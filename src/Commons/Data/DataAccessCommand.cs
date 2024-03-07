@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;
@@ -29,7 +30,7 @@ public class DataAccessCommand
     public string Sql { get; set; }
 
     [JsonProperty("parameters")]
-    public List<DataAccessParameter> Parameters { get;  }
+    public List<DataAccessParameter> Parameters { get; internal init; }
 
     [SetsRequiredMembers]
     public DataAccessCommand()
@@ -60,5 +61,15 @@ public class DataAccessCommand
     public void AddParameter(string name, object? value, DbType dbType)
     {
         Parameters.Add(new DataAccessParameter(name, value, dbType));
+    }
+
+    public DataAccessCommand DeepCopy()
+    {
+        return new DataAccessCommand()
+        {
+            Type = Type,
+            Parameters = Parameters.Select(p => p.DeepCopy()).ToList(),
+            Sql = Sql
+        };
     }
 }

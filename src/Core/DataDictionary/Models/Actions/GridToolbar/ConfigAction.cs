@@ -16,4 +16,5 @@ public class ConfigAction : GridToolbarAction
         CssClass = "float-end";
         Order = 2;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

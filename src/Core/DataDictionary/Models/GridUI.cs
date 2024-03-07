@@ -156,4 +156,28 @@ public class GridUI
     [JsonProperty("isCompact")]
     [Display(Name = "Compact mode")]
     public bool IsCompact { get; set; }
+
+    public GridUI DeepCopy()
+    {
+        return new GridUI
+        {
+            RecordsPerPage = RecordsPerPage,
+            TotalPaggingButton = TotalPaggingButton,
+            ShowBorder = ShowBorder,
+            ShowRowStriped = ShowRowStriped,
+            ShowRowHover = ShowRowHover,
+            TotalOfRecords = TotalOfRecords,
+            ShowTitle = ShowTitle,
+            ShowToolBar = ShowToolBar,
+            EnableSorting = EnableSorting,
+            EnableMultiSelect = EnableMultiSelect,
+            MaintainValuesOnLoad = MaintainValuesOnLoad,
+            ShowHeaderWhenEmpty = ShowHeaderWhenEmpty,
+            EmptyDataText = EmptyDataText,
+            ShowPagging = ShowPagging,
+            HeaderFixed = HeaderFixed,
+            UseVerticalLayoutAtFilter = UseVerticalLayoutAtFilter,
+            IsCompact = IsCompact
+        };
+    }
 }

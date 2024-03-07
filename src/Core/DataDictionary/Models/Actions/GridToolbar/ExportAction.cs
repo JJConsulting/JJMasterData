@@ -29,4 +29,12 @@ public class ExportAction : GridToolbarAction
         Order = 3;
         ProcessOptions = new ProcessOptions();
     }
+
+    public override BasicAction DeepCopy()
+    {
+        var newAction = (ExportAction)CopyAction();
+        newAction.FileName = FileName;
+        newAction.ProcessOptions = ProcessOptions.DeepCopy();
+        return newAction;
+    }
 }

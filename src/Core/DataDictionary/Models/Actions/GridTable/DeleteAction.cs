@@ -20,4 +20,5 @@ public class DeleteAction : GridTableAction, ISubmittableAction
     }
 
     public bool IsSubmit { get; set; }
+    public override BasicAction DeepCopy() => CopyAction();
 }

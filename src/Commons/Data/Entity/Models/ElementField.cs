@@ -115,4 +115,23 @@ public class ElementField
     /// </summary>
     [JsonIgnore]
     public bool EnableOnDelete { get; set; } = true;
+
+    public ElementField DeepCopy()
+    {
+        return new ElementField
+        {
+            FieldId = FieldId,
+            Name = Name,
+            Label = Label,
+            DataType = DataType,
+            Filter = Filter.DeepCopy(),
+            Size = Size,
+            DefaultValue = DefaultValue,
+            IsRequired = IsRequired,
+            IsPk = IsPk,
+            AutoNum = AutoNum,
+            DataBehavior = DataBehavior,
+            EnableOnDelete = EnableOnDelete
+        };
+    }
 }

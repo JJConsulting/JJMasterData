@@ -232,4 +232,9 @@ public class ElementFieldList : IList<ElementField>
 
 
     #endregion
+
+    public ElementFieldList DeepCopy()
+    {
+        return new(_list.Select(f=>f.DeepCopy()).ToList());
+    }
 }

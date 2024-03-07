@@ -25,6 +25,13 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
             .Select(r => r.ElementRelationship).ToList();
         _formRelationships = formRelationships;
     }
+
+    private FormElementRelationshipList(List<ElementRelationship> baseFields,
+        List<FormElementRelationship> formRelationships)
+    {
+        _baseRelationships = baseFields;
+        _formRelationships = formRelationships;
+    }
     
     public FormElementRelationshipList(List<ElementRelationship> baseFields)
     {
@@ -156,5 +163,12 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     {
         var relationship = GetById(id);
         return _formRelationships.IndexOf(relationship);
+    }
+
+    public FormElementRelationshipList DeepCopy()
+    {
+        return new FormElementRelationshipList(
+            _baseRelationships.Select(b=>b.DeepCopy()).ToList(),
+            _formRelationships.Select(r=>r.DeepCopy()).ToList());
     }
 }

@@ -12,4 +12,5 @@ public class RefreshAction : GridToolbarAction
         CssClass = "float-end";
         Order = 6;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

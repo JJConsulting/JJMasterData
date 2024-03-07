@@ -26,4 +26,13 @@ public class ElementFilter(FilterMode type)
     public ElementFilter() : this(FilterMode.None)
     {
     }
+
+    public ElementFilter DeepCopy()
+    {
+        return new ElementFilter
+        {
+            Type = Type,
+            IsRequired = IsRequired
+        };
+    }
 }

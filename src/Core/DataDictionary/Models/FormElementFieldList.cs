@@ -13,7 +13,7 @@ namespace JJMasterData.Core.DataDictionary.Models;
 /// </summary>
 public class FormElementFieldList : IList<FormElementField>
 {
-    private readonly IList<FormElementField> _formFields;
+    private readonly List<FormElementField> _formFields;
     private readonly ElementFieldList _baseFields;
     
     public FormElementFieldList()
@@ -22,10 +22,16 @@ public class FormElementFieldList : IList<FormElementField>
         _formFields = new List<FormElementField>();
     }
     [JsonConstructor]
-    private FormElementFieldList(IList<FormElementField> formFields)
+    private FormElementFieldList(List<FormElementField> formFields)
     {
         _baseFields = new ElementFieldList(formFields.Cast<ElementField>().ToList());
         _formFields = formFields;
+    }
+    
+    private FormElementFieldList(ElementFieldList baseFields, List<FormElementField> fields )
+    {
+        _baseFields = baseFields;
+        _formFields = fields;
     }
     
     public FormElementFieldList(ElementFieldList baseFields)
@@ -92,7 +98,7 @@ public class FormElementFieldList : IList<FormElementField>
 
     public int Count => _formFields.Count;
 
-    public bool IsReadOnly => _formFields.IsReadOnly;
+    public bool IsReadOnly => false;
 
     #endregion
 
@@ -177,5 +183,11 @@ public class FormElementFieldList : IList<FormElementField>
         formElementField = null!;
         return false;
     }
- 
+
+    public FormElementFieldList DeepCopy()
+    {
+        return new FormElementFieldList(
+            _baseFields.DeepCopy(),
+            _formFields.Select(f=>f.DeepCopy()).ToList());
+    }
 }

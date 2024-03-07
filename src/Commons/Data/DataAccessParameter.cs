@@ -110,4 +110,17 @@ public class DataAccessParameter
         Type = type;
         Direction = direction;
     }
+
+    public DataAccessParameter DeepCopy()
+    {
+        return new DataAccessParameter
+        {
+            Name = Name,
+            Type = Type,
+            Size = Size,
+            Direction = Direction,
+            Value = Value,
+            IsNullable = IsNullable
+        };
+    }
 }

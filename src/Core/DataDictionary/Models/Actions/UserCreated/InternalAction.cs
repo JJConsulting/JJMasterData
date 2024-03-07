@@ -12,4 +12,10 @@ public class InternalAction : UserCreatedAction
         ElementRedirect = new FormActionRedirect();
     }
 
+    public override BasicAction DeepCopy()
+    { 
+        var newAction = (InternalAction)CopyAction();
+        newAction.ElementRedirect = ElementRedirect.DeepCopy();
+        return newAction;
+    }
 }

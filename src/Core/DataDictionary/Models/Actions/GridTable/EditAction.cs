@@ -24,6 +24,6 @@ public class EditAction : GridTableAction, IModalAction
         Icon = IconType.Pencil;
         Order = 2;
     }
-
+    public override BasicAction DeepCopy() => CopyAction();
 
 }

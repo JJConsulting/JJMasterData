@@ -27,4 +27,5 @@ public class UrlRedirectAction : UserCreatedAction
     {
         Icon = IconType.ExternalLink;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

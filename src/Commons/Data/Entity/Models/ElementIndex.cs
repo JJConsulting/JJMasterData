@@ -29,4 +29,14 @@ public class ElementIndex
         IsUnique = isUnique;
         Columns = columns.ToList();
     }
+
+    public ElementIndex DeepCopy()
+    {
+        return new ElementIndex
+        {
+            Columns = [..Columns],
+            IsClustered = IsClustered,
+            IsUnique = IsUnique
+        };
+    }
 }

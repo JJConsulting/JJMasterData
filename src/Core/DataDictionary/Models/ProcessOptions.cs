@@ -31,4 +31,14 @@ public class ProcessOptions
     /// </remarks>
     [JsonProperty("scope")]
     public ProcessScope Scope { get; set; } = ProcessScope.Global;
+
+    public ProcessOptions DeepCopy()
+    {
+        return new ProcessOptions
+        {
+            CommandBeforeProcess = CommandBeforeProcess,
+            CommandAfterProcess = CommandAfterProcess,
+            Scope = Scope
+        };
+    }
 }

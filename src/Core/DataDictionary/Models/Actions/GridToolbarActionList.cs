@@ -44,4 +44,9 @@ public class GridToolbarActionList : FormElementActionList
         EnsureActionExists<SortAction>();
         EnsureActionExists<AuditLogGridToolbarAction>();
     }
+
+    public GridToolbarActionList DeepCopy()
+    {
+        return new GridToolbarActionList(List.Select(a=>a.DeepCopy()).ToList());
+    }
 }

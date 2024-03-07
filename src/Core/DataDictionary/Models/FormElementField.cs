@@ -283,4 +283,44 @@ public class FormElementField : ElementField
     {
         ReadOnlyExpression = value ? "val:1" : "val:0";
     }
+
+    public new FormElementField DeepCopy()
+    {
+        var copiedField = new FormElementField
+        {
+            Component = Component,
+            VisibleExpression = VisibleExpression,
+            EnableExpression = EnableExpression,
+            LineGroup = LineGroup,
+            CssClass = CssClass,
+            HelpDescription = HelpDescription,
+            DataItem = DataItem?.DeepCopy(),
+            DataFile = DataFile?.DeepCopy(),
+            Attributes = new Dictionary<string, object>(Attributes),
+            Export = Export,
+            ValidateRequest = ValidateRequest,
+            AutoPostBack = AutoPostBack,
+            TriggerExpression = TriggerExpression,
+            NumberOfDecimalPlaces = NumberOfDecimalPlaces,
+            PanelId = PanelId,
+            Actions = Actions.DeepCopy(),
+            InternalNotes = InternalNotes,
+            GridAlignment = GridAlignment,
+            ReadOnlyExpression = ReadOnlyExpression,
+            FieldId = FieldId,
+            Name = Name,
+            Label = Label,
+            DataType = DataType,
+            Filter = Filter.DeepCopy(),
+            Size = Size,
+            DefaultValue = DefaultValue,
+            IsRequired = IsRequired,
+            IsPk = IsPk,
+            AutoNum = AutoNum,
+            DataBehavior = DataBehavior,
+            EnableOnDelete = EnableOnDelete,
+        };
+
+        return copiedField;
+    }
 }

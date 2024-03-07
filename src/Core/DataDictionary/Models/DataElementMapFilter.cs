@@ -15,4 +15,13 @@ public class DataElementMapFilter
     [Display(Name = "Expression")]
     public string ExpressionValue { get; set; }
 
+    public DataElementMapFilter DeepCopy()
+    {
+        return new()
+        {
+            ExpressionValue = ExpressionValue,
+            FieldName = FieldName
+        };
+    }
+
 }

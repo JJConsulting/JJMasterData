@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using JJMasterData.Commons.Data;
 using Newtonsoft.Json;
 
@@ -69,4 +70,21 @@ public class FormElementDataItem
     public bool HasElementMap() => ElementMap != null;
 
     public bool HasItems() => Items?.Count > 0;
+
+    public FormElementDataItem DeepCopy()
+    {
+        return new FormElementDataItem
+        {
+            DataItemType = DataItemType,
+            Command = Command?.DeepCopy(),
+            Items = Items?.Select(i=>i.DeepCopy()).ToList(),
+            ElementMap = ElementMap?.DeepCopy(),
+            FirstOption = FirstOption,
+            RadioLayout = RadioLayout,
+            EnableMultiSelect = EnableMultiSelect,
+            GridBehavior = GridBehavior,
+            ShowIcon = ShowIcon
+        };
+    }
+
 }

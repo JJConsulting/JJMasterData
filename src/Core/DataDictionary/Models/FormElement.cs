@@ -163,4 +163,31 @@ public class FormElement : Element
     {
         return Panels.First(x => x.PanelId == id);
     }
+
+    public FormElement DeepCopy()
+    {
+        return new FormElement
+        {
+            Fields = Fields.DeepCopy(),
+            Options = Options.DeepCopy(),
+            Panels = Panels.Select(p => p.DeepCopy()).ToList(),
+            Relationships = Relationships.DeepCopy(),
+            Indexes = Indexes.Select(i => i.DeepCopy()).ToList(),
+            ApiOptions = ApiOptions.DeepCopy(),
+            Title = Title,
+            ParentName = ParentName,
+            SubTitle = SubTitle,
+            TitleSize = TitleSize,
+            Info = Info,
+            Name = Name,
+            EnableSynchronism = EnableSynchronism,
+            SynchronismMode = SynchronismMode,
+            TableName = TableName,
+            ReadProcedureName = ReadProcedureName,
+            WriteProcedureName = WriteProcedureName,
+            UseReadProcedure = UseReadProcedure,
+            UseWriteProcedure = UseWriteProcedure,
+            
+        };
+    }
 }

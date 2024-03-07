@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -38,4 +39,14 @@ public class ElementRelationship
             Columns.AddRange(columns);
     }
 
+    public ElementRelationship DeepCopy()
+    {
+        return new ElementRelationship
+        {
+            Columns = Columns.Select(c => c.DeepCopy()).ToList(),
+            ChildElement = ChildElement,
+            DeleteOnCascade = DeleteOnCascade,
+            UpdateOnCascade = UpdateOnCascade
+        };
+    }
 }
