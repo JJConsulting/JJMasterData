@@ -1,4 +1,5 @@
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -15,7 +16,8 @@ public class ExpressionsServiceTests
     private readonly Mock<ILogger<ExpressionsService>> _loggerMock = new();
     private readonly Mock<IAsyncExpressionProvider> _expressionAsyncProviderMock = new();
     private readonly Mock<ISyncExpressionProvider> _expressionBooleanProviderMock = new();
-    
+    private readonly Mock<IEncryptionService> _encryptionServiceMock = new();
+
     private IHttpContext MockHttpContext()
     {
         var mockHttpContext = new Mock<IHttpContext>();
@@ -32,8 +34,13 @@ public class ExpressionsServiceTests
         _expressionAsyncProviderMock.SetupGet(p => p.Prefix).Returns("example");
         _expressionBooleanProviderMock.SetupGet(p => p.Prefix).Returns("bool_example");
         _expressionsService = new ExpressionsService(
-            new List<IExpressionProvider> { _expressionAsyncProviderMock.Object,_expressionBooleanProviderMock.Object },
+            new List<IExpressionProvider>
+            {
+                _expressionAsyncProviderMock.Object,
+                _expressionBooleanProviderMock.Object
+            },
              new ExpressionParser(MockHttpContext(), MockLogger()),
+            _encryptionServiceMock.Object,
             _loggerMock.Object
         );
     }

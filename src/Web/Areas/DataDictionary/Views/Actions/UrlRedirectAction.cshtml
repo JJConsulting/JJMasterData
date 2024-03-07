@@ -27,9 +27,9 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
                     <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["This field support runtime values using expressions."]">@StringLocalizer["Url Redirect"]</label>
-                    @Html.TextBoxFor(model => model.UrlRedirect, new { @class = "form-control" })
+                    <input asp-for="UrlRedirect" class="form-control font-monospace" />
                 </div>
-
+                
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
                     <label asp-for="IsModal" class="@BootstrapHelper.Label">@StringLocalizer["Is Modal"]</label>
                     <checkbox for="IsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
@@ -40,6 +40,12 @@
                     <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
                     @Html.TextBoxFor(model => model.ModalTitle, new { @class = "form-control" })
                 </div>
+
+
+                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                    <label class="@BootstrapHelper.Label " asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
+                    <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
+                </div>
                 
                 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
@@ -49,12 +55,25 @@
                     <tooltip title="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]"/>
                     <checkbox for="IsIframe" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label " asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
-                    <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
+            </div>
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                    <label asp-for="EncryptParameters" class="@BootstrapHelper.Label"></label>
+                    <checkbox for="EncryptParameters" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
-
+                <div class="col-sm-10">
+                    <alert color="Info"
+                           title="@StringLocalizer["Encrypt Parameters"]"
+                           icon="IconType.InfoCircle">
+                        @{
+                            var docsUrl = "https://md.jjconsulting.tech/api/";
+                            var methodUrl = docsUrl + "JJMasterData.Core.Extensions.EncryptionServiceExtensions.html#JJMasterData_Core_Extensions_EncryptionServiceExtensions_DecryptStringWithUrlUnescape_JJMasterData_Commons_Security_Cryptography_Abstractions_IEncryptionService_System_String_";
+                            var interfaceUrl = docsUrl + "JJMasterData.Commons.Security.Cryptography.Abstractions.IEncryptionService.html";
+                            var tip = @StringLocalizer["To decrypt at the destination, use the <a href=\\\"{0}\\\">DecryptStringWithUrlUnescape</a> method from <a href=\\\"{1}\\\">IEncryptionService</a>.", methodUrl, interfaceUrl];
+                        }
+                        @Html.Raw(tip)
+                    </alert>
+                </div>
             </div>
         </div>
 

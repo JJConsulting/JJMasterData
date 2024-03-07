@@ -2,16 +2,21 @@
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 
-public class UrlRedirectService(IEntityRepository entityRepository, FormValuesService formValuesService, ExpressionsService expressionsService)
+public class UrlRedirectService(
+    IEntityRepository entityRepository,
+    FormValuesService formValuesService,
+    ExpressionsService expressionsService)
 {
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private FormValuesService FormValuesService { get; } = formValuesService;
@@ -54,18 +59,19 @@ public class UrlRedirectService(IEntityRepository entityRepository, FormValuesSe
         return GetJsonResult(values, urlRedirectAction);
     }
 
-    private JsonComponentResult GetJsonResult(Dictionary<string, object> values, UrlRedirectAction urlRedirectAction)
+    private JsonComponentResult GetJsonResult(Dictionary<string, object> values, UrlRedirectAction action)
     {
         var formStateData = new FormStateData(values, PageState.List);
-        var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(System.Web.HttpUtility.UrlDecode(urlRedirectAction.UrlRedirect), formStateData);
-        var parsedTitle =  ExpressionsService.ReplaceExpressionWithParsedValues(urlRedirectAction.ModalTitle, formStateData);
+        var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(System.Web.HttpUtility.UrlDecode(action.UrlRedirect), formStateData, action.EncryptParameters);
+        var parsedTitle =  ExpressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
+        
         var model = new UrlRedirectModel
         {
-            IsIframe = urlRedirectAction.IsIframe,
-            UrlRedirect = parsedUrl!,
+            IsIframe = action.IsIframe,
+            UrlRedirect = parsedUrl,
             ModalTitle = parsedTitle!,
-            UrlAsModal = urlRedirectAction.IsModal,
-            ModalSize = urlRedirectAction.ModalSize
+            UrlAsModal = action.IsModal,
+            ModalSize = action.ModalSize
         };
         
         return new JsonComponentResult(model);

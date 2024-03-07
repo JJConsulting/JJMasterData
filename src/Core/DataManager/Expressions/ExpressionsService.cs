@@ -1,11 +1,11 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -19,6 +19,7 @@ namespace JJMasterData.Core.DataManager.Expressions;
 public class ExpressionsService(
     IEnumerable<IExpressionProvider> expressionProviders,
     ExpressionParser expressionParser,
+    IEncryptionService encryptionService,
     ILogger<ExpressionsService> logger)
 {
     private record Expression(string Prefix, string Content);
@@ -30,6 +31,7 @@ public class ExpressionsService(
 
     private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
     private ExpressionParser ExpressionParser { get; } = expressionParser;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
     private ILogger<ExpressionsService> Logger { get; } = logger;
 
     public Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
@@ -39,14 +41,29 @@ public class ExpressionsService(
 
     public string? ReplaceExpressionWithParsedValues(
         string? expression,
-        FormStateData formStateData)
+        FormStateData formStateData,
+        bool encryptValues = false
+        )
     {
         var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
 
+        if (encryptValues)
+            EncryptValues(parsedValues);
+        
         if (expression != null)
             return ExpressionHelper.ReplaceExpression(expression, parsedValues);
 
         return null;
+    }
+
+    private void EncryptValues(Dictionary<string, object?> parsedValues)
+    {
+        foreach(var kvp in parsedValues)
+        {
+            var value = parsedValues[kvp.Key];
+            if(value is not null)
+                parsedValues[kvp.Key] = EncryptionService.EncryptStringWithUrlEscape(value.ToString()!);
+        }
     }
 
     public bool GetBoolValue(string? expression, FormStateData formStateData)

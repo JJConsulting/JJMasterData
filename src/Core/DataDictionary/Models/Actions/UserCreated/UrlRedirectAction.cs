@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -6,7 +7,6 @@ public class UrlRedirectAction : UserCreatedAction
 {
     [JsonProperty("urlRedirect")]
     public string UrlRedirect { get; set; }
-
     
     [JsonProperty("urlAsPopUp")]
     public bool IsModal { get; set; }
@@ -23,6 +23,10 @@ public class UrlRedirectAction : UserCreatedAction
     [JsonProperty("ModalTitle")]
     public string ModalTitle { get; set; } = "Title";
 
+    [JsonProperty("encryptParameters")]
+    [Display(Name="Encrypt Parameters")]
+    public bool EncryptParameters { get; set; }
+    
     public UrlRedirectAction()
     {
         Icon = IconType.ExternalLink;

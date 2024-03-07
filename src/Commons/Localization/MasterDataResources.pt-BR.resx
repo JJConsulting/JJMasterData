@@ -4032,4 +4032,10 @@
   <data name="File successfully deleted." xml:space="preserve">
     <value>Arquivo deletado com sucesso.</value>
   </data>
+  <data name="Encrypt Parameters" xml:space="preserve">
+    <value>Criptografar Parâmetros</value>
+  </data>
+  <data name="To decrypt at the destination, use the &lt;a href=\&quot;{0}\&quot;&gt;DecryptStringWithUrlUnescape&lt;/a&gt; method from &lt;a href=\&quot;{1}\&quot;&gt;IEncryptionService&lt;/a&gt;." xml:space="preserve">
+    <value>Para descriptografar no destino, utilize o método &lt;a href=\&quot;{0}\&quot;&gt;DecryptStringWithUrlUnescape&lt;/a&gt; da interface &lt;a href=\&quot;{1}\&quot;&gt;IEncryptionService&lt;/a&gt;.</value>
+  </data>
 </root>
