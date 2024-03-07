@@ -26,7 +26,8 @@
         <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["This field support runtime values using expressions."]">@StringLocalizer["Url Redirect"]</label>
+                    <label class="form-label" asp-for="UrlRedirect"></label>
+                    <tooltip title="@StringLocalizer["This field support runtime values using expressions."]"/>
                     <input asp-for="UrlRedirect" class="form-control font-monospace" />
                 </div>
                 

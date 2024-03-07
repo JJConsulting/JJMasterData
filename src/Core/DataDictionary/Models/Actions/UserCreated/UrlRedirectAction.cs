@@ -6,6 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 public class UrlRedirectAction : UserCreatedAction
 {
     [JsonProperty("urlRedirect")]
+    [Display(Name = "Url")]
     public string UrlRedirect { get; set; }
     
     [JsonProperty("urlAsPopUp")]
