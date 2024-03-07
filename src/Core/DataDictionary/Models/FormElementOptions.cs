@@ -53,7 +53,7 @@ public class FormElementOptions
 
     public FormElementOptions DeepCopy()
     {
-        return new FormElementOptions()
+        return new FormElementOptions
         {
             Grid = Grid.DeepCopy(),
             Form = Form.DeepCopy(),

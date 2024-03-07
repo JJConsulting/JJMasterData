@@ -65,7 +65,7 @@ public class DataAccessCommand
 
     public DataAccessCommand DeepCopy()
     {
-        return new DataAccessCommand()
+        return new DataAccessCommand
         {
             Type = Type,
             Parameters = Parameters.Select(p => p.DeepCopy()).ToList(),

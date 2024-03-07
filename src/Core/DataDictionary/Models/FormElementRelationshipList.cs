@@ -169,6 +169,6 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     {
         return new FormElementRelationshipList(
             _baseRelationships.Select(b=>b.DeepCopy()).ToList(),
-            _formRelationships.Select(r=>r.DeepCopy()).ToList());
+            _formRelationships.ConvertAll(r=>r.DeepCopy()));
     }
 }

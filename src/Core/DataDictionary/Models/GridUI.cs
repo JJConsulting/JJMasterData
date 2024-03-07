@@ -159,25 +159,6 @@ public class GridUI
 
     public GridUI DeepCopy()
     {
-        return new GridUI
-        {
-            RecordsPerPage = RecordsPerPage,
-            TotalPaggingButton = TotalPaggingButton,
-            ShowBorder = ShowBorder,
-            ShowRowStriped = ShowRowStriped,
-            ShowRowHover = ShowRowHover,
-            TotalOfRecords = TotalOfRecords,
-            ShowTitle = ShowTitle,
-            ShowToolBar = ShowToolBar,
-            EnableSorting = EnableSorting,
-            EnableMultiSelect = EnableMultiSelect,
-            MaintainValuesOnLoad = MaintainValuesOnLoad,
-            ShowHeaderWhenEmpty = ShowHeaderWhenEmpty,
-            EmptyDataText = EmptyDataText,
-            ShowPagging = ShowPagging,
-            HeaderFixed = HeaderFixed,
-            UseVerticalLayoutAtFilter = UseVerticalLayoutAtFilter,
-            IsCompact = IsCompact
-        };
+        return (GridUI)MemberwiseClone();
     }
 }

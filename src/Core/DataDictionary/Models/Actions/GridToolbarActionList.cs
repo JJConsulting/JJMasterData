@@ -47,6 +47,6 @@ public class GridToolbarActionList : FormElementActionList
 
     public GridToolbarActionList DeepCopy()
     {
-        return new GridToolbarActionList(List.Select(a=>a.DeepCopy()).ToList());
+        return new GridToolbarActionList(List.ConvertAll(a=>a.DeepCopy()));
     }
 }

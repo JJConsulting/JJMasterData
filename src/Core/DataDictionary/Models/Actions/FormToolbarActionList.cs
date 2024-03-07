@@ -35,6 +35,6 @@ public class FormToolbarActionList : FormElementActionList
 
     public FormToolbarActionList DeepCopy()
     {
-        return new FormToolbarActionList(List.Select(a=>a.DeepCopy()).ToList());
+        return new FormToolbarActionList(List.ConvertAll(a=>a.DeepCopy()));
     }
 }

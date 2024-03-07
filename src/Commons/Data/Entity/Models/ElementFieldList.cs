@@ -12,13 +12,13 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class ElementFieldList : IList<ElementField>
 {
-    private readonly IList<ElementField> _list = new List<ElementField>();
+    private readonly List<ElementField> _list = new();
 
     public ElementFieldList()
     {
         
     }
-    public ElementFieldList(IList<ElementField> fields)
+    public ElementFieldList(List<ElementField> fields)
     {
         _list = fields;
     }
@@ -173,7 +173,7 @@ public class ElementFieldList : IList<ElementField>
 
     public int Count => _list.Count;
 
-    public bool IsReadOnly => _list.IsReadOnly;
+    public bool IsReadOnly => false;
 
     #endregion
 
@@ -233,8 +233,13 @@ public class ElementFieldList : IList<ElementField>
 
     #endregion
 
+    public List<ElementField> GetAsList()
+    {
+        return _list;
+    }
+    
     public ElementFieldList DeepCopy()
     {
-        return new(_list.Select(f=>f.DeepCopy()).ToList());
+        return new(_list.ConvertAll(f=>f.DeepCopy()));
     }
 }

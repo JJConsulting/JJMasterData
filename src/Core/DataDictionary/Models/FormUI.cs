@@ -44,12 +44,6 @@ public class FormUI
 
     public FormUI DeepCopy()
     {
-        return new FormUI
-        {
-            FormCols = FormCols,
-            IsVerticalLayout = IsVerticalLayout,
-            ShowViewModeAsStatic = ShowViewModeAsStatic,
-            EnterKey = EnterKey
-        };
+        return (FormUI)MemberwiseClone();
     }
 }

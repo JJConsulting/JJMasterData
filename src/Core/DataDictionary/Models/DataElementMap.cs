@@ -51,7 +51,8 @@ public class DataElementMap
         }
     }
 
-    [JsonProperty("mapFilters")] public List<DataElementMapFilter> MapFilters { get; set; } = [];
+    [JsonProperty("mapFilters")]
+    public List<DataElementMapFilter> MapFilters { get; set; } = [];
 
 
     [JsonProperty("enableElementActions")]
@@ -60,18 +61,11 @@ public class DataElementMap
 
     public DataElementMap DeepCopy()
     {
-        return new()
-        {
-            Filters = new Dictionary<string, object>(Filters),
-            ElementName = ElementName,
-            MapFilters = MapFilters.Select(m => m.DeepCopy()).ToList(),
-            ModalSize = ModalSize,
-            DescriptionFieldName = DescriptionFieldName,
-            EnableElementActions = EnableElementActions,
-            GroupFieldName = GroupFieldName,
-            IdFieldName = IdFieldName,
-            IconColorFieldName = IconColorFieldName,
-            IconIdFieldName = IconIdFieldName
-        };
+        var copy = (DataElementMap)MemberwiseClone();
+        
+        copy.Filters = new Dictionary<string, object>(Filters);
+        copy.MapFilters = MapFilters.ConvertAll(m => m.DeepCopy());
+        
+        return copy;
     }
 }

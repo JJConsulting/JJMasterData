@@ -13,10 +13,11 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElement : Element
 {
-    
-    [JsonIgnore]
-    internal string? ParentName { get; set; } 
-    
+    private FormElementFieldList? _fields;
+    private FormElementRelationshipList? _relationships;
+
+    [JsonIgnore] internal string? ParentName { get; set; }
+
     [JsonProperty]
     [Display(Name = "Title")]
     [SyncExpression]
@@ -25,28 +26,40 @@ public class FormElement : Element
     [JsonProperty]
     [Display(Name = "Title Size")]
     public HeadingSize TitleSize { get; set; } = HeadingSize.H3;
-    
+
     [JsonProperty]
     [Display(Name = "SubTitle")]
     [SyncExpression]
     public string? SubTitle { get; set; }
-    
+
     [Required]
     [JsonProperty("fields")]
-    public new FormElementFieldList Fields { get; private set; }
-    
-    [Required]
-    [JsonProperty("panels")]
-    public List<FormElementPanel> Panels { get; set; }
-    
+    public new FormElementFieldList Fields
+    {
+        get => _fields ?? [];
+        private set
+        {
+            base.Fields = new ElementFieldList(value.GetElementFields());
+            _fields = value;
+        }
+    }
+
+    [Required] [JsonProperty("panels")] public List<FormElementPanel> Panels { get; set; }
+
     [Required]
     [JsonProperty("relations")]
-    public new FormElementRelationshipList Relationships { get; set; }
-    
-    [Required]
-    [JsonProperty("options")]
-    public FormElementOptions Options { get; set; }
-    
+    public new FormElementRelationshipList Relationships
+    {
+        get => _relationships ?? [];
+        private set
+        {
+            base.Relationships = value.GetElementRelationships();
+            _relationships = value;
+        }
+    }
+
+    [Required] [JsonProperty("options")] public FormElementOptions Options { get; set; }
+
     [Required]
     [JsonProperty("apiOptions")]
     public FormElementApiOptions ApiOptions { get; set; }
@@ -60,13 +73,12 @@ public class FormElement : Element
         ApiOptions = new FormElementApiOptions();
     }
 
-    public FormElement(Element element) 
+    public FormElement(Element element)
     {
         Name = element.Name;
         TableName = element.TableName;
         Info = element.Info;
         Indexes = element.Indexes;
-        base.Relationships = element.Relationships;
         Relationships = new FormElementRelationshipList(base.Relationships);
         ReadProcedureName = element.ReadProcedureName;
         WriteProcedureName = element.WriteProcedureName;
@@ -74,8 +86,6 @@ public class FormElement : Element
         SynchronismMode = element.SynchronismMode;
         Title = element.Name;
         SubTitle = element.Info;
-
-        base.Fields = element.Fields;
         Fields = new FormElementFieldList(element.Fields);
         Panels = [];
         ApiOptions = new FormElementApiOptions();
@@ -105,7 +115,7 @@ public class FormElement : Element
             var type = col.DataType;
 
             SetFieldType(field, type);
-            
+
             Fields.Add(new FormElementField(field));
         }
     }
@@ -114,14 +124,15 @@ public class FormElement : Element
     private FormElement(
         FormElementFieldList fields,
         List<FormElementPanel>? panels,
-        FormElementRelationshipList relationships, 
+        FormElementRelationshipList relationships,
         FormElementOptions? options,
         FormElementApiOptions? apiOptions)
     {
         base.Fields = new ElementFieldList(fields.Cast<ElementField>().ToList());
         Fields = fields;
         base.Relationships =
-            [..relationships.Where(r => r.ElementRelationship != null).Select(r => r.ElementRelationship).ToList()!];
+            [..relationships.Where(r => r.ElementRelationship != null).
+                Select(r => r.ElementRelationship).ToList()!];
         Relationships = relationships;
         Options = options ?? new FormElementOptions();
         ApiOptions = apiOptions ?? new FormElementApiOptions();
@@ -140,7 +151,7 @@ public class FormElement : Element
             field.DataType = FieldType.Int;
         }
         else if (type == typeof(decimal) ||
-                 type == typeof(double) || 
+                 type == typeof(double) ||
                  type == typeof(float))
         {
             field.DataType = FieldType.Float;
@@ -166,28 +177,15 @@ public class FormElement : Element
 
     public FormElement DeepCopy()
     {
-        return new FormElement
-        {
-            Fields = Fields.DeepCopy(),
-            Options = Options.DeepCopy(),
-            Panels = Panels.Select(p => p.DeepCopy()).ToList(),
-            Relationships = Relationships.DeepCopy(),
-            Indexes = Indexes.Select(i => i.DeepCopy()).ToList(),
-            ApiOptions = ApiOptions.DeepCopy(),
-            Title = Title,
-            ParentName = ParentName,
-            SubTitle = SubTitle,
-            TitleSize = TitleSize,
-            Info = Info,
-            Name = Name,
-            EnableSynchronism = EnableSynchronism,
-            SynchronismMode = SynchronismMode,
-            TableName = TableName,
-            ReadProcedureName = ReadProcedureName,
-            WriteProcedureName = WriteProcedureName,
-            UseReadProcedure = UseReadProcedure,
-            UseWriteProcedure = UseWriteProcedure,
-            
-        };
+        var copy = (FormElement)MemberwiseClone();
+
+        copy.Fields = Fields.DeepCopy();
+        copy.Options = Options.DeepCopy();
+        copy.Panels = Panels.ConvertAll(p => p.DeepCopy());
+        copy.Relationships = Relationships.DeepCopy();
+        copy.Indexes = Indexes.ConvertAll(i => i.DeepCopy());
+        copy.ApiOptions = ApiOptions.DeepCopy();
+
+        return copy;
     }
 }

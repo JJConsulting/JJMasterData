@@ -118,20 +118,8 @@ public class ElementField
 
     public ElementField DeepCopy()
     {
-        return new ElementField
-        {
-            FieldId = FieldId,
-            Name = Name,
-            Label = Label,
-            DataType = DataType,
-            Filter = Filter.DeepCopy(),
-            Size = Size,
-            DefaultValue = DefaultValue,
-            IsRequired = IsRequired,
-            IsPk = IsPk,
-            AutoNum = AutoNum,
-            DataBehavior = DataBehavior,
-            EnableOnDelete = EnableOnDelete
-        };
+        var copy = (ElementField)MemberwiseClone();
+        copy.Filter = Filter.DeepCopy();
+        return copy;
     }
 }

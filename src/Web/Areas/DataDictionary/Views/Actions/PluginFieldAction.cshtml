@@ -19,7 +19,7 @@
     {
         DataItemType = DataItemType.Manual,
         FirstOption = FirstOptionMode.Choose,
-        Items = formElement.Fields.Select(f=>new DataItemValue(f.Name,f.Name)).ToImmutableList()
+        Items = formElement.Fields.Select(f=>new DataItemValue(f.Name,f.Name)).ToList()
     };
 }
 

@@ -30,6 +30,6 @@ public class GridTableActionList : FormElementActionList
 
     public GridTableActionList DeepCopy()
     {
-        return new GridTableActionList(List.Select(a=>a.DeepCopy()).ToList());
+        return new GridTableActionList(List.ConvertAll(a=>a.DeepCopy()));
     }
 }

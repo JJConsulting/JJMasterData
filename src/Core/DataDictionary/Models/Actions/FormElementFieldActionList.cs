@@ -19,6 +19,6 @@ public class FormElementFieldActionList : FormElementActionList
 
     public FormElementFieldActionList DeepCopy()
     {
-        return new FormElementFieldActionList(List.Select(a=>a.DeepCopy()).ToList());
+        return new FormElementFieldActionList(List.ConvertAll(a=>a.DeepCopy()));
     }
 }

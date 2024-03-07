@@ -184,10 +184,15 @@ public class FormElementFieldList : IList<FormElementField>
         return false;
     }
 
+    public List<ElementField> GetElementFields()
+    {
+        return _baseFields.GetAsList();
+    }
+
     public FormElementFieldList DeepCopy()
     {
         return new FormElementFieldList(
             _baseFields.DeepCopy(),
-            _formFields.Select(f=>f.DeepCopy()).ToList());
+            _formFields.ConvertAll(f=>f.DeepCopy()));
     }
 }
