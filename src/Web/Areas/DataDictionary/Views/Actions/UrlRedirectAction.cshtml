@@ -1,8 +1,12 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IHtmlLocalizer<MasterDataResources> HtmlLocalizer
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Mvc.Localization
 @model  JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction
 
 @{
@@ -67,12 +71,11 @@
                            title="@StringLocalizer["Encrypt Parameters"]"
                            icon="IconType.InfoCircle">
                         @{
-                            var docsUrl = "https://md.jjconsulting.tech/api/";
-                            var methodUrl = docsUrl + "JJMasterData.Core.Extensions.EncryptionServiceExtensions.html#JJMasterData_Core_Extensions_EncryptionServiceExtensions_DecryptStringWithUrlUnescape_JJMasterData_Commons_Security_Cryptography_Abstractions_IEncryptionService_System_String_";
-                            var interfaceUrl = docsUrl + "JJMasterData.Commons.Security.Cryptography.Abstractions.IEncryptionService.html";
-                            var tip = @StringLocalizer["To decrypt at the destination, use the <a href=\\\"{0}\\\">DecryptStringWithUrlUnescape</a> method from <a href=\\\"{1}\\\">IEncryptionService</a>.", methodUrl, interfaceUrl];
+                            const string docsUrl = "https://md.jjconsulting.tech/api/";
+                            const string methodUrl = docsUrl + "JJMasterData.Core.Extensions.EncryptionServiceExtensions.html#JJMasterData_Core_Extensions_EncryptionServiceExtensions_DecryptStringWithUrlUnescape_JJMasterData_Commons_Security_Cryptography_Abstractions_IEncryptionService_System_String_";
+                            const string interfaceUrl = docsUrl + "JJMasterData.Commons.Security.Cryptography.Abstractions.IEncryptionService.html";
                         }
-                        @Html.Raw(tip)
+                        @HtmlLocalizer["To decrypt at the destination, use the <a target=\"_blank\" href=\"{0}\">DecryptStringWithUrlUnescape</a> method from <a target=\"_blank\" href=\"{1}\">IEncryptionService</a>.", methodUrl, interfaceUrl]
                     </alert>
                 </div>
             </div>
