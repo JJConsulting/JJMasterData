@@ -8,12 +8,5 @@ public class FormActionRelationField
 
     [JsonProperty("redirectField")] public string RedirectField { get; set; }
 
-    public FormActionRelationField DeepCopy()
-    {
-        return new FormActionRelationField
-        {
-            InternalField = InternalField,
-            RedirectField = RedirectField
-        };
-    }
+    public FormActionRelationField DeepCopy() => (FormActionRelationField)MemberwiseClone();
 }

@@ -26,12 +26,5 @@ public class ElementRelationshipColumn
         FkColumn = fkColumn;
     }
 
-    public ElementRelationshipColumn DeepCopy()
-    {
-        return new ElementRelationshipColumn()
-        {
-            FkColumn = FkColumn,
-            PkColumn = PkColumn
-        };
-    }
+    public ElementRelationshipColumn DeepCopy() => (ElementRelationshipColumn)MemberwiseClone();
 }
