@@ -5,7 +5,7 @@
         
         if(document.querySelector<HTMLInputElement>(selector).dropzone)
             return;
-        
+
         let dropzone = new window.Dropzone(selector, {
             paramName: "uploadAreaFile",
             maxFilesize: options.maxFileSize,
@@ -20,6 +20,12 @@
             clickable:true,
             parallelUploads: options.parallelUploads,
             url: options.url
+        });
+
+        dropzone.on('sendingmultiple', function(data, xhr, formData) {
+            $("form").find("input").each(function(){
+                formData.append($(this).attr("name"), $(this).val().toString());
+            });
         });
 
         const onSuccess = (files = null) => {

@@ -253,7 +253,7 @@ public class FormFileManager(string memoryFilesSessionName,
                 string filename = string.IsNullOrEmpty(file.OldName) ? fileName : file.OldName;
                 File.Delete(folderPath + filename);
             }
-            else if (!string.IsNullOrEmpty(file.OldName))
+            else if (!string.IsNullOrEmpty(file.OldName) && !file.IsInMemory)
             {
                 File.Move(folderPath + file.OldName, folderPath + fileName);
             }
