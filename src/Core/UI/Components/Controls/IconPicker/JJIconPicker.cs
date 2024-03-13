@@ -58,7 +58,7 @@ public class JJIconPicker(
         div.AppendIf(Enabled,HtmlTag.Div,div =>
         {
             var tooltip = stringLocalizer["Search Icon"];
-            div.WithCssClass("btn btn-default");
+            div.WithCssClass(BootstrapHelper.BtnDefault);
             div.WithToolTip(tooltip);
             div.AppendComponent(new JJIcon(IconType.Search));
             var url = urlHelper.Action("Index", "Icons", new { inputId = id, Area="MasterData" });

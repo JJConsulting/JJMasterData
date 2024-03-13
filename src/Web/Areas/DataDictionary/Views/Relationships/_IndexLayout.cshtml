@@ -64,7 +64,7 @@
                                 @title
                             </div>
                             <div class=@BootstrapHelper.PullRight>
-                                <button class="btn btn-default btn-small" type="button" onclick="defaultModal.showIframe('@Url.Action("LayoutDetails", "Relationships", new { elementName = Model.ElementName, relationship.Id })','Layout - @title')">
+                                <button class="@BootstrapHelper.BtnDefault btn-small" type="button" onclick="defaultModal.showIframe('@Url.Action("LayoutDetails", "Relationships", new { elementName = Model.ElementName, relationship.Id })','Layout - @title')">
                                     <span class="fa fa-pencil"></span>
                                 </button>
                             </div>

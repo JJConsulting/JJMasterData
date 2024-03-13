@@ -37,7 +37,7 @@
             <checkbox 
                 name="@FormElementField.IsSwitchAttribute" 
                 switch="true" 
-                switch-size="CheckBoxSwitchSize.Medium"
+                
                 value="@(Model.GetAttr(FormElementField.IsSwitchAttribute) is true)"/>
         </div>
         break;
@@ -103,7 +103,7 @@
             <tooltip title="@StringLocalizer["When opening the picker, fill the input with today's date."]"/>
             <checkbox name="@(FormElementField.AutocompletePickerAttribute)" 
                       switch="true"
-                      switch-size="CheckBoxSwitchSize.Medium"
+                      
                       value="@(Model.GetAttr(FormElementField.AutocompletePickerAttribute) is true)"/>
         </div>
         
@@ -114,7 +114,7 @@
             </label>
             <checkbox name="@(FormElementField.MultipleDatesAttribute)" 
                       switch="true"
-                      switch-size="CheckBoxSwitchSize.Medium"
+                      
                       value="@(Model.GetAttr(FormElementField.MultipleDatesAttribute) is true)"/>
         </div>
         break;

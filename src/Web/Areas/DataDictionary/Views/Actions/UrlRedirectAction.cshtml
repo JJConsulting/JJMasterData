@@ -12,7 +12,7 @@
 @using (Html.BeginForm("UrlRedirectAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
         <li id="navUrlAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">@StringLocalizer["Url Action"]</a></li>
         <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
@@ -31,8 +31,7 @@
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
-                    <label asp-for="IsModal" class="@BootstrapHelper.Label">@StringLocalizer["Is Modal"]</label>
-                    <checkbox for="IsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox for="IsModal" switch="true" />
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-8">
@@ -47,7 +46,7 @@
                         @StringLocalizer["Iframe"]
                     </label>
                     <tooltip title="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]"/>
-                    <checkbox for="IsIframe" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox for="IsIframe" switch="true" />
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-3">

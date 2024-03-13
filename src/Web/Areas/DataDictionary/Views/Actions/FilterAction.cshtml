@@ -11,7 +11,7 @@
 @using (Html.BeginForm("FilterAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
         <li id="navFilterAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#filter-action">@StringLocalizer["Filter Action"]</a></li>
         <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
@@ -25,23 +25,18 @@
         <div id="filter-action" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" asp-for="ShowAsCollapse"></label>
-                    <tooltip title="@StringLocalizer["Show the filter in a Collapse Panel above the Grid. Filter behavior remains the same."]"/>
-                    <checkbox for="ShowAsCollapse" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox tooltip="@StringLocalizer["Show the filter in a Collapse Panel above the Grid. Filter behavior remains the same."]" for="ShowAsCollapse" switch="true" />
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" asp-for="ExpandedByDefault"></label>
-                    <checkbox for="ExpandedByDefault" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox for="ExpandedByDefault" switch="true" />
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
                         <label class="@BootstrapHelper.Label" asp-for="ShowIconAtCollapse"></label>
-                        <checkbox for="ShowIconAtCollapse" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                        <checkbox for="ShowIconAtCollapse" switch="true" />
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" asp-for="EnableScreenSearch"></label>
-                    <tooltip title="@StringLocalizer["Only data shown in the browser will be filtered."]"/>
-                    <checkbox for="EnableScreenSearch" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox tooltip="@StringLocalizer["Only data shown in the browser will be filtered."]" for="EnableScreenSearch" switch="true" />
                 </div>
             </div>
         </div>

@@ -6,76 +6,61 @@
     
     <div class="row mb-3">
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="ShowTitle"></label>
             <checkbox for="ShowTitle" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="EnableSorting"></label>
             <checkbox for="EnableSorting" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="EnableMultiSelect"></label>
-            <tooltip title="@StringLocalizer["Allows you to select multiple lines in the grid."]"/>
-            <checkbox for="EnableMultiSelect" switch="true"/>
+            <checkbox tooltip="@StringLocalizer["Allows you to select multiple lines in the grid."]" for="EnableMultiSelect" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="MaintainValuesOnLoad"></label>
-            <tooltip title="@StringLocalizer["Filters, sorting and grid settings are saved."]"/>
-            <checkbox for="MaintainValuesOnLoad" switch="true"/>
+            <checkbox for="IsCompact" switch="true"/>
         </div>
+        
     </div>
 
     <div class="row mb-3">
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="ShowRowHover"></label>
-            <tooltip title="@StringLocalizer["Change the line color on mouseover."]"/>
-            <checkbox for="ShowRowHover" switch="true"/>
+
+            <checkbox for="ShowRowHover" tooltip="@StringLocalizer["Change the line color on mouseover."]" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="ShowRowStriped"></label>
             <checkbox for="ShowRowStriped" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="ShowBorder"></label>
             <checkbox for="ShowBorder" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="ShowToolBar"></label>
             <checkbox for="ShowToolBar" switch="true"/>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="UseVerticalLayoutAtFilter"></label>
             <checkbox for="UseVerticalLayoutAtFilter" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="HeaderFixed"></label>
             <checkbox for="HeaderFixed" switch="true"/>
         </div>
 
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="ShowHeaderWhenEmpty"></label>
             <checkbox for="ShowHeaderWhenEmpty" switch="true"/>
         </div>
-
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="IsCompact"></label>
-            <checkbox for="IsCompact" switch="true"/>
+            <checkbox tooltip="@StringLocalizer["Filters, sorting and grid settings are saved."]" for="MaintainValuesOnLoad" switch="true"/>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col-sm-3">
-            <label class="@BootstrapHelper.Label" asp-for="ShowPagging"></label>
             <checkbox for="ShowPagging" switch="true"/>
         </div>
 

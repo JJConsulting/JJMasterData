@@ -126,7 +126,7 @@ public static class BootstrapHelper
 
     public static string PageHeader => Version switch
     {
-        >= 4 => "pb-2 mt-4 mb-2 border-bottom",
+        >= 4 => "pb-2 mb-2 border-bottom",
         _ => "page-header"
     };
 
@@ -230,6 +230,12 @@ public static class BootstrapHelper
     {
         >= 4 => "badge bg-danger",
         _ => "label label-danger"
+    };
+
+    public static string BtnDefault => Version switch
+    {
+        >= 4 => " btn btn-light",
+        _ => " btn btn-default"
     };
 
 

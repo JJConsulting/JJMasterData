@@ -25,7 +25,7 @@
 <div class="row mt-3 mb-3">
     <div class="col-sm-12">
         <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="@BootstrapHelper.BtnDefault dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
                 <span class="fa fa-plus-circle"></span>&nbsp;@StringLocalizer["New Action"]&nbsp; <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
@@ -116,12 +116,12 @@
                             }
                         </div>
                         <div class="@BootstrapHelper.PullRight d-flex align-content-center">
-                            <button class="btn btn-default btn-small" type="button" onclick="@GetEditScript(action)">
+                            <button class="@BootstrapHelper.BtnDefault btn-small" type="button" onclick="@GetEditScript(action)">
                                 <span class="fa fa-pencil"></span>
                             </button>
                             @if (action.IsUserCreated)
                             {
-                                <button class="btn btn-default btn-small" style="margin-left:10px;" type="button"
+                                <button class="@BootstrapHelper.BtnDefault btn-small" style="margin-left:10px;" type="button"
                                         onclick="@GetDeleteScript(action)">
                                     <span class="fa fa-trash"></span>
                                 </button>

@@ -17,7 +17,7 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { elementName = ViewBag.ElementName })'" class="btn btn-default btn-small">
+        <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { elementName = ViewBag.ElementName })'" class="@BootstrapHelper.BtnDefault btn-small">
             <span class="fa fa-pencil"></span>
             <span>&nbsp;@StringLocalizer["Edit"]</span>
         </button>

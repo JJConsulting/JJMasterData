@@ -101,7 +101,6 @@ public class JJCheckBox : ControlBase
                 .WithAttributeIf(IsSwitch && BootstrapHelper.Version is 3,"data-size","small")
                 .WithAttributeIf(IsSwitch,"role","switch")
                 .WithCssClass(CssClass)
-                .WithToolTip(Tooltip)
                 .WithAttributeIf(IsChecked, "checked", "checked")
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
         });
@@ -116,8 +115,9 @@ public class JJCheckBox : ControlBase
 
         div.AppendIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {
-            label.WithAttribute("for", checkBoxName);
+            label.WithAttribute("for", checkBoxName.Replace(".","_"));
             label.WithCssClass("form-check-label");
+            label.WithToolTip(Tooltip);
             label.AppendText(Text);
         });
 

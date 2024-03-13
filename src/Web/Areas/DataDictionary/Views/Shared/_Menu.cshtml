@@ -18,7 +18,7 @@
     </h1>
 </div>
 
-<nav class="navbar rounded navbar-expand-lg fs-5 bg-body-tertiary mb-3">
+<nav class="navbar rounded navbar-expand-lg bg-body-secondary mb-3">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -46,17 +46,17 @@
                     <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start">
                         <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
                             <a class="dropdown-item" href="#">
-                                <span class="@IconType.SolidScroll.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Database Scripts"]
+                                <span class="@IconType.SolidScroll.GetCssClass() fa-fw fa-xs"></span> @StringLocalizer["Database Scripts"]
                             </a>
                         </li>
                         <li onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["C# Class"]',1);">
                             <a class="dropdown-item" href="#">
-                                <span class="@IconType.SolidFileCode.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["C# Class"]
+                                <span class="@IconType.SolidFileCode.GetCssClass() fa-fw fa-xs"></span> @StringLocalizer["C# Class"]
                             </a>
                         </li>
                         <li onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
                             <a class="dropdown-item" href="#">
-                                <span class="@IconType.SolidCirclePlay.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Render"]
+                                <span class="@IconType.SolidCirclePlay.GetCssClass() fa-fw fa-xs"></span> @StringLocalizer["Render"]
                             </a>
                         </li>
                     </ul>
@@ -88,7 +88,7 @@
         string? url)
     {
         <li class="nav-item">
-            <a class="nav-link m-1 @IsActive(label)" href="@url">
+            <a class="nav-link text-nowrap m-1 @IsActive(label)" href="@url">
                 <span class="@iconCssClass"></span>&nbsp;@StringLocalizer[label]
             </a>
         </li>

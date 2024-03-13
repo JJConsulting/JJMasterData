@@ -11,7 +11,7 @@
 @using (Html.BeginForm("ViewAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
                 <li id="navView" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divViewAction">@StringLocalizer["View Action"]</a></li>
         <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
@@ -25,8 +25,7 @@
         <div id="divViewAction" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <label asp-for="ShowAsModal" class="form-label"></label>
-                    <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox for="ShowAsModal" switch="true" />
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label asp-for="ModalTitle" class="form-label"></label>

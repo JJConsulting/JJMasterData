@@ -113,7 +113,7 @@ public class JJLinkButton : HtmlComponent
                 html.WithAttribute("href", "javascript: void(0);");
             
             if(!ShowAsButton)
-                html.WithCssClass($"link-{Color.ToString().ToLower()}");
+                html.WithCssClass($"link-{Color.ToLinkColorString()}");
         }
 
 
@@ -164,7 +164,7 @@ public class JJLinkButton : HtmlComponent
                 !cssClass.Contains(" btn") &&
                 !cssClass.Equals("btn"))
             {
-                cssClass += $" btn btn-{Color.ToString().ToLower()}"; 
+                cssClass += $" btn btn-{Color.ToButtonColorString()}"; 
             }
         }
         else if (!ShowAsButton && Type is LinkButtonType.Submit)

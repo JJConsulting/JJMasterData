@@ -215,7 +215,7 @@
             <div class="col-sm-3">
                 <div class="input-group jjform-action ">
                     <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
-                    <a href="javascript: void(0);" class=" btn btn-default icon-link-hover" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                    <a href="javascript: void(0);" class=" @BootstrapHelper.BtnDefault icon-link-hover" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
                         <span class="fa fa-plus  bi"></span>
                     </a>
                 </div>
