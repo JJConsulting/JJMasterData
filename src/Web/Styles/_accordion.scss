@@ -1,19 +1,8 @@
 ﻿@import "variables";
 
-.accordion {
-  --#{$prefix}accordion-btn-active-icon: var(--#{$prefix}accordion-btn-icon);
-  --#{$prefix}accordion-btn-focus-box-shadow: inset 0 calc(-1*var(--#{$prefix}accordion-border-width)) 0 var(--#{$prefix}accordion-border-color);
-}
+
 .accordion-button {
   height: auto;
-}
-.accordion-default {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}tertiary-bg);
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}tertiary-bg);
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}tertiary-bg);
-  --#{$prefix}accordion-active: var( --#{$prefix}body-color);
-  --#{$prefix}accordion-active-color: var( --#{$prefix}body-color);
-  --#{$prefix}accordion-btn-color: var( --#{$prefix}body-color);
 }
 
 .accordion-primary {
