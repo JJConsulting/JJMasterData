@@ -15,6 +15,7 @@
         <PackageId>JJMasterData.Web</PackageId>
         <LangVersion>12</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <SassCompilerEnableWatcher>false</SassCompilerEnableWatcher>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -22,6 +23,7 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <PackageReference Include="AspNetCore.SassCompiler" Version="1.72.0" ReferenceOutputAssembly="false"/>
         <PackageReference Include="JetBrains.Annotations" Version="2023.3.0">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
@@ -58,4 +60,9 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    
+	<ItemGroup>
+	  <Folder Include="wwwroot\css\jjmasterdata\" />
+	</ItemGroup>
+    
 </Project>

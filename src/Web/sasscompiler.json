@@ -1,0 +1,11 @@
+﻿{
+  "Source": "Styles/jjmasterdata.scss",
+  "Target": "wwwroot/css/jjmasterdata/jjmasterdata.css",
+  "Arguments": "--style=compressed",
+  "IncludePaths": [],
+  "Configurations": {
+    "Debug": { 
+      "Arguments": "--style=expanded"
+    }
+  }
+}
