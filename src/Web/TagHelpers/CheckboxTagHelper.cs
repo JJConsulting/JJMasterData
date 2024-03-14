@@ -41,6 +41,9 @@ public class CheckboxTagHelper(
 
     [HtmlAttributeName("tooltip")] 
     public string? Tooltip { get; set; }
+
+    [HtmlAttributeName("show-label")] 
+    public bool ShowLabel { get; set; } = true;
     
     [ViewContext] [HtmlAttributeNotBound] 
     public ViewContext ViewContext { get; set; } = null!;
@@ -68,7 +71,10 @@ public class CheckboxTagHelper(
         
         checkBox.IsSwitch = IsSwitch;
         checkBox.SwitchSize = SwitchSize;
-        checkBox.Text = stringLocalizer[displayName ?? string.Empty];
+        
+        if (ShowLabel)
+            checkBox.Text = stringLocalizer[displayName ?? string.Empty];
+        
         checkBox.Tooltip = Tooltip;
         Configure?.Invoke(checkBox);
         

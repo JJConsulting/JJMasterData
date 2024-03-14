@@ -200,7 +200,7 @@ textarea {
 /*noinspection CssReplaceWithShorthandSafely*/
 
 input.loading-circle {
-    background: url('../../images/LoadingIndicator.gif') no-repeat right 0.625rem center;
+    background: url('../../images/LoadingIndicator.gif') no-repeat right 0.625rem center !important;
 }
 
 a.disabled {
@@ -243,17 +243,13 @@ a.disabled {
     .jjsortable .jjsortable-icon {
         cursor: -webkit-grab;
         cursor: grab;
-        width: 10px;
-        margin-top: 0.8em;
         text-align: right;
     }
 
     .jjsortable a .jjsortable-span {
         cursor: -webkit-grab;
         cursor: grab;
-        margin-top: 1.95em;
         text-align: right;
-        font-size: 0.6em;
     }
 
     .jjsortable .ui-sortable-helper,
@@ -345,7 +341,6 @@ a.disabled {
 #listField {
     border-width: 0px;
     width: 100%;
-    height: 69vh;
     overflow: auto;
 }
 
@@ -779,7 +774,6 @@ input.form-control:read-only {
     background-position: right calc(.375em + .1875rem) center;
     background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
-
-.icon-link-hover{
-    --bs-icon-link-transform: translate3d(0, -.125rem, 0);
+.list-group-item{
+    font-size: 0.75rem;
 }

@@ -21,14 +21,11 @@
     </div>
     
     <div class="col-sm-3">
-       <label class="@BootstrapHelper.Label" asp-for="IsVerticalLayout"></label>
        <checkbox for="IsVerticalLayout" switch="true"/>
     </div>
     
     <div class="col-sm-3">
-        <label class="@BootstrapHelper.Label" asp-for="ShowViewModeAsStatic"></label>
-        <tooltip title="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]"/>
-        <checkbox for="ShowViewModeAsStatic" switch="true"/>
+        <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]" for="ShowViewModeAsStatic" switch="true"/>
     </div>
     
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
