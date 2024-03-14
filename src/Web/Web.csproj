@@ -47,6 +47,7 @@
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.0" />
         <EmbeddedResource Include="Scripts\**\*.ts" />
+        <EmbeddedResource Include="Styles\**\*.scss" />
     </ItemGroup>
     
 	<ItemGroup>
