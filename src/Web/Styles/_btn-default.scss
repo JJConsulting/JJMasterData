@@ -1,0 +1,15 @@
+﻿@import "variables";
+
+.btn-default {
+  --#{$prefix}btn-font-weight: 400;
+  --#{$prefix}btn-color: #333;
+  --#{$prefix}btn-bg: #fff;
+  --#{$prefix}btn-border-color: #ccc;
+  --#{$prefix}btn-hover-color: #333;
+  --#{$prefix}btn-hover-bg: #e6e6e6;
+  --#{$prefix}btn-hover-border-color: #adadad;
+  --#{$prefix}btn-focus-shadow-rgb: #8c8c8c;
+  --#{$prefix}btn-active-color: #333;
+  --#{$prefix}btn-active-bg: #d4d4d4;
+  --#{$prefix}btn-active-border-color: #8c8c8c;
+}

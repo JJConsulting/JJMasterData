@@ -51,14 +51,14 @@
 
     <script>
         function saveScrollPosition() {
-            const listField = document.getElementById('listField');
+            const listField = document.getElementById(field-list);
             if (listField) {
                 sessionStorage.setItem('listFieldScrollPosition', listField.scrollTop);
             }
         }
 
         function restoreScrollPosition() {
-            const listField = document.getElementById('listField');
+            const listField = document.getElementById(field-list);
             const savedScrollPosition = sessionStorage.getItem('listFieldScrollPosition');
             if (listField && savedScrollPosition) {
                 listField.scrollTop = parseInt(savedScrollPosition);
@@ -221,7 +221,7 @@
                 </div>
                 <br/>
                 <div class="jjrelative">
-                    <div id="listField">
+                    <div id=field-list>
                         <div class="list-group jjsortable" id="sortable-grid">
                             @if (ViewBag.Fields.Count == 0)
                             {

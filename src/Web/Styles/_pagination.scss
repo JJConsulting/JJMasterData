@@ -1,0 +1,28 @@
+﻿@import "variables";
+
+.pagination-jump-to-page-input {
+  border-radius: 0;
+}
+
+.pagination-jump-to-page-button {
+  border: var(--#{$prefix}pagination-border-width) solid var(--#{$prefix}pagination-border-color);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  color: var(--#{$prefix}pagination-color) !important;
+  margin-left: calc(var(--#{$prefix}border-width)*-1);
+  position: relative;
+  display: block;
+  padding: var(--#{$prefix}pagination-padding-y) var(--#{$prefix}pagination-padding-x);
+  font-size: var(--#{$prefix}pagination-font-size);
+  text-decoration: none;
+  background-color: var(--#{$prefix}pagination-bg) !important;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.pagination-jump-to-page-button:hover {
+  z-index: 2 !important;
+  color: var(--#{$prefix}pagination-hover-color) !important;
+  background-color: var(--#{$prefix}pagination-hover-bg) !important;
+  border-color: var(--#{$prefix}pagination-hover-border-color) !important;
+}
+
