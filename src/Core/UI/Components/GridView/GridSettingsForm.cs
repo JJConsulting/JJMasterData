@@ -21,7 +21,7 @@ internal class GridSettingsForm(
     private readonly string _tableRowHover = $"{name}-table-rowhover";
     private readonly string _tableIsHeaderFixed = $"{name}-table-header-fixed";
     private readonly string _tableIsCompact = $"{name}-table-is-compact";
-    
+
     public GridSettings LoadFromForm()
     {
         var gridSettings = new GridSettings();
@@ -70,28 +70,32 @@ internal class GridSettingsForm(
         div.Append(GetShowRowsStripedHtml(gridSettings));
         div.Append(GetHighlightLineHtml(gridSettings));
         div.Append(GetIsCompactHtml(gridSettings));
-        
+
         return div;
     }
 
     private HtmlBuilder GetHighlightLineHtml(GridSettings gridSettings)
     {
-        return GetDataToggleElement(_tableRowHover,stringLocalizer["Highlight line on mouseover"], gridSettings.ShowRowHover);
+        return GetDataToggleElement(_tableRowHover, stringLocalizer["Highlight line on mouseover"],
+            gridSettings.ShowRowHover).WithCssClass("col-sm-3");
     }
 
     private HtmlBuilder GetIsCompactHtml(GridSettings gridSettings)
     {
-        return GetDataToggleElement(_tableIsCompact,stringLocalizer["Compact mode"], gridSettings.IsCompact);
+        return GetDataToggleElement(_tableIsCompact, stringLocalizer["Compact mode"], gridSettings.IsCompact)
+            .WithCssClass("col-sm-2");
     }
-    
+
     private HtmlBuilder GetShowRowsStripedHtml(GridSettings gridSettings)
     {
-        return GetDataToggleElement(_tableRowsStriped,stringLocalizer["Show rows striped"], gridSettings.ShowRowStriped);
+        return GetDataToggleElement(_tableRowsStriped, stringLocalizer["Show rows striped"],
+            gridSettings.ShowRowStriped).WithCssClass("col-sm-2");
     }
 
     private HtmlBuilder GetShowBorderHtml(GridSettings gridSettings)
     {
-        return GetDataToggleElement(_tableBorder,stringLocalizer["Show table border"], gridSettings.ShowBorder);
+        return GetDataToggleElement(_tableBorder, stringLocalizer["Show table border"], gridSettings.ShowBorder)
+            .WithCssClass("col-sm-2");
     }
 
     private HtmlBuilder GetPaginationHtml(GridSettings gridSettings)
@@ -132,17 +136,17 @@ internal class GridSettingsForm(
         return div;
     }
 
-    private HtmlBuilder GetDataToggleElement(string name,string label,  bool isChecked)
+    private HtmlBuilder GetDataToggleElement(string name, string label, bool isChecked)
     {
         var checkbox = new JJCheckBox(currentContext.Request.Form, stringLocalizer)
         {
             Name = name,
             IsChecked = isChecked,
-            Text = label,    
+            Text = label,
             IsSwitch = true,
             SwitchSize = CheckBoxSwitchSize.Default
         };
 
-        return checkbox.GetHtmlBuilder().WithCssClass("col-sm-3");
+        return checkbox.GetHtmlBuilder();
     }
 }
