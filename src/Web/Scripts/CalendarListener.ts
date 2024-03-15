@@ -9,6 +9,7 @@ class CalendarListener {
                 wrap: true,
                 allowInput: true,
                 altInput: false,
+                monthSelectorType: 'static',
                 time_24hr: true,
                 mode: div.firstElementChild.getAttribute("multiple-dates") === "True" ? "multiple" : "single",
                 dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
@@ -30,6 +31,7 @@ class CalendarListener {
                 wrap: true,
                 allowInput: true,
                 altInput: false,
+                monthSelectorType: 'static',
                 mode: div.firstElementChild.getAttribute("multiple-dates") === "True" ? "multiple" : "single",
                 dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
                 onOpen: function(selectedDates, dateStr, instance) {
