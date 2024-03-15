@@ -1,7 +1,7 @@
 #nullable enable
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 
@@ -9,13 +9,13 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public static class IconHelper
 {
-    private static ReadOnlyCollection<IconType>? _icons;
-    public static ReadOnlyCollection<IconType> GetIconList()
+    private static FrozenSet<IconType>? _icons;
+    public static FrozenSet<IconType> GetIconList()
     {
         if (_icons != null)
             return _icons;
 
-        _icons = new List<IconType>((IconType[])Enum.GetValues(typeof(IconType))).AsReadOnly();
+        _icons = new List<IconType>((IconType[])Enum.GetValues(typeof(IconType))).ToFrozenSet();
 
         return _icons;
     }
