@@ -34,7 +34,7 @@ internal class GridCaptionView(
 
     private async Task<HtmlBuilder> GetCaptionHtmlBuilder(FormElementField field)
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
 
         if (field != null)
         {
@@ -52,7 +52,7 @@ internal class GridCaptionView(
                 {
                     div.Append(HtmlTag.Div, div =>
                     {
-                        div.WithAttribute("style", "height:2.5rem");
+                        div.WithStyle( "height:2.5rem");
 
                         div.AppendComponent(new JJIcon(item.Icon, item.IconColor)
                         {

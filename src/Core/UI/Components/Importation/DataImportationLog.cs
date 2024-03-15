@@ -40,7 +40,7 @@ internal class DataImportationLog
     public HtmlBuilder GetSummaryHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
-            .WithAttribute("style", "text-align: center;")
+            .WithStyle( "text-align: center;")
             .WithCssClass("jjlabel-process");
 
         html.AppendIf(Reporter.EndDate != DateTime.MinValue, HtmlTag.Div, div =>
@@ -156,14 +156,14 @@ internal class DataImportationLog
         if (Reporter.HasError || Reporter.TotalProcessed == Reporter.Error)
         {
             alert.Icon = IconType.ExclamationTriangle;
-            alert.Color = PanelColor.Danger;
+            alert.Color = BootstrapColor.Danger;
             alert.Title = StringLocalizer["Error importing file!"];
             alert.Messages.Add(StringLocalizer[Reporter.Message]);
         }
         else if (Reporter.Error > 0)
         {
             alert.Icon = IconType.InfoCircle;
-            alert.Color = PanelColor.Info;
+            alert.Color = BootstrapColor.Info;
             alert.Title = StringLocalizer["File imported with errors!"];
             alert.Messages.Add(StringLocalizer[
             Reporter.Message]);
@@ -171,7 +171,7 @@ internal class DataImportationLog
         else
         {
             alert.Icon = IconType.Check;
-            alert.Color = PanelColor.Success;
+            alert.Color = BootstrapColor.Success;
             alert.Title = StringLocalizer[Reporter.Message];
         }
 

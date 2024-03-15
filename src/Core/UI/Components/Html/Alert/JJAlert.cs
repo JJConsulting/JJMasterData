@@ -10,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJAlert : HtmlComponent
 {
-    public PanelColor Color { get; set; }
+    public BootstrapColor Color { get; set; }
     public IconType? Icon { get; set; }
     
     [LocalizationRequired]
@@ -73,8 +73,8 @@ public class JJAlert : HtmlComponent
 
     private string GetClassType()
     {
-        if (Color == PanelColor.Default)
-            return BootstrapHelper.Version == 3 ? "well" : "alert-secondary";
+        if (Color == BootstrapColor.Default)
+            return BootstrapHelper.Version == 3 ? "well" : "alert-outline-primary";
 
         return $"alert-{Color.ToString().ToLower()}";
     }

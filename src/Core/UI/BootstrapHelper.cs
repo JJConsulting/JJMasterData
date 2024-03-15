@@ -73,14 +73,6 @@ public static class BootstrapHelper
     };
     #endregion
 
-    #region NavBar 
-    public static string NavBar => Version switch
-    {
-        >= 4 => " navbar navbar-light bg-light navbar-expand-sm",
-        _ => " navbar navbar-default"
-    };
-    #endregion
-
     #region Miscellaneous
     public static string Show => Version switch
     {
@@ -234,7 +226,7 @@ public static class BootstrapHelper
 
     public static string BtnDefault => Version switch
     {
-        >= 4 => " btn btn-light",
+        >= 4 => " btn btn-secondary",
         _ => " btn btn-default"
     };
 

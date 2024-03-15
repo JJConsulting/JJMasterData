@@ -68,7 +68,7 @@ public partial class HtmlBuilder
     
     public HtmlBuilder AppendBr()
     {
-        var child = new HtmlBuilder(HtmlTag.Br);
+        var child = new Br();
         Append(child);
         return this;
     }
@@ -95,6 +95,11 @@ public partial class HtmlBuilder
     public HtmlBuilder AppendLabel(Action<HtmlBuilder>? builderAction = null)
     {
         return Append(HtmlTag.Label, builderAction);
+    }
+    
+    public HtmlBuilder AppendHr()
+    {
+        return Append(HtmlTag.Hr);
     }
     
     public HtmlBuilder AppendLink(string text, string link)

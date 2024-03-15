@@ -49,7 +49,7 @@ internal class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetPaginationHtmlBuilder()
     {
-        var ul = new HtmlBuilder(HtmlTag.Ul);
+        var ul = new Ul();
         ul.WithCssClass("pagination");
 
         if (_startButtonIndex > _totalButtons)
@@ -100,7 +100,7 @@ internal class GridPagination(JJGridView gridView)
         textBox.CssClass += " pagination-jump-to-page-input";
 
 
-        yield return new HtmlBuilder(HtmlTag.Li)
+        yield return new Li()
             .WithCssClass("page-item")
             .Append(textBox.GetHtmlBuilder())
             .AppendDiv(div =>
@@ -110,7 +110,7 @@ internal class GridPagination(JJGridView gridView)
                 div.AppendText(StringLocalizer["Page must be between 1 and {0}.", _totalPages]);
             });
 
-        yield return new HtmlBuilder(HtmlTag.Li)
+        yield return new Li()
             .WithCssClass("page-item")
             .Append(new JJLinkButton(GridView.StringLocalizer)
             {
@@ -123,15 +123,15 @@ internal class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetPageButton(int page, IconType? icon = null, string? tooltip = null)
     {
-        var li = new HtmlBuilder(HtmlTag.Li)
+        var li = new Li()
             .WithCssClass("page-item")
             .WithCssClassIf(page == GridView.CurrentPage, "active")
             .Append(HtmlTag.A, a =>
             {
                 a.WithCssClass("page-link");
-                a.WithAttribute("style", "cursor:pointer; cursor:hand;");
+                a.WithStyle( "cursor:pointer; cursor:hand;");
                 a.WithToolTip(tooltip);
-                a.WithAttribute("onclick", $"javascript:{GridView.Scripts.GetPaginationScript(page)}");
+                a.WithOnClick( $"javascript:{GridView.Scripts.GetPaginationScript(page)}");
                 if (icon != null)
                 {
                     a.AppendComponent(new JJIcon(icon.Value));
@@ -147,7 +147,7 @@ internal class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetTotalRecordsHtmlBuilder()
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight}");
         div.Append(HtmlTag.Label, label =>
         {

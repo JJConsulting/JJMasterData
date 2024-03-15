@@ -124,7 +124,7 @@ public abstract class BasicAction
 
     [JsonProperty("color")]
     [Display(Name ="Color" )]
-    public PanelColor Color { get; set; }
+    public BootstrapColor Color { get; set; }
     
     /// <summary>
     /// CSS3 Stylesheet Class

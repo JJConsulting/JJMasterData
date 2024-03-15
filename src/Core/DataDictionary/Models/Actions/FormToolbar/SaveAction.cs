@@ -23,7 +23,7 @@ public class SaveAction : FormToolbarAction, ISubmittableAction
         Icon = IconType.Check;
         Text = "Save";
         Location = FormToolbarActionLocation.Panel;
-        Color = PanelColor.Primary;
+        Color = BootstrapColor.Primary;
         ShowAsButton = true;
         VisibleExpression = "exp: '{PageState}' <> 'View'";
     }

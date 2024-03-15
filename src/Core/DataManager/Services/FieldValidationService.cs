@@ -215,7 +215,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
     {
         var link = new HtmlBuilder(HtmlTag.A);
         link.WithAttribute("href", "#void");
-        link.WithAttribute("onclick", $"javascript:$('#{fieldName}').focus();");
+        link.WithOnClick( $"javascript:$('#{fieldName}').focus();");
         link.WithCssClass("alert-link");
         link.AppendText(label ?? fieldName);
 

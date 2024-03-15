@@ -179,7 +179,7 @@ public class JJTextFile(IHttpRequest request,
 
     private HtmlBuilder GetHiddenInputHtml()
     {
-        var input = new HtmlBuilder(HtmlTag.Input);
+        var input = new Input();
         input.WithAttribute("type", "hidden")
             .WithNameAndId(Name)
             .WithAttribute("value", GetFileName());

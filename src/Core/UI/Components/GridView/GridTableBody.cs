@@ -213,7 +213,7 @@ internal class GridTableBody(JJGridView gridView)
 
     private static HtmlBuilder GetIconCell(IconType iconType, string? color = null, string? tooltip = null)
     {
-        var cell = new HtmlBuilder(HtmlTag.Div);
+        var cell = new Div();
         var icon = new JJIcon(iconType, color);
         if (tooltip is not null)
         {
@@ -231,7 +231,7 @@ internal class GridTableBody(JJGridView gridView)
         var name = GridView.GetFieldName(field.Name, values);
         var hasError = GridView.Errors.ContainsKey(name);
 
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
 
         div.WithCssClassIf(hasError, BootstrapHelper.HasError);
 

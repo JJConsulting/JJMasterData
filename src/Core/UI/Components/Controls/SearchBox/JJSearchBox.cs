@@ -269,7 +269,7 @@ public class JJSearchBox : ControlBase
 
         var selectedValue = await GetSelectedValueAsync();
 
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
         await div.AppendAsync(HtmlTag.Input, async input =>
         {
             input.WithAttribute("id", $"{HtmlId}_text");

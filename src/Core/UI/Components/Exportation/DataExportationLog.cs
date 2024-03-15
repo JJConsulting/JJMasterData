@@ -11,7 +11,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
 
     internal HtmlBuilder GetLoadingHtml()
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
         
         div.WithCssClass("text-center");
         
@@ -21,7 +21,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
         {
             div.WithAttribute("id", "process-status")
                 .WithCssClass("text-center")
-                .WithAttribute("style", "display:none;");
+                .WithStyle( "display:none;");
             
             div.Append(GetProgressData());
 
@@ -57,11 +57,11 @@ internal class DataExportationLog(JJDataExportation dataExportation)
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
-            .WithAttribute("style", "text-align:center;")
+            .WithStyle( "text-align:center;")
             .Append(HtmlTag.Div, div =>
             {
                 div.WithAttribute("id", "data-exportation-spinner-");
-                div.WithAttribute("style", "position: relative; height: 80px");
+                div.WithStyle( "position: relative; height: 80px");
             });
     }
 
@@ -76,7 +76,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             })
             .Append(HtmlTag.Div, div =>
             {
-                div.WithAttribute("style", "display:none;width:50%");
+                div.WithStyle( "display:none;width:50%");
                 div.WithCssClass(BootstrapHelper.CenterBlock);
                 div.Append(HtmlTag.Div, div =>
                 {
@@ -85,7 +85,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
                     {
                         div.WithCssClass("progress-bar");
                         div.WithAttribute("role", "progressbar");
-                        div.WithAttribute("style", "width: 0;");
+                        div.WithStyle( "width: 0;");
                         div.WithAttribute("aria-valuemin", "0");
                         div.WithAttribute("aria-valuemax", "100");
                         div.AppendText("0%");

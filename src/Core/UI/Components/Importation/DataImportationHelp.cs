@@ -41,7 +41,7 @@ internal class DataImportationHelp
             {
                 Title = StringLocalizer["Information"],
                 Icon = IconType.InfoCircle,
-                Color = PanelColor.Info,
+                Color = BootstrapColor.Info,
                 InnerHtml = new(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
                                 string.Empty)
             })
@@ -90,18 +90,18 @@ internal class DataImportationHelp
             {
                 tr.Append(HtmlTag.Th, th =>
                 {
-                    th.WithAttribute("style", "width:60px")
+                    th.WithStyle( "width:60px")
                         .AppendText(StringLocalizer["Order"]);
                 });
                 tr.Append(HtmlTag.Th, th => { th.AppendText(StringLocalizer["Name"]); });
                 tr.Append(HtmlTag.Th, th =>
                 {
-                    th.WithAttribute("style", "width:120px")
+                    th.WithStyle( "width:120px")
                         .AppendText(StringLocalizer["Type"]);
                 });
                 tr.Append(HtmlTag.Th, th =>
                 {
-                    th.WithAttribute("style", "width:90px")
+                    th.WithStyle( "width:90px")
                         .AppendText(StringLocalizer["Required"]);
                 });
                 tr.Append(HtmlTag.Th, th => { th.AppendText(StringLocalizer["Details"]); });
@@ -126,7 +126,7 @@ internal class DataImportationHelp
                 {
                     span.WithCssClass("fa fa-star")
                         .WithToolTip(StringLocalizer["Primary Key"])
-                        .WithAttribute("style", "color:#efd829;");
+                        .WithStyle( "color:#efd829;");
                 });
             });
             tr.Append(HtmlTag.Td, td => { td.AppendText(GetDataTypeDescription(field.DataType)); });

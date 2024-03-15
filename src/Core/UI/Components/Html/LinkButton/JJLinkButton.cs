@@ -81,7 +81,7 @@ public class JJLinkButton : HtmlComponent
     
     public string UrlAction { get; set; }
 
-    public PanelColor Color { get; set; } = PanelColor.Default;
+    public BootstrapColor Color { get; set; } = BootstrapColor.Default;
     
     public bool OpenInNewTab { get; set; }
 

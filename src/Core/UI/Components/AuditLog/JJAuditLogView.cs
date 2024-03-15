@@ -103,7 +103,7 @@ public class JJAuditLogView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         string logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
 
         if (string.IsNullOrEmpty(logId))
         {
@@ -175,7 +175,7 @@ public class JJAuditLogView : AsyncComponent
 
     private async Task<HtmlBuilder> GetLogDetailsHtmlAsync(string logId)
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         html.WithCssClass("mb-2");
         if (GridView.ShowTitle)
             html.AppendComponent(await GridView.GetTitleAsync());
@@ -186,7 +186,7 @@ public class JJAuditLogView : AsyncComponent
             {
                 ShowIcon = true,
                 Icon = IconType.ExclamationTriangle,
-                Color = PanelColor.Warning,
+                Color = BootstrapColor.Warning,
                 Title = StringLocalizer["No records found."]
             };
 
@@ -310,7 +310,7 @@ public class JJAuditLogView : AsyncComponent
             {
                 var alert = _componentFactory.Html.Alert.Create();
                 alert.Title = StringLocalizer["Warning"];
-                alert.Color = PanelColor.Warning;
+                alert.Color = BootstrapColor.Warning;
                 alert.Icon = IconType.SolidTriangleExclamation;
                 alert.Messages.Add(StringLocalizer["Audit Log is disabled. Please contact the administrator."]);
                 args.HtmlBuilder.AppendComponent(alert);
@@ -404,11 +404,11 @@ public class JJAuditLogView : AsyncComponent
 
                 a.Append(HtmlTag.Div, div =>
                 {
-                    div.WithAttribute("style", "height: 4.75rem;");
+                    div.WithStyle( "height: 4.75rem;");
                     div.Append(HtmlTag.Span, span =>
                     {
                         span.WithCssClass(icon);
-                        span.WithAttribute("style", $"color:{color};");
+                        span.WithStyle( $"color:{color};");
                         span.WithToolTip(action);
                     });
                     div.Append(HtmlTag.B, b => { b.AppendText(message); });

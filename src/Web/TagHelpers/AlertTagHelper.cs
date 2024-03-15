@@ -20,7 +20,7 @@ public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
     public List<string>? Messages { get; set; }
 
     [HtmlAttributeName("color")]
-    public PanelColor Color { get; set; }
+    public BootstrapColor Color { get; set; }
     
     [HtmlAttributeName("icon")]
     public IconType? Icon { get; set; }

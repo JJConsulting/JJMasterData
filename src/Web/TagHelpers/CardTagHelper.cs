@@ -34,7 +34,7 @@ public class CardTagHelper(RazorPartialRendererService rendererService, ICompone
     public Action<JJCard>? Configure { get; set; }
 
     [HtmlAttributeName("color")]
-    public PanelColor Color { get; set; }
+    public BootstrapColor Color { get; set; }
     
     [HtmlAttributeName("layout")]
     public PanelLayout? Layout { get; set; }

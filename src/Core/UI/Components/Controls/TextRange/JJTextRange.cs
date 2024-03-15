@@ -25,7 +25,7 @@ public class JJTextRange(IFormValues formValues,
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
         div.WithCssClass("row");
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
@@ -139,8 +139,8 @@ public class JJTextRange(IFormValues formValues,
 
     private static HtmlBuilder GetListItem(string label, string script)
     {
-        return new HtmlBuilder(HtmlTag.Li)
-            .WithAttribute("onclick", script)
+        return new Li()
+            .WithOnClick( script)
             .Append(HtmlTag.A, a =>
             {
                 a.WithCssClass("dropdown-item");

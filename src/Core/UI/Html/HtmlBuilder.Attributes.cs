@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Web;
+using JetBrains.Annotations;
 
 namespace JJMasterData.Core.UI.Html;
 
@@ -164,5 +165,23 @@ public partial class HtmlBuilder
         var attributeName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
         attributeName += name;
         return WithAttribute(attributeName, value);
+    }
+    
+    public HtmlBuilder WithOnChange([LanguageInjection("JavaScript")]string value)
+    {
+        _attributes["onchange"] = value;
+        return this;
+    }
+    
+    public HtmlBuilder WithOnClick([LanguageInjection("JavaScript")]string value)
+    {
+        _attributes["onclick"] = value;
+        return this;
+    }
+    
+    public HtmlBuilder WithStyle(string value)
+    {
+        _attributes["style"] = value;
+        return this;
     }
 }

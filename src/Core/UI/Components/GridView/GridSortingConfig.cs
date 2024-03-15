@@ -45,7 +45,7 @@ internal class GridSortingConfig(JJGridView gridView)
             {
                 Title =StringLocalizer["Drag and drop to change order."],
                 Icon = IconType.SolidCircleInfo,
-                Color = PanelColor.Info,
+                Color = BootstrapColor.Info,
                 ShowIcon = true,
                 ShowCloseButton = false
             });
@@ -69,7 +69,7 @@ internal class GridSortingConfig(JJGridView gridView)
         {
             tr.Append(HtmlTag.Th, th =>
             {
-                th.WithAttribute("style", "width:50px");
+                th.WithStyle( "width:50px");
                 th.AppendText("#");
             });
             tr.Append(HtmlTag.Th, th =>
@@ -78,7 +78,7 @@ internal class GridSortingConfig(JJGridView gridView)
             });
             tr.Append(HtmlTag.Th, th =>
             {
-                th.WithAttribute("style", "width:220px");
+                th.WithStyle( "width:220px");
                 th.AppendText(gridView.StringLocalizer["Order"]);
             });
         });
