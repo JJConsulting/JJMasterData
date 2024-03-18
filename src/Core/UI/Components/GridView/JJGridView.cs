@@ -921,7 +921,7 @@ public class JJGridView : AsyncComponent
         var modal = new JJModalDialog
         {
             Name = $"config-modal-{Name}",
-            Size = ModalSize.Large,
+            Size = ModalSize.Small,
             Title = StringLocalizer["Configure Grid"]
         };
 

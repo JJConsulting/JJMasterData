@@ -157,10 +157,12 @@
             </div>
 
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <checkbox for="Export" switch="true"/>
                 </div>
-
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
+                </div>
                 @if (Options.Value.SupportNetFramework)
                 {
                     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
@@ -181,9 +183,6 @@
                             component.Group.Name = StringLocalizer[component.Group.Name];
                     }
                     <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="componentList.OrderBy(c=>c.Group.Name).ThenBy(c=>c.Text)"></select>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
                 </div>
 
                 @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)

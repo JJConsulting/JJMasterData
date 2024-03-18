@@ -167,6 +167,8 @@ internal class GridTableHeader
             }
             case FormComponent.CheckBox:
                 return "text-align:center;";
+            case FormComponent.Icon:
+                return "text-align:center;";
             default:
             {
                 if (field.DataType is FieldType.Float or FieldType.Int)

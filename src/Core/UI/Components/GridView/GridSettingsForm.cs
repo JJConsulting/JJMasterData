@@ -59,17 +59,42 @@ internal class GridSettingsForm(
 
         if (isPaginationEnabled)
         {
-            div.Append(GetPaginationHtml(gridSettings));
+            div.AppendDiv(div =>
+            {
+                div.Append(GetPaginationHtml(gridSettings));
+                div.WithCssClass($"row {BootstrapHelper.FormGroup}");
+                div.WithCssClass(BootstrapHelper.FormGroup);
+            });
         }
         else
         {
             div.AppendHiddenInput(_tableTotalPerPage, gridSettings.RecordsPerPage.ToString());
         }
 
-        div.Append(GetShowBorderHtml(gridSettings));
-        div.Append(GetShowRowsStripedHtml(gridSettings));
-        div.Append(GetHighlightLineHtml(gridSettings));
-        div.Append(GetIsCompactHtml(gridSettings));
+        div.AppendDiv(div=>
+        {
+            div.Append(GetShowBorderHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
+        div.AppendDiv(div=>
+        {
+            div.Append(GetShowRowsStripedHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
+        div.AppendDiv(div=>
+        {
+            div.Append(GetHighlightLineHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
+        div.AppendDiv(div=>
+        {
+            div.Append(GetIsCompactHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
 
         return div;
     }
@@ -77,25 +102,25 @@ internal class GridSettingsForm(
     private HtmlBuilder GetHighlightLineHtml(GridSettings gridSettings)
     {
         return GetDataToggleElement(_tableRowHover, stringLocalizer["Highlight line on mouseover"],
-            gridSettings.ShowRowHover).WithCssClass("col-sm-2");
+            gridSettings.ShowRowHover).WithCssClass("col-sm-12");
     }
 
     private HtmlBuilder GetIsCompactHtml(GridSettings gridSettings)
     {
         return GetDataToggleElement(_tableIsCompact, stringLocalizer["Compact mode"], gridSettings.IsCompact)
-            .WithCssClass("col-sm-2");
+            .WithCssClass("col-sm-12");
     }
 
     private HtmlBuilder GetShowRowsStripedHtml(GridSettings gridSettings)
     {
         return GetDataToggleElement(_tableRowsStriped, stringLocalizer["Show rows striped"],
-            gridSettings.ShowRowStriped).WithCssClass("col-sm-2");
+            gridSettings.ShowRowStriped).WithCssClass("col-sm-12");
     }
 
     private HtmlBuilder GetShowBorderHtml(GridSettings gridSettings)
     {
         return GetDataToggleElement(_tableBorder, stringLocalizer["Show table border"], gridSettings.ShowBorder)
-            .WithCssClass("col-sm-2");
+            .WithCssClass("col-sm-12");
     }
 
     private HtmlBuilder GetPaginationHtml(GridSettings gridSettings)

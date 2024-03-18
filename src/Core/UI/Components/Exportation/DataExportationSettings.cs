@@ -238,7 +238,7 @@ internal class DataExportationSettings(JJDataExportation dataExportation)
     private HtmlBuilder GetFirstLineField()
     {
         var div = new Div();
-        div.WithCssClass("col-sm-4");
+        div.WithCssClass("col-sm-12");
         div.WithCssClass(BootstrapHelper.FormGroup);
         var exportFirstLineCheckbox = DataExportation.ComponentFactory.Controls.CheckBox.Create();
         exportFirstLineCheckbox.Name = $"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}";
