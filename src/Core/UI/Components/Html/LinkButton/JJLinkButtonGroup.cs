@@ -37,7 +37,7 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
         AddActionsAt(parentElement);
 
         if (BootstrapHelper.Version is 5 && !ShowAsButton)
-            parentElement.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
+            parentElement.WithAttribute("title",MoreActionsText ?? StringLocalizer["More"]);
         
         return parentElement;
     }
