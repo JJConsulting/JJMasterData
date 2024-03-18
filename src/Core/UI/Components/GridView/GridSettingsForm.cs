@@ -77,7 +77,7 @@ internal class GridSettingsForm(
     private HtmlBuilder GetHighlightLineHtml(GridSettings gridSettings)
     {
         return GetDataToggleElement(_tableRowHover, stringLocalizer["Highlight line on mouseover"],
-            gridSettings.ShowRowHover).WithCssClass("col-sm-3");
+            gridSettings.ShowRowHover).WithCssClass("col-sm-2");
     }
 
     private HtmlBuilder GetIsCompactHtml(GridSettings gridSettings)
