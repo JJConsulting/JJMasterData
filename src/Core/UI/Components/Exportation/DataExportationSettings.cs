@@ -276,13 +276,13 @@ internal class DataExportationSettings(JJDataExportation dataExportation)
     private  JJCollapsePanel GetFilesPanelHtmlElement(string exportationFolderPath)
     {
         var files = GetGeneratedFiles(exportationFolderPath);
-        var filesCount = files.Count > 0;
+        var filesCount = files.Count;
         var panel = new JJCollapsePanel(DataExportation.CurrentContext.Request.Form)
         {
             Name = "exportCollapse",
             ExpandedByDefault = false,
             TitleIcon = new JJIcon(IconType.FolderOpenO),
-            Visible = filesCount,
+            Visible = filesCount  > 0,
             Title = $"{StringLocalizer["Recently generated files"]} ({filesCount})",
             HtmlBuilderContent = GetLastFilesHtmlElement(files)
         };
