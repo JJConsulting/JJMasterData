@@ -21,7 +21,7 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// </code>
 /// </example>
 /// </summary>
-public class MasterDataCommonsOptions
+public sealed class MasterDataCommonsOptions
 {
     public string? ConnectionString { get; set; }
     
