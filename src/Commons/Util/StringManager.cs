@@ -444,45 +444,35 @@ public static class StringManager
     }
 
     /// <summary>
-    /// Recupera todos os conteudos dentro de um caracter especifico
-    /// Exemplo: "teste[a]foo [b] teste" FindValuesByInterval('[',']') retorna {'a','b'}
+    /// Returns a list with all characters between the specified begin and end characters.
+    /// Example:
+    /// StringManager.FindValuesByInterval("test[a]foo [b] test" ,'[',']') returns ['a','b'].
     /// </summary>
-    /// <param name="text">Texto a ser pesquisado</param>
-    /// <param name="begin">Caracter Inicial</param>
-    /// <param name="end">Caracter Final</param>
-    /// <returns>Lista com as strings localizadas</returns>
     public static List<string> FindValuesByInterval(string text, char begin, char end)
     {
-        List<string> list = [];
-        char[] arr = text.ToCharArray();
-        string value = "";
-        bool isReading = false;
-        foreach(char c in arr)
+        var result = new List<string>();
+        var valueBuilder = new StringBuilder();
+        var isReading = false;
+
+        foreach (var c in text)
         {
-            if (isReading)
+            if (c == begin)
             {
-                if (c.Equals(end))
-                {
-                    list.Add(value);
-                    value = "";
-                    isReading = false;
-                }
-                else
-                {
-                    value += c.ToString();
-                }
+                valueBuilder.Clear();
+                isReading = true;
             }
-            else
+            else if (c == end)
             {
-                if (c.Equals(begin))
-                {
-                    isReading = true;
-                    value = "";
-                }
-            } 
+                result.Add(valueBuilder.ToString());
+                isReading = false;
+            }
+            else if (isReading)
+            {
+                valueBuilder.Append(c);
+            }
         }
-            
-        return list;
+
+        return result;
     }
 
     public static string Soma1(string baseVal)

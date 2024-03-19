@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;
@@ -16,14 +17,15 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
     public string GetHtmlFormScript()
     {
         var script = new StringBuilder();
-        var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
-
-        foreach (var f in listFieldsExp)
+        var fieldsWithExpression = FormElement.Fields.Where(x => x.EnableExpression.StartsWith("exp:"));
+        var pageState = DataPanel.PageState;
+        foreach (var field in fieldsWithExpression)
         {
-            string exp = f.EnableExpression.Replace("exp:", "");
-            exp = exp.Replace("'{PageState}'", $"'{DataPanel.PageState.ToString()}'");
-            exp = exp.Replace("'{PageState}'", $"'{DataPanel.PageState.ToString()}'");
-            exp = exp
+            var expressionBuilder = new StringBuilder(field.EnableExpression);
+            expressionBuilder.Replace("exp:", "");
+            expressionBuilder.Replace("'{PageState}'", $"'{ExpressionParser.GetPageStateName(pageState)}'");
+            expressionBuilder.Replace("'{PageState}'", $"'{ExpressionParser.GetPageStateName(pageState)}'");
+            expressionBuilder
                 .Replace(" and ", " && ")
                 .Replace(" or ", " || ")
                 .Replace(" AND ", " && ")
@@ -31,17 +33,17 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
                 .Replace("=", " == ")
                 .Replace("<>", " != ");
 
-            List<string> list = StringManager.FindValuesByInterval(exp, '{', '}');
+            var list = StringManager.FindValuesByInterval(expressionBuilder.ToString(), '{', '}');
             if (list.Count == 0)
                 continue;
 
-            exp = ExecuteExpression(exp, list);
+            var expression = ExecuteExpression(expressionBuilder.ToString(), list);
 
-            string selector = string.Join(",", list.Select(x => $"'#{x}'"));
+            var selector = string.Join(",", list.Select(x => $"'#{x}'"));
             script.Append('\t');
             script.AppendLine($"$({selector}).change(function () {{");
             script.Append('\t', 2);
-            script.AppendLine($"let exp = \"{exp}\";");
+            script.AppendLine($"let exp = \"{expression}\";");
 
             foreach (var t in list)
             {
@@ -60,13 +62,13 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
             script.AppendLine("if (enable)");
             script.Append('\t', 3);
             script.Append("$(\"#");
-            script.Append(f.Name);
+            script.Append(field.Name);
             script.AppendLine("\").removeAttr(\"readonly\").removeAttr(\"disabled\");");
             script.Append('\t', 2);
             script.AppendLine("else");
             script.Append('\t', 3);
             script.Append("$(\"#");
-            script.Append(f.Name);
+            script.Append(field.Name);
 
             //If disabled, will break GetFormValuesAsync at POST and not receive the values when the expression is exp:.
             script.AppendLine("\").attr(\"readonly\",\"readonly\").val(\"\");");
@@ -80,29 +82,27 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
     private string ExecuteExpression(string exp, List<string> list)
     {
         var formData = new FormStateData(DataPanel.Values, DataPanel.UserValues, DataPanel.PageState);
-        foreach (string fieldName in list)
+        foreach (var fieldName in list)
         {
             string val = null;
-            var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
+            var field = FormElement.Fields.FirstOrDefault(x => x.Name.Equals(fieldName));
             if (field is { AutoPostBack: true })
                 continue;
 
             if (DataPanel.UserValues.TryGetValue(fieldName, out var value))
             {
-                //Valor customizado pelo usuário
                 val = $"'{value}'";
             }
             else if (DataPanel.CurrentContext.Session[fieldName] != null)
             {
-                //Valor da Sessão
                 val = $"'{DataPanel.CurrentContext.Session[fieldName]}'";
             }
+            //Hidden fields
             else if (DataPanel.Values.TryGetValue(fieldName, out var panelValue))
             {
-                //Campos ocultos
                 if (field != null)
                 {
-                    bool visible = DataPanel.ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
+                    var visible = DataPanel.ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
                     if (!visible)
                     {
                         val = $"'{panelValue}'";

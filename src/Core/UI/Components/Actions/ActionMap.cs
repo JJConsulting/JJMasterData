@@ -43,10 +43,15 @@ public class ActionMap
         ActionSource = actionSource;
         ActionName = actionName;
         PkFieldValues = new Dictionary<string, object>();
-        foreach (var f in formElement.Fields.ToList().FindAll(x => x.IsPk)
-                     .Where(f => row.ContainsKey(f.Name) && row[f.Name] != null))
+        foreach (var f in formElement.Fields)
         {
-            PkFieldValues.Add(f.Name, row[f.Name].ToString()!);
+            if (!f.IsPk) 
+                continue;
+            
+            if (row.ContainsKey(f.Name) && row[f.Name] != null)
+            {
+                PkFieldValues.Add(f.Name, row[f.Name].ToString()!);
+            }
         }
     }
     
