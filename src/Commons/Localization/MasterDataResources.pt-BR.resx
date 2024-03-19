@@ -4036,7 +4036,7 @@
   </data>
   <data name="This field support runtime values between {}." xml:space="preserve">
     <value>Este campo suporta valores do runtime entre {}.</value>
-
+  </data>
   <data name="Table Or View Name" xml:space="preserve">
     <value>Nome da Tabela ou View</value>
   </data>
