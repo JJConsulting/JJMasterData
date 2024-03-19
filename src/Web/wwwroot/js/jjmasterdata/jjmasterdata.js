@@ -2423,6 +2423,11 @@ class UploadAreaListener {
             parallelUploads: options.parallelUploads,
             url: options.url
         });
+        dropzone.on('sendingmultiple', function (data, xhr, formData) {
+            $("form").find("input").each(function () {
+                formData.append($(this).attr("name"), $(this).val().toString());
+            });
+        });
         const onSuccess = (files = null) => {
             const processFile = (file) => {
                 const jsonResponse = JSON.parse(file.xhr.responseText);

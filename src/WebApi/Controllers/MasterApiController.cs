@@ -4,11 +4,12 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.WebApi.Controllers;
 
-// [Authorize]
+[Authorize]
 [ApiController]
 [Route("masterApi/{elementName}")]
 public class MasterApiController(MasterApiService service) : ControllerBase

@@ -1409,8 +1409,8 @@
     <value>Importação configurada com escopo por usuário, porém nenhuma chave com valor USERID foi definada.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Import fields" xml:space="preserve">
-    <value>Importar campos</value>
+  <data name="Import Fields" xml:space="preserve">
+    <value>Importar Campos</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Upload File" xml:space="preserve">
@@ -4036,5 +4036,20 @@
   </data>
   <data name="This field support runtime values between {}." xml:space="preserve">
     <value>Este campo suporta valores do runtime entre {}.</value>
+
+  <data name="Table Or View Name" xml:space="preserve">
+    <value>Nome da Tabela ou View</value>
+  </data>
+  <data name="Add Element" xml:space="preserve">
+    <value>Adicionar Elemento</value>
+  </data>
+  <data name="Duplicate Element" xml:space="preserve">
+    <value>Duplicar Elemento</value>
+  </data>
+  <data name="Original Element Name" xml:space="preserve">
+    <value>Nome do Elemento Original</value>
+  </data>
+  <data name="New Element Name" xml:space="preserve">
+    <value>Nome do Novo Elemento</value>
   </data>
 </root>
