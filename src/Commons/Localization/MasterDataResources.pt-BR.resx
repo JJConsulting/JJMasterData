@@ -2429,8 +2429,8 @@
     <value>Vários usuários podem executar esse processo simultaneamente, porém visualiza apenas o log e uma execução do seu processo. </value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Show As Button" xml:space="preserve">
-    <value>Mostrar como botão</value>
+  <data name="Show as Button" xml:space="preserve">
+    <value>Mostrar como Botão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Show rows striped" xml:space="preserve">

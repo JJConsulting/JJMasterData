@@ -30,14 +30,10 @@
     case FormComponent.CheckBox:
        
         <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <label class="@BootstrapHelper.Label"
-                   for="@FormElementField.IsSwitchAttribute">
-                @StringLocalizer["Show as Switch"]
-            </label>
             <checkbox 
                 name="@FormElementField.IsSwitchAttribute" 
                 switch="true" 
-                
+                label="@StringLocalizer["Show as Switch"]"
                 value="@(Model.GetAttr(FormElementField.IsSwitchAttribute) is true)"/>
         </div>
         break;
@@ -96,25 +92,16 @@
     case FormComponent.DateTime:
     case FormComponent.Hour:
         <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <label class="@BootstrapHelper.Label "
-                for="@FormElementField.AutocompletePickerAttribute">
-                @StringLocalizer["Autocomplete"]
-            </label>
-            <tooltip title="@StringLocalizer["When opening the picker, fill the input with today's date."]"/>
-            <checkbox name="@(FormElementField.AutocompletePickerAttribute)" 
+            <checkbox tooltip="@StringLocalizer["When opening the picker, fill the input with today's date."]" label="@StringLocalizer["Autocomplete"]" name="@(FormElementField.AutocompletePickerAttribute)" 
                       switch="true"
                       
                       value="@(Model.GetAttr(FormElementField.AutocompletePickerAttribute) is true)"/>
         </div>
         
         <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <label class="@BootstrapHelper.Label "
-                   for="@FormElementField.MultipleDatesAttribute">
-                @StringLocalizer["Allow multiple dates"]
-            </label>
             <checkbox name="@(FormElementField.MultipleDatesAttribute)" 
                       switch="true"
-                      
+                      label="@StringLocalizer["Allow multiple dates"]"
                       value="@(Model.GetAttr(FormElementField.MultipleDatesAttribute) is true)"/>
         </div>
         break;

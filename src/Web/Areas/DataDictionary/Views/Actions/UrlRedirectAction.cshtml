@@ -42,11 +42,7 @@
                 
                 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
-                    <label asp-for="IsIframe" class="@BootstrapHelper.Label">
-                        @StringLocalizer["Iframe"]
-                    </label>
-                    <tooltip title="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]"/>
-                    <checkbox for="IsIframe" switch="true" />
+                    <checkbox tooltip="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]" for="IsIframe" switch="true" />
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-3">

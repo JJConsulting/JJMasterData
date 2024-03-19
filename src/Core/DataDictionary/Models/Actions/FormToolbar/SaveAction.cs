@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
@@ -14,6 +15,7 @@ public class SaveAction : FormToolbarAction, ISubmittableAction
     public FormEnterKey EnterKeyBehavior { get; set; }
     
     [JsonProperty("isSubmit")]
+    [Display(Name = "Is Submit")]
     public bool IsSubmit { get; set; }
     
     public SaveAction()

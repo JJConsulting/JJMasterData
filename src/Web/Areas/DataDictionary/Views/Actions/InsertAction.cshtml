@@ -66,9 +66,7 @@
                     @Html.Raw(await GetInsertSelectionComboBoxHtml())
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <label asp-for="ReopenForm" class="@BootstrapHelper.Label"></label>
-                    <tooltip title="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]"/>
-                    <checkbox for="ReopenForm" switch="true" />
+                    <checkbox for="ReopenForm" tooltip="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]" switch="true" />
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
                     <label asp-for="SuccessMessage" class="@BootstrapHelper.Label"></label>
@@ -78,7 +76,6 @@
             </div>
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <label asp-for="ShowAsModal" class="@BootstrapHelper.Label"></label>
                     <checkbox for="ShowAsModal" switch="true" />
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">

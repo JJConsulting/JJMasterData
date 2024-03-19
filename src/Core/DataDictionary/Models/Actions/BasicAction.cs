@@ -46,6 +46,7 @@ public abstract class BasicAction
     /// This action will be triggered in any line location
     /// </summary>
     [JsonProperty("isDefaultOption")]
+    [Display(Name = "Is Default")] 
     public bool IsDefaultOption { get; set; }
 
     /// <summary>
@@ -53,6 +54,7 @@ public abstract class BasicAction
     /// Default = false
     /// </summary>
     [JsonProperty("isGroup")]
+    [Display(Name = "Is Group")] 
     public bool IsGroup { get; set; }
 
     /// <summary>
@@ -63,6 +65,7 @@ public abstract class BasicAction
     /// Only valid if IsGroup is true.
     /// </remarks>
     [JsonProperty("dividerLine")]
+    [Display(Name = "Divider Line")] 
     public bool DividerLine { get; set; }
 
     /// <summary>
@@ -120,6 +123,7 @@ public abstract class BasicAction
     public int Order { get; set; }
 
     [JsonProperty("showAsButton")] 
+    [Display(Name = "Show as Button")]
     public bool ShowAsButton { get; set; }
 
     [JsonProperty("color")]

@@ -123,7 +123,6 @@ function checkAllToggle(checkAllCheckbox) {
             <select asp-for="ApiOptions.JsonFormatting" class="form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormatting>()"></select>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-            <label class="@BootstrapHelper.Label" asp-for="EnableSynchronism"></label>
             <checkbox for="EnableSynchronism" switch="true" onchange="setModeVisibility(this)"/>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.EnableSynchronism ? "visible" : "hidden")">

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -15,6 +16,7 @@ public class UrlRedirectAction : UserCreatedAction
     /// If the action is inside a modal, render as iFrame. If this is false, it will only add the resulting HTML inside the modal (recommended).
     /// </summary>
     [JsonProperty("isIframe")]
+    [Display(Name = "Iframe")]
     public bool IsIframe { get; set; } = true;
     
     [JsonProperty("popupSize")]
