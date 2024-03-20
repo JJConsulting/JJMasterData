@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Drawing;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary;
@@ -24,6 +25,26 @@ public class FormElementTest
                     Name = "rt",
                     Label = "la",
                     Size = 1,
+                    CssClass = "foo",
+                    Export = true,
+                    Filter = new()
+                    {
+                        Type = FilterMode.Contain,
+                        IsRequired = true   
+                    },
+                    NumberOfDecimalPlaces = 2,
+                    EnableOnDelete = true,
+                    VisibleExpression = "val:1",
+                    PanelId = 1,
+                    Attributes =
+                    {
+                        {"example","example"}
+                    },
+                    IsRequired = true,
+                    AutoPostBack = true,
+                    DataBehavior = FieldBehavior.Real,
+                    IsPk = true,
+                    ValidateRequest = true,
                     DataItem = new FormElementDataItem()
                     {
                         Command = new DataAccessCommand()
@@ -134,6 +155,25 @@ public class FormElementTest
                     ConfigAction =
                     {
                         Name = "Test 2"
+                    }
+                },
+                GridTableActions =
+                {
+                    ViewAction =
+                    {
+                        Text = "a",
+                        Tooltip = "b",
+                        IsDefaultOption = true,
+                        IsGroup = true,
+                        DividerLine =  true,
+                        Icon =IconType.CircleONotch,
+                        ShowTitle = true,
+                        ConfirmationMessage = "a",
+                        EnableExpression = "val:1",
+                        VisibleExpression = "val:1",
+                        Order =1,
+                        ShowAsButton = true,
+                        CssClass = "css"
                     }
                 },
                 EnableAuditLog = true,
