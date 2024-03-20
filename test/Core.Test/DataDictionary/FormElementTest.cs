@@ -77,6 +77,36 @@ public class FormElementTest
                                 CommandAfterProcess = "select",
                             }
                         },
+                        new ImportAction()
+                        {
+                            ProcessOptions =
+                            {
+                                Scope = ProcessScope.Global
+                            }
+                        },
+                        new SqlCommandAction()
+                        {
+                            SqlCommand = "select",
+                            
+                        }
+                    ],
+                    Component = FormComponent.Search
+                },
+                new FormElementField
+                {
+                    Name = "new field",
+                    Label = "la",
+                    Size = 1,
+                    DataFile = new()
+                    {
+                      ShowAsUploadView  = true
+                    },
+                    Actions =
+                    [
+                        new UrlRedirectAction()
+                        {
+                          Name = "url",
+                        },
                         new SqlCommandAction()
                         {
                             SqlCommand = "select",
@@ -96,6 +126,14 @@ public class FormElementTest
                         {
                             CommandAfterProcess = "SELECT"
                         }
+                    },
+                    ExportAction =
+                    {
+                        Name = "Test"
+                    },
+                    ConfigAction =
+                    {
+                        Name = "Test 2"
                     }
                 },
                 EnableAuditLog = true,

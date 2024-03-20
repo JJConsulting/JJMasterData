@@ -47,7 +47,7 @@ public class FormElementOptions
         Grid = gridUI ?? new GridUI();
         Form = formUI ?? new FormUI();
         GridToolbarActions = gridToolbarActions ?? [];
-        GridTableActions = gridTableActions ?? new GridTableActionList();
+        GridTableActions = gridTableActions ?? [];
         FormToolbarActions = formToolbarActions ?? [];
     }
 
