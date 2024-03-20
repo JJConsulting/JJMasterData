@@ -4028,12 +4028,6 @@
   <data name="File successfully deleted." xml:space="preserve">
     <value>Arquivo deletado com sucesso.</value>
   </data>
-  <data name="Encrypt Parameters" xml:space="preserve">
-    <value>Criptografar Parâmetros</value>
-  </data>
-  <data name="To decrypt at the destination, use the &lt;a target=\&quot;_blank\&quot; href=\&quot;{0}\&quot;&gt;DecryptStringWithUrlUnescape&lt;&#47;a&gt; method from &lt;a target=\&quot;_blank\&quot; href=\&quot;{1}\&quot;&gt;IEncryptionService&lt;&#47;a&gt;." xml:space="preserve">
-    <value>Para descriptografar no destino, use o método &lt;a target=\"_blank\" href=\"{0}\"&gt;DecryptStringWithUrlUnescape&lt;/a&gt; da interface &lt;a target=\"_blank\" href=\"{1}\"&gt;IEncryptionService&lt;/a&gt;.</value>
-  </data>
   <data name="This field support runtime values between {}." xml:space="preserve">
     <value>Este campo suporta valores do runtime entre {}.</value>
   </data>
