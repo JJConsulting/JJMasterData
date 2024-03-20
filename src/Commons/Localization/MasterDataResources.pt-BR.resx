@@ -189,6 +189,10 @@
     <value>Já existe um arquivo com o nome {0}</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Url Redirect" xml:space="preserve">
+    <value>Redirecionamento Url</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="A selected record" xml:space="preserve">
     <value>Um registro selecionado</value>
     <comment>JJMasterDataApi</comment>
