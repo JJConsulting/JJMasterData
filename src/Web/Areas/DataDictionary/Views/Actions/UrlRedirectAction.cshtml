@@ -1,12 +1,8 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IHtmlLocalizer<MasterDataResources> HtmlLocalizer
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-
-@using Microsoft.AspNetCore.Mvc.Localization
 @model  JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction
 
 @{
@@ -30,11 +26,10 @@
         <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="form-label" asp-for="UrlRedirect"></label>
-                    <tooltip title="@StringLocalizer["This field support runtime values between {}."]"/>
-                    <input asp-for="UrlRedirect" class="form-control font-monospace" />
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["This field support runtime values using expressions."]">@StringLocalizer["Url Redirect"]</label>
+                    @Html.TextBoxFor(model => model.UrlRedirect, new { @class = "form-control" })
                 </div>
-                
+
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
                     <label asp-for="IsModal" class="@BootstrapHelper.Label">@StringLocalizer["Is Modal"]</label>
                     <checkbox for="IsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
@@ -45,12 +40,6 @@
                     <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
                     @Html.TextBoxFor(model => model.ModalTitle, new { @class = "form-control" })
                 </div>
-
-
-                <div class="@BootstrapHelper.FormGroup col-sm-2">
-                    <label class="@BootstrapHelper.Label " asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
-                    <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
-                </div>
                 
                 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
@@ -60,24 +49,12 @@
                     <tooltip title="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]"/>
                     <checkbox for="IsIframe" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
-            </div>
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-2">
-                    <label asp-for="EncryptParameters" class="@BootstrapHelper.Label"></label>
-                    <checkbox for="EncryptParameters" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label class="@BootstrapHelper.Label " asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
+                    <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
                 </div>
-                <div class="col-sm-10">
-                    <alert color="Info"
-                           title="@StringLocalizer["Encrypt Parameters"]"
-                           icon="IconType.InfoCircle">
-                        @{
-                            const string docsUrl = "https://md.jjconsulting.tech/api/";
-                            const string methodUrl = docsUrl + "JJMasterData.Core.Extensions.EncryptionServiceExtensions.html#JJMasterData_Core_Extensions_EncryptionServiceExtensions_DecryptStringWithUrlUnescape_JJMasterData_Commons_Security_Cryptography_Abstractions_IEncryptionService_System_String_";
-                            const string interfaceUrl = docsUrl + "JJMasterData.Commons.Security.Cryptography.Abstractions.IEncryptionService.html";
-                        }
-                        @HtmlLocalizer["To decrypt at the destination, use the <a target=\"_blank\" href=\"{0}\">DecryptStringWithUrlUnescape</a> method from <a target=\"_blank\" href=\"{1}\">IEncryptionService</a>.", methodUrl, interfaceUrl]
-                    </alert>
-                </div>
+
             </div>
         </div>
 
