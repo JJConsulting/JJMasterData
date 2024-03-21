@@ -44,13 +44,13 @@ public class SettingsController(
   
             alert.Title = StringLocalizer["Error while testing the connection."];
             alert.Icon = IconType.SolidXmark;
-            alert.Color = PanelColor.Danger;
+            alert.Color = BootstrapColor.Danger;
         }
         else
         {
             alert.Title = StringLocalizer["Connection successfully estabilished."];
             alert.Icon = IconType.CheckCircle;
-            alert.Color = PanelColor.Success;
+            alert.Color = BootstrapColor.Success;
         }
 
         return new ContentResult

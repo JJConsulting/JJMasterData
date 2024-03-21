@@ -10,7 +10,7 @@
 <form asp-action="Save">
     <input asp-for="FilePath" hidden="hidden"/>
 
-    <div class="pb-2 mt-4 mb-2 border-bottom">
+    <div class="pb-2 mb-2 border-bottom">
         <h1>
             @Html.Raw(ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml())
             <small class="sub-title">@StringLocalizer["Application Settings"]</small>

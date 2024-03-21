@@ -52,7 +52,7 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
         if (defaultAction is { Enabled: true })
         {
             input.WithCssClass("default-option");
-            input.WithAttribute("onchange", defaultAction.OnClientClick);
+            input.WithOnChange( defaultAction.OnClientClick);
         }
 
         var inputGroup = new HtmlBuilder(HtmlTag.Div)

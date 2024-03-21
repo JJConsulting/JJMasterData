@@ -75,7 +75,7 @@ public class JJComboBox : ControlBase
 
         if (ReadOnly && Enabled)
         {
-            var combobox = new HtmlBuilder(HtmlTag.Div);
+            var combobox = new Div();
             combobox.AppendRange(GetReadOnlyInputs(values));
             return new RenderedComponentResult(combobox);
         }
@@ -169,7 +169,7 @@ public class JJComboBox : ControlBase
     {
         if (SelectedValue != null)
         {
-            var hiddenInput = new HtmlBuilder(HtmlTag.Input)
+            var hiddenInput = new Input()
                 .WithAttribute("type", "hidden")
                 .WithNameAndId(Name)
                 .WithValue(SelectedValue);
@@ -179,7 +179,7 @@ public class JJComboBox : ControlBase
 
         var selectedText = GetSelectedText(values);
 
-        var readonlyInput = new HtmlBuilder(HtmlTag.Input)
+        var readonlyInput = new Input()
             .WithNameAndId($"cboview_{Name}")
             .WithCssClass("form-control form-select")
             .WithCssClass(CssClass)
@@ -231,7 +231,7 @@ public class JJComboBox : ControlBase
 
         if (DataItem.ShowIcon)
         {
-            var div = new HtmlBuilder(HtmlTag.Div);
+            var div = new Div();
 
             var icon = new JJIcon(item.Icon, item.IconColor, item.Description)
             {

@@ -571,7 +571,7 @@ public class JJFormView : AsyncComponent
         var alert = new JJAlert
         {
             Name = $"insert-alert-{Name}",
-            Color = PanelColor.Success,
+            Color = BootstrapColor.Success,
             Title = StringLocalizer[GridView.InsertAction.SuccessMessage],
             ShowIcon = true,
             Icon = IconType.CheckCircleO
@@ -864,7 +864,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetInsertSelectionListResult()
     {
         var insertAction = GridView.ToolbarActions.InsertAction;
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         html.AppendHiddenInput($"form-view-insert-selection-values-{Name}");
 
 
@@ -907,7 +907,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
         var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         
         var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
         var childElement = await DataDictionaryRepository.GetFormElementAsync(childElementName);
@@ -975,7 +975,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetDeleteResult()
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         var messageFactory = ComponentFactory.Html.MessageBox;
         try
         {
@@ -1010,7 +1010,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetDeleteSelectedRowsResult()
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         var messageFactory = ComponentFactory.Html.MessageBox;
         var errorMessage = new StringBuilder();
         int errorCount = 0;
@@ -1107,7 +1107,7 @@ public class JJFormView : AsyncComponent
 
         if (PageState == PageState.View)
         {
-            var html = new HtmlBuilder(HtmlTag.Div);
+            var html = new Div();
             
             var logDetailsHtml = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
 
@@ -1132,7 +1132,7 @@ public class JJFormView : AsyncComponent
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
 
         if (ShowTitle)
             html.AppendComponent(GetTitle(new FormStateData(UserValues, PageState.Import)));
@@ -1186,7 +1186,7 @@ public class JJFormView : AsyncComponent
         Dictionary<string, object?> values)
     {
         var formStateData = new FormStateData(values, UserValues, PageState);
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         if (ShowTitle)
             html.AppendComponent(GetTitle(formStateData));
 
@@ -1292,7 +1292,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<HtmlBuilder> GetDataPanelHtml()
     {
-        var formHtml = new HtmlBuilder(HtmlTag.Div);
+        var formHtml = new Div();
         
         ConfigureFormToolbar();
 
@@ -1322,7 +1322,7 @@ public class JJFormView : AsyncComponent
 
     internal async Task<HtmlBuilder> GetParentPanelHtmlAtRelationship(FormElementRelationship relationship)
     {
-        var formHtml = new HtmlBuilder(HtmlTag.Div);
+        var formHtml = new Div();
 
         if (!DataPanel.ContainsPanelState())
             DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState : PageState.View;

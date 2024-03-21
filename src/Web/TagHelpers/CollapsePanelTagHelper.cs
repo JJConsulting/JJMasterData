@@ -34,7 +34,7 @@ public class CollapsePanelTagHelper(RazorPartialRendererService rendererService,
     public Action<JJCollapsePanel>? Configure { get; set; }
 
     [HtmlAttributeName("color")]
-    public PanelColor Color { get; set; }
+    public BootstrapColor Color { get; set; }
     
     private RazorPartialRendererService RendererService { get; } = rendererService;
     private IComponentFactory<JJCollapsePanel> CollapsePanelFactory { get; } = collapsePanelFactory;

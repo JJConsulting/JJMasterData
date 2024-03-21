@@ -317,7 +317,7 @@ public class JJUploadView : AsyncComponent
         if (!string.IsNullOrEmpty(previewVideo))
             return new ContentComponentResult(GetHtmlPreviewVideo(previewVideo));
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
 
         var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
         if (!string.IsNullOrEmpty(uploadAction))
@@ -378,7 +378,7 @@ public class JJUploadView : AsyncComponent
         script.AppendLine("   $('#video').css('max-height',window.innerHeight);");
         script.AppendLine("	}); ");
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         html.Append(HtmlTag.Center, c =>
         {
             c.Append(HtmlTag.Video, video =>
@@ -386,7 +386,7 @@ public class JJUploadView : AsyncComponent
                 video.WithAttribute("id", "video")
                      .WithAttribute("src", srcVideo)
                      .WithAttribute("autoplay", "autoplay")
-                     .WithAttribute("style", "width:100%;height:100%;")
+                     .WithStyle( "width:100%;height:100%;")
                      .WithCssClass("img-responsive");
             });
         });
@@ -424,14 +424,14 @@ public class JJUploadView : AsyncComponent
             });
         """;
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         html.Append(HtmlTag.Center, c =>
         {
             c.Append(HtmlTag.Img, img =>
             {
                 img.WithAttribute("id", "img")
                     .WithAttribute("src", src).WithAttribute((string)"alt", (string)fileName)
-                   .WithAttribute("style", "max-height:350px;display:none;")
+                   .WithStyle( "max-height:350px;display:none;")
                    .WithCssClass("img-responsive");
             });
         });
@@ -458,7 +458,7 @@ public class JJUploadView : AsyncComponent
         {
             var alert = ComponentFactory.Html.Alert.Create();
             alert.Title = ex.Message;
-            alert.Color = PanelColor.Warning;
+            alert.Color = BootstrapColor.Warning;
             alert.ShowCloseButton = true;
             alert.Icon = IconType.SolidTriangleExclamation;
         
@@ -524,7 +524,7 @@ public class JJUploadView : AsyncComponent
         foreach (var fileInfo in files)
         {
             var file = fileInfo.Content;
-            var col = new HtmlBuilder(HtmlTag.Div);
+            var col = new Div();
             col.WithCssClass("col-sm-3");
             await col.AppendAsync(HtmlTag.Ul, async ul =>
             {
@@ -555,7 +555,7 @@ public class JJUploadView : AsyncComponent
 
     private HtmlBuilder GetHtmlGalleryListItem(string label, string value)
     {
-        return new HtmlBuilder(HtmlTag.Li)
+        return new Li()
             .WithCssClass("list-group-item")
             .Append(HtmlTag.B, b =>
             {
@@ -566,7 +566,7 @@ public class JJUploadView : AsyncComponent
 
     private HtmlBuilder GetHtmlGalleryPreview(string fileName)
     {
-        var html = new HtmlBuilder(HtmlTag.Li)
+        var html = new Li()
             .WithCssClass("list-group-item");
 
         switch (Path.GetExtension(fileName))
@@ -582,39 +582,39 @@ public class JJUploadView : AsyncComponent
                 break;
             case ".pdf":
                 html.WithCssClass("text-center");
-                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.WithStyle( "background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-pdf-o", "red"));
                 break;
             case ".pptx":
                 html.WithCssClass("text-center");
-                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.WithStyle( "background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-powerpoint-o", "red"));
                 break;
             case ".docx":
                 html.WithCssClass("text-center");
-                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.WithStyle( "background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-word-o", "blue"));
                 break;
             case ".csv":
             case ".txt":
                 html.WithCssClass("text-center");
-                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.WithStyle( "background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-text-o", "black"));
                 break;
             case ".xls":
                 html.WithCssClass("text-center");
-                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.WithStyle( "background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-excel-o", "green"));
                 break;
             case ".rar":
             case ".zip":
                 html.WithCssClass("text-center");
-                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.WithStyle( "background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-zip-o", "#d2bb1c"));
                 break;
             default:
                 html.WithCssClass("text-center");
-                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.WithStyle( "background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-o", "gray"));
                 break;
         }
@@ -625,12 +625,12 @@ public class JJUploadView : AsyncComponent
     private static HtmlBuilder GetHtmlItemBox(string fileName, string cssIcon, string colorIcon)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
-            .WithAttribute("style", "height:180px;")
+            .WithStyle( "height:180px;")
             .Append(HtmlTag.Span, span =>
             {
                 span.WithCssClass(cssIcon)
                     .WithToolTip(fileName)
-                    .WithAttribute("style", $"color:{colorIcon};padding-top:45px;font-size:100px;");
+                    .WithStyle( $"color:{colorIcon};padding-top:45px;font-size:100px;");
             });
         return div;
     }
@@ -670,7 +670,7 @@ public class JJUploadView : AsyncComponent
         {
             img.WithAttribute("loading", "lazy")
                .WithAttribute("src", src)
-               .WithAttribute("style", "height:180px;")
+               .WithStyle( "height:180px;")
                .WithCssClass("img-responsive")
                .WithToolTip(fileName);
         });
@@ -712,7 +712,7 @@ public class JJUploadView : AsyncComponent
 
     private async Task<JJModalDialog> GetPreviewModalHtml()
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         
         var label = ComponentFactory.Html.Label.Create();
         label.Text = "File name";
@@ -748,7 +748,7 @@ public class JJUploadView : AsyncComponent
                 col.Append(HtmlTag.Img, img =>
                 {
                     img.WithAttribute("id", "pastedimage_0")
-                       .WithAttribute("style", "max-height:350px;")
+                       .WithStyle( "max-height:350px;")
                        .WithAttribute("alt", StringLocalizer["Preview Image"])
                        .WithCssClass("img-responsive");
                 });
@@ -823,7 +823,7 @@ public class JJUploadView : AsyncComponent
         var alert = ComponentFactory.Html.Alert.Create();
         alert.Title = text;
         alert.ShowCloseButton = true;
-        alert.Color = PanelColor.Info;
+        alert.Color = BootstrapColor.Info;
         alert.Icon = IconType.SolidCircleInfo;
         
         return new RenderedComponentResult(alert.GetHtmlBuilder());
@@ -842,7 +842,7 @@ public class JJUploadView : AsyncComponent
         var alert = ComponentFactory.Html.Alert.Create();
         alert.Title = text;
         alert.ShowCloseButton = true;
-        alert.Color = PanelColor.Info;
+        alert.Color = BootstrapColor.Info;
         alert.Icon = IconType.SolidCircleInfo;
         
         return new RenderedComponentResult(alert.GetHtmlBuilder());

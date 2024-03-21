@@ -81,12 +81,14 @@ public class ElementField
     /// Required field (Default=false)
     /// </summary>
     [JsonProperty("isrequired")]
+    [Display(Name="Required")]
     public bool IsRequired { get; set; }
 
     /// <summary>
     /// Primary Key (Default=false)
     /// </summary>
     [JsonProperty("ispk")]
+    [Display(Name="Primary Key")]
     public bool IsPk { get; set; }
 
     /// <summary>

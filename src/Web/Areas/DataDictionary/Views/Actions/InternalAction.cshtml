@@ -54,7 +54,7 @@
 {
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab" />
 
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
         <li id="navInternalRedirect" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-internal-redirect">@StringLocalizer["Internal Redirect"]</a></li>
         <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
@@ -112,7 +112,7 @@
 
             <div class="row">
                 <div class="col-sm-4">
-                    <button type="button" class="btn btn-default" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Add Reference"]" OnClick="addRelation();">
+                    <button type="button" class="@BootstrapHelper.BtnDefault" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Add Reference"]" OnClick="addRelation();">
                         <span class="fa fa-plus-square-o"></span>&nbsp;@StringLocalizer["Add"]
                     </button>
                 </div>

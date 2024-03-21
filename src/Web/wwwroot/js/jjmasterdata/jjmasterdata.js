@@ -261,6 +261,7 @@ class CalendarListener {
                 wrap: true,
                 allowInput: true,
                 altInput: false,
+                monthSelectorType: 'static',
                 time_24hr: true,
                 mode: div.firstElementChild.getAttribute("multiple-dates") === "True" ? "multiple" : "single",
                 dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
@@ -279,6 +280,7 @@ class CalendarListener {
                 wrap: true,
                 allowInput: true,
                 altInput: false,
+                monthSelectorType: 'static',
                 mode: div.firstElementChild.getAttribute("multiple-dates") === "True" ? "multiple" : "single",
                 dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
                 onOpen: function (selectedDates, dateStr, instance) {
@@ -1669,8 +1671,8 @@ class MessageBox {
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
         }
         else {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-bs-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
         }
         html += "      </div>\r\n";
         html += "    </div>\r\n";

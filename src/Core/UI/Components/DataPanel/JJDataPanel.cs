@@ -288,12 +288,11 @@ public class JJDataPanel : AsyncComponent
         {
             script.AppendLine($"\tjjutil.replaceEntertoTab('{Name}');");
         }
-
-        var listField = FormElement.Fields.ToList();
-        if (!listField.Exists(x => x.AutoPostBack))
+        
+        if (!FormElement.Fields.Any(x => x.AutoPostBack))
         {
-            var dataPanelScript = new DataPanelExpressionScripts(this);
-            script.AppendLine( dataPanelScript.GetHtmlFormScript());
+            var dataPanelScripts = new DataPanelExpressionScripts(this);
+            script.AppendLine( dataPanelScripts.GetHtmlFormScript());
         }
 
         script.AppendLine("});");

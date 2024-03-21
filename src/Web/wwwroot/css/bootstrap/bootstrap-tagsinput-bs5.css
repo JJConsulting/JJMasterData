@@ -5,21 +5,21 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: var(--bs-body-color);
+  color: var(--bs-body-color) !important;
   appearance: none;
-  background-color: var(--bs-body-bg);
+  background-color: var(--bs-body-bg) !important;
   background-clip: padding-box;
-  border: var(--bs-border-width) solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
+  border: var(--bs-border-width) solid var(--bs-border-color) !important;
+  border-radius: var(--bs-border-radius) !important;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
 .bootstrap-tagsinput:focus-within {
-  color: var(--bs-body-color);
-  background-color: var(--bs-body-bg);
-  border-color: var(--bs-primary-border-subtle);
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+  border-color: var(--bs-primary-border-subtle) !important;
   outline: 0;
-  box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb),.25);
+  box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb),.25) !important;
 }
 
 .bootstrap-tagsinput input {

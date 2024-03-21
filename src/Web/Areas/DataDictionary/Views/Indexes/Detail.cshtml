@@ -34,11 +34,9 @@
                     @Html.TextBox("indexName", (string)ViewBag.IndexName, new { @class = "form-control", @readonly = "readonly" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                     <label class="form-label" asp-for="IsUnique"></label>
-                     <checkbox for="IsClustered" switch="true"/>
+                     <checkbox for="IsUnique" switch="true"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="form-label" asp-for="IsClustered"></label>
                     <checkbox for="IsClustered" switch="true"/>
                 </div>
 

@@ -51,14 +51,14 @@
 
     <script>
         function saveScrollPosition() {
-            const listField = document.getElementById('listField');
+            const listField = document.getElementById('field-list');
             if (listField) {
                 sessionStorage.setItem('listFieldScrollPosition', listField.scrollTop);
             }
         }
 
         function restoreScrollPosition() {
-            const listField = document.getElementById('listField');
+            const listField = document.getElementById('field-list');
             const savedScrollPosition = sessionStorage.getItem('listFieldScrollPosition');
             if (listField && savedScrollPosition) {
                 listField.scrollTop = parseInt(savedScrollPosition);
@@ -215,13 +215,13 @@
             <div class="col-sm-3">
                 <div class="input-group jjform-action ">
                     <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
-                    <a href="javascript: void(0);" class=" btn btn-default icon-link-hover" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                    <a href="javascript: void(0);" class=" @BootstrapHelper.BtnDefault " data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
                         <span class="fa fa-plus  bi"></span>
                     </a>
                 </div>
                 <br/>
                 <div class="jjrelative">
-                    <div id="listField">
+                    <div id="field-list">
                         <div class="list-group jjsortable" id="sortable-grid">
                             @if (ViewBag.Fields.Count == 0)
                             {

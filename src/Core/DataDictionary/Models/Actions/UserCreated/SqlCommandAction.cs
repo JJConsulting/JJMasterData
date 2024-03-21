@@ -6,6 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 public class SqlCommandAction : UserCreatedAction, ISubmittableAction
 {
     [JsonProperty("isSubmit")]
+    [Display(Name = "Is Submit")]
     public bool IsSubmit { get; set; }
     
     /// <summary>

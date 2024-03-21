@@ -63,7 +63,7 @@ public class JJTextBox : ControlBase
             CssClass += " jj-numeric";
         }
 
-        var html = new HtmlBuilder(HtmlTag.Input)
+        var html = new Input()
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithAttributeIfNotEmpty("placeholder", PlaceHolder)

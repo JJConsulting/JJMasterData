@@ -1,7 +1,6 @@
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Util;
 
-namespace JJMasterData.Commons.Test.Extensions;
+namespace JJMasterData.Commons.Test.Util;
 
 public class DeepCopyTest
 {

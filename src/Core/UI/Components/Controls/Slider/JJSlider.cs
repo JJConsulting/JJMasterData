@@ -55,7 +55,7 @@ public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBox
     
     private HtmlBuilder GetHtmlSlider()
     {
-        var slider = new HtmlBuilder(HtmlTag.Input)
+        var slider = new Input()
            .WithAttributes(Attributes)
            .WithAttribute("type", "range")
            .WithNameAndId(Name)

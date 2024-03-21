@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
@@ -14,6 +15,7 @@ public class SaveAction : FormToolbarAction, ISubmittableAction
     public FormEnterKey EnterKeyBehavior { get; set; }
     
     [JsonProperty("isSubmit")]
+    [Display(Name = "Is Submit")]
     public bool IsSubmit { get; set; }
     
     public SaveAction()
@@ -23,7 +25,7 @@ public class SaveAction : FormToolbarAction, ISubmittableAction
         Icon = IconType.Check;
         Text = "Save";
         Location = FormToolbarActionLocation.Panel;
-        Color = PanelColor.Primary;
+        Color = BootstrapColor.Primary;
         ShowAsButton = true;
         VisibleExpression = "exp: '{PageState}' <> 'View'";
     }

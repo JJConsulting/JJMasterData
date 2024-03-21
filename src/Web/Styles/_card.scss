@@ -1,0 +1,24 @@
+﻿.card {
+  margin-bottom: 1vh !important;
+}
+
+.card-header .jj-panel-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-header[aria-expanded="true"] .jj-panel-title:after {
+  content: "\f147";
+  font-family: FontAwesome;
+  color: inherit;
+}
+
+.card-header[aria-expanded="false"] .jj-panel-title:after {
+  content: "\f196";
+  font-family: FontAwesome;
+  color: inherit;
+}
+
+.card-header.bg-primary {
+  color: white
+}

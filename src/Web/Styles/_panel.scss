@@ -1,0 +1,25 @@
+﻿.panel-heading {
+  cursor: pointer;
+}
+
+.panel-heading .panel-title {
+  position: relative;
+}
+
+.panel-heading[aria-expanded="true"] .panel-title:after {
+  content: "\f147";
+  font-family: FontAwesome;
+  right: 0px;
+  position: absolute;
+  top: 2px;
+  color: inherit;
+}
+
+.panel-heading[aria-expanded="false"] .panel-title:after {
+  content: "\f196";
+  font-family: FontAwesome;
+  right: 0px;
+  position: absolute;
+  top: 2px;
+  color: inherit;
+}

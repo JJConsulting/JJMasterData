@@ -21,7 +21,7 @@ internal class GridSettingsForm(
     private readonly string _tableRowHover = $"{name}-table-rowhover";
     private readonly string _tableIsHeaderFixed = $"{name}-table-header-fixed";
     private readonly string _tableIsCompact = $"{name}-table-is-compact";
-    
+
     public GridSettings LoadFromForm()
     {
         var gridSettings = new GridSettings();
@@ -53,126 +53,94 @@ internal class GridSettingsForm(
     internal HtmlBuilder GetHtmlBuilder(bool isPaginationEnabled, GridSettings gridSettings)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass($"{(BootstrapHelper.Version == 3 ? "form-horizontal" : string.Empty)}")
-            .WithAttribute("role", "form")
+            .WithCssClass("row")
             .AppendHiddenInput(_tableTotalPaginationButtons, gridSettings.TotalPaginationButtons.ToString())
             .AppendHiddenInput(_tableIsHeaderFixed, gridSettings.IsHeaderFixed ? "1" : "0");
 
         if (isPaginationEnabled)
         {
-            div.Append(GetPaginationHtml(gridSettings));
+            div.AppendDiv(div =>
+            {
+                div.Append(GetPaginationHtml(gridSettings));
+                div.WithCssClass($"row {BootstrapHelper.FormGroup}");
+                div.WithCssClass(BootstrapHelper.FormGroup);
+            });
         }
         else
         {
             div.AppendHiddenInput(_tableTotalPerPage, gridSettings.RecordsPerPage.ToString());
         }
 
-        div.Append(GetShowBorderHtml(gridSettings));
-        div.Append(GetShowRowsStripedHtml(gridSettings));
-        div.Append(GetHighlightLineHtml(gridSettings));
-        div.Append(GetIsCompactHtml(gridSettings));
+        div.AppendDiv(div=>
+        {
+            div.Append(GetShowBorderHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
+        div.AppendDiv(div=>
+        {
+            div.Append(GetShowRowsStripedHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
+        div.AppendDiv(div=>
+        {
+            div.Append(GetHighlightLineHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
+        div.AppendDiv(div=>
+        {
+            div.Append(GetIsCompactHtml(gridSettings));
+            div.WithCssClass("row");
+            div.WithCssClass(BootstrapHelper.FormGroup);
+        });
+
         return div;
     }
 
     private HtmlBuilder GetHighlightLineHtml(GridSettings gridSettings)
     {
-        var div = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .Append(HtmlTag.Label, label =>
-            {
-                label.WithAttribute("for", _tableRowHover);
-                label.WithCssClass("col-sm-4");
-                label.AppendText(stringLocalizer["Highlight line on mouseover"]);
-            });
-        div.Append(HtmlTag.Div, div =>
-        {
-            div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(_tableRowHover, gridSettings.ShowRowHover));
-        });
-        
-        return div;
+        return GetDataToggleElement(_tableRowHover, stringLocalizer["Highlight line on mouseover"],
+            gridSettings.ShowRowHover).WithCssClass("col-sm-12");
     }
 
     private HtmlBuilder GetIsCompactHtml(GridSettings gridSettings)
     {
-        var div = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .Append(HtmlTag.Label, label =>
-            {
-                label.WithAttribute("for", _tableIsCompact);
-                label.WithCssClass("col-sm-4");
-                label.AppendText(stringLocalizer["Compact mode"]);
-            });
-        div.Append(HtmlTag.Div, div =>
-        {
-            div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(_tableIsCompact, gridSettings.IsCompact));
-        });
-        
-        return div;
+        return GetDataToggleElement(_tableIsCompact, stringLocalizer["Compact mode"], gridSettings.IsCompact)
+            .WithCssClass("col-sm-12");
     }
-    
+
     private HtmlBuilder GetShowRowsStripedHtml(GridSettings gridSettings)
     {
-        var div = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .Append(HtmlTag.Label, label =>
-            {
-                label.WithAttribute("for", _tableRowsStriped);
-                label.WithCssClass("col-sm-4");
-                label.AppendText(stringLocalizer["Show rows striped"]);
-            });
-        div.Append(HtmlTag.Div, div =>
-        {
-            div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(_tableRowsStriped, gridSettings.ShowRowStriped));
-        });
-
-        return div;
+        return GetDataToggleElement(_tableRowsStriped, stringLocalizer["Show rows striped"],
+            gridSettings.ShowRowStriped).WithCssClass("col-sm-12");
     }
 
     private HtmlBuilder GetShowBorderHtml(GridSettings gridSettings)
     {
-        var div = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .Append(HtmlTag.Label, label =>
-            {
-                label.WithAttribute("for", _tableBorder);
-                label.WithCssClass("col-sm-4");
-                label.AppendText(stringLocalizer["Show table border"]);
-            });
-        div.Append(HtmlTag.Div, div =>
-        {
-            div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(_tableBorder, gridSettings.ShowBorder));
-        });
-
-
-        return div;
+        return GetDataToggleElement(_tableBorder, stringLocalizer["Show table border"], gridSettings.ShowBorder)
+            .WithCssClass("col-sm-12");
     }
 
     private HtmlBuilder GetPaginationHtml(GridSettings gridSettings)
     {
-        var div = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass($"{BootstrapHelper.FormGroup} row")
+        var div = new HtmlBuilder()
             .Append(HtmlTag.Label, label =>
             {
+                label.WithCssClass("form-label");
                 label.WithAttribute("for", _tableTotalPerPage);
-                label.WithCssClass("col-sm-4");
                 label.AppendText(stringLocalizer["Records per page"]);
-            });
-        div.Append(HtmlTag.Div, div =>
-        {
-            div.WithCssClass("col-sm-2");
-            div.Append(GetTotalPerPageSelectElement(gridSettings));
-        });
-        div.Append(HtmlTag.Div, div => { div.WithCssClass("col-sm-6"); });
+            })
+            .Append(GetTotalPerPageSelectElement(gridSettings));
 
         return div;
     }
 
     private HtmlBuilder GetTotalPerPageSelectElement(GridSettings gridSettings)
     {
+        var div = new Div();
+        div.WithCssClass("col-sm-3");
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control form-select")
             .WithNameAndId(_tableTotalPerPage);
@@ -188,17 +156,20 @@ internal class GridSettingsForm(
             });
         }
 
-        return select;
+        div.Append(select);
+
+        return div;
     }
 
-    private HtmlBuilder GetDataToggleElement(string name, bool isChecked)
+    private HtmlBuilder GetDataToggleElement(string name, string label, bool isChecked)
     {
         var checkbox = new JJCheckBox(currentContext.Request.Form, stringLocalizer)
         {
             Name = name,
             IsChecked = isChecked,
+            Text = label,
             IsSwitch = true,
-            SwitchSize = CheckBoxSwitchSize.Medium
+            SwitchSize = CheckBoxSwitchSize.Default
         };
 
         return checkbox.GetHtmlBuilder();

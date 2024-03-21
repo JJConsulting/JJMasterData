@@ -133,7 +133,7 @@ internal class GridTableHeader
     private void SetSortAttributes(HtmlBuilder span, ElementField field)
     {
         span.WithCssClass("jjenable-sorting");
-        span.WithAttribute("onclick", GridView.Scripts.GetSortingScript(field.Name));
+        span.WithOnClick( GridView.Scripts.GetSortingScript(field.Name));
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()
@@ -166,6 +166,8 @@ internal class GridTableHeader
                 break;
             }
             case FormComponent.CheckBox:
+                return "text-align:center;";
+            case FormComponent.Icon:
                 return "text-align:center;";
             default:
             {
@@ -205,7 +207,7 @@ internal class GridTableHeader
                     .WithNameAndId($"{GridView.Name}-checkbox-select-all-rows")
                     .WithCssClass("form-check-input")
                     .WithToolTip(StringLocalizer["Mark|Unmark all from page"])
-                    .WithAttribute("onclick",
+                    .WithOnClick(
                         $"GridViewSelectionHelper.selectAllAtSamePage(this)");
             });
 
@@ -230,7 +232,7 @@ internal class GridTableHeader
                     {
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithAttribute("onclick", $"GridViewSelectionHelper.unSelectAll('{GridView.Name}')");
+                        a.WithOnClick( $"GridViewSelectionHelper.unSelectAll('{GridView.Name}')");
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });
@@ -240,7 +242,7 @@ internal class GridTableHeader
                     {
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithAttribute("onclick", GridView.Scripts.GetSelectAllScript());
+                        a.WithOnClick( GridView.Scripts.GetSelectAllScript());
                         a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalOfRecords]);
                     });
                 });

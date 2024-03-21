@@ -236,11 +236,22 @@ public class SqlServerProvider(
         {
             FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int or FieldType.Time when
                 string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
-            FieldType.UniqueIdentifier => Guid.Parse(value.ToString()!),
+            FieldType.UniqueIdentifier => TryGetGuid(value),
             FieldType.Bit => StringManager.ParseBool(values[field.Name]),
             FieldType.Varchar or FieldType.NVarchar => value.ToString(),
             _ => value
         };
+    }
+
+    private static object TryGetGuid(object? value)
+    {
+        if (value is Guid guid)
+            return guid;
+        
+        if(Guid.TryParse(value?.ToString(), out guid))
+            return guid;
+
+        return DBNull.Value;
     }
 
     private static DbType GetDbType(FieldType dataType)

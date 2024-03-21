@@ -177,7 +177,7 @@ public class JJLookup : ControlBase
         
         Attributes["lookup-field-name"] = FieldName;
         
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
         div.WithCssClass("input-group mb-3 d-flex" );
 
         var routeContext = new RouteContext(ElementName, ParentElementName,
@@ -209,7 +209,7 @@ public class JJLookup : ControlBase
                 div.AppendSpan(span =>
                 {
                     span.WithCssClass("input-group-btn");
-                    span.WithAttribute("style", "width:0px;");
+                    span.WithStyle( "width:0px;");
                 });
             }
 

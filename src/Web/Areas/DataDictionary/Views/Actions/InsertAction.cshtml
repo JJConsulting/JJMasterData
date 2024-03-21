@@ -36,7 +36,7 @@
 @using (Html.BeginForm("InsertAction", "Actions",
             new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
@@ -66,9 +66,7 @@
                     @Html.Raw(await GetInsertSelectionComboBoxHtml())
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <label asp-for="ReopenForm" class="@BootstrapHelper.Label"></label>
-                    <tooltip title="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]"/>
-                    <checkbox for="ReopenForm" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox for="ReopenForm" tooltip="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]" switch="true" />
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
                     <label asp-for="SuccessMessage" class="@BootstrapHelper.Label"></label>
@@ -78,8 +76,7 @@
             </div>
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <label asp-for="ShowAsModal" class="@BootstrapHelper.Label"></label>
-                    <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    <checkbox for="ShowAsModal" switch="true" />
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <label asp-for="ModalTitle" class="form-label"></label>

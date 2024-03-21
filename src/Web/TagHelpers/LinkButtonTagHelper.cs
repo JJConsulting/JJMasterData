@@ -36,7 +36,7 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory, IMas
     public bool? Enabled { get; set; }
     
     [HtmlAttributeName("color")]
-    public PanelColor Color { get; set; }
+    public BootstrapColor Color { get; set; }
     
     [HtmlAttributeName("text")]
     [Localizable(false)]

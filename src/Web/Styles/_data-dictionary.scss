@@ -1,0 +1,63 @@
+﻿@media (min-height: 310px) {
+
+  #field-details {
+    height: 64vh !important;
+  }
+
+  #field-list {
+    height: 55vh !important;
+  }
+}
+
+@media (min-height: 610px) {
+
+  #field-details {
+    height: 71vh !important;
+  }
+
+  #field-list {
+    height: 64vh !important;
+  }
+}
+
+@media (min-height: 710px) {
+
+  #field-details {
+    height: 75vh !important;
+  }
+
+  #field-list {
+    height: 70vh !important;
+  }
+}
+
+.jjrelative {
+  position: relative;
+}
+
+#field-details {
+  border-width: 0px;
+  width: 100%;
+  height: 75vh;
+  overflow: auto;
+}
+
+#field-list {
+  border-width: 0px;
+  width: 100%;
+  overflow: auto;
+}
+
+.bs-clipboard {
+  position: absolute;
+  right: 7px;
+  top: 7px;
+}
+
+.bs-clipboard button.btn-default {
+  background-color: inherit;
+}
+.jjtoolbar{
+  text-align: center;
+  padding-top: 0.938rem;
+}
