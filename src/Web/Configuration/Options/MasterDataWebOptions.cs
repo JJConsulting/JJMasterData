@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace JJMasterData.Web.Configuration.Options;
 
-public class MasterDataWebOptions
+public sealed class MasterDataWebOptions
 {
     /// <summary>
     /// Default value: _MasterDataLayout <br></br>

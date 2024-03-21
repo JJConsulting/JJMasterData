@@ -119,7 +119,7 @@ public class JJDataExportation : ProcessComponent
         if (!reporter.HasError)
         {
             string url = GetDownloadUrl(reporter.FilePath);
-            var html = new HtmlBuilder(HtmlTag.Div);
+            var html = new Div();
 
             if (reporter.HasError)
             {
@@ -205,7 +205,7 @@ public class JJDataExportation : ProcessComponent
         {
             Title = reporter.Message,
             Icon = IconType.Warning,
-            Color = PanelColor.Danger
+            Color = BootstrapColor.Danger
         };
 
         return alert.GetHtml();

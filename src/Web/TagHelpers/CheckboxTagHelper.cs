@@ -1,12 +1,17 @@
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory, IHtmlHelper htmlHelper) : TagHelper 
+public class CheckboxTagHelper(
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    IControlFactory<JJCheckBox> checkboxFactory, 
+    IHtmlHelper htmlHelper) : TagHelper 
 {
     private IControlFactory<JJCheckBox> CheckboxFactory { get; set; } = checkboxFactory;
 
@@ -34,6 +39,12 @@ public class CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory, IHtm
     [HtmlAttributeName("onchange")] 
     public string? OnChange { get; set; }
 
+    [HtmlAttributeName("tooltip")] 
+    public string? Tooltip { get; set; }
+
+    [HtmlAttributeName("show-label")] 
+    public bool ShowLabel { get; set; } = true;
+    
     [ViewContext] [HtmlAttributeNotBound] 
     public ViewContext ViewContext { get; set; } = null!;
     
@@ -45,6 +56,7 @@ public class CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory, IHtm
         var checkBox = CheckboxFactory.Create();
         checkBox.Name = Name ?? htmlHelper.Name(For!.Name) ?? throw new JJMasterDataException("Either for or name attributes are required.");
         checkBox.Enabled = Enabled;
+        var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
         if (For is not null)
         {
             checkBox.IsChecked = For?.Model is true;
@@ -58,9 +70,12 @@ public class CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory, IHtm
             checkBox.Attributes["onchange"] = OnChange;
         
         checkBox.IsSwitch = IsSwitch;
-        checkBox.SwitchSize = SwitchSize ?? CheckBoxSwitchSize.Medium;
-        checkBox.Text = Label;
+        checkBox.SwitchSize = SwitchSize;
         
+        if (ShowLabel)
+            checkBox.Text = stringLocalizer[displayName ?? string.Empty];
+        
+        checkBox.Tooltip = Tooltip;
         Configure?.Invoke(checkBox);
         
         output.TagMode = TagMode.StartTagAndEndTag;

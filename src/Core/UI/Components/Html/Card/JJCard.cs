@@ -17,7 +17,7 @@ public class JJCard : HtmlComponent
     
     public PanelLayout Layout { get; set; }
 
-    public PanelColor Color { get; set; } = PanelColor.Default;
+    public BootstrapColor Color { get; set; } = BootstrapColor.Default;
 
     public HtmlBuilder HtmlBuilderContent { get; set; }
 
@@ -132,7 +132,7 @@ public class JJCard : HtmlComponent
             .WithCssClass(CssClass);
 
 
-        html.WithCssClass(BootstrapHelper.Version == 3 ? "well" : "card card-body bg-light");
+        html.WithCssClass(BootstrapHelper.Version == 3 ? "well" : "card card-body");
 
         
         if (Icon is not null)

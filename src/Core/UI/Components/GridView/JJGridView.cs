@@ -671,7 +671,7 @@ public class JJGridView : AsyncComponent
 
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         html.WithAttribute("id", Name);
         await html.AppendAsync(HtmlTag.Div, async div =>
         {
@@ -723,7 +723,7 @@ public class JJGridView : AsyncComponent
 
         string? currentAction = CurrentContext.Request[$"grid-view-action-map-{Name}"];
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
 
         if (CheckForSqlCommand())
         {
@@ -790,7 +790,7 @@ public class JJGridView : AsyncComponent
             InnerHtml = new HtmlBuilder(HtmlTag.Span)
                 .AppendText(StringLocalizer["Page must be between 1 and {0}.",totalPages])
                 .AppendLink("Click here to go to the first page.", $"javascript:{Scripts.GetPaginationScript(1)}"),
-            Color = PanelColor.Warning,
+            Color = BootstrapColor.Warning,
             Icon = IconType.SolidTriangleExclamation
         };
     }
@@ -876,7 +876,7 @@ public class JJGridView : AsyncComponent
         var alert = new JJAlert
         {
             ShowCloseButton = true,
-            Color = PanelColor.Default,
+            Color = BootstrapColor.Default,
             Title = StringLocalizer[EmptyDataText!],
             Icon = IconType.InfoCircle
         };
@@ -921,6 +921,7 @@ public class JJGridView : AsyncComponent
         var modal = new JJModalDialog
         {
             Name = $"config-modal-{Name}",
+            Size = ModalSize.Small,
             Title = StringLocalizer["Configure Grid"]
         };
 

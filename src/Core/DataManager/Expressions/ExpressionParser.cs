@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Util;
@@ -38,6 +39,21 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
         return result;
     }
 
+    internal static string GetPageStateName(PageState state)
+    {
+        return state switch
+        {
+            PageState.List => "List",
+            PageState.View => "View",
+            PageState.Insert => "Insert",
+            PageState.Update => "Update",
+            PageState.Filter => "Filter",
+            PageState.Import => "Import",
+            PageState.Delete => "Delete",
+            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+        };
+    }
+    
     private object? GetParsedValue(string field, FormStateData formStateData)
     {
         var loweredFieldName = field.ToLower();
@@ -48,28 +64,28 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
         switch (loweredFieldName)
         {
             case "pagestate":
-                parsedValue = $"{pageState}";
+                parsedValue = GetPageStateName(pageState);
                 break;
             case "islist":
-                parsedValue = pageState == PageState.List ? 1 : 0;
+                parsedValue = pageState is PageState.List ? 1 : 0;
                 break;
             case "isview":
-                parsedValue = pageState == PageState.View ? 1 : 0;
+                parsedValue = pageState is PageState.View ? 1 : 0;
                 break;
             case "isupdate":
-                parsedValue = pageState == PageState.Update ? 1 : 0;
+                parsedValue = pageState is PageState.Update ? 1 : 0;
                 break;
             case "isinsert":
-                parsedValue = pageState == PageState.Insert ? 1 : 0;
+                parsedValue = pageState is PageState.Insert ? 1 : 0;
                 break;
             case "isfilter":
-                parsedValue = pageState == PageState.Filter ? 1 : 0;
+                parsedValue = pageState is PageState.Filter ? 1 : 0;
                 break;
             case "isimport":
-                parsedValue = pageState == PageState.Import ? 1 : 0;
+                parsedValue = pageState is PageState.Import ? 1 : 0;
                 break;
             case "isdelete":
-                parsedValue = pageState == PageState.Delete ? 1 : 0;
+                parsedValue = pageState is PageState.Delete ? 1 : 0;
                 break;
             case "fieldname":
                 parsedValue = $"{Request.QueryString["fieldName"]}";

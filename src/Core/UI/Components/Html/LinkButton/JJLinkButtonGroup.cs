@@ -37,7 +37,7 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
         AddActionsAt(parentElement);
 
         if (BootstrapHelper.Version is 5 && !ShowAsButton)
-            parentElement.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
+            parentElement.WithAttribute("title",MoreActionsText ?? StringLocalizer["More"]);
         
         return parentElement;
     }
@@ -97,7 +97,7 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
             .WithAttribute("aria-haspopup", "true")
             .WithAttribute("aria-expanded", "false")
             .WithCssClass("dropdown-toggle")
-            .WithCssClassIf(ShowAsButton, "btn btn-default")
+            .WithCssClassIf(ShowAsButton, BootstrapHelper.BtnDefault)
             .AppendTextIf(!string.IsNullOrEmpty(CaretText), CaretText!)
             .AppendIf( BootstrapHelper.Version is 3,HtmlTag.Span, s =>
             {

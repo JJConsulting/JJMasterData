@@ -13,7 +13,7 @@
         <div class="@BootstrapHelper.FormGroup col-sm-12">
             <div class="input-group">
                 <span class="input-group-text">
-                    <checkbox for="ImportFields" class="mt-0" value="true" label="Import fields"/>
+                    <checkbox for="ImportFields" class="mt-0" value="true"/>
                 </span>
                 <div class="form-floating">
                     <input
@@ -36,7 +36,7 @@
     <div class="row">
         <div class="col-sm-6">
             <link-button icon="SolidXmark" text="Cancel" type="@LinkButtonType.Button" on-client-click="location.href='@(Url.Action("Index")!)'"/>
-            <link-button icon="Plus" text="Add" type="LinkButtonType.Submit"/>
+            <link-button icon="Plus" text="Add" type="LinkButtonType.Submit" color="Primary"/>
         </div>
     </div>
 }

@@ -86,7 +86,7 @@ public class ActionScripts(
 
         var script = new StringBuilder();
         string url = ExpressionsService.ReplaceExpressionWithParsedValues(HttpUtility.UrlDecode(action.UrlRedirect),
-            actionContext.FormStateData);
+            actionContext.FormStateData, action.EncryptParameters);
         string isModal = action.IsModal ? "true" : "false";
         string isIframe = action.IsIframe ? "true" : "false";
 

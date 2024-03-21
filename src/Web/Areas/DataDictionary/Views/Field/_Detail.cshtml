@@ -67,7 +67,7 @@
             @Html.Raw(ViewBag.Error)
         </div>
     </div>
-    <ul id="field-nav" class="nav nav-tabs">
+    <ul id="field-nav" class="nav nav-underline">
         <li class="nav-item" id="nav-general" @Active("#div-general")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-general" href="#div-general">@StringLocalizer["General"]</a>
         </li>
@@ -76,6 +76,9 @@
         </li>
         <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced" href="#div-advanced">@StringLocalizer["Expressions"]</a>
+        </li>
+        <li class="nav-item" id="nav-layout" @Active("#div-layout")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-layout" href="#div-layout">@StringLocalizer["Layout"]</a>
         </li>
     </ul>
 
@@ -90,7 +93,7 @@
                            icon="IconType.Warning"
                            message="@StringLocalizer["This field uses a reserved keyword of the database in its name."]"/>
                 }
-                <div class="@BootstrapHelper.FormGroup col-sm-5 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
                     <label class="@BootstrapHelper.Label " asp-for="Name"></label>
                     <tooltip title="@StringLocalizer["Name of the field at the database."]"/>
                     @if (isCustomizedField)
@@ -103,7 +106,7 @@
                     }
                     <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-7">
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label class="@BootstrapHelper.Label " asp-for="Label"></label>
                     <tooltip title="@StringLocalizer["Name of the field displayed at the form."]"/>
                         
@@ -112,88 +115,58 @@
             </div>
 
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
                     <label class="@BootstrapHelper.Label " asp-for="Filter.Type"></label>
                     <select asp-for="Filter.Type" class="form-control form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
                     <label class="@BootstrapHelper.Label " asp-for="DataBehavior"></label>
                     <tooltip title=@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]/>
                     <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " asp-for="DataType"></label>
-                     @{
-                                    var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+            </div>
             
-                                    foreach (var dataType in dataTypeList)
-                                        dataType.Group.Name = StringLocalizer[dataType.Group.Name];
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+                    <label class="@BootstrapHelper.Label " asp-for="DataType"></label>
+                    @{
+                    var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+
+                    foreach (var dataType in dataTypeList)
+                    dataType.Group.Name = StringLocalizer[dataType.Group.Name];
                     }
                     <select asp-for="DataType" class="form-control form-select" asp-items="dataTypeList.OrderBy(f => f.Group.Name)"></select>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label class="@BootstrapHelper.Label " asp-for="Size"></label>
                     <tooltip title="@StringLocalizer["Field size. Use -1 to use the MAX keyword."]"/>
                     <input asp-for="Size" class="form-control"/>
                 </div>
-                <div class="col-sm-3">
-                    <div class="row">
-                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                            <label class="@BootstrapHelper.Label " asp-for="IsRequired">@StringLocalizer["Required"]</label>
-                            <checkbox for="IsRequired" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                        </div>
-                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                            <label class="@BootstrapHelper.Label " asp-for="IsPk">@StringLocalizer["PK"]</label>
-                            <checkbox for="IsPk" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                        </div>
-                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                            <label class="@BootstrapHelper.Label " asp-for="AutoNum">@StringLocalizer["Identity"]</label>
-                            <checkbox for="AutoNum" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                        </div>
-                    </div>
+            </div>
+            
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <checkbox for="IsRequired" switch="true" />
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <checkbox for="IsPk" switch="true" />
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <checkbox for="AutoNum" switch="true" />
                 </div>
             </div>
 
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <label class="@BootstrapHelper.Label " asp-for="HelpDescription">
-                    </label>
-                    <tooltip title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
-                    @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label " asp-for="CssClass"></label>
-                    <tooltip title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
-
-                    @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
-                </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label " asp-for="LineGroup"></label>
-                    <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
-
-                    @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
-                </div>
-                
-                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-                    <label class="@BootstrapHelper.Label " asp-for="GridAlignment"></label>
-                    <select asp-for="GridAlignment"  class="form-control form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
-                </div>
-                
-                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-                    <label class="@BootstrapHelper.Label " asp-for="Export"></label>
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <checkbox for="Export" switch="true"/>
                 </div>
-
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
+                </div>
                 @if (Options.Value.SupportNetFramework)
                 {
                     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                        <label class="@BootstrapHelper.Label " asp-for="ValidateRequest"></label>
-                        <tooltip title="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]"/>
-                        <checkbox for="ValidateRequest" switch="true"/>
+                        <checkbox tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]" for="ValidateRequest" switch="true"/>
                     </div>
                 }
             </div>
@@ -210,13 +183,6 @@
                             component.Group.Name = StringLocalizer[component.Group.Name];
                     }
                     <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="componentList.OrderBy(c=>c.Group.Name).ThenBy(c=>c.Text)"></select>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label class="@BootstrapHelper.Label " asp-for="AutoPostBack"></label>
-
-                    <tooltip title="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]"/>
-
-                    <checkbox for="AutoPostBack" switch="true"/>
                 </div>
 
                 @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
@@ -295,7 +261,36 @@
                 <span> <span class="fa fa-info-circle" style="color:#005a86"></span> @StringLocalizer["Read more about expressions "]<a target="_blank" href="https://md.jjconsulting.tech/articles/expressions.html">@StringLocalizer[" in this link."]</a></span>
             </div>
         </div>
-    </div>
+        <div id="div-layout" class="tab-pane fade @Active("#div-layout")">
+            <div class="@BootstrapHelper.FormGroup col-sm-12">
+                <label class="@BootstrapHelper.Label " asp-for="HelpDescription">
+                </label>
+                <tooltip title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
+                @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
+            </div>
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-4">
+                    <label class="@BootstrapHelper.Label " asp-for="CssClass"></label>
+                    <tooltip title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
+
+                    @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-4">
+                    <label class="@BootstrapHelper.Label " asp-for="LineGroup"></label>
+                    <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
+
+                    @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <label class="@BootstrapHelper.Label " asp-for="GridAlignment"></label>
+                    <select asp-for="GridAlignment"  class="form-control form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
+                </div>
+            </div>
+        </div>
+        
+        </div>
     
     <div class="row">
         <div class="col-sm-12">

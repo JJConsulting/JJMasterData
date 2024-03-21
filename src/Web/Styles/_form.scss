@@ -1,0 +1,258 @@
+﻿
+
+.tab-content {
+  margin-top: 20px;
+}
+
+
+
+
+
+
+textarea {
+  resize: none;
+}
+
+.required .control-label:after {
+  content: "*";
+  color: red;
+}
+
+.required .col-form-label:after {
+  content: "*";
+  color: red;
+}
+
+.jjenable-sorting {
+  cursor: pointer;
+  cursor: hand;
+}
+
+.jjenable-sorting:hover {
+  cursor: pointer;
+  cursor: hand;
+  text-decoration: underline;
+}
+
+
+
+.checkbox label {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+/*noinspection CssReplaceWithShorthandSafely*/
+
+input.loading-circle {
+  background: url('../../images/LoadingIndicator.gif') no-repeat right 0.625rem center !important;
+}
+
+a.disabled {
+  cursor: not-allowed !important;
+  color: gray !important;
+}
+
+.jjborder-static p.form-control-static {
+  border-top: 1px solid #e6e6e6;
+  text-align: center;
+}
+
+.jjborder-static {
+  text-align: center;
+}
+
+.jjlabel-process span {
+  margin: 5px;
+}
+
+.jjform-action .default-option {
+  cursor: pointer !important;
+}
+
+
+.bootstrap-tagsinput {
+  width: 100%;
+}
+
+.required-symbol {
+  color: red;
+}
+
+.help-description {
+  cursor: pointer;
+  padding-left: 0.25rem;
+  color: #005a86;
+}
+
+
+/* Data Dictionary Field and Panel */
+
+
+
+div.dropdown-menu.open {
+  max-height: 314px !important;
+  overflow: hidden;
+}
+
+ul.dropdown-menu.inner {
+  max-height: 260px !important;
+  overflow-y: auto;
+}
+
+.bg-jjmasterdata {
+  border-color: #dddddd !important;
+}
+
+/* _Menu Navbar */
+.navbar .nav-pills .nav-link.active {
+  color: #fff !important
+}
+
+/* Legacy bootstrap-theme.css implementation */
+
+a.list-group-item,
+button.list-group-item {
+  color: #555;
+}
+
+a.list-group-item .list-group-item-heading,
+button.list-group-item .list-group-item-heading {
+  color: #333;
+}
+
+.page-header {
+  margin: 0.063rem 0 0.938rem !important;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.sub-title {
+  font-size: 1.5rem !important;
+  font-weight: 400;
+  line-height: 1;
+  color: #777777;
+}
+
+
+/* Bootstrap 5 */
+.dropdown-item > a {
+  text-decoration: none
+}
+
+
+/*Bootstrap select custom style*/
+button.dropdown-toggle.form-control {
+  border-bottom-color: rgb(206, 212, 218) !important;
+  border-bottom-style: solid !important;
+  border-bottom-width: 1px !important;
+  border-image-repeat: stretch !important;
+  border-image-source: none !important;
+  border-image-width: 1 !important;
+  border-left-color: rgb(206, 212, 218) !important;
+  border-left-style: solid !important;
+  border-left-width: 1px !important;
+  border-right-color: rgb(206, 212, 218) !important;
+  border-right-style: solid !important;
+  border-right-width: 1px !important;
+  border-top-color: rgb(206, 212, 218) !important;
+  border-radius: 4px;
+  border-top-style: solid !important;
+  border-top-width: 1px !important;
+  box-sizing: border-box !important;
+  transition-property: color, background-color, border-color, box-shadow !important;
+}
+
+.form-control.jj-icon-search {
+  padding-right: calc(1.5em + .75rem)  !important;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%20fill%3D%22%23333333%22%3E%3Cpath%20d%3D%22M416%20208c0%2045.9-14.9%2088.3-40%20122.7L502.6%20457.4c12.5%2012.5%2012.5%2032.8%200%2045.3s-32.8%2012.5-45.3%200L330.7%20376c-34.4%2025.2-76.8%2040-122.7%2040C93.1%20416%200%20322.9%200%20208S93.1%200%20208%200S416%2093.1%20416%20208zM208%20352c79.5%200%20144-64.5%20144-144s-64.5-144-144-144S64%20128.5%2064%20208s64.5%20144%20144%20144z%22%2F%3E%3C%2Fsvg%3E")  !important;
+  background-repeat: no-repeat  !important;
+  background-position: right calc(.375em + .1875rem) center  !important;
+  background-size: calc(.75em + .375rem) calc(.75em + .375rem)  !important;
+}
+
+.form-control.jj-icon-success {
+  padding-right: calc(1.5em + .75rem)  !important;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%20fill%3D%22%23333333%22%3E%3Cpath%20d%3D%22M470.6%20105.4c12.5%2012.5%2012.5%2032.8%200%2045.3l-256%20256c-12.5%2012.5-32.8%2012.5-45.3%200l-128-128c-12.5-12.5-12.5-32.8%200-45.3s32.8-12.5%2045.3%200L192%20338.7%20425.4%20105.4c12.5-12.5%2032.8-12.5%2045.3%200z%22%2F%3E%3C%2Fsvg%3E") !important;
+  background-repeat: no-repeat  !important;
+  background-position: right calc(.375em + .1875rem) center  !important;
+  background-size: calc(.75em + .375rem) calc(.75em + .375rem)  !important;
+}
+
+.form-control.jj-icon-warning {
+  padding-right: calc(1.5em + .75rem) !important;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%20fill%3D%22%23333333%22%3E%3Cpath%20d%3D%22M256%2032L0%20480H512L256%2032zm24%20160v24V328v24H232V328%20216%20192h48zM232%20384h48v48H232V384z%22%2F%3E%3C%2Fsvg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right calc(.375em + .1875rem) center !important;
+  background-size: calc(.75em + .375rem) calc(.75em + .375rem) !important;
+}
+
+.form-control.jj-icon-error {
+  padding-right: calc(1.5em + .75rem) !important;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20512%22%20fill%3D%22%23333333%22%3E%3Cpath%20d%3D%22M310.6%20150.6c12.5-12.5%2012.5-32.8%200-45.3s-32.8-12.5-45.3%200L160%20210.7%2054.6%20105.4c-12.5-12.5-32.8-12.5-45.3%200s-12.5%2032.8%200%2045.3L114.7%20256%209.4%20361.4c-12.5%2012.5-12.5%2032.8%200%2045.3s32.8%2012.5%2045.3%200L160%20301.3%20265.4%20406.6c12.5%2012.5%2032.8%2012.5%2045.3%200s12.5-32.8%200-45.3L205.3%20256%20310.6%20150.6z%22%2F%3E%3C%2Fsvg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right calc(.375em + .1875rem) center !important;
+  background-size: calc(.75em + .375rem) calc(.75em + .375rem) !important;
+}
+
+.form-horizontal .has-feedback .form-control-feedback {
+  right: 2px !important;
+}
+
+
+
+/*Workaround https://github.com/flatpickr/flatpickr/issues/2575*/
+.date > .form-control {
+  border-top-left-radius: 3px !important;
+  border-bottom-left-radius: 3px !important;
+}
+
+/*JJMasterData Web*/
+
+/*Spinner overlay*/
+
+
+
+
+
+.fade-out {
+  opacity: 1;
+  transition: opacity 3s ease-in-out;
+}
+
+/* Bootstrap 5 switch */
+
+
+input.form-control:read-only {
+  background-color: var(--#{$prefix}secondary-bg);
+  opacity: 1;
+}
+
+/*Custom accordion colors*/
+
+
+.form-control-static {
+  min-height: 30px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  margin-bottom: 0;
+}
+
+
+/* Backport table-sm to Bootstrap 3 */
+
+/* Input validation error*/
+.was-validated .form-control:invalid, .form-control.input-validation-error {
+  border-color: var(--#{$prefix}form-invalid-border-color);
+  padding-right: calc(1.5em + .75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(.375em + .1875rem) center;
+  background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+}
+.list-group-item{
+  font-size: 0.75rem;
+}

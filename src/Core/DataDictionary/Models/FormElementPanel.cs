@@ -28,7 +28,7 @@ public class FormElementPanel
 
     [JsonProperty("color")]
     [Display(Name = "Color")]
-    public PanelColor Color { get; set; } = PanelColor.Default;
+    public BootstrapColor Color { get; set; } = BootstrapColor.Default;
 
     [JsonProperty("icon")]
     [Display(Name = "Icon")]

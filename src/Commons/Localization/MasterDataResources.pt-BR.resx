@@ -189,6 +189,10 @@
     <value>Já existe um arquivo com o nome {0}</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Url Redirect" xml:space="preserve">
+    <value>Redirecionamento Url</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="A selected record" xml:space="preserve">
     <value>Um registro selecionado</value>
     <comment>JJMasterDataApi</comment>
@@ -1409,8 +1413,8 @@
     <value>Importação configurada com escopo por usuário, porém nenhuma chave com valor USERID foi definada.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Import fields" xml:space="preserve">
-    <value>Importar campos</value>
+  <data name="Import Fields" xml:space="preserve">
+    <value>Importar Campos</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Upload File" xml:space="preserve">
@@ -2429,8 +2433,8 @@
     <value>Vários usuários podem executar esse processo simultaneamente, porém visualiza apenas o log e uma execução do seu processo. </value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Show As Button" xml:space="preserve">
-    <value>Mostrar como botão</value>
+  <data name="Show as Button" xml:space="preserve">
+    <value>Mostrar como Botão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Show rows striped" xml:space="preserve">
@@ -2855,10 +2859,6 @@
   </data>
   <data name="URL accept expression" xml:space="preserve">
     <value>Url aceita expressão</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Url Redirect" xml:space="preserve">
-    <value>Redirecionamento Url</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
@@ -4031,5 +4031,23 @@
   </data>
   <data name="File successfully deleted." xml:space="preserve">
     <value>Arquivo deletado com sucesso.</value>
+  </data>
+  <data name="This field support runtime values between {}." xml:space="preserve">
+    <value>Este campo suporta valores do runtime entre {}.</value>
+  </data>
+  <data name="Table Or View Name" xml:space="preserve">
+    <value>Nome da Tabela ou View</value>
+  </data>
+  <data name="Add Element" xml:space="preserve">
+    <value>Adicionar Elemento</value>
+  </data>
+  <data name="Duplicate Element" xml:space="preserve">
+    <value>Duplicar Elemento</value>
+  </data>
+  <data name="Original Element Name" xml:space="preserve">
+    <value>Nome do Elemento Original</value>
+  </data>
+  <data name="New Element Name" xml:space="preserve">
+    <value>Nome do Novo Elemento</value>
   </data>
 </root>

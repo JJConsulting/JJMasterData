@@ -50,7 +50,7 @@ public class JJValidationSummary : HtmlComponent
     {
         var alert = new JJAlert
         {
-            Color = PanelColor.Danger,
+            Color = BootstrapColor.Danger,
             Icon = IconType.ExclamationTriangle,
             Title = MessageTitle,
             ShowCloseButton = ShowCloseButton,

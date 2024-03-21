@@ -81,7 +81,7 @@ public class JJLinkButton : HtmlComponent
     
     public string UrlAction { get; set; }
 
-    public PanelColor Color { get; set; } = PanelColor.Default;
+    public BootstrapColor Color { get; set; } = BootstrapColor.Default;
     
     public bool OpenInNewTab { get; set; }
 
@@ -113,7 +113,7 @@ public class JJLinkButton : HtmlComponent
                 html.WithAttribute("href", "javascript: void(0);");
             
             if(!ShowAsButton)
-                html.WithCssClass($"link-{Color.ToString().ToLower()}");
+                html.WithCssClass($"link-{Color.ToLinkColorString()}");
         }
 
 
@@ -129,7 +129,6 @@ public class JJLinkButton : HtmlComponent
         if (icon is not null)
         {
             html.AppendComponent(icon);
-            html.WithCssClassIf(Enabled,"icon-link-hover");
         }
 
         if (!string.IsNullOrEmpty(Text)) 
@@ -164,7 +163,7 @@ public class JJLinkButton : HtmlComponent
                 !cssClass.Contains(" btn") &&
                 !cssClass.Equals("btn"))
             {
-                cssClass += $" btn btn-{Color.ToString().ToLower()}"; 
+                cssClass += $" btn btn-{Color.ToButtonColorString()}"; 
             }
         }
         else if (!ShowAsButton && Type is LinkButtonType.Submit)

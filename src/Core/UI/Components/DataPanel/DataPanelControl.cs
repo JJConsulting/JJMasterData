@@ -103,7 +103,7 @@ internal class DataPanelControl
         if (cols >= 1)
             colClass = $" col-sm-{12 / cols}";
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new Div();
         int lineGroup = int.MinValue;
         HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);

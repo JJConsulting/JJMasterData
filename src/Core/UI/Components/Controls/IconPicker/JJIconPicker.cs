@@ -52,17 +52,17 @@ public class JJIconPicker(
         comboBox.Attributes["data-size"] = "false";
         comboBox.Attributes["data-sanitize"] = "false";
         comboBox.Attributes["data-none-results-text"] = stringLocalizer["No icons found."];
-        var div = new HtmlBuilder(HtmlTag.Div);
+        var div = new Div();
         div.WithCssClass("input-group");
         await div.AppendControlAsync(comboBox);
         div.AppendIf(Enabled,HtmlTag.Div,div =>
         {
             var tooltip = stringLocalizer["Search Icon"];
-            div.WithCssClass("btn btn-default");
+            div.WithCssClass(BootstrapHelper.BtnDefault);
             div.WithToolTip(tooltip);
             div.AppendComponent(new JJIcon(IconType.Search));
             var url = urlHelper.Action("Index", "Icons", new { inputId = id, Area="MasterData" });
-            div.WithAttribute("onclick", $"iconsModal.showUrl('{url}', '{tooltip}', '{(int)ModalSize.ExtraLarge}')");
+            div.WithOnClick( $"iconsModal.showUrl('{url}', '{tooltip}', '{(int)ModalSize.ExtraLarge}')");
         });
 
         return new RenderedComponentResult(div);

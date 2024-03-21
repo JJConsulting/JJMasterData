@@ -1,7 +1,8 @@
 #nullable enable
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Reflection;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 
@@ -9,18 +10,52 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public static class IconHelper
 {
-    private static ReadOnlyCollection<IconType>? _icons;
-    public static ReadOnlyCollection<IconType> GetIconList()
+    private static FrozenSet<IconType>? _icons;
+    public static FrozenSet<IconType> GetIconList()
     {
         if (_icons != null)
             return _icons;
 
-        _icons = new List<IconType>((IconType[])Enum.GetValues(typeof(IconType))).AsReadOnly();
+        _icons = new List<IconType>((IconType[])Enum.GetValues(typeof(IconType))).ToFrozenSet();
 
         return _icons;
     }
     
-    internal static IconType GetIconTypeFromField( ElementField field,object value)
+    private static FrozenDictionary<IconType, string>? _cssClasses;
+    private static FrozenDictionary<IconType, string> CssClasses
+    {
+        get
+        {
+            if (_cssClasses is not null) 
+                return _cssClasses;
+            
+            var cssClasses = new Dictionary<IconType, string>();
+            var icons = GetIconList();
+            foreach (var icon in icons)
+            {
+                var enumField = typeof(IconType).GetField(icon.ToString());
+                var attribute = enumField!.GetCustomAttribute<IconCssClassAttribute>();
+                cssClasses[icon] = attribute!.CssClass;
+            }
+
+            _cssClasses = cssClasses.ToFrozenDictionary();
+
+            return _cssClasses;
+        }
+    }
+    
+    
+    public static int GetId(this IconType icon)
+    {
+        return (int)icon;
+    }
+
+    public static string GetCssClass(this IconType icon)
+    {
+        return CssClasses[icon];
+    }
+    
+    internal static IconType GetIconTypeFromField(ElementField field, object value)
     {
         IconType iconType;
         if (value is int intValue)
@@ -41,70 +76,6 @@ public static class IconHelper
 
         return iconType;
     }
-    
-    public static string GetCssClass(this IconType icon)
-    {
-        if ((int)icon <= 692)
-        {
-            var description = PascalToParamCase(icon.ToString());
-            return $"fa fa-{description}";
-        }
 
-        var iconString = icon.ToString();
 
-        if (iconString.StartsWith("Solid"))
-        {
-            return $"fa-solid fa-{PascalToParamCase(icon.ToString().Replace("Solid", string.Empty))}";
-        }
-        if (iconString.StartsWith("Regular"))
-        {
-            return $"fa-regular fa-{PascalToParamCase(icon.ToString().Replace("Regular", string.Empty))}";
-        }
-        if (iconString.StartsWith("Brands"))
-        {
-            return $"fa-brands fa-{PascalToParamCase(icon.ToString().Replace("Brands", string.Empty))}";
-        }
-
-        throw new JJMasterDataException("Invalid IconType");
-    }
-
-    public static string GetDescription(this IconType icon)
-    {
-        return PascalToParamCase(icon.ToString());
-    }
-
-    public static int GetId(this IconType icon)
-    {
-        return (int)icon;
-    }
-
-    public static string PascalToParamCase(string icon)
-    {
-        int i = 0;
-        string parsedName = string.Empty;
-        foreach (char c in icon)
-        {
-            i++;
-            if (i == 1)
-            {
-                parsedName += c;
-                continue;
-            }
-
-            if (c == '_')
-            {
-                i = 0;
-                continue;
-            }
-
-            if (char.IsUpper(c) || char.IsDigit(c))
-            {
-                parsedName += '-';
-            }
-
-            parsedName += c;
-        }
-
-        return parsedName.ToLower();
-    }
 }

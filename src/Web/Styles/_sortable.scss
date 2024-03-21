@@ -1,0 +1,49 @@
+﻿.jjsortable {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.jjsortable .ui-sortable-helper {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+.jjsortable li:hover {
+  background-color: #f7f7f7;
+}
+
+.jjsortable .jjsortable-icon {
+  cursor: -webkit-grab;
+  cursor: grab;
+  text-align: right;
+}
+
+.jjsortable a .jjsortable-span {
+  cursor: -webkit-grab;
+  cursor: grab;
+  text-align: right;
+}
+
+.jjsortable .ui-sortable-helper,
+.jjsortable .ui-sortable-helper .jjsortable-icon {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+
+.jjsortable a.active .jjsortable-icon:after,
+.jjsortable a.active:hover .jjsortable-icon:after {
+  font-family: "FontAwesome";
+  content: "\f0da";
+  display: inline-block;
+  padding-right: 0;
+  vertical-align: middle;
+}
+
+.jjsortable a:hover .jjsortable-icon:after {
+  font-family: "FontAwesome";
+  content: "\f07d";
+  display: inline-block;
+  padding-right: 0;
+  vertical-align: middle;
+}

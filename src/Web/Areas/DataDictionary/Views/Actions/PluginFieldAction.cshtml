@@ -28,7 +28,7 @@
 {
     <input asp-for="PluginId" class="form-control" hidden="hidden"/>
 
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
@@ -88,9 +88,7 @@
                 </table>
                 <div class="row">
                     <div class="col-sm-12">
-                        <label asp-for="TriggerOnChange" class="form-label"></label>
-                        <tooltip title="@StringLocalizer["Trigger the action when the value of the field is changed."]"/>
-                        <checkbox for="TriggerOnChange" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                        <checkbox tooltip="@StringLocalizer["Trigger the action when the value of the field is changed."]" for="TriggerOnChange" switch="true" />
                     </div>
                 </div>
             </div>

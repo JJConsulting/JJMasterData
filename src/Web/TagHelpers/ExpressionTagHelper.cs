@@ -153,7 +153,7 @@ public class ExpressionTagHelper(
         string? selectedExpressionValue)
     {
         var advanced = options.Value.UseAdvancedModeAtExpressions;
-        var input = new HtmlBuilder(HtmlTag.Input);
+        var input = new Input();
         input.WithCssClass("font-monospace");
         input.WithCssClass("form-control");
         input.WithAttributeIf(!advanced,"style", "width:75%");

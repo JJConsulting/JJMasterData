@@ -172,7 +172,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (IsRunning())
                 {
-                    htmlBuilder = new HtmlBuilder(HtmlTag.Div);
+                    htmlBuilder = new Div();
                     htmlBuilder.WithId(Name);
                     htmlBuilder.Append(GetLoadingHtml());
                     htmlBuilder.AppendScript(DataImportationScripts.GetStartProgressVerificationScript());
@@ -215,11 +215,11 @@ public class JJDataImportation : ProcessComponent
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
-            .WithAttribute("style", "text-align: center;")
+            .WithStyle( "text-align: center;")
             .Append(HtmlTag.Div, spin =>
             {
                 spin.WithAttribute("id", "data-importation-spinner")
-                    .WithAttribute("style", "position: relative; height: 80px");
+                    .WithStyle( "position: relative; height: 80px");
             })
             .AppendDiv(div =>
             {
@@ -229,13 +229,13 @@ public class JJDataImportation : ProcessComponent
             .Append(HtmlTag.Div, msg =>
             {
                 msg.WithAttribute("id", "process-status")
-                    .WithAttribute("style", "display:none")
+                    .WithStyle( "display:none")
                     .Append(HtmlTag.Div, status => { status.WithAttribute("id", "divStatus"); })
                     .Append(HtmlTag.Span, resume => { resume.WithAttribute("id", "process-message"); });
             })
             .Append(HtmlTag.Div, div =>
             {
-                div.WithAttribute("style", "width:50%;")
+                div.WithStyle( "width:50%;")
                     .WithCssClass(BootstrapHelper.CenterBlock)
                     .Append(HtmlTag.Div, progress =>
                     {
@@ -244,7 +244,7 @@ public class JJDataImportation : ProcessComponent
                             {
                                 bar.WithCssClass("progress-bar")
                                     .WithAttribute("role", "progressbar")
-                                    .WithAttribute("style", "width:0;")
+                                    .WithStyle( "width:0;")
                                     .WithAttribute("aria-valuemin", "0")
                                     .WithAttribute("aria-valuemax", "100")
                                     .AppendText("0%");
@@ -276,7 +276,7 @@ public class JJDataImportation : ProcessComponent
             .Append(HtmlTag.TextArea, area =>
             {
                 area.WithNameAndId("pasteValue");
-                area.WithAttribute("style", "display:none");
+                area.WithStyle( "display:none");
             });
 
 

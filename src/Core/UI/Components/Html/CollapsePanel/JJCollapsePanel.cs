@@ -32,7 +32,7 @@ public class JJCollapsePanel : HtmlComponent
 
     public bool ExpandedByDefault { get; set; }
 
-    public PanelColor Color { get; set; }
+    public BootstrapColor Color { get; set; }
 
     internal IFormValues FormValues { get; }
     
@@ -51,14 +51,14 @@ public class JJCollapsePanel : HtmlComponent
         ButtonPosition = Position.Right;
         Name = "collapse1";
         Buttons = [];
-        Color = PanelColor.Default;
+        Color = BootstrapColor.Default;
         TitleIcon = null;
         HtmlBuilderContent = new HtmlBuilder();
     }
 
     internal override HtmlBuilder BuildHtml()
     {
-        var root = new HtmlBuilder(HtmlTag.Div);
+        var root = new Div();
 
         root.Append(HtmlTag.Input, input =>
         {
@@ -166,7 +166,7 @@ public class JJCollapsePanel : HtmlComponent
 
     private HtmlBuilder GetBody()
     {
-        var panelBody = new HtmlBuilder(HtmlTag.Div);
+        var panelBody = new Div();
 
         if (!string.IsNullOrEmpty(SubTitle))
         {
