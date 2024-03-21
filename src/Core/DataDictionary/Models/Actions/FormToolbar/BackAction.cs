@@ -20,4 +20,5 @@ public sealed class BackAction : FormToolbarAction
         Order = 0;
         Text = "Back";
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

@@ -29,4 +29,11 @@ public class ElementIndex
         IsUnique = isUnique;
         Columns = columns.ToList();
     }
+
+    public ElementIndex DeepCopy()
+    {
+        var copy = (ElementIndex)MemberwiseClone();
+        copy.Columns = [..Columns];
+        return copy;
+    }
 }

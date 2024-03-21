@@ -1,45 +1,39 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
-
 public class DataElementMap
 {
-    [JsonProperty("elementName")] 
+    [JsonProperty("elementName")]
     [Required]
     public string ElementName { get; set; } = null!;
 
-    [JsonProperty("fieldKey")]
-    public string IdFieldName { get; set; } = null!;
+    [JsonProperty("fieldKey")] public string IdFieldName { get; set; } = null!;
 
-    [JsonProperty("fieldDescription")]
-    public string? DescriptionFieldName { get; set; }= null!;
-    
-    [JsonProperty("iconId")] 
-    public string? IconIdFieldName { get; set; }
-    
-    [JsonProperty("iconColor")]
-    public string? IconColorFieldName { get; set; }
-    
-    [JsonProperty("group")]
-    public string? GroupFieldName { get; set; }
-    
-    [JsonProperty("popUpSize")]
-    public ModalSize ModalSize { get; set; }
+    [JsonProperty("fieldDescription")] public string? DescriptionFieldName { get; set; } = null!;
 
-    public Dictionary<string, object> Filters 
+    [JsonProperty("iconId")] public string? IconIdFieldName { get; set; }
+
+    [JsonProperty("iconColor")] public string? IconColorFieldName { get; set; }
+
+    [JsonProperty("group")] public string? GroupFieldName { get; set; }
+
+    [JsonProperty("popUpSize")] public ModalSize ModalSize { get; set; }
+
+    public Dictionary<string, object> Filters
     {
         get
         {
             var filters = new Dictionary<string, object>();
-            
-            
+
+
             foreach (var item in MapFilters ?? [])
                 filters.Add(item.FieldName, item.ExpressionValue);
-                
+
             return filters;
         }
         set
@@ -64,4 +58,14 @@ public class DataElementMap
     [JsonProperty("enableElementActions")]
     [Display(Name = "Enable Element Actions")]
     public bool EnableElementActions { get; set; }
+
+    public DataElementMap DeepCopy()
+    {
+        var copy = (DataElementMap)MemberwiseClone();
+        
+        copy.Filters = new Dictionary<string, object>(Filters);
+        copy.MapFilters = MapFilters.ConvertAll(m => m.DeepCopy());
+        
+        return copy;
+    }
 }

@@ -9,7 +9,7 @@ public class PluginAction : UserCreatedAction
 {
     public required Guid PluginId { get; init; }
     
-    public Dictionary<string, object?> ConfigurationMap { get; } = new Dictionary<string,object?>();
+    public Dictionary<string, object?> ConfigurationMap { get; protected set; } = new();
     
     public PluginAction()
     {
@@ -17,4 +17,12 @@ public class PluginAction : UserCreatedAction
         Text = "Plugin";
         Icon = IconType.Plug;
     }
+
+    public override BasicAction DeepCopy()
+    {
+        var newAction = (PluginAction)CopyAction();
+        newAction.ConfigurationMap = new Dictionary<string, object?>(ConfigurationMap);
+        return newAction;
+    }
+    
 }

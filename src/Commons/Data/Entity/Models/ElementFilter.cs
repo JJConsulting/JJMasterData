@@ -26,4 +26,6 @@ public class ElementFilter(FilterMode type)
     public ElementFilter() : this(FilterMode.None)
     {
     }
+
+    public ElementFilter DeepCopy() => (ElementFilter)MemberwiseClone();
 }

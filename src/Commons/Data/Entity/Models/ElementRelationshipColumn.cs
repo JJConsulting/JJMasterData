@@ -26,4 +26,5 @@ public class ElementRelationshipColumn
         FkColumn = fkColumn;
     }
 
+    public ElementRelationshipColumn DeepCopy() => (ElementRelationshipColumn)MemberwiseClone();
 }

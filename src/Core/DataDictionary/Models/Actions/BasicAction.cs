@@ -190,4 +190,6 @@ public abstract class BasicAction
         CssClass = action.CssClass;
     }
 
+    protected BasicAction CopyAction() => (BasicAction)MemberwiseClone();
+    public abstract BasicAction DeepCopy();
 }

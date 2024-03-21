@@ -27,4 +27,9 @@ public sealed class GridTableActionList : FormElementActionList
         EnsureActionExists<EditAction>();
         EnsureActionExists<ViewAction>();
     }
+
+    public GridTableActionList DeepCopy()
+    {
+        return new GridTableActionList(List.ConvertAll(a=>a.DeepCopy()));
+    }
 }

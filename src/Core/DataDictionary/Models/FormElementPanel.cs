@@ -63,4 +63,8 @@ public class FormElementPanel
         return !string.IsNullOrEmpty(Title) | !string.IsNullOrEmpty(SubTitle);
     }
 
+    public FormElementPanel DeepCopy()
+    {
+        return (FormElementPanel)MemberwiseClone();
+    }
 }

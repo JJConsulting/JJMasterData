@@ -25,6 +25,7 @@ public sealed class ViewAction : GridTableAction, IModalAction
         Icon = IconType.Eye;
         Order = 1;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 
 
 

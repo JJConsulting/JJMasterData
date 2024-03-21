@@ -15,4 +15,5 @@ public sealed class ScriptAction : UserCreatedAction
     // ReSharper disable once InconsistentNaming
     public string OnClientClick { get; set; }
     public override bool IsUserCreated => true;
+    public override BasicAction DeepCopy() => CopyAction();
 }

@@ -30,4 +30,5 @@ public sealed class SqlCommandAction : UserCreatedAction, ISubmittableAction
     {
         Icon = IconType.Play;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

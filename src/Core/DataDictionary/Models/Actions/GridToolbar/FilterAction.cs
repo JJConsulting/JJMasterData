@@ -65,4 +65,5 @@ public sealed class FilterAction : GridToolbarAction
         ExpandedByDefault = false;
         EnableScreenSearch = false;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }
