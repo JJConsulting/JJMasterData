@@ -189,6 +189,10 @@
     <value>Já existe um arquivo com o nome {0}</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Url Redirect" xml:space="preserve">
+    <value>Redirecionamento Url</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="A selected record" xml:space="preserve">
     <value>Um registro selecionado</value>
     <comment>JJMasterDataApi</comment>
@@ -2857,10 +2861,6 @@
     <value>Url aceita expressão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Url Redirect" xml:space="preserve">
-    <value>Redirecionamento Url</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
     <value>Utilizar vírgula como separador de {1} casas decimais</value>
     <comment>JJMasterDataCore</comment>
@@ -4031,6 +4031,9 @@
   </data>
   <data name="File successfully deleted." xml:space="preserve">
     <value>Arquivo deletado com sucesso.</value>
+  </data>
+  <data name="This field support runtime values between {}." xml:space="preserve">
+    <value>Este campo suporta valores do runtime entre {}.</value>
   </data>
   <data name="Table Or View Name" xml:space="preserve">
     <value>Nome da Tabela ou View</value>
