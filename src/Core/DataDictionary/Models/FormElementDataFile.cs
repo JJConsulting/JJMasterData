@@ -64,4 +64,9 @@ public class FormElementDataFile
     [JsonProperty("showAsUploadView")]
     [Display(Name = "Show as Upload Outside Modal")]
     public bool ShowAsUploadView { get; set; }
+
+    public FormElementDataFile DeepCopy()
+    {
+        return (FormElementDataFile)MemberwiseClone();
+    }
 }

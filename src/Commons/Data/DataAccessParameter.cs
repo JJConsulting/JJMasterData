@@ -110,4 +110,9 @@ public class DataAccessParameter
         Type = type;
         Direction = direction;
     }
+
+    public DataAccessParameter DeepCopy()
+    {
+        return (DataAccessParameter)MemberwiseClone();
+    }
 }

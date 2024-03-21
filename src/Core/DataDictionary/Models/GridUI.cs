@@ -156,4 +156,9 @@ public class GridUI
     [JsonProperty("isCompact")]
     [Display(Name = "Compact mode")]
     public bool IsCompact { get; set; }
+
+    public GridUI DeepCopy()
+    {
+        return (GridUI)MemberwiseClone();
+    }
 }

@@ -13,4 +13,5 @@ public class LegendAction : GridToolbarAction
         Order = 7;
         SetVisible(false);
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

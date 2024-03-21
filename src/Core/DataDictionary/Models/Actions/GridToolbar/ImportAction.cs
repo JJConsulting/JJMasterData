@@ -25,4 +25,11 @@ public class ImportAction : GridToolbarAction
         ProcessOptions = new ProcessOptions();
         SetVisible(false);
     }
+    public override BasicAction DeepCopy()
+    {
+        var newAction = (ImportAction)CopyAction();
+        newAction.HelpText = HelpText;
+        newAction.ProcessOptions = ProcessOptions.DeepCopy();
+        return newAction;
+    }
 }

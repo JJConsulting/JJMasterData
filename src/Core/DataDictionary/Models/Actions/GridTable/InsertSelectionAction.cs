@@ -14,4 +14,5 @@ internal class InsertSelectionAction : GridTableAction
         Icon = IconType.CaretRight;
         Order = -1;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

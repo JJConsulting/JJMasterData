@@ -13,4 +13,5 @@ public class DeleteSelectedRowsAction : GridToolbarAction
         Order = 3;
         SetVisible(false);
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

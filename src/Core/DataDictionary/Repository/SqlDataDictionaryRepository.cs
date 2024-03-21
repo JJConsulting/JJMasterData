@@ -22,7 +22,6 @@ public class SqlDataDictionaryRepository(
     IOptionsSnapshot<MasterDataCoreOptions> options)
     : IDataDictionaryRepository
 {
-
     private Element MasterDataElement { get; } = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
 
     public List<FormElement> GetFormElementList(bool? apiSync = null)
@@ -79,8 +78,8 @@ public class SqlDataDictionaryRepository(
 
     public FormElement? GetFormElement(string elementName)
     {
-        if (memoryCache.TryGetValue(elementName, out string formElementJson))
-            return FormElementSerializer.Deserialize(formElementJson);
+        if (memoryCache.TryGetValue(elementName, out FormElement formElement))
+            return formElement.DeepCopy();
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
@@ -90,8 +89,9 @@ public class SqlDataDictionaryRepository(
 
         if (model != null)
         {
-            memoryCache.Set(elementName, model.Json);
-            return FormElementSerializer.Deserialize(model.Json);
+            formElement = FormElementSerializer.Deserialize(model.Json);
+            memoryCache.Set(elementName, formElement);
+            return formElement;
         }
 
         return null;
@@ -99,8 +99,8 @@ public class SqlDataDictionaryRepository(
 
     public async Task<FormElement?> GetFormElementAsync(string elementName)
     {
-        if (memoryCache.TryGetValue(elementName, out string formElementJson))
-            return FormElementSerializer.Deserialize(formElementJson);
+        if (memoryCache.TryGetValue(elementName, out FormElement formElement))
+            return formElement.DeepCopy();
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
@@ -110,8 +110,9 @@ public class SqlDataDictionaryRepository(
         
         if (model != null)
         {
-            memoryCache.Set(elementName, model.Json);
-            return FormElementSerializer.Deserialize(model.Json);
+            formElement = FormElementSerializer.Deserialize(model.Json);
+            memoryCache.Set(elementName, formElement);
+            return formElement;
         }
 
         return null;

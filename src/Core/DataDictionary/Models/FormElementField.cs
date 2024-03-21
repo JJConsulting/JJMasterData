@@ -283,4 +283,17 @@ public class FormElementField : ElementField
     {
         ReadOnlyExpression = value ? "val:1" : "val:0";
     }
+
+    public new FormElementField DeepCopy()
+    {
+        var copiedField = (FormElementField)MemberwiseClone();
+
+        copiedField.DataItem = DataItem?.DeepCopy();
+        copiedField.DataFile = DataFile?.DeepCopy();
+        copiedField.Attributes = new Dictionary<string, object>(Attributes);
+        copiedField.Actions = Actions.DeepCopy();
+        copiedField.Filter = Filter.DeepCopy();
+
+        return copiedField;
+    }
 }

@@ -73,4 +73,9 @@ public class FormElementApiOptions
                EnableUpdatePart ||
                EnableDel;
     }
+
+    public FormElementApiOptions DeepCopy()
+    {
+        return (FormElementApiOptions)MemberwiseClone();
+    }
 }

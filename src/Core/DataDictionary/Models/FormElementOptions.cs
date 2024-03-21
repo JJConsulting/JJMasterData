@@ -15,13 +15,13 @@ public class FormElementOptions
     public FormUI Form { get; set; }
 
     [JsonProperty("toolBarActions")]
-    public GridToolbarActionList GridToolbarActions { get; }
+    public GridToolbarActionList GridToolbarActions { get; private init;  }
 
     [JsonProperty("formToolbarActions")]
-    public FormToolbarActionList FormToolbarActions { get; }
+    public FormToolbarActionList FormToolbarActions { get; private init; }
 
     [JsonProperty("gridActions")] 
-    public GridTableActionList GridTableActions { get; }
+    public GridTableActionList GridTableActions { get; private init;  }
     
     [JsonProperty("enableAuditLog")]
     [Display(Name = "Enable Audit Log")]
@@ -47,7 +47,20 @@ public class FormElementOptions
         Grid = gridUI ?? new GridUI();
         Form = formUI ?? new FormUI();
         GridToolbarActions = gridToolbarActions ?? [];
-        GridTableActions = gridTableActions ?? new GridTableActionList();
+        GridTableActions = gridTableActions ?? [];
         FormToolbarActions = formToolbarActions ?? [];
+    }
+
+    public FormElementOptions DeepCopy()
+    {
+        return new FormElementOptions
+        {
+            Grid = Grid.DeepCopy(),
+            Form = Form.DeepCopy(),
+            EnableAuditLog = EnableAuditLog,
+            FormToolbarActions = FormToolbarActions.DeepCopy(),
+            GridTableActions = GridTableActions.DeepCopy(),
+            GridToolbarActions = GridToolbarActions.DeepCopy()
+        };
     }
 }

@@ -41,4 +41,9 @@ public class FormUI
     [JsonProperty("enterKey")]
     [Display(Name = "Enter Key Behavior")]
     public FormEnterKey EnterKey { get; set; } = FormEnterKey.Disabled;
+
+    public FormUI DeepCopy()
+    {
+        return (FormUI)MemberwiseClone();
+    }
 }

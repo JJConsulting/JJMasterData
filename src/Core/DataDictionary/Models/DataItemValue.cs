@@ -47,4 +47,8 @@ public class DataItemValue
         IconColor = iconColor;
     }
 
+    public DataItemValue DeepCopy()
+    {
+        return (DataItemValue)MemberwiseClone();
+    }
 }

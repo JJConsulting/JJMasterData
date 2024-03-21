@@ -117,4 +117,11 @@ public class ElementField
     /// </summary>
     [JsonIgnore]
     public bool EnableOnDelete { get; set; } = true;
+
+    public ElementField DeepCopy()
+    {
+        var copy = (ElementField)MemberwiseClone();
+        copy.Filter = Filter.DeepCopy();
+        return copy;
+    }
 }

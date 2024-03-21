@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using JJMasterData.Commons.Data;
 using Newtonsoft.Json;
 
@@ -12,7 +13,8 @@ namespace JJMasterData.Core.DataDictionary.Models;
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class FormElementDataItem
 {
-    [JsonProperty("dataItemType")] public DataItemType DataItemType { get; set; }
+    [JsonProperty("dataItemType")] 
+    public DataItemType DataItemType { get; set; }
 
     /// <summary>
     /// Command executed to recover DataItemValues. Returns two columns:
@@ -22,7 +24,8 @@ public class FormElementDataItem
     [JsonProperty("command")]
     public DataAccessCommand? Command { get; set; }
 
-    [JsonProperty("itens")] public IList<DataItemValue>? Items { get; set; }
+    [JsonProperty("itens")] 
+    public List<DataItemValue>? Items { get; set; }
 
     /// <summary>
     /// Relationship with another Element to recover values
@@ -69,4 +72,16 @@ public class FormElementDataItem
     public bool HasElementMap() => ElementMap != null;
 
     public bool HasItems() => Items?.Count > 0;
+
+    public FormElementDataItem DeepCopy()
+    {
+        var copy = (FormElementDataItem)MemberwiseClone();
+        
+        copy.Command = Command?.DeepCopy();
+        copy.Items = Items?.ConvertAll(i => i.DeepCopy());
+        copy.ElementMap = ElementMap?.DeepCopy();
+        
+        return copy;
+    }
+
 }

@@ -7,5 +7,5 @@ public class SubmitAction : UserCreatedAction
 {
     [JsonProperty("formAction")]
     public string FormAction { get; set; }
-    
+    public override BasicAction DeepCopy() => CopyAction();
 }

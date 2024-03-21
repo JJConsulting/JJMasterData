@@ -32,4 +32,9 @@ public class FormToolbarActionList : FormElementActionList
         EnsureActionExists<FormEditAction>();
         EnsureActionExists<AuditLogFormToolbarAction>();
     }
+
+    public FormToolbarActionList DeepCopy()
+    {
+        return new FormToolbarActionList(List.ConvertAll(a=>a.DeepCopy()));
+    }
 }

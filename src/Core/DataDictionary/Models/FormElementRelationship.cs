@@ -50,5 +50,12 @@ public class FormElementRelationship
     {
         ElementRelationship = elementRelationship;
     }
- 
+
+    public FormElementRelationship DeepCopy()
+    {
+        var copy = (FormElementRelationship)MemberwiseClone();
+        copy.Panel = Panel.DeepCopy();
+        copy.ElementRelationship = ElementRelationship?.DeepCopy();
+        return copy;
+    }
 }

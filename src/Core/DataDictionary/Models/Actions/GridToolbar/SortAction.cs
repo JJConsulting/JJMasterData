@@ -15,4 +15,5 @@ public class SortAction : GridToolbarAction
         Order = 7;
         SetVisible(false);
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

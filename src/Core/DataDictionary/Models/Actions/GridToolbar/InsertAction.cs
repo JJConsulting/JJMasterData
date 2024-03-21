@@ -49,4 +49,5 @@ public class InsertAction : GridToolbarAction, IModalAction
         ShowAsButton = true;
         Order = 1;
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }

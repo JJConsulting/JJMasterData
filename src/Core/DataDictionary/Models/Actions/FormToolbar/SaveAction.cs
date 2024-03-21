@@ -29,4 +29,5 @@ public class SaveAction : FormToolbarAction, ISubmittableAction
         ShowAsButton = true;
         VisibleExpression = "exp: '{PageState}' <> 'View'";
     }
+    public override BasicAction DeepCopy() => CopyAction();
 }
