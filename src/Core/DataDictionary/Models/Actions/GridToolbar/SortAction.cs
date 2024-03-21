@@ -1,7 +1,6 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-
-public class SortAction : GridToolbarAction
+public sealed class SortAction : GridToolbarAction
 {
     public const string ActionName = "sort";
     public override bool IsUserCreated => false;

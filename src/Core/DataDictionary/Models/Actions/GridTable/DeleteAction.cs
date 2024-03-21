@@ -6,7 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// Represents the default delete action of a data dictionary
 /// </summary>
 
-public class DeleteAction : GridTableAction, ISubmittableAction
+public sealed class DeleteAction : GridTableAction, ISubmittableAction
 {
 
     [Display(Name = "Is Submit")] 

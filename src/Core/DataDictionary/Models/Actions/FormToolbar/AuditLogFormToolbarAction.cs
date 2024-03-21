@@ -3,7 +3,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Action to view a audit log entry from the toolbar.
 /// </summary>
-public class AuditLogFormToolbarAction : FormToolbarAction
+public sealed class AuditLogFormToolbarAction : FormToolbarAction
 {
     public const string ActionName = "audit-log-form-toolbar";
     

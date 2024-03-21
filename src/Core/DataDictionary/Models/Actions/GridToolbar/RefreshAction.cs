@@ -1,6 +1,6 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class RefreshAction : GridToolbarAction
+public sealed class RefreshAction : GridToolbarAction
 {
     public const string ActionName = "refresh";
     public RefreshAction()

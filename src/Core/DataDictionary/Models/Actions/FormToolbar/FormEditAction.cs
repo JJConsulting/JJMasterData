@@ -5,7 +5,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// When in a relationship, this is the action to edit the parent DataPanel.
 /// </summary>
-public class FormEditAction : FormToolbarAction
+public sealed class FormEditAction : FormToolbarAction
 {
     public const string ActionName = "form-edit";
 

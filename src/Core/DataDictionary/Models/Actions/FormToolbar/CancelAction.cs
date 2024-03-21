@@ -6,7 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Action to cancel a DataPanel update at a FormView.
 /// </summary>
-public class CancelAction : FormToolbarAction
+public sealed class CancelAction : FormToolbarAction
 {
     public const string ActionName = "cancel";
 

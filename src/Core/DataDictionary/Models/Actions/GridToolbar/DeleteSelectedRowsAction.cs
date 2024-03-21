@@ -1,6 +1,6 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class DeleteSelectedRowsAction : GridToolbarAction
+public sealed class DeleteSelectedRowsAction : GridToolbarAction
 {
     public const string ActionName = "deleteSelectedRows";
 

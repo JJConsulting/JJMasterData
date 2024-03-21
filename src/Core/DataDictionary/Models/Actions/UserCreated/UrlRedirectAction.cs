@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class UrlRedirectAction : UserCreatedAction
+public sealed class UrlRedirectAction : UserCreatedAction
 {
     [JsonProperty("urlRedirect")]
     [Display(Name = "Url")]

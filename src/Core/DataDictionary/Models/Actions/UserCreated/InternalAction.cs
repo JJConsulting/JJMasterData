@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class InternalAction : UserCreatedAction
+public sealed class InternalAction : UserCreatedAction
 {
     [JsonProperty("elementRedirect")]
     public FormActionRedirect ElementRedirect { get; set; }

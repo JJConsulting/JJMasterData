@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Represents the dictionary export button.
 /// </summary>
-public class ExportAction : GridToolbarAction
+public sealed class ExportAction : GridToolbarAction
 {
     public const string ActionName = "export";
 

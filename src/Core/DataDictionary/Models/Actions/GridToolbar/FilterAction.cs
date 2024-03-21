@@ -6,7 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Represents the dictionary export button.
 /// </summary>
-public class FilterAction : GridToolbarAction
+public sealed class FilterAction : GridToolbarAction
 {
     public const string ActionName = "filter";
     

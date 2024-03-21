@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class ImportAction : GridToolbarAction
+public sealed class ImportAction : GridToolbarAction
 {
     public const string ActionName = "import";
     

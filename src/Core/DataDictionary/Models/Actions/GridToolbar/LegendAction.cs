@@ -1,6 +1,6 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class LegendAction : GridToolbarAction
+public sealed class LegendAction : GridToolbarAction
 {
     public const string ActionName = "legend";
     public LegendAction()

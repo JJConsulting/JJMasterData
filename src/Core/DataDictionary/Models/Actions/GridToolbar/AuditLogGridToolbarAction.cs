@@ -1,6 +1,6 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class AuditLogGridToolbarAction : GridToolbarAction
+public sealed class AuditLogGridToolbarAction : GridToolbarAction
 {
     public const string ActionName = "audit-log-grid-toolbar";
     public AuditLogGridToolbarAction()

@@ -6,7 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Action to return to the Grid at PageState.View or close the edit mode at a relationship.
 /// </summary>
-public class BackAction : FormToolbarAction
+public sealed class BackAction : FormToolbarAction
 {
     public const string ActionName = "back";
 

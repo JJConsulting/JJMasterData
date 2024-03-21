@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 
-public class InsertAction : GridToolbarAction, IModalAction
+public sealed class InsertAction : GridToolbarAction, IModalAction
 {
     public const string ActionName = "insert";
     

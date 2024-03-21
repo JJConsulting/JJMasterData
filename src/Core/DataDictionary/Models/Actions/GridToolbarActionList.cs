@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class GridToolbarActionList : FormElementActionList
+public sealed class GridToolbarActionList : FormElementActionList
 {
     public InsertAction InsertAction => List.FirstOrDefault(a => a is InsertAction) as InsertAction;
     public LegendAction LegendAction => List.FirstOrDefault(a => a is LegendAction) as LegendAction;

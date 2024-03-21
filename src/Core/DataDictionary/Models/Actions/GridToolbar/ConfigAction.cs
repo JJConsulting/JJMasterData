@@ -4,7 +4,7 @@
 /// Represents the settings menu of a data dictionary.
 /// </summary>
 
-public class ConfigAction : GridToolbarAction
+public sealed class ConfigAction : GridToolbarAction
 {
     public const string ActionName = "config";
     public ConfigAction()

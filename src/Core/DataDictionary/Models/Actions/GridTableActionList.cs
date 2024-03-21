@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 
-public class GridTableActionList : FormElementActionList
+public sealed class GridTableActionList : FormElementActionList
 {
     public DeleteAction DeleteAction => List.First(a => a is DeleteAction) as DeleteAction;
     public EditAction EditAction => List.First(a => a is EditAction) as EditAction;

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class SqlCommandAction : UserCreatedAction, ISubmittableAction
+public sealed class SqlCommandAction : UserCreatedAction, ISubmittableAction
 {
     [JsonProperty("isSubmit")]
     [Display(Name = "Is Submit")]

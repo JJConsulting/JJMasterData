@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class FormToolbarActionList : FormElementActionList
+public sealed class FormToolbarActionList : FormElementActionList
 {
     public SaveAction SaveAction => List.First(a => a is SaveAction) as SaveAction;
     

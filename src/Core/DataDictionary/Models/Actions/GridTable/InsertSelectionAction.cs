@@ -1,6 +1,6 @@
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-internal class InsertSelectionAction : GridTableAction
+internal sealed class InsertSelectionAction : GridTableAction
 {
     /// <summary>
     /// Nome padrão da ação

@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Action to save a DataPanel at a FormView.
 /// </summary>
-public class SaveAction : FormToolbarAction, ISubmittableAction
+public sealed class SaveAction : FormToolbarAction, ISubmittableAction
 {
     public const string ActionName = "save";
 
