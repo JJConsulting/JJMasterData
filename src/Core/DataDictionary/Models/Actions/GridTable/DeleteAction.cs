@@ -5,10 +5,8 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Represents the default delete action of a data dictionary
 /// </summary>
-
 public sealed class DeleteAction : GridTableAction, ISubmittableAction
 {
-
     [Display(Name = "Is Submit")] 
     public bool IsSubmit { get; set; }
 
@@ -25,7 +23,5 @@ public sealed class DeleteAction : GridTableAction, ISubmittableAction
         Icon = IconType.SolidTrashCan;
         Order = 3;
     }
-
-    public bool IsSubmit { get; set; }
     public override BasicAction DeepCopy() => CopyAction();
 }
