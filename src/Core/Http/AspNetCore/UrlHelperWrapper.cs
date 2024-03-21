@@ -16,5 +16,7 @@ public class UrlHelperWrapper(IUrlHelperFactory urlHelperFactory, IActionContext
     {
         return UrlHelper.Action(action, controller, values)!;
     }
+
+    public string Content(string? contentPath) => UrlHelper.Content(contentPath)!;
 }
 #endif  

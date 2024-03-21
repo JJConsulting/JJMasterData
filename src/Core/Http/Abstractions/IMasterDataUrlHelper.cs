@@ -9,6 +9,8 @@ public interface IMasterDataUrlHelper
                   [AspMvcController] string controller = null, 
                    [AspMvcArea("Area"),
                    AspMvcModelType] object values = null);
+    
+    string Content(string contentPath);
 #else
     string Action(string action = null, 
                   string controller = null, 
