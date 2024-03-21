@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
@@ -20,7 +21,7 @@ public static class DataHelper
             return value.ToString();
         }
 
-        return context.User.Identity?.Name;
+        return context.User.GetUserId();
     }
 
     public static Dictionary<string, object?> GetElementValues(Element element, Dictionary<string, object?> values)

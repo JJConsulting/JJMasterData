@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.UI.Components;
+﻿using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class FormController(IFormElementComponentFactory<JJFormView> formViewFac
     
     private void ConfigureFormView(JJFormView formView)
     {
-        var userId = HttpContext.GetUserId();
+        var userId = HttpContext.User.GetUserId();
 
         if (userId == null) 
             return;

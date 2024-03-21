@@ -29,7 +29,7 @@ public class InternalRedirectController(
     public async Task<IActionResult> Index(string parameters)
     {
         LoadParameters(parameters);
-        var userId = HttpContext.GetUserId();
+        var userId = HttpContext.User.GetUserId();
 
         InternalRedirectViewModel model;
 
@@ -108,7 +108,7 @@ public class InternalRedirectController(
     {
         LoadParameters(parameters);
 
-        var userId = HttpContext.GetUserId();
+        var userId = HttpContext.User.GetUserId();
 
         var panel = await componentFactory.DataPanel.CreateAsync(_elementName);
         panel.PageState = PageState.Update;
