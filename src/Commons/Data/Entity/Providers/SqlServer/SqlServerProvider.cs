@@ -289,6 +289,7 @@ public class SqlServerProvider(
             return FieldType.NVarchar;
 
         if (databaseType.Equals("int") ||
+            databaseType.Equals("int identity") ||
             databaseType.Equals("bigint") ||
             databaseType.Equals("tinyint"))
             return FieldType.Int;
