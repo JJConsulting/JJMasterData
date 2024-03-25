@@ -1482,7 +1482,10 @@ const listenAllEvents = (selectorPrefix = String()) => {
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
     document.querySelector("form").addEventListener("submit", function (event) {
         let isValid;
-        if (typeof this.reportValidity === "function") {
+        if (typeof jQuery == 'function') {
+            isValid = $(this).valid();
+        }
+        else if (typeof this.reportValidity === "function") {
             isValid = this.reportValidity();
         }
         else {

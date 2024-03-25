@@ -54,11 +54,11 @@ public class JJCard : HtmlComponent
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass)
-            .WithCssClass(BootstrapHelper.GetPanel(Color.ToString().ToLower()));
+            .WithCssClass(BootstrapHelper.GetPanel(Color.ToColorString()));
 
         html.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.Div, header =>
         {
-            header.WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()));
+            header.WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToColorString()));
             if (Icon is not null)
             {
                 var icon = new JJIcon(Icon.Value);

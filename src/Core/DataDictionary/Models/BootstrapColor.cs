@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.UI;
+﻿using System;
+using JJMasterData.Core.UI;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -24,16 +25,33 @@ public static class ColorExtensions
     public static string ToButtonColorString(this BootstrapColor color)
     {
         if (BootstrapHelper.Version >= 4 && color == BootstrapColor.Default)
-            return BootstrapColor.Secondary.ToString().ToLower();
+            return BootstrapColor.Secondary.ToColorString();
         
-        return color.ToString().ToLower();
+        return color.ToColorString();
     }
     
     public static string ToLinkColorString(this BootstrapColor color)
     {
         if (BootstrapHelper.Version >= 4 && color == BootstrapColor.Default)
             return BootstrapColor.Default.ToString().ToLower();
-        
-        return color.ToString().ToLower();
+
+        return color.ToColorString();
+    }
+    
+    public static string ToColorString(this BootstrapColor color)
+    {
+        return color switch
+        {
+            BootstrapColor.Default => "default",
+            BootstrapColor.Primary => "primary",
+            BootstrapColor.Success => "success",
+            BootstrapColor.Info => "info",
+            BootstrapColor.Warning => "warning",
+            BootstrapColor.Danger => "danger",
+            BootstrapColor.Light => "light",
+            BootstrapColor.Dark => "dark",
+            BootstrapColor.Secondary => "secondary",
+            _ => throw new ArgumentOutOfRangeException(nameof(color), color, null)
+        };
     }
 }

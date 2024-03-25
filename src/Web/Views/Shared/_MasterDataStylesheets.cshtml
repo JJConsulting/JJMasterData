@@ -16,7 +16,7 @@
 {
     @if (Options.Value.UseCustomBootstrap)
     {
-        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath" data-hs-appearance="default" as="style"/>
+        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath"/>
     }
     else
     {
@@ -65,5 +65,5 @@ else
 
 @foreach (var customScriptPath in Options.Value.CustomStylesheetsPaths)
 {
-    <link rel="stylesheet" src="@(pathBase + customScriptPath)"/>
+    <link rel="stylesheet" href="@(pathBase + customScriptPath)"/>
 }

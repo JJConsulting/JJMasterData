@@ -1,8 +1,21 @@
 ﻿@import "variables";
 
+.accordion {
+  --bs-accordion-btn-active-icon: var(--bs-accordion-btn-icon);
+  --bs-accordion-btn-focus-box-shadow: inset 0 calc(-1*var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+}
 
 .accordion-button {
   height: auto;
+}
+
+.accordion-default {
+  --#{$prefix}accordion-active-bg: var(--bs-tertiary-bg);
+  --#{$prefix}accordion-btn-active: var(--bs-tertiary-bg);
+  --#{$prefix}accordion-btn-bg: var(--bs-tertiary-bg);
+  --#{$prefix}accordion-active: var( --bs-body-color);
+  --#{$prefix}accordion-active-color: var( --bs-body-color);
+  --#{$prefix}accordion-btn-color: var( --bs-body-color);
 }
 
 .accordion-primary {

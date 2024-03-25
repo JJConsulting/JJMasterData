@@ -78,7 +78,7 @@ public class JJCollapsePanel : HtmlComponent
     private HtmlBuilder GetAccordion()
     {
         var accordion = new HtmlBuilder(HtmlTag.Div)
-                .WithCssClass($"accordion accordion-{Color.ToString().ToLower()} pb-1 mb-3")
+                .WithCssClass($"accordion accordion-{Color.ToColorString()} pb-1 mb-3")
                 .WithAttribute("id", $"{Name}")
                 .Append(HtmlTag.Div, div =>
                 {
@@ -129,7 +129,7 @@ public class JJCollapsePanel : HtmlComponent
             .WithCssClass(BootstrapHelper.PanelGroup)
             .Append(HtmlTag.Div, div =>
             {
-                div.WithCssClass(BootstrapHelper.GetPanel(Color.ToString().ToLower()));
+                div.WithCssClass(BootstrapHelper.GetPanel(Color.ToColorString()));
                 div.Append(GetPanelHeading());
                 div.Append(HtmlTag.Div, body =>
                 {
@@ -144,7 +144,7 @@ public class JJCollapsePanel : HtmlComponent
     private HtmlBuilder GetPanelHeading()
     {
         var panelHeading = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()))
+            .WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToColorString()))
             .WithAttribute("href", "#collapseOne")
             .WithDataAttribute("toggle", "collapse")
             .WithDataAttribute("target", $"#{Name}")

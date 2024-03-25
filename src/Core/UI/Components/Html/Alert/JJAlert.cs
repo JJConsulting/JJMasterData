@@ -74,9 +74,9 @@ public class JJAlert : HtmlComponent
     private string GetClassType()
     {
         if (Color == BootstrapColor.Default)
-            return BootstrapHelper.Version == 3 ? "well" : "alert-outline-primary";
+            return BootstrapHelper.Version == 3 ? "well" : "alert-secondary";
 
-        return $"alert-{Color.ToString().ToLower()}";
+        return $"alert-{Color.ToColorString()}";
     }
 
     internal static HtmlBuilder GetCloseButton(string dimissValue)
