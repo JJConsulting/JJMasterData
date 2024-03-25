@@ -91,7 +91,7 @@ public class SqlDataDictionaryRepository(
         {
             formElement = FormElementSerializer.Deserialize(model.Json);
             memoryCache.Set(elementName, formElement);
-            return formElement;
+            return formElement.DeepCopy();
         }
 
         return null;
@@ -112,7 +112,7 @@ public class SqlDataDictionaryRepository(
         {
             formElement = FormElementSerializer.Deserialize(model.Json);
             memoryCache.Set(elementName, formElement);
-            return formElement;
+            return formElement.DeepCopy();
         }
 
         return null;
