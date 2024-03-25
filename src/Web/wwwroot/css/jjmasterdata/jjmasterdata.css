@@ -557,7 +557,7 @@ input.form-control:read-only {
 }
 
 .list-group-item {
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
 #spinner-overlay {
