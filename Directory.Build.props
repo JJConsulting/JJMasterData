@@ -12,7 +12,7 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<FileVersion>$(Version)</FileVersion>
 		<Company>JJ Consulting</Company>
-		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
+		<Copyright>© 2024 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	</PropertyGroup>
