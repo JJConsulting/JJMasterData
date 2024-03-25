@@ -45,7 +45,9 @@
     document.querySelector("form").addEventListener("submit", function (event) {
         let isValid: boolean;
 
-        if (typeof this.reportValidity === "function") {
+        if (typeof jQuery == 'function'){
+            isValid = $(this).valid();
+        } else if (typeof this.reportValidity === "function") {
             isValid = this.reportValidity();
         } else {
             isValid = true;
