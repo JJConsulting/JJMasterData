@@ -4,6 +4,7 @@
 
 @{
     var areaName = ViewContext.RouteData.Values["area"] as string;
+    var pathBase = Context.Request.PathBase;
 }
 
 
@@ -60,4 +61,9 @@ else
     {
         <link rel="stylesheet" href="~/css/jjmasterdata-bundle-with-bootstrap.min.css"/>
     }
+}
+
+@foreach (var customScriptPath in Options.Value.CustomStylesheetsPaths)
+{
+    <link rel="stylesheet" src="@(pathBase + customScriptPath)"/>
 }

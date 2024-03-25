@@ -46,6 +46,13 @@ public sealed class MasterDataWebOptions
     [BindNever]
     public List<string> CustomScriptsPaths { get; } = [];
 
+        
+    /// <summary>
+    /// Custom scripts to be added at _MasterDataStylesheets. The paths are relative.
+    /// </summary>
+    [BindNever]
+    public List<string> CustomStylesheetsPaths { get; } = [];
+    
     [BindNever]
     public Action<MasterDataCoreOptions>? ConfigureCoreOptions { get; set; }
 }
