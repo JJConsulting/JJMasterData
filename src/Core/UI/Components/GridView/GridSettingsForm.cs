@@ -53,7 +53,7 @@ internal class GridSettingsForm(
     internal HtmlBuilder GetHtmlBuilder(bool isPaginationEnabled, GridSettings gridSettings)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass("row")
+            .WithCssClass("container")
             .AppendHiddenInput(_tableTotalPaginationButtons, gridSettings.TotalPaginationButtons.ToString())
             .AppendHiddenInput(_tableIsHeaderFixed, gridSettings.IsHeaderFixed ? "1" : "0");
 
@@ -122,24 +122,16 @@ internal class GridSettingsForm(
         return GetDataToggleElement(_tableBorder, stringLocalizer["Show table border"], gridSettings.ShowBorder)
             .WithCssClass("col-sm-12");
     }
-
+    
     private HtmlBuilder GetPaginationHtml(GridSettings gridSettings)
     {
-        var div = new HtmlBuilder()
-            .Append(HtmlTag.Label, label =>
-            {
-                label.WithCssClass("form-label");
-                label.WithAttribute("for", _tableTotalPerPage);
-                label.AppendText(stringLocalizer["Records per page"]);
-            })
-            .Append(GetTotalPerPageSelectElement(gridSettings));
-
-        return div;
-    }
-
-    private HtmlBuilder GetTotalPerPageSelectElement(GridSettings gridSettings)
-    {
         var div = new Div();
+        div.Append(HtmlTag.Label, label =>
+        {
+            label.WithCssClass("form-label");
+            label.WithAttribute("for", _tableTotalPerPage);
+            label.AppendText(stringLocalizer["Records per page"]);
+        });
         div.WithCssClass("col-sm-3");
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control form-select")
