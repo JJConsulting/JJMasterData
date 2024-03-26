@@ -21,9 +21,9 @@ internal class DataExportationSettings(JJDataExportation dataExportation)
     {
         var html = new Div();
         
-        string folderPath = DataExportationHelper.GetFolderPath(DataExportation);
+        var folderPath = DataExportationHelper.GetFolderPath(DataExportation);
         
-        html.WithCssClass("container");
+        html.WithCssClass("container-fluid");
         html.Append(GetFormHtmlElement(folderPath));
         html.AppendHr();
         html.AppendDiv(div =>
