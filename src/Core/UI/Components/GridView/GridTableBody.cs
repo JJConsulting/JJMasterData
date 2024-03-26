@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
@@ -184,7 +185,8 @@ internal class GridTableBody(JJGridView gridView)
                 else
                 {
                     value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
-                    cell = new HtmlBuilder(value?.ToString()?.Trim() ?? string.Empty);
+                    var valueString = value?.ToString()?.Trim() ?? string.Empty;
+                    cell = new HtmlBuilder(field.EncodeHtml ? HttpUtility.HtmlEncode(valueString) : valueString);
                 }
 
                 if (OnRenderCellAsync != null)
