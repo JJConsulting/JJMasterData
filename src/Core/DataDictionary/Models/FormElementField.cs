@@ -174,7 +174,11 @@ public class FormElementField : ElementField
     
     [JsonProperty("gridAlignment")]
     [Display(Name = "Alignment At Grid")]
-    public GridAlignment GridAlignment { get; set; } 
+    public GridAlignment GridAlignment { get; set; }
+
+    [JsonProperty("encodeHtml")]
+    [Display(Name = "Encode HTML")]
+    public bool EncodeHtml { get; set; } = true;
     
     /// <summary>
     /// The field will be disabled but the value send to the server
