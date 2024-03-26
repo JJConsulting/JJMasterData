@@ -92,8 +92,7 @@ public class JJCollapsePanel : HtmlComponent
     private HtmlBuilder GetAccordionHeader()
     {
         var h2 = new HtmlBuilder(HtmlTag.H2)
-        .WithCssClass(
-            $"accordion-header ")
+        .WithCssClass("accordion-header ")
         .WithAttribute("id", $"heading-{Name.ToLower()}")
         .Append(HtmlTag.Button, button =>
         {
