@@ -8,7 +8,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
 {
     public string Id { get; set; }
-    public HtmlBuilder LabelHtml { get; } = new HtmlBuilder();
+    public HtmlBuilder LabelHtml { get; } = new();
     public bool IsChecked { get; set; }
     public DataItemRadioLayout Layout { get; set; }
     

@@ -1366,7 +1366,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Identity" xml:space="preserve">
-    <value>Auto.Incr.</value>
+    <value>Auto Incremento</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="If the download does not start automatically, click on the icon below." xml:space="preserve">
@@ -4049,6 +4049,12 @@
   </data>
   <data name="New Element Name" xml:space="preserve">
     <value>Nome do Novo Elemento</value>
+  </data>
+  <data name="Encode HTML" xml:space="preserve">
+    <value>Codificar HTML</value>
+  </data>
+  <data name="Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data." xml:space="preserve">
+    <value>Opção usada para prevenir ataques XSS. Desmarque essa opção somente se você realmente confia na origem de seus dados.</value>
   </data>
   <data name="Enable Data Dictionary Caching" xml:space="preserve">
     <value>Habilitar Cache do Dicionário de Dados</value>

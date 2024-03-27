@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
@@ -22,7 +23,7 @@ internal class DataPanelControl
 {
 
     private DataPanelScripts? _panelScripts;
-    private bool _isViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
+    private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
 
 
     public string ParentComponentName { get; }
@@ -158,7 +159,7 @@ internal class DataPanelControl
                 htmlField.AppendComponent(label);
             }
                 
-            if (_isViewModeAsStatic)
+            if (IsViewModeAsStatic)
                 htmlField.Append(await GetStaticField(field));
             else
                 htmlField.Append(await GetControlFieldHtml(field, value));
@@ -230,7 +231,7 @@ internal class DataPanelControl
             else if (field.Component is FormComponent.CheckBox)
             {
                 colCount = 1;
-                if (!_isViewModeAsStatic)
+                if (!IsViewModeAsStatic)
                     label.Text = string.Empty;
             }
             else
@@ -245,7 +246,7 @@ internal class DataPanelControl
             await row?.AppendAsync(HtmlTag.Div, async col =>
             {
                 col.WithCssClass(colClass);
-                col.Append(_isViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value));
+                col.Append(IsViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value));
             })!;
             
         }
@@ -291,7 +292,7 @@ internal class DataPanelControl
         var label = ComponentFactory.Html.Label.Create(field);
         label.LabelFor =GetFieldNameWithPrefix(field);
 
-        if (_isViewModeAsStatic)
+        if (IsViewModeAsStatic)
             label.LabelFor = null;
         else if (isRange)
             label.LabelFor += "_from";
@@ -299,11 +300,12 @@ internal class DataPanelControl
         return label;
     }
 
-    private async Task<HtmlBuilder> GetStaticField(FormElementField f)
+    private async Task<HtmlBuilder> GetStaticField(FormElementField field)
     {
+        var staticValue = await FieldsService.FormatGridValueAsync(field, Values, UserValues);
         var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
-            .AppendText(await FieldsService.FormatGridValueAsync(f, Values, UserValues));
+            .AppendText(field.EncodeHtml ? HttpUtility.HtmlEncode(staticValue) : staticValue);
 
         return html;
     }

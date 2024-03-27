@@ -163,9 +163,12 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
                 </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <checkbox tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]" for="EncodeHtml" switch="true"/>
+                </div>
                 @if (Options.Value.SupportNetFramework)
                 {
-                    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                         <checkbox tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]" for="ValidateRequest" switch="true"/>
                     </div>
                 }

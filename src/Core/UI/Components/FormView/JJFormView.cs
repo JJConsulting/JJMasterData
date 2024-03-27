@@ -956,6 +956,8 @@ public class JJFormView : AsyncComponent
         
         AppendFormViewHiddenInputs(html);
 
+        html.WithId(Name);
+        
         return new ContentComponentResult(html);
     }
 
