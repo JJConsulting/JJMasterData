@@ -113,12 +113,12 @@ internal class GridSortingConfig(JJGridView gridView)
             comboBox.Name = $"{field.Name}_order";
             comboBox.SelectedValue = "N";
             comboBox.DataItem.ShowIcon = true;
-            comboBox.DataItem.Items = new List<DataItemValue>
-            {
+            comboBox.DataItem.Items =
+            [
                 new("A", StringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
                 new("D", StringLocalizer["Descendant"], IconType.SortAmountDesc, null),
                 new("N", StringLocalizer["No Order"], IconType.Genderless, null)
-            };
+            ];
             
             var sort = sortList.Find(x => x.FieldName.Equals(field.Name));
             if (sort != null)

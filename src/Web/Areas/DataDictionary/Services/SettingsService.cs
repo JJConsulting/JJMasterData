@@ -43,6 +43,7 @@ public class SettingsService(IValidationDictionary validationDictionary,
                 options.DataDictionaryTableName = model.CoreOptions.DataDictionaryTableName;
                 options.ExportationFolderPath = model.CoreOptions.ExportationFolderPath;
                 options.AuditLogTableName = model.CoreOptions.AuditLogTableName;
+                options.EnableDataDictionaryCaching = model.CoreOptions.EnableDataDictionaryCaching;
             });
             await WebWritableOptions.UpdateAsync(options =>
             {

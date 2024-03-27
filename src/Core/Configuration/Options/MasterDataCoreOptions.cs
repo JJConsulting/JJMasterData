@@ -28,6 +28,10 @@ public sealed class MasterDataCoreOptions
 
     public bool EnableCultureProviderAtUrl { get; set; } = true;
     #endif
+    
+    [Display(Name = "Enable Data Dictionary Caching")]
+    public bool EnableDataDictionaryCaching { get; set; } = true;
+    
     /// <summary>
     /// Default value: {ApplicationPath}/JJExportationFiles
     /// </summary>

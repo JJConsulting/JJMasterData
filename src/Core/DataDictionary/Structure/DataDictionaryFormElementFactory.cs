@@ -43,10 +43,10 @@ public class DataDictionaryFormElementFactory(
     {
         var formElement = new FormElement(element)
         {
-            Title = "val:" + new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml(),
+            Title = $"val:{new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml()}",
         };
 
-        formElement.SubTitle = "val:" +  StringLocalizer[formElement.SubTitle!];
+        formElement.SubTitle = $"val:{StringLocalizer[formElement.SubTitle!]}";
 
         ConfigureFields(formElement);
 

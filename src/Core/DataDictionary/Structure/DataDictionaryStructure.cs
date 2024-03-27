@@ -3,7 +3,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class DataDictionaryStructure
+public static class DataDictionaryStructure
 {
     public const string Name = "name";
     public const string Type = "type";

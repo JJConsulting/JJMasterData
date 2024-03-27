@@ -4050,4 +4050,7 @@
   <data name="New Element Name" xml:space="preserve">
     <value>Nome do Novo Elemento</value>
   </data>
+  <data name="Enable Data Dictionary Caching" xml:space="preserve">
+    <value>Habilitar Cache do Dicionário de Dados</value>
+  </data>
 </root>

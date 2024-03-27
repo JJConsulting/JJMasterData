@@ -32,16 +32,16 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
         logLevel.Component = FormComponent.ComboBox;
         logLevel.DataItem = new FormElementDataItem
         {
-            Items = new List<DataItemValue>
-            {
-                new("0", LogLevel.Trace.ToString(),  IconType.SolidMapLocation, "#808080"), 
-                new("1", LogLevel.Debug.ToString(), IconType.Bug, "#198754"), 
-                new("2", LogLevel.Information.ToString(), IconType.InfoCircle,  "#0d6efd"),
-                new("3", LogLevel.Warning.ToString(), IconType.SolidTriangleExclamation, "#ffc107"), 
-                new("4", LogLevel.Error.ToString(), IconType.TimesCircle, "#dc3545"), 
-                new("5", LogLevel.Critical.ToString(), IconType.Fire,  "#FF5733"), 
-                new("6", LogLevel.None.ToString(), IconType.CircleO,  "#808080")
-            },
+            Items =
+            [
+                new("0", LogLevel.Trace.ToString(), IconType.SolidMapLocation, "#808080"),
+                new("1", LogLevel.Debug.ToString(), IconType.Bug, "#198754"),
+                new("2", LogLevel.Information.ToString(), IconType.InfoCircle, "#0d6efd"),
+                new("3", LogLevel.Warning.ToString(), IconType.SolidTriangleExclamation, "#ffc107"),
+                new("4", LogLevel.Error.ToString(), IconType.TimesCircle, "#dc3545"),
+                new("5", LogLevel.Critical.ToString(), IconType.Fire, "#FF5733"),
+                new("6", LogLevel.None.ToString(), IconType.CircleO, "#808080")
+            ],
             GridBehavior = DataItemGridBehavior.Icon,
             ShowIcon = true
         };
