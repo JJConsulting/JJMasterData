@@ -43,6 +43,7 @@
   position: absolute;
   right: 7px;
   top: 7px;
+  z-index: 99;
 }
 
 .bs-clipboard button.btn-default {

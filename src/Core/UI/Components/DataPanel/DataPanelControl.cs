@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -366,28 +365,14 @@ internal class DataPanelControl
     private string GetScriptReload(FormElementField field)
     {
         var nameWithPrefix = GetFieldNameWithPrefix(field);
-        
-        //Workaround to trigger event on search component
-        if (field.Component is FormComponent.Search)
+
+        return field.Component switch
         {
-            var reloadPanelScript
-                = Scripts.GetReloadPanelScript(field.Name, nameWithPrefix + "_text");
-
-            var script = new StringBuilder();
-            script.Append("setTimeout(function() { ");
-            script.Append(reloadPanelScript);
-            script.Append("}, 200);");
-            return script.ToString();
-        }
-        
-        if (field.Component is FormComponent.CheckBox)
-        {
-            return Scripts.GetReloadPanelScript(field.Name,nameWithPrefix + "-checkbox");
-        }
-
-        return Scripts.GetReloadPanelScript(field.Name,nameWithPrefix);
-
+            FormComponent.Search => Scripts.GetReloadPanelWithTimeoutScript(field.Name, nameWithPrefix + "_text"),
+            FormComponent.CheckBox => Scripts.GetReloadPanelScript(field.Name, nameWithPrefix + "-checkbox"),
+            _ =>  Scripts.GetReloadPanelScript(field.Name, nameWithPrefix)
+        };
     }
-
+    
     private string GetFieldNameWithPrefix(FormElementField field) => FieldNamePrefix + field.Name;
 }

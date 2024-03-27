@@ -942,6 +942,14 @@ class DataImportationModal {
 }
 class DataPanelHelper {
     static reload(panelName, elementFieldName, fieldNameWithPrefix, routeContext) {
+        this.reloadInternal(panelName, elementFieldName, fieldNameWithPrefix, routeContext);
+    }
+    static reloadWithTimeout(panelName, elementFieldName, fieldNameWithPrefix, routeContext) {
+        setTimeout(() => {
+            this.reloadInternal(panelName, elementFieldName, fieldNameWithPrefix, routeContext);
+        }, 200);
+    }
+    static reloadInternal(panelName, elementFieldName, fieldNameWithPrefix, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("panelName", panelName);
         urlBuilder.addQueryParameter("fieldName", elementFieldName);
