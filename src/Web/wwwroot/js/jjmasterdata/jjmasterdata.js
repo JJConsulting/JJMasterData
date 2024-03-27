@@ -1457,7 +1457,8 @@ document.addEventListener("DOMContentLoaded", function () {
 const listenAllEvents = (selectorPrefix = String()) => {
     selectorPrefix += " ";
     $(selectorPrefix + ".selectpicker").selectpicker({
-        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon'
+        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon',
+        styleBase: "form-control"
     });
     if (bootstrapVersion === 3) {
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();

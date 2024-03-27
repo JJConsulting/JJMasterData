@@ -2,7 +2,8 @@
     selectorPrefix += " "
     
     $(selectorPrefix + ".selectpicker").selectpicker({
-        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon'
+        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon',
+        styleBase: "form-control"
     });
     
     if(bootstrapVersion === 3){
