@@ -52,7 +52,7 @@
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <checkbox tooltip="Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table." for="DataItem!.EnableMultiSelect" switch="true"/>
+            <checkbox tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]" for="DataItem!.EnableMultiSelect" switch="true"/>
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
