@@ -3,7 +3,6 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.LegacyMetadataMigrator;
@@ -12,14 +11,12 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
     MetadataRepository metadataRepository,
     IOptions<MasterDataCommonsOptions> commonsOptions,
     IOptions<MasterDataCoreOptions> options,
-    ExpressionsMigrationService expressionsMigrationService,
-    ILogger<FormElementMigrationService> logger)
+    ExpressionsMigrationService expressionsMigrationService)
 {
     private DataAccess? _dataAccess;
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
     private MetadataRepository MetadataRepository { get; } = metadataRepository;
     private ExpressionsMigrationService ExpressionsMigrationService { get; } = expressionsMigrationService;
-    private ILogger<FormElementMigrationService> Logger { get; } = logger;
 
     private DataAccess DataAccess
     {
@@ -51,7 +48,7 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
 
         if (containsLegacyType is null)
         {
-            Logger.LogInformation("✅ DataDictionary is already migrated");
+            Console.WriteLine("✅ DataDictionary is already migrated");
             return;
         }
         
@@ -63,7 +60,7 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
         
         DataDictionaryRepository.CreateStructureIfNotExistsAsync().GetAwaiter().GetResult();
         
-        Logger.LogInformation("\u2705 Re-created {TableName} and all related stored procedures", TableName);
+        Console.WriteLine("\u2705 Re-created {0} and all related stored procedures", TableName);
         
         foreach (var metadata in databaseDictionaries)
         {
@@ -81,7 +78,7 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
             }
             
             DataDictionaryRepository.InsertOrReplaceAsync(formElement).GetAwaiter().GetResult();
-            Logger.LogInformation("\u2705 {FormElementName}", formElement.Name);
+            Console.WriteLine("\u2705 {0}", formElement.Name);
         }
 
         DataAccess.SetCommand($"delete from {TableName} where type <> 'F'");
@@ -94,7 +91,7 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
                               WHERE [json] LIKE '%{search_id}%';
                               """);
         
-        Logger.LogInformation("✅ Replaced {{search_id}} to {{SearchId}} in all elements");
+        Console.WriteLine("✅ Replaced {{search_id}} to {{SearchId}} in all elements");
         
         DataAccess.SetCommand($$"""
                                 UPDATE {{TableName}}
@@ -104,7 +101,7 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
                                 WHERE [json] LIKE '%{search_text}%';
                                 """);
         
-        Logger.LogInformation(@"✅ Replaced {{search_text}} to {{SearchText}} in all elements");
+        Console.WriteLine(@"✅ Replaced {{search_text}} to {{SearchText}} in all elements");
         
         DataAccess.SetCommand($$"""
                                 UPDATE {{TableName}}

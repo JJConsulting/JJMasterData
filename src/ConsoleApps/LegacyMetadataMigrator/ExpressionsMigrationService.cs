@@ -1,23 +1,14 @@
-using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.LegacyMetadataMigrator;
 
-public class ExpressionsMigrationService(IEntityRepository entityRepository, 
-    IDataDictionaryRepository dataDictionaryRepository,
-    IOptions<MasterDataCoreOptions> options,
-    ILogger<ExpressionsMigrationService> logger)
+public class ExpressionsMigrationService(
+    IDataDictionaryRepository dataDictionaryRepository)
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private ILogger<ExpressionsMigrationService> Logger { get; } = logger;
-    private MasterDataCoreOptions Options { get; } = options.Value;
 
     public void Migrate()
     {
@@ -55,8 +46,8 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
             DataDictionaryRepository.InsertOrReplace(formElement);
         }
         
-        Logger.LogInformation("Process started: {Start}", start);
-        Logger.LogInformation("Process finished: {Finish}", DateTime.Now);
+        Console.WriteLine("Process started: {0}", start);
+        Console.WriteLine("Process finished: {0}", DateTime.Now);
     }
 
     private void FixFieldExpressions(FormElementField field)
@@ -67,9 +58,9 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
 
         if (visibleExpressionBefore != field.VisibleExpression)
         {
-            Logger.LogInformation("{Field} VisibleExpression Before: {ExpressionBefore}", field.Name,
+            Console.WriteLine("{0} VisibleExpression Before: {1}", field.Name,
                 visibleExpressionBefore);
-            Logger.LogInformation("{Field} VisibleExpression After: {ExpressionBefore}", field.Name,
+            Console.WriteLine("{0} VisibleExpression After: {1}", field.Name,
                 field.VisibleExpression);
         }
 
@@ -79,9 +70,9 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
 
         if (enableExpressionBefore != field.EnableExpression)
         {
-            Logger.LogInformation("{Field} EnableExpression Before: {ExpressionBefore}", field.Name,
+            Console.WriteLine("{0} EnableExpression Before: {1}", field.Name,
                 enableExpressionBefore);
-            Logger.LogInformation("{Field} EnableExpression After: {ExpressionBefore}", field.Name, field.EnableExpression);
+            Console.WriteLine("{0} EnableExpression After: {1}", field.Name, field.EnableExpression);
         }
 
         foreach (var action in field.Actions)
@@ -98,9 +89,9 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
 
         if (visibleExpressionBefore != panel.VisibleExpression)
         {
-            Logger.LogInformation("Panel {PanelId} VisibleExpression Before: {ExpressionBefore}", panel.PanelId,
+            Console.WriteLine("Panel {0} VisibleExpression Before: {1}", panel.PanelId,
                 visibleExpressionBefore);
-            Logger.LogInformation("Panel {PanelId} VisibleExpression After: {ExpressionBefore}", panel.PanelId,
+            Console.WriteLine("Panel {0} VisibleExpression After: {1}", panel.PanelId,
                 panel.VisibleExpression);
         }
 
@@ -110,9 +101,9 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
 
         if (enableExpressionBefore != panel.EnableExpression)
         {
-            Logger.LogInformation("Panel {PanelId} EnableExpression Before: {ExpressionBefore}", panel.PanelId,
+            Console.WriteLine("Panel {0} EnableExpression Before: {1}", panel.PanelId,
                 enableExpressionBefore);
-            Logger.LogInformation("Panel {PanelId} EnableExpression After: {ExpressionBefore}", panel.PanelId,
+            Console.WriteLine("Panel {0} EnableExpression After: {1}", panel.PanelId,
                 panel.EnableExpression);
         }
     }
@@ -125,9 +116,9 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
 
         if (visibleExpressionBefore != action.VisibleExpression)
         {
-            Logger.LogInformation("Action {ActionName} VisibleExpression Before: {ExpressionBefore}", action.Name,
+            Console.WriteLine("Action {0} VisibleExpression Before: {1}", action.Name,
                 visibleExpressionBefore);
-            Logger.LogInformation("Action {ActionName} VisibleExpression After: {ExpressionBefore}", action.Name,
+            Console.WriteLine("Action {0} VisibleExpression After: {1}", action.Name,
                 action.VisibleExpression);
         }
 
@@ -137,9 +128,9 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
 
         if (enableExpressionBefore != action.EnableExpression)
         {
-            Logger.LogInformation("Action {ActionName} EnableExpression Before: {ExpressionBefore}", action.Name,
+            Console.WriteLine("Action {0} EnableExpression Before: {1}", action.Name,
                 enableExpressionBefore);
-            Logger.LogInformation("Action {ActionName} EnableExpression After: {ExpressionBefore}", action.Name,
+            Console.WriteLine("Action {0} EnableExpression After: {1}", action.Name,
                 action.EnableExpression);
         }
     }
