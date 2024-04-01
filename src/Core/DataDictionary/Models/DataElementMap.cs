@@ -24,6 +24,7 @@ public class DataElementMap
 
     [JsonProperty("popUpSize")] public ModalSize ModalSize { get; set; }
 
+    [JsonIgnore]
     public Dictionary<string, object> Filters
     {
         get
@@ -63,7 +64,6 @@ public class DataElementMap
     {
         var copy = (DataElementMap)MemberwiseClone();
         
-        copy.Filters = new Dictionary<string, object>(Filters);
         copy.MapFilters = MapFilters.ConvertAll(m => m.DeepCopy());
         
         return copy;
