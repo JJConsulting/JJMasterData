@@ -286,6 +286,7 @@ public class FormElementField : ElementField
     public bool SupportsFloatingLabel() =>
         Component
             is FormComponent.Text
+            or FormComponent.Number
             or FormComponent.Cep
             or FormComponent.Cpf
             or FormComponent.CnpjCpf

@@ -89,34 +89,32 @@ public class ExpressionTagHelper(
             selectedExpressionValue = splittedExpression[1];
         }
         
-        var fieldSet = new HtmlBuilder(HtmlTag.FieldSet);
+        var fieldSet = new FieldSet();
         fieldSet.WithAttributeIf(Disabled, "disabled");
+
         var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
-        fieldSet.AppendIf(displayName is not null, HtmlTag.Label, label =>
+
+        fieldSet.AppendIf(displayName is not null, HtmlTag.Div, div =>
         {
-            label.WithCssClass(BootstrapHelper.Label);
+            div.WithCssClass("form-floating mb-3");
+
+            var label = new Label();
             label.WithAttribute("for", name + "-ExpressionValue");
             label.AppendText(displayName!);
-            if (!string.IsNullOrWhiteSpace(Tooltip))
-            {
-                label.AppendSpan(span =>
-                {
-                    span.WithCssClass("fa fa-question-circle help-description");
-                    span.WithToolTip(Tooltip);
-                });
-            }
-        });
-
-        fieldSet.AppendDiv(div =>
-        {
+            
             if (!options.Value.UseAdvancedModeAtExpressions)
             {
                 div.WithCssClass("input-group");
                 div.Append(GetTypeSelect(name, selectedExpressionType)
-                    .WithCssClassIf(isInvalid,"is-invalid"));
+                    .WithCssClassIf(isInvalid, "form-select is-invalid")
+                    .WithAttribute("id", name + "-ExpressionValue"));
             }
-            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue)
-                .WithCssClassIf(isInvalid,"is-invalid"));
+
+            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue).WithAttribute("placeholder",displayName!)
+                .WithCssClassIf(isInvalid, "form-control is-invalid")
+                .WithAttribute("id", name + "-ExpressionValue"));
+
+            div.Append(label);
         });
 
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -158,7 +156,7 @@ public class ExpressionTagHelper(
         input.WithCssClass("form-control");
         input.WithAttributeIf(!advanced,"style", "width:75%");
         input.WithNameAndId(name + "-ExpressionValue");
-
+        
         if (selectedExpressionType is null)
             return input;
         
@@ -167,6 +165,9 @@ public class ExpressionTagHelper(
             : selectedExpressionValue;
         
         input.WithValue(value ?? string.Empty);
+        
+        if (!string.IsNullOrEmpty(Tooltip))
+            input.WithToolTip(Tooltip);
 
         return input;
     }

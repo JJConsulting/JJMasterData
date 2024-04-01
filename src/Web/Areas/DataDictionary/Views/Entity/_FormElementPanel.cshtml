@@ -7,8 +7,10 @@
         <expression for="FormElement.Title" disabled="@Model.Disabled"/>
     </div>
     <div class="col-sm-2">
-        <label asp-for="FormElement.TitleSize" class="form-label"></label>
-        <select asp-for="FormElement.TitleSize" disabled="@Model.Disabled" asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select"></select>
+        <div class="form-floating">
+            <select asp-for="FormElement.TitleSize" disabled="@Model.Disabled" asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select" id="floatingTitleSize"></select>
+            <label asp-for="FormElement.TitleSize"></label>
+        </div>
     </div>
 </div>
 <div class="row mb-3">

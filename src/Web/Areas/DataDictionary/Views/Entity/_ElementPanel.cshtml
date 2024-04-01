@@ -6,33 +6,38 @@
 
 <div class="row mb-3">
     <div class="col-sm-6 required">
-        <label asp-for="FormElement.Name" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Unique identifier of the element."]"/>
-        <input asp-for="FormElement.Name" class="form-control"  disabled="@Model.Disabled" />
+        <div class="form-floating">
+            <input asp-for="FormElement.Name" placeholder="" class="form-control"  disabled="@Model.Disabled" data-bs-toggle="tooltip" title="@StringLocalizer["Unique identifier of the element."]"/>
+            <label asp-for="FormElement.Name" ></label>
+        </div>
     </div>
     <div class="col-sm-6 required">
-        <label asp-for="FormElement.TableName" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Table where the element data is stored."]"/>
-        <input asp-for="FormElement.TableName" class="form-control"  disabled="@Model.Disabled"/>
+        <div class="form-floating">
+            <input asp-for="FormElement.TableName" placeholder="" class="form-control"  disabled="@Model.Disabled"  data-bs-toggle="tooltip" title="@StringLocalizer["Table where the element data is stored"]"/>
+            <label asp-for="FormElement.TableName" ></label>
+        </div>
     </div>
 </div>
 <div class="row mb-3">
     <div class="col-sm-6">
-        <label asp-for="FormElement.ReadProcedureName" class="form-label"></label>
         <div class="input-group">
             <div class="input-group-text">
-                <input asp-for="FormElement.UseReadProcedure" data-bs-placement="right" 
-                       data-bs-toggle="tooltip" 
-                       title="@StringLocalizer["Enable Read Procedure"]"  
-                       disabled="disabled" 
-                       class="form-check-input mt-0" 
-                       type="checkbox" aria-label="Enable Read Procedure">
+                <input asp-for="FormElement.UseReadProcedure"
+                       data-bs-placement="right"
+                       data-bs-toggle="tooltip"
+                       title="@StringLocalizer["Enable Read Procedure"]"
+                       disabled="disabled"
+                       class="form-check-input mt-0"
+                       type="checkbox"
+                       aria-label="Enable Read Procedure">
             </div>
-            <input asp-for="FormElement.ReadProcedureName" placeholder="@Options.Value.GetReadProcedureName(Model.FormElement)" class="form-control"  disabled="@Model.Disabled" />
+            <div class="form-floating">
+                <input asp-for="FormElement.ReadProcedureName" placeholder="@Options.Value.GetReadProcedureName(Model.FormElement)"  class="form-control"  disabled="@Model.Disabled" />
+                <label asp-for="FormElement.ReadProcedureName"></label>
+            </div>
         </div>
     </div>
     <div class="col-sm-6">
-        <label asp-for="FormElement.WriteProcedureName" class="form-label"></label>
         <div class="input-group">
             <div class="input-group-text">
                 <input asp-for="FormElement.UseWriteProcedure" 
@@ -44,18 +49,21 @@
                        type="checkbox" 
                        aria-label="Enable Write Procedure">
             </div>
-            <input asp-for="FormElement.WriteProcedureName" placeholder="@Options.Value.GetWriteProcedureName(Model.FormElement)"  class="form-control"  disabled="@Model.Disabled" />
+            <div class="form-floating">
+                <input asp-for="FormElement.WriteProcedureName" placeholder="@Options.Value.GetWriteProcedureName(Model.FormElement)"  class="form-control"  disabled="@Model.Disabled" />
+                <label asp-for="FormElement.WriteProcedureName"></label>
+            </div>
         </div>
     </div>
 </div>
-<div class="row mb-3 ">
-        <div class="col-sm-6 flex-grow-1">
-            <label asp-for="FormElement.Info" class="form-label"></label>
-            <tooltip title="@StringLocalizer["Developer only information about the element."]"/>
-            <input asp-for="FormElement.Info" class="form-control"  disabled="@Model.Disabled"/>
+<div class="row mb-3">
+    <div class="col-sm-6 flex-grow-1">
+        <div class="form-floating">
+            <input asp-for="FormElement.Info" class="form-control" id="infoInput" disabled="@Model.Disabled" />
+            <label asp-for="FormElement.Info"></label>
         </div>
+    </div>
 </div>
-
 
 @if (!Model.Disabled)
 {
