@@ -26,6 +26,7 @@ internal class TextAreaFactory(IFormValues formValues, IStringLocalizer<MasterDa
         text.SetAttr(field.Attributes);
         text.Tooltip = field.HelpDescription;
         text.MaxLength = field.Size;
+        text.Rows = int.Parse(field.GetAttr(FormElementField.RowsAttribute) as string ?? "5");
         text.Text = context.Value != null ? context.Value.ToString() : "";
         text.Name = field.Name;
 
