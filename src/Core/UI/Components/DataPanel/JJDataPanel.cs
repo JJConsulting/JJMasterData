@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
@@ -18,6 +19,7 @@ using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 #if NET48
 using JJMasterData.Commons.Configuration;
 #endif
@@ -141,7 +143,7 @@ public class JJDataPanel : AsyncComponent
     internal ExpressionsService ExpressionsService { get; }
     private UrlRedirectService UrlRedirectService { get; }
     internal IComponentFactory ComponentFactory { get; }
-
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     #endregion
 
@@ -155,6 +157,7 @@ public class JJDataPanel : AsyncComponent
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         UrlRedirectService urlRedirectService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory
     ) 
     {
@@ -165,6 +168,7 @@ public class JJDataPanel : AsyncComponent
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         UrlRedirectService = urlRedirectService;
+        StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
         Values = new Dictionary<string, object>();
         Errors = new Dictionary<string, string>();
@@ -180,8 +184,9 @@ public class JJDataPanel : AsyncComponent
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         UrlRedirectService urlRedirectService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory
-    ) : this(entityRepository,  currentContext, encryptionService, fieldsService, formValuesService, expressionsService, urlRedirectService,componentFactory)
+    ) : this(entityRepository,  currentContext, encryptionService, fieldsService, formValuesService, expressionsService, urlRedirectService,stringLocalizer,componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;

@@ -288,8 +288,15 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " asp-for="GridAlignment"></label>
-                    <select asp-for="GridAlignment"  class="form-control form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
+                    <select asp-for="GridAlignment"  class="form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
                 </div>
+                
+                @if (Model.SupportsFloatingLabel())
+                {
+                    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                        <checkbox switch="true" for="FloatingLabel" tooltip="@StringLocalizer[""]"/>
+                    </div>
+                }
             </div>
         </div>
         

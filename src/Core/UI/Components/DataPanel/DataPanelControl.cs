@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -12,6 +13,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components.TextRange;
 using JJMasterData.Core.UI.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -48,10 +50,11 @@ internal class DataPanelControl
     public string? FieldNamePrefix { get; init; }
 
 
-    internal FieldsService FieldsService { get; }
+    private FieldsService FieldsService { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     internal ExpressionsService ExpressionsService { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
+    private DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
 
     public DataPanelControl(JJDataPanel dataPanel)
     {
@@ -65,6 +68,7 @@ internal class DataPanelControl
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
+        StringLocalizer = dataPanel.StringLocalizer;
         FormStateData = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
@@ -82,6 +86,7 @@ internal class DataPanelControl
         ComponentFactory = gridView.ComponentFactory;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
+        StringLocalizer = gridView.StringLocalizer;
         FormStateData = new FormStateData(values, gridView.UserValues, PageState.Filter);
     }
 
@@ -120,14 +125,12 @@ internal class DataPanelControl
             if (lineGroup != field.LineGroup)
             {
                 lineGroup = field.LineGroup;
-                row = new HtmlBuilder(HtmlTag.Div)
-                    .WithCssClass("row");
+                row = new Div().WithCssClass("row");
                 html.Append(row);
             }
 
-            var htmlField = new HtmlBuilder(HtmlTag.Div)
+            var htmlField = new Div()
                 .WithCssClass(BootstrapHelper.FormGroup);
-
             
             row?.Append(htmlField);
 
@@ -152,16 +155,39 @@ internal class DataPanelControl
             if (PageState == PageState.View && FormUI.ShowViewModeAsStatic)
                 htmlField.WithCssClass("jjborder-static");
 
-            if (field.Component is not FormComponent.CheckBox)
+            if (field.Component is not FormComponent.CheckBox && !field.FloatingLabel)
             {
                 var label = CreateLabel(field, IsRange(field, PageState));
                 htmlField.AppendComponent(label);
             }
-                
-            if (IsViewModeAsStatic)
-                htmlField.Append(await GetStaticField(field));
+            
+            if(field.FloatingLabel)
+                field.SetAttr("placeholder",field.LabelOrName);
+
+            HtmlBuilder parentDiv;
+
+            if (field.FloatingLabel)
+            {
+                var formFloating = new Div().WithCssClass("form-floating");
+                htmlField.Append(formFloating);
+                parentDiv = formFloating;
+            }
             else
-                htmlField.Append(await GetControlFieldHtml(field, value));
+                parentDiv = htmlField;
+            
+            if (IsViewModeAsStatic)
+                parentDiv.Append(await GetStaticField(field));
+            else
+            {
+                var controlHtml = await GetControlFieldHtml(field, value);
+                if(field.FloatingLabel && !string.IsNullOrEmpty(field.HelpDescription))
+                    controlHtml.WithToolTip(StringLocalizer[field.HelpDescription!]);
+                parentDiv.Append(controlHtml);
+            }
+            
+            if (field.FloatingLabel)
+                parentDiv.Append(CreateFloatingLabel(field, IsRange(field,PageState)));
+           
         }
 
         return html;
@@ -298,6 +324,19 @@ internal class DataPanelControl
 
         return label;
     }
+    private HtmlBuilder CreateFloatingLabel(FormElementField field, bool isRange)
+    {
+        var label = new HtmlBuilder(HtmlTag.Label);
+        var fieldName = GetFieldNameWithPrefix(field);
+        
+        if (isRange)
+            fieldName += "_from";
+        
+        label.WithAttribute("for", fieldName);
+        label.AppendText(field.LabelOrName);
+        return label;
+    }
+
 
     private async Task<HtmlBuilder> GetStaticField(FormElementField field)
     {

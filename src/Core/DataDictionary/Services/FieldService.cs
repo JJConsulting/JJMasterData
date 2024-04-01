@@ -68,6 +68,9 @@ public class FieldService(IValidationDictionary validationDictionary,
 
     private static void RemoveUnusedProperties(FormElementField field)
     {
+        if (!field.SupportsFloatingLabel())
+            field.FloatingLabel = false;
+        
         if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup or FormComponent.RadioButtonGroup)
         {
             switch (field.DataItem!.DataItemType)

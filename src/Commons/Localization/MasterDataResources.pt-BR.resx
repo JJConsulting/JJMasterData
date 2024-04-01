@@ -4059,4 +4059,7 @@
   <data name="Enable Data Dictionary Caching" xml:space="preserve">
     <value>Habilitar Cache do Dicionário de Dados</value>
   </data>
+  <data name="Floating Label" xml:space="preserve">
+    <value>Label Flutuante</value>
+  </data>
 </root>

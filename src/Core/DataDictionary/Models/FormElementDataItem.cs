@@ -67,6 +67,8 @@ public class FormElementDataItem
     [Display(Name = "Show Icon")]
     public bool ShowIcon { get; set; }
 
+    public bool SupportsFloatingLabels() => !EnableMultiSelect && !ShowIcon;
+
     public bool HasSqlCommand() => !string.IsNullOrWhiteSpace(Command?.Sql);
 
     public bool HasElementMap() => ElementMap != null;

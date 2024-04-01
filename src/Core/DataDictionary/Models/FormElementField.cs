@@ -26,7 +26,7 @@ public class FormElementField : ElementField
     public const string IsSwitchAttribute = "is-switch";
     public const string MultipleDatesAttribute = "multiple-dates";
     public const string CultureInfoAttribute = "culture-info";
-    
+
     [JsonProperty("component")]
     [Display(Name = "Component")]
     public FormComponent Component { get; set; }
@@ -46,7 +46,7 @@ public class FormElementField : ElementField
     [Display(Name = "Enable Expression")]
     [SyncExpression]
     public string EnableExpression { get; set; }
-    
+
     /// <summary>
     /// Line counter, used to break the line in the form (row class)
     /// </summary>
@@ -163,15 +163,14 @@ public class FormElementField : ElementField
     [JsonProperty("panelId")]
     public int PanelId { get; set; }
 
-    [JsonProperty("actions")]
-    public FormElementFieldActionList Actions { get; set; }
+    [JsonProperty("actions")] public FormElementFieldActionList Actions { get; set; }
 
     /// <summary>
     /// Internal developer notes
     /// </summary>
     [JsonProperty("internalNotes")]
     public string? InternalNotes { get; set; }
-    
+
     [JsonProperty("gridAlignment")]
     [Display(Name = "Alignment At Grid")]
     public GridAlignment GridAlignment { get; set; }
@@ -179,13 +178,18 @@ public class FormElementField : ElementField
     [JsonProperty("encodeHtml")]
     [Display(Name = "Encode HTML")]
     public bool EncodeHtml { get; set; } = true;
-    
+
+    [JsonProperty("floatingLabel")]
+    [Display(Name = "Floating Label")]
+    public bool FloatingLabel { get; set; }
+
     /// <summary>
     /// The field will be disabled but the value send to the server
     /// </summary>
     [JsonIgnore]
     public string? ReadOnlyExpression { get; set; }
-    
+
+
     public FormElementField()
     {
         Component = FormComponent.Text;
@@ -240,6 +244,7 @@ public class FormElementField : ElementField
                 EnableExpression = "exp:'{PageState}' <> 'Update'";
             }
         }
+
         Export = true;
         ValidateRequest = true;
         Actions = [];
@@ -260,8 +265,7 @@ public class FormElementField : ElementField
         if (string.IsNullOrEmpty(value?.ToString()))
             Attributes?.Remove(key);
     }
-    
-    
+
     /// <summary>
     /// Set field visibility
     /// </summary>
@@ -279,6 +283,18 @@ public class FormElementField : ElementField
         EnableExpression = value ? "val:1" : "val:0";
     }
     
+    public bool SupportsFloatingLabel() =>
+        Component
+            is FormComponent.Text
+            or FormComponent.Cep
+            or FormComponent.Cpf
+            or FormComponent.CnpjCpf
+            or FormComponent.Tel
+            or FormComponent.Date
+            or FormComponent.DateTime
+            or FormComponent.ComboBox
+        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels()));
+
     /// <summary>
     /// Set if the field is enabled.
     /// </summary>
