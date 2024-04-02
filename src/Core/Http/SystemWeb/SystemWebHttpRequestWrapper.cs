@@ -33,6 +33,7 @@ internal class SystemWebHttpRequestWrapper(IQueryString queryString, IFormValues
     public IFormValues Form  => form;
     public IQueryString QueryString { get; } = queryString;
     public string ContentType => Request.ContentType;
+    public string Path => Request.Path;
 
     public string this[string key] => Request[key];
 }

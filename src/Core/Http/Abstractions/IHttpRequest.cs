@@ -12,4 +12,5 @@ public interface IHttpRequest
     public IQueryString QueryString { get; }
     IFormValues Form { get; } 
     string ContentType { get; }
+    string Path { get; }
 }

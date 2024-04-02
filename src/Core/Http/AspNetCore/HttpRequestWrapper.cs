@@ -33,6 +33,7 @@ internal class HttpRequestWrapper(
     public string ApplicationPath => Request?.PathBase;
 
     public string ContentType => Request?.ContentType;
+    public string Path => Request?.Path;
 
     private string GetValue(string key)
     {
