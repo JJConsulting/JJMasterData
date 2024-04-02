@@ -1232,7 +1232,7 @@ public class JJFormView : AsyncComponent
         switch (PageState)
         {
             case PageState.Insert when panelState is PageState.Insert:
-                formToolbarActions.CancelAction.SetVisible(false);
+                formToolbarActions.BackAction.SetVisible(false);
                 break;
             case PageState.Insert when IsInsertAtGridView:
                 formToolbarActions.CancelAction.SetVisible(false);
