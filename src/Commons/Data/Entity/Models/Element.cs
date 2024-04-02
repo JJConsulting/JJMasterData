@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
+using JJMasterData.Commons.Configuration.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -41,7 +42,7 @@ public class Element()
     
     [JsonProperty("customprocnameget")]
     [Display(Name = "Read Procedure")]
-    public string ReadProcedureName { get; set; }
+    public string ReadProcedureName { get; set; } 
     
     [JsonProperty("useWriteProcedure")] 
     [Display(Name = "Use Write Procedure")]

@@ -9,7 +9,6 @@ using JJMasterData.Web.Binders;
 using JJMasterData.Web.Configuration.Options;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
-using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,7 +60,6 @@ public static class ServiceCollectionExtensions
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
-        services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<LocalizationService>();
         services.AddScoped<SettingsService>();
 

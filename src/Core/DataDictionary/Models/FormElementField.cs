@@ -291,10 +291,8 @@ public class FormElementField : ElementField
             or FormComponent.Cpf
             or FormComponent.CnpjCpf
             or FormComponent.Tel
-            or FormComponent.Date
-            or FormComponent.DateTime
             or FormComponent.ComboBox
-        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels()));
+        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels() && Actions.Count == 0));
 
     /// <summary>
     /// Set if the field is enabled.

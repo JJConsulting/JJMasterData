@@ -1917,7 +1917,7 @@
     <value>Número de colunas onde os campos serão renderizados por padrão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Number of decimal places" xml:space="preserve">
+  <data name="Number of Decimal Places" xml:space="preserve">
     <value>Número de casas decimais</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3366,8 +3366,8 @@
   <data name="Customized Field" xml:space="preserve">
     <value>Campo customizado</value>
   </data>
-  <data name="This field is inside an event handler and its behavior can be modified at runtime. You also cannot delete or modify your name." xml:space="preserve">
-    <value>Este campo está dentro de um manipulador de eventos e seu comportamento pode ser modificado em tempo de execução. Você também não pode excluir ou modificar seu nome.</value>
+  <data name="This field is inside an event handler and its behavior can be modified at runtime." xml:space="preserve">
+    <value>Este campo está dentro de um manipulador de eventos e seu comportamento pode ser modificado em tempo de execução.</value>
   </data>
   <data name="1. Text" xml:space="preserve">
     <value>1. Texto</value>
@@ -4061,5 +4061,8 @@
   </data>
   <data name="Floating Label" xml:space="preserve">
     <value>Label Flutuante</value>
+  </data>
+  <data name="Additional Info" xml:space="preserve">
+    <value>Informações Adicionais</value>
   </data>
 </root>

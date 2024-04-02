@@ -2,27 +2,17 @@ using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Web.Services;
 
 namespace JJMasterData.Web.TagHelpers;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-public class CollapsePanelTagHelper(RazorPartialRendererService rendererService,
-        IComponentFactory<JJCollapsePanel> collapsePanelFactory)
+public class CollapsePanelTagHelper(IComponentFactory<JJCollapsePanel> collapsePanelFactory)
     : TagHelper
 {
-    
     [HtmlAttributeName("title")]
     [LocalizationRequired]
     public string? Title { get; set; }
-    
-    [HtmlAttributeName("partial")]
-    [AspMvcPartialView]
-    public string? Partial { get; set; }
-
-    [HtmlAttributeName("model")]
-    public object? Model { get; set; }
     
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
@@ -36,7 +26,6 @@ public class CollapsePanelTagHelper(RazorPartialRendererService rendererService,
     [HtmlAttributeName("color")]
     public BootstrapColor Color { get; set; }
     
-    private RazorPartialRendererService RendererService { get; } = rendererService;
     private IComponentFactory<JJCollapsePanel> CollapsePanelFactory { get; } = collapsePanelFactory;
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -54,15 +43,10 @@ public class CollapsePanelTagHelper(RazorPartialRendererService rendererService,
             panel.TitleIcon = new JJIcon(Icon);
         }
 
-        if (Partial == null)
-        {
-            var content = (await output.GetChildContentAsync()).GetContent();
-            panel.HtmlContent = content;
-        }
-        else
-        {
-            panel.HtmlContent = await RendererService.ToStringAsync(Partial, Model);
-        }
+     
+        var content = (await output.GetChildContentAsync()).GetContent();
+        panel.HtmlContent = content;
+  
         
         Configure?.Invoke(panel);
         

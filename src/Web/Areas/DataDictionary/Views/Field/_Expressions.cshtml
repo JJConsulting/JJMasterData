@@ -1,0 +1,20 @@
+﻿@model JJMasterData.Core.DataDictionary.Models.FormElementField
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-12">
+        <expression for="DefaultValue" icon="IconType.Check"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+        <expression for="VisibleExpression" icon="IconType.Eye"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+        <expression for="EnableExpression" icon="IconType.Pencil"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-12">
+        <expression for="TriggerExpression" icon="IconType.Bolt" />
+    </div>
+</div>
+<div class="row">
+    <span> <span class="fa fa-info-circle" style="color:#005a86"></span> @StringLocalizer["Read more about expressions "]<a target="_blank" href="https://md.jjconsulting.tech/articles/expressions.html">@StringLocalizer[" in this link."]</a></span>
+</div>

@@ -13,22 +13,22 @@ public class EntityService(IValidationDictionary validationDictionary,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
-    private async Task<bool> ValidateEntity(Element formElement, string originName)
+    private async Task<bool> ValidateEntity(Entity entity, string originName)
     {
-        if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
+        if (ValidateName(entity.Name) && !originName.ToLower().Equals(entity.Name.ToLower()))
         {
-            if (await DataDictionaryRepository.ExistsAsync(formElement.Name))
-                AddError("Name", StringLocalizer["There is already a dictionary with the name {0}",formElement.Name]);
+            if (await DataDictionaryRepository.ExistsAsync(entity.Name))
+                AddError("Name", StringLocalizer["There is already a dictionary with the name {0}",entity.Name]);
         }
 
-        if (string.IsNullOrEmpty(formElement.TableName))
+        if (string.IsNullOrEmpty(entity.TableName))
             AddError("TableName", StringLocalizer["Required table name field"]);
 
     
-        if (!string.IsNullOrEmpty(formElement.ReadProcedureName) &&
-            !string.IsNullOrEmpty(formElement.WriteProcedureName))
+        if (!string.IsNullOrEmpty(entity.ReadProcedureName) &&
+            !string.IsNullOrEmpty(entity.WriteProcedureName))
         { 
-            if (formElement.ReadProcedureName.ToLower().Equals(formElement.WriteProcedureName.ToLower()))
+            if (entity.ReadProcedureName.ToLower().Equals(entity.WriteProcedureName.ToLower()))
             {
                 AddError("CustomProcNameGet", StringLocalizer["Procedure names cannot be identical"]);
             }
@@ -39,7 +39,7 @@ public class EntityService(IValidationDictionary validationDictionary,
     }
 
 
-    public async Task<FormElement> EditEntityAsync(FormElement entity, string entityName)
+    public async Task<FormElement> EditEntityAsync(Entity entity, string entityName)
     {
         var isValid = await ValidateEntity(entity, entityName);
         if (!isValid)

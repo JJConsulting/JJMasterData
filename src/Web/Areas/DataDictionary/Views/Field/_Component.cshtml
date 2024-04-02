@@ -1,0 +1,78 @@
+﻿@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        @{
+            var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
+
+            foreach (var component in componentList)
+                component.Group.Name = StringLocalizer[component.Group.Name];
+        }
+        <div class="form-floating">
+            <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="componentList.OrderBy(c => c.Group.Name).ThenBy(c => c.Text)"></select>
+            <label asp-for="Component"></label>
+        </div>
+    </div>
+
+    @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
+            <div class="form-floating">
+                @Html.TextBoxFor(model => model.NumberOfDecimalPlaces, new { type = "number", @class = "form-control", placeholder = "" })
+                <label asp-for="NumberOfDecimalPlaces"></label>
+            </div>
+        </div>
+    }
+
+    @await Html.PartialAsync("_Attributes", Model)
+
+</div>
+
+@if (Model.Component is FormComponent.Text
+     or FormComponent.Email
+     or FormComponent.Number
+     or FormComponent.Cep
+     or FormComponent.Cnpj
+     or FormComponent.Cpf
+     or FormComponent.CnpjCpf)
+{
+    if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
+    {
+        <hr/>
+        <div class="col-sm-12">
+            <span class="text-info fa fa-info-circle"></span>
+            <span class="small">
+                <b>@StringLocalizer["Actions"]</b>
+                <br/>
+                <em>@StringLocalizer["This component allows you to add actions, but you must save it to add actions later."]</em>
+            </span>
+        </div>
+    }
+    else
+    {
+        @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new ActionsListDetailsViewModel
+        {
+            Source = ActionSource.Field,
+            ElementName = ViewBag.ElementName,
+            Actions = Model.Actions.GetAllSorted(),
+            FieldName = ViewBag.OriginalName
+        })
+    }
+}
+else if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup)
+{
+    @await Html.PartialAsync("_DataItem", Model)
+}
+else if (Model.Component is FormComponent.Lookup)
+{
+    @await Html.PartialAsync("_Lookup", Model)
+}
+else if (Model.Component is FormComponent.File)
+{
+    @await Html.PartialAsync("_DataFile", Model)
+}

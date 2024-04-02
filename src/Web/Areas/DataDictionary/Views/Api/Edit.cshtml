@@ -31,6 +31,8 @@
             @Html.Raw(Model.ValidationSummary?.GetHtml())
         </div>
     </div>
-    <card name="webApiCard" partial="_Api" model="Model"/>
+    <card>
+        <partial name="_Api" model="Model"/>
+    </card>
 }
 

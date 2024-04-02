@@ -16,7 +16,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Web.TagHelpers;
 
 public class ExpressionTagHelper(
-    IEnumerable<IExpressionProvider> expressionProviders, 
+    IEnumerable<IExpressionProvider> expressionProviders,
     IOptionsSnapshot<MasterDataWebOptions> options,
     IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
 {
@@ -31,18 +31,17 @@ public class ExpressionTagHelper(
     [HtmlAttributeName("value")] 
     public string? Value { get; set; }
 
-    [HtmlAttributeName("label")] 
+    [HtmlAttributeName("label")]
     public string? Label { get; set; }
-
+    
     [HtmlAttributeName("tooltip")]
     [Localizable(false)]
     public string? Tooltip { get; set; }
 
-    [ViewContext] 
-    [HtmlAttributeNotBound] 
+    [ViewContext] [HtmlAttributeNotBound] 
     public ViewContext ViewContext { get; set; } = null!;
-    
-    [HtmlAttributeName("disabled")]
+
+    [HtmlAttributeName("disabled")] 
     public bool Disabled { get; set; }
 
     private bool IsSyncExpression
@@ -59,8 +58,7 @@ public class ExpressionTagHelper(
         }
     }
 
-    [HtmlAttributeName("icon")]
-    public IconType? Icon { get; set; }
+    [HtmlAttributeName("icon")] public IconType? Icon { get; set; }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -75,20 +73,20 @@ public class ExpressionTagHelper(
         {
             modelValue = Value;
         }
-        
+
         var isInvalid = ViewContext.ModelState[name]?.Errors.Any() ?? false;
-        
+
         var splittedExpression = modelValue?.Split(':', 2);
 
-        string? selectedExpressionType =  null;
+        string? selectedExpressionType = null;
         string? selectedExpressionValue = modelValue;
-        
+
         if (splittedExpression?.Length == 2)
         {
             selectedExpressionType = splittedExpression[0];
             selectedExpressionValue = splittedExpression[1];
         }
-        
+
         var fieldSet = new FieldSet();
         fieldSet.WithAttributeIf(Disabled, "disabled");
 
@@ -96,13 +94,11 @@ public class ExpressionTagHelper(
 
         fieldSet.AppendIf(displayName is not null, HtmlTag.Div, div =>
         {
-            div.WithCssClass("form-floating mb-3");
-
             var label = new Label();
             label.WithAttribute("for", name + "-ExpressionValue");
             label.AppendText(displayName!);
-            
-            if (!options.Value.UseAdvancedModeAtExpressions)
+            var isAdvanced = options.Value.UseAdvancedModeAtExpressions;
+            if (!isAdvanced)
             {
                 div.WithCssClass("input-group");
                 div.Append(GetTypeSelect(name, selectedExpressionType)
@@ -110,11 +106,16 @@ public class ExpressionTagHelper(
                     .WithAttribute("id", name + "-ExpressionValue"));
             }
 
-            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue).WithAttribute("placeholder",displayName!)
+            div.AppendDiv(div =>
+                {
+                    div.WithCssClass("form-floating");
+                    div.WithAttributeIf(!isAdvanced, "style", "width:75%");
+                    div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
+                    div.Append(label);
+                }).WithAttribute("placeholder", displayName!)
+                .WithCssClass("mb-3")
                 .WithCssClassIf(isInvalid, "form-control is-invalid")
-                .WithAttribute("id", name + "-ExpressionValue"));
-
-            div.Append(label);
+                .WithAttribute("id", name + "-ExpressionValue");
         });
 
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -146,7 +147,7 @@ public class ExpressionTagHelper(
         return select;
     }
 
-    private HtmlBuilder GetEditorHtml(string name, 
+    private HtmlBuilder GetEditorHtml(string name,
         string? selectedExpressionType,
         string? selectedExpressionValue)
     {
@@ -154,18 +155,17 @@ public class ExpressionTagHelper(
         var input = new Input();
         input.WithCssClass("font-monospace");
         input.WithCssClass("form-control");
-        input.WithAttributeIf(!advanced,"style", "width:75%");
         input.WithNameAndId(name + "-ExpressionValue");
-        
+        input.WithAttribute("placeholder", string.Empty);
         if (selectedExpressionType is null)
             return input;
-        
-        var value = advanced ? 
-            selectedExpressionType + ":" + selectedExpressionValue 
+
+        var value = advanced
+            ? selectedExpressionType + ":" + selectedExpressionValue
             : selectedExpressionValue;
-        
+
         input.WithValue(value ?? string.Empty);
-        
+
         if (!string.IsNullOrEmpty(Tooltip))
             input.WithToolTip(Tooltip);
 

@@ -1,16 +1,14 @@
 
-
-using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
-using JJMasterData.Web.Services;
+
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
-public class CardTagHelper(RazorPartialRendererService rendererService, IComponentFactory<JJCard> cardFactory)
+public class CardTagHelper(IComponentFactory<JJCard> cardFactory)
     : TagHelper
 {
     
@@ -19,10 +17,6 @@ public class CardTagHelper(RazorPartialRendererService rendererService, ICompone
     
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
-    
-    [HtmlAttributeName("partial")]
-    [AspMvcPartialView]
-    public string? Partial { get; set; }
 
     [HtmlAttributeName("model")]
     public object? Model { get; set; }
@@ -38,7 +32,6 @@ public class CardTagHelper(RazorPartialRendererService rendererService, ICompone
     
     [HtmlAttributeName("layout")]
     public PanelLayout? Layout { get; set; }
-    private RazorPartialRendererService RendererService { get; } = rendererService;
     private IComponentFactory<JJCard> CardFactory { get; } = cardFactory;
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -54,15 +47,10 @@ public class CardTagHelper(RazorPartialRendererService rendererService, ICompone
             card.Icon = Icon;
         }
 
-        if (Partial == null)
-        {
-            var content = (await output.GetChildContentAsync()).GetContent();
-            card.HtmlBuilderContent = new HtmlBuilder(content);
-        }
-        else
-        {
-            card.HtmlBuilderContent = new HtmlBuilder(await RendererService.ToStringAsync(Partial, Model));
-        }
+      
+        var content = (await output.GetChildContentAsync()).GetContent();
+        card.HtmlBuilderContent = new HtmlBuilder(content);
+        
         
         Configure?.Invoke(card);
         

@@ -1,0 +1,45 @@
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@using JJMasterData.Core.DataDictionary.Models
+@model JJMasterData.Core.DataDictionary.Models.FormElementPanel
+
+<div class="row mb-3">
+    <div class="col-sm-4 required">
+        <div class="form-floating">
+            <select asp-for="Layout" class="form-control form-select" asp-items="Html.GetEnumSelectList<PanelLayout>()"></select>
+            <label asp-for="Layout"></label>
+        </div>
+    </div>
+    <div class=" col-sm-4 required">
+        <div class="form-floating">
+            <select asp-for="Color" class="form-control form-select" asp-items="Html.GetEnumSelectList<BootstrapColor>()"></select>
+            <label asp-for="Color"></label>
+        </div>
+    </div>
+    <div class="col-sm-4 required" id="divExpandedByDefault">
+        <div class="form-floating">
+            <select asp-for="ExpandedByDefault" class="form-control form-select">
+                <option value="true">@StringLocalizer["Yes"]</option>
+                <option value="false">@StringLocalizer["No"]</option>
+            </select>
+            <label asp-for="ExpandedByDefault"></label>
+        </div>
+
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <expression for="Title"/>
+    </div>
+    <div class="col-sm-6">
+        <expression for="SubTitle"/>
+    </div>
+    <div class="col-sm-6">
+        <label asp-for="Icon" class="@BootstrapHelper.Label"></label>
+        <icon-picker for="Icon"/>
+    </div>
+    <div class="col-sm-6">
+        <label asp-for="CssClass" class="@BootstrapHelper.Label"></label>
+        <input type="text" asp-for="CssClass" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
+    </div>
+</div>

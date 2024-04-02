@@ -4,17 +4,17 @@
 
 <div class="row mb-3">
     <div class="col-sm-10">
-        <expression for="FormElement.Title" disabled="@Model.Disabled"/>
+        <expression for="Entity.Title" disabled="@Model.Disabled"/>
     </div>
     <div class="col-sm-2">
         <div class="form-floating">
-            <select asp-for="FormElement.TitleSize" disabled="@Model.Disabled" asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select" id="floatingTitleSize"></select>
-            <label asp-for="FormElement.TitleSize"></label>
+            <select asp-for="Entity.TitleSize" disabled="@Model.Disabled" asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select" id="floatingTitleSize"></select>
+            <label asp-for="Entity.TitleSize"></label>
         </div>
     </div>
 </div>
 <div class="row mb-3">
     <div class="col-sm-10">
-        <expression for="FormElement.SubTitle" disabled="@Model.Disabled"/>
+        <expression for="Entity.SubTitle" disabled="@Model.Disabled"/>
     </div>
 </div>

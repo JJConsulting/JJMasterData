@@ -6,7 +6,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class EntityViewModel : DataDictionaryViewModel
 {
-    public FormElement FormElement { get; set; } = null!;
+    public Entity Entity { get; set; } = null!;
     public IEventHandler? FormEvent { get; set; }
     [Display(Name = "Type")]
     public string FormEventType => IsPythonFormEvent ? "Python" : ".NET";

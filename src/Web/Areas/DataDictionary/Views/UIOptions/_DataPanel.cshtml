@@ -6,18 +6,17 @@
 
 <div class="row">
     <div class="col-sm-3">
-        <label class="@BootstrapHelper.Label"  asp-for="FormCols"></label>
-        <tooltip title="@StringLocalizer["Number of columns where fields will be rendered by default."]"/>
-        
-        @Html.DropDownListFor(model => Model.FormCols, new[]
-        {
-            new SelectListItem { Text = StringLocalizer["1 (one column)"], Value = "1" },
-            new SelectListItem { Text = StringLocalizer["2 (two columns)"], Value = "2" },
-            new SelectListItem { Text = StringLocalizer["3 (three columns)"], Value = "3" },
-            new SelectListItem { Text = StringLocalizer["4 (four columns)"], Value = "4" },
-            new SelectListItem { Text = StringLocalizer["6 (six columns)"], Value = "6" },
-            new SelectListItem { Text = StringLocalizer["12 (twelve columns)"], Value = "12" },
-        }, new { @class = "form-select" })
+        <div class="form-floating">
+            <select asp-for="FormCols" class="form-select" data-bs-toggle="tooltip" title="@StringLocalizer["Number of columns where fields will be rendered by default."]">
+                <option value="1">@StringLocalizer["1 (one column)"]</option>
+                <option value="2">@StringLocalizer["2 (two columns)"]</option>
+                <option value="3">@StringLocalizer["3 (three columns)"]</option>
+                <option value="4">@StringLocalizer["4 (four columns)"]</option>
+                <option value="6">@StringLocalizer["6 (six columns)"]</option>
+                <option value="12">@StringLocalizer["12 (twelve columns)"]</option>
+            </select>
+            <label asp-for="FormCols"></label>
+        </div>
     </div>
     
     <div class="col-sm-3">
@@ -29,7 +28,9 @@
     </div>
     
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-        <label class="@BootstrapHelper.Label " asp-for="EnterKey"></label>
-        <select asp-for="EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+        <div class="form-floating">
+            <select asp-for="EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+            <label asp-for="EnterKey"></label>
+        </div>
     </div>
 </div>

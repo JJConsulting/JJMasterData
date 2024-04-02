@@ -1,20 +1,9 @@
-﻿@using JJMasterData.Commons.Data.Entity.Models
-@using JJMasterData.Commons.Validations
-@using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Core.DataDictionary.Models.Actions
-@using JJMasterData.Core.Events.Abstractions
+﻿@using JJMasterData.Core.Events.Abstractions
 @using JJMasterData.Core.Events.Extensions
-@using JJMasterData.Core.UI
-@using JJMasterData.Core.UI.Components
 @using JJMasterData.Core.UI.Events.Abstractions
-@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
-
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
-
 @inject IFormEventHandlerResolver FormEventHandlerResolver
-
 @inject IGridEventHandlerResolver GridEventHandlerResolver
 
 @{
@@ -84,227 +73,16 @@
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade @Active("#div-general")">
-            <div class="row">
-
-                @if (Validate.IsDatabaseKeyword(Model.Name))
-                {
-                    <alert title="@StringLocalizer["Warning"]" 
-                           color="Warning" 
-                           icon="IconType.Warning"
-                           message="@StringLocalizer["This field uses a reserved keyword of the database in its name."]"/>
-                }
-                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                    <div class="form-floating">
-                        @if (isCustomizedField)
-                        {
-                        <input asp-for="Name" placeholder=""  maxlength="64" class="form-control" readonly="readonly" data-bs-toggle="tooltip" title="@StringLocalizer["Name of the field at the database."]"/>
-                        }
-                        else
-                        {
-                        <input asp-for="Name" placeholder="" maxlength="64" class="form-control"  data-bs-toggle="tooltip" title="@StringLocalizer["Name of the field at the database."]"/>
-                        }
-                        <label asp-for="Name"></label>
-                    </div>
-                    <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <div class="form-floating">
-                        <input asp-for="Label" class="form-control" placeholder="" data-bs-toggle="tooltip" title="@StringLocalizer["Name of the field displayed at the form."]" />
-                        <label asp-for="Label"></label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                    <div class="form-floating">
-                        <select asp-for="Filter.Type" class="form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
-                        <label asp-for="Filter.Type"></label>
-                    </div>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                    <div class="form-floating">
-                        <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()" data-bs-html="true" data-bs-toggle="tooltip" title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"></select>
-                        <label asp-for="DataBehavior"></label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                    @{
-                        var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
-
-                        foreach (var dataType in dataTypeList)
-                        dataType.Group.Name = StringLocalizer[dataType.Group.Name];
-                    }
-                    <div class="form-floating">
-                        <select asp-for="DataType" class="form-control form-select" asp-items="dataTypeList.OrderBy(f => f.Group.Name)"></select>
-                        <label asp-for="DataType"></label>
-                    </div>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <div class="form-floating">
-                        <input asp-for="Size" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Field size. Use -1 to use the MAX keyword."]"/>
-                        <label asp-for="Size"></label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <checkbox for="IsRequired" switch="true" />
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <checkbox for="IsPk" switch="true" />
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <checkbox for="AutoNum" switch="true" />
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <checkbox for="Export" switch="true"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <checkbox tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]" for="EncodeHtml" switch="true"/>
-                </div>
-                @if (Options.Value.SupportNetFramework)
-                {
-                    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                        <checkbox tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]" for="ValidateRequest" switch="true"/>
-                    </div>
-                }
-            </div>
-
+            <partial name="_General"/>
         </div>
         <div id="div-component" class="tab-pane fade @Active("#div-component")">
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label class="@BootstrapHelper.Label " asp-for="Component"></label>
-                    @{
-                        var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
-
-                        foreach (var component in componentList)
-                            component.Group.Name = StringLocalizer[component.Group.Name];
-                    }
-                    <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="componentList.OrderBy(c=>c.Group.Name).ThenBy(c=>c.Text)"></select>
-                </div>
-
-                @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
-                {
-                    <div class="@BootstrapHelper.FormGroup col-sm-4">
-                        <label class="@BootstrapHelper.Label " asp-for="NumberOfDecimalPlaces"></label>
-                        @Html.TextBoxFor(model => model.NumberOfDecimalPlaces, new { type = "number", @class = "form-control" })
-                    </div>
-                }
-
-                @await Html.PartialAsync("_Attributes", Model)
-
-            </div>
-
-            @if (Model.Component is FormComponent.Text 
-                or FormComponent.Email 
-                or FormComponent.Number 
-                or FormComponent.Cep 
-                or FormComponent.Cnpj 
-                or FormComponent.Cpf 
-                or FormComponent.CnpjCpf)
-            {
-                if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
-                {
-                    <hr/>
-                    <div class="col-sm-12">
-                        <span class="text-info fa fa-info-circle"></span>
-                        <span class="small">
-                            <b>@StringLocalizer["Actions"]</b>
-                            <br/>
-                            <em>@StringLocalizer["This component allows you to add actions, but you must save it to add actions later."]</em>
-                        </span>
-                    </div>
-                }
-                else
-                {
-                    @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new ActionsListDetailsViewModel
-                           {
-                               Source = ActionSource.Field,
-                               ElementName = ViewBag.ElementName,
-                               Actions = Model.Actions.GetAllSorted(),
-                               FieldName = ViewBag.OriginalName
-                           })
-                }
-            }
-            else if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup)
-            {
-                @await Html.PartialAsync("_DataItem", Model)
-            }
-            else if (Model.Component is FormComponent.Lookup)
-            {
-                @await Html.PartialAsync("_Lookup", Model)
-            }
-            else if (Model.Component is FormComponent.File)
-            {
-                @await Html.PartialAsync("_DataFile", Model)
-            }
-
+            <partial name="_Component"/>
         </div>
         <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <expression for="DefaultValue" icon="IconType.Check" tooltip="@StringLocalizer["Expression for a default value. See the docs for more information."]"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <expression for="VisibleExpression" icon="IconType.Eye" tooltip="@StringLocalizer["Boolean expression to show the field. See the docs for more information."]"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <expression for="EnableExpression" icon="IconType.Pencil" tooltip="@StringLocalizer["Boolean expression to enable the field. See the docs for more information."]"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <expression for="TriggerExpression" icon="IconType.Bolt" tooltip="@StringLocalizer["Expression triggered whenever a field performs a POST to the server. See the documentation for more information."]"/>
-                </div>
-            </div>
-            <div class="row">
-                <span> <span class="fa fa-info-circle" style="color:#005a86"></span> @StringLocalizer["Read more about expressions "]<a target="_blank" href="https://md.jjconsulting.tech/articles/expressions.html">@StringLocalizer[" in this link."]</a></span>
-            </div>
+            <partial name="_Expressions"/>
         </div>
         <div id="div-layout" class="tab-pane fade @Active("#div-layout")">
-            <div class="@BootstrapHelper.FormGroup col-sm-12">
-                <label class="@BootstrapHelper.Label " asp-for="HelpDescription">
-                </label>
-                <tooltip title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
-                @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
-            </div>
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " asp-for="CssClass"></label>
-                    <tooltip title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
-
-                    @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
-                </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " asp-for="LineGroup"></label>
-                    <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
-
-                    @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
-                </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label class="@BootstrapHelper.Label " asp-for="GridAlignment"></label>
-                    <select asp-for="GridAlignment"  class="form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
-                </div>
-                
-                @if (Model.SupportsFloatingLabel())
-                {
-                    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                        <checkbox switch="true" for="FloatingLabel" tooltip="@StringLocalizer[""]"/>
-                    </div>
-                }
-            </div>
+            <partial name="_FieldLayout"/>
         </div>
         
         </div>
@@ -314,7 +92,7 @@
             @if (isCustomizedField)
             {
                 <alert title="@StringLocalizer["Customized Field"]"
-                       message="@StringLocalizer["This field is inside an event handler and its behavior can be modified at runtime. You also cannot delete or modify your name."]" 
+                       message="@StringLocalizer["This field is inside an event handler and its behavior can be modified at runtime."]" 
                        icon="IconType.SolidCircleInfo" 
                        color="Info"/>
             }
@@ -335,15 +113,14 @@
         text="Refresh" 
         icon="Refresh"/>
     
-    @if (!isCustomizedField)
-    {
-        <link-button 
-            asp-action="Delete"
-            asp-route-fieldName="@Model.Name"
-            asp-route-elementName="@ViewBag.ElementName"
-            text="Delete" 
-            icon="SolidTrashCan" />
-    }
+ 
+    <link-button 
+        asp-action="Delete"
+        asp-route-fieldName="@Model.Name"
+        asp-route-elementName="@ViewBag.ElementName"
+        text="Delete" 
+        icon="SolidTrashCan" />
+    
     <link-button 
         text="Copy"  
         icon="FilesO" 

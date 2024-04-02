@@ -93,20 +93,26 @@
         <li id="nav-general" class="nav-item" @Active("#div-general")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
+        <li id="nav-fields" class="nav-item" @Active("#div-fields")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-fields">@StringLocalizer["Fields"]</a>
+        </li>
         <li id="nav-advanced" class="nav-item" @Active("#div-advanced")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Expressions"]</a>
         </li>
     </ul>
 
     @Html.HiddenFor(model => model.PanelId)
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade">
-            <partial name="_DetailData" model="Model"/>
+            <partial name="_DetailGeneral" model="Model"/>
+        </div>
+        
+        <div id="div-fields" class="tab-pane fade">
             <partial name="_DetailFields" model="Model"/>
         </div>
 
         <div id="div-advanced" class="tab-pane fade">
-            <partial name="_DetailAdvanced" model="Model"/>
+            <partial name="_DetailExpressions" model="Model"/>
         </div>
 
     </div>

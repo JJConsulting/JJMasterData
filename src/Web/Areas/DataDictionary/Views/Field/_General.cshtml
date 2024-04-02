@@ -1,0 +1,96 @@
+﻿@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Commons.Validations
+@using JJMasterData.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
+<div class="row">
+
+    @if (Validate.IsDatabaseKeyword(Model.Name))
+    {
+        <alert title="@StringLocalizer["Warning"]"
+               color="Warning"
+               icon="IconType.Warning"
+               message="@StringLocalizer["This field uses a reserved keyword of the database in its name."]"/>
+    }
+    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+        <div class="form-floating">
+            <input asp-for="Name" placeholder="" maxlength="64" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Name of the field at the database."]"/>
+            <label asp-for="Name"></label>
+        </div>
+        <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Label" class="form-control" placeholder="" data-bs-toggle="tooltip" title="@StringLocalizer["Name of the field displayed at the form."]"/>
+            <label asp-for="Label"></label>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+        <div class="form-floating">
+            <select asp-for="Filter.Type" class="form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
+            <label asp-for="Filter.Type"></label>
+        </div>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+        <div class="form-floating">
+            <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()" data-bs-html="true" data-bs-toggle="tooltip" title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"></select>
+            <label asp-for="DataBehavior"></label>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+        @{
+            var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+
+            foreach (var dataType in dataTypeList)
+                dataType.Group.Name = StringLocalizer[dataType.Group.Name];
+        }
+        <div class="form-floating">
+            <select asp-for="DataType" class="form-control form-select" asp-items="dataTypeList.OrderBy(f => f.Group.Name)"></select>
+            <label asp-for="DataType"></label>
+        </div>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Size" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Field size. Use -1 to use the MAX keyword."]"/>
+            <label asp-for="Size"></label>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <checkbox for="IsRequired" switch="true"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <checkbox for="IsPk" switch="true"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <checkbox for="AutoNum" switch="true"/>
+    </div>
+</div>
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <checkbox for="Export" switch="true"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <checkbox tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]" for="EncodeHtml" switch="true"/>
+    </div>
+    @if (Options.Value.SupportNetFramework)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <checkbox tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]" for="ValidateRequest" switch="true"/>
+        </div>
+    }
+</div>
