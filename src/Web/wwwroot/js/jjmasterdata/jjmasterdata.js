@@ -2079,6 +2079,7 @@ function getRequestOptions() {
 function postFormValues(options) {
     SpinnerOverlay.show();
     const requestOptions = getRequestOptions();
+    const event = new Event("postFormValuesCompleted");
     fetch(options.url, requestOptions)
         .then(response => {
         var _a;
@@ -2097,6 +2098,7 @@ function postFormValues(options) {
     })
         .then(data => {
         options.success(data);
+        document.dispatchEvent(event);
     })
         .catch(error => {
         if (options.error) {

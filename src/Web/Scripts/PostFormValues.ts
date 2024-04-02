@@ -16,6 +16,7 @@ function getRequestOptions() {
 function postFormValues(options : PostFormValuesOptions) {
     SpinnerOverlay.show();
     const requestOptions = getRequestOptions();
+    const event = new Event("postFormValuesCompleted");
     fetch(options.url, requestOptions)
         .then(response => {
             if (response.headers.get("content-type")?.includes("application/json")) {
@@ -35,6 +36,7 @@ function postFormValues(options : PostFormValuesOptions) {
         })
         .then(data => {
             options.success(data)
+            document.dispatchEvent(event);
         })
         .catch(error => {
             if(options.error){
