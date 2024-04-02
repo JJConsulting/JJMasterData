@@ -126,14 +126,38 @@ internal class GridSettingsForm(
     private HtmlBuilder GetPaginationHtml(GridSettings gridSettings)
     {
         var div = new Div();
-        div.Append(HtmlTag.Label, label =>
+        div.WithCssClass("col-sm-6");
+
+        if (BootstrapHelper.Version is 3)
         {
-            label.WithCssClass("form-label");
-            label.WithAttribute("for", _tableTotalPerPage);
-            label.AppendText(stringLocalizer["Records per page"]);
-        });
-        div.WithCssClass("col-sm-3");
-        var select = new HtmlBuilder(HtmlTag.Select)
+            div.Append(GetPaginationLabel());
+            div.Append(GetPaginationSelect(gridSettings));
+        }
+        else
+        {
+            div.AppendDiv(div =>
+            {
+                div.WithCssClass("form-floating");
+                div.Append(GetPaginationSelect(gridSettings));
+                div.Append(GetPaginationLabel());
+            });
+        }
+
+        return div;
+    }
+
+    private HtmlBuilder GetPaginationLabel()
+    {
+        var label = new Label();
+        label.WithCssClass("form-label");
+        label.WithAttribute("for", _tableTotalPerPage);
+        label.AppendText(stringLocalizer["Records per page"]);
+        return label;
+    }
+
+    private HtmlBuilder GetPaginationSelect(GridSettings gridSettings)
+    {
+        var select = new Select()
             .WithCssClass("form-control form-select")
             .WithNameAndId(_tableTotalPerPage);
 
@@ -148,9 +172,7 @@ internal class GridSettingsForm(
             });
         }
 
-        div.Append(select);
-
-        return div;
+        return select;
     }
 
     private HtmlBuilder GetDataToggleElement(string name, string label, bool isChecked)
