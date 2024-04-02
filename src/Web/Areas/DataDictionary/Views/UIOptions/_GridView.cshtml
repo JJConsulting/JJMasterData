@@ -70,7 +70,9 @@
                     <input type="text" class="form-control" asp-for="RecordsPerPage" placeholder="" >
                     <label asp-for="RecordsPerPage"></label>
                 </div>
-                <link-button icon="SolidGaugeHigh" tooltip="@StringLocalizer["Maximum possible records"]" color="Default" on-client-click="setMaxRecordsPerPage()"/>
+                <div class="input-group-text" onclick="setMaxRecordsPerPage()" data-bs-toggle="tooltip" title="@StringLocalizer["Maximum possible records"]">
+                    <icon icon="SolidGaugeHigh"></icon>
+                </div>
             </div>
         </div>
 
