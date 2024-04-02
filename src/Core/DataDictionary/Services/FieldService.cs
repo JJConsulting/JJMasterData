@@ -130,6 +130,11 @@ public class FieldService(IValidationDictionary validationDictionary,
                 StringLocalizer[
                     "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"]);
 
+        if (field.DataType is FieldType.DateTime2 && field.Size < 0 || field.Size > 7)
+        {
+            AddError(nameof(field.DataType), StringLocalizer["Field size must be between 0 and 7 for DateTime2"]);
+        }
+        
         if (field.DataType != FieldType.Varchar && 
             field.DataType != FieldType.NVarchar && 
             field.DataType != FieldType.Text && 
