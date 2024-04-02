@@ -60,7 +60,7 @@ function saveIcon(selectedIcon) {
     </div>
 </div>
 <div id="icon-container" class="row">
-    @foreach (var icon in Enum.GetValues<IconType>())
+    @foreach (var icon in IconHelper.GetIconList())
     {
         <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.GetId().ToString()');">
             <span class="@icon.GetCssClass() fa-3x"></span>
