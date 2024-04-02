@@ -1455,6 +1455,7 @@ document.addEventListener("DOMContentLoaded", function () {
     listenAllEvents();
 });
 const listenAllEvents = (selectorPrefix = String()) => {
+    var _a;
     selectorPrefix += " ";
     $(selectorPrefix + ".selectpicker").selectpicker({
         iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon',
@@ -1489,7 +1490,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
         });
     }
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
-    document.querySelector("form").addEventListener("submit", function (event) {
+    (_a = document.querySelector("form")) === null || _a === void 0 ? void 0 : _a.addEventListener("submit", function (event) {
         let isValid;
         if (typeof jQuery == 'function') {
             isValid = $(this).valid();
