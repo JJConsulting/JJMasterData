@@ -37,9 +37,11 @@ public class DataImportationWorker(
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     #endregion
-
+    
     public string UserId { get; set; }
 
+    internal Dictionary<string, object> UserValues { get; set; } = new();
+    
     public ProcessOptions ProcessOptions { get; set; }
 
     private CultureInfo Culture { get; set; } = Thread.CurrentThread.CurrentUICulture;
@@ -126,7 +128,7 @@ public class DataImportationWorker(
         Thread.CurrentThread.CurrentCulture = Culture;
 
         //recuperando campos a serem importados
-        var fieldList = GetListImportedField();
+        var fieldList = GetImportationFields();
         
         string[] stringSeparators = ["\r\n"];
         string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
@@ -134,37 +136,33 @@ public class DataImportationWorker(
         currentProcess.Message =
             StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
 
-        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData()
+        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData
         {
             Values = new Dictionary<string, object>(),
             PageState = PageState.Import,
             UserValues = UserValues
         });
         var formStateData = new FormStateData(defaultValues, UserValues, PageState.Import);
-
-        //executa script antes da execuçao
+        
+        //Execute before process events
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
             var parsedSql =
                 ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandBeforeProcess,
                     formStateData);
-            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql));
+            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 
         token.ThrowIfCancellationRequested();
-        bool isFirstRow = true;
-        foreach (string line in rows)
+        for (var index = 0; index < rows.Length; index++)
         {
+            var line = rows[index];
             currentProcess.TotalProcessed++;
-
-            //Ignora linhas em branco
+            
             if (string.IsNullOrWhiteSpace(line))
-            {
                 continue;
-            }
-
-            //Ignora conteudo vazio
+            
             if (string.IsNullOrWhiteSpace(line.Replace(Separator.ToString(), string.Empty)))
             {
                 currentProcess.AddError(StringLocalizer["Empty line ignored"]);
@@ -172,28 +170,30 @@ public class DataImportationWorker(
                 continue;
             }
 
-            //Verifica quantidade de colunas do arquivo
-            string[] cols = line.Split(Separator);
+            var cols = line.Split(Separator);
+
+            //Check if the row count is valid.
             if (cols.Length != fieldList.Count)
             {
                 currentProcess.Error++;
 
-                string error = string.Empty;
-                error += StringLocalizer["Invalid number of fields."];
-                error += " ";
-                error += StringLocalizer["Expected {0} Received {1}.", fieldList.Count, cols.Length];
-                currentProcess.AddError(error);
+                var errorBuilder = new StringBuilder();
+                errorBuilder.Append(StringLocalizer["Invalid number of fields."]);
+                errorBuilder.Append(' ');
+                errorBuilder.Append(StringLocalizer["Expected {0} Received {1}.", fieldList.Count, cols.Length]);
+                currentProcess.AddError(errorBuilder.ToString());
 
-                error += StringLocalizer["Click on the Help button for more information regarding the file layout."];
-                throw new JJMasterDataException(error);
+                errorBuilder.Append(StringLocalizer["Click on the Help button for more information regarding the file layout."]);
+                throw new JJMasterDataException(errorBuilder.ToString());
             }
 
-            //Analisa se ignora a primeira linha do arquivo
-            if (isFirstRow)
+            //Verify if it's first row.
+            if (index == 0)
             {
-                isFirstRow = false;
-                string colName1 = fieldList[0].LabelOrName;
-                if (colName1.Trim().ToLower().Equals(cols[0].Trim().ToLower()))
+                string firstColumnName = StringLocalizer[fieldList[0].LabelOrName];
+
+                //Validate if the first column is the same label of the FormElement. Is there a better way to do this?
+                if (string.Equals(firstColumnName.Trim(), cols[0].Trim(), StringComparison.OrdinalIgnoreCase))
                 {
                     currentProcess.AddError(StringLocalizer["File header ignored"]);
                     currentProcess.Ignore++;
@@ -201,17 +201,28 @@ public class DataImportationWorker(
                 }
             }
 
-            var values = GetDictionaryWithNameAndValue(fieldList, cols);
-            await SetFormValues(values, currentProcess);
+            try
+            {
+                var values = GetDictionaryWithNameAndValue(fieldList, cols);
+                var formLetter = await SaveRowValues(values);
+                ProcessFormLetter(currentProcess, formLetter);
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "Error while processing line {Line} of {FormElement} at Data Importation.",index, FormElement.Name);
+                currentProcess.Error++;
+                currentProcess.AddError(StringLocalizer[ExceptionManager.GetMessage(exception)]);
+            }
+
             Reporter(currentProcess);
             token.ThrowIfCancellationRequested();
         }
 
-        //executa script após a execução
+        //Execute success events
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
-            string parsedSql =
+            var parsedSql =
                 ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandAfterProcess, formStateData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
@@ -220,27 +231,57 @@ public class DataImportationWorker(
             await OnAfterProcessAsync(this, new FormAfterActionEventArgs());
     }
 
-    internal Dictionary<string, object> UserValues { get; set; } = new Dictionary<string, object>();
+    private static void ProcessFormLetter(DataImportationReporter currentProcess, FormLetter<CommandOperation> formLetter)
+    {
+        if (formLetter.IsValid)
+        {
+            switch (formLetter.Result)
+            {
+                case CommandOperation.Insert:
+                    currentProcess.Insert++;
+                    break;
+                case CommandOperation.Update:
+                    currentProcess.Update++;
+                    break;
+                case CommandOperation.Delete:
+                    currentProcess.Delete++;
+                    break;
+                case CommandOperation.None:
+                default:
+                    currentProcess.Ignore++;
+                    break;
+            }
+        }
+        else
+        {
+            currentProcess.Error++;
+            var errorBuilder = new StringBuilder();
+            foreach (var error in formLetter.Errors)
+            {
+                if (errorBuilder.Length > 0)
+                    errorBuilder.AppendLine();
 
+                errorBuilder.Append(error.Value);
+            }
 
-    private static Dictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField,
+            currentProcess.AddError(errorBuilder.ToString());
+        }
+    }
+
+    private static Dictionary<string, object> GetDictionaryWithNameAndValue(
+        List<FormElementField> fieldList,
         string[] cols)
     {
-        var values = new Dictionary<string, object>();
-        for (int i = 0; i < listField.Count; i++)
+        var values = new Dictionary<string, object>(fieldList.Count);
+        for (var i = 0; i < fieldList.Count; i++)
         {
-            var field = listField[i];
-            var value = cols[i];
-            FormValuesService.HandleFieldValue(field, values, value);
+            FormValuesService.HandleFieldValue(fieldList[i], values, cols[i]);
         }
 
         return values;
     }
-
-    /// <summary>
-    /// Lista de campos a serem importados
-    /// </summary>
-    private List<FormElementField> GetListImportedField()
+    
+    private List<FormElementField> GetImportationFields()
     {
         if (FormElement == null)
             throw new ArgumentException(nameof(FormElement));
@@ -250,74 +291,21 @@ public class DataImportationWorker(
         var list = new List<FormElementField>();
         foreach (var field in FormElement.Fields)
         {
-            bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
+            var visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (visible && field.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly)
                 list.Add(field);
         }
 
         return list;
     }
-
-    /// <summary>
-    /// Atualiza os valores no banco de dados. 
-    /// Retorna lista de erros
-    /// </summary>
-    /// <returns>Retorna lista de erros</returns>
-    private async Task SetFormValues(Dictionary<string, object> fileValues, DataImportationReporter currentProcess)
+    
+    private async Task<FormLetter<CommandOperation>> SaveRowValues(Dictionary<string, object> fileValues)
     {
-        try
-        {
-            DataHelper.CopyIntoDictionary(fileValues, RelationValues);
-            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,
-                new FormStateData(fileValues, UserValues, PageState.Import));
+        DataHelper.CopyIntoDictionary(fileValues, RelationValues);
+        
+        var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,
+            new FormStateData(fileValues, UserValues, PageState.Import));
 
-            var formLetter = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
-
-            if (formLetter.IsValid)
-            {
-                switch (formLetter.Result)
-                {
-                    case CommandOperation.Insert:
-                        currentProcess.Insert++;
-                        break;
-                    case CommandOperation.Update:
-                        currentProcess.Update++;
-                        break;
-                    case CommandOperation.Delete:
-                        currentProcess.Delete++;
-                        break;
-                    default:
-                        currentProcess.Ignore++;
-                        break;
-                }
-            }
-            else
-            {
-                currentProcess.Error++;
-                var sErr = new StringBuilder();
-                foreach (var err in formLetter.Errors)
-                {
-                    if (sErr.Length > 0)
-                        sErr.AppendLine("");
-
-                    sErr.Append(err.Value);
-                }
-
-                currentProcess.AddError(sErr.ToString());
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (ThreadAbortException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            currentProcess.Error++;
-            currentProcess.AddError(StringLocalizer[ExceptionManager.GetMessage(ex)]);
-        }
+        return await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
     }
 }
