@@ -21,9 +21,9 @@ class GridViewHelper {
     }
 
     static closeSettingsModal(componentName: string, clearFormValues: boolean = true) {
-
-        const checkboxes = getMasterDataForm();
+        
         const modalId = "config-modal-" + componentName;
+        const checkboxes = document.querySelectorAll("#" + modalId + " input");
         const modalElement = document.getElementById("config-modal-" + componentName);
 
         if (clearFormValues) {

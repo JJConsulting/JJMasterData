@@ -3,6 +3,8 @@
 JJMasterData only supports one form per HTML document.
 If you need multiple `JJFormView` or `JJDataPanel` instances, you put them in the same form.
 
+If MasterData does not find the id `masterdata-form`, it will be considered the first form in the DOM.
+
 When you need multiple forms in your View alongside JJMasterData, you have two options:
 ## Using the TagHelper
 
