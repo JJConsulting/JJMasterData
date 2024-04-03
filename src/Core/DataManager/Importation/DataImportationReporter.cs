@@ -1,9 +1,11 @@
 ﻿using System.Text;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks.Progress;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Importation;
 
-public class DataImportationReporter : ProgressReporter
+public class DataImportationReporter(IStringLocalizer<MasterDataResources> stringLocalizer) : ProgressReporter
 {
     
     private int _totalProcessed;
@@ -42,10 +44,10 @@ public class DataImportationReporter : ProgressReporter
 
     public void AddError(string value)
     {
-        ErrorLog.Append("Row: ");
+        ErrorLog.Append("<hr/>");
+        ErrorLog.Append("<b>" + stringLocalizer["Row: "] + "</b>");
         ErrorLog.AppendLine(TotalProcessed.ToString());
         ErrorLog.Append(value);
-        ErrorLog.Append("<hr/>");
     }
 
     private void UpdatePercentProgress()
