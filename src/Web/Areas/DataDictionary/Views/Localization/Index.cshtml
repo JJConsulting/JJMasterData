@@ -6,7 +6,6 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
-@using (Html.BeginForm())
-{
+<master-data-form asp-action="Index" asp-controller="Localization" asp-area="DataDictionary">
     @Html.Raw(Model)
-}
+</master-data-form>

@@ -3,6 +3,7 @@
 @using JJMasterData.Core.UI
 @using JJMasterData.Commons.Data.Entity.Providers
 @using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Web.Extensions
 
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
@@ -208,7 +209,7 @@
 
     <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
-    @using (Html.BeginForm("Index", "Field", FormMethod.Post))
+    @using (Html.BeginMasterDataForm("Index", "Field", FormMethod.Post))
     {
         <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
         <div class="row">

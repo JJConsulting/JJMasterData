@@ -129,7 +129,7 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
-@using (Html.BeginForm())
+@using (Html.BeginMasterDataForm())
 {
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
     <input type="hidden" name="selectedFields" id="selectedFields" value="@Context.Request.Query["selectedFields"]"/>

@@ -130,7 +130,8 @@
 })();
 
 function requestSubmitParentWindow() {
-    window.parent.document.forms[0].requestSubmit();
+    // @ts-ignore
+    window.parent.getMasterDataForm().requestSubmit();
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

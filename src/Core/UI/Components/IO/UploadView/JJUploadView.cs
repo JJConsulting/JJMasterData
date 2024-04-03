@@ -98,7 +98,7 @@ public class JJUploadView : AsyncComponent
         }
     }
     
-    public string JsCallback { get; set; } = @"document.forms[0].submit()";
+    public string JsCallback { get; set; } = "getMasterDataForm().submit()";
 
     public JJGridView GridView
     {

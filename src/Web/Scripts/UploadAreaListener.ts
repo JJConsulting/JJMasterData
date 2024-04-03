@@ -23,7 +23,7 @@
         });
 
         dropzone.on('sendingmultiple', function(data, xhr, formData) {
-            $("form").find("input").each(function(){
+            $(getMasterDataForm()).find("input").each(function(){
                 formData.append($(this).attr("name"), $(this).val().toString());
             });
         });

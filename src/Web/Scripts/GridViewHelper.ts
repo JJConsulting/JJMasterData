@@ -22,12 +22,12 @@ class GridViewHelper {
 
     static closeSettingsModal(componentName: string, clearFormValues: boolean = true) {
 
-        const checkboxes = document.querySelectorAll("form");
+        const checkboxes = getMasterDataForm();
         const modalId = "config-modal-" + componentName;
         const modalElement = document.getElementById("config-modal-" + componentName);
 
         if (clearFormValues) {
-            const form = document.querySelector("form");
+            const form = getMasterDataForm();
             form?.reset();
         }
 
@@ -159,7 +159,7 @@ class GridViewHelper {
         this.setCurrentGridPage(componentName,String());
         this.clearCurrentGridAction(componentName)
         this.clearCurrentFormAction(componentName)
-        document.forms[0].submit();
+        getMasterDataForm().submit();
     }
     
     static refreshGrid(componentName: string, routeContext: string) {

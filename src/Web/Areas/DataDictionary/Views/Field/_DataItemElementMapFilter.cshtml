@@ -21,13 +21,13 @@
        </collapse-panel>
        <script lang="javascript" type="text/javascript">
            function addElementMapFilter() {
-               const form = document.forms[0]; 
+               const form = getMasterDataForm(); 
                form.action = "@Url.Action("AddElementMapFilter", new { elementName = ViewBag.ElementName })";
                form.submit();
            }
            
            function removeElementMapFilter(elementMapFieldName) {
-               const form = document.forms[0];
+               const form = getMasterDataForm();
                const input = document.createElement("input");
                input.type = "hidden";
                input.id = "elementMapFieldName";

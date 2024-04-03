@@ -1,4 +1,5 @@
 ﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
+@using JJMasterData.Web.Extensions
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @{
@@ -6,7 +7,7 @@
     
 }
 
-@using (Html.BeginForm())
+@using (Html.BeginMasterDataForm())
 {
     <script lang="js" type="text/javascript">
          window.parent.defaultModal.modalTitle = '@Html.Raw(@Model.Title)';

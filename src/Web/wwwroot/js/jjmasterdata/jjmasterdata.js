@@ -13,7 +13,7 @@ class ActionHelper {
     static submitWithScrollPosition() {
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
         SpinnerOverlay.show();
-        document.forms[0].submit();
+        getMasterDataForm().submit();
     }
     static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, isSubmit, confirmMessage) {
         if (confirmMessage) {
@@ -143,7 +143,7 @@ class ActionHelper {
         if (formViewActionInput) {
             formViewActionInput.value = actionMap;
         }
-        let form = document.querySelector("form");
+        let form = getMasterDataForm();
         if (!form) {
             return;
         }
@@ -229,7 +229,7 @@ class ActionHelper {
 class AuditLogViewHelper {
     static viewAuditLog(componentName, id) {
         const auditLogIdInput = document.getElementById("audit-log-id-" + componentName);
-        const form = document.querySelector("form");
+        const form = getMasterDataForm();
         if (auditLogIdInput) {
             auditLogIdInput.value = id;
         }
@@ -452,7 +452,7 @@ class DataDictionaryUtils {
         });
     }
     static postAction(url) {
-        window.parent.document.forms[0].requestSubmit();
+        window.parent.getMasterDataForm().requestSubmit();
     }
     static exportElement(id, url, validationMessage) {
         const values = document.querySelector('#grid-view-selected-rows-' + id).value;
@@ -1185,11 +1185,11 @@ class GridViewHelper {
         }
     }
     static closeSettingsModal(componentName, clearFormValues = true) {
-        const checkboxes = document.querySelectorAll("form");
+        const checkboxes = getMasterDataForm();
         const modalId = "config-modal-" + componentName;
         const modalElement = document.getElementById("config-modal-" + componentName);
         if (clearFormValues) {
-            const form = document.querySelector("form");
+            const form = getMasterDataForm();
             form === null || form === void 0 ? void 0 : form.reset();
         }
         if (checkboxes) {
@@ -1284,7 +1284,7 @@ class GridViewHelper {
         this.setCurrentGridPage(componentName, String());
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
-        document.forms[0].submit();
+        getMasterDataForm().submit();
     }
     static refreshGrid(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -1490,7 +1490,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
         });
     }
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
-    (_a = document.querySelector("form")) === null || _a === void 0 ? void 0 : _a.addEventListener("submit", function (event) {
+    (_a = getMasterDataForm()) === null || _a === void 0 ? void 0 : _a.addEventListener("submit", function (event) {
         let isValid;
         if (typeof jQuery == 'function') {
             isValid = $(this).valid();
@@ -1558,6 +1558,12 @@ class LookupListener {
             });
         });
     }
+}
+function getMasterDataForm() {
+    const mdForm = document.getElementById("masterdata-form");
+    if (mdForm)
+        return mdForm;
+    return document.forms[0];
 }
 var TMessageIcon;
 (function (TMessageIcon) {
@@ -1789,7 +1795,7 @@ class _Modal extends ModalBase {
           <div class="modal-body"> </div>
         </div>
       </div>`;
-            let form = document.forms[0];
+            let form = getMasterDataForm();
             if (form) {
                 form.appendChild(this.modalElement);
             }
@@ -1915,7 +1921,7 @@ class _LegacyModal extends ModalBase {
         if ($(modalIdSelector).length) {
             $(modalIdSelector).remove();
         }
-        const $form = $("form");
+        const $form = $(getMasterDataForm());
         if ($form.length) {
             $(modalHtml).appendTo($form);
         }
@@ -1956,7 +1962,7 @@ class _LegacyModal extends ModalBase {
                                 $(".modal-backdrop").remove();
                                 $(modalIdSelector).remove();
                             }
-                            const $form = $("form");
+                            const $form = $(getMasterDataForm());
                             if ($form.length) {
                                 $(modalHtml).appendTo($form);
                             }
@@ -2070,7 +2076,7 @@ const setPageState = (componentName, pageState) => {
 class PostFormValuesOptions {
 }
 function getRequestOptions() {
-    const formData = new FormData(document.querySelector("form"));
+    const formData = new FormData(getMasterDataForm());
     return {
         method: "POST",
         body: formData
@@ -2090,7 +2096,7 @@ function postFormValues(options) {
             window.location.href = response.url;
         }
         else if (response.status == 440 || response.status == 403 || response.status == 401) {
-            document.forms[0].submit();
+            getMasterDataForm().submit();
         }
         else {
             return response.text();
@@ -2441,7 +2447,7 @@ class UploadAreaListener {
             url: options.url
         });
         dropzone.on('sendingmultiple', function (data, xhr, formData) {
-            $("form").find("input").each(function () {
+            $(getMasterDataForm()).find("input").each(function () {
                 formData.append($(this).attr("name"), $(this).val().toString());
             });
         });
@@ -2574,7 +2580,7 @@ class UrlBuilder {
         return this;
     }
     build() {
-        const form = document.querySelector("form");
+        const form = getMasterDataForm();
         if (this.url == null) {
             this.url = form.getAttribute("action");
         }
@@ -2697,7 +2703,7 @@ var jjutil = (function () {
     };
 })();
 function requestSubmitParentWindow() {
-    window.parent.document.forms[0].requestSubmit();
+    window.parent.getMasterDataForm().requestSubmit();
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function onDOMReady(callback) {

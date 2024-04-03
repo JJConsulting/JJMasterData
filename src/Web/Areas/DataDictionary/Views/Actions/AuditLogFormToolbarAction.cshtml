@@ -9,7 +9,7 @@
     FormElement formElement = ViewBag.FormElement;
 }
 
-@using (Html.BeginForm("AuditLogFormToolbarAction", "Actions",
+@using (Html.BeginMasterDataForm("AuditLogFormToolbarAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-underline">

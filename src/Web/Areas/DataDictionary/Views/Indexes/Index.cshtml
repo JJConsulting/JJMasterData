@@ -34,7 +34,7 @@
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginMasterDataForm())
 {
     <div class="row">
         <div class="col-sm-8">

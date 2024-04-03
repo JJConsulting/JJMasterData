@@ -2,6 +2,7 @@
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
+@using JJMasterData.Web.Extensions
 @using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.AuditLogGridToolbarAction
 
@@ -10,7 +11,7 @@
     FormElement formElement = ViewBag.FormElement;
 }
 
-@using (Html.BeginForm("AuditLogGridToolbarAction", "Actions",
+@using (Html.BeginMasterDataForm("AuditLogGridToolbarAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-underline">

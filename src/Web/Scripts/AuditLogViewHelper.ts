@@ -2,7 +2,7 @@ class AuditLogViewHelper {
 
     static viewAuditLog(componentName: string, id: string) {
         const auditLogIdInput = document.getElementById("audit-log-id-" + componentName) as HTMLInputElement;
-        const form = document.querySelector<HTMLFormElement>("form");
+        const form = getMasterDataForm();
 
         if (auditLogIdInput) {
             auditLogIdInput.value = id;

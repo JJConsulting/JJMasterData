@@ -7,8 +7,13 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
-@using (Html.BeginForm("ConfigAction", "Actions", new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
-{
+<master-data-form
+    asp-action="ConfigAction"
+    asp-controller="Actions"
+    method="post"
+    asp-route-elementName="@ViewBag.ElementName"
+    asp-route-context="@ViewBag.ContextAction">
+    
     <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
         <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
@@ -24,5 +29,8 @@
     </div>
 
     @await Html.PartialAsync("_Toolbar")
-}
+
+</master-data-form>
+
+
 

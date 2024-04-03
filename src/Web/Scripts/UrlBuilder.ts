@@ -13,7 +13,7 @@ class UrlBuilder {
     }
 
     build() {
-        const form = document.querySelector("form");
+        const form = getMasterDataForm();
         
         if(this.url == null){
             this.url = form.getAttribute("action");

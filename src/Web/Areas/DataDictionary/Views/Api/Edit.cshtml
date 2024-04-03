@@ -1,4 +1,5 @@
 ﻿@using JJMasterData.Core.UI.Components
+@using JJMasterData.Web.Extensions
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
@@ -15,7 +16,7 @@
     string cancelLocation = @Url.Action("Index", new { elementName = Model.ElementName })!;
 }
 
-@using (Html.BeginForm("Edit", "Api", FormMethod.Post))
+@using (Html.BeginMasterDataForm("Edit", "Api"))
 {
     <input asp-for="MenuId" hidden="hidden"/>
     <input asp-for="ElementName" hidden="hidden"/>

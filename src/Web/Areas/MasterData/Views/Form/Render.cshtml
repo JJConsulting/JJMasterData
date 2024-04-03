@@ -4,6 +4,6 @@
     ViewData["Title"] = Model.FormTitle;
 }
 
-<form asp-controller="Form" asp-action="Render" asp-area="MasterData">
+<master-data-form asp-controller="Form" asp-action="Render" asp-area="MasterData">
     @Html.Raw(Model.FormViewHtml)
-</form>
+</master-data-form>

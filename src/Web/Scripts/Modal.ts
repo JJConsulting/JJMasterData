@@ -92,7 +92,7 @@ class _Modal extends ModalBase {
           <div class="modal-body"> </div>
         </div>
       </div>`;
-            let form = document.forms[0];
+            let form = getMasterDataForm();
             if(form){
                 form.appendChild(this.modalElement);
             }
@@ -249,9 +249,10 @@ class _LegacyModal extends ModalBase{
             $(modalIdSelector).remove();
         }
 
-        const $form = $("form");
+        const $form = $(getMasterDataForm());
 
         if ($form.length) {
+            // @ts-ignore
             $(modalHtml).appendTo($form);
         } else {
             $(modalHtml).appendTo($("body"));
@@ -293,8 +294,10 @@ class _LegacyModal extends ModalBase{
                                 $(".modal-backdrop").remove()
                                 $(modalIdSelector).remove();
                             }
-                            const $form = $("form");
+                            // @ts-ignore
+                            const $form = $(getMasterDataForm());
                             if ($form.length) {
+                                // @ts-ignore
                                 $(modalHtml).appendTo($form);
                             } else {
                                 $(modalHtml).appendTo($("body"));

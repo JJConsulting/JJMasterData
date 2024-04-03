@@ -2,13 +2,14 @@
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Web.Extensions
 @model JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction
 
 @{
     Layout = Options.Value.ModalLayoutPath;
 }
 
-@using (Html.BeginForm("ScriptAction", "Actions",
+@using (Html.BeginMasterDataForm("ScriptAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <ul class="nav nav-underline">

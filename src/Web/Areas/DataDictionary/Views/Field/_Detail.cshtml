@@ -27,7 +27,7 @@
     function save() {
         SpinnerOverlay.show();
         const url = `@Url.Action("Save", new { elementName })`;
-        const form = document.querySelector("form");
+        const form = getMasterDataForm();
         form.action = url;
         form.submit();
     }
@@ -35,7 +35,7 @@
     function copy() {
         SpinnerOverlay.show();
         const url = `@Url.Action("Copy", new { elementName })`;
-        const form = document.querySelector("form");
+        const form = getMasterDataForm();
         form.action = url;
         form.submit();
     }

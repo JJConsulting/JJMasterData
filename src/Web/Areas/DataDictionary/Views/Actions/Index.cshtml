@@ -1,6 +1,7 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Web.Extensions
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model ActionsListViewModel
@@ -31,7 +32,7 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(Model.ElementName, Model.MenuId))"/>
 
-@using (Html.BeginForm())
+@using (Html.BeginMasterDataForm())
 {
     <input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["selectedTab"]"/>
     <ul class="nav nav-underline">

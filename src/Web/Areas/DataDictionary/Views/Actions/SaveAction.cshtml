@@ -1,13 +1,14 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJMasterData.Core.UI
+@using JJMasterData.Web.Extensions
 @model JJMasterData.Core.DataDictionary.Models.Actions.SaveAction
 
 @{
     Layout = Options.Value.ModalLayoutPath;
 }
 
-@using (Html.BeginForm("SaveAction", "Actions",
+@using (Html.BeginMasterDataForm("SaveAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-underline">

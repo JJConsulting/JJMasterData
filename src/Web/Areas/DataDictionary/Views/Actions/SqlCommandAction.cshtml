@@ -46,7 +46,7 @@
     </script>
 }
 
-@using (Html.BeginForm("SqlCommandAction", "Actions",
+@using (Html.BeginMasterDataForm("SqlCommandAction", "Actions",
             new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <ul class="nav nav-underline">
