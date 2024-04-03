@@ -1097,8 +1097,8 @@
     <value>Arquivo já está sendo usado.</value>
     <comment>JJMasterdata.Core</comment>
   </data>
-  <data name="File header ignored" xml:space="preserve">
-    <value>Cabeçalho do arquivo ignorado</value>
+  <data name="File header ignored." xml:space="preserve">
+    <value>Cabeçalho do arquivo ignorado.</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="File imported successfully!" xml:space="preserve">
