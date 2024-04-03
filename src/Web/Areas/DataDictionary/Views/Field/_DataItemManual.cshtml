@@ -19,10 +19,10 @@
             id: "qtdRowsToAdd",
             name: "qtdRowsToAdd",
             value: qtd
-        }).appendTo("form");
+        }).appendTo(getMasterDataForm());
 
         const url = "@Url.Action("AddDataItem", new { elementName = ViewBag.ElementName })";
-        $("form:first").attr("action", url).submit();
+        $(getMasterDataForm()).attr("action", url).submit();
     }
 
     function removeDataItem(dataItemIndex) {
@@ -32,16 +32,16 @@
             id: "dataItemIndex",
             name: "dataItemIndex",
             value: dataItemIndex
-        }).appendTo("form");
+        }).appendTo(getMasterDataForm());
 
         const url = "@Url.Action("RemoveDataItem", new { elementName = ViewBag.ElementName })";
-        $("form:first").attr("action", url).submit();
+        $(getMasterDataForm()).attr("action", url).submit();
     }
 
     function removeAllDataItem() {
         SpinnerOverlay.show();
         const url = "@Url.Action("RemoveAllDataItem", new { elementName = ViewBag.ElementName })";
-        $("form:first").attr("action", url).submit();
+        $(getMasterDataForm()).attr("action", url).submit();
     }
 </script>
 

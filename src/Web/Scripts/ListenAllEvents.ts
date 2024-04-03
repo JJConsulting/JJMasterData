@@ -42,8 +42,8 @@
     }
 
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces)
-    
-    document.querySelector("form")?.addEventListener("submit", function (event) {
+
+    getMasterDataForm()?.addEventListener("submit", function (event) {
         let isValid: boolean;
 
         if (typeof jQuery == 'function'){

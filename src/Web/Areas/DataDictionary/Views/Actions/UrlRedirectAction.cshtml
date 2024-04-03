@@ -9,7 +9,7 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
-@using (Html.BeginForm("UrlRedirectAction", "Actions",
+@using (Html.BeginMasterDataForm("UrlRedirectAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <ul class="nav nav-underline">

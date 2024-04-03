@@ -30,7 +30,7 @@
     function addRelation() {
         SpinnerOverlay.show();
         const url = "@Html.Raw(Url.Action("AddRelation", "Actions", new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))";
-        $("form:first").attr("action", url).submit();
+        $(getMasterDataForm()).attr("action", url).submit();
     }
 
     function removeRelation(relationIndex) {
@@ -40,16 +40,16 @@
             id: "relationIndex",
             name: "relationIndex",
             value: relationIndex
-        }).appendTo("form");
+        }).appendTo(getMasterDataForm());
 
         const url = "@Url.Action("RemoveRelation", "Actions", new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName })";
-        $("form:first").attr("action", url).submit();
+        $(getMasterDataForm()).attr("action", url).submit();
     }
 
 
 </script>
 
-@using (Html.BeginForm("InternalAction", "Actions",
+@using (Html.BeginMasterDataForm("InternalAction", "Actions",
    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab" />

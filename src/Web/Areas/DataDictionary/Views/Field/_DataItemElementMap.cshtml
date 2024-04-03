@@ -9,7 +9,7 @@
             <label class="@BootstrapHelper.Label ">@StringLocalizer["Element Name"]</label>
             @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.ElementName,
                 new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-                new { @class = "form-control form-select", onchange = "document.forms[0].submit();" })
+                new { @class = "form-control form-select", onchange = "getMasterDataForm().submit();" })
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3 required">
             <label class="@BootstrapHelper.Label">@StringLocalizer["Id"]</label>

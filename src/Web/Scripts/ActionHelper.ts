@@ -2,7 +2,7 @@ class ActionHelper {
     static submitWithScrollPosition(){
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
         SpinnerOverlay.show();
-        document.forms[0].submit();
+        getMasterDataForm().submit();
     }
     
     static executeSqlCommand(
@@ -166,7 +166,7 @@ class ActionHelper {
             formViewActionInput.value = actionMap;
         }
 
-        let form = document.querySelector<HTMLFormElement>("form");
+        let form = getMasterDataForm();
 
         if (!form) {
             return;

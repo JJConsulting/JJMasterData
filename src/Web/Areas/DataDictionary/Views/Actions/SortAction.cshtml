@@ -7,7 +7,7 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
-@using (Html.BeginForm("SortAction", "Actions",
+@using (Html.BeginMasterDataForm("SortAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-underline">

@@ -52,7 +52,8 @@
     }
 
     static postAction(url: string): void {
-        window.parent.document.forms[0].requestSubmit();
+        // @ts-ignore
+        window.parent.getMasterDataForm().requestSubmit();
     }
 
     static exportElement(id, url, validationMessage) {

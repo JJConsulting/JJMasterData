@@ -5,7 +5,7 @@ class PostFormValuesOptions{
 }
 
 function getRequestOptions() {
-    const formData = new FormData(document.querySelector("form"));
+    const formData = new FormData(getMasterDataForm());
 
     return {
         method: "POST",
@@ -28,7 +28,7 @@ function postFormValues(options : PostFormValuesOptions) {
             else if(response.status == 440 || response.status == 403 || response.status == 401)
             {
                 //Let the application handle any error in these status
-                document.forms[0].submit();
+                getMasterDataForm().submit();
             }
             else {
                 return response.text();

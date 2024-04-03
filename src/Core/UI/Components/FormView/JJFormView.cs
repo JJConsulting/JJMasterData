@@ -1096,7 +1096,7 @@ public class JJFormView : AsyncComponent
         var script = new StringBuilder();
         script.Append($"setPageState('{Name}',{(int)PageState.List});");
         script.Append($"document.getElementById('current-action-map-{Name}').value = null; ");
-        script.AppendLine("document.forms[0].submit(); ");
+        script.AppendLine("getMasterDataForm().submit(); ");
 
         var goBackAction = new ScriptAction
         {

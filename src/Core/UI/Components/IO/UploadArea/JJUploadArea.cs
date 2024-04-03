@@ -83,7 +83,7 @@ public class JJUploadArea : AsyncComponent
     /// <summary>
     /// JS code to be executed after all server side uploads are completed.
     /// </summary>
-    public string JsCallback { get; set; } = @"document.forms[0].submit()";
+    public string JsCallback { get; set; } = "getMasterDataForm().submit()";
 
     /// <summary>
     /// QueryString parameters to be sended at async POST requests.

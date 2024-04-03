@@ -1,5 +1,6 @@
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI
+@using JJMasterData.Web.Extensions
 @model JJMasterData.Core.DataDictionary.Models.Actions.PluginAction
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
@@ -11,9 +12,14 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
-@using (Html.BeginForm("PluginAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
-{
+<master-data-form
+    asp-action="PluginAction"
+    asp-controller="Actions"
+    method="post"
+    asp-route-context="@ViewBag.ContextAction"
+    asp-route-fieldName="@ViewBag.FieldName"
+    asp-route-elementName="@ViewBag.ElementName">
+
     <input asp-for="PluginId" class="form-control" hidden="hidden"/>
 
     <ul class="nav nav-underline">
@@ -50,4 +56,5 @@
     </div>
 
     @await Html.PartialAsync("_Toolbar")
-}
+
+</master-data-form>

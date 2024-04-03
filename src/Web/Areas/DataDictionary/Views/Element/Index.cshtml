@@ -5,8 +5,7 @@
     ViewData["Title"] = StringLocalizer["Data Dictionary"];
 }
 
-@using (Html.BeginForm())
-{
+<master-data-form asp-action="Index" asp-controller="Element" asp-area="DataDictionary">
     @Html.Raw(ViewBag.FormViewHtml)
-}
-    
+</master-data-form>
+

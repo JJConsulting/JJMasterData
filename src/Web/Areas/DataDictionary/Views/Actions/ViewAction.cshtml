@@ -1,31 +1,36 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
-@using JJMasterData.Core.UI
-@using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.Actions.ViewAction
 
 @{
     Layout = Options.Value.ModalLayoutPath;
 }
-
-@using (Html.BeginForm("ViewAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
-{
+<master-data-form 
+    method="post"
+    asp-action="ViewAction" asp-controller="Actions"
+    asp-route-elementName="@ViewBag.ElementName"
+    asp-route-context="@ViewBag.ContextAction">
     <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-                <li id="navView" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divViewAction">@StringLocalizer["View Action"]</a></li>
-        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
+        <li id="nav-general" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li id="navView" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divViewAction">@StringLocalizer["View Action"]</a>
+        </li>
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
             <partial name="_NavGeneral" model="Model"/>
         </div>
-        
+
         <div id="divViewAction" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <checkbox for="ShowAsModal" switch="true" />
+                    <checkbox for="ShowAsModal" switch="true"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label asp-for="ModalTitle" class="form-label"></label>
@@ -33,12 +38,11 @@
                 </div>
             </div>
         </div>
-        
-        
+
+
         <div id="div-advanced" class="tab-pane fade">
             <partial name="_NavAdvanced" model="Model"/>
         </div>
     </div>
-
-    @await Html.PartialAsync("_Toolbar")
-}
+    <partial name="_Toolbar"/>
+</master-data-form>

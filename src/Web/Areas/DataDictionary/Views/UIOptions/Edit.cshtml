@@ -10,7 +10,7 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
-@using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
+@using (Html.BeginMasterDataForm("Edit", "UIOptions", FormMethod.Post))
 {
     <div class="row">
         <div class="col-sm-12">
