@@ -13,7 +13,7 @@ public class DataImportationReporter : ProgressReporter
         set
         {
             _totalProcessed = value;
-            UpdatePencertProcess();
+            UpdatePercentProgress();
         }
     }
 
@@ -24,7 +24,7 @@ public class DataImportationReporter : ProgressReporter
         set
         {
             _totalRecords = value;
-            UpdatePencertProcess();
+            UpdatePercentProgress();
         }
     }
 
@@ -38,22 +38,20 @@ public class DataImportationReporter : ProgressReporter
 
     public int Ignore { get; set; }
 
-    public StringBuilder ErrorLog { get; set; } = new();
-
+    public StringBuilder ErrorLog { get; } = new();
 
     public void AddError(string value)
     {
-        ErrorLog.Append("Row:");
-        ErrorLog.Append(" ");
+        ErrorLog.Append("Row: ");
         ErrorLog.AppendLine(TotalProcessed.ToString());
         ErrorLog.Append(value);
         ErrorLog.Append("<hr/>");
     }
 
-    private void UpdatePencertProcess()
+    private void UpdatePercentProgress()
     {
         if (TotalRecords > 0 && TotalProcessed > 0)
-            Percentage = (int)((TotalProcessed / (double)TotalRecords) * 100);
+            Percentage = (int)(TotalProcessed / (double)TotalRecords * 100);
     }
 
 }

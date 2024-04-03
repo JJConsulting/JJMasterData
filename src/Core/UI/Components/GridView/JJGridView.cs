@@ -1248,7 +1248,7 @@ public class JJGridView : AsyncComponent
             if (!hasVal)
                 hasVal = true;
             else
-                selectedKeys.Append(",");
+                selectedKeys.Append(',');
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
             selectedKeys.Append((string?)EncryptionService.EncryptStringWithUrlEscape(values));

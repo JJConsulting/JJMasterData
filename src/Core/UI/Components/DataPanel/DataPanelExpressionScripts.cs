@@ -49,7 +49,7 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
             {
                 script.Append('\t', 2);
                 script.Append("exp = exp.replace(\"");
-                script.Append("{");
+                script.Append('{');
                 script.Append(t);
                 script.Append("}\", \"'\" + $(\"#");
                 script.Append(t);

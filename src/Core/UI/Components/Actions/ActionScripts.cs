@@ -43,9 +43,9 @@ public class ActionScripts(
         {
             if (actionContext.FormStateData.Values.TryGetValue(field.InternalField, out var value))
             {
-                @params.Append("&");
+                @params.Append('&');
                 @params.Append(field.RedirectField);
-                @params.Append("=");
+                @params.Append('=');
                 @params.Append(value);
             }
         }

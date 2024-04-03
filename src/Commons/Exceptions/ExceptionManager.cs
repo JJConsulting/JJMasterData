@@ -9,45 +9,46 @@ namespace JJMasterData.Commons.Exceptions;
 
 public static class ExceptionManager
 {
+    private const string UnexpectedErrorMessage = "Unexpected error.";
+    
     public static ResponseLetter GetResponse(Exception ex)
     {
-        var err = new ResponseLetter();
+        var letter = new ResponseLetter();
         switch (ex)
         {
             case UnauthorizedAccessException exAccess:
-                err.Message = exAccess.Message;
-                err.Status = (int)HttpStatusCode.Unauthorized;
+                letter.Message = exAccess.Message;
+                letter.Status = (int)HttpStatusCode.Unauthorized;
                 break;
-            case JJMasterDataException dcEx:
-                err.Message = dcEx.Message;
-                err.Status = (int)HttpStatusCode.BadRequest;
+            case JJMasterDataException mdException:
+                letter.Message = mdException.Message;
+                letter.Status = (int)HttpStatusCode.BadRequest;
                 break;
             case SqlException exSql:
             {
-                string errMsg = GetMessage(exSql);
-                err.Message = errMsg;
-                err.Status = (int)HttpStatusCode.BadRequest;
-                err.ValidationList = new Dictionary<string, string>();
-                err.ValidationList.Add("DB", errMsg);
+                var errMsg = GetMessage(exSql);
+                letter.Message = errMsg;
+                letter.Status = (int)HttpStatusCode.BadRequest;
+                letter.ValidationList = new Dictionary<string, string> { { "DB", errMsg } };
                 break;
             }
             case KeyNotFoundException exNotFound:
-                err.Message = exNotFound.Message ?? "Page not found.";
-                err.Status = (int)HttpStatusCode.NotFound;
+                letter.Message = exNotFound.Message ?? "Page not found.";
+                letter.Status = (int)HttpStatusCode.NotFound;
                 break;
             default:
-                err.Message = ex.Message;
-                err.Status = (int)HttpStatusCode.InternalServerError;
+                letter.Message = ex.Message;
+                letter.Status = (int)HttpStatusCode.InternalServerError;
                 break;
         }
 
-        return err;
+        return letter;
     }
 
-    public static string GetMessage(SqlException ex)
+    public static string GetMessage(SqlException sqlException)
     {
         string message;
-        switch (ex.Number)
+        switch (sqlException.Number)
         {
             case 547:
                 message = "The record cannot be deleted because it is being used as a dependency.";
@@ -59,13 +60,13 @@ public static class ExceptionManager
                 message = "Invalid character.";
                 break;
             case >= 50000:
-                message = ex.Message;
+                message = sqlException.Message;
                 break;
             default:
 #if DEBUG
-                message = ex.Message;
+                message = sqlException.Message;
 #else
-                message = "Unexpected error.";
+                message = UnexpectedErrorMessage;
 #endif
                 break;
         }
@@ -78,8 +79,13 @@ public static class ExceptionManager
         if (ex is SqlException exSql)
             return GetMessage(exSql);
         if (ex is IOException)
-            return "IO Exception";
+            return "Error while processing file.";
+#if DEBUG
         return ex.Message;
+#else
+        return UnexpectedErrorMessage;
+#endif
+
     }
 
 }

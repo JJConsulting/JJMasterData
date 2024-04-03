@@ -166,19 +166,19 @@ internal class DataImportationHelp
         {
             case FormComponent.Date:
                 text.Append(StringLocalizer[$"Format ({Format.DateFormat}) example:"]);
-                text.Append(" ");
+                text.Append(' ');
                 text.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
-                text.Append(".");
+                text.Append('.');
                 break;
             case FormComponent.DateTime:
                 text.Append(StringLocalizer[$"Format ({Format.DateTimeFormat}) example:"]);
-                text.Append(" ");
+                text.Append(' ');
                 text.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
-                text.Append(".");
+                text.Append('.');
                 break;
             case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
                 text.Append(StringLocalizer["Inform the Id"]);
-                text.Append(" ");
+                text.Append(' ');
                 text.Append(await GetHtmlComboHelp(field));
                 break;
             case FormComponent.CheckBox:
@@ -240,7 +240,7 @@ internal class DataImportationHelp
         text.Append(StringLocalizer["the file must contain"]);
         text.Append(" <b>");
         text.Append(columnsCount);
-        text.Append(" ");
+        text.Append(' ');
         text.Append(StringLocalizer["Columns"]);
         text.Append(" </b> ");
         text.Append(StringLocalizer["separated by semicolons (;), following the layout below:"]);
