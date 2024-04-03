@@ -10,6 +10,7 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Exceptions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
@@ -52,6 +53,23 @@ public class FormValuesService(
     }
 
     internal static void HandleFieldValue(FormElementField field, Dictionary<string, object?> values, string? value)
+    {
+        try
+        {
+            var parsedValue = GetParsedValue(field, value);
+
+            if (parsedValue is not null)
+                values.Add(field.Name, parsedValue);
+            else if (value == string.Empty)
+                values.Add(field.Name, null);
+        }
+        catch (Exception ex)
+        {
+            throw new FormValuesException(field, value, ex);
+        }
+    }
+
+    private static object? GetParsedValue(FormElementField field, string? value)
     {
         object? parsedValue = null;
         switch (field.Component)
@@ -98,10 +116,7 @@ public class FormValuesService(
                 break;
         }
 
-        if (parsedValue is not null)
-            values.Add(field.Name, parsedValue);
-        else if (value == string.Empty)
-            values.Add(field.Name, null);
+        return parsedValue;
     }
 
     internal static object? HandleCurrencyComponent(FormElementField field, string? value)

@@ -357,7 +357,7 @@ public class JJDataImportation : ProcessComponent
         var progress = BackgroundTaskManager.GetProgress<DataImportationReporter>(ProcessKey);
         if (progress != null)
             return progress;
-        return new DataImportationReporter();
+        return new DataImportationReporter(StringLocalizer);
     }
 
     internal void ImportInBackground(string pasteValue)

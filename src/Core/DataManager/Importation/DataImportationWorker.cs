@@ -12,6 +12,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Exceptions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -74,7 +75,7 @@ public class DataImportationWorker(
 #if NETFRAMEWORK
             System.Web.HttpContext.Current = HttpContext;
 #endif
-        var currentProcess = new DataImportationReporter();
+        var currentProcess = new DataImportationReporter(StringLocalizer);
         try
         {
             currentProcess.StartDate = DateTime.Now;
@@ -206,6 +207,11 @@ public class DataImportationWorker(
                 var values = GetDictionaryWithNameAndValue(fieldList, cols);
                 var formLetter = await SaveRowValues(values);
                 ProcessFormLetter(currentProcess, formLetter);
+            }
+            catch (FormValuesException fvEx)
+            {
+                currentProcess.Error++;
+                currentProcess.AddError(StringLocalizer["Error parsing value [{0}] for field [{1}].",fvEx.Value, fvEx.Field.Name]);
             }
             catch (Exception exception)
             {

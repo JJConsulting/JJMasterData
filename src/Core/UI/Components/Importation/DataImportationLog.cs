@@ -164,9 +164,7 @@ internal class DataImportationLog
         {
             alert.Icon = IconType.InfoCircle;
             alert.Color = BootstrapColor.Info;
-            alert.Title = StringLocalizer["File imported with errors!"];
-            alert.Messages.Add(StringLocalizer[
-            Reporter.Message]);
+            alert.Title =StringLocalizer[Reporter.Message];
         }
         else
         {

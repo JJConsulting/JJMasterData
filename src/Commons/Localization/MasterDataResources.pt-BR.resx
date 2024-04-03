@@ -2337,8 +2337,8 @@
     <value>Recuperando registros...</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Row:" xml:space="preserve">
-    <value>Linha:</value>
+  <data name="Row: " xml:space="preserve">
+    <value>Linha: </value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Rows" xml:space="preserve">
@@ -4067,5 +4067,11 @@
   </data>
   <data name="Field size must be between 0 and 7 for DateTime2" xml:space="preserve">
     <value>Tamanho do campo deve ser entre 0 e 7 para o tipo DateTime2</value>
+  </data>
+  <data name="Error parsing value [{0}] for field [{1}]." xml:space="preserve">
+    <value>Erro parseando valor [{0}] para o campo [{1}].</value>
+  </data>
+  <data name="Row: " xml:space="preserve">
+    <value />
   </data>
 </root>
