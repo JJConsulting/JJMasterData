@@ -61,9 +61,4 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-    
-	<ItemGroup>
-	  <Folder Include="wwwroot\css\jjmasterdata\" />
-	</ItemGroup>
-    
 </Project>

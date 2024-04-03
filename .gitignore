@@ -351,6 +351,11 @@ appsettings.json
 # Ignore default JJConsulting logs
 *_applog.txt
 *.DS_Store
+
+# Front-end generated files
+jjmasterdata.css
+jjmasterdata.css.map
+jjmasterdata.js
 jjmasterdata.js.map
 
 # Ignore the default exportation path
