@@ -1,7 +1,9 @@
-﻿# Using multiple forms alongside JJMasterData
+﻿# Multiple Forms Support
+
+JJMasterData only supports one form per HTML document.
+If you need multiple `JJFormView` or `JJDataPanel` instances, you put them in the same form.
 
 When you need multiple forms in your View alongside JJMasterData, you have two options:
-
 ## Using the TagHelper
 
 ```html

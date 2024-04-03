@@ -69,6 +69,8 @@
     href: plugins/ncalc.md
 - name: Miscellaneous
   items:
+  - name: Multiple Forms Support
+    href: multiple_forms.md
   - name: .NET Framework Support
     href: miscellaneous/netframework.md
   - name: Assemblies
