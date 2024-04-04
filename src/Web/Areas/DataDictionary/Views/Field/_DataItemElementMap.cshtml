@@ -6,50 +6,67 @@
 <collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
     <div class="row">
         <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-            <label class="@BootstrapHelper.Label ">@StringLocalizer["Element Name"]</label>
-            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.ElementName,
-                new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-                new { @class = "form-control form-select", onchange = "getMasterDataForm().submit();" })
+            <div class="form-floating">
+                <select asp-for="DataItem!.ElementMap!.ElementName"
+                        asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
+                        class="form-control form-select"
+                        onchange="getMasterDataForm().submit();"></select>
+                <label>@StringLocalizer["Element Name"]</label>
+            </div>
+         
+
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-            <label class="@BootstrapHelper.Label">@StringLocalizer["Id"]</label>
-            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IdFieldName,
-                new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                new { @class = "form-control form-select" })
+            <div class="form-floating">
+                <select asp-for="DataItem!.ElementMap!.IdFieldName"
+                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                        class="form-control form-select"></select>
+                <label>@StringLocalizer["Id"]</label>
+            </div>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3">
-            <label class="@BootstrapHelper.Label">@StringLocalizer["Description"]</label>
-            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.DescriptionFieldName,
-                new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                new { @class = "form-control form-select" })
+            <div class="form-floating">
+                <select asp-for="DataItem!.ElementMap!.DescriptionFieldName"
+                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                        class="form-control form-select"></select>
+                <label>@StringLocalizer["Description"]</label>
+            </div>
         </div>
 
         @if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup && Model.DataItem!.ShowIcon)
         {
             <div class="@BootstrapHelper.FormGroup col-sm-2">
-                <label class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IconIdFieldName,
-                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control form-select" })
+                <div class="form-floating">
+                    <select asp-for="DataItem!.ElementMap!.IconIdFieldName"
+                            asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                            class="form-control form-select"></select>
+                    <label>@StringLocalizer["Icon"]</label>
+                </div>
+
             </div>
             <div class="@BootstrapHelper.FormGroup col-sm-2">
-                <label class="@BootstrapHelper.Label">@StringLocalizer["Icon Color"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IconColorFieldName,
-                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control form-select" })
+                <div class="form-floating">
+                    <select asp-for="DataItem!.ElementMap!.IconColorFieldName"
+                            asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                            class="form-control form-select"></select>
+                    <label>@StringLocalizer["Icon Color"]</label>
+                </div>
             </div>
         }
         @if (Model.Component is FormComponent.ComboBox)
         {
             <div class="@BootstrapHelper.FormGroup col-sm-2">
-                <label class="@BootstrapHelper.Label">@StringLocalizer["Group"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.GroupFieldName,
-                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control form-select" })
+                <div class="form-floating">
+                    <select asp-for="DataItem!.ElementMap!.GroupFieldName"
+                            asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                            class="form-control form-select"></select>
+                    <label>@StringLocalizer["Group"]</label>
+                </div>
             </div>
         }
     </div>
 </collapse-panel>
+
 
 <partial name="_DataItemElementMapFilter" model="null"/>
 <div class="row">

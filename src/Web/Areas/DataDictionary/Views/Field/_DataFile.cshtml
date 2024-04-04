@@ -45,7 +45,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <div class="form-floating">
-            <input asp-for="DataFile!.FolderPath" maxlength="400" class="form-control"/>
+            <input asp-for="DataFile!.FolderPath" maxlength="400" class="form-control"  placeholder="" />
             <label asp-for="DataFile!.FolderPath"></label>
         </div>
         <span class="help-block">
@@ -55,7 +55,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <div class="form-floating">
-            <input asp-for="DataFile!.AllowedTypes" maxlength="255" class="form-control"/>
+            <input asp-for="DataFile!.AllowedTypes" maxlength="255" class="form-control"  placeholder="" />
             <label asp-for="DataFile!.AllowedTypes"></label>
         </div>
         <span class="help-block">@StringLocalizer["File types separated with comma ex: txt,csv,xlsx. In * mode system files are blocked"]</span>
