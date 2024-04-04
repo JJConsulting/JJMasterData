@@ -177,7 +177,7 @@ public class FieldController(FieldService fieldService)
         field.DataItem ??= new FormElementDataItem();
         field.DataFile ??= new FormElementDataFile
         {
-            MaxFileSize = 2097152 //2mb
+            MaxFileSize = 2 
         };
         
         //Refresh action
