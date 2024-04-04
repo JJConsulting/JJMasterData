@@ -184,4 +184,10 @@ public partial class HtmlBuilder
         _attributes["style"] = value;
         return this;
     }
+
+    public HtmlBuilder WithHref(string link)
+    {
+        _attributes["href"] = link;
+        return this;
+    }
 }
