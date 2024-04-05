@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
         if (webOptionsConfiguration.ConfigureWeb != null) 
             services.PostConfigure(webOptionsConfiguration.ConfigureWeb);
 
-        AddMasterDataWebServices(services);
+        AddMasterDataWebServices(services, webOptionsConfiguration);
 
         return services.AddJJMasterDataCore(new MasterDataCoreOptionsConfiguration
         {
@@ -54,9 +54,35 @@ public static class ServiceCollectionExtensions
             ConfigureCore = webOptionsConfiguration.ConfigureCore
         });
     }
-
-    private static void AddMasterDataWebServices(IServiceCollection services)
+    
+    public static MasterDataServiceBuilder AddJJMasterDataWeb(
+        this IServiceCollection services,
+        Action<MasterDataWebOptionsConfiguration> webOptionsConfiguration
+    )
     {
+        var configuration = new MasterDataWebOptionsConfiguration();
+
+        webOptionsConfiguration(configuration);
+        
+        if (configuration.ConfigureWeb != null) 
+            services.PostConfigure(configuration.ConfigureWeb);
+
+        AddMasterDataWebServices(services, configuration);
+
+        return services.AddJJMasterDataCore(new MasterDataCoreOptionsConfiguration
+        {
+            ConfigureCommons = configuration.ConfigureCommons,
+            ConfigureCore = configuration.ConfigureCore
+        });
+    }
+
+
+    private static void AddMasterDataWebServices(
+        IServiceCollection services, 
+        MasterDataWebOptionsConfiguration? configuration = null)
+    {
+        services.AddMvcServices(configuration ?? new());
+        
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
@@ -67,18 +93,7 @@ public static class ServiceCollectionExtensions
         services.ConfigureWritableOptions<MasterDataCoreOptions>("JJMasterData");
         services.ConfigureWritableOptions<MasterDataWebOptions>("JJMasterData");
         
-        services.AddJJMasterDataWebOptimizer();
-
-        services.AddControllersWithViews(options =>
-            {
-                options.ModelBinderProviders.Insert(0, new ExpressionModelBinderProvider());
-            })
-            .AddViewLocalization()
-            .AddDataAnnotationsLocalization(options =>
-            {
-                options.DataAnnotationLocalizerProvider = (_, factory) =>
-                    factory.Create(typeof(MasterDataResources));
-            });
+        services.AddMasterDataWebOptimizer();
 
         services.AddHttpContextAccessor();
         services.AddSession();
@@ -86,7 +101,29 @@ public static class ServiceCollectionExtensions
         services.AddActionFilters();
     }
 
-    internal static void AddJJMasterDataWebOptimizer(this IServiceCollection services,
+    private static void AddMvcServices(
+        this IServiceCollection services,
+        MasterDataWebOptionsConfiguration configuration)
+    {
+        services.AddControllersWithViews(options =>
+            {
+                options.ModelBinderProviders.Add(new ExpressionModelBinderProvider());
+            })
+            .AddViewLocalization()
+            .AddDataAnnotationsLocalization(options =>
+            {
+                options.DataAnnotationLocalizerProvider = (type, factory) =>
+                {
+                    var assemblyName = type.Assembly.GetName().Name;
+                    if(assemblyName is "JJMasterData.Commons" or "JJMasterData.Core" or "JJMasterData.Web")
+                        return factory.Create(typeof(MasterDataResources));
+                    
+                    return configuration.ConfigureDataAnnotations(type,factory);
+                };
+            });
+    }
+
+    internal static void AddMasterDataWebOptimizer(this IServiceCollection services,
         Action<IAssetPipeline>? configure = null)
     {
         services.AddWebOptimizer(options =>

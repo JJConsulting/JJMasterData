@@ -12,7 +12,7 @@ public static class MasterDataServiceBuilderExtensions
 
         services.RemoveAll<IAssetPipeline>();
 
-        services.AddJJMasterDataWebOptimizer(configure);
+        services.AddMasterDataWebOptimizer(configure);
         
         return serviceBuilder;
     }
