@@ -61,7 +61,7 @@
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
-            <partial name="../Panel/_DetailData" model="Model.Panel"/>
+            <partial name="../Panel/_DetailGeneral" model="Model.Panel"/>
         </div>
 
 
@@ -96,7 +96,7 @@
 
 
         <div id="div-advanced" class="tab-pane fade">
-            <partial name="../Panel/_DetailAdvanced" model="Model.Panel"/>
+            <partial name="../Panel/_DetailExpressions" model="Model.Panel"/>
         </div>
 
         <div class="row">
