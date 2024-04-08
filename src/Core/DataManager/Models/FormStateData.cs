@@ -24,7 +24,7 @@ public class FormStateData
         Dictionary<string, object?>? userValues,
         PageState pageState)
     {
-        UserValues = userValues is null ? new() : new Dictionary<string, object?>(userValues);
+        UserValues = userValues is null ? null : new Dictionary<string, object?>(userValues);
         Values = values;
         PageState = pageState;
     }

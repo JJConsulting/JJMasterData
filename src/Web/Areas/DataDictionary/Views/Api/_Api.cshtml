@@ -114,20 +114,34 @@ function checkAllToggle(checkAllCheckbox) {
 <div class="container-fluid">
     <div class="row">
         <div class="@BootstrapHelper.FormGroup col-sm-5">
-            <label class="@BootstrapHelper.Label " asp-for="ApiOptions.ApplyUserIdOn"></label>
-            <tooltip title="@StringLocalizer["Apply the current logged user in this field."]"/> 
-            @Html.DropDownListFor(model => Model.ApiOptions.ApplyUserIdOn, new SelectList(Model.ElementFields, "Name", "Name"), StringLocalizer["(No Apply)"], new { @class = "form-control form-select" })
+            <div class="form-floating">
+                <select asp-for="ApiOptions.ApplyUserIdOn"
+                        asp-items="Model.ElementFields!.Select(f=>new SelectListItem(f.Name,f.Name))" 
+                        class="form-control form-select"
+                        data-bs-toggle="tooltip"
+                        title="@StringLocalizer["Apply the current logged user in this field."]"
+                >
+                    <option value="">@StringLocalizer["(No not apply)"]</option>
+                </select>
+                <label asp-for="ApiOptions.ApplyUserIdOn"></label>
+            </div>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-2">
-            <label class="@BootstrapHelper.Label " asp-for="ApiOptions.JsonFormatting"></label>
-            <select asp-for="ApiOptions.JsonFormatting" class="form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormatting>()"></select>
+            <div class="form-floating">
+                <select asp-for="ApiOptions.JsonFormatting" 
+                        class="form-control form-select"
+                        asp-items="Html.GetEnumSelectList<ApiJsonFormatting>()"></select>
+                <label asp-for="ApiOptions.JsonFormatting"></label>
+            </div>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-2 required">
             <checkbox for="EnableSynchronism" switch="true" onchange="setModeVisibility(this)"/>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.EnableSynchronism ? "visible" : "hidden")">
-            <label class="@BootstrapHelper.Label" asp-for="SynchronismMode"></label>
-            <select asp-for="SynchronismMode" class="form-control form-select" asp-items="@Html.GetEnumSelectList<SynchronismMode>()"></select>
+            <div class="form-floating">
+                <select asp-for="SynchronismMode" class="form-control form-select" asp-items="@Html.GetEnumSelectList<SynchronismMode>()"></select>
+                <label asp-for="SynchronismMode"></label>
+            </div>
         </div>
     </div>
 </div>

@@ -121,10 +121,6 @@
     <value>(clique aqui para mais detalhes)</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="(No Apply)" xml:space="preserve">
-    <value>(Não aplicável)</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="(Select)" xml:space="preserve">
     <value>(Selecione)</value>
     <comment>JJMasterDataWeb</comment>
@@ -4073,5 +4069,8 @@
   </data>
   <data name="Enable Element Actions" xml:space="preserve">
     <value>Habilitar Ações do Elemento</value>
+  </data>
+  <data name="(Do not apply)" xml:space="preserve">
+    <value>(Não aplicar)</value>
   </data>
 </root>
