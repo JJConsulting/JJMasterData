@@ -4071,4 +4071,7 @@
   <data name="Error parsing value [{0}] for field [{1}]." xml:space="preserve">
     <value>Erro parseando valor [{0}] para o campo [{1}].</value>
   </data>
+  <data name="Enable Element Actions" xml:space="preserve">
+    <value>Habilitar Ações do Elemento</value>
+  </data>
 </root>

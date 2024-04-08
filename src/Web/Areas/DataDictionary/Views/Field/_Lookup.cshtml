@@ -11,24 +11,27 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-        <label class="@BootstrapHelper.Label" asp-for="DataItem!.DataItemType">@StringLocalizer["Type"]</label>
-        <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
-            <option selected="selected" value="@((int)DataItemType.ElementMap)">@DataItemType.ElementMap.ToString()</option>
-        </select>
+        <div class="form-floating">
+            <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
+                <option selected="selected" value="@((int)DataItemType.ElementMap)">@DataItemType.ElementMap.ToString()</option>
+            </select>
+            <label asp-for="DataItem!.DataItemType">@StringLocalizer["Type"]</label>
+        </div>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divReplaceTextOnGrid">
-        <label class="@BootstrapHelper.Label " asp-for="DataItem!.GridBehavior"></label>
-        <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
-        <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
-            <option value="0">@StringLocalizer["Id"]</option>
-            <option value="1">@StringLocalizer["Description"]</option>
-            @if (Model.DataItem!.ShowIcon)
-            {
+        <div class="form-floating">
+            <select asp-for="DataItem!.GridBehavior" class="form-control form-select" data-bs-toggle="tooltip" title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]">
+                <option value="0">@StringLocalizer["Id"]</option>
+                <option value="1">@StringLocalizer["Description"]</option>
+                @if (Model.DataItem!.ShowIcon)
+                {
                 <option value="2">@StringLocalizer["Icon"]</option>
                 <option value="3">@StringLocalizer["Icon with Description"]</option>
-            }
-        </select>
+                }
+            </select>
+            <label asp-for="DataItem!.GridBehavior"></label>
+        </div>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
