@@ -4073,4 +4073,7 @@
   <data name="(Do not apply)" xml:space="preserve">
     <value>(Não aplicar)</value>
   </data>
+  <data name="Child Element" xml:space="preserve">
+    <value>Elemento Filho</value>
+  </data>
 </root>

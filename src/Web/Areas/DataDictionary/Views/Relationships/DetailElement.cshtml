@@ -51,34 +51,33 @@
     <div class="well">
         <div>
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-8">
-                    <label asp-for="Relationship.ChildElement"
-                           class="@BootstrapHelper.Label"
-                           data-bs-toggle="tooltip" data-toggle="tooltip"
-                           title="@StringLocalizer["Child element name"]">
-                        @StringLocalizer["ChildElement"]
-                    </label>
-                    <select asp-for="Relationship.ChildElement"
-                            onchange="populateFkColumn()"
-                            class="form-control"
-                            asp-items="Model.ElementsSelectList">
-                    </select>
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <div class="form-floating">
+                        <select asp-for="Relationship.ChildElement"
+                                onchange="populateFkColumn()"
+                                class="form-select"
+                                asp-items="Model.ElementsSelectList">
+                        </select>
+                        <label asp-for="Relationship.ChildElement"></label>
+                    </div>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label asp-for="Relationship.UpdateOnCascade" class="@BootstrapHelper.Label "></label>
-                    @Html.DropDownListFor(model => model.Relationship.UpdateOnCascade, new[]
-                    {
-                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
-                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
-                    }, new { @class = "form-control form-select" })
+                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                    <div class="form-floating">
+                        <select asp-for="Relationship.UpdateOnCascade" class="form-select">
+                            <option value="false">@StringLocalizer["No"]</option>
+                            <option value="true">@StringLocalizer["Yes"]</option>
+                        </select>
+                        <label asp-for="Relationship.UpdateOnCascade" ></label>
+                    </div>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label asp-for="Relationship.DeleteOnCascade" class="@BootstrapHelper.Label "></label>
-                    @Html.DropDownListFor(model => model.Relationship.DeleteOnCascade, new[]
-                    {
-                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
-                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
-                    }, new { @class = "form-control form-select" })
+                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                    <div class="form-floating">
+                        <select asp-for="Relationship.DeleteOnCascade" class="form-select">
+                            <option value="false">@StringLocalizer["No"]</option>
+                            <option value="true">@StringLocalizer["Yes"]</option>
+                        </select>
+                        <label asp-for="Relationship.DeleteOnCascade" ></label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,20 +86,24 @@
     <jj-title title="@StringLocalizer["Relationship"]" size="HeadingSize.H4"/>
 
     <div class="row">
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <label asp-for="AddPrimaryKeyName" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip"></label>
-            <select asp-for="AddPrimaryKeyName"
-                    class="form-control form-select"
-                    asp-items="Model.PrimaryKeysSelectList">
-            </select>
+        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+            <div class="form-floating">
+                <select asp-for="AddPrimaryKeyName"
+                        class="form-select"
+                        asp-items="Model.PrimaryKeysSelectList">
+                </select>
+                <label asp-for="AddPrimaryKeyName"></label>
+            </div>
         </div>
 
-        <div class="@BootstrapHelper.FormGroup col-sm-5 required">
-            <label asp-for="AddForeignKeyName" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip"></label>
-            <select asp-for="AddForeignKeyName"
-                    class="form-control form-select"
-                    asp-items="Model.ForeignKeysSelectList">
-            </select>
+        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+            <div class="form-floating">
+                <select asp-for="AddForeignKeyName"
+                                  class="form-select"
+                                  asp-items="Model.ForeignKeysSelectList">
+                </select>
+                <label asp-for="AddForeignKeyName"></label>
+            </div>
         </div>
 
 
@@ -121,61 +124,58 @@
         </div>
     </div>
     <br/>
-    <div class="row">
-        <div class="col-sm-12">
-            <table class="table table-striped table-bordered table-hover">
-                <thead>
+    
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th scope="col">@StringLocalizer["Order"]</th>
+            <th scope="col">@StringLocalizer["Primary Key"]</th>
+            <th scope="col">@StringLocalizer["Foreign Key"]</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (Model.Relationship.Columns.Count > 0)
+        {
+            int index = 0;
+            foreach (var item in Model.Relationship.Columns)
+            {
                 <tr>
-                    <th scope="col">@StringLocalizer["Order"]</th>
-                    <th scope="col">@StringLocalizer["Primary Key"]</th>
-                    <th scope="col">@StringLocalizer["Foreign Key"]</th>
-                    <th scope="col"></th>
+                    <td>@index</td>
+                    <td>
+                        @item.PkColumn
+                        @Html.HiddenFor(model => model.Relationship.Columns[index].PkColumn)
+                    </td>
+
+                    <td>
+                        @item.FkColumn
+                        @Html.HiddenFor(model => model.Relationship.Columns[index].FkColumn)
+                    </td>
+                    <td align="center" style="width:3.75rem;" valign="middle">
+                        <link-button 
+                            asp-action="DeleteRelationshipColumn"
+                            asp-controller="Relationships"
+                            asp-route-columnIndex="@index"
+                            type="LinkButtonType.Submit"
+                            icon="RegularTrashCan" 
+                            tooltip="Delete" 
+                            show-as-button="false" />
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                @if (Model.Relationship.Columns.Count > 0)
-                {
-                    int index = 0;
-                    foreach (var item in Model.Relationship.Columns)
-                    {
-                        <tr>
-                            <td>@index</td>
-                            <td>
-                                @item.PkColumn
-                                @Html.HiddenFor(model => model.Relationship.Columns[index].PkColumn)
-                            </td>
-
-                            <td>
-                                @item.FkColumn
-                                @Html.HiddenFor(model => model.Relationship.Columns[index].FkColumn)
-                            </td>
-                            <td align="center" style="width:3.75rem;" valign="middle">
-                                <link-button 
-                                    asp-action="DeleteRelationshipColumn"
-                                    asp-controller="Relationships"
-                                    asp-route-columnIndex="@index"
-                                    type="LinkButtonType.Submit"
-                                    icon="RegularTrashCan" 
-                                    tooltip="Delete" 
-                                    show-as-button="false" />
-                            </td>
-                        </tr>
-                        index++;
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="4">
-                            @StringLocalizer["No data records found"]
-                        </td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-
-        </div>
-    </div>
+                index++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4">
+                    @StringLocalizer["No data records found"]
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    
 
 
     <div class="row">
