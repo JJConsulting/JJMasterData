@@ -70,8 +70,10 @@
                 @if (!Model.IsParent)
                 {
                     <div class="col-sm-6">
-                        <label asp-for="ViewType"></label>
-                        <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
+                        <div class="form-floating">
+                            <select class="form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
+                            <label asp-for="ViewType"></label>
+                        </div>
                     </div>
                 }
                 <div class="col-sm-6" id="editModeDiv">
