@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
@@ -121,7 +122,7 @@ public class JJLookup : ControlBase
         StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
         Enabled = true;
-        AutoReloadFormFields = true;
+        AutoReloadFormFields = false;
         Name = field?.Name;
         ModalSize = ModalSize.Large;
         ModalTitle = "Search";
@@ -192,8 +193,8 @@ public class JJLookup : ControlBase
         idTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
         idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
         idTextBox.MaxLength = MaxLength;
-        idTextBox.Text = SelectedValue?.ToString();
-        idTextBox.Attributes = ObjectCloner.DeepCopy(Attributes);
+        idTextBox.Text = SelectedValue?.ToString() ?? string.Empty;
+        idTextBox.Attributes = new Dictionary<string, string>(Attributes);
         idTextBox.Tooltip = Tooltip;
         idTextBox.ReadOnly = ReadOnly;
         idTextBox.Enabled = Enabled;
@@ -219,7 +220,7 @@ public class JJLookup : ControlBase
             descriptionTextBox.InputType = InputType.Text;
             descriptionTextBox.MaxLength = MaxLength;
             descriptionTextBox.Text = description;
-            descriptionTextBox.Attributes =  ObjectCloner.DeepCopy(Attributes);;
+            descriptionTextBox.Attributes = new Dictionary<string, string>(Attributes);
             descriptionTextBox.Tooltip = Tooltip;
             descriptionTextBox.Enabled = false;
 
