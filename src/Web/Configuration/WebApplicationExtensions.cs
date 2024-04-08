@@ -11,15 +11,21 @@ namespace JJMasterData.Web.Configuration;
 
 public static class WebApplicationExtensions
 {
-    
-    public static WebApplication UseJJMasterDataWeb(this WebApplication app, Action<MasterDataRoutingOptions>? configure = null)
+    public static WebApplication UseJJMasterDataWeb(this WebApplication app, Action<RequestLocalizationOptions> configureLocalization)
     {
-        app.UseSession();
+        app.UseRequiredMiddlewares();
+        app.UseRequestLocalization(configureLocalization);
+        return app;
+    }
+    
+    public static WebApplication UseJJMasterDataWeb(this WebApplication app, Action<MasterDataLocalizationOptions>? configureLocalization = null)
+    {
+        app.UseRequiredMiddlewares();
 
         app.UseRequestLocalization(options =>
         {
-            var routingOptions = new MasterDataRoutingOptions();
-            configure?.Invoke(routingOptions);
+            var routingOptions = new MasterDataLocalizationOptions();
+            configureLocalization?.Invoke(routingOptions);
             
             var supportedCultures = new List<CultureInfo>
             {
@@ -29,21 +35,21 @@ public static class WebApplicationExtensions
             };
             
             supportedCultures.AddRange(routingOptions.AdditionalCultures);
-
+        
             options.DefaultRequestCulture = new RequestCulture(routingOptions.DefaultCulture);
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
-
+        
             options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
             {
                 string currentCulture;
-
+            
                 var segments = context.Request.Path.Value?.Split(new[] { '/' },
                     StringSplitOptions.RemoveEmptyEntries);
                 
                 var culturePattern = new Regex(@"^[a-z]{2}(-[a-z]{2,4})?$",
                     RegexOptions.IgnoreCase);
-
+            
                 if (segments?.Length > 0 && culturePattern.IsMatch(segments[0]))
                 {
                     currentCulture = segments[0];
@@ -52,12 +58,19 @@ public static class WebApplicationExtensions
                 {
                     currentCulture = routingOptions.DefaultCulture;
                 }
-
+            
                 var requestCulture = new ProviderCultureResult(currentCulture);
-
+            
                 return Task.FromResult(requestCulture)!;
             }));
         });
+
+        return app;
+    }
+
+    private static void UseRequiredMiddlewares(this WebApplication app)
+    {
+        app.UseSession();
 
         //Debug for typescript        
 #if DEBUG
@@ -72,8 +85,6 @@ public static class WebApplicationExtensions
         app.UseWebOptimizer();
         
         app.UseDefaultFiles();
-
-        return app;
     }
 
     /// <summary>

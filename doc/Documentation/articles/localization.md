@@ -7,8 +7,28 @@ app.UseJJMasterDataWeb(options =>
 {
     options.AdditionalCultures.Add(new CultureInfo("es-AR"));
 });
-
 ```
+
+You can also configure your localization using the `Action<RequestLocalizationOptions>` overload:
+```cs
+app.UseJJMasterDataWeb(options =>
+{
+    var supportedCultures = new List<CultureInfo>
+    {
+        new("pt-BR"),
+        new("en-US")
+    };
+    options.DefaultRequestCulture = new RequestCulture("pt-BR");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+    options.RequestCultureProviders.Insert(0,new CookieRequestCultureProvider
+    {
+        CookieName = CookieRequestCultureProvider.DefaultCookieName,
+        Options = options,
+    });
+});
+```
+
 Now we have 3 scenarios to accomplish this:
 
 ## Resource File

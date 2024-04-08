@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Configuration.Options;
 
-public class MasterDataWebOptionsConfiguration
+public sealed class MasterDataWebOptionsConfiguration
 {
     public Action<MasterDataWebOptions>? ConfigureWeb { get; set; }
     public Action<MasterDataCoreOptions>? ConfigureCore { get; set; } 
