@@ -30,6 +30,7 @@ using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable UnusedMember.Local
 
@@ -567,6 +568,7 @@ public class JJGridView : AsyncComponent
         }
     }
 
+    internal ILogger<JJGridView> Logger { get; }
 
     #endregion
 
@@ -583,6 +585,7 @@ public class JJGridView : AsyncComponent
         FormValuesService formValuesService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         UrlRedirectService urlRedirectService,
+        ILogger<JJGridView> logger,
         IComponentFactory componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}";
@@ -603,6 +606,7 @@ public class JJGridView : AsyncComponent
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         UrlRedirectService = urlRedirectService;
+        Logger = logger;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
         CurrentContext = currentContext;
@@ -1052,6 +1056,7 @@ public class JJGridView : AsyncComponent
                         }
                         catch (Exception ex)
                         {
+                            Logger.LogError(ex, "Error executing DataExportation.");
                             var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
                             var validationSummary =ComponentFactory.Html.ValidationSummary.Create(errorMessage);
                             validationSummary.MessageTitle = StringLocalizer["Error"];

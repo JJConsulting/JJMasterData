@@ -636,19 +636,13 @@ public partial class DataAccess
     
     private static Exception GetDataAccessException(Exception ex, DataAccessCommand? cmd)
     {
-        string sql = string.Empty;
-        ICollection<DataAccessParameter>? parameters = null;
-        if (cmd != null)
-        {
-            sql = cmd.Sql;
-            parameters = cmd.Parameters;
-        }
-        return GetDataAccessException(ex, sql, parameters);
+        return GetDataAccessException(ex, cmd?.Sql ?? string.Empty, cmd?.Parameters);
     }
 
-    private static Exception GetDataAccessException(Exception ex, 
+    private static Exception GetDataAccessException(
+        Exception ex, 
         string sql,
-        ICollection<DataAccessParameter>? parameters = null)
+        List<DataAccessParameter>? parameters = null)
     {
         ex.Data.Add("DataAccess Query", sql);
 
