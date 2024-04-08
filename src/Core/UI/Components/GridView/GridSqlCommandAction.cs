@@ -7,6 +7,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Models;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -36,6 +37,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
         }
         catch (Exception ex)
         {
+            gridView.Logger.LogError(ex, "Error while executing SQL Command Action at GridView.");
             string msg = gridView.StringLocalizer[ExceptionManager.GetMessage(ex)];
             return messageFactory.Create(msg, MessageIcon.Error);
         }

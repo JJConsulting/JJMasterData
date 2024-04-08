@@ -12,6 +12,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -26,39 +27,27 @@ internal class GridViewFactory(IHttpContext currentContext,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerResolver gridEventHandlerResolver,
         UrlRedirectService urlRedirectService,
+        ILoggerFactory loggerFactory,
         IComponentFactory componentFactory)
     : IFormElementComponentFactory<JJGridView>
 {
-    private FieldsService FieldsService { get; } = fieldsService;
-    private FormValuesService FormValuesService { get; } = formValuesService;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IGridEventHandlerResolver GridEventHandlerResolver { get; } = gridEventHandlerResolver;
-    private UrlRedirectService UrlRedirectService { get; } = urlRedirectService;
-    private IComponentFactory ComponentFactory { get; } = componentFactory;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private DataItemService DataItemService { get; } = dataItemService;
-    private IHttpContext CurrentContext { get; } = currentContext;
-
-
     public JJGridView Create(FormElement formElement)
     {
         var gridView = new JJGridView(
             formElement, 
-            CurrentContext,
-            EntityRepository,
-            EncryptionService, 
-            DataItemService, 
-            ExpressionsService, 
-            FieldsService, 
-            FormValuesService,
-            StringLocalizer,
-            UrlRedirectService,
-            ComponentFactory);
+            currentContext,
+            entityRepository,
+            encryptionService, 
+            dataItemService, 
+            expressionsService, 
+            fieldsService, 
+            formValuesService,
+            stringLocalizer,
+            urlRedirectService,
+            loggerFactory.CreateLogger<JJGridView>(),
+            componentFactory);
 
-        var eventHandler = GridEventHandlerResolver.GetGridEventHandler(formElement.Name);
+        var eventHandler = gridEventHandlerResolver.GetGridEventHandler(formElement.Name);
         
         SetGridOptions(gridView, formElement.Options);
         
@@ -88,7 +77,7 @@ internal class GridViewFactory(IHttpContext currentContext,
 
     public async Task<JJGridView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
         var gridView = Create(formElement);
 
@@ -120,7 +109,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad)
-                settings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
+                settings = currentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
 
             if (settings == null)
             {
