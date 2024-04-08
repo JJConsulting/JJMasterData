@@ -107,7 +107,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddControllersWithViews(options =>
             {
-                options.ModelBinderProviders.Add(new ExpressionModelBinderProvider());
+                options.ModelBinderProviders.Insert(0,new ExpressionModelBinderProvider());
             })
             .AddViewLocalization()
             .AddDataAnnotationsLocalization(options =>
