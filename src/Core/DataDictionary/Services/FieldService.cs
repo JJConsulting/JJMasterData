@@ -468,7 +468,7 @@ public class FieldService(IValidationDictionary validationDictionary,
 
     public async Task<bool> CopyFieldAsync(FormElement formElement, FormElementField field)
     {
-        var newField = ObjectCloner.DeepCopy(field);
+        var newField = field.DeepCopy();
 
         if (formElement.Fields.Contains(newField.Name))
         {

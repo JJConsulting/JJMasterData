@@ -24,7 +24,7 @@ public class FormStateData
         Dictionary<string, object?>? userValues,
         PageState pageState)
     {
-        UserValues = ObjectCloner.DeepCopy(userValues);
+        UserValues = userValues is null ? new() : new Dictionary<string, object?>(userValues);
         Values = values;
         PageState = pageState;
     }

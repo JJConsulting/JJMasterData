@@ -186,7 +186,7 @@ internal class GridFilter(JJGridView gridView)
             FieldNamePrefix = FilterFieldPrefix
         };
         
-        var htmlPanel = await dataPanelControl.GetHtmlForm(ObjectCloner.DeepCopy(fields));
+        var htmlPanel = await dataPanelControl.GetHtmlForm(new List<FormElementField>(fields));
         htmlPanel.WithAttribute("id", $"current-grid-filter-{GridView.Name}");
 
         var html = new HtmlBuilder(HtmlTag.Div)
