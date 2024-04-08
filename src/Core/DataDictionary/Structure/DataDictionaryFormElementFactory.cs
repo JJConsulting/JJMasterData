@@ -228,14 +228,14 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnI18n",
-                Text = StringLocalizer["Localization"],
-                Icon = IconType.Globe,
+                Text = StringLocalizer["Internationalization"],
+                Icon = IconType.SolidEarthAmericas,
                 ShowAsButton = true,
                 IsModal = true,
                 IsGroup = true,
-                ModalTitle = StringLocalizer["Localization"],
+                ModalTitle = StringLocalizer["Internationalization"],
                 ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.Action("Index", "Localization", new {Area="DataDictionary"}),
+                UrlRedirect = UrlHelper.Action("Index", "Localization", new {Area="DataDictionary", isModal=true}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             }

@@ -27,7 +27,14 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         
         formElement.Fields["Id"].VisibleExpression = "val:0";
-        
+        formElement.Fields[Options.LevelColumnName].LineGroup = 1;
+        formElement.Fields[Options.LevelColumnName].CssClass = "col-sm-6";
+        formElement.Fields[Options.CategoryColumnName].LineGroup = 1;
+        formElement.Fields[Options.CategoryColumnName].CssClass = "col-sm-6";
+        formElement.Fields[Options.CreatedColumnName].LineGroup = 2;
+
+        formElement.Fields[Options.MessageColumnName].LineGroup = 3;
+        formElement.Fields[Options.MessageColumnName].CssClass = "col-sm-10";
         var logLevel = formElement.Fields[Options.LevelColumnName];
         logLevel.Component = FormComponent.ComboBox;
         logLevel.DataItem = new FormElementDataItem
@@ -62,7 +69,7 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
         formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
         formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
         formElement.Options.Grid.IsCompact = true;
-        
+        formElement.Options.Grid.UseVerticalLayoutAtFilter = false;
         return formElement;
     }
 }

@@ -12,8 +12,7 @@ public static class MasterDataStringLocalizerElement
             Name = options.LocalizationTableName,
             TableName = options.LocalizationTableName,
             UseReadProcedure = false,
-            UseWriteProcedure = false,
-            Info = "Resources"
+            UseWriteProcedure = false
         };
 
         var culture = new ElementField
