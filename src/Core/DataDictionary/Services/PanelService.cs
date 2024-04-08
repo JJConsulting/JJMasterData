@@ -127,7 +127,7 @@ public class PanelService(IValidationDictionary validationDictionary,
     public async Task<FormElementPanel> CopyPanel(string elementName, FormElementPanel panel)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
-        var newPanel = ObjectCloner.DeepCopy(panel);
+        var newPanel = panel.DeepCopy();
         newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
         formElement.Panels.Add(newPanel);
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
