@@ -109,7 +109,7 @@ public class ExpressionTagHelper(
             div.AppendDiv(div =>
                 {
                     div.WithCssClass("form-floating");
-                    div.WithAttributeIf(!isAdvanced, "style", "width:75%");
+                    div.WithAttributeIf(!isAdvanced, "style", "width:80%");
                     div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
                     div.Append(label);
                 }).WithAttribute("placeholder", displayName!)
