@@ -114,8 +114,8 @@ public static class ServiceCollectionExtensions
             {
                 options.DataAnnotationLocalizerProvider = (type, factory) =>
                 {
-                    var assemblyName = type.Assembly.GetName().Name;
-                    if(assemblyName is "JJMasterData.Commons" or "JJMasterData.Core" or "JJMasterData.Web")
+                    var assemblyName = type.Assembly.FullName;
+                    if(assemblyName != null && assemblyName.Contains("JJMasterData"))
                         return factory.Create(typeof(MasterDataResources));
                     
                     return configuration.ConfigureDataAnnotations(type,factory);

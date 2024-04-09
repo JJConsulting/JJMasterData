@@ -4,8 +4,19 @@
 @using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.FormUI
 
-<div class="row">
-    <div class="col-sm-3">
+
+<div class="row mb-3">
+    <div class="col-sm-4">
+        <checkbox for="IsVerticalLayout" switch="true"/>
+    </div>
+
+    <div class="col-sm-4">
+        <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]" for="ShowViewModeAsStatic" switch="true"/>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-4 col-6">
         <div class="form-floating">
             <select asp-for="FormCols" class="form-select" data-bs-toggle="tooltip" title="@StringLocalizer["Number of columns where fields will be rendered by default."]">
                 <option value="1">@StringLocalizer["1 (one column)"]</option>
@@ -18,16 +29,7 @@
             <label asp-for="FormCols"></label>
         </div>
     </div>
-    
-    <div class="col-sm-3">
-       <checkbox for="IsVerticalLayout" switch="true"/>
-    </div>
-    
-    <div class="col-sm-3">
-        <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]" for="ShowViewModeAsStatic" switch="true"/>
-    </div>
-    
-    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+    <div class="@BootstrapHelper.FormGroup col-sm-4 col-6 required">
         <div class="form-floating">
             <select asp-for="EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
             <label asp-for="EnterKey"></label>
