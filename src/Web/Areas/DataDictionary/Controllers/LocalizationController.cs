@@ -1,4 +1,5 @@
-﻿using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+﻿using System.Globalization;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Areas.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,4 +26,10 @@ public class LocalizationController(LocalizationService localizationService) : D
         });
     }
 
+    public async Task<FileContentResult> DownloadStrings()
+    {
+        var fileBytes = await LocalizationService.GetAllStringsFile();
+        return File(fileBytes,"application/octet-stream",$"LocalizationStrings-{CultureInfo.CurrentUICulture.Name}.csv");
+    }
+    
 }

@@ -3,19 +3,20 @@ using System.Globalization;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class LocalizationFormElementFactory(
+    IMasterDataUrlHelper urlHelper,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCommonsOptions> masterDataOptions)
 {
-    public FormElement GetFormElement()
+    public FormElement GetFormElement(CultureInfo[] supportedCultures)
     {
-        var supportedCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
-            
         var element = MasterDataStringLocalizerElement.GetElement(masterDataOptions.Value);
     
         var formElement = new FormElement(element);
@@ -35,7 +36,21 @@ public class LocalizationFormElementFactory(
     
         formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
         formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
-        
+        formElement.Options.GridToolbarActions.Add(new UrlRedirectAction
+        {
+            Name = "download-resources",
+            CssClass = "float-end",
+            UrlRedirect = urlHelper.Action("DownloadStrings","Localization", new {Area="DataDictionary"}),
+            Tooltip = stringLocalizer["Download all strings to create your own translation."],
+            Text = stringLocalizer["Download Resources"],
+            ShowAsButton = true,
+            Order = 4,
+            IsGroup = true,
+            Icon = IconType.SolidFileCsv
+        });
+        formElement.Options.GridToolbarActions.ExportAction.Tooltip = "";
+        formElement.Options.GridToolbarActions.ExportAction.Text = stringLocalizer["Export"];
+        formElement.Options.GridToolbarActions.ExportAction.IsGroup = true;
         var cultureField = formElement.Fields["cultureCode"];
         cultureField.IsRequired = true;
         cultureField.CssClass = "col-sm-6";

@@ -4076,4 +4076,10 @@
   <data name="Child Element" xml:space="preserve">
     <value>Elemento Filho</value>
   </data>
+  <data name="Download all strings to create your own translation." xml:space="preserve">
+    <value>Baixa todas as strings para criar sua própria tradução.</value>
+  </data>
+  <data name="Download Resources" xml:space="preserve">
+    <value>Baixar Resources</value>
+  </data>
 </root>
