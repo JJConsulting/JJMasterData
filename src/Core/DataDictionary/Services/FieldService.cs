@@ -56,14 +56,19 @@ public class FieldService(IValidationDictionary validationDictionary,
         if (IsValid)
         {
             await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-            if (!formElement.UseReadProcedure)
-                memoryCache.Remove(formElement.Name + "_ReadScript");
-            if (!formElement.UseWriteProcedure)
-                memoryCache.Remove(formElement.Name + "_WriteScript");
+            ClearScriptsCache(formElement);
         }
             
 
         return IsValid;
+    }
+
+    private void ClearScriptsCache(FormElement formElement)
+    {
+        if (!formElement.UseReadProcedure)
+            memoryCache.Remove(formElement.Name + "_ReadScript");
+        if (!formElement.UseWriteProcedure)
+            memoryCache.Remove(formElement.Name + "_WriteScript");
     }
 
     private static void RemoveUnusedProperties(FormElementField field)
@@ -426,7 +431,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-
+        ClearScriptsCache(formElement);
         return IsValid;
     }
 
