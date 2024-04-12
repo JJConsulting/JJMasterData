@@ -1,37 +1,37 @@
 ﻿using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
+public class LogController(
+    IFormElementComponentFactory<JJFormView> formViewFactory,
         LoggerFormElementFactory loggerFormElementFactory,
         IEntityRepository entityRepository,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<DbLoggerOptions> options)
     : DataDictionaryController
 {
     private DbLoggerOptions Options { get; } = options.Value;
-
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
-    private LoggerFormElementFactory LoggerFormElementFactory { get; } = loggerFormElementFactory;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-
+    
     public async Task<IActionResult> Index()
     {
-        var formElement = LoggerFormElementFactory.GetFormElement();
+        var formElement = loggerFormElementFactory.GetFormElement();
 
-        if (!await EntityRepository.TableExistsAsync(Options.TableName))
+        if (!await entityRepository.TableExistsAsync(Options.TableName))
         {
-            await EntityRepository.CreateDataModelAsync(formElement,[]);
+            await entityRepository.CreateDataModelAsync(formElement,[]);
         }
 
-        var formView = FormViewFactory.Create(formElement);
+        var formView = formViewFactory.Create(formElement);
         formView.ShowTitle = false;
         if (!formView.GridView.CurrentOrder.Any())
         {
@@ -44,7 +44,10 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
                 return Task.CompletedTask;
             
             var message = args.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
-            args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
+
+            var localizedMessage = stringLocalizer[message!];
+            
+            args.HtmlResult = new HtmlBuilder(localizedMessage );
 
             return Task.CompletedTask;
         };
@@ -62,7 +65,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     {
         var sql = $"TRUNCATE TABLE {Options.TableName}";
 
-        await EntityRepository.SetCommandAsync(new DataAccessCommand(sql));
+        await entityRepository.SetCommandAsync(new DataAccessCommand(sql));
 
         return RedirectToAction("Index");
     }
