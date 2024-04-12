@@ -7,6 +7,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
@@ -33,25 +34,10 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
         {
             var value = GetParsedValue(field, formStateData);
             result[field] = value;
-            Logger.LogDebug("Added parsed value to {Field}: {ParsedValue}", field, value);
+            Logger.LogExpressionParsedValue(field, value);
         }
 
         return result;
-    }
-
-    internal static string GetPageStateName(PageState state)
-    {
-        return state switch
-        {
-            PageState.List => "List",
-            PageState.View => "View",
-            PageState.Insert => "Insert",
-            PageState.Update => "Update",
-            PageState.Filter => "Filter",
-            PageState.Import => "Import",
-            PageState.Delete => "Delete",
-            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
-        };
     }
     
     private object? GetParsedValue(string field, FormStateData formStateData)
@@ -64,7 +50,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
         switch (loweredFieldName)
         {
             case "pagestate":
-                parsedValue = GetPageStateName(pageState);
+                parsedValue = pageState.GetPageStateName();
                 break;
             case "islist":
                 parsedValue = pageState is PageState.List ? 1 : 0;

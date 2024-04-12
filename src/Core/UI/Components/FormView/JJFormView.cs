@@ -23,12 +23,14 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Logging;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -673,16 +675,18 @@ public class JJFormView : AsyncComponent
 
         if (sqlAction is null)
             throw new JJMasterDataException("Action not found at your FormElement");
-        
+
+        var formStateData = await GetFormStateDataAsync();
+        var parsedValues = ExpressionsService.ParseExpression(sqlAction.SqlCommand, formStateData);
+        var sqlCommand = SqlExpressionProvider.GetParsedDataAccessCommand(sqlAction.SqlCommand, parsedValues);
+
         try
         {
-            var sqlCommand = ExpressionsService.ReplaceExpressionWithParsedValues(sqlAction.SqlCommand, await GetFormStateDataAsync());
-
-            await EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
+            await EntityRepository.SetCommandAsync(sqlCommand);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error while executing SQL Command Action at FormView.");
+            Logger.LogSqlCommandException(ex, sqlCommand.Sql);
             var message = StringLocalizer[ExceptionManager.GetMessage(ex)];
             messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
         }

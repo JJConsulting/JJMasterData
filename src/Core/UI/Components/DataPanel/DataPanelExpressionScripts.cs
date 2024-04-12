@@ -23,8 +23,8 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
         {
             var expressionBuilder = new StringBuilder(field.EnableExpression);
             expressionBuilder.Replace("exp:", "");
-            expressionBuilder.Replace("'{PageState}'", $"'{ExpressionParser.GetPageStateName(pageState)}'");
-            expressionBuilder.Replace("'{PageState}'", $"'{ExpressionParser.GetPageStateName(pageState)}'");
+            expressionBuilder.Replace("'{PageState}'", $"'{pageState.GetPageStateName()}'");
+            expressionBuilder.Replace("'{PageState}'", $"'{pageState.GetPageStateName()}'");
             expressionBuilder
                 .Replace(" and ", " && ")
                 .Replace(" or ", " || ")

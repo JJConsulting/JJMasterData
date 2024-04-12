@@ -12,6 +12,7 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
@@ -33,7 +34,12 @@ public class ExpressionsService(
     private ExpressionParser ExpressionParser { get; } = expressionParser;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private ILogger<ExpressionsService> Logger { get; } = logger;
-
+    
+    public Dictionary<string, object?> ParseExpression(string expression, FormStateData formStateData)
+    {
+        return ExpressionParser.ParseExpression(expression, formStateData);
+    }
+    
     public Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
         return GetExpressionValueAsync(field.DefaultValue, field, formStateData);
@@ -84,7 +90,7 @@ public class ExpressionsService(
 
         try
         {
-            Logger.LogDebug("Executing expression: {Expression}", expression);
+            Logger.LogExpression(expression);
 
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
 
@@ -94,8 +100,7 @@ public class ExpressionsService(
         {
             var exception = new ExpressionException("Unhandled exception at a expression provider.", ex);
 
-            Logger.LogError(exception, "Error retrieving expression at {Provider} provider. Expression: {Expression}",
-                provider.Prefix, expression);
+            Logger.LogExpressionError(exception, provider.Prefix, expression);
 
             throw exception;
         }
@@ -165,9 +170,7 @@ public class ExpressionsService(
                 ? new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex)
                 : new ExpressionException("Unhandled exception at a expression provider.", ex);
 
-            Logger.LogError(exception,
-                "Error retrieving expression at {Provider} provider\nExpression: {Expression}\nField: {FieldName}",
-                provider, expression, field?.Name);
+            Logger.LogExpressionError(exception, provider.Prefix, expression, field?.Name);
 
             throw exception;
         }

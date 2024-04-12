@@ -6,8 +6,9 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
-using Microsoft.Extensions.Logging;
+using JJMasterData.Core.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -37,7 +38,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
         }
         catch (Exception ex)
         {
-            gridView.Logger.LogError(ex, "Error while executing SQL Command Action at GridView.");
+            gridView.Logger.LogSqlCommandException(ex, sqlCommandAction.SqlCommand);
             string msg = gridView.StringLocalizer[ExceptionManager.GetMessage(ex)];
             return messageFactory.Create(msg, MessageIcon.Error);
         }
@@ -58,8 +59,10 @@ internal class GridSqlCommandAction(JJGridView gridView)
         foreach (var row in selectedRows)
         {
             var formData = new FormStateData(row, gridView.UserValues, PageState.List);
-            var sql = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.SqlCommand, formData);
-            commandList.Add(new DataAccessCommand(sql!));
+            var sql = sqlCommandAction.SqlCommand;
+            var parsedValues = gridView.ExpressionsService.ParseExpression(sql, formData);
+            var command = SqlExpressionProvider.GetParsedDataAccessCommand(sql, parsedValues);
+            commandList.Add(command);
         }
 
         await gridView.EntityRepository.SetCommandListAsync(commandList);
@@ -79,9 +82,11 @@ internal class GridSqlCommandAction(JJGridView gridView)
         }
 
         var formStateData = new FormStateData(formValues, gridView.UserValues, PageState.List);
-        var sqlCommand = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.SqlCommand, formStateData);
+        var sql = sqlCommandAction.SqlCommand;
+        var parsedValues = gridView.ExpressionsService.ParseExpression(sql, formStateData);
+        var sqlCommand = SqlExpressionProvider.GetParsedDataAccessCommand(sql, parsedValues);
         
-        await gridView.EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
+        await gridView.EntityRepository.SetCommandAsync(sqlCommand);
     }
 
 }

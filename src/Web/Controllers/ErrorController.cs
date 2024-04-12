@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Localization;
+using JJMasterData.Web.Logging;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ public class ErrorController : Controller
         };
         
         if(exceptionHandler?.Error is not null)
-            logger?.LogCritical(exceptionHandler.Error, "Unhandled exception captured by ErrorController");
+            logger?.LogUnhandledException(exceptionHandler.Error);
 
         return View(model);
     }
