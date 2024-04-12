@@ -170,7 +170,7 @@ public class ExpressionsService(
                 ? new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex)
                 : new ExpressionException("Unhandled exception at a expression provider.", ex);
 
-            Logger.LogExpressionError(exception, provider.Prefix, expression, field?.Name);
+            Logger.LogExpressionErrorWithField(exception, provider.Prefix, expression, field?.Name);
 
             throw exception;
         }
