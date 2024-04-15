@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -136,7 +137,7 @@ public class DataItemService(IEntityRepository entityRepository,
         }
         catch (Exception ex)
         {
-            Logger.LogSqlCommandException(ex, command.Sql);
+            Logger.LogDataAccessCommandException(ex, command);
             throw;
         }
 

@@ -36,9 +36,9 @@ internal class GridSqlCommandAction(JJGridView gridView)
                 await ExecuteOnRecord(map, sqlCommandAction);
             }
         }
-        catch (Exception ex)
+        catch (DataAccessException ex)
         {
-            gridView.Logger.LogSqlCommandException(ex, sqlCommandAction.SqlCommand);
+            gridView.Logger.LogSqlActionException(ex, sqlCommandAction.SqlCommand);
             string msg = gridView.StringLocalizer[ExceptionManager.GetMessage(ex)];
             return messageFactory.Create(msg, MessageIcon.Error);
         }

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using JJMasterData.Commons.Data;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Logging;
@@ -42,14 +43,15 @@ internal static partial class LogMessages
         string provider,
         string? expression);
 
-    [LoggerMessage(
-        EventId = 4,
-        Message = "Error while executing SQL Command. Sql: {Sql}",
-        Level = LogLevel.Critical)]
-    internal static partial void LogSqlCommandException(this ILogger logger, Exception exception, string sql);
     
     [LoggerMessage(
-        EventId = 5,
+        EventId = 4,
+        Message = "Error while executing SQL Command Action. Sql: {sql}",
+        Level = LogLevel.Critical)]
+    internal static partial void LogSqlActionException(this ILogger logger, Exception exception, string sql);
+    
+    [LoggerMessage(
+        EventId = 6,
         Message = "Error retrieving expression at {Provider} provider. Expression: {Expression}. Field: {FieldName}.",
         Level = LogLevel.Error)]
     internal static partial void LogExpressionErrorWithField(
