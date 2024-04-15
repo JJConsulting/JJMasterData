@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 

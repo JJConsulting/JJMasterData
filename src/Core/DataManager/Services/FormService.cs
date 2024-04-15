@@ -11,6 +11,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Events.Args;
+using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -79,7 +80,7 @@ public class FormService(
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Error at {Method}", nameof(UpdateAsync));
+            Logger.LogFormServiceError(e,  nameof(UpdateAsync));
             errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 
@@ -130,7 +131,7 @@ public class FormService(
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Error at {Method}", nameof(InsertAsync));
+            Logger.LogFormServiceError(e,  nameof(InsertAsync));
             errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 
@@ -181,7 +182,7 @@ public class FormService(
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Error at {Method}", nameof(InsertOrReplaceAsync));
+            Logger.LogFormServiceError(e,  nameof(InsertOrReplaceAsync));
             errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 
@@ -245,7 +246,7 @@ public class FormService(
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Error at {Method}", nameof(DeleteAsync));
+            Logger.LogFormServiceError(e,  nameof(DeleteAsync));
             errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 

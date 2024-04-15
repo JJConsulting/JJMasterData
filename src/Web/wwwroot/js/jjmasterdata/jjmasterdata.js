@@ -1795,7 +1795,7 @@ class _Modal extends ModalBase {
           <div class="modal-body"> </div>
         </div>
       </div>`;
-            let form = getMasterDataForm();
+            let form = this.modalElement.closest("form");
             if (form) {
                 form.appendChild(this.modalElement);
             }

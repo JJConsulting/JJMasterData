@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -135,7 +137,7 @@ public class DataItemService(IEntityRepository entityRepository,
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values. Sql: {Sql}", command?.Sql);
+            Logger.LogDataAccessCommandException(ex, command);
             throw;
         }
 

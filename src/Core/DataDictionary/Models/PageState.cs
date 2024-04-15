@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models;
+﻿using System;
+
+namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Represents the state of a component.
@@ -43,4 +45,22 @@ public enum PageState
     /// Represents the dictionary deleting a record
     /// </summary>
     Delete = 7
+}
+
+internal static class PageStateExtensions
+{
+    internal static string GetPageStateName(this PageState state)
+    {
+        return state switch
+        {
+            PageState.List => "List",
+            PageState.View => "View",
+            PageState.Insert => "Insert",
+            PageState.Update => "Update",
+            PageState.Filter => "Filter",
+            PageState.Import => "Import",
+            PageState.Delete => "Delete",
+            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+        };
+    }
 }
