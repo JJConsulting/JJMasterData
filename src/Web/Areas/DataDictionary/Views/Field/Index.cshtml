@@ -1,9 +1,9 @@
-﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+﻿@using System.Text
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Core.UI
-@using JJMasterData.Commons.Data.Entity.Providers
 @using JJMasterData.Commons.Data.Entity.Models
-@using JJMasterData.Web.Extensions
+@using JJMasterData.Commons.Extensions
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
@@ -16,6 +16,28 @@
 }
 
 @{
+    string GetFieldDataTypeText(FormElementField field)
+    {
+        var sql = new StringBuilder();
+        sql.Append(StringLocalizer[field.DataType.GetDisplayName()]);
+
+        if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+        {
+            sql.Append('(');
+            sql.Append(field.Size == -1 ? "MAX" : field.Size);
+            sql.Append(')');
+        }
+
+        if (field.IsRequired)
+            sql.Append(" NOT NULL");
+
+        if (field is { AutoNum: true, DataType: not FieldType.UniqueIdentifier })
+            sql.Append(" IDENTITY ");
+
+        return sql.ToString();
+    }
+    
+    
     static IconType GetFontAwesomeIconClass(FormComponent component)
     {
         return component switch
@@ -252,7 +274,8 @@
                                                 <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Filter.Type.ToString()"></span>
                                             }
                                             <br>
-                                            @if (field.Label != null)
+                                            <small>
+                                            @if (field.Label != null && !string.Equals(fieldName, field.Label, StringComparison.InvariantCultureIgnoreCase))
                                             {
                                                 var label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
                                                 if (label.Length > 35)
@@ -263,7 +286,9 @@
                                                 <span>@label</span>
                                                 <span> - </span>
                                             }
-                                            <small>@SqlServerScriptsBase.GetFieldDataTypeScript(field)</small>
+                                     
+                                            @GetFieldDataTypeText(field)
+                                            </small>
                                         </div>
                                         <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
                                         </div>
