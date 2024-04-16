@@ -38,7 +38,7 @@ public class JJModalDialog : HtmlComponent
             .WithAttribute("aria-labelledby", $"{Name}-label")
             .Append(HtmlTag.Div, div =>
             {
-                div.WithCssClass($"modal-dialog {Size.GetDescription()}");
+                div.WithCssClass($"modal-dialog {Size.GetCssClass()}");
                 div.WithCssClassIf(IsCentered, "modal-dialog-centered");
                 div.Append(HtmlTag.Div, content =>
                 {

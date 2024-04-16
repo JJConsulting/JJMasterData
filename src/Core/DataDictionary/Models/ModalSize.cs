@@ -1,24 +1,29 @@
-﻿using System.ComponentModel;
-
-namespace JJMasterData.Core.DataDictionary.Models;
+﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Tamanho da janela do popup
 /// </summary>
 public enum ModalSize
 {
-    [Description("modal-fullscreen")]
     Fullscreen,
-
-    [Description("jj-modal-xl")]
     ExtraLarge,
-
-    [Description("jj-modal-lg")]
     Large,
-
-    [Description("jj-modal-default")]
     Default,
-
-    [Description("jj-modal-sm")]
     Small
+}
+
+public static class ModalSizeExtensions
+{
+    public static string GetCssClass(this ModalSize modalSize)
+    {
+        return modalSize switch
+        {
+            ModalSize.Fullscreen => "modal-fullscreen",
+            ModalSize.ExtraLarge => "jj-modal-xl",
+            ModalSize.Large => "jj-modal-lg",
+            ModalSize.Default => "jj-modal-default",
+            ModalSize.Small => "jj-modal-sm",
+            _ => "jj-modal-default"
+        };
+    }
 }

@@ -1,17 +1,26 @@
-using System.ComponentModel;
-
 namespace JJMasterData.Core.UI.Components;
 
 public enum CheckBoxSwitchSize
 {
-    [Description("")]
     Default,
-    [Description("form-switch-sm")]
     Small,
-    [Description("form-switch-md")]
     Medium,
-    [Description("form-switch-lg")]
     Large,
-    [Description("form-switch-xl")]
     ExtraLarge
+}
+
+public static class CheckboxSwitchSizeExtensions
+{
+    public static string GetCssClass(this CheckBoxSwitchSize size)
+    {
+        return size switch
+        {
+            CheckBoxSwitchSize.Default => "",
+            CheckBoxSwitchSize.Small => "form-switch-sm",
+            CheckBoxSwitchSize.Medium => "form-switch-md",
+            CheckBoxSwitchSize.Large => "form-switch-lg",
+            CheckBoxSwitchSize.ExtraLarge => "form-switch-xl",
+            _ => ""
+        };
+    }
 }
