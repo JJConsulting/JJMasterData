@@ -1,3 +1,3 @@
 namespace JJMasterData.Commons.Logging.Db;
 
-public class DbLoggerBuffer(int maxSize) : LoggerBuffer(maxSize);
+public sealed class DbLoggerBuffer(int maxSize) : LoggerBuffer(maxSize);

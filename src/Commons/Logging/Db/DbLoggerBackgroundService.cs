@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-internal class DbLoggerBackgroundService(
+internal sealed class DbLoggerBackgroundService(
     DbLoggerBuffer loggerBuffer,
     IOptionsMonitor<DbLoggerOptions> optionsMonitor,
     IServiceProvider serviceProvider)
