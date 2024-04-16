@@ -56,7 +56,7 @@ public class CheckboxTagHelper(
         var checkBox = CheckboxFactory.Create();
         checkBox.Name = Name ?? htmlHelper.Name(For!.Name) ?? throw new JJMasterDataException("Either for or name attributes are required.");
         checkBox.Enabled = Enabled;
-        var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
+        var displayName = Label ?? For?.ModelExplorer.Metadata.GetDisplayName();
         if (For is not null)
         {
             checkBox.IsChecked = For?.Model is true;
