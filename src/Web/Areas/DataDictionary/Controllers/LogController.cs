@@ -33,7 +33,8 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
         }
 
         var formView = FormViewFactory.Create(formElement);
-        formView.ShowTitle = false;
+        formView.ShowTitle = !isModal;
+        
         if (!formView.GridView.CurrentOrder.Any())
         {
             formView.GridView.CurrentOrder.AddOrReplace(Options.CreatedColumnName, OrderByDirection.Desc);
