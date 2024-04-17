@@ -1606,7 +1606,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="IP Address" xml:space="preserve">
-    <value>Endereço IP</value>
+    <value>Endereço de IP</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Is Default" xml:space="preserve">
