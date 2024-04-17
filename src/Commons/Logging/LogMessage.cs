@@ -3,7 +3,7 @@ using System;
 
 namespace JJMasterData.Commons.Logging;
 
-public struct LogMessage
+public readonly struct LogMessage
 {
     public required DateTime Created { get; init; }
     public required int LogLevel { get; init; }
