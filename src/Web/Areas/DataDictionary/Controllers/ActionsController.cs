@@ -4,7 +4,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

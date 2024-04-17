@@ -1,7 +1,6 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @using JJMasterData.Core.UI.Components
-@using JJMasterData.Web.Extensions
-@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel;
+@model EntityViewModel;
 
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";

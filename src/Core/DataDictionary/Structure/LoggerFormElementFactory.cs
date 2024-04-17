@@ -16,7 +16,7 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private DbLoggerOptions Options { get; } = options.Value;
 
-    public FormElement GetFormElement()
+    public FormElement GetFormElement(bool isModal)
     {
         var formElement = new FormElement(DbLoggerElement.GetInstance(Options))
         {
@@ -60,7 +60,7 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
             Text = StringLocalizer["Clear Log"],
             ShowAsButton = true,
             ConfirmationMessage = StringLocalizer["Do you want to clear ALL logs?"],
-            UrlRedirect = UrlHelper.Action("ClearAll", "Log", new {Area="DataDictionary"})
+            UrlRedirect = UrlHelper.Action("ClearAll", "Log", new {Area="DataDictionary", isModal})
         };
         
         formElement.Options.GridTableActions.Clear();

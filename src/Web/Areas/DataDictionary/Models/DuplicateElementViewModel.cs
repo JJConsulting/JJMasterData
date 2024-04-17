@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class DuplicateElementViewModel
+public sealed class DuplicateElementViewModel
 {
     [Display(Name="Original Element Name", Prompt = "Original Element Name")]
     public string? OriginalElementName { get; init; } 

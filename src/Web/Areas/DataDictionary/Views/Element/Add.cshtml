@@ -1,8 +1,7 @@
 ﻿@using JJMasterData.Core.UI.Components
-@using JJMasterData.Core.UI
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IComponentFactory ComponentFactory
-@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.AddElementViewModel
+@model AddElementViewModel
 
 <jj-title title="@ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml()" subtitle="@StringLocalizer["Add Element"]"/>
 

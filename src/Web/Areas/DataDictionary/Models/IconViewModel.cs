@@ -1,8 +1,8 @@
 using JJMasterData.Core.DataDictionary;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class IconViewModel
+public sealed class IconViewModel
 {
     public bool EnablePopUp { get; init; } = true;
     public IconType SelectedIcon { get; init; }

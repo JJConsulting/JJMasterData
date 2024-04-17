@@ -18,8 +18,13 @@ public class FormController(IFormElementComponentFactory<JJFormView> formViewFac
 
         if (result is IActionResult actionResult)
             return actionResult;
+
+        var model = new FormViewModel
+        {
+            FormTitle = formView.FormElement.Name,
+            FormViewHtml = result.Content
+        };
         
-        var model = new FormViewModel(formView.FormElement.Name, result.Content);
         return View(model);
     }
     

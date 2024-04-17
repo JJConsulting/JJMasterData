@@ -5,6 +5,7 @@ using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -22,9 +23,9 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     private LoggerFormElementFactory LoggerFormElementFactory { get; } = loggerFormElementFactory;
     private IEntityRepository EntityRepository { get; } = entityRepository;
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(bool isModal)
     {
-        var formElement = LoggerFormElementFactory.GetFormElement();
+        var formElement = LoggerFormElementFactory.GetFormElement(isModal);
 
         if (!await EntityRepository.TableExistsAsync(Options.TableName))
         {
@@ -38,7 +39,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
             formView.GridView.CurrentOrder.AddOrReplace(Options.CreatedColumnName, OrderByDirection.Desc);
         }
 
-        formView.GridView.OnRenderCellAsync += (sender, args) =>
+        formView.GridView.OnRenderCellAsync += (_, args) =>
         {
             if (!args.Field.Name.Equals(Options.MessageColumnName))
                 return Task.CompletedTask;
@@ -54,16 +55,20 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
         if (result is IActionResult actionResult)
             return actionResult;
 
-        return View(nameof(Index), result.Content);
+        return View(new LogViewModel
+        {
+            FormViewHtml = result.Content,
+            IsModal = isModal
+        });
     }
 
     [HttpGet]
-    public async Task<IActionResult> ClearAll()
+    public async Task<IActionResult> ClearAll(bool isModal)
     {
         var sql = $"TRUNCATE TABLE {Options.TableName}";
 
         await EntityRepository.SetCommandAsync(new DataAccessCommand(sql));
 
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", new {isModal});
     }
 }

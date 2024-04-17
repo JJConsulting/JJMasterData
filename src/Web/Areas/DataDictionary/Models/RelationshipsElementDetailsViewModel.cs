@@ -2,9 +2,9 @@ using System.ComponentModel;
 using JJMasterData.Commons.Data.Entity.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class RelationshipsElementDetailsViewModel : DataDictionaryViewModel
+public sealed class RelationshipsElementDetailsViewModel : DataDictionaryViewModel
 {
     public required int? Id { get; set; }
     public required ElementRelationship Relationship { get; set; }

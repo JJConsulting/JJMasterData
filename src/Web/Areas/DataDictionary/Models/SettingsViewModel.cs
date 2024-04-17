@@ -1,13 +1,11 @@
-using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Configuration.Options;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class SettingsViewModel
+public sealed class SettingsViewModel
 {
     public required ConnectionString ConnectionString { get; init; } = new();
     public MasterDataCommonsOptions? Options { get; init; } 

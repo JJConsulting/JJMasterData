@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class AddElementViewModel
+public sealed class AddElementViewModel
 {
     [Display(Name = "Table Or View Name", Prompt = "Table Or View Name")]
     public string Name { get; init; } = null!;

@@ -1,12 +1,13 @@
-@model string
+@model LogViewModel
+
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @{
-    ViewData["Title"] = StringLocalizer["Log"];
-    Layout = Options.Value.ModalLayoutPath;
+    ViewData["Title"] = StringLocalizer["Localization"];
+    Layout = Model.IsModal ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
-<master-data-form asp-action="Index" asp-controller="Log" asp-area="DataDictionary">
-    @Html.Raw(Model)
+<master-data-form asp-action="Index" asp-controller="Log" asp-area="DataDictionary" asp-route-isModal="@Model.IsModal">
+    @Html.Raw(Model.FormViewHtml)
 </master-data-form>

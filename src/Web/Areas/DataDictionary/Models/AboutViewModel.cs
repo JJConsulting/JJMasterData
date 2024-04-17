@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class AboutViewModel
+public sealed class AboutViewModel
 {
     public required List<Assembly> Dependencies { get; set; }
     public required string ExecutingAssemblyProduct { get; set; }

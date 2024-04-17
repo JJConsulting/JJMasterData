@@ -2,9 +2,9 @@
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Events.Abstractions;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class EntityViewModel : DataDictionaryViewModel
+public sealed class EntityViewModel : DataDictionaryViewModel
 {
     public Entity Entity { get; set; } = null!;
     public IEventHandler? FormEvent { get; set; }

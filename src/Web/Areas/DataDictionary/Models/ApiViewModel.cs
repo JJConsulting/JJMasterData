@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class ApiViewModel : DataDictionaryViewModel
+public sealed class ApiViewModel : DataDictionaryViewModel
 {
     [Display(Name = "Enable Synchronism")]
     public bool EnableSynchronism { get; set; }

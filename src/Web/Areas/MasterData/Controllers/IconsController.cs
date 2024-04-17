@@ -1,4 +1,4 @@
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;

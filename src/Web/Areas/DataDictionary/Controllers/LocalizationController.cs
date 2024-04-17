@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Areas.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +9,7 @@ public class LocalizationController(LocalizationService localizationService) : D
 {
     private LocalizationService LocalizationService { get; } = localizationService;
 
-    public async Task<IActionResult> Index(bool isModal)
+    public async Task<IActionResult> Index([FromQuery] bool isModal)
     {
         var formView = LocalizationService.GetFormView();
         formView.ShowTitle = !isModal;

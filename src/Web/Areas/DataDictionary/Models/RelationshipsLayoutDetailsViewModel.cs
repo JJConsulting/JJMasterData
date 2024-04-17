@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class RelationshipsLayoutDetailsViewModel : DataDictionaryViewModel
+public sealed class RelationshipsLayoutDetailsViewModel : DataDictionaryViewModel
 {
     public required int Id { get; set; }
     public required bool IsParent { get; set; }

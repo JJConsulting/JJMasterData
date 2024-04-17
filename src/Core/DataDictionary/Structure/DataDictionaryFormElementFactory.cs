@@ -208,7 +208,7 @@ public class DataDictionaryFormElementFactory(
                 IsGroup = true,
                 ModalTitle = StringLocalizer["Log"],
                 ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.Action("Index", "Log", new {Area="DataDictionary"}),
+                UrlRedirect = UrlHelper.Action("Index", "Log", new {Area="DataDictionary", isModal = true}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             },

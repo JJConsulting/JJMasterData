@@ -1,8 +1,8 @@
 using JJMasterData.Commons.Data.Entity.Models;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class ElementScriptsViewModel : DataDictionaryViewModel
+public sealed class ElementScriptsViewModel : DataDictionaryViewModel
 {
     public required ScriptsResult Scripts { get; init; }
     public bool TableExists { get; set; }

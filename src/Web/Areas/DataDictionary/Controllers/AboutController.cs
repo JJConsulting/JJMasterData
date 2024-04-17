@@ -1,5 +1,5 @@
 using System.Reflection;
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Areas.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 

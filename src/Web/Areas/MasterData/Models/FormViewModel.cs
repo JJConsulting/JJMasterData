@@ -1,3 +1,7 @@
 namespace JJMasterData.Web.Areas.MasterData.Models;
 
-public record FormViewModel(string FormTitle,string FormViewHtml);
+public sealed class FormViewModel
+{
+    public required string FormTitle { get; init; } 
+    public required string FormViewHtml { get; init; } 
+}

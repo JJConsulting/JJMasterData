@@ -1,8 +1,8 @@
 using JJMasterData.Core.DataDictionary.Models.Actions;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class ActionsListDetailsViewModel : DataDictionaryViewModel
+public sealed class ActionsListDetailsViewModel : DataDictionaryViewModel
 {
     public required ActionSource Source { get; init; }
     public required List<BasicAction> Actions { get; init; }
