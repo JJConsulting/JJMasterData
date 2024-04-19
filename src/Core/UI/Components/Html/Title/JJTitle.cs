@@ -1,4 +1,5 @@
 ﻿using System;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
@@ -8,7 +9,8 @@ public class JJTitle : HtmlComponent
     public string Title { get; set; }
     public string SubTitle { get; set; }
     public HeadingSize Size { get; set; }
-
+    public IconType? Icon { get; set; }
+    
     private HtmlTag Tag => Size switch
     {
         HeadingSize.H1 => HtmlTag.H1,
@@ -19,6 +21,8 @@ public class JJTitle : HtmlComponent
         HeadingSize.H6 => HtmlTag.H6,
         _ => throw new ArgumentOutOfRangeException()
     };
+
+
 
     public JJTitle()
     {
@@ -44,6 +48,10 @@ public class JJTitle : HtmlComponent
             .WithCssClass(BootstrapHelper.PageHeader)
             .Append(Tag, e =>
             {
+                e.AppendIf(Icon.HasValue,HtmlTag.Span,span =>
+                {
+                    span.AppendComponent(new JJIcon(Icon!.Value));
+                });
                 e.AppendText(Title);
                 e.Append(HtmlTag.Small, small =>
                 {
