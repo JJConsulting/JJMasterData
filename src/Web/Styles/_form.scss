@@ -246,3 +246,12 @@ input.form-control:read-only {
   background-position: right calc(.375em + .1875rem) center;
   background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
+
+.input-group .dropdown-toggle.form-dropdown{
+  border-bottom-right-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.dropdown-toggle.form-dropdown:after{
+  content:  none  !important;
+}

@@ -87,7 +87,7 @@ public class JJComboBox : ControlBase
     {
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass(CssClass)
-            .WithCssClass("form-control ")
+            .WithCssClass("form-control")
             .WithCssClass(MultiSelect || DataItem.ShowIcon ? "selectpicker" : "form-select")
             .WithName(Name)
             .WithId(Id ?? Name)
@@ -96,7 +96,8 @@ public class JJComboBox : ControlBase
             .WithAttributeIf(MultiSelect && FormStateData.PageState == PageState.Filter, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
-            .WithAttribute("data-style", "form-control")
+            .WithAttributeIf(BootstrapHelper.Version is 3,"data-style", "form-control")
+            .WithAttributeIf(BootstrapHelper.Version is 5,"data-style-base", "form-select form-dropdown")
             .WithAttributes(Attributes)
             .AppendRange(GetOptions(values));
 

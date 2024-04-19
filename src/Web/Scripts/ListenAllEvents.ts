@@ -3,7 +3,7 @@
     
     $(selectorPrefix + ".selectpicker").selectpicker({
         iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon',
-        styleBase: "form-control"
+        styleBase: bootstrapVersion === 5 ? "form-select form-dropdown" : "form-control"
     });
     
     if(bootstrapVersion === 3){
