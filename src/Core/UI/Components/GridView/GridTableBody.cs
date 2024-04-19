@@ -186,7 +186,7 @@ internal class GridTableBody(JJGridView gridView)
                 {
                     value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
                     var valueString = value?.ToString()?.Trim() ?? string.Empty;
-                    cell = new HtmlBuilder(field.EncodeHtml ? HttpUtility.HtmlEncode(valueString) : valueString);
+                    cell = new HtmlBuilder(valueString);
                 }
 
                 if (OnRenderCellAsync != null)

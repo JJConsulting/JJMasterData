@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -18,16 +20,17 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
     public async Task<string> FormatGridValueAsync(FormElementField field, Dictionary<string, object> values, Dictionary<string, object> userValues)
     {
-        object fieldValue = null;
-        if (values.TryGetValue(field.Name, out var value))
-            fieldValue = value;
-
-        if (fieldValue == null || fieldValue == DBNull.Value)
-            return string.Empty;
-
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
-
+        
+        values.TryGetValue(field.Name, out var value);
+        
+        if (value == null || value == DBNull.Value)
+            return string.Empty;
+        
+        if (field.EncodeHtml)
+            value = HttpUtility.HtmlEncode(value);
+        
         string stringValue;
         switch (field.Component)
         {
@@ -63,15 +66,30 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
                 values.TryGetValue(field.Name, out var searchId);
                 var searchBoxValues = await DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, searchId?.ToString());
-                var rowValue = searchBoxValues.FirstOrDefault(v => v.Id == fieldValue?.ToString());
+                var rowValue = searchBoxValues.FirstOrDefault(v => v.Id == value?.ToString());
                 
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
+            case FormComponent.Email:
+                stringValue = GetEmailLink(value?.ToString());
+                break;
             default:
                 stringValue = FormatValue(field, value);
                 break;
         }
 
         return stringValue ?? string.Empty;
+    }
+
+    private static string GetEmailLink(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return string.Empty;
+        
+        var a = new A();
+        a.WithAttribute("href", $"mailto:{value}");
+        a.AppendText(value);
+        
+        return a.ToString();
     }
 
     private static string GetCurrencyValueAsString(FormElementField field, object value)
