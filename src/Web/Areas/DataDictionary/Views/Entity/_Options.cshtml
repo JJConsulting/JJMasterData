@@ -7,18 +7,6 @@
 @model EntityViewModel 
 
 <div class="row mb-3">
-    <div class="col-sm-6">
-        <label class="form-label" asp-for="Entity.Icon"></label>
-        <icon-picker for="Entity.Icon" enabled="@(!Model.Disabled)"/>
-    </div>
-    <div class="col-sm-6">
-        <label asp-for="Entity.TitleSize" class="form-label"></label>
-        <select asp-for="Entity.TitleSize" disabled="@Model.Disabled" asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select" id="floatingTitleSize"></select>
-    </div>
-</div>
-
-
-<div class="row mb-3">
     <div class="col-sm-6 flex-grow-1">
         <label asp-for="Entity.Info" class="form-label"></label>
         <input asp-for="Entity.Info" data-bs-toggle="title" title="@Localizer["Developer only information about the element."]" class="form-control" id="infoInput" disabled="@Model.Disabled" />

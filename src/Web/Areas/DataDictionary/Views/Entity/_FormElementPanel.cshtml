@@ -2,6 +2,17 @@
 @model EntityViewModel;
 
 
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label class="form-label" asp-for="Entity.Icon"></label>
+        <icon-picker for="Entity.Icon" enabled="@(!Model.Disabled)"/>
+    </div>
+    <div class="col-sm-6">
+        <label asp-for="Entity.TitleSize" class="form-label"></label>
+        <select asp-for="Entity.TitleSize" disabled="@Model.Disabled" asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select" id="floatingTitleSize"></select>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-sm-12">
         <expression for="Entity.Title" disabled="@Model.Disabled"/>
