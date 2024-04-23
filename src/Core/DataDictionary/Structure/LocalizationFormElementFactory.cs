@@ -21,6 +21,7 @@ public class LocalizationFormElementFactory(
     
         var formElement = new FormElement(element);
         formElement.Title = stringLocalizer["Internationalization"];
+        formElement.Icon = IconType.SolidEarthAmericas;
         formElement.Options.Grid.ShowTitle = false;
         formElement.Fields["resourceKey"].IsRequired = true;
         formElement.Fields["resourceKey"].CssClass = "col-sm-6";

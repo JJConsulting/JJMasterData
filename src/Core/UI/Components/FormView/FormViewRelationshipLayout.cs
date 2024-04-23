@@ -130,6 +130,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                     var htmlTitle = new JJTitle
                     {
                         Title = relationship.Panel.Title,
+                        Icon = relationship.Panel.Icon,
                         Size = HeadingSize.H3
                     };
                     div.AppendComponent(htmlTitle);

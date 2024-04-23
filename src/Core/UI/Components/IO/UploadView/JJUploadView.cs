@@ -63,6 +63,8 @@ public class JJUploadView : AsyncComponent
     
     public string Title { get; set; }
     public string SubTitle { get; set; }
+    public HeadingSize TitleSize { get; set; } = HeadingSize.H3;
+    public IconType? Icon { get; set; }
     
     public bool ViewGallery { get; set; }
 
@@ -117,6 +119,8 @@ public class JJUploadView : AsyncComponent
             _gridView.FormElement.ParentName = ParentName;
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
+            _gridView.FormElement.TitleSize = TitleSize;
+            _gridView.FormElement.Icon = Icon;
             
             _gridView.DataSource = EnumerableHelper.ConvertToDictionaryList(files);
             _gridView.TotalOfRecords = files.Rows.Count;
@@ -333,8 +337,13 @@ public class JJUploadView : AsyncComponent
                 return result;
             }
         }
+
         if (!string.IsNullOrEmpty(Title))
-            html.AppendComponent(ComponentFactory.Html.Title.Create(Title, SubTitle));
+        {
+            var title = ComponentFactory.Html.Title.Create(Title, SubTitle, Icon);
+            title.Size = TitleSize;
+            html.AppendComponent(title);
+        }
 
         html.Append(GetUploadAreaHtml());
 

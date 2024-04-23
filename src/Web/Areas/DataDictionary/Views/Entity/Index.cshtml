@@ -33,6 +33,10 @@
         <partial name="_FormElementPanel" model="Model"/>
     </collapse-panel>
 
+    <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="true">
+        <partial name="_Options" model="Model"/>
+    </collapse-panel>
+    
     if (Model.FormEvent != null)
     {
         <collapse-panel  name="eventsPanel" icon="SolidBoltLightning" title="@StringLocalizer["Events"]" expanded-by-default="true">

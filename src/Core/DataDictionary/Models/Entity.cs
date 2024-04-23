@@ -37,6 +37,9 @@ public sealed class Entity
     
     [Display(Name = "Additional Info")]
     public required string Info { get; set; }
+    
+    [Display(Name = "Icon")]
+    public required IconType? Icon { get; set; }
 
     public static Entity FromFormElement(FormElement formElement)
     {
@@ -51,7 +54,8 @@ public sealed class Entity
             Title = formElement.Title,
             TitleSize = formElement.TitleSize,
             SubTitle = formElement.SubTitle,
-            Info = formElement.Info
+            Info = formElement.Info,
+            Icon = formElement.Icon    
         };
     }
 }

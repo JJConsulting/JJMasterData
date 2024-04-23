@@ -21,7 +21,8 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
         var formElement = new FormElement(DbLoggerElement.GetInstance(Options))
         {
             Title = StringLocalizer["Application Log"],
-            SubTitle = string.Empty
+            SubTitle = string.Empty,
+            Icon = IconType.Film
         };
         
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);

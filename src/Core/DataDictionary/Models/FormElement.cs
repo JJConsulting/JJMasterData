@@ -31,7 +31,10 @@ public class FormElement : Element
     [Display(Name = "SubTitle")]
     [SyncExpression]
     public string? SubTitle { get; set; }
-
+    
+    [JsonProperty("icon")]
+    public IconType? Icon { get; set; }
+    
     [Required]
     [JsonProperty("fields")]
     public new FormElementFieldList Fields

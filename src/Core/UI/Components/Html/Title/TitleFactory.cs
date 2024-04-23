@@ -1,4 +1,6 @@
 using System;
+using System.Drawing;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -12,11 +14,13 @@ public class TitleFactory(ExpressionsService expressionsService) : IComponentFac
         return new JJTitle();
     }
     
-    public JJTitle Create(string title, string subtitle)
+    public JJTitle Create(string title, string subtitle, IconType? icon)
     {
         var htmlTitle = Create();
         htmlTitle.Title = title;
         htmlTitle.SubTitle = subtitle;
+        htmlTitle.Icon = icon;
+        
         return htmlTitle;
     }
 
@@ -28,6 +32,7 @@ public class TitleFactory(ExpressionsService expressionsService) : IComponentFac
         var htmlTitle = Create();
         htmlTitle.Title = expressionsService.GetExpressionValue(formElement.Title, formStateData) as string;
         htmlTitle.Size = formElement.TitleSize;
+        htmlTitle.Icon = formElement.Icon;
         htmlTitle.SubTitle = expressionsService.GetExpressionValue(formElement.SubTitle, formStateData) as string;
 
         return htmlTitle;

@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Web.TagHelpers;
@@ -16,9 +17,12 @@ public class TitleTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
     [HtmlAttributeName("size")]
     public HeadingSize? Size { get; set; }
 
+    [HtmlAttributeName("icon")]
+    public IconType? Icon { get; set; }
+    
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var title = htmlComponentFactory.Title.Create(Title ?? string.Empty, SubTitle ?? string.Empty);
+        var title = htmlComponentFactory.Title.Create(Title ?? string.Empty, SubTitle ?? string.Empty, Icon);
 
         if (Size is not null)
         {

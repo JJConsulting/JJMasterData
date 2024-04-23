@@ -42,7 +42,7 @@ public class JJIconPicker(
                 Icon = icon
             }).ToList(),
             FirstOption = FirstOptionMode.Choose,
-            ShowIcon = true,
+            ShowIcon = Enabled,
         };
 
         comboBox.EnableLocalization = false;
@@ -53,7 +53,7 @@ public class JJIconPicker(
         comboBox.Attributes["data-sanitize"] = "false";
         comboBox.Attributes["data-none-results-text"] = stringLocalizer["No icons found."];
         var div = new Div();
-        div.WithCssClass("input-group");
+        div.WithCssClassIf(Enabled,"input-group");
         await div.AppendControlAsync(comboBox);
         div.AppendIf(Enabled,HtmlTag.Div,div =>
         {

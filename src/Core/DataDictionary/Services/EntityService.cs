@@ -59,6 +59,7 @@ public class EntityService(IValidationDictionary validationDictionary,
             formElement.SubTitle = entity.SubTitle;
             formElement.UseReadProcedure = entity.UseReadProcedure;
             formElement.UseWriteProcedure = entity.UseWriteProcedure;
+            formElement.Icon = entity.Icon;
             
             if (!entityName.Equals(formElement.Name))
             {

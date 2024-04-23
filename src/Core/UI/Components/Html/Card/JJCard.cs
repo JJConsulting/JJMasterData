@@ -85,6 +85,7 @@ public class JJCard : HtmlComponent
             {
                 var title = new JJTitle
                 {
+                    Icon = Icon,
                     SubTitle = SubTitle
                 };
                 d.Append(title.GetHtmlBlockquote());
@@ -114,6 +115,7 @@ public class JJCard : HtmlComponent
             var title = new JJTitle
             {
                 Title = Title,
+                Icon = Icon,
                 SubTitle = SubTitle
             };
             html.Append(title.GetHtmlBlockquote());
@@ -133,20 +135,13 @@ public class JJCard : HtmlComponent
 
 
         html.WithCssClass(BootstrapHelper.Version == 3 ? "well" : "card card-body");
-
-        
-        if (Icon is not null)
-        {
-            var icon = new JJIcon(Icon.Value);
-            icon.CssClass += $" {BootstrapHelper.MarginRight}-1";
-            html.AppendComponent(icon);
-        }
         
         if (HasTitle)
         {
             var title = new JJTitle
             {
                 Title = Title,
+                Icon = Icon,
                 SubTitle = SubTitle
             };
             html.Append(title.GetHtmlBlockquote());
