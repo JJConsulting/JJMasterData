@@ -114,7 +114,7 @@ public class MasterDataStringLocalizer(
 
         var hasConnectionString = !string.IsNullOrEmpty(Options.CurrentValue.ConnectionString);
         
-        var tableExists = hasConnectionString && EntityRepository.TableExists(element.TableName);
+        var tableExists = hasConnectionString && EntityRepository.TableExists(element.TableName, null);
         
         if (!tableExists && hasConnectionString)
              EntityRepository.CreateDataModel(element,[]);

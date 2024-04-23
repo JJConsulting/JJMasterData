@@ -340,7 +340,8 @@ internal class DataPanelControl
 
     private async Task<HtmlBuilder> GetStaticField(FormElementField field)
     {
-        var staticValue = await FieldsService.FormatGridValueAsync(field, Values, UserValues);
+        var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
+        var staticValue = await FieldsService.FormatGridValueAsync(fieldSelector, Values, UserValues);
         var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
             .AppendText(field.EncodeHtml ? HttpUtility.HtmlEncode(staticValue) : staticValue);

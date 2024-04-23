@@ -27,7 +27,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     {
         var formElement = LoggerFormElementFactory.GetFormElement(isModal);
 
-        if (!await EntityRepository.TableExistsAsync(Options.TableName))
+        if (!await EntityRepository.TableExistsAsync(Options.TableName, null))
         {
             await EntityRepository.CreateDataModelAsync(formElement,[]);
         }
@@ -68,7 +68,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     {
         var sql = $"TRUNCATE TABLE {Options.TableName}";
 
-        await EntityRepository.SetCommandAsync(new DataAccessCommand(sql));
+        await EntityRepository.SetCommandAsync(new DataAccessCommand(sql), null);
 
         return RedirectToAction("Index", new {isModal});
     }

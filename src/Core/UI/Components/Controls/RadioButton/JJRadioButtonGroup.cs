@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
@@ -11,9 +12,8 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJRadioButtonGroup(
     DataItemService dataItemService,
-    IFormValues formValues) : ControlBase(formValues)
+    IFormValues formValues) : ControlBase(formValues), IDataItemControl
 {
-    public FormElementDataItem DataItem { get; set; } = null!;
     private DataItemService DataItemService { get; } = dataItemService;
     private string? _selectedValue;
     public string? SelectedValue
@@ -29,7 +29,9 @@ public class JJRadioButtonGroup(
         }
         set => _selectedValue = value;
     }
-
+    
+    public FormElementDataItem DataItem { get; set; } = null!;
+    public Guid? ConnectionId { get; set; }
     public FormStateData FormStateData { get; set; } = null!;
 
     protected override async Task<ComponentResult> BuildResultAsync()
@@ -50,7 +52,7 @@ public class JJRadioButtonGroup(
     
     public Task<List<DataItemValue>> GetValuesAsync()
     {
-        return DataItemService.GetValuesAsync(DataItem,FormStateData);
+        return DataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
     }
 
     private void AppendRadioButton(HtmlBuilder html, DataItemValue item)

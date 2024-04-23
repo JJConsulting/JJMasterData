@@ -18,10 +18,12 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
     private DataItemService DataItemService { get; } = dataItemService;
     private LookupService LookupService { get; } = lookupService;
 
-    public async Task<string> FormatGridValueAsync(FormElementField field, Dictionary<string, object> values, Dictionary<string, object> userValues)
+    public async Task<string> FormatGridValueAsync(
+        FormElementFieldSelector fieldSelector, 
+        Dictionary<string, object> values,
+        Dictionary<string, object> userValues)
     {
-        if (field == null)
-            throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
+        var field = fieldSelector.Field;
         
         values.TryGetValue(field.Name, out var value);
         
@@ -65,7 +67,13 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 var searchFormData = new FormStateData(values, userValues, PageState.List);
 
                 values.TryGetValue(field.Name, out var searchId);
-                var searchBoxValues = await DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, searchId?.ToString());
+                
+                var dataQuery = new DataQuery(searchFormData, fieldSelector.FormElement.ConnectionId)
+                {
+                    SearchId = searchId?.ToString()
+                };
+                
+                var searchBoxValues = await DataItemService.GetValuesAsync(field.DataItem, dataQuery);
                 var rowValue = searchBoxValues.FirstOrDefault(v => v.Id == value?.ToString());
                 
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;

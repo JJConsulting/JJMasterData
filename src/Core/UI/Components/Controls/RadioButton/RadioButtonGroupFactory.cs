@@ -18,6 +18,7 @@ internal class RadioButtonGroupFactory(DataItemService dataItemService, IFormVal
     {
         var radioButtonGroup = Create();
         radioButtonGroup.DataItem = field.DataItem!;
+        radioButtonGroup.ConnectionId = formElement.ConnectionId;
         radioButtonGroup.Name = field.Name;
         radioButtonGroup.Visible = true;
         radioButtonGroup.FormStateData = context.FormStateData;

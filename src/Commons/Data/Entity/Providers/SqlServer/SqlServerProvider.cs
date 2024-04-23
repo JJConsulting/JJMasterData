@@ -17,12 +17,11 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerProvider(
-    DataAccess dataAccess,
     SqlServerScripts sqlServerScripts,
     IMemoryCache memoryCache,
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
-    : EntityProviderBase(dataAccess, options, loggerFactory)
+    : EntityProviderBase(options, loggerFactory)
 {
     private readonly TimeSpan _cacheExpiration = new (4, 0, 0);
     private SqlServerScripts SqlServerScripts { get; } = sqlServerScripts;
@@ -323,12 +322,14 @@ public class SqlServerProvider(
         return databaseType.Equals("ntext") ? FieldType.NText : FieldType.NVarchar;
     }
     
-    public override async Task<Element> GetElementFromTableAsync(string tableName)
+    public override async Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId)
     {
+        var dataAccess = GetDataAccess(connectionId);
+        
         if (string.IsNullOrEmpty(tableName))
             throw new ArgumentNullException(nameof(tableName));
 
-        if (!await DataAccess.TableExistsAsync(tableName))
+        if (!await dataAccess.TableExistsAsync(tableName))
             throw new JJMasterDataException($"Table {tableName} not found");
 
         var element = new Element
@@ -343,8 +344,8 @@ public class SqlServerProvider(
             Sql = "sp_columns"
         };
         cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-
-        var dtFields = await DataAccess.GetDataTableAsync(cmdFields);
+        
+        var dtFields = await dataAccess.GetDataTableAsync(cmdFields);
         if (dtFields.Rows.Count == 0)
             throw new JJMasterDataException($"Table {tableName} has invalid structure");
 
@@ -371,7 +372,7 @@ public class SqlServerProvider(
         };
 
         cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-        var primaryKeys = await DataAccess.GetDictionaryListAsync(cmdPks);
+        var primaryKeys = await dataAccess.GetDictionaryListAsync(cmdPks);
         foreach (var row in primaryKeys)
         {
             element.Fields[row["COLUMN_NAME"]?.ToString()].IsPk = true;

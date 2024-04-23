@@ -14,12 +14,12 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class DataItemService(IEntityRepository entityRepository,
+public class DataItemService(
+    IEntityRepository entityRepository,
     ExpressionParser expressionParser,
     ElementMapService elementMapService,
     ILogger<DataItemService> logger)
@@ -31,20 +31,18 @@ public class DataItemService(IEntityRepository entityRepository,
 
     public async Task<List<DataItemValue>> GetValuesAsync(
         FormElementDataItem dataItem,
-        FormStateData formStateData,
-        string? searchText = null,
-        string? searchId = null)
+        DataQuery dataQuery)
     {
         var dataItemType = GetDataItemType(dataItem);
         
         switch (dataItemType)
         {
             case DataItemType.Manual:
-                return GetItemsValues(dataItem, searchId, searchText).ToList();
+                return GetItemsValues(dataItem, dataQuery.SearchId, dataQuery.SearchText).ToList();
             case DataItemType.SqlCommand:
-                return await GetSqlCommandValues(dataItem, formStateData, searchId, searchText).ToListAsync();
+                return await GetSqlCommandValues(dataItem, dataQuery).ToListAsync();
             case DataItemType.ElementMap:
-                return await GetElementMapValues(dataItem, formStateData, searchId,searchText).ToListAsync();
+                return await GetElementMapValues(dataItem, dataQuery).ToListAsync();
             default:
                 throw new JJMasterDataException("Invalid DataItemType.");
         }
@@ -88,8 +86,12 @@ public class DataItemService(IEntityRepository entityRepository,
             }
     }
 
-    private async IAsyncEnumerable<DataItemValue> GetElementMapValues(FormElementDataItem dataItem, FormStateData formStateData, string? searchId, string? searchText)
+    private async IAsyncEnumerable<DataItemValue> GetElementMapValues(FormElementDataItem dataItem, DataQuery dataQuery)
     {
+        FormStateData formStateData = dataQuery.FormStateData;
+        string? searchId = dataQuery.SearchId;
+        string? searchText = dataQuery.SearchText;
+        
         var elementMap = dataItem.ElementMap;
         var values = await ElementMapService.GetDictionaryList(elementMap!, searchId, formStateData);
             
@@ -122,18 +124,22 @@ public class DataItemService(IEntityRepository entityRepository,
         }
     }
 
-    private async IAsyncEnumerable<DataItemValue> GetSqlCommandValues(FormElementDataItem dataItem,
-        FormStateData formStateData,
-        string? searchId,
-        string? searchText)
+    private async IAsyncEnumerable<DataItemValue> GetSqlCommandValues(
+        FormElementDataItem dataItem,
+        DataQuery dataQuery)
     {
+        FormStateData formStateData = dataQuery.FormStateData;
+        string? searchId = dataQuery.SearchId;
+        string? searchText = dataQuery.SearchText;
+        Guid? connectionId = dataQuery.ConnectionId;
+        
         var command = GetDataItemCommand(dataItem, formStateData, searchText, searchId);
         
         DataTable result;
         
         try
         {
-             result = await EntityRepository.GetDataTableAsync(command);
+             result = await EntityRepository.GetDataTableAsync(command, connectionId);
         }
         catch (Exception ex)
         {

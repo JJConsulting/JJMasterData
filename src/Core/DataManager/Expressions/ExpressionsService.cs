@@ -40,11 +40,6 @@ public class ExpressionsService(
         return ExpressionParser.ParseExpression(expression, formStateData);
     }
     
-    public Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
-    {
-        return GetExpressionValueAsync(field.DefaultValue, field, formStateData);
-    }
-
     public string? ReplaceExpressionWithParsedValues(
         string? expression,
         FormStateData formStateData,
@@ -108,32 +103,21 @@ public class ExpressionsService(
         return result;
     }
 
-    public Task<object?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)
+    public Task<object?> GetTriggerValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
     {
-        return GetExpressionValueAsync(field.TriggerExpression, field, formStateData);
+        var field = fieldSelector.Field;
+        return GetExpressionValueAsync(fieldSelector,field.TriggerExpression, formStateData);
     }
-
-    internal async Task<object?> GetExpressionValueAsync(
-        string? expression,
-        FormStateData formStateData)
+    
+    public Task<object?> GetDefaultValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
     {
-        return await GetExpressionValueAsyncInternal(expression, null, formStateData);
+        var field = fieldSelector.Field;
+        return GetExpressionValueAsync(fieldSelector,field.DefaultValue, formStateData);
     }
-
-    internal async Task<object?> GetExpressionValueAsync(
+    
+    private async Task<object?> GetExpressionValueAsync(
+        FormElementFieldSelector fieldSelector,
         string? expression,
-        ElementField field,
-        FormStateData formStateData)
-    {
-        if (field == null)
-            throw new ArgumentNullException(nameof(field));
-
-        return await GetExpressionValueAsyncInternal(expression, field, formStateData);
-    }
-
-    private async Task<object?> GetExpressionValueAsyncInternal(
-        string? expression,
-        ElementField? field,
         FormStateData formStateData)
     {
         var extractedExpression = GetExpressionFromString(expression);
@@ -145,12 +129,14 @@ public class ExpressionsService(
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");
         }
 
+        var field = fieldSelector.Field;
+        
         try
         {
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+            
             var result = await provider.EvaluateAsync(expressionValue, parsedValues);
-
-            if (field != null && result is string stringResult)
+            if (result is string stringResult)
             {
                 return field.DataType switch
                 {
@@ -166,11 +152,10 @@ public class ExpressionsService(
         }
         catch (Exception ex)
         {
-            var exception = field != null
-                ? new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex)
-                : new ExpressionException("Unhandled exception at a expression provider.", ex);
+            var exception =
+                new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex);
 
-            Logger.LogExpressionErrorWithField(exception, provider.Prefix, expression, field?.Name);
+            Logger.LogExpressionErrorWithField(exception, provider.Prefix, expression, field.Name);
 
             throw exception;
         }

@@ -51,17 +51,17 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
             { DicJson, GetJsonFields(formValues) }
         };
 
-        var logElement = GetElement();
-        await CreateTableIfNotExistsAsync();
+        var logElement = GetElement(element.ConnectionId);
+        await CreateTableIfNotExistsAsync(element.ConnectionId);
         await EntityRepository.InsertAsync(logElement, values);
     }
 
-    private async Task CreateTableIfNotExistsAsync()
+    private async Task CreateTableIfNotExistsAsync(Guid? connectionId)
     {
         if (!_hasAuditLogTable)
         {
-            var logElement = GetElement();
-            if (!await EntityRepository.TableExistsAsync(logElement.TableName))
+            var logElement = GetElement(connectionId);
+            if (!await EntityRepository.TableExistsAsync(logElement.TableName, logElement.ConnectionId))
                 await EntityRepository.CreateDataModelAsync(logElement,[]);
 
             _hasAuditLogTable = true;
@@ -92,7 +92,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
         return key.ToString();
     }
 
-    public Element GetElement()
+    public Element GetElement(Guid? elementConnectionString)
     {
         string tableName = Options.AuditLogTableName;
         var element = new Element(tableName, StringLocalizer["Audit Log"]);
@@ -110,19 +110,19 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
         return element;
     }
 
-    public FormElement GetFormElement(string parentElement)
+    public FormElement GetFormElement(FormElement formElement)
     {
-        var formElement = new FormElement(GetElement());
-        formElement.Fields[DicId].VisibleExpression = "val:0";
-        formElement.Fields[DicName].VisibleExpression = "val:0";
-        formElement.Fields[DicBrowser].VisibleExpression = "val:0";
-        formElement.Fields[DicJson].VisibleExpression = "val:0";
-        formElement.Fields[DicModified].Component = FormComponent.DateTime;
+        var auditLogFormElement = new FormElement(GetElement(formElement.ConnectionId));
+        auditLogFormElement.Fields[DicId].VisibleExpression = "val:0";
+        auditLogFormElement.Fields[DicName].VisibleExpression = "val:0";
+        auditLogFormElement.Fields[DicBrowser].VisibleExpression = "val:0";
+        auditLogFormElement.Fields[DicJson].VisibleExpression = "val:0";
+        auditLogFormElement.Fields[DicModified].Component = FormComponent.DateTime;
 
-        formElement.Options.GridTableActions.Clear();
-        formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
+        auditLogFormElement.Options.GridTableActions.Clear();
+        auditLogFormElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         
-        var origin = formElement.Fields[DicOrigin];
+        var origin = auditLogFormElement.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;
         origin.DataItem = new FormElementDataItem
         {
@@ -135,7 +135,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
             origin.DataItem.Items.Add(item);
         }
 
-        var action = formElement.Fields[DicAction];
+        var action = auditLogFormElement.Fields[DicAction];
         action.Component = FormComponent.ComboBox;
         action.DataItem = new FormElementDataItem
         {
@@ -152,10 +152,10 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
             Tooltip = "View"
         };
         btnViewLog.Name = nameof(btnViewLog);
-        btnViewLog.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{parentElement}','{{{DicId}}}');";
+        btnViewLog.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{formElement.Name}','{{{DicId}}}');";
 
-        formElement.Options.GridTableActions.Add(btnViewLog);
-        return formElement;
+        auditLogFormElement.Options.GridTableActions.Add(btnViewLog);
+        return auditLogFormElement;
     }
     
     internal static string GetUpdateColor()

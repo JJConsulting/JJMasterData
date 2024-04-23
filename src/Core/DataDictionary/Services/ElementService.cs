@@ -2,7 +2,6 @@
 
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
@@ -25,7 +23,6 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService(IFormElementComponentFactory<JJFormView> formViewFactory,
         IValidationDictionary validationDictionary,
-        IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -38,19 +35,21 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IEntityRepository EntityRepository { get; } =  entityRepository;
 
-    private readonly MasterDataCoreOptions _options = options.Value;
-
     #region Add Dictionary
 
-    public async Task<Element?> CreateEntityAsync(string tableName, bool importFields)
+    public async Task<Element?> CreateEntityAsync(ElementBean elementBean)
     {
-        if (!await ValidateEntityAsync(tableName, importFields))
+        var tableName = elementBean.Name;
+        var importFields = elementBean.ImportFields;
+        var connectionId = elementBean.ConnectionId;
+        
+        if (!await ValidateEntityAsync(elementBean))
             return null;
 
         Element element;
         if (importFields)
         {
-            element = await EntityRepository.GetElementFromTableAsync(tableName);
+            element = await EntityRepository.GetElementFromTableAsync(tableName, connectionId);
             element.Name = GetElementName(tableName);
         }
         else
@@ -67,8 +66,12 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         return element;
     }
 
-    public async Task<bool> ValidateEntityAsync(string tableName, bool importFields)
+    public async Task<bool> ValidateEntityAsync(ElementBean elementBean)
     {
+        var tableName = elementBean.Name;
+        var importFields = elementBean.ImportFields;
+        var connectionId = elementBean.ConnectionId;
+        
         if (ValidateName(tableName))
         {
             if (await DataDictionaryRepository.ExistsAsync(tableName))
@@ -79,7 +82,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
         if (importFields & IsValid)
         {
-            var exists = await EntityRepository.TableExistsAsync(tableName);
+            var exists = await EntityRepository.TableExistsAsync(tableName, connectionId);
             if (!exists)
                 AddError("Name", StringLocalizer["Table not found"]);
         }

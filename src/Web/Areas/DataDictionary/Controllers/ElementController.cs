@@ -4,6 +4,7 @@ using System.Net;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Web.Areas.DataDictionary.Models;
@@ -123,7 +124,7 @@ public class ElementController(
     {
         var formElement = await elementService.GetFormElementAsync(elementName);
         var scripts = await scriptsService.GetScriptsAsync(formElement);
-        var tableExists = await entityRepository.TableExistsAsync(formElement.TableName);
+        var tableExists = await entityRepository.TableExistsAsync(formElement.TableName, formElement.ConnectionId);
         
         var model = new ElementScriptsViewModel
         {
@@ -136,9 +137,9 @@ public class ElementController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(AddElementViewModel model)
+    public async Task<IActionResult> Add(ElementBean model)
     {
-        var element = await elementService.CreateEntityAsync(model.Name, model.ImportFields);
+        var element = await elementService.CreateEntityAsync(model);
         if (element != null)
         {
             return RedirectToAction("Index", "Entity", new { elementName = element.Name });

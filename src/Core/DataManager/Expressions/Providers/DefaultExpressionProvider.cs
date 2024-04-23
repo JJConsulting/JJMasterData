@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ public class DefaultExpressionProvider : ISyncExpressionProvider, IAsyncExpressi
 {
     public string Prefix => "exp";
     public string Title => "Expression";
-    
+
     private static readonly DataTable _expressionsDataTable = new();
     
     public object Evaluate(string expression, Dictionary<string, object?> parsedValues)

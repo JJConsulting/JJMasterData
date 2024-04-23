@@ -14,10 +14,9 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SQLiteProvider(
-    DataAccess dataAccess,
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
-    : EntityProviderBase(dataAccess, options, loggerFactory)
+    : EntityProviderBase(options, loggerFactory)
 {
     private const string Tab = "\t";
     public override string VariablePrefix => "@";
@@ -249,7 +248,7 @@ public class SQLiteProvider(
         return string.Empty;
     }
 
-    public override Task<Element> GetElementFromTableAsync(string tableName)
+    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId)
     {
         throw new NotImplementedException();
     }

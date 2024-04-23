@@ -49,7 +49,7 @@ public class ScriptsService(IEntityRepository entityRepository,
                 var sql = new StringBuilder();
                 sql.AppendLine(entityRepository.GetWriteProcedureScript(formElement));
                 sql.AppendLine(entityRepository.GetReadProcedureScript(formElement));
-                await entityRepository.ExecuteBatchAsync(sql.ToString());
+                await entityRepository.ExecuteBatchAsync(sql.ToString(), formElement.ConnectionId);
                 break;
             case "ExecuteCreateDataModel":
                 var relationships = await GetFormElementRelationships(formElement).ToListAsync();
@@ -57,7 +57,7 @@ public class ScriptsService(IEntityRepository entityRepository,
                 break;
             case "ExecuteAlterTable":
                 var alterTableScript = await entityRepository.GetAlterTableScriptAsync(formElement);
-                await entityRepository.ExecuteBatchAsync(alterTableScript);
+                await entityRepository.ExecuteBatchAsync(alterTableScript, formElement.ConnectionId);
                 break;
         }
     }

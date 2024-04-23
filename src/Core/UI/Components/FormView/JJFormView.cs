@@ -682,7 +682,7 @@ public class JJFormView : AsyncComponent
 
         try
         {
-            await EntityRepository.SetCommandAsync(sqlCommand);
+            await EntityRepository.SetCommandAsync(sqlCommand, FormElement.ConnectionId);
         }
         catch (Exception ex)
         {

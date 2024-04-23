@@ -20,7 +20,7 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Represents a searchable combobox.
 /// </summary>
-public class JJSearchBox : ControlBase
+public class JJSearchBox : ControlBase, IDataItemControl
 {
     #region "Events"
 
@@ -166,11 +166,7 @@ public class JJSearchBox : ControlBase
 
         return _selectedValue;
     }
-
-
-    public FormElementDataItem DataItem { get; set; }
-
-
+    
     /// <summary>
     /// Ao recarregar o painel, manter os valores digitados no formulário
     /// (Default=True)
@@ -180,7 +176,10 @@ public class JJSearchBox : ControlBase
     private IHttpRequest Request { get; }
     private IEncryptionService EncryptionService { get; }
     private DataItemService DataItemService { get; }
-    public FormStateData FormStateData { get; internal set; }
+    
+    public Guid? ConnectionId { get; set; }
+    public FormElementDataItem DataItem { get; set; }
+    public FormStateData FormStateData { get; set; }
 
     public string SelectedValue
     {
@@ -344,7 +343,11 @@ public class JJSearchBox : ControlBase
         }
         else
         {
-            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId);
+            var dataQuery = new DataQuery(FormStateData, ConnectionId)
+            {
+                SearchId = searchId
+            };
+            _values ??= await DataItemService.GetValuesAsync(DataItem, dataQuery);
         }
 
         var item = _values?.ToList().Find(x => x.Id.Equals(searchId));
@@ -372,7 +375,11 @@ public class JJSearchBox : ControlBase
         }
         else
         {
-            list.AddRange(await DataItemService.GetValuesAsync(DataItem, FormStateData, searchText));
+            var dataQuery = new DataQuery(FormStateData, ConnectionId)
+            {
+                SearchText = searchText
+            };
+            list.AddRange(await DataItemService.GetValuesAsync(DataItem, dataQuery));
         }
 
         return list;

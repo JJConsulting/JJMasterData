@@ -49,7 +49,14 @@ public class ExpressionsServiceTests
     public async Task GetDefaultValueAsync_ShouldReturnExpressionValue()
     {
         // Arrange
-        var field = new ElementField { DefaultValue = "example:sampleExpression" };
+        var field = new FormElementFieldSelector(new FormElement
+        {
+            Name = "field",
+            Fields =
+            {
+                new FormElementField { TriggerExpression = "example:sampleExpression" }
+            }
+        }, "field");
 
         var values = new Dictionary<string, object?>();
         
@@ -98,7 +105,14 @@ public class ExpressionsServiceTests
     public async Task GetTriggerValueAsync_ShouldReturnExpressionValue()
     {
         // Arrange
-        var field = new FormElementField { TriggerExpression = "example:sampleExpression" };
+        var field = new FormElementFieldSelector(new FormElement
+        {
+            Name = "field",
+            Fields =
+            {
+                new FormElementField { TriggerExpression = "example:sampleExpression" }
+            }
+        }, "field");
         var values = new Dictionary<string, object?>();
         var formStateData = new FormStateData(
             new Dictionary<string, object?>(), 

@@ -1,9 +1,13 @@
 ﻿#nullable enable
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -24,8 +28,9 @@ namespace JJMasterData.Commons.Configuration.Options;
 public sealed class MasterDataCommonsOptions
 {
     public string? ConnectionString { get; set; }
-    
     public DataAccessProvider ConnectionProvider { get; set; }
+    
+    public List<ConnectionString>? ConnectionStrings { get; set; }
     
     /// <summary>
     /// Default value: tb_masterdata_resources <br></br>
@@ -54,6 +59,19 @@ public sealed class MasterDataCommonsOptions
     [JsonIgnore]
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 
+    public ConnectionString GetConnectionString(Guid? guid)
+    {
+        if (guid is null)
+            return new ConnectionString(ConnectionString!, ConnectionProvider);
+
+        var connectionString = ConnectionStrings?.FirstOrDefault(c => c.Guid == guid);
+
+        if (connectionString is null)
+            throw new JJMasterDataException($"ConnectionString {guid} does not exist.");
+
+        return connectionString;
+    }
+    
     public string GetReadProcedureName(Element element)
     {
         if (!string.IsNullOrEmpty(element.ReadProcedureName))

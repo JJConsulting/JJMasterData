@@ -16,14 +16,17 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJComboBox : ControlBase
+public class JJComboBox : ControlBase, IDataItemControl
 {
     private string? _selectedValue;
 
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private DataItemService DataItemService { get; }
     internal ILogger<JJComboBox> Logger { get; }
-    internal FormStateData FormStateData { get; set; }
+    
+    public Guid? ConnectionId { get; set; }
+
+    public FormStateData FormStateData{ get; set; }
 
     public string? Id { get; set; }
 
@@ -214,7 +217,7 @@ public class JJComboBox : ControlBase
 
     public Task<List<DataItemValue>> GetValuesAsync()
     {
-        return DataItemService.GetValuesAsync(DataItem, FormStateData);
+        return DataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
     }
 
 
@@ -257,7 +260,11 @@ public class JJComboBox : ControlBase
 
     public async Task<DataItemValue?> GetValueAsync(string? searchId)
     {
-        var values = await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId);
+        var dataQuery = new DataQuery(FormStateData, ConnectionId)
+        {
+            SearchId = searchId
+        };
+        var values = await DataItemService.GetValuesAsync(DataItem, dataQuery);
         return values.FirstOrDefault(v => v.Id == searchId);
     }
 

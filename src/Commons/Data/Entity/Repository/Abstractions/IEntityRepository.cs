@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -101,49 +102,11 @@ public interface IEntityRepository
     public string? GetWriteProcedureScript(Element element);
     
     public Task<string> GetAlterTableScriptAsync(Element element);
-    
-    /// <summary>
-    /// Build a element from a existing table
-    /// </summary>
-    public Task<Element> GetElementFromTableAsync(string tableName);
-        
-    /// <summary>
-    /// Returns a single sql command value with parameters
-    /// </summary>
-    /// <remarks>
-    /// It's used to return sql expressions commands
-    /// </remarks>
-    public Task<object?> GetResultAsync(DataAccessCommand command);
-    
-    /// <summary>
-    /// Check if table exists in the database
-    /// </summary>
-    public Task<bool> TableExistsAsync(string tableName);
-    
 
-    /// <summary>
-    /// Execute the command in the database.
-    /// </summary>
-    /// <remarks>
-    /// It's used to run scripts from data dictionary at importation files
-    /// </remarks>
-    public Task SetCommandAsync(DataAccessCommand command);
-    
-    /// <inheritdoc>
-    ///     <cref>SetCommand(IEnumerable)</cref>
-    /// </inheritdoc>
-    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList);
-    
-    public Task<bool> ExecuteBatchAsync(string script);
-    
     Dictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys);
-    Dictionary<string, object?> GetFields(DataAccessCommand command);
-    
-    Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command);
+
     
     Task<Dictionary<string, object?>> GetFieldsAsync(Element element, Dictionary<string, object> primaryKeys);
-    
-    Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command);
     
     /// <summary>
     /// Returns records from the database based on the filter.  
@@ -155,12 +118,12 @@ public interface IEntityRepository
         Element element,
         EntityParameters? parameters = null,
         bool recoverTotalOfRecords = true);
-
     
     DictionaryListResult GetDictionaryListResult(
         Element element,
         EntityParameters? parameters = null,
-        bool recoverTotalOfRecords = true);
+        bool recoverTotalOfRecords = true
+        );
     
     List<Dictionary<string,object?>> GetDictionaryList(
         Element element,
@@ -171,14 +134,51 @@ public interface IEntityRepository
         Element element,
         EntityParameters? parameters = null
     );
-
-    DataTable GetDataTable(DataAccessCommand dataAccessCommand);
-
-    Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand);
-
     
     Task<DataTable> GetDataTableAsync(Element element, EntityParameters? entityParameters = null);
     int GetCount(Element element, Dictionary<string, object?> filters);
     Task<int> GetCountAsync(Element element, Dictionary<string, object?> filters);
-    bool TableExists(string tableName);
+    
+    
+        
+    /// <summary>
+    /// Build a element from a existing table
+    /// </summary>
+    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId);
+
+    
+    /// <summary>
+    /// Check if table exists in the database
+    /// </summary>
+    public Task<bool> TableExistsAsync(string tableName, Guid? connectionId);
+    
+    /// <summary>
+    /// Returns a single sql command value with parameters
+    /// </summary>
+    /// <remarks>
+    /// It's used to return sql expressions commands
+    /// </remarks>
+    public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId);
+    
+    /// <summary>
+    /// Execute the command in the database.
+    /// </summary>
+    /// <remarks>
+    /// It's used to run scripts from data dictionary at importation files
+    /// </remarks>
+    public Task SetCommandAsync(DataAccessCommand command, Guid? connectionId);
+    
+    /// <inheritdoc>
+    ///     <cref>SetCommand(IEnumerable)</cref>
+    /// </inheritdoc>
+    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList, Guid? connectionId);
+    
+    public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId);
+
+    Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId);
+    Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId = null);
+    Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command, Guid? connectionId = null);
+    DataTable GetDataTable(DataAccessCommand dataAccessCommand, Guid? connectionId);
+    Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand, Guid? connectionId);
+    bool TableExists(string tableName, Guid? connectionId);
 }

@@ -8,16 +8,13 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class SearchBoxFactory(DataItemService dataItemService,
-        IDataDictionaryRepository dataDictionaryRepository,
-        FormValuesService formValuesService,
+internal class SearchBoxFactory(
+        DataItemService dataItemService,
         IHttpRequest httpRequest,
         IEncryptionService encryptionService)
     : IControlFactory<JJSearchBox>
 {
     private DataItemService DataItemService { get; } = dataItemService;
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private FormValuesService FormValuesService { get; } = formValuesService;
     private IHttpRequest HttpRequest { get; } = httpRequest;
     private IEncryptionService EncryptionService { get; } = encryptionService;
 
@@ -34,6 +31,7 @@ internal class SearchBoxFactory(DataItemService dataItemService,
         var search = new JJSearchBox(HttpRequest, EncryptionService, DataItemService)
         {
             DataItem = field.DataItem,
+            ConnectionId = formElement.ConnectionId,
             Name = field.Name,
             FieldName = field.Name,
             ParentElementName = formElement.ParentName,
