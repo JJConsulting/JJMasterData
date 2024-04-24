@@ -1,0 +1,47 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@using JJMasterData.Core.UI.Components
+@using JJMasterData.Web.Extensions
+@model JJMasterData.Web.Areas.DataDictionary.Models.EntityViewModel;
+
+@{
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";
+}
+
+<partial name="_Menu"></partial>
+
+@using (Html.BeginMasterDataForm("Edit", "Entity"))
+{
+    <input asp-for="MenuId" hidden/>
+    <div class="row">
+        <div class="col-sm-12">
+            <link-button text="Save" color="Primary" icon="Check" type="LinkButtonType.Submit"/>
+            <link-button text="Cancel" icon="SolidXmark" asp-action="Index" asp-route-elementName="@Model.ElementName"/>
+        </div>
+    </div>
+    <br>
+
+    <collapse-panel icon="Book" title="@StringLocalizer["Element"]" expanded-by-default="true">
+        <partial name="_ElementPanel" model="Model"/>
+    </collapse-panel>
+
+    <collapse-panel icon="RegularRectangleList" title="@StringLocalizer["Form Title"]" expanded-by-default="true">
+        <partial name="_FormTitle" model="Model"/>
+    </collapse-panel>
+    
+    if (Model.FormEvent != null)
+    {
+        <collapse-panel name="eventsPanel" icon="SolidBoltLightning" title="@StringLocalizer["Events"]" expanded-by-default="true">
+            <partial name="_EventsPanel" model="Model"/>
+        </collapse-panel>
+    }
+    <input asp-for="ElementName" hidden="hidden"/>
+
+    <br />
+
+    <div class="col-sm-12">
+        @Html.Raw(Model.ValidationSummary?.GetHtml())
+    </div>
+
+    <br/>
+}
+

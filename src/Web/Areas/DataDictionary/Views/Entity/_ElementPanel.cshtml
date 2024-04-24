@@ -1,24 +1,28 @@
 ﻿
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptionsSnapshot<MasterDataCommonsOptions> OptionsSnapshot
+@using JJMasterData.Commons.Configuration.Options
 @model EntityViewModel
 
+@{
+    bool hasConnections = OptionsSnapshot.Value.AdditionalConnectionStrings.Count >= 0;
+    var options = OptionsSnapshot.Value;
+}
 
 <div class="row mb-3">
     <div class="col-sm-6 required">
-        <div class="form-floating">
-            <input asp-for="Entity.Name" placeholder="" class="form-control"  disabled="@Model.Disabled" data-bs-toggle="tooltip" title="@StringLocalizer["Unique identifier of the element."]"/>
-            <label asp-for="Entity.Name" ></label>
-        </div>
+        <label asp-for="Entity.Name" class="form-label" ></label>
+        <input asp-for="Entity.Name" placeholder="" class="form-control"  disabled="@Model.Disabled" data-bs-toggle="tooltip" title="@StringLocalizer["Unique identifier of the element."]"/>
     </div>
     <div class="col-sm-6 required">
-        <div class="form-floating">
-            <input asp-for="Entity.TableName" placeholder="" class="form-control"  disabled="@Model.Disabled"  data-bs-toggle="tooltip" title="@StringLocalizer["Table where the element data is stored."]"/>
-            <label asp-for="Entity.TableName" ></label>
-        </div>
+        <label asp-for="Entity.TableName" class="form-label"></label>
+        <input asp-for="Entity.TableName" placeholder="" class="form-control"  disabled="@Model.Disabled"  data-bs-toggle="tooltip" title="@StringLocalizer["Table where the element data is stored."]"/>
     </div>
 </div>
 <div class="row mb-3">
     <div class="col-sm-6">
+        <label asp-for="Entity.ReadProcedureName" class="form-label"></label>
+
         <div class="input-group">
             <div class="input-group-text">
                 <input asp-for="Entity.UseReadProcedure"
@@ -30,13 +34,11 @@
                        type="checkbox"
                        aria-label="Enable Read Procedure">
             </div>
-            <div class="form-floating">
-                <input asp-for="Entity.ReadProcedureName"  class="form-control"  disabled="@Model.Disabled" />
-                <label asp-for="Entity.ReadProcedureName"></label>
-            </div>
+            <input asp-for="Entity.ReadProcedureName" placeholder="@options.GetReadProcedureName(Model.Entity.TableName)" class="form-control" disabled="@Model.Disabled"/>
         </div>
     </div>
     <div class="col-sm-6">
+        <label asp-for="Entity.WriteProcedureName" class="form-label"></label>
         <div class="input-group">
             <div class="input-group-text">
                 <input asp-for="Entity.UseWriteProcedure" 
@@ -48,11 +50,29 @@
                        type="checkbox" 
                        aria-label="Enable Write Procedure">
             </div>
-            <div class="form-floating">
-                <input asp-for="Entity.WriteProcedureName"  class="form-control"  disabled="@Model.Disabled" />
-                <label asp-for="Entity.WriteProcedureName"></label>
-            </div>
+
+                <input asp-for="Entity.WriteProcedureName" placeholder="@options.GetWriteProcedureName(Model.Entity.TableName)" class="form-control"  disabled="@Model.Disabled" />
         </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    @if (hasConnections)
+    {
+    <div class="col-sm-6">
+        <label asp-for="Entity.ConnectionId" class="form-label"></label>
+        <select  disabled="@Model.Disabled" asp-for="Entity.ConnectionId" class="form-select">
+            <option value="">@StringLocalizer["Application Default"]</option>
+            @foreach (var connection in OptionsSnapshot.Value.AdditionalConnectionStrings)
+            {
+            <option value="@connection.Guid">@connection.Name</option>
+            }
+        </select>
+    </div>
+    }
+    <div class="col-sm-@(hasConnections ? "6" : "12")">
+        <label asp-for="Entity.Info" class="form-label"></label>
+        <input asp-for="Entity.Info"  data-bs-toggle="title" title="@StringLocalizer["Developer only information about the element."]" class="form-control" id="infoInput" disabled="@Model.Disabled"/>
     </div>
 </div>
 
