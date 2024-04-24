@@ -36,7 +36,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
                 Services.TryAddTransient<SqlServerScripts>();
                 WithEntityProvider<SqlServerProvider>();
                 break;
-            case DataAccessProvider.SqLite:
+            case DataAccessProvider.SQLite:
                 WithEntityProvider<SQLiteProvider>();
                 break;
             case DataAccessProvider.Oracle:

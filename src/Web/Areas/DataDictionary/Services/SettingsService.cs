@@ -63,7 +63,7 @@ public class SettingsService(IValidationDictionary validationDictionary,
         var connectionResult = await GetConnectionResultAsync(connectionString, connectionProvider);
         var viewModel = new SettingsViewModel
         {
-            ConnectionString = new ConnectionString(connectionString),
+            ConnectionString = new ConnectionStringModel(connectionString),
             CommonsOptions = CommonsWritableOptions.Value!,
             CoreOptions = CoreWritableOptions.Value!,
             WebOptions = WebWritableOptions.Value!,

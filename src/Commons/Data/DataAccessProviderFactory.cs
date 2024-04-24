@@ -54,14 +54,14 @@ public static class DataAccessProviderFactory
             case DataAccessProvider.SqlServer:
                 return SqlClientFactory.Instance; // this library has a ref to SqlClient so this works
             case DataAccessProvider.Oracle:
-                return GetDbProviderFactory(type.GetDescription(), "Oracle.ManagedDataAccess");
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Oracle.ManagedDataAccess");
             case DataAccessProvider.OracleNetCore:
-                return GetDbProviderFactory(type.GetDescription(), "Oracle.ManagedDataAccess.Core");
-            case DataAccessProvider.SqLite:
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Oracle.ManagedDataAccess.Core");
+            case DataAccessProvider.SQLite:
             case DataAccessProvider.MySql:
-                return GetDbProviderFactory(type.GetDescription(), "MySql.Data");
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "MySql.Data");
             case DataAccessProvider.PostgreSql:
-                return GetDbProviderFactory(type.GetDescription(), "Npgsql");
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Npgsql");
             default:
                 throw new NotSupportedException($"Not supported {type}");
         }

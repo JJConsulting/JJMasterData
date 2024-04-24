@@ -284,6 +284,6 @@ public class EntityRepository(
     private DataAccess GetDataAccess(Guid? connectionId)
     {
         var connection = Options.GetConnectionString(connectionId);
-        return new DataAccess(connection.Connection, connection.Provider);
+        return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
 }

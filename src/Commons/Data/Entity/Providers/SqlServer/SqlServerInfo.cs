@@ -12,7 +12,7 @@ public class SqlServerInfo(IOptionsSnapshot<MasterDataCommonsOptions> commonsOpt
     private DataAccess GetDataAccess(Guid? connectionId)
     {
         var connection = commonsOptions.Value.GetConnectionString(connectionId);
-        return new DataAccess(connection.Connection, connection.Provider);
+        return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
     
     public int GetMajorVersion(Guid? connectionId)

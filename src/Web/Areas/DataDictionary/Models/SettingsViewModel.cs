@@ -7,7 +7,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public sealed class SettingsViewModel
 {
-    public required ConnectionString ConnectionString { get; init; } = new();
+    public required ConnectionStringModel ConnectionString { get; init; } = new();
     public MasterDataCommonsOptions? Options { get; init; } 
     public string? FilePath { get; init; }
     

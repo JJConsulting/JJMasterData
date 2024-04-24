@@ -62,7 +62,7 @@ public sealed class MasterDataCommonsOptions
     public ConnectionString GetConnectionString(Guid? guid)
     {
         if (guid is null)
-            return new ConnectionString(ConnectionString!, ConnectionProvider);
+            return new ConnectionString(ConnectionString!, ConnectionProvider.GetAdoNetTypeName());
 
         var connectionString = AdditionalConnectionStrings?.FirstOrDefault(c => c.Guid == guid);
 

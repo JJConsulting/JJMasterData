@@ -2,8 +2,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-
-namespace JJMasterData.Commons.Data.Entity.Models;
+namespace JJMasterData.Commons.Configuration.Options;
 
 public class ConnectionString
 {
@@ -13,14 +12,14 @@ public class ConnectionString
     }
     
     [SetsRequiredMembers]
-    public ConnectionString(string connectionString, DataAccessProvider connectionProvider)
+    public ConnectionString(string connectionString, string connectionProvider)
     {
         Connection = connectionString;
-        Provider = connectionProvider;
+        ConnectionProvider = connectionProvider;
     }
 
     public Guid Guid { get; set; }
     public required string? Name { get; set; }
     public required string Connection { get; set; }
-    public DataAccessProvider Provider { get; set; }
+    public required string ConnectionProvider { get; set; }
 }
