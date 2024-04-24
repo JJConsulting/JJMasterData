@@ -45,7 +45,7 @@
 }
 
 @using (Html.BeginMasterDataForm("SqlCommandAction", "Actions",
-            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
 {
     <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active">

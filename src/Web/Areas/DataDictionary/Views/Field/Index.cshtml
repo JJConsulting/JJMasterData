@@ -230,7 +230,7 @@
 
     <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
-    @using (Html.BeginMasterDataForm("Index", "Field", FormMethod.Post))
+    @using (Html.BeginMasterDataForm("Index", "Field"))
     {
         <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
         <div class="row">

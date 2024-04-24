@@ -25,13 +25,13 @@ public class DataAccessTest
     [InlineData("Foo",false)]
     public async Task TableExistsTest(string table, bool exists)
     {
-        Assert.Equal(exists, await DataAccess.TableExistsAsync(table, default));
+        Assert.Equal(exists, await DataAccess.TableExistsAsync(table));
     }
 
     [Fact]
     public async Task GetDataTableTest()
     {
-        var dataTable = await DataAccess.GetDataTableAsync($"SELECT * FROM {TableName}", default);
+        var dataTable = await DataAccess.GetDataTableAsync($"SELECT * FROM {TableName}");
         
         Assert.True(dataTable.Rows.Count > 0);
     }

@@ -8,7 +8,7 @@
 }
 
 @using (Html.BeginMasterDataForm("UrlRedirectAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
 {
     <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>

@@ -21,7 +21,7 @@
 }
 
 @using (Html.BeginMasterDataForm("PluginFieldAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
 {
     <input asp-for="PluginId" class="form-control" hidden="hidden"/>
 
