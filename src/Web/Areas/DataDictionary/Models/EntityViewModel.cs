@@ -13,6 +13,8 @@ public sealed class EntityViewModel : DataDictionaryViewModel
     public bool IsPythonFormEvent => FormEvent != null && FormEvent.GetType().ToString().Contains('$');
     public bool Disabled { get; init; }
 
+    public string? CurrentTab { get; set; }
+    
     // ReSharper disable once UnusedMember.Global
     // Reason: Used for model binding.
     public EntityViewModel()

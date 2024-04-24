@@ -6,8 +6,7 @@ using NCalc;
 
 namespace JJMasterData.NCalc;
 
-public class NCalcExpressionProvider
-    (IOptionsSnapshot<NCalcExpressionProviderOptions> options) :
+public sealed class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProviderOptions> options) :
     IAsyncExpressionProvider,
     ISyncExpressionProvider
 {

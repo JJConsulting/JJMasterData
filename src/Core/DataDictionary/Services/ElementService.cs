@@ -1,14 +1,13 @@
 ﻿#nullable enable
 
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
@@ -21,7 +20,8 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ElementService(IFormElementComponentFactory<JJFormView> formViewFactory,
+public class ElementService(
+        IFormElementComponentFactory<JJFormView> formViewFactory,
         IValidationDictionary validationDictionary,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
@@ -37,7 +37,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
     #region Add Dictionary
 
-    public async Task<Element?> CreateEntityAsync(ElementBean elementBean)
+    public async Task<FormElement?> CreateEntityAsync(ElementBean elementBean)
     {
         var tableName = elementBean.Name;
         var importFields = elementBean.ImportFields;
@@ -46,24 +46,26 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         if (!await ValidateEntityAsync(elementBean))
             return null;
 
-        Element element;
+        FormElement formElement;
         if (importFields)
         {
-            element = await EntityRepository.GetElementFromTableAsync(tableName, connectionId);
-            element.Name = GetElementName(tableName);
+            var element = await EntityRepository.GetElementFromTableAsync(tableName, connectionId);
+            element.Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName);
+            formElement = new FormElement(element);
         }
         else
         {
-            element = new FormElement
+            formElement = new FormElement
             {
                 TableName = tableName,
-                Name = GetElementName(tableName)
+                Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName),
+                ConnectionId = connectionId,
             };
         }
 
-        await DataDictionaryRepository.InsertOrReplaceAsync(new FormElement(element));
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
-        return element;
+        return formElement;
     }
 
     public async Task<bool> ValidateEntityAsync(ElementBean elementBean)
@@ -88,19 +90,6 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         }
 
         return IsValid;
-    }
-
-    private static string GetElementName(string tablename)
-    {
-        string elementName;
-        if (tablename.ToLower().StartsWith("tb_"))
-            elementName = tablename.Substring(3);
-        else if (tablename.ToLower().StartsWith("tb"))
-            elementName = tablename.Substring(2);
-        else
-            elementName = tablename;
-        
-        return StringManager.ToPascalCase(elementName);
     }
 
     #endregion

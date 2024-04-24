@@ -37,7 +37,7 @@ public class SettingsController(
 
     public async Task<IActionResult> TestConnection(SettingsViewModel model)
     {
-        var result = await SettingsService.GetConnectionResultAsync(model.ConnectionString.ToString(), model.CommonsOptions.ConnectionProvider);
+        var result = await SettingsService.GetConnectionResultAsync(model.ConnectionString.ToString(), model.CommonsOptions.DefaultConnectionProvider);
         var alert = ComponentFactory.Html.Alert.Create();
         if (!result.IsConnectionSuccessful.GetValueOrDefault())
         {

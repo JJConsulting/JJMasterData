@@ -18,23 +18,18 @@ public class EntityController(
 {
     public async Task<IActionResult> Index(string elementName)
     {
-        return View(await Populate(elementName, true));
-    }
-
-    public async Task<IActionResult> Edit(string elementName)
-    {
         return View(await Populate(elementName, false));
     }
-
+    
     [HttpPost]        
-    public async Task<ActionResult> Edit(
+    public async Task<ActionResult> Index(
         EntityViewModel model)
     {
         var entity = await entityService.EditEntityAsync(model.Entity, model.ElementName);
 
         if (entity != null)
         {
-            return RedirectToAction("Index", new { elementName = entity.Name });
+            return View(model);
         }
 
         model.MenuId = "Entity";

@@ -134,6 +134,9 @@ public class ExpressionsService(
         try
         {
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+
+            if(provider is SqlExpressionProvider sqlProvider) 
+                sqlProvider.ConnectionId = fieldSelector.FormElement.ConnectionId;
             
             var result = await provider.EvaluateAsync(expressionValue, parsedValues);
             if (result is string stringResult)

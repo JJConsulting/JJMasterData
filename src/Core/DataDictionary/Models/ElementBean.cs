@@ -11,6 +11,6 @@ public sealed class ElementBean
     [Display(Name = "Import Fields")]
     public bool ImportFields { get; init; }
     
-    [Display(Name = "Connection")]
+    [Display(Name = "Connection String")]
     public Guid? ConnectionId { get; init; }
 }

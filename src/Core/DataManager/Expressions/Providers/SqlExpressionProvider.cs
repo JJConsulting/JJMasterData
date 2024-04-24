@@ -10,7 +10,7 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncExpressionProvider
+public sealed class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncExpressionProvider
 {
     public string Prefix => "sql";
     public string Title => "SQL";

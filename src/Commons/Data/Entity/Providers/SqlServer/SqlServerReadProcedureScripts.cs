@@ -31,7 +31,7 @@ public class SqlServerReadProcedureScripts(
         var sql = new StringBuilder();
         string procedureFinalName = Options.GetReadProcedureName(element);
 
-        if (SqlServerInfo.GetCompatibilityLevel() >= 130)
+        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
             sql.Append("CREATE OR ALTER PROCEDURE [");
         }
@@ -190,10 +190,10 @@ public class SqlServerReadProcedureScripts(
                     sql.Append($" LIKE  ''%'' + @{field.Name} + ''%'' '");
                     break;
                 case FilterMode.MultValuesContain:
-                    sql.Append(GetFilterMultValuesContains(field.Name));
+                    sql.Append(GetFilterMultValuesContains(element, field.Name));
                     break;
                 case FilterMode.MultValuesEqual:
-                    sql.Append(GetMultValuesEquals(field));
+                    sql.Append(GetMultValuesEquals(element, field));
                     break;
                 default:
                 {
@@ -331,10 +331,10 @@ public class SqlServerReadProcedureScripts(
         return sql.ToString();
     }
 
-    private string GetMultValuesEquals(ElementField field)
+    private string GetMultValuesEquals(Element element, ElementField field)
     {
         var sql = new StringBuilder();
-        if (SqlServerInfo.GetCompatibilityLevel() < 130)
+        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) < 130)
         {
             sql.AppendLine("");
             sql.Append(Tab);
@@ -499,7 +499,7 @@ public class SqlServerReadProcedureScripts(
         return sql.ToString();
     }
 
-    private string GetFilterMultValuesContains(string fieldName)
+    private string GetFilterMultValuesContains(Element element, string fieldName)
     {
         var sql = new StringBuilder();
         sql.AppendLine();
@@ -511,7 +511,7 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine("BEGIN");
         
 
-        if (SqlServerInfo.GetCompatibilityLevel() >= 130)
+        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
             sql.Append(Tab, 2);
             sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");

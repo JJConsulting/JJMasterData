@@ -335,7 +335,8 @@ public class SqlServerProvider(
         var element = new Element
         {
             Name = tableName,
-            TableName = tableName
+            TableName = tableName,
+            ConnectionId = connectionId
         };
 
         var cmdFields = new DataAccessCommand

@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Data;
 
 public static class DataAccessProviderFactory
 {
-    public static DataAccessProvider GetDataAccessProviderFromString(string description)
+    private static DataAccessProvider GetDataAccessProviderFromString(string description)
     {
         foreach(var field in typeof(DataAccessProvider).GetFields())
         {
@@ -29,7 +29,8 @@ public static class DataAccessProviderFactory
         
         return default;
     }
-    public static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
+
+    private static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
     {
         var instance = ReflectionUtils.GetStaticProperty(dbProviderFactoryTypename, "Instance");
         if (instance == null)

@@ -1,6 +1,8 @@
-﻿@using JJMasterData.Core.UI.Components
+﻿@using JJMasterData.Commons.Configuration.Options
+@using JJMasterData.Core.UI.Components
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IComponentFactory ComponentFactory
+@inject IOptionsSnapshot<MasterDataCommonsOptions> OptionsSnapshot
 @model JJMasterData.Core.DataDictionary.Models.ElementBean
 
 <jj-title title="@ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml()" subtitle="@StringLocalizer["Add Element"]"/>
@@ -8,11 +10,14 @@
 @using (Html.BeginMasterDataForm())
 {
   
-    <div class="row">
-        <div class="@BootstrapHelper.FormGroup col-sm-12">
+    <div class="row mb-3">
+        <div class="col-sm-6">
             <div class="input-group">
                 <span class="input-group-text">
-                    <checkbox for="ImportFields" class="mt-0" value="true"/>
+                    <input asp-for="ImportFields"
+                           class="form-check-input"
+                           type="checkbox"></input>
+                    <label class="ms-1 form-check-label" asp-for="ImportFields"></label>
                 </span>
                 <div class="form-floating">
                     <input
@@ -24,6 +29,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-sm-6">
+            <div class="form-floating">
+                <select asp-for="ConnectionId" class="form-select">
+                    <option value="">@StringLocalizer["Application Default"]</option>
+                    @foreach (var connection in OptionsSnapshot.Value.AdditionalConnectionStrings)
+                    {
+                    <option value="@connection.Guid">@connection.Name</option>
+                    }
+                </select>
+                <label asp-for="ConnectionId"></label>
+            </div>
+        </div>
+
     </div>
     
     <partial name="_DatabaseWarning"/>

@@ -49,17 +49,7 @@ public class EntityService(IValidationDictionary validationDictionary,
         {
             var formElement = await DataDictionaryRepository.GetFormElementAsync(entityName);
 
-            formElement.Name = entity.Name;
-            formElement.TableName = entity.TableName;
-            formElement.ReadProcedureName = entity.ReadProcedureName;
-            formElement.WriteProcedureName = entity.WriteProcedureName;
-            formElement.Info = entity.Info;
-            formElement.Title = entity.Title;
-            formElement.TitleSize = entity.TitleSize;
-            formElement.SubTitle = entity.SubTitle;
-            formElement.UseReadProcedure = entity.UseReadProcedure;
-            formElement.UseWriteProcedure = entity.UseWriteProcedure;
-            formElement.Icon = entity.Icon;
+            entity.SetFormElement(formElement);
             
             if (!entityName.Equals(formElement.Name))
             {

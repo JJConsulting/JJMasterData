@@ -112,7 +112,7 @@ public class MasterDataStringLocalizer(
 
         var element = MasterDataStringLocalizerElement.GetElement(Options.CurrentValue);
 
-        var hasConnectionString = !string.IsNullOrEmpty(Options.CurrentValue.ConnectionString);
+        var hasConnectionString = !string.IsNullOrEmpty(Options.CurrentValue.DefaultConnectionString);
         
         var tableExists = hasConnectionString && EntityRepository.TableExists(element.TableName, null);
         

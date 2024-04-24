@@ -1,46 +1,94 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-
+@using JJMasterData.Core.UI.Components
 @model EntityViewModel;
-
 
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";
-    string urlEdit = Url.Action("Edit", new { elementName = Model.ElementName })!;
 }
 
+<partial name="_Menu"></partial>
 
-<partial name="_Menu"/>
-
-
-@using (Html.BeginMasterDataForm())
+@using (Html.BeginMasterDataForm("Index", "Entity"))
 {
+    <div class="col-sm-12">
+        @Html.Raw(Model.ValidationSummary?.GetHtml())
+    </div>
+    <input asp-for="ElementName" hidden/>
     <input asp-for="MenuId" hidden/>
+    <input asp-for="CurrentTab" hidden/>
     <div class="row">
         <div class="col-sm-12">
-            <link-button icon="Pencil" 
-                         text="Edit"
-                         on-client-click="location.href='@urlEdit'"/>
+            <ul class="nav nav-underline" id="entity-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="element-tab" data-bs-toggle="tab" data-bs-target="#element" type="button" role="tab" aria-controls="element" aria-selected="false">@StringLocalizer["Element"]</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="form-tab" data-bs-toggle="tab" data-bs-target="#form" type="button" role="tab" aria-controls="form" aria-selected="false">@StringLocalizer["Form Title"]</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="advanced-tab" data-bs-toggle="tab" data-bs-target="#advanced" type="button" role="tab" aria-controls="advanced" aria-selected="false">@StringLocalizer["Advanced"]</button>
+                </li>
+                @if (Model.FormEvent != null)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab" aria-controls="events" aria-selected="false">@StringLocalizer["Events"]</button>
+                    </li>
+                }
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade" id="element" role="tabpanel" aria-labelledby="element-tab">
+                    <partial name="_ElementPanel" model="Model"/>
+                </div>
+                <div class="tab-pane fade" id="form" role="tabpanel" aria-labelledby="form-tab">
+                    <partial name="_FormElementPanel" model="Model"/>
+                </div>
+                <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
+                    <partial name="_Advanced" model="Model"/>
+                </div>
+                @if (Model.FormEvent != null)
+                {
+                    <div class="tab-pane fade" id="events" role="tabpanel" aria-labelledby="events-tab">
+                        <partial name="_EventsPanel" model="Model"/>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-
     <br/>
-    
-    <collapse-panel icon="Book" title="@StringLocalizer["Element"]" expanded-by-default="true">
-        <partial name="_ElementPanel" model="Model"/>
-    </collapse-panel>
 
-    <collapse-panel  icon="RegularRectangleList" title="@StringLocalizer["Form Title"]" expanded-by-default="true">
-        <partial name="_FormElementPanel" model="Model"/>
-    </collapse-panel>
+    <div class="row">
+        <div class="col-sm-12">
+            <link-button text="Save" color="Primary" icon="Check" type="LinkButtonType.Submit"/>
+        </div>
+    </div>
+}
 
-    <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="false">
-        <partial name="_Options" model="Model"/>
-    </collapse-panel>
-    
-    if (Model.FormEvent != null)
-    {
-        <collapse-panel  name="eventsPanel" icon="SolidBoltLightning" title="@StringLocalizer["Events"]" expanded-by-default="true">
-            <partial name="_EventsPanel" model="Model"/>
-        </collapse-panel>
-    }
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentTabInput = document.getElementById('@Html.IdFor(m => m.CurrentTab)');
+            const currentTabId = currentTabInput.value;
+
+            if (currentTabId) {
+
+                const tab = document.getElementById(currentTabId);
+                if (tab) {
+                    const bsTab = new bootstrap.Tab(tab);
+                    bsTab.show();
+                }
+            }
+            else{
+                const bsTab = new bootstrap.Tab("#element-tab");
+                console.log(bsTab)
+                bsTab.show();
+            }
+
+            const tabElements = document.querySelectorAll('[data-bs-toggle="tab"]');
+            tabElements.forEach(tabElement => {
+                tabElement.addEventListener('shown.bs.tab', function (event) {
+                    currentTabInput.value = event.target.id;
+                });
+            });
+        });
+    </script>
 }

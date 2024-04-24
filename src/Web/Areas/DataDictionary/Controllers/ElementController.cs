@@ -25,7 +25,7 @@ public class ElementController(
 {
     public async Task<IActionResult> Index()
     {
-        if (string.IsNullOrEmpty(masterDataOptions.Value.ConnectionString))
+        if (string.IsNullOrEmpty(masterDataOptions.Value.DefaultConnectionString))
             return RedirectToAction("Index", "Settings");
             
         await elementService.CreateStructureIfNotExistsAsync();
@@ -139,14 +139,14 @@ public class ElementController(
     [HttpPost]
     public async Task<IActionResult> Add(ElementBean model)
     {
-        var element = await elementService.CreateEntityAsync(model);
-        if (element != null)
+        var formElement = await elementService.CreateEntityAsync(model);
+        if (formElement != null)
         {
-            return RedirectToAction("Index", "Entity", new { elementName = element.Name });
+            return RedirectToAction("Index", "Entity", new { elementName = formElement.Name });
         }
 
-        var jjValidationSummary = elementService.GetValidationSummary();
-        ViewBag.Error = jjValidationSummary.GetHtml();
+        var validationSummary = elementService.GetValidationSummary();
+        ViewBag.Error = validationSummary.GetHtml();
         return View();
     }
 

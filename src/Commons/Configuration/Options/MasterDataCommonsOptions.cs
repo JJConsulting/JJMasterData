@@ -27,10 +27,13 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// </summary>
 public sealed class MasterDataCommonsOptions
 {
-    public string? ConnectionString { get; set; }
-    public DataAccessProvider ConnectionProvider { get; set; }
+    [ConfigurationKeyName("ConnectionString")]
+    public string? DefaultConnectionString { get; set; }
     
-    public List<ConnectionString>? ConnectionStrings { get; set; }
+    [ConfigurationKeyName("ConnectionProvide")]
+    public DataAccessProvider DefaultConnectionProvider { get; set; }
+
+    public List<ConnectionString> AdditionalConnectionStrings { get; set; } = [];
     
     /// <summary>
     /// Default value: tb_masterdata_resources <br></br>
@@ -62,9 +65,9 @@ public sealed class MasterDataCommonsOptions
     public ConnectionString GetConnectionString(Guid? guid)
     {
         if (guid is null)
-            return new ConnectionString(ConnectionString!, ConnectionProvider);
+            return new ConnectionString(DefaultConnectionString!, DefaultConnectionProvider);
 
-        var connectionString = ConnectionStrings?.FirstOrDefault(c => c.Guid == guid);
+        var connectionString = AdditionalConnectionStrings?.FirstOrDefault(c => c.Guid == guid);
 
         if (connectionString is null)
             throw new JJMasterDataException($"ConnectionString {guid} does not exist.");
@@ -94,24 +97,26 @@ public sealed class MasterDataCommonsOptions
 
     public string GetReadProcedureName(string tableName)
     {
-        var dicName = RemovePrefixChars(tableName);
+        var dicName = RemoveTbPrefix(tableName);
 
         return ReadProcedurePattern.Replace("{tablename}", dicName);
     }
 
     public string GetWriteProcedureName(string tableName)
     {
-        var dicName = RemovePrefixChars(tableName);
+        var dicName = RemoveTbPrefix(tableName);
 
         return WriteProcedurePattern.Replace("{tablename}", dicName);
     }
 
-    private static string RemovePrefixChars(string tableName)
+    public static string RemoveTbPrefix(string tableName)
     {
-        if (tableName.ToLower().StartsWith("tb_"))
+        var loweredTableName = tableName.ToLowerInvariant();
+        
+        if (loweredTableName.StartsWith("tb_"))
             return tableName[3..];
 
-        if (tableName.ToLower().StartsWith("tb"))
+        if (loweredTableName.StartsWith("tb"))
             return tableName[2..];
 
         return tableName;

@@ -60,14 +60,14 @@
 {
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const useReadProcedureCheckbox = document.getElementById('FormElement_UseReadProcedure');
-        const useWriteProcedureCheckbox = document.getElementById('FormElement_UseWriteProcedure'); 
+        const useReadProcedureCheckbox = document.getElementById('@Html.IdFor(m=>m.Entity.UseReadProcedure)');
+        const useWriteProcedureCheckbox = document.getElementById('@Html.IdFor(m=>m.Entity.UseWriteProcedure)'); 
         
         useReadProcedureCheckbox.disabled = false;
         useWriteProcedureCheckbox.disabled = false;
         
-        const writeProcedureName = document.getElementById('FormElement_WriteProcedureName'); 
-        const readProcedureName = document.getElementById('FormElement_ReadProcedureName'); 
+        const writeProcedureName = document.getElementById('@Html.IdFor(m=>m.Entity.WriteProcedureName)'); 
+        const readProcedureName = document.getElementById('@Html.IdFor(m=>m.Entity.ReadProcedureName)'); 
         
         function toggleProcedure(checkbox, input) {
             input.readOnly = !checkbox.checked;

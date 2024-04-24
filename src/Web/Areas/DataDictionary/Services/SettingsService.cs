@@ -30,8 +30,8 @@ public class SettingsService(IValidationDictionary validationDictionary,
         {
             await CommonsWritableOptions.UpdateAsync(options =>
             {
-                options.ConnectionString = model.CommonsOptions.ConnectionString;
-                options.ConnectionProvider = model.CommonsOptions.ConnectionProvider;
+                options.DefaultConnectionString = model.CommonsOptions.DefaultConnectionString;
+                options.DefaultConnectionProvider = model.CommonsOptions.DefaultConnectionProvider;
                 options.ReadProcedurePattern = model.CommonsOptions.ReadProcedurePattern;
                 options.WriteProcedurePattern = model.CommonsOptions.WriteProcedurePattern;
                 options.SecretKey = model.CommonsOptions.SecretKey;
@@ -57,8 +57,8 @@ public class SettingsService(IValidationDictionary validationDictionary,
 
     public async Task<SettingsViewModel> GetViewModel()
     {
-        var connectionString = CommonsWritableOptions.Value.ConnectionString;
-        var connectionProvider = CommonsWritableOptions.Value?.ConnectionProvider ?? DataAccessProvider.SqlServer;
+        var connectionString = CommonsWritableOptions.Value.DefaultConnectionString;
+        var connectionProvider = CommonsWritableOptions.Value?.DefaultConnectionProvider ?? DataAccessProvider.SqlServer;
         
         var connectionResult = await GetConnectionResultAsync(connectionString, connectionProvider);
         var viewModel = new SettingsViewModel

@@ -4,10 +4,10 @@
 
 <div class="row">
     <div class="col-sm-3 mb-3">
-        <label asp-for="CommonsOptions.ConnectionProvider" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-        <select asp-items="@Html.GetEnumSelectList<DataAccessProvider>()" asp-for="CommonsOptions.ConnectionProvider" readonly class="form-control form-select">
+        <label asp-for="CommonsOptions.DefaultConnectionProvider" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+        <select asp-items="@Html.GetEnumSelectList<DataAccessProvider>()" asp-for="CommonsOptions.DefaultConnectionProvider" readonly class="form-control form-select">
         </select>
-        <span asp-validation-for="CommonsOptions.ConnectionProvider" class="text-danger"></span>
+        <span asp-validation-for="CommonsOptions.DefaultConnectionProvider" class="text-danger"></span>
     </div>
     <div class="col-sm-7 mb-3">
         <label asp-for="ConnectionString.Server" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>

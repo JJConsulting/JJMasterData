@@ -1,0 +1,29 @@
+﻿@using JJMasterData.Commons.Configuration.Options
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@inject IOptionsSnapshot<MasterDataCommonsOptions> OptionsSnapshot
+@inject IStringLocalizer<MasterDataResources> Localizer
+
+@model EntityViewModel 
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <select asp-for="Entity.ConnectionId" class="form-select">
+                <option value="">@Localizer["Application Default"]</option>
+                @foreach (var connection in OptionsSnapshot.Value.AdditionalConnectionStrings)
+                {
+                    <option value="@connection.Guid">@connection.Name</option>
+                }
+            </select>
+            <label asp-for="Entity.ConnectionId"></label>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-floating">
+            <input asp-for="Entity.Info" placeholder="" data-bs-toggle="title" title="@Localizer["Developer only information about the element."]" class="form-control" id="infoInput" disabled="@Model.Disabled"/>
+            <label asp-for="Entity.Info"></label>
+        </div>
+    </div>
+</div>
+
