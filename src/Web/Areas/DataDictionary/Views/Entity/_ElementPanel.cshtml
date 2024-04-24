@@ -5,7 +5,7 @@
 @model EntityViewModel
 
 @{
-    bool hasConnections = OptionsSnapshot.Value.AdditionalConnectionStrings.Count >= 0;
+    bool hasConnections = OptionsSnapshot.Value.AdditionalConnectionStrings.Count > 0;
     var options = OptionsSnapshot.Value;
 }
 
@@ -59,16 +59,16 @@
 <div class="row mb-3">
     @if (hasConnections)
     {
-    <div class="col-sm-6">
-        <label asp-for="Entity.ConnectionId" class="form-label"></label>
-        <select  disabled="@Model.Disabled" asp-for="Entity.ConnectionId" class="form-select">
-            <option value="">@StringLocalizer["Application Default"]</option>
-            @foreach (var connection in OptionsSnapshot.Value.AdditionalConnectionStrings)
-            {
-            <option value="@connection.Guid">@connection.Name</option>
-            }
-        </select>
-    </div>
+        <div class="col-sm-6">
+            <label asp-for="Entity.ConnectionId" class="form-label"></label>
+            <select  disabled="@Model.Disabled" asp-for="Entity.ConnectionId" class="form-select">
+                <option value="">@StringLocalizer["Application Default"]</option>
+                @foreach (var connection in OptionsSnapshot.Value.AdditionalConnectionStrings)
+                {
+                <option value="@connection.Guid">@connection.Name</option>
+                }
+            </select>
+        </div>
     }
     <div class="col-sm-@(hasConnections ? "6" : "12")">
         <label asp-for="Entity.Info" class="form-label"></label>

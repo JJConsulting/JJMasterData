@@ -30,8 +30,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
     public const string DicIp = "ip";
     public const string DicBrowser = "browser";
     public const string DicJson = "json";
-
-    private static bool _hasAuditLogTable;
+    
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private MasterDataCoreOptions Options { get; } = options.Value;
@@ -58,14 +57,9 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
 
     private async Task CreateTableIfNotExistsAsync(Guid? connectionId)
     {
-        if (!_hasAuditLogTable)
-        {
-            var logElement = GetElement(connectionId);
-            if (!await EntityRepository.TableExistsAsync(logElement.TableName, logElement.ConnectionId))
-                await EntityRepository.CreateDataModelAsync(logElement,[]);
-
-            _hasAuditLogTable = true;
-        }
+        var logElement = GetElement(connectionId);
+        if (!await EntityRepository.TableExistsAsync(logElement.TableName, logElement.ConnectionId))
+            await EntityRepository.CreateDataModelAsync(logElement);
     }
 
     private static string GetJsonFields(Dictionary<string, object>formValues)
@@ -92,7 +86,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
         return key.ToString();
     }
 
-    public Element GetElement(Guid? elementConnectionString)
+    public Element GetElement(Guid? connectionId)
     {
         string tableName = Options.AuditLogTableName;
         var element = new Element(tableName, StringLocalizer["Audit Log"]);
@@ -106,7 +100,8 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
         element.Fields.Add(DicOrigin, "Origin", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicKey, "Record Key", FieldType.Varchar, 100, true, FilterMode.Equal);
         element.Fields.Add(DicJson, "Object", FieldType.Text, 0, false, FilterMode.None);
-
+        element.ConnectionId = connectionId;
+        
         return element;
     }
 

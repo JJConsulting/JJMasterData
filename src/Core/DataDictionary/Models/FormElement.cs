@@ -89,6 +89,7 @@ public class FormElement : Element
         SynchronismMode = element.SynchronismMode;
         Title = element.Name;
         SubTitle = element.Info;
+        ConnectionId = element.ConnectionId;
         Fields = new FormElementFieldList(element.Fields);
         Panels = [];
         ApiOptions = new FormElementApiOptions();
