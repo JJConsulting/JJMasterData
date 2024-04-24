@@ -27,11 +27,8 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// </summary>
 public sealed class MasterDataCommonsOptions
 {
-    [ConfigurationKeyName("ConnectionString")]
-    public string? DefaultConnectionString { get; set; }
-    
-    [ConfigurationKeyName("ConnectionProvide")]
-    public DataAccessProvider DefaultConnectionProvider { get; set; }
+    public string? ConnectionString { get; set; }
+    public DataAccessProvider ConnectionProvider { get; set; }
 
     public List<ConnectionString> AdditionalConnectionStrings { get; set; } = [];
     
@@ -65,7 +62,7 @@ public sealed class MasterDataCommonsOptions
     public ConnectionString GetConnectionString(Guid? guid)
     {
         if (guid is null)
-            return new ConnectionString(DefaultConnectionString!, DefaultConnectionProvider);
+            return new ConnectionString(ConnectionString!, ConnectionProvider);
 
         var connectionString = AdditionalConnectionStrings?.FirstOrDefault(c => c.Guid == guid);
 

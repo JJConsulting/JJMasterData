@@ -26,7 +26,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
     {
         Services.PostConfigure<MasterDataCommonsOptions>(options =>
         {
-            options.DefaultConnectionString = connectionString;
+            options.ConnectionString = connectionString;
         });
         switch (provider)
         {

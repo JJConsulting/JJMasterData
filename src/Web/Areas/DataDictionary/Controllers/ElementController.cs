@@ -25,7 +25,7 @@ public class ElementController(
 {
     public async Task<IActionResult> Index()
     {
-        if (string.IsNullOrEmpty(masterDataOptions.Value.DefaultConnectionString))
+        if (string.IsNullOrEmpty(masterDataOptions.Value.ConnectionString))
             return RedirectToAction("Index", "Settings");
             
         await elementService.CreateStructureIfNotExistsAsync();
