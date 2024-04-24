@@ -1024,7 +1024,7 @@ public class OracleProvider(
         return ret;
     }
     
-    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId)
+    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }

@@ -248,7 +248,7 @@ public class SQLiteProvider(
         return string.Empty;
     }
 
-    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId)
+    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }

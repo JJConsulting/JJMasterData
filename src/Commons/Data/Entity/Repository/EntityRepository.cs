@@ -55,48 +55,48 @@ public class EntityRepository(
         return Provider.SetValues(element, values, ignoreResults);
     }
 
-    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId)
+    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         return Provider.GetElementFromTableAsync(tableName, connectionId);
     }
 
-    public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId)
+    public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.GetResultAsync(command);
     }
 
-    public Task<bool> TableExistsAsync(string tableName, Guid? connectionId)
+    public Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.TableExistsAsync(tableName);
     }
 
-    public bool TableExists(string tableName, Guid? connectionId)
+    public bool TableExists(string tableName, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.TableExists(tableName);
     }
 
-    public async Task SetCommandAsync(DataAccessCommand command, Guid? connectionId)
+    public async Task SetCommandAsync(DataAccessCommand command, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         await dataAccess.SetCommandAsync(command);
     }
 
-    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList, Guid? connectionId)
+    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.SetCommandListAsync(commandList);
     }
 
-    private Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId)
+    private Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.ColumnExistsAsync(tableName, columnName);
     }
 
-    public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId)
+    public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.ExecuteBatchAsync(script);
@@ -118,13 +118,13 @@ public class EntityRepository(
         return dataAccess.GetDictionary(cmd) ?? new Dictionary<string, object?>();
     }
 
-    public Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId)
+    public Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
     }
 
-    public async Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId)
+    public async Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         return await dataAccess.GetDictionaryAsync(command);

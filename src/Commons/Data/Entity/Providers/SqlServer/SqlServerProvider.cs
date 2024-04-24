@@ -322,7 +322,7 @@ public class SqlServerProvider(
         return databaseType.Equals("ntext") ? FieldType.NText : FieldType.NVarchar;
     }
     
-    public override async Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId)
+    public override async Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         

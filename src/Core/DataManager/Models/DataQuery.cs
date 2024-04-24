@@ -5,17 +5,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace JJMasterData.Core.DataManager.Models;
 
-public class DataQuery
+public class DataQuery(FormStateData formStateData, Guid? connectionId)
 {
-    public required Guid? ConnectionId { get; set; }
-    public required FormStateData FormStateData { get; set; }
-    public string? SearchText { get; set; }
-    public string? SearchId { get; set; }
-
-    [SetsRequiredMembers]
-    public DataQuery(FormStateData formStateData, Guid? connectionId)
-    {
-        FormStateData = formStateData;
-        ConnectionId = connectionId;
-    }
+    public Guid? ConnectionId { get; } = connectionId;
+    public FormStateData FormStateData { get; } = formStateData;
+    public string? SearchText { get; init; }
+    public string? SearchId { get; init; }
 }

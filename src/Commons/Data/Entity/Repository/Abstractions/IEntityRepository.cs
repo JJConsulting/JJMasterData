@@ -144,13 +144,13 @@ public interface IEntityRepository
     /// <summary>
     /// Build a element from a existing table
     /// </summary>
-    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId);
+    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null);
 
     
     /// <summary>
     /// Check if table exists in the database
     /// </summary>
-    public Task<bool> TableExistsAsync(string tableName, Guid? connectionId);
+    public Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null);
     
     /// <summary>
     /// Returns a single sql command value with parameters
@@ -158,7 +158,7 @@ public interface IEntityRepository
     /// <remarks>
     /// It's used to return sql expressions commands
     /// </remarks>
-    public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId);
+    public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId = null);
     
     /// <summary>
     /// Execute the command in the database.
@@ -166,19 +166,19 @@ public interface IEntityRepository
     /// <remarks>
     /// It's used to run scripts from data dictionary at importation files
     /// </remarks>
-    public Task SetCommandAsync(DataAccessCommand command, Guid? connectionId);
+    public Task SetCommandAsync(DataAccessCommand command, Guid? connectionId = null);
     
     /// <inheritdoc>
     ///     <cref>SetCommand(IEnumerable)</cref>
     /// </inheritdoc>
-    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList, Guid? connectionId);
+    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList, Guid? connectionId = null);
     
-    public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId);
+    public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId = null);
 
-    Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId);
+    Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId = null);
     Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId = null);
     Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command, Guid? connectionId = null);
-    DataTable GetDataTable(DataAccessCommand dataAccessCommand, Guid? connectionId);
-    Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand, Guid? connectionId);
-    bool TableExists(string tableName, Guid? connectionId);
+    DataTable GetDataTable(DataAccessCommand dataAccessCommand, Guid? connectionId = null);
+    Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand, Guid? connectionId = null);
+    bool TableExists(string tableName, Guid? connectionId = null);
 }
