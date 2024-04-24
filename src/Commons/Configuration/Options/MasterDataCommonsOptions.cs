@@ -64,7 +64,7 @@ public sealed class MasterDataCommonsOptions
         if (guid is null)
             return new ConnectionString(ConnectionString!, ConnectionProvider.GetAdoNetTypeName());
 
-        var connectionString = AdditionalConnectionStrings?.FirstOrDefault(c => c.Guid == guid);
+        var connectionString = AdditionalConnectionStrings.FirstOrDefault(c => c.Guid == guid);
 
         if (connectionString is null)
             throw new JJMasterDataException($"ConnectionString {guid} does not exist.");

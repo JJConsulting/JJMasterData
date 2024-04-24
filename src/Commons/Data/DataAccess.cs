@@ -67,7 +67,6 @@ public partial class DataAccess
 
     ///<summary>
     ///Database Connection Provider; 
-    ///Default value configured in app.config as "ConnectionString";
     ///</summary>
     ///<returns>Provider Name</returns>
     ///<remarks>
