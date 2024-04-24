@@ -8,7 +8,7 @@ public class ConnectionString
 {
     public ConnectionString()
     {
-        
+        Guid = Guid.NewGuid();
     }
     
     [SetsRequiredMembers]
@@ -18,8 +18,8 @@ public class ConnectionString
         ConnectionProvider = connectionProvider;
     }
 
-    public Guid Guid { get; set; }
-    public required string? Name { get; set; }
-    public required string Connection { get; set; }
-    public required string ConnectionProvider { get; set; }
+    public Guid Guid { get; init; }
+    public required string? Name { get; init; }
+    public required string Connection { get; init; }
+    public required string ConnectionProvider { get; init; }
 }

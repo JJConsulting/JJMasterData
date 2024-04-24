@@ -1,6 +1,7 @@
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Configuration.Options.Abstractions;
 using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -67,8 +68,7 @@ public class SettingsService(IValidationDictionary validationDictionary,
             CommonsOptions = CommonsWritableOptions.Value!,
             CoreOptions = CoreWritableOptions.Value!,
             WebOptions = WebWritableOptions.Value!,
-            FilePath = CoreWritableOptions.FilePath,
-
+            FilePath = CoreWritableOptions.FilePath
         };
 
         if (!viewModel.PathExists)
@@ -96,7 +96,6 @@ public class SettingsService(IValidationDictionary validationDictionary,
         {
             TimeOut = 5
         };
-        var result = await dataAccess.TryConnectionAsync(cancellationToken);
-        return new ConnectionResult(result.Item1, result.Item2);
+        return await dataAccess.TryConnectionAsync(cancellationToken);
     }
 }
