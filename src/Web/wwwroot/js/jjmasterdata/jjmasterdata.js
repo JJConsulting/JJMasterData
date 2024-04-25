@@ -2611,17 +2611,15 @@ class UploadViewHelper {
         }
     }
     static deleteFile(componentName, fileName, confirmationMessage, jsCallback) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (confirmationMessage) {
-                const confirmed = yield showConfirmation(confirmationMessage);
-                if (!confirmed) {
-                    return;
-                }
+        if (confirmationMessage) {
+            const confirmed = confirm(confirmationMessage);
+            if (!confirmed) {
+                return;
             }
-            this.performFileAction(componentName, fileName, "deleteFile");
-            eval(jsCallback);
-            this.clearFileAction(componentName, fileName);
-        });
+        }
+        this.performFileAction(componentName, fileName, "deleteFile");
+        eval(jsCallback);
+        this.clearFileAction(componentName, fileName);
     }
     static downloadFile(componentName, fileName, jsCallback) {
         this.performFileAction(componentName, fileName, "downloadFile");
