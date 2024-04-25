@@ -19,9 +19,9 @@ class UploadViewHelper {
         }
     }
     
-    static async deleteFile(componentName: string, fileName: string, confirmationMessage: string, jsCallback: string) {
+    static deleteFile(componentName: string, fileName: string, confirmationMessage: string, jsCallback: string) {
         if (confirmationMessage) {
-            const confirmed = await showConfirmation(confirmationMessage)
+            const confirmed = confirm(confirmationMessage)
             if (!confirmed) {
                 return
             }
