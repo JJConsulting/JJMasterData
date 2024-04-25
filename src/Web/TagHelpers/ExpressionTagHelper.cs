@@ -134,7 +134,7 @@ public class ExpressionTagHelper(
                 formFloating.WithCssClass("form-floating");
                 formFloating.Append(editor);
                 formFloating.Append(label);
-                formFloating.WithAttributeIf(!isAdvanced, "style", "width:80%");
+                formFloating.WithAttributeIf(!isAdvanced, "style", "width:75%");
                 div.Append(formFloating);
             }
             else
