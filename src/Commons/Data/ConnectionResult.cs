@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace JJMasterData.Commons.Data.Entity.Models;
+namespace JJMasterData.Commons.Data;
 
 public class ConnectionResult(bool isConnectionSuccessful, string? errorMessage)
 {
