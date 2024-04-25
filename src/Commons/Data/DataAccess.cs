@@ -67,7 +67,6 @@ public partial class DataAccess
 
     ///<summary>
     ///Database Connection Provider; 
-    ///Default value configured in app.config as "ConnectionString";
     ///</summary>
     ///<returns>Provider Name</returns>
     ///<remarks>
@@ -85,19 +84,11 @@ public partial class DataAccess
     /// See also <see cref="DataAccessProvider"/>.
     /// </summary>
     /// <param name="connectionString">Conections string with data source, user etc...</param>
-    /// <param name="connectionProviderName">Provider name. Avaliable provider see <see cref="DataAccessProvider"/></param>
-    public DataAccess(string connectionString, string connectionProviderName)
+    /// <param name="connectionProviderType">Provider name. For avaliable providers see <see cref="DataAccessProvider"/></param>
+    public DataAccess(string connectionString, string connectionProviderType)
     {
         ConnectionString = connectionString;
-
-        if (Enum.TryParse<DataAccessProvider>(connectionProviderName, out var provider))
-        {
-            ConnectionProvider = provider;
-        }
-        else
-        {
-            throw new DataAccessProviderException("Invalid DataAccess provider.");
-        }
+        ConnectionProvider = DataAccessProviderHelper.GetDataAccessProviderFromString(connectionProviderType);
     }
 
     public DataAccess(string connectionString, DataAccessProvider dataAccessProvider)
@@ -114,7 +105,6 @@ public partial class DataAccess
         ConnectionProvider = optionsValue.ConnectionProvider;
     }
     
-
     public DbConnection GetConnection()
     {
         var connection = Factory.CreateConnection();

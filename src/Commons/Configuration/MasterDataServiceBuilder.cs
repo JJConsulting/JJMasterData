@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Tasks;
@@ -33,7 +36,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
                 Services.TryAddTransient<SqlServerScripts>();
                 WithEntityProvider<SqlServerProvider>();
                 break;
-            case DataAccessProvider.SqLite:
+            case DataAccessProvider.SQLite:
                 WithEntityProvider<SQLiteProvider>();
                 break;
             case DataAccessProvider.Oracle:
@@ -63,6 +66,15 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));
+        return this;
+    }
+    
+    public MasterDataServiceBuilder WithConnectionStrings(List<ConnectionString> connectionStrings)
+    {
+        Services.PostConfigure<MasterDataCommonsOptions>(options =>
+        {
+            options.AdditionalConnectionStrings = connectionStrings;
+        });
         return this;
     }
 }

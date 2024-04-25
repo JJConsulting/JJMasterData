@@ -6,7 +6,7 @@ using NCalc;
 
 namespace JJMasterData.NCalc;
 
-public class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProviderOptions> options) :
+public sealed class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProviderOptions> options) :
     IAsyncExpressionProvider,
     ISyncExpressionProvider
 {
@@ -14,7 +14,6 @@ public class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProviderOpt
     public string Title => Options.ReplaceDefaultExpressionProvider ? "Expression" : "NCalc";
     private NCalcExpressionProviderOptions Options { get; } = options.Value;
     
-
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);

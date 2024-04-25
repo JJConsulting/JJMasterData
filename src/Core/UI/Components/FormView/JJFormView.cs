@@ -682,7 +682,7 @@ public class JJFormView : AsyncComponent
 
         try
         {
-            await EntityRepository.SetCommandAsync(sqlCommand);
+            await EntityRepository.SetCommandAsync(sqlCommand, FormElement.ConnectionId);
         }
         catch (Exception ex)
         {
@@ -921,8 +921,7 @@ public class JJFormView : AsyncComponent
         var mappedFkValues = DataHelper.GetRelationValues(FormElement, selectionValues, true);
 
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert),
-                true);
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert));
         
         var errors = await InsertFormValuesAsync(values, false);
 
@@ -1476,7 +1475,7 @@ public class JJFormView : AsyncComponent
     public async Task<Dictionary<string, string>> DeleteFormValuesAsync(Dictionary<string, object?>? filter)
     {
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,  new FormStateData(filter!, UserValues, PageState.Delete), true);
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,  new FormStateData(filter!, UserValues, PageState.Delete));
         var result = await FormService.DeleteAsync(FormElement, values,
             new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;

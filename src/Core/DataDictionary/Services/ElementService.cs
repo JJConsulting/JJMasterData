@@ -1,18 +1,15 @@
 ﻿#nullable enable
 
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
@@ -23,9 +20,9 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ElementService(IFormElementComponentFactory<JJFormView> formViewFactory,
+public class ElementService(
+        IFormElementComponentFactory<JJFormView> formViewFactory,
         IValidationDictionary validationDictionary,
-        IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -38,37 +35,45 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IEntityRepository EntityRepository { get; } =  entityRepository;
 
-    private readonly MasterDataCoreOptions _options = options.Value;
-
     #region Add Dictionary
 
-    public async Task<Element?> CreateEntityAsync(string tableName, bool importFields)
+    public async Task<FormElement?> CreateEntityAsync(ElementBean elementBean)
     {
-        if (!await ValidateEntityAsync(tableName, importFields))
+        var tableName = elementBean.Name;
+        var importFields = elementBean.ImportFields;
+        var connectionId = elementBean.ConnectionId;
+        
+        if (!await ValidateEntityAsync(elementBean))
             return null;
 
-        Element element;
+        FormElement formElement;
         if (importFields)
         {
-            element = await EntityRepository.GetElementFromTableAsync(tableName);
-            element.Name = GetElementName(tableName);
+            var element = await EntityRepository.GetElementFromTableAsync(tableName, connectionId);
+            element.Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName);
+            formElement = new FormElement(element);
         }
         else
         {
-            element = new FormElement
+            formElement = new FormElement
             {
                 TableName = tableName,
-                Name = GetElementName(tableName)
+                Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName),
+                ConnectionId = connectionId,
             };
         }
 
-        await DataDictionaryRepository.InsertOrReplaceAsync(new FormElement(element));
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
-        return element;
+        return formElement;
     }
 
-    public async Task<bool> ValidateEntityAsync(string tableName, bool importFields)
+    public async Task<bool> ValidateEntityAsync(ElementBean elementBean)
     {
+        var tableName = elementBean.Name;
+        var importFields = elementBean.ImportFields;
+        var connectionId = elementBean.ConnectionId;
+        
         if (ValidateName(tableName))
         {
             if (await DataDictionaryRepository.ExistsAsync(tableName))
@@ -79,25 +84,12 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
         if (importFields & IsValid)
         {
-            var exists = await EntityRepository.TableExistsAsync(tableName);
+            var exists = await EntityRepository.TableExistsAsync(tableName, connectionId);
             if (!exists)
                 AddError("Name", StringLocalizer["Table not found"]);
         }
 
         return IsValid;
-    }
-
-    private static string GetElementName(string tablename)
-    {
-        string elementName;
-        if (tablename.ToLower().StartsWith("tb_"))
-            elementName = tablename.Substring(3);
-        else if (tablename.ToLower().StartsWith("tb"))
-            elementName = tablename.Substring(2);
-        else
-            elementName = tablename;
-        
-        return StringManager.ToPascalCase(elementName);
     }
 
     #endregion

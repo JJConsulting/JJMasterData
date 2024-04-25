@@ -136,9 +136,11 @@ internal class GridTableBody(JJGridView gridView)
                     field.DataItem.GridBehavior is DataItemGridBehavior.Icon
                         or DataItemGridBehavior.IconWithDescription)
                 {
-                    var dataItemValues = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,
-                        null,
-                        value.ToString());
+                    var dataQuery = new DataQuery(formStateData, GridView.FormElement.ConnectionId)
+                    {
+                        SearchId = value.ToString()
+                    };
+                    var dataItemValues = await GridView.DataItemService.GetValuesAsync(field.DataItem, dataQuery);
                     var dataItemValue = dataItemValues.FirstOrDefault(d => d.Id == value.ToString());
 
 
@@ -184,7 +186,8 @@ internal class GridTableBody(JJGridView gridView)
                 }
                 else
                 {
-                    value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
+                    var selector = new FormElementFieldSelector(GridView.FormElement, field.Name);
+                    value = await GridView.FieldsService.FormatGridValueAsync(selector, values, GridView.UserValues);
                     var valueString = value?.ToString()?.Trim() ?? string.Empty;
                     cell = new HtmlBuilder(valueString);
                 }

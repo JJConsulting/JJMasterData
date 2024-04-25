@@ -1,6 +1,7 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @using JJMasterData.Core.UI.Components
-@model EntityViewModel;
+@using JJMasterData.Web.Extensions
+@model JJMasterData.Web.Areas.DataDictionary.Models.EntityViewModel;
 
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";
@@ -8,7 +9,7 @@
 
 <partial name="_Menu"></partial>
 
-@using (Html.BeginMasterDataForm("Edit", "Entity", FormMethod.Post))
+@using (Html.BeginMasterDataForm("Edit", "Entity"))
 {
     <input asp-for="MenuId" hidden/>
     <div class="row">
@@ -24,14 +25,9 @@
     </collapse-panel>
 
     <collapse-panel icon="RegularRectangleList" title="@StringLocalizer["Form Title"]" expanded-by-default="true">
-        <partial name="_FormElementPanel" model="Model"/>
+        <partial name="_FormTitle" model="Model"/>
     </collapse-panel>
     
-    
-    <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="false">
-        <partial name="_Options" model="Model"/>
-    </collapse-panel>
-
     if (Model.FormEvent != null)
     {
         <collapse-panel name="eventsPanel" icon="SolidBoltLightning" title="@StringLocalizer["Events"]" expanded-by-default="true">

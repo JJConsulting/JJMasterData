@@ -12,7 +12,7 @@ public sealed class EntityViewModel : DataDictionaryViewModel
     public string FormEventType => IsPythonFormEvent ? "Python" : ".NET";
     public bool IsPythonFormEvent => FormEvent != null && FormEvent.GetType().ToString().Contains('$');
     public bool Disabled { get; init; }
-
+    
     // ReSharper disable once UnusedMember.Global
     // Reason: Used for model binding.
     public EntityViewModel()

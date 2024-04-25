@@ -4082,4 +4082,7 @@
   <data name="Download Resources" xml:space="preserve">
     <value>Baixar Resources</value>
   </data>
+  <data name="Application Default" xml:space="preserve">
+    <value>Padrão da Aplicação</value>
+  </data>
 </root>

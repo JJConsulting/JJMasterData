@@ -152,7 +152,7 @@ public class DataImportationWorker(
             var parsedSql =
                 ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandBeforeProcess,
                     formStateData);
-            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
+            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!), FormElement.ConnectionId);
         }
 
         token.ThrowIfCancellationRequested();
@@ -230,7 +230,7 @@ public class DataImportationWorker(
         {
             var parsedSql =
                 ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandAfterProcess, formStateData);
-            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
+            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!), FormElement.ConnectionId);
         }
 
         if (OnAfterProcessAsync != null)

@@ -201,7 +201,8 @@ public class PdfWriter(
             }
             else
             {
-                value = await FieldFormattingService.FormatGridValueAsync(field, row,null);
+                var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
+                value = await FieldFormattingService.FormatGridValueAsync(fieldSelector, row,null);
             }
         }
 
@@ -306,7 +307,10 @@ public class PdfWriter(
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
         var formStateData = new FormStateData(values, PageState.List);
-        var dataItemValues = await DataItemService.GetValuesAsync(field.DataItem!, formStateData);
+
+        var dataQuery = new DataQuery(formStateData, FormElement.ConnectionId);
+        
+        var dataItemValues = await DataItemService.GetValuesAsync(field.DataItem!, dataQuery);
         var item =  dataItemValues.First(v=>v.Id == selectedValue);
 
         if (item != null)

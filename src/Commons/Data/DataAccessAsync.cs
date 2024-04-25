@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data;
@@ -342,7 +343,7 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="TryConnection"/>
-    public async Task<(bool, string?)> TryConnectionAsync(CancellationToken cancellationToken = default)
+    public async Task<ConnectionResult> TryConnectionAsync(CancellationToken cancellationToken = default)
     {
         bool result;
         DbConnection? connection = null;
@@ -359,7 +360,7 @@ public partial class DataAccess
             result = false;
             var error = new StringBuilder();
             error.AppendLine(ex.Message);
-            if (ex.InnerException is { Message: { } })
+            if (ex.InnerException is { Message: not null })
                 error.Append(ex.InnerException.Message);
 
             errorMessage = error.ToString();
@@ -381,7 +382,7 @@ public partial class DataAccess
             }
         }
 
-        return (result, errorMessage);
+        return new(result, errorMessage);
     }
     
     

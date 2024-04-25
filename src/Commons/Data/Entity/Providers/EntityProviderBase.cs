@@ -16,11 +16,9 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public abstract class EntityProviderBase(
-    DataAccess dataAccess,
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
 {
-    internal DataAccess DataAccess { get; set; } = dataAccess;
     protected MasterDataCommonsOptions Options { get; } = options.Value;
     private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
@@ -29,7 +27,7 @@ public abstract class EntityProviderBase(
     public abstract string? GetWriteProcedureScript(Element element);
     public abstract string? GetReadProcedureScript(Element element);
     public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
-    public abstract Task<Element> GetElementFromTableAsync(string tableName);
+    public abstract Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null);
     public abstract DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values);
     public abstract DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values);
     public abstract DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> primaryKeys);
@@ -39,7 +37,8 @@ public abstract class EntityProviderBase(
     public async Task InsertAsync(Element element, Dictionary<string,object?> values)
     {
         var command = GetInsertCommand(element, values);
-        var newFields = await DataAccess.GetDictionaryAsync(command);
+        var dataAccess = GetDataAccess(element.ConnectionId);
+        var newFields = await dataAccess.GetDictionaryAsync(command);
 
         foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
         {
@@ -49,8 +48,9 @@ public abstract class EntityProviderBase(
     
     public  void Insert(Element element, Dictionary<string,object?> values)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         var command = GetInsertCommand(element, values);
-        var newFields =  DataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
+        var newFields =  dataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
 
         foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
         {
@@ -60,32 +60,36 @@ public abstract class EntityProviderBase(
     
     public int Update(Element element, Dictionary<string, object?> values)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         var cmd = GetUpdateCommand(element, values);
-        int numberRowsAffected = DataAccess.SetCommand(cmd);
+        int numberRowsAffected = dataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
     
     public async Task<int> UpdateAsync(Element element, Dictionary<string,object?> values)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         var cmd = GetUpdateCommand(element, values);
-        int numberRowsAffected = await DataAccess.SetCommandAsync(cmd);
+        int numberRowsAffected = await dataAccess.SetCommandAsync(cmd);
         return numberRowsAffected;
     }
     
     public async Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         const CommandOperation commandType = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
-        var newFields = await DataAccess.GetDictionaryAsync(command);
+        var newFields = await dataAccess.GetDictionaryAsync(command);
 
         return GetCommandOperation(element, values, command, commandType, newFields);
     }
     
     public CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         const CommandOperation commandType = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
-        var newFields =  DataAccess.GetDictionary(command);
+        var newFields =  dataAccess.GetDictionary(command);
 
         return GetCommandOperation(element, values, command, commandType, newFields);
     }
@@ -130,15 +134,17 @@ public abstract class EntityProviderBase(
     
     public int Delete(Element element, Dictionary<string, object> primaryKeys)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         var cmd = GetDeleteCommand(element, primaryKeys);
-        int numberRowsAffected = DataAccess.SetCommand(cmd);
+        int numberRowsAffected = dataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
     
     public async Task<int> DeleteAsync(Element element, Dictionary<string,object> primaryKeys)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         var cmd = GetDeleteCommand(element, primaryKeys);
-        int numberRowsAffected = await DataAccess.SetCommandAsync(cmd);
+        int numberRowsAffected = await dataAccess.SetCommandAsync(cmd);
         return numberRowsAffected;
     }
     
@@ -157,9 +163,11 @@ public abstract class EntityProviderBase(
 
         var totalParameter = new DataAccessParameter($"{VariablePrefix}qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
         
+        var dataAccess = GetDataAccess(element.ConnectionId);
+        
         var command = GetReadCommand(element, entityParameters, totalParameter);
         
-        var list = await DataAccess.GetDictionaryListAsync(command);
+        var list = await dataAccess.GetDictionaryListAsync(command);
 
         int totalRecords = 0;
         
@@ -171,14 +179,16 @@ public abstract class EntityProviderBase(
     
     public void CreateDataModel(Element element, List<RelationshipReference>? relationships = null)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         var sqlScripts = GetDataModelScripts(element, relationships);
-        DataAccess.ExecuteBatch(sqlScripts);
+        dataAccess.ExecuteBatch(sqlScripts);
     }
     
     public async Task CreateDataModelAsync(Element element, List<RelationshipReference>? relationships = null)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         var sqlScripts = GetDataModelScripts(element, relationships);
-        await DataAccess.ExecuteBatchAsync(sqlScripts);
+        await dataAccess.ExecuteBatchAsync(sqlScripts);
     }
 
     private string GetDataModelScripts(Element element, List<RelationshipReference>? relationships = null)
@@ -244,9 +254,10 @@ public abstract class EntityProviderBase(
     
     private async Task<CommandOperation> SetValuesNoResultAsync(Element element, Dictionary<string,object?> values)
     {
+        var dataAccess = GetDataAccess(element.ConnectionId);
         const CommandOperation result = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
-        await DataAccess.SetCommandAsync(command);
+        await dataAccess.SetCommandAsync(command);
 
         return GetCommandFromValuesNoResult(element, command, result);
     }
@@ -284,8 +295,10 @@ public abstract class EntityProviderBase(
         var totalParameter = new DataAccessParameter($"{VariablePrefix}qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
         
         var command = GetReadCommand(element, entityParameters, totalParameter);
+
+        var dataAccess = GetDataAccess(element.ConnectionId);
         
-        var list =  DataAccess.GetDictionaryList(command);
+        var list =  dataAccess.GetDictionaryList(command);
 
         int totalRecords = 0;
         
@@ -293,5 +306,11 @@ public abstract class EntityProviderBase(
             totalRecords = (int)totalParameter.Value;
 
         return new DictionaryListResult(list, totalRecords);
+    }
+    
+    internal DataAccess GetDataAccess(Guid? connectionId)
+    {
+        var connection = Options.GetConnectionString(connectionId);
+        return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
 }

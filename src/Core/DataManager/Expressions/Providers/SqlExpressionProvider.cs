@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncExpressionProvider
+public sealed class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncExpressionProvider
 {
     public string Prefix => "sql";
     public string Title => "SQL";
-    
+    public Guid? ConnectionId { get; set; }
+
     public async Task<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
     {
         var command = GetParsedDataAccessCommand(expression, parsedValues);
 
-        var result = await entityRepository.GetResultAsync(command);
+        var result = await entityRepository.GetResultAsync(command,ConnectionId);
             
         return result;
     }

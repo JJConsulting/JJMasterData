@@ -20,7 +20,7 @@ public interface IDataDictionaryRepository
 
     Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderByData, int recordsPerPage, int currentPage);
     Task<bool> ExistsAsync(string elementName);
-    Task InsertOrReplaceAsync(FormElement metadata);
+    Task InsertOrReplaceAsync(FormElement formElement);
     void InsertOrReplace(FormElement formElement);
     Task DeleteAsync(string elementName);
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -65,6 +66,13 @@ public class Element()
     [JsonProperty("mode")]
     public SynchronismMode SynchronismMode { get; set; } = SynchronismMode.Online;
 
+    /// <summary>
+    /// Custom connection string. If null, will use the default JJMasterData:ConnectionString from IConfiguration.
+    /// </summary>
+    [Display(Name = "Connection String")]
+    [JsonProperty("connectionId")]
+    public Guid? ConnectionId { get; set; }
+    
     public Element(string name) : this()
     {
         Name = name;

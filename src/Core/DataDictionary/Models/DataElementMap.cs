@@ -12,17 +12,23 @@ public class DataElementMap
     [Required]
     public string ElementName { get; set; } = null!;
 
-    [JsonProperty("fieldKey")] public string IdFieldName { get; set; } = null!;
+    [JsonProperty("fieldKey")] 
+    public string IdFieldName { get; set; } = null!;
 
-    [JsonProperty("fieldDescription")] public string? DescriptionFieldName { get; set; } = null!;
+    [JsonProperty("fieldDescription")]
+    public string? DescriptionFieldName { get; set; } = null!;
 
-    [JsonProperty("iconId")] public string? IconIdFieldName { get; set; }
+    [JsonProperty("iconId")]
+    public string? IconIdFieldName { get; set; }
 
-    [JsonProperty("iconColor")] public string? IconColorFieldName { get; set; }
+    [JsonProperty("iconColor")] 
+    public string? IconColorFieldName { get; set; }
 
-    [JsonProperty("group")] public string? GroupFieldName { get; set; }
+    [JsonProperty("group")]
+    public string? GroupFieldName { get; set; }
 
-    [JsonProperty("popUpSize")] public ModalSize ModalSize { get; set; }
+    [JsonProperty("popUpSize")] 
+    public ModalSize ModalSize { get; set; }
 
     [JsonIgnore]
     public Dictionary<string, object> Filters

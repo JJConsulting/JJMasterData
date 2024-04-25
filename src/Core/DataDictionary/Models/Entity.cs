@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
 
@@ -28,7 +29,7 @@ public sealed class Entity
     [SyncExpression]
     public required string Title { get; set; }
     
-    [Display(Name = "Title Size")]
+    [Display(Name = "Size")]
     public required HeadingSize TitleSize { get; set; }
     
     [Display(Name = "SubTitle")]
@@ -40,6 +41,9 @@ public sealed class Entity
     
     [Display(Name = "Icon")]
     public required IconType? Icon { get; set; }
+    
+    [Display(Name = "Connection String")]
+    public required Guid? ConnectionId { get; set; }
 
     public static Entity FromFormElement(FormElement formElement)
     {
@@ -55,7 +59,24 @@ public sealed class Entity
             TitleSize = formElement.TitleSize,
             SubTitle = formElement.SubTitle,
             Info = formElement.Info,
-            Icon = formElement.Icon    
+            Icon = formElement.Icon,
+            ConnectionId = formElement.ConnectionId
         };
+    }
+
+    public void SetFormElement(FormElement formElement)
+    {
+        formElement.Name = Name;
+        formElement.TableName = TableName;
+        formElement.UseReadProcedure = UseReadProcedure;
+        formElement.UseWriteProcedure = UseWriteProcedure;
+        formElement.ReadProcedureName = ReadProcedureName;
+        formElement.WriteProcedureName = WriteProcedureName;
+        formElement.Title = Title;
+        formElement.TitleSize = TitleSize;
+        formElement.SubTitle = SubTitle;
+        formElement.Info = Info;
+        formElement.Icon = Icon;
+        formElement.ConnectionId = ConnectionId;
     }
 }

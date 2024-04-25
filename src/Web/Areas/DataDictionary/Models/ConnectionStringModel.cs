@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class ConnectionString
+public class ConnectionStringModel
 {
     [Required] public string? Server { get; init; }
 
@@ -29,11 +29,11 @@ public class ConnectionString
 
     public int? MaxPoolSize { get; init; }
 
-    public ConnectionString()
+    public ConnectionStringModel()
     {
     }
 
-    public ConnectionString(string? connectionString)
+    public ConnectionStringModel(string? connectionString)
     {
         var builder = new DbConnectionStringBuilder
         {

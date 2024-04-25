@@ -65,7 +65,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
             commandList.Add(command);
         }
 
-        await gridView.EntityRepository.SetCommandListAsync(commandList);
+        await gridView.EntityRepository.SetCommandListAsync(commandList, gridView.FormElement.ConnectionId);
     }
 
     private async Task ExecuteOnRecord(ActionMap map, SqlCommandAction sqlCommandAction)
@@ -86,7 +86,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
         var parsedValues = gridView.ExpressionsService.ParseExpression(sql, formStateData);
         var sqlCommand = SqlExpressionProvider.GetParsedDataAccessCommand(sql, parsedValues);
         
-        await gridView.EntityRepository.SetCommandAsync(sqlCommand);
+        await gridView.EntityRepository.SetCommandAsync(sqlCommand, gridView.FormElement.ConnectionId);
     }
 
 }

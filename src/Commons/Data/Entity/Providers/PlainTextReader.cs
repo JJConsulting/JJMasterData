@@ -19,14 +19,13 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
     private ILogger<PlainTextReader> Logger { get; } = logger;
     public bool ShowLogInfo { get; init; }
     public string Delimiter { get; init; } = "|";
-
-
+    
     public async Task<string> GetFieldsListAsTextAsync(Element element, EntityParameters entityParameters)
     {
         var sRet = new StringBuilder();
         var dStart = DateTime.Now;
         var culture = CultureInfo.CreateSpecificCulture("en-US");
-        var dataAccess = provider.DataAccess;
+        var dataAccess = provider.GetDataAccess(element.ConnectionId);
         string currentField = null;
         DbConnection conn = null;
 

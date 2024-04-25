@@ -7,7 +7,7 @@
 }
 
 @using (Html.BeginMasterDataForm("LegendAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }))
 {
     <ul class="nav nav-underline">
         <li id="nav-general" class="active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>

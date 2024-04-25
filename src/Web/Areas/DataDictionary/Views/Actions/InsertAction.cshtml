@@ -33,7 +33,7 @@
 }
 
 @using (Html.BeginMasterDataForm("InsertAction", "Actions",
-            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }))
 {
     <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active">
