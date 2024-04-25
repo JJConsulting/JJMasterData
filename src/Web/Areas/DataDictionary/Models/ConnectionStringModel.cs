@@ -19,11 +19,11 @@ public class ConnectionStringModel
 
     public int? Timeout { get; init; }
 
-    public bool? TrustServerCertificate { get; init; }
+    public bool TrustServerCertificate { get; init; }
 
-    public bool? Encrypt { get; init; }
+    public bool Encrypt { get; init; }
 
-    public bool? Pooling { get; init; }
+    public bool Pooling { get; init; }
 
     public int? MinPoolSize { get; init; }
 
@@ -143,13 +143,13 @@ public class ConnectionStringModel
         if (Timeout != null)
             builder["timeout"] = Timeout;
 
-        if (TrustServerCertificate != null)
+        if (TrustServerCertificate)
             builder["trust server certificate"] = TrustServerCertificate;
 
-        if (Encrypt != null)
+        if (Encrypt)
             builder["encrypt"] = Encrypt;
 
-        if (Pooling != null)
+        if (Pooling)
             builder["pooling"] = Pooling;
 
         if (MinPoolSize != null)
