@@ -2,7 +2,7 @@
     private static strings: { [key: string]: string } = {};
 
     static initialize() {
-        const lang = document.documentElement.lang;
+        const lang = document.documentElement.lang.toLowerCase();
         switch (lang) {
             case "pt-br":
                 Localization.strings = {

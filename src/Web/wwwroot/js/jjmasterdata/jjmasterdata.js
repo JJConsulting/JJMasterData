@@ -16,89 +16,97 @@ class ActionHelper {
         getMasterDataForm().submit();
     }
     static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, isSubmit, confirmMessage) {
-        if (confirmMessage) {
-            const result = showConfirmation(confirmMessage);
-            if (!result) {
-                return false;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (confirmMessage) {
+                const result = yield showConfirmation(confirmMessage);
+                if (!result) {
+                    return false;
+                }
             }
-        }
-        const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
-        if (gridViewActionInput) {
-            gridViewActionInput.value = encryptedActionMap;
-        }
-        else if (formViewActionInput) {
-            formViewActionInput.value = encryptedActionMap;
-        }
-        if (isSubmit) {
-            ActionHelper.submitWithScrollPosition();
-        }
-        else {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
-            postFormValues({ url: urlBuilder.build(), success: data => {
-                    TooltipHelper.dispose("#" + componentName);
-                    HTMLHelper.setOuterHTML(componentName, data);
-                    listenAllEvents("#" + componentName);
-                } });
-        }
-    }
-    static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
-        if (confirmationMessage) {
-            const result = showConfirmation(confirmationMessage);
-            if (!result) {
-                return false;
+            const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
+            const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
+            if (gridViewActionInput) {
+                gridViewActionInput.value = encryptedActionMap;
             }
-        }
-        const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
-        if (formViewActionInput) {
-            formViewActionInput.value = encryptedActionMap;
-        }
-        else {
-            const newFormInput = document.createElement("input");
-            newFormInput.id = "current-action-map-" + componentName;
-            newFormInput.name = "current-action-map-" + componentName;
-            newFormInput.type = "hidden";
-            newFormInput.value = encryptedActionMap;
-            document.querySelector('form').appendChild(newFormInput);
-        }
-        if (gridViewActionInput) {
-            gridViewActionInput.value = encryptedActionMap;
-        }
-        else {
-            const newGridInput = document.createElement("input");
-            newGridInput.id = "grid-view-action-map-" + componentName;
-            newGridInput.name = "grid-view-action-map-" + componentName;
-            newGridInput.type = "hidden";
-            newGridInput.value = encryptedActionMap;
-            document.querySelector('form').appendChild(newGridInput);
-        }
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", routeContext);
-        urlBuilder.addQueryParameter("componentName", componentName);
-        const url = urlBuilder.build();
-        this.executeUrlRedirect(url);
-        return true;
-    }
-    static executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
-        if (confirmationMessage) {
-            const result = showConfirmation(confirmationMessage);
-            if (!result) {
-                return false;
+            else if (formViewActionInput) {
+                formViewActionInput.value = encryptedActionMap;
             }
-        }
-        if (isModal) {
-            if (isIframe) {
-                defaultModal.showIframe(url, modalTitle, modalSize);
+            if (isSubmit) {
+                ActionHelper.submitWithScrollPosition();
             }
             else {
-                defaultModal.showUrl(url, modalTitle, modalSize);
+                const urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+                postFormValues({
+                    url: urlBuilder.build(), success: data => {
+                        TooltipHelper.dispose("#" + componentName);
+                        HTMLHelper.setOuterHTML(componentName, data);
+                        listenAllEvents("#" + componentName);
+                    }
+                });
             }
-        }
-        else {
-            window.location.href = url;
-        }
+        });
+    }
+    static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (confirmationMessage) {
+                const result = yield showConfirmation(confirmationMessage);
+                if (!result) {
+                    return false;
+                }
+            }
+            const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
+            const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
+            if (formViewActionInput) {
+                formViewActionInput.value = encryptedActionMap;
+            }
+            else {
+                const newFormInput = document.createElement("input");
+                newFormInput.id = "current-action-map-" + componentName;
+                newFormInput.name = "current-action-map-" + componentName;
+                newFormInput.type = "hidden";
+                newFormInput.value = encryptedActionMap;
+                document.querySelector('form').appendChild(newFormInput);
+            }
+            if (gridViewActionInput) {
+                gridViewActionInput.value = encryptedActionMap;
+            }
+            else {
+                const newGridInput = document.createElement("input");
+                newGridInput.id = "grid-view-action-map-" + componentName;
+                newGridInput.name = "grid-view-action-map-" + componentName;
+                newGridInput.type = "hidden";
+                newGridInput.value = encryptedActionMap;
+                document.querySelector('form').appendChild(newGridInput);
+            }
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            urlBuilder.addQueryParameter("componentName", componentName);
+            const url = urlBuilder.build();
+            this.executeUrlRedirect(url);
+            return true;
+        });
+    }
+    static executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (confirmationMessage) {
+                const result = yield showConfirmation(confirmationMessage);
+                if (!result) {
+                    return false;
+                }
+            }
+            if (isModal) {
+                if (isIframe) {
+                    defaultModal.showIframe(url, modalTitle, modalSize);
+                }
+                else {
+                    defaultModal.showUrl(url, modalTitle, modalSize);
+                }
+            }
+            else {
+                window.location.href = url;
+            }
+        });
     }
     static executeUrlRedirect(url) {
         postFormValues({
@@ -119,88 +127,96 @@ class ActionHelper {
         });
     }
     static executeInternalRedirect(url, modalSize, confirmationMessage) {
-        if (confirmationMessage) {
-            if (!showConfirmation(confirmationMessage)) {
-                return false;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (confirmationMessage) {
+                const confirmed = yield showConfirmation(confirmationMessage);
+                if (!confirmed) {
+                    return false;
+                }
             }
-        }
-        defaultModal.showIframe(url, "", modalSize);
+            defaultModal.showIframe(url, "", modalSize);
+        });
     }
     static executeActionData(actionData) {
-        var _a;
-        const { componentName, actionMap, gridViewRouteContext, modalTitle, isModal, isSubmit, confirmationMessage } = actionData;
-        if (confirmationMessage) {
-            if (!showConfirmation(confirmationMessage)) {
-                return false;
-            }
-        }
-        const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
-        const formViewRouteContext = (_a = document.querySelector("#form-view-route-context-" + componentName)) === null || _a === void 0 ? void 0 : _a.value;
-        if (gridViewActionInput) {
-            gridViewActionInput.value = "";
-        }
-        if (formViewActionInput) {
-            formViewActionInput.value = actionMap;
-        }
-        let form = getMasterDataForm();
-        if (!form) {
-            return;
-        }
-        function onModalClose() {
-            formViewActionInput.value = String();
-            setPageState(componentName, PageState.List);
-        }
-        if (isModal) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
-            const modal = new Modal();
-            modal.modalId = componentName + "-modal";
-            $("body").on('hidden.bs.modal', "#" + modal.modalId, function () {
-                onModalClose();
-            });
-            SpinnerOverlay.show();
-            const requestOptions = getRequestOptions();
-            modal.showUrl({
-                url: urlBuilder.build(), requestOptions: requestOptions
-            }, modalTitle).then(function (data) {
-                SpinnerOverlay.hide();
-                listenAllEvents("#" + modal.modalId + " ");
-                if (typeof data === "object") {
-                    if (data.closeModal) {
-                        if (isSubmit) {
-                            onModalClose();
-                            ActionHelper.submitWithScrollPosition();
-                        }
-                        else {
-                            modal.hide();
-                            GridViewHelper.refresh(componentName, gridViewRouteContext);
-                        }
-                    }
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const { componentName, actionMap, gridViewRouteContext, modalTitle, isModal, isSubmit, confirmationMessage } = actionData;
+            if (confirmationMessage) {
+                const confirm = yield showConfirmation(confirmationMessage);
+                if (!confirm) {
+                    return false;
                 }
-            });
-        }
-        else {
-            if (!isSubmit) {
+            }
+            const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
+            const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
+            const formViewRouteContext = (_a = document.querySelector("#form-view-route-context-" + componentName)) === null || _a === void 0 ? void 0 : _a.value;
+            if (gridViewActionInput) {
+                gridViewActionInput.value = "";
+            }
+            if (formViewActionInput) {
+                formViewActionInput.value = actionMap;
+            }
+            let form = getMasterDataForm();
+            if (!form) {
+                return;
+            }
+            function onModalClose() {
+                formViewActionInput.value = String();
+                setPageState(componentName, PageState.List);
+            }
+            if (isModal) {
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
-                postFormValues({ url: urlBuilder.build(), success: (data) => {
-                        if (typeof data === "string") {
-                            TooltipHelper.dispose("#" + componentName);
-                            HTMLHelper.setOuterHTML(componentName, data);
-                            listenAllEvents("#" + componentName);
-                        }
-                        else {
-                            if (data.jsCallback) {
-                                eval(data.jsCallback);
+                const modal = new Modal();
+                modal.modalId = componentName + "-modal";
+                $("body").on('hidden.bs.modal', "#" + modal.modalId, function () {
+                    onModalClose();
+                });
+                SpinnerOverlay.show();
+                const requestOptions = getRequestOptions();
+                modal.showUrl({
+                    url: urlBuilder.build(), requestOptions: requestOptions
+                }, modalTitle).then(function (data) {
+                    SpinnerOverlay.hide();
+                    listenAllEvents("#" + modal.modalId + " ");
+                    if (typeof data === "object") {
+                        if (data.closeModal) {
+                            if (isSubmit) {
+                                onModalClose();
+                                ActionHelper.submitWithScrollPosition();
+                            }
+                            else {
+                                modal.hide();
+                                GridViewHelper.refresh(componentName, gridViewRouteContext);
                             }
                         }
-                    } });
+                    }
+                });
             }
             else {
-                ActionHelper.submitWithScrollPosition();
+                if (!isSubmit) {
+                    const urlBuilder = new UrlBuilder();
+                    urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
+                    postFormValues({
+                        url: urlBuilder.build(), success: (data) => {
+                            if (typeof data === "string") {
+                                TooltipHelper.dispose("#" + componentName);
+                                HTMLHelper.setOuterHTML(componentName, data);
+                                listenAllEvents("#" + componentName);
+                            }
+                            else {
+                                if (data.jsCallback) {
+                                    eval(data.jsCallback);
+                                }
+                            }
+                        }
+                    });
+                }
+                else {
+                    ActionHelper.submitWithScrollPosition();
+                }
             }
-        }
+        });
     }
     static executeAction(actionDataJson) {
         const actionData = JSON.parse(actionDataJson);
@@ -211,19 +227,21 @@ class ActionHelper {
         modal.modalId = componentName + "-modal";
         modal.hide();
     }
-    static launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
-        if (confirmationMessage) {
-            const result = showConfirmation(confirmationMessage);
-            if (!result) {
-                return false;
+    static launchUrl(url_1, isModal_1, title_1, confirmationMessage_1) {
+        return __awaiter(this, arguments, void 0, function* (url, isModal, title, confirmationMessage, modalSize = 1) {
+            if (confirmationMessage) {
+                const result = yield showConfirmation(confirmationMessage);
+                if (!result) {
+                    return false;
+                }
             }
-        }
-        if (isModal) {
-            popup.show(title, url, modalSize);
-        }
-        else {
-            window.location.href = url;
-        }
+            if (isModal) {
+                popup.show(title, url, modalSize);
+            }
+            else {
+                window.location.href = url;
+            }
+        });
     }
 }
 class AuditLogViewHelper {
@@ -403,17 +421,18 @@ class CollapsePanelListener {
 }
 class DataDictionaryUtils {
     static deleteAction(actionName, url, confirmationMessage) {
-        let confirmed = showConfirmation(confirmationMessage);
-        if (confirmed == true) {
-            postFormValues({
-                url: url,
-                success: function (data) {
-                    if (data.success) {
-                        document.getElementById(actionName).remove();
+        showConfirmation(confirmationMessage).then(function (confirmed) {
+            if (confirmed) {
+                postFormValues({
+                    url: url,
+                    success: function (data) {
+                        if (data.success) {
+                            document.getElementById(actionName).remove();
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     }
     static sortAction(context, url, errorMessage) {
         $("#sortable-" + context).sortable({
@@ -1511,7 +1530,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
 };
 class Localization {
     static initialize() {
-        const lang = document.documentElement.lang;
+        const lang = document.documentElement.lang.toLowerCase();
         switch (lang) {
             case "pt-br":
                 Localization.strings = {
@@ -1639,7 +1658,7 @@ class MessageBox {
     static reset() {
         MessageBox.hide();
     }
-    static loadHtml(title, iconType, iconSize) {
+    static loadHtml(hasTitle, iconType, iconSize) {
         if ($(MessageBox.jQueryModalId).length) {
             $(MessageBox.jQueryModalId).remove();
         }
@@ -1653,14 +1672,14 @@ class MessageBox {
         html += "\" role=\"document\">\r\n";
         html += "    <div class=\"modal-content\">\r\n";
         html += "      <div class=\"modal-header\">\r\n";
-        if (bootstrapVersion >= 4 && title) {
+        if (bootstrapVersion >= 4 && hasTitle) {
             html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
         }
         else if (bootstrapVersion >= 5) {
             html +=
                 '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
         }
-        else if (bootstrapVersion == 3 && title) {
+        else if (bootstrapVersion == 3 && hasTitle) {
             html +=
                 '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
         }
@@ -1721,7 +1740,8 @@ class MessageBox {
     }
     static show(title, description, iconType, sizeType, btn1Label, btn1Callback, btn2Label, btn2Callback) {
         MessageBox.reset();
-        MessageBox.loadHtml(title, iconType, sizeType || TMessageSize.DEFAULT);
+        MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT);
+        MessageBox.setTitle(title);
         MessageBox.setContent(description);
         if (btn1Label === undefined) {
             MessageBox.setBtn1(Localization.get("Close"), null);
@@ -1742,25 +1762,21 @@ class MessageBox {
         MessageBox.show(null, description, TMessageIcon.QUESTION, TMessageSize.DEFAULT, cancelLabel !== null && cancelLabel !== void 0 ? cancelLabel : Localization.get("No"), cancelCallback !== null && cancelCallback !== void 0 ? cancelCallback : MessageBox.hide, confirmLabel !== null && confirmLabel !== void 0 ? confirmLabel : Localization.get("Yes"), confirmCallback);
     }
     static showConfirmation(message) {
-        let confirmationResult = false;
-        let modalClosed = false;
-        const cancelCallback = () => {
-            confirmationResult = true;
-            modalClosed = true;
-        };
-        const confirmCallback = () => {
-            confirmationResult = true;
-            modalClosed = true;
-        };
-        MessageBox.showConfirmationDialog({
-            description: message,
-            cancelCallback: cancelCallback,
-            confirmCallback: confirmCallback,
-            cancelLabel: Localization.get('No'),
-            confirmLabel: Localization.get('Yes'),
+        return new Promise((resolve, reject) => {
+            MessageBox.showConfirmationDialog({
+                description: message,
+                cancelLabel: Localization.get('No'),
+                confirmLabel: Localization.get('Yes'),
+                confirmCallback: () => {
+                    MessageBox.hide();
+                    resolve(true);
+                },
+                cancelCallback: () => {
+                    MessageBox.hide();
+                    resolve(false);
+                },
+            });
         });
-        while (!modalClosed) { }
-        return confirmationResult;
     }
     static hide() {
         $(MessageBox.jQueryModalId).modal("hide");
@@ -2595,15 +2611,17 @@ class UploadViewHelper {
         }
     }
     static deleteFile(componentName, fileName, confirmationMessage, jsCallback) {
-        if (confirmationMessage) {
-            const confirmed = showConfirmation(confirmationMessage);
-            if (!confirmed) {
-                return;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (confirmationMessage) {
+                const confirmed = yield showConfirmation(confirmationMessage);
+                if (!confirmed) {
+                    return;
+                }
             }
-        }
-        this.performFileAction(componentName, fileName, "deleteFile");
-        eval(jsCallback);
-        this.clearFileAction(componentName, fileName);
+            this.performFileAction(componentName, fileName, "deleteFile");
+            eval(jsCallback);
+            this.clearFileAction(componentName, fileName);
+        });
     }
     static downloadFile(componentName, fileName, jsCallback) {
         this.performFileAction(componentName, fileName, "downloadFile");

@@ -71,7 +71,7 @@ class MessageBox {
         MessageBox.hide()
     }
 
-    private static loadHtml(title: string, iconType: TMessageIcon, iconSize: TMessageSize): void {
+    private static loadHtml(hasTitle: boolean, iconType: TMessageIcon, iconSize: TMessageSize): void {
         if ($(MessageBox.jQueryModalId).length) {
             $(MessageBox.jQueryModalId).remove();
         }
@@ -85,12 +85,12 @@ class MessageBox {
         html += "    <div class=\"modal-content\">\r\n";
         html += "      <div class=\"modal-header\">\r\n";
 
-        if (bootstrapVersion >= 4 && title) {
+        if (bootstrapVersion >= 4 && hasTitle) {
             html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
         } else if (bootstrapVersion >= 5) {
             html +=
                 '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
-        } else if (bootstrapVersion == 3 && title) {
+        } else if (bootstrapVersion == 3 && hasTitle) {
             html +=
                 '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
         }
@@ -159,7 +159,8 @@ class MessageBox {
         btn2Callback?: (() => void) | null
     ): void {
         MessageBox.reset();
-        MessageBox.loadHtml(title, iconType, sizeType || TMessageSize.DEFAULT);
+        MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT);
+        MessageBox.setTitle(title)
         MessageBox.setContent(description);
 
         if (btn1Label === undefined) {
@@ -204,33 +205,24 @@ class MessageBox {
         )
     }
 
-    public static showConfirmation(message: string): boolean {
-        let confirmationResult = false;
-        let modalClosed = false;
-
-        const cancelCallback = () => {
-            confirmationResult = true;
-            modalClosed = true;
-        };
-        
-        const confirmCallback = () => {
-            confirmationResult = true;
-            modalClosed = true;
-        };
-
-        MessageBox.showConfirmationDialog({
-            description: message,
-            cancelCallback: cancelCallback,
-            confirmCallback: confirmCallback,
-            cancelLabel: Localization.get('No'),
-            confirmLabel: Localization.get('Yes'),
+    public static showConfirmation(message: string): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            MessageBox.showConfirmationDialog({
+                description: message,
+                cancelLabel: Localization.get('No'),
+                confirmLabel: Localization.get('Yes'),
+                confirmCallback: () => {
+                    MessageBox.hide();
+                    resolve(true);
+                },
+                cancelCallback: () => {
+                    MessageBox.hide();
+                    resolve(false);
+                },
+            });
         });
-        
-        
-        while (!modalClosed) {}
-
-        return confirmationResult;
     }
+
     public static hide(): void {
         $(MessageBox.jQueryModalId).modal("hide");
         $(".modal-backdrop").hide();
