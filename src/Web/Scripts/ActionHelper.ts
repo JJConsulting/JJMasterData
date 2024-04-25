@@ -13,7 +13,7 @@ class ActionHelper {
         confirmMessage: string) {
 
         if (confirmMessage) {
-            const result = await showConfirmation(confirmMessage);
+            const result = await showConfirmationMessage(confirmMessage);
             if (!result) {
                 return false;
             }
@@ -45,7 +45,7 @@ class ActionHelper {
 
     static async executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {
         if (confirmationMessage) {
-            const result = await showConfirmation(confirmationMessage);
+            const result = await showConfirmationMessage(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -89,7 +89,7 @@ class ActionHelper {
 
     static async executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
         if (confirmationMessage) {
-            const result = await showConfirmation(confirmationMessage);
+            const result = await showConfirmationMessage(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -125,7 +125,7 @@ class ActionHelper {
 
     private static async executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string) {
         if (confirmationMessage) {
-            const confirmed = await showConfirmation(confirmationMessage);
+            const confirmed = await showConfirmationMessage(confirmationMessage);
             if (!confirmed) {
                 return false;
             }
@@ -146,7 +146,7 @@ class ActionHelper {
         } = actionData;
 
         if (confirmationMessage) {
-            const confirm = await showConfirmation(confirmationMessage);
+            const confirm = await showConfirmationMessage(confirmationMessage);
             if (!confirm) {
                 return false;
             }
@@ -243,7 +243,7 @@ class ActionHelper {
     
     static async launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
         if (confirmationMessage) {
-            const result = await showConfirmation(confirmationMessage);
+            const result = await showConfirmationMessage(confirmationMessage);
             if (!result) {
                 return false;
             }

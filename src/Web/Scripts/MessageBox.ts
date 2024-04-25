@@ -205,7 +205,7 @@ class MessageBox {
         )
     }
 
-    public static showConfirmation(message: string): Promise<boolean> {
+    public static showConfirmationMessage(message: string): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             MessageBox.showConfirmationDialog({
                 description: message,
@@ -233,4 +233,4 @@ class MessageBox {
 const messageBox = MessageBox;
 
 const showConfirmationDialog = MessageBox.showConfirmationDialog;
-const showConfirmation = MessageBox.showConfirmation;
+const showConfirmationMessage = MessageBox.showConfirmationMessage;

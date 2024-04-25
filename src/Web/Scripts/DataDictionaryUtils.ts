@@ -1,6 +1,6 @@
 ﻿class DataDictionaryUtils {
     static deleteAction(actionName: string, url: string, confirmationMessage: string): void {
-        showConfirmation(confirmationMessage).then(function(confirmed){
+        showConfirmationMessage(confirmationMessage).then(function(confirmed){
             if(confirmed){
                 postFormValues({
                     url:url,

@@ -18,7 +18,7 @@ class ActionHelper {
     static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, isSubmit, confirmMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (confirmMessage) {
-                const result = yield showConfirmation(confirmMessage);
+                const result = yield showConfirmationMessage(confirmMessage);
                 if (!result) {
                     return false;
                 }
@@ -50,7 +50,7 @@ class ActionHelper {
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (confirmationMessage) {
-                const result = yield showConfirmation(confirmationMessage);
+                const result = yield showConfirmationMessage(confirmationMessage);
                 if (!result) {
                     return false;
                 }
@@ -90,7 +90,7 @@ class ActionHelper {
     static executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (confirmationMessage) {
-                const result = yield showConfirmation(confirmationMessage);
+                const result = yield showConfirmationMessage(confirmationMessage);
                 if (!result) {
                     return false;
                 }
@@ -129,7 +129,7 @@ class ActionHelper {
     static executeInternalRedirect(url, modalSize, confirmationMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (confirmationMessage) {
-                const confirmed = yield showConfirmation(confirmationMessage);
+                const confirmed = yield showConfirmationMessage(confirmationMessage);
                 if (!confirmed) {
                     return false;
                 }
@@ -142,7 +142,7 @@ class ActionHelper {
             var _a;
             const { componentName, actionMap, gridViewRouteContext, modalTitle, isModal, isSubmit, confirmationMessage } = actionData;
             if (confirmationMessage) {
-                const confirm = yield showConfirmation(confirmationMessage);
+                const confirm = yield showConfirmationMessage(confirmationMessage);
                 if (!confirm) {
                     return false;
                 }
@@ -230,7 +230,7 @@ class ActionHelper {
     static launchUrl(url_1, isModal_1, title_1, confirmationMessage_1) {
         return __awaiter(this, arguments, void 0, function* (url, isModal, title, confirmationMessage, modalSize = 1) {
             if (confirmationMessage) {
-                const result = yield showConfirmation(confirmationMessage);
+                const result = yield showConfirmationMessage(confirmationMessage);
                 if (!result) {
                     return false;
                 }
@@ -421,7 +421,7 @@ class CollapsePanelListener {
 }
 class DataDictionaryUtils {
     static deleteAction(actionName, url, confirmationMessage) {
-        showConfirmation(confirmationMessage).then(function (confirmed) {
+        showConfirmationMessage(confirmationMessage).then(function (confirmed) {
             if (confirmed) {
                 postFormValues({
                     url: url,
@@ -1761,7 +1761,7 @@ class MessageBox {
         const { description, cancelLabel, cancelCallback, confirmLabel, confirmCallback } = options;
         MessageBox.show(null, description, TMessageIcon.QUESTION, TMessageSize.DEFAULT, cancelLabel !== null && cancelLabel !== void 0 ? cancelLabel : Localization.get("No"), cancelCallback !== null && cancelCallback !== void 0 ? cancelCallback : MessageBox.hide, confirmLabel !== null && confirmLabel !== void 0 ? confirmLabel : Localization.get("Yes"), confirmCallback);
     }
-    static showConfirmation(message) {
+    static showConfirmationMessage(message) {
         return new Promise((resolve, reject) => {
             MessageBox.showConfirmationDialog({
                 description: message,
@@ -1792,7 +1792,7 @@ MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
 MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
 const messageBox = MessageBox;
 const showConfirmationDialog = MessageBox.showConfirmationDialog;
-const showConfirmation = MessageBox.showConfirmation;
+const showConfirmationMessage = MessageBox.showConfirmationMessage;
 var ModalSize;
 (function (ModalSize) {
     ModalSize[ModalSize["Fullscreen"] = 0] = "Fullscreen";
