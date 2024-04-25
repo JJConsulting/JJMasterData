@@ -19,7 +19,7 @@ public class ImageFactory(IHttpContext httpContext)
         
         var logoSrc = $"{baseUrl}_content/JJMasterData.Web/images/JJMasterData.png";
         var image = Create(logoSrc);
-        image.SetAttr("style","width:8%;height:8%;");
+        image.SetAttr("style","width:15%;height:15%;");
         image.Title = "JJMasterData";
         return image;
     }

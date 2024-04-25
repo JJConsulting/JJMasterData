@@ -226,7 +226,7 @@ public class JJAuditLogView : AsyncComponent
                     divFields.Append(HtmlTag.Div, group =>
                     {
                         group.WithAttribute("id", "sortable-grid");
-                        group.WithCssClass("list-group sortable-grid");
+                        group.WithCssClass("list-group jj-list-group sortable-grid");
                         group.Append(logListGroupHtml);
                     });
                 });
