@@ -20,16 +20,16 @@ class UploadViewHelper {
     }
     
     static deleteFile(componentName: string, fileName: string, confirmationMessage: string, jsCallback: string) {
-        if(confirmationMessage){
+        if (confirmationMessage) {
             const confirmed = confirm(confirmationMessage)
-            if(!confirmed){
+            if (!confirmed) {
                 return
             }
         }
-        
+
         this.performFileAction(componentName, fileName, "deleteFile");
         eval(jsCallback);
-        this.clearFileAction(componentName,fileName);
+        this.clearFileAction(componentName, fileName);
     }
 
     static downloadFile(componentName: string, fileName: string, jsCallback: string) {
