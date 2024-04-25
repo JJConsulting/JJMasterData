@@ -23,7 +23,8 @@ class MessageBox {
     private static readonly button1Id = MessageBox.jQueryModalButton1Id.substring(1);
     
     private static setTitle(title: string): void {
-        $(MessageBox.jQueryModalTitleId).html(title);
+        if(title)
+            $(MessageBox.jQueryModalTitleId).html(title);
     }
 
     private static setContent(content: string): void {
@@ -70,7 +71,7 @@ class MessageBox {
         MessageBox.hide()
     }
 
-    private static loadHtml(icontype: TMessageIcon, sizetype: TMessageSize): void {
+    private static loadHtml(title: string, iconType: TMessageIcon, iconSize: TMessageSize): void {
         if ($(MessageBox.jQueryModalId).length) {
             $(MessageBox.jQueryModalId).remove();
         }
@@ -78,18 +79,18 @@ class MessageBox {
         let html = "";
         html += "<div id=\"site-modal\" tabindex=\"-1\" data-bs-backdrop='static' data-bs-keyboard='false' class=\"modal fade\" role=\"dialog\">\r\n";
         html += "  <div class=\"modal-dialog";
-        if (sizetype == TMessageSize.LARGE) html += " modal-lg";
-        else if (sizetype == TMessageSize.SMALL) html += " modal-sm";
+        if (iconSize == TMessageSize.LARGE) html += " modal-lg";
+        else if (iconSize == TMessageSize.SMALL) html += " modal-sm";
         html += "\" role=\"document\">\r\n";
         html += "    <div class=\"modal-content\">\r\n";
         html += "      <div class=\"modal-header\">\r\n";
 
-        if (bootstrapVersion >= 4) {
+        if (bootstrapVersion >= 4 && title) {
             html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
         } else if (bootstrapVersion >= 5) {
             html +=
                 '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
-        } else if (bootstrapVersion == 3) {
+        } else if (bootstrapVersion == 3 && title) {
             html +=
                 '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
         }
@@ -100,22 +101,22 @@ class MessageBox {
         html += "          <tr>\r\n";
         html += '            <td style="width:40px">\r\n';
 
-        if (icontype == TMessageIcon.ERROR) {
+        if (iconType == TMessageIcon.ERROR) {
             html += '              <span class="text-danger">\r\n';
             html +=
                 '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
-        } else if (icontype == TMessageIcon.WARNING) {
+        } else if (iconType == TMessageIcon.WARNING) {
             html += '              <span class="text-warning">\r\n';
             html +=
                 '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
-        } else if (icontype == TMessageIcon.INFO) {
+        } else if (iconType == TMessageIcon.INFO) {
             html += '              <span class="text-info">\r\n';
             html +=
                 '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
-        } else if (icontype == TMessageIcon.QUESTION) {
+        } else if (iconType == TMessageIcon.QUESTION) {
             html += '              <span class="text-info">\r\n';
             html +=
                 '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
@@ -147,49 +148,89 @@ class MessageBox {
         $("body").append(html);
     }
 
-    /**
-     * Exibe uma caixa de mensagem (dialog)
-     *
-     * @param {string} title Título da mensagem
-     * @param {string} content Mensagem
-     * @param {TMessageIcon} icontype [opcional] Tipo do ícone 1=NONE(padrão), 2=INFO, 3=WARNING, 4=ERROR
-     * @param {TMessageSize} sizetype [opcional] Tamanho 1=SMALL, 2=DEFAULT(padrão), 3=LARGE
-     * @param {string} btn1Label [opcional] Descrição do btn1 padrão = 'Fechar'
-     * @param {Function} btn1Func [opcional] Evento disparado ao clicar no btn1
-     * @param {string} btn2Label [opcional] Descrição do btn2
-     * @param {Function} btn2Func [opcional] Evento disparado ao clicar no btn2
-     * @memberof MessageBox
-     */
     public static show(
         title: string,
-        content: string,
-        icontype: TMessageIcon,
-        sizetype?: TMessageSize,
+        description: string,
+        iconType: TMessageIcon,
+        sizeType?: TMessageSize,
         btn1Label?: string,
-        btn1Func?: (() => void) | null,
+        btn1Callback?: (() => void) | null,
         btn2Label?: string,
-        btn2Func?: (() => void) | null
+        btn2Callback?: (() => void) | null
     ): void {
         MessageBox.reset();
-        MessageBox.loadHtml(icontype, sizetype || TMessageSize.DEFAULT);
-        MessageBox.setTitle(title);
-        MessageBox.setContent(content);
+        MessageBox.loadHtml(title, iconType, sizeType || TMessageSize.DEFAULT);
+        MessageBox.setContent(description);
 
         if (btn1Label === undefined) {
-            MessageBox.setBtn1("Fechar", null);
+            MessageBox.setBtn1(Localization.get("Close"), null);
         } else {
-            MessageBox.setBtn1(btn1Label, btn1Func);
+            MessageBox.setBtn1(btn1Label, btn1Callback);
         }
 
         if (btn2Label === undefined) {
             $(MessageBox.jQueryModalButton2Id).hide();
         } else {
-            MessageBox.setBtn2(btn2Label, btn2Func);
+            MessageBox.setBtn2(btn2Label, btn2Callback);
         }
 
         MessageBox.showModal();
     }
+    
+    public static showConfirmationDialog(options: {
+        description: string,
+        cancelLabel?: string,
+        cancelCallback?: (() => void) | null
+        confirmLabel?: string,
+        confirmCallback?: (() => void) | null
+    }): void {
+        const {
+            description,
+            cancelLabel,
+            cancelCallback,
+            confirmLabel,
+            confirmCallback
+        } = options;
+        
+        MessageBox.show(
+            null,
+            description, 
+            TMessageIcon.QUESTION,
+            TMessageSize.DEFAULT, 
+            cancelLabel  ?? Localization.get("No"),
+            cancelCallback ?? MessageBox.hide,
+            confirmLabel ?? Localization.get("Yes"),
+            confirmCallback
+        )
+    }
 
+    public static showConfirmation(message: string): boolean {
+        let confirmationResult = false;
+        let modalClosed = false;
+
+        const cancelCallback = () => {
+            confirmationResult = true;
+            modalClosed = true;
+        };
+        
+        const confirmCallback = () => {
+            confirmationResult = true;
+            modalClosed = true;
+        };
+
+        MessageBox.showConfirmationDialog({
+            description: message,
+            cancelCallback: cancelCallback,
+            confirmCallback: confirmCallback,
+            cancelLabel: Localization.get('No'),
+            confirmLabel: Localization.get('Yes'),
+        });
+        
+        
+        while (!modalClosed) {}
+
+        return confirmationResult;
+    }
     public static hide(): void {
         $(MessageBox.jQueryModalId).modal("hide");
         $(".modal-backdrop").hide();
@@ -198,3 +239,6 @@ class MessageBox {
 
 // Maintain compatibility with the global variable
 const messageBox = MessageBox;
+
+const showConfirmationDialog = MessageBox.showConfirmationDialog;
+const showConfirmation = MessageBox.showConfirmation;

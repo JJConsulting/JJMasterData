@@ -13,7 +13,7 @@ class ActionHelper {
         confirmMessage: string) {
         
         if (confirmMessage) {
-            const result = confirm(confirmMessage);
+            const result = showConfirmation(confirmMessage);
             if (!result) {
                 return false;
             }
@@ -47,7 +47,7 @@ class ActionHelper {
 
     static executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {
         if (confirmationMessage) {
-            const result = confirm(confirmationMessage);
+            const result = showConfirmation(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -92,7 +92,7 @@ class ActionHelper {
 
     static executeClientSideRedirect(url, isModal, modalTitle,modalSize, isIframe,confirmationMessage) {
         if (confirmationMessage) {
-            const result = confirm(confirmationMessage);
+            const result = showConfirmation(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -130,7 +130,7 @@ class ActionHelper {
 
     private static executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string) {
         if (confirmationMessage) {
-            if (!confirm(confirmationMessage)) {
+            if (!showConfirmation(confirmationMessage)) {
                 return false;
             }
         }
@@ -150,7 +150,7 @@ class ActionHelper {
         } = actionData;
         
         if (confirmationMessage) {
-            if (!confirm(confirmationMessage)) {
+            if (!showConfirmation(confirmationMessage)) {
                 return false;
             }
         }
@@ -247,7 +247,7 @@ class ActionHelper {
     
     static launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
         if (confirmationMessage) {
-            const result = confirm(confirmationMessage);
+            const result = showConfirmation(confirmationMessage);
             if (!result) {
                 return false;
             }

@@ -1,6 +1,6 @@
 ﻿class DataDictionaryUtils {
     static deleteAction(actionName: string, url: string, confirmationMessage: string): void {
-        let confirmed = confirm(confirmationMessage);
+        let confirmed = showConfirmation(confirmationMessage);
         if (confirmed == true) {
             postFormValues({
                 url:url,

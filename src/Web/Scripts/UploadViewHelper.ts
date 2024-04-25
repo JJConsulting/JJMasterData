@@ -21,7 +21,7 @@ class UploadViewHelper {
     
     static deleteFile(componentName: string, fileName: string, confirmationMessage: string, jsCallback: string) {
         if(confirmationMessage){
-            const confirmed = confirm(confirmationMessage)
+            const confirmed = showConfirmation(confirmationMessage)
             if(!confirmed){
                 return
             }

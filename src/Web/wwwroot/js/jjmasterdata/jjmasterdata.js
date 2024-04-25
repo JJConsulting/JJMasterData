@@ -17,7 +17,7 @@ class ActionHelper {
     }
     static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, isSubmit, confirmMessage) {
         if (confirmMessage) {
-            const result = confirm(confirmMessage);
+            const result = showConfirmation(confirmMessage);
             if (!result) {
                 return false;
             }
@@ -45,7 +45,7 @@ class ActionHelper {
     }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
-            const result = confirm(confirmationMessage);
+            const result = showConfirmation(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -83,7 +83,7 @@ class ActionHelper {
     }
     static executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
         if (confirmationMessage) {
-            const result = confirm(confirmationMessage);
+            const result = showConfirmation(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -120,7 +120,7 @@ class ActionHelper {
     }
     static executeInternalRedirect(url, modalSize, confirmationMessage) {
         if (confirmationMessage) {
-            if (!confirm(confirmationMessage)) {
+            if (!showConfirmation(confirmationMessage)) {
                 return false;
             }
         }
@@ -130,7 +130,7 @@ class ActionHelper {
         var _a;
         const { componentName, actionMap, gridViewRouteContext, modalTitle, isModal, isSubmit, confirmationMessage } = actionData;
         if (confirmationMessage) {
-            if (!confirm(confirmationMessage)) {
+            if (!showConfirmation(confirmationMessage)) {
                 return false;
             }
         }
@@ -213,7 +213,7 @@ class ActionHelper {
     }
     static launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
         if (confirmationMessage) {
-            const result = confirm(confirmationMessage);
+            const result = showConfirmation(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -403,7 +403,7 @@ class CollapsePanelListener {
 }
 class DataDictionaryUtils {
     static deleteAction(actionName, url, confirmationMessage) {
-        let confirmed = confirm(confirmationMessage);
+        let confirmed = showConfirmation(confirmationMessage);
         if (confirmed == true) {
             postFormValues({
                 url: url,
@@ -1452,6 +1452,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         localStorage.removeItem("masterDataScrollPosition");
     }
+    Localization.initialize();
     listenAllEvents();
 });
 const listenAllEvents = (selectorPrefix = String()) => {
@@ -1508,6 +1509,24 @@ const listenAllEvents = (selectorPrefix = String()) => {
         }
     });
 };
+class Localization {
+    static initialize() {
+        const lang = document.documentElement.lang;
+        switch (lang) {
+            case "pt-br":
+                Localization.strings = {
+                    Yes: "Sim",
+                    No: "Não",
+                    Close: "Fechar"
+                };
+                break;
+        }
+    }
+    static get(key) {
+        return Localization.strings[key] || key;
+    }
+}
+Localization.strings = {};
 class LookupHelper {
     static setLookupValues(fieldName, id, description) {
         const idInput = window.parent.document.querySelector("#" + fieldName);
@@ -1581,7 +1600,8 @@ var TMessageSize;
 })(TMessageSize || (TMessageSize = {}));
 class MessageBox {
     static setTitle(title) {
-        $(MessageBox.jQueryModalTitleId).html(title);
+        if (title)
+            $(MessageBox.jQueryModalTitleId).html(title);
     }
     static setContent(content) {
         $(MessageBox.jQueryModalContentId).html(content);
@@ -1619,28 +1639,28 @@ class MessageBox {
     static reset() {
         MessageBox.hide();
     }
-    static loadHtml(icontype, sizetype) {
+    static loadHtml(title, iconType, iconSize) {
         if ($(MessageBox.jQueryModalId).length) {
             $(MessageBox.jQueryModalId).remove();
         }
         let html = "";
         html += "<div id=\"site-modal\" tabindex=\"-1\" data-bs-backdrop='static' data-bs-keyboard='false' class=\"modal fade\" role=\"dialog\">\r\n";
         html += "  <div class=\"modal-dialog";
-        if (sizetype == TMessageSize.LARGE)
+        if (iconSize == TMessageSize.LARGE)
             html += " modal-lg";
-        else if (sizetype == TMessageSize.SMALL)
+        else if (iconSize == TMessageSize.SMALL)
             html += " modal-sm";
         html += "\" role=\"document\">\r\n";
         html += "    <div class=\"modal-content\">\r\n";
         html += "      <div class=\"modal-header\">\r\n";
-        if (bootstrapVersion >= 4) {
+        if (bootstrapVersion >= 4 && title) {
             html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
         }
         else if (bootstrapVersion >= 5) {
             html +=
                 '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
         }
-        else if (bootstrapVersion == 3) {
+        else if (bootstrapVersion == 3 && title) {
             html +=
                 '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
         }
@@ -1649,25 +1669,25 @@ class MessageBox {
         html += "        <table border=\"0\">\r\n";
         html += "          <tr>\r\n";
         html += '            <td style="width:40px">\r\n';
-        if (icontype == TMessageIcon.ERROR) {
+        if (iconType == TMessageIcon.ERROR) {
             html += '              <span class="text-danger">\r\n';
             html +=
                 '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
         }
-        else if (icontype == TMessageIcon.WARNING) {
+        else if (iconType == TMessageIcon.WARNING) {
             html += '              <span class="text-warning">\r\n';
             html +=
                 '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
         }
-        else if (icontype == TMessageIcon.INFO) {
+        else if (iconType == TMessageIcon.INFO) {
             html += '              <span class="text-info">\r\n';
             html +=
                 '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
         }
-        else if (icontype == TMessageIcon.QUESTION) {
+        else if (iconType == TMessageIcon.QUESTION) {
             html += '              <span class="text-info">\r\n';
             html +=
                 '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
@@ -1699,24 +1719,48 @@ class MessageBox {
         html += "</div>\r\n";
         $("body").append(html);
     }
-    static show(title, content, icontype, sizetype, btn1Label, btn1Func, btn2Label, btn2Func) {
+    static show(title, description, iconType, sizeType, btn1Label, btn1Callback, btn2Label, btn2Callback) {
         MessageBox.reset();
-        MessageBox.loadHtml(icontype, sizetype || TMessageSize.DEFAULT);
-        MessageBox.setTitle(title);
-        MessageBox.setContent(content);
+        MessageBox.loadHtml(title, iconType, sizeType || TMessageSize.DEFAULT);
+        MessageBox.setContent(description);
         if (btn1Label === undefined) {
-            MessageBox.setBtn1("Fechar", null);
+            MessageBox.setBtn1(Localization.get("Close"), null);
         }
         else {
-            MessageBox.setBtn1(btn1Label, btn1Func);
+            MessageBox.setBtn1(btn1Label, btn1Callback);
         }
         if (btn2Label === undefined) {
             $(MessageBox.jQueryModalButton2Id).hide();
         }
         else {
-            MessageBox.setBtn2(btn2Label, btn2Func);
+            MessageBox.setBtn2(btn2Label, btn2Callback);
         }
         MessageBox.showModal();
+    }
+    static showConfirmationDialog(options) {
+        const { description, cancelLabel, cancelCallback, confirmLabel, confirmCallback } = options;
+        MessageBox.show(null, description, TMessageIcon.QUESTION, TMessageSize.DEFAULT, cancelLabel !== null && cancelLabel !== void 0 ? cancelLabel : Localization.get("No"), cancelCallback !== null && cancelCallback !== void 0 ? cancelCallback : MessageBox.hide, confirmLabel !== null && confirmLabel !== void 0 ? confirmLabel : Localization.get("Yes"), confirmCallback);
+    }
+    static showConfirmation(message) {
+        let confirmationResult = false;
+        let modalClosed = false;
+        const cancelCallback = () => {
+            confirmationResult = true;
+            modalClosed = true;
+        };
+        const confirmCallback = () => {
+            confirmationResult = true;
+            modalClosed = true;
+        };
+        MessageBox.showConfirmationDialog({
+            description: message,
+            cancelCallback: cancelCallback,
+            confirmCallback: confirmCallback,
+            cancelLabel: Localization.get('No'),
+            confirmLabel: Localization.get('Yes'),
+        });
+        while (!modalClosed) { }
+        return confirmationResult;
     }
     static hide() {
         $(MessageBox.jQueryModalId).modal("hide");
@@ -1731,6 +1775,8 @@ MessageBox.jQueryModalButton2Id = "#site-modal-btn2";
 MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
 MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
 const messageBox = MessageBox;
+const showConfirmationDialog = MessageBox.showConfirmationDialog;
+const showConfirmation = MessageBox.showConfirmation;
 var ModalSize;
 (function (ModalSize) {
     ModalSize[ModalSize["Fullscreen"] = 0] = "Fullscreen";
@@ -2550,7 +2596,7 @@ class UploadViewHelper {
     }
     static deleteFile(componentName, fileName, confirmationMessage, jsCallback) {
         if (confirmationMessage) {
-            const confirmed = confirm(confirmationMessage);
+            const confirmed = showConfirmation(confirmationMessage);
             if (!confirmed) {
                 return;
             }
