@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -10,7 +12,7 @@ namespace JJMasterData.Commons.Security.Cryptography;
 /// <summary>
 /// AES is more secure than the DES cipher and is the de facto world standard. DES can be broken easily as it has known vulnerabilities.
 /// </summary>
-public class AesEncryptionAlgorithm(IMemoryCache memoryCache) : IEncryptionAlgorithm
+public class AesEncryptionAlgorithm(IMemoryCache? memoryCache = null) : IEncryptionAlgorithm
 {
     private record AesEntry(byte[] Key, byte[] IV);
     
@@ -46,16 +48,16 @@ public class AesEncryptionAlgorithm(IMemoryCache memoryCache) : IEncryptionAlgor
         }
         catch
         {
-            return null;
+            return string.Empty;
         }
     }
     
     private Aes CreateAes(string secretKey)
     {
-        Aes aes = null;
+        Aes? aes = null;
         try
         {
-            if (memoryCache.TryGetValue(secretKey, out AesEntry aesEntry))
+            if (memoryCache != null && memoryCache.TryGetValue(secretKey, out AesEntry aesEntry))
             {
                 aes = CreateAes(aesEntry);
                 return aes;
@@ -71,7 +73,7 @@ public class AesEncryptionAlgorithm(IMemoryCache memoryCache) : IEncryptionAlgor
 
             aesEntry = new AesEntry(aesKey, aesIv);
             
-            memoryCache.Set(secretKey, aesEntry);
+            memoryCache?.Set(secretKey, aesEntry);
             
             aes = CreateAes(aesEntry);
 

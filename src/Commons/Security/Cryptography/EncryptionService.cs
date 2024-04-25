@@ -1,3 +1,4 @@
+#nullable enable
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using Microsoft.Extensions.Options;
@@ -12,10 +13,15 @@ public class EncryptionService(
     IOptionsSnapshot<MasterDataCommonsOptions> options)
     : IEncryptionService
 {
-    private readonly string _secretKey = options.Value.SecretKey;
+    private readonly string _secretKey = options.Value.SecretKey!;
 
-    public string EncryptString(string plainText) => encryptionAlgorithm.EncryptString(plainText, _secretKey);
+    public string EncryptString(string plainText, string? secretKey = null)
+    {
+        return encryptionAlgorithm.EncryptString(plainText,secretKey ??_secretKey);
+    }
 
-    public string DecryptString(string cipherText) =>
-        encryptionAlgorithm.DecryptString(cipherText,_secretKey);
+    public string DecryptString(string cipherText, string? secretKey = null)
+    {
+        return encryptionAlgorithm.DecryptString(cipherText,secretKey ?? _secretKey);
+    }
 }
