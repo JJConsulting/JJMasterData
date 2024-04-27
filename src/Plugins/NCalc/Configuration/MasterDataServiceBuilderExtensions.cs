@@ -29,4 +29,23 @@ public static class MasterDataServiceBuilderExtensions
         
         return builder;
     }
+    
+    public static MasterDataServiceBuilder WithNCalcExpression(this MasterDataServiceBuilder builder)
+    {
+        builder.WithNCalcExpressionProvider(new NCalcExpressionProviderOptions
+        {
+            ReplaceDefaultExpressionProvider = true,
+            AdditionalFunctions =
+            [
+                (name, args) =>
+                {
+                    if (name == "now")
+                        args.Result = DateTime.Now;
+                }
+            ]
+        });
+        
+        return builder;
+    }
+    
 }
