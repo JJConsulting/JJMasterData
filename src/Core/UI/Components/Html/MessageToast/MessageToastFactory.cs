@@ -26,11 +26,11 @@ public class MessageToastFactory(IStringLocalizer<MasterDataResources> stringLoc
         {
             case BootstrapColor.Danger:
                 messageToast.Icon.IconClass = IconType.TimesCircle.GetCssClass();
-                messageToast.Title = stringLocalizer["Erro"];
+                messageToast.Title = stringLocalizer["Error"];
                 break;
             case BootstrapColor.Warning:
                 messageToast.Icon.IconClass = IconType.Warning.GetCssClass();
-                messageToast.Title = stringLocalizer["Aviso"];
+                messageToast.Title = stringLocalizer["Warning"];
                 break;
             default:
                 messageToast.Icon.IconClass = IconType.Check.GetCssClass();

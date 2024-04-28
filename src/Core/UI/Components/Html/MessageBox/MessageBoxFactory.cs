@@ -22,8 +22,8 @@ public class MessageBoxFactory(IStringLocalizer<MasterDataResources> stringLocal
         messageBox.Size = MessageSize.Default;
         messageBox.Title = messageBox.Icon switch
         {
-            MessageIcon.Error => StringLocalizer["Erro"],
-            MessageIcon.Warning => StringLocalizer["Aviso"],
+            MessageIcon.Error => StringLocalizer["Error"],
+            MessageIcon.Warning => StringLocalizer["Warning"],
             MessageIcon.Info => StringLocalizer["Info"],
             _ => StringLocalizer["Message"],
         };
