@@ -21,7 +21,7 @@ public class HtmlComponentFactory(
     public CardFactory Card => new();
     
     public CollapsePanelFactory CollapsePanel => new(currentContext.Request.Form);
-    
+   
     public IconFactory Icon => new();
     
     public ImageFactory Image =>  new(currentContext);
@@ -31,6 +31,8 @@ public class HtmlComponentFactory(
     public LinkButtonFactory LinkButton => serviceProvider.GetRequiredService<LinkButtonFactory>();
     
     public MessageBoxFactory MessageBox =>  new(stringLocalizer);
+    
+    public MessageToastFactory MessageToast =>  new(stringLocalizer);
     
     public ModalDialogFactory ModalDialog => new();
     

@@ -4085,4 +4085,8 @@
   <data name="Application Default" xml:space="preserve">
     <value>Padrão da Aplicação</value>
   </data>
+  <data name="Operation Performed" xml:space="preserve">
+    <value>Operação Realizada!</value>
+  </data>
+  
 </root>
