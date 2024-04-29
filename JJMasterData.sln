@@ -39,13 +39,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commons.Test", "test\Common
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-4493-BAAA-277D13A85DB8}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		.github\workflows\docs.yml = .github\workflows\docs.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\nuget.yml = .github\workflows\nuget.yml
-		README.NuGet.md = README.NuGet.md
 		README.md = README.md
-		.gitignore = .gitignore
+		README.NuGet.md = README.NuGet.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebEntryPoint", "example\WebEntryPoint\WebEntryPoint.csproj", "{E3224095-1C9D-4248-BE8E-7ACFB9D34352}"
@@ -75,11 +75,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brasil.Test", "test\Plugins
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCalc", "src\Plugins\NCalc\NCalc.csproj", "{FDF54236-3662-4C89-B49D-5700C64C4B8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaGenerator", "src\ConsoleApps\SchemaGenerator\SchemaGenerator.csproj", "{29388C67-8C15-4EAE-836C-15BA812846F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchemaGenerator", "src\ConsoleApps\SchemaGenerator\SchemaGenerator.csproj", "{29388C67-8C15-4EAE-836C-15BA812846F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormElementImporter", "src\ConsoleApps\FormElementImporter\FormElementImporter.csproj", "{8FB84AE3-4FBC-492F-B3BE-4B7000CEDFE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormElementImporter", "src\ConsoleApps\FormElementImporter\FormElementImporter.csproj", "{8FB84AE3-4FBC-492F-B3BE-4B7000CEDFE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyMetadataMigrator", "src\ConsoleApps\LegacyMetadataMigrator\LegacyMetadataMigrator.csproj", "{5325D0BE-1C2F-4A5E-8A30-8A443DE17C53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegacyMetadataMigrator", "src\ConsoleApps\LegacyMetadataMigrator\LegacyMetadataMigrator.csproj", "{5325D0BE-1C2F-4A5E-8A30-8A443DE17C53}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "test\Selenium\IntegrationTests.csproj", "{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -355,6 +357,18 @@ Global
 		{5325D0BE-1C2F-4A5E-8A30-8A443DE17C53}.Release|x64.Build.0 = Release|Any CPU
 		{5325D0BE-1C2F-4A5E-8A30-8A443DE17C53}.Release|x86.ActiveCfg = Release|Any CPU
 		{5325D0BE-1C2F-4A5E-8A30-8A443DE17C53}.Release|x86.Build.0 = Release|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Debug|x64.Build.0 = Debug|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Debug|x86.Build.0 = Debug|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Release|x64.ActiveCfg = Release|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Release|x64.Build.0 = Release|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Release|x86.ActiveCfg = Release|Any CPU
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -379,6 +393,7 @@ Global
 		{29388C67-8C15-4EAE-836C-15BA812846F7} = {8799DF37-58EB-4B95-A558-DD3D5EDD247A}
 		{8FB84AE3-4FBC-492F-B3BE-4B7000CEDFE1} = {8799DF37-58EB-4B95-A558-DD3D5EDD247A}
 		{5325D0BE-1C2F-4A5E-8A30-8A443DE17C53} = {8799DF37-58EB-4B95-A558-DD3D5EDD247A}
+		{78F2C2D9-BC1D-4CF8-91AC-758E688BA6CA} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BCB34875-DB5E-4444-99BA-3C362F8EF1BB}
