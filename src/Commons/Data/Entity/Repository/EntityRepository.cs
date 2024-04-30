@@ -281,6 +281,12 @@ public class EntityRepository(
         return new DictionaryListResult(result.Data, result.TotalOfRecords);
     }
     
+    public DataSet GetDataSet(DataAccessCommand command, Guid? connectionId = null)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+        return dataAccess.GetDataSet(command);
+    }
+    
     private DataAccess GetDataAccess(Guid? connectionId)
     {
         var connection = Options.GetConnectionString(connectionId);

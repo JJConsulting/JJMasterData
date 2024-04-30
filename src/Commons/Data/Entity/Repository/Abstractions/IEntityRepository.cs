@@ -181,4 +181,6 @@ public interface IEntityRepository
     DataTable GetDataTable(DataAccessCommand dataAccessCommand, Guid? connectionId = null);
     Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand, Guid? connectionId = null);
     bool TableExists(string tableName, Guid? connectionId = null);
+
+    DataSet GetDataSet(DataAccessCommand command, Guid? connectionId = null);
 }
