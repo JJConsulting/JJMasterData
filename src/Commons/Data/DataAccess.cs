@@ -123,25 +123,44 @@ public partial class DataAccess
     }
 
     /// <summary>
-    /// Returns a DataTable object populated from a sql.
+    /// Returns a DataTable object populated by a SQL string. Use a <see cref="DataAccessCommand"/> if you need parameters.
     /// </summary>
-    /// <returns>
-    /// Returns a DataTable object populated by a query with parameters
-    /// </returns>
     public DataTable GetDataTable(string sql)
     {
         return GetDataTable(new DataAccessCommand(sql));
     }
 
     /// <summary>
-    /// Returns a DataTable object populated from a sql command.
+    ///  Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// </summary>
-    /// <returns>
-    /// Returns a DataTable object populated by a <see cref="DataAccessCommand"/> with parameters
-    /// </returns>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
-        var dt = new DataTable();
+        var dataTable = new DataTable();
+        ExecuteDataCommand(cmd, dataAdapter => dataAdapter.Fill(dataTable));
+        return dataTable;
+    }
+    
+    
+    /// <summary>
+    /// Returns a DataSet object populated by a SQL string. Use a <see cref="DataAccessCommand"/> if you need parameters.
+    /// </summary>
+    public DataSet GetDataSet(string sql)
+    {
+        return GetDataSet(new DataAccessCommand(sql));
+    }
+    
+    /// <summary>
+    ///  Returns a DataSet object populated by a <see cref="DataAccessCommand"/>.
+    /// </summary>
+    public DataSet GetDataSet(DataAccessCommand cmd)
+    {
+        var dataSet = new DataSet();
+        ExecuteDataCommand(cmd, dataAdapter => dataAdapter.Fill(dataSet));
+        return dataSet;
+    }
+    
+    private void ExecuteDataCommand(DataAccessCommand cmd, Action<DbDataAdapter> fillAction)
+    {
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -151,25 +170,21 @@ public partial class DataAccess
             {
                 using var dataAdapter = Factory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
-                dataAdapter.Fill(dt);
-
+                fillAction(dataAdapter);
+            
                 foreach (var parameter in cmd.Parameters)
                 {
                     if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                         parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                 }
-                
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
         }
-
-
-        return dt;
     }
-
+    
     /// <summary>
     /// Returns a DataTable object populated from a sql.
     /// </summary>
