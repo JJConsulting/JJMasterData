@@ -104,22 +104,22 @@ class MessageBox {
         if (iconType == TMessageIcon.ERROR) {
             html += '              <span class="text-danger">\r\n';
             html +=
-                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         } else if (iconType == TMessageIcon.WARNING) {
             html += '              <span class="text-warning">\r\n';
             html +=
-                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         } else if (iconType == TMessageIcon.INFO) {
             html += '              <span class="text-info">\r\n';
             html +=
-                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         } else if (iconType == TMessageIcon.QUESTION) {
             html += '              <span class="text-info">\r\n';
             html +=
-                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         }
         html += "            </td>\r\n";
@@ -197,11 +197,11 @@ class MessageBox {
             null,
             description, 
             TMessageIcon.QUESTION,
-            TMessageSize.DEFAULT, 
-            cancelLabel  ?? Localization.get("No"),
-            cancelCallback ?? MessageBox.hide,
+            TMessageSize.DEFAULT,
             confirmLabel ?? Localization.get("Yes"),
-            confirmCallback
+            confirmCallback,
+            cancelLabel  ?? Localization.get("No"),
+            cancelCallback ?? MessageBox.hide
         )
     }
 

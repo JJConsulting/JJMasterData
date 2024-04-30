@@ -1691,25 +1691,25 @@ class MessageBox {
         if (iconType == TMessageIcon.ERROR) {
             html += '              <span class="text-danger">\r\n';
             html +=
-                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         }
         else if (iconType == TMessageIcon.WARNING) {
             html += '              <span class="text-warning">\r\n';
             html +=
-                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         }
         else if (iconType == TMessageIcon.INFO) {
             html += '              <span class="text-info">\r\n';
             html +=
-                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         }
         else if (iconType == TMessageIcon.QUESTION) {
             html += '              <span class="text-info">\r\n';
             html +=
-                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
             html += "              </span>\r\n";
         }
         html += "            </td>\r\n";
@@ -1759,7 +1759,7 @@ class MessageBox {
     }
     static showConfirmationDialog(options) {
         const { description, cancelLabel, cancelCallback, confirmLabel, confirmCallback } = options;
-        MessageBox.show(null, description, TMessageIcon.QUESTION, TMessageSize.DEFAULT, cancelLabel !== null && cancelLabel !== void 0 ? cancelLabel : Localization.get("No"), cancelCallback !== null && cancelCallback !== void 0 ? cancelCallback : MessageBox.hide, confirmLabel !== null && confirmLabel !== void 0 ? confirmLabel : Localization.get("Yes"), confirmCallback);
+        MessageBox.show(null, description, TMessageIcon.QUESTION, TMessageSize.DEFAULT, confirmLabel !== null && confirmLabel !== void 0 ? confirmLabel : Localization.get("Yes"), confirmCallback, cancelLabel !== null && cancelLabel !== void 0 ? cancelLabel : Localization.get("No"), cancelCallback !== null && cancelCallback !== void 0 ? cancelCallback : MessageBox.hide);
     }
     static showConfirmationMessage(message) {
         return new Promise((resolve, reject) => {
