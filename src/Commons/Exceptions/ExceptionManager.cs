@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Net;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -20,11 +21,7 @@ public static class ExceptionManager
                 letter.Message = exAccess.Message;
                 letter.Status = (int)HttpStatusCode.Unauthorized;
                 break;
-            case JJMasterDataException mdException:
-                letter.Message = mdException.Message;
-                letter.Status = (int)HttpStatusCode.BadRequest;
-                break;
-            case SqlException exSql:
+            case DataAccessException exSql:
             {
                 var errMsg = GetMessage(exSql);
                 letter.Message = errMsg;
@@ -32,6 +29,10 @@ public static class ExceptionManager
                 letter.ValidationList = new Dictionary<string, string> { { "DB", errMsg } };
                 break;
             }
+            case JJMasterDataException mdException:
+                letter.Message = mdException.Message;
+                letter.Status = (int)HttpStatusCode.BadRequest;
+                break;
             case KeyNotFoundException exNotFound:
                 letter.Message = exNotFound.Message ?? "Page not found.";
                 letter.Status = (int)HttpStatusCode.NotFound;
@@ -45,26 +46,27 @@ public static class ExceptionManager
         return letter;
     }
 
-    public static string GetMessage(SqlException sqlException)
+    public static string GetMessage(DataAccessCommandException commandException)
     {
         string message;
-        switch (sqlException.Number)
+        switch (commandException.ErrorKind)
         {
-            case 547:
+            case DataAccessErrorKind.DependencyCannotBeDeleted:
                 message = "The record cannot be deleted because it is being used as a dependency.";
                 break;
-            case 2627 or 2601:
+            case DataAccessErrorKind.RecordAlreadyRegistered:
                 message = "Record already registered.";
                 break;
-            case 170:
+            case DataAccessErrorKind.InvalidCharacter:
                 message = "Invalid character.";
                 break;
-            case >= 50000:
-                message = sqlException.Message;
+            case DataAccessErrorKind.Custom:
+                message = commandException.Message;
                 break;
+            case DataAccessErrorKind.Unhandled:
             default:
 #if DEBUG
-                message = sqlException.Message;
+                message = commandException.Message;
 #else
                 message = UnexpectedErrorMessage;
 #endif
@@ -76,8 +78,8 @@ public static class ExceptionManager
     
     public static string GetMessage(Exception ex)
     {
-        if (ex is SqlException exSql)
-            return GetMessage(exSql);
+        if (ex is DataAccessCommandException commandException)
+            return GetMessage(commandException);
         if (ex is IOException)
             return "Error while processing file.";
 #if DEBUG

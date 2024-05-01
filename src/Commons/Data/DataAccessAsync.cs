@@ -74,7 +74,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
     }
     
@@ -112,7 +112,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return scalarResult;
@@ -145,7 +145,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return rowsAffected;
@@ -155,7 +155,6 @@ public partial class DataAccess
     public async Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
     {
         int numberOfRowsAffected = 0;
-        DataAccessCommand? currentCommand = null;
 
         var connection = await GetConnectionAsync(cancellationToken);
 #if NET
@@ -169,6 +168,7 @@ public partial class DataAccess
             using var transaction = connection.BeginTransaction();
 #endif
 
+            DataAccessCommand currentCommand = null!;
             try
             {
                 foreach (var command in commands)
@@ -197,7 +197,7 @@ public partial class DataAccess
 #else
                 transaction.Rollback();
 #endif
-                throw GetDataAccessException(ex, currentCommand);
+                throw GetDataAccessCommandException(ex, currentCommand);
             }
         }
 
@@ -224,7 +224,7 @@ public partial class DataAccess
         GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
     
     
-    /// <inheritdoc cref="GetHashtable"/>
+    /// <inheritdoc cref="GetDictionary(DataAccessCommand)"/>
     public async Task<Dictionary<string,object?>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         var result = new Dictionary<string, object?>();
@@ -271,7 +271,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, command);
+            throw GetDataAccessCommandException(ex, command);
         }
 
         return result;
@@ -328,7 +328,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return dictionaryList;
@@ -450,7 +450,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, command);
+            throw GetDataAccessCommandException(ex, command);
         }
     }
     

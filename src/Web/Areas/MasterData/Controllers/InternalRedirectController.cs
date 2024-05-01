@@ -125,7 +125,7 @@ public class InternalRedirectController(
             if (errors.Count == 0)
                 await panel.EntityRepository.SetValuesAsync(formElement, values);
         }
-        catch (SqlException ex)
+        catch (DataAccessCommandException ex)
         {
             errors.Add("DB", localizer[ExceptionManager.GetMessage(ex)]);
         }

@@ -1,3 +1,3 @@
 namespace JJMasterData.Commons.Exceptions;
 
-public class DataAccessProviderException(string message) : DataAccessException(message);
+public sealed class DataAccessProviderException(string message) : DataAccessException(message);

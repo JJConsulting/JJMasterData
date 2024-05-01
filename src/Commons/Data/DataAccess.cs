@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -181,7 +182,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
     }
     
@@ -207,7 +208,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, sql);
+            throw GetDataAccessCommandException(ex, new DataAccessCommand(sql));
         }
 
         return dt;
@@ -250,7 +251,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return scalarResult;
@@ -282,7 +283,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return scalarResult;
@@ -312,7 +313,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return rowsAffected;
@@ -324,13 +325,13 @@ public partial class DataAccess
     public int SetCommand(IEnumerable<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
-        DataAccessCommand? currentCommand = null;
 
         var connection = GetConnection();
 
         using (connection)
         {
             using var sqlTransaction = connection.BeginTransaction();
+            DataAccessCommand currentCommand = null!;
             try
             {
                 foreach (var command in commands)
@@ -349,7 +350,7 @@ public partial class DataAccess
             catch (Exception ex)
             {
                 sqlTransaction.Rollback();
-                throw GetDataAccessException(ex, currentCommand);
+                throw GetDataAccessCommandException(ex, currentCommand);
             }
         }
 
@@ -402,7 +403,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return numberOfRowsAffected;
@@ -469,7 +470,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return retCollection;
@@ -505,7 +506,7 @@ public partial class DataAccess
                         {
                             string fieldName = dr.GetName(nQtd);
                             if (retCollection.ContainsKey(fieldName))
-                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                                throw new DataAccessException($"[{fieldName}] field duplicated in the query result.");
 
                             retCollection.Add(fieldName, dr.GetValue(nQtd));
                             nQtd += 1;
@@ -522,7 +523,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return retCollection;
@@ -639,20 +640,21 @@ public partial class DataAccess
         return command;
     }
     
-    private static Exception GetDataAccessException(Exception ex, DataAccessCommand? cmd)
+    private static DataAccessCommandException GetDataAccessCommandException(Exception ex, DataAccessCommand command)
     {
-        return GetDataAccessException(ex, cmd?.Sql ?? string.Empty, cmd?.Parameters);
-    }
+        var sql = command.Sql;
+        var parameters = command.Parameters;
 
-    private static Exception GetDataAccessException(
-        Exception ex, 
-        string sql,
-        List<DataAccessParameter>? parameters = null)
-    {
-        ex.Data.Add("DataAccess Query", sql);
-
-        if (!(parameters?.Count > 0)) 
-            return ex;
+        DataAccessCommandException dataAccessException;
+        if (ex is SqlException sqlException)
+            dataAccessException = DataAccessCommandException.FromSqlException(sqlException, command);
+        else
+            dataAccessException = new DataAccessCommandException(ex, command);
+        
+        dataAccessException.Data.Add("DataAccess Statement", sql);
+        
+        if (!(parameters.Count > 0)) 
+            return dataAccessException;
         
         var error = new StringBuilder();
         foreach (var param in parameters)
@@ -665,11 +667,11 @@ public partial class DataAccess
             error.AppendLine("]");
         }
 
-        ex.Data.Add("DataAccess Parameters", error.ToString());
+        dataAccessException.Data.Add("DataAccess Parameters", error.ToString());
 
-        return ex;
-
+        return dataAccessException;
     }
+    
 
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
@@ -763,7 +765,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessCommandException(ex, cmd);
         }
 
         return dictionaryList;
