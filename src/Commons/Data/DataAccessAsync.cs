@@ -74,7 +74,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessCommandException(ex, cmd);
+            throw GetDataAccessException(ex, cmd);
         }
     }
     
@@ -112,7 +112,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessCommandException(ex, cmd);
+            throw GetDataAccessException(ex, cmd);
         }
 
         return scalarResult;
@@ -145,7 +145,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessCommandException(ex, cmd);
+            throw GetDataAccessException(ex, cmd);
         }
 
         return rowsAffected;
@@ -197,7 +197,7 @@ public partial class DataAccess
 #else
                 transaction.Rollback();
 #endif
-                throw GetDataAccessCommandException(ex, currentCommand);
+                throw GetDataAccessException(ex, currentCommand);
             }
         }
 
@@ -271,7 +271,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessCommandException(ex, command);
+            throw GetDataAccessException(ex, command);
         }
 
         return result;
@@ -328,7 +328,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessCommandException(ex, cmd);
+            throw GetDataAccessException(ex, cmd);
         }
 
         return dictionaryList;
@@ -450,7 +450,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessCommandException(ex, command);
+            throw GetDataAccessException(ex, command);
         }
     }
     
