@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 
@@ -183,4 +184,6 @@ public interface IEntityRepository
     bool TableExists(string tableName, Guid? connectionId = null);
 
     DataSet GetDataSet(DataAccessCommand command, Guid? connectionId = null);
+    
+    Task<DataSet> GetDataSetAsync(DataAccessCommand command, Guid? connectionId = null, CancellationToken cancellationToken = default);
 }

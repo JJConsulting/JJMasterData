@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -285,6 +286,13 @@ public class EntityRepository(
     {
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.GetDataSet(command);
+    }
+    
+        
+    public Task<DataSet> GetDataSetAsync(DataAccessCommand command, Guid? connectionId = null, CancellationToken cancellationToken = default)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+        return dataAccess.GetDataSetAsync(command, cancellationToken);
     }
     
     private DataAccess GetDataAccess(Guid? connectionId)
