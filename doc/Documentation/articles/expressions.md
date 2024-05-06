@@ -49,7 +49,8 @@ Building an expression<br>
 - {IsUpdate} = 1 | 0
 - {IsDelete} = 1 | 0
 - {IsImport} = 1 | 0
-- {ComponentName} = Name of the component that triggered the AutoPostBack event
+- {ComponentName} = Name of the component that the field resides
+- {FieldName} = Name of the field that triggered the AutoPostBack event
 - {UserId} = Identifier of the authenticated user, can be recovered from UserValues, Session or Claims
 
 Dynamic values will be recovered in the following order:
