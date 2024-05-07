@@ -85,15 +85,18 @@ public partial class DataAccess
         
             using (dbCommand.Connection)
             {
-                using (var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.KeyInfo, cancellationToken))
+                using (var reader = await dbCommand.ExecuteReaderAsync( cancellationToken))
                 {
                     var dataSet = new DataSet();
-                    
+
+                    var index = 1;
                     do
                     {
                         var dataTable = new DataTable();
+                        dataTable.TableName = $"Result {index}";
                         dataTable.Load(reader);
                         dataSet.Tables.Add(dataTable);
+                        index++;
                     } while(!reader.IsClosed);
                     
                     foreach (var parameter in command.Parameters)
