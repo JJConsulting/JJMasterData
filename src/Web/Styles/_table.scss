@@ -42,10 +42,9 @@ table.table-fixed-header {
 table.table-fixed-header th {
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
+  top: var(--md-sticky-top-height);
   z-index: 2;
-  box-shadow: 0px 4px 0px rgba(0, 0, 0, .2);
-  background: #eee;
+  background: var(--#{$prefix}body-bg);
 }
 
 table.table-fixed-header th[scope=row] {
