@@ -207,7 +207,6 @@ public class JJFormView : AsyncComponent
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
             _gridView.ShowTitle = ShowTitle;
-            _gridView.ToolbarActions.Add(new DeleteSelectedRowsAction());
 
             if (_gridView.InsertAction.InsertActionLocation is InsertActionLocation.AboveGrid)
                 _gridView.OnBeforeTableRenderAsync += RenderInsertActionAtGrid;
@@ -618,8 +617,6 @@ public class JJFormView : AsyncComponent
             result = await GetAuditLogResult();
         else if (CurrentAction is DeleteAction)
             result = await GetDeleteResult();
-        else if (CurrentAction is DeleteSelectedRowsAction)
-            result = await GetDeleteSelectedRowsResult();
         else if (CurrentAction is SaveAction)
             result = await GetSaveActionResult();
         else if (CurrentAction is BackAction)
@@ -1008,86 +1005,6 @@ public class JJFormView : AsyncComponent
         }
 
         html.Append(await GridView.GetHtmlBuilderAsync());
-        PageState = PageState.List;
-
-        return new RenderedComponentResult(html);
-    }
-
-    private async Task<ComponentResult> GetDeleteSelectedRowsResult()
-    {
-        var html = new Div();
-        var messageFactory = ComponentFactory.Html.MessageBox;
-        var errorMessage = new StringBuilder();
-        int errorCount = 0;
-        int successCount = 0;
-
-        try
-        {
-            var rows = GridView.GetSelectedGridValues();
-
-            foreach (var row in rows)
-            {
-                var errors = await DeleteFormValuesAsync(row!);
-
-                if (errors.Count > 0)
-                {
-                    foreach (var err in errors)
-                    {
-                        errorMessage.Append(" - ");
-                        errorMessage.Append(err.Value);
-                        errorMessage.Append("<br>");
-                    }
-
-                    errorCount++;
-                }
-                else
-                {
-                    successCount++;
-                }
-            }
-
-            if (rows.Count > 0)
-            {
-                var message = new StringBuilder();
-                var icon = MessageIcon.Info;
-                if (successCount > 0)
-                {
-                    message.Append("<p class=\"text-success\">");
-                    message.Append(StringLocalizer["{0} Record(s) deleted successfully", successCount]);
-                    message.Append("</p><br>");
-                }
-
-                if (errorCount > 0)
-                {
-                    message.Append("<p class=\"text-danger\">");
-                    message.Append(StringLocalizer["{0} Record(s) with error", successCount]);
-                    message.Append(StringLocalizer["Details:"]);
-                    message.Append("<br>");
-                    message.Append(errorMessage);
-                    icon = MessageIcon.Warning;
-                }
-
-                html.AppendComponent(messageFactory.Create(message.ToString(), icon));
-
-                GridView.ClearSelectedGridValues();
-            }
-        }
-        catch (Exception ex)
-        {
-            html.AppendComponent(messageFactory.Create(ex.Message, MessageIcon.Error));
-        }
-
-        var gridViewResult = await GetGridViewResult();
-
-        if (gridViewResult is RenderedComponentResult)
-        {
-            html.Append(new HtmlBuilder(gridViewResult));
-        }
-        else
-        {
-            return gridViewResult;
-        }
-
         PageState = PageState.List;
 
         return new RenderedComponentResult(html);
