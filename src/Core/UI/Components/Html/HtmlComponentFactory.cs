@@ -18,6 +18,8 @@ public class HtmlComponentFactory(
 
     public AlertFactory Alert => new();
 
+    public BreadcrumbFactory Breadcrumb => new();
+    
     public CardFactory Card => new();
     
     public CollapsePanelFactory CollapsePanel => new(currentContext.Request.Form);
