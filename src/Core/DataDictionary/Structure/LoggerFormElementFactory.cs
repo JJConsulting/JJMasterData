@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Models;
@@ -10,7 +9,10 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,IMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
+public class LoggerFormElementFactory(
+    IOptionsSnapshot<DbLoggerOptions> options,
+    IMasterDataUrlHelper urlHelper,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -24,21 +26,23 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
             SubTitle = string.Empty,
             Icon = IconType.Film
         };
-        
-        formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
-        
-        formElement.Fields["Id"].VisibleExpression = "val:0";
+
+        formElement.Fields[Options.IdColumnName].VisibleExpression = "val:0";
+
+        formElement.Fields[Options.CategoryColumnName].VisibleExpression = "val:0";
+        formElement.Fields[Options.CategoryColumnName].CssClass = "col-sm-6";
+
         formElement.Fields[Options.LevelColumnName].LineGroup = 1;
         formElement.Fields[Options.LevelColumnName].CssClass = "col-sm-6";
-        formElement.Fields[Options.CategoryColumnName].LineGroup = 1;
-        formElement.Fields[Options.CategoryColumnName].CssClass = "col-sm-6";
+
         formElement.Fields[Options.CreatedColumnName].LineGroup = 2;
 
         formElement.Fields[Options.MessageColumnName].LineGroup = 3;
         formElement.Fields[Options.MessageColumnName].CssClass = "col-sm-10";
-        var logLevel = formElement.Fields[Options.LevelColumnName];
-        logLevel.Component = FormComponent.ComboBox;
-        logLevel.DataItem = new FormElementDataItem
+
+        var levelField = formElement.Fields[Options.LevelColumnName];
+        levelField.Component = FormComponent.ComboBox;
+        levelField.DataItem = new FormElementDataItem
         {
             Items =
             [
@@ -53,7 +57,7 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
             GridBehavior = DataItemGridBehavior.Icon,
             ShowIcon = true
         };
-        
+
         var btnClearAll = new UrlRedirectAction
         {
             Name = "btnClearLog",
@@ -61,16 +65,18 @@ public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,
             Text = StringLocalizer["Clear Log"],
             ShowAsButton = true,
             ConfirmationMessage = StringLocalizer["Do you want to clear ALL logs?"],
-            UrlRedirect = UrlHelper.Action("ClearAll", "Log", new {Area="DataDictionary", isModal})
+            UrlRedirect = UrlHelper.Action("ClearAll", "Log", new { Area = "DataDictionary", isModal })
         };
-        
+
         formElement.Options.GridTableActions.Clear();
-        
+        formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         formElement.Options.GridToolbarActions.Add(btnClearAll);
         formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
         formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
+
         formElement.Options.Grid.IsCompact = true;
         formElement.Options.Grid.UseVerticalLayoutAtFilter = false;
+
         return formElement;
     }
 }

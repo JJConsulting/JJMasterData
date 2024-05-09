@@ -44,5 +44,7 @@ public enum HtmlTag
     FieldSet,
     Legend,
     U,
-    OptGroup
+    OptGroup,
+    Nav,
+    Ol
 }
