@@ -1,32 +1,16 @@
 ﻿@using JJMasterData.Commons.Configuration.Options
 @using JJMasterData.Core.UI.Components
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IComponentFactory ComponentFactory
 @inject IOptionsSnapshot<MasterDataCommonsOptions> OptionsSnapshot
+@inject JJMasterDataLogo MasterDataLogo
 @model JJMasterData.Core.DataDictionary.Models.ElementBean
 
-
 @{
-    var backUrl = @Url.Action("Index", "Element");
+    var backUrl = Url.Action("Index", "Element")!;
+    List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl),  new BreadcrumbItem(StringLocalizer["Add Element"])];
 }
 
-<div class="border-bottom mb-3">
-    <nav class="mb-2 pb-2" aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-                <a href="@backUrl">
-                    <img class="img-responsive md-logo" src="~/_content/JJMasterData.Web/images/JJMasterData.png" alt="JJMasterData">
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="@backUrl">@StringLocalizer["Data Dictionary"]</a>
-            </li>
-            <li class="breadcrumb-item active">
-                @StringLocalizer["Add Element"]
-            </li>
-        </ol>
-    </nav>
-</div>
+<breadcrumb items="breadcrumbs"/>
 
 @using (Html.BeginMasterDataForm())
 {

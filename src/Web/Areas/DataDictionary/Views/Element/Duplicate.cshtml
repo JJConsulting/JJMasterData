@@ -1,11 +1,15 @@
 ﻿@using JJMasterData.Core.UI.Components
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IComponentFactory ComponentFactory
+@inject JJMasterDataLogo MasterDataLogo
+
 @model DuplicateElementViewModel
 
 @{
-    var backUrl = @Url.Action("Index", "Element");
+    var backUrl = Url.Action("Index", "Element")!;
+    List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl),  new BreadcrumbItem(StringLocalizer["Add Element"])];
 }
+
+<breadcrumb items="breadcrumbs"/>
 
 <div class="border-bottom mb-3">
     <nav class="mb-2 pb-2" aria-label="breadcrumb">

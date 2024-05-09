@@ -9,12 +9,11 @@ public class BreadcrumbFactory : IComponentFactory<JJBreadcrumb>
         return new JJBreadcrumb();
     }
     
-    public JJBreadcrumb Create(List<BreadcrumbItem> items)
+    public JJBreadcrumb Create(IEnumerable<BreadcrumbItem> items)
     {
         var breadcrumb = new JJBreadcrumb();
-        breadcrumb.Items = items;
+        breadcrumb.Items.AddRange(items); 
         
         return breadcrumb;
     }
-    
 }

@@ -26,7 +26,7 @@ public class HtmlComponentFactory(
    
     public IconFactory Icon => new();
     
-    public ImageFactory Image =>  new(currentContext);
+    public ImageFactory Image => new();
     
     public LabelFactory Label => new(stringLocalizer);
     

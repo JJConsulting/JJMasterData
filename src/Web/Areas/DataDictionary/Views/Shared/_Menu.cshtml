@@ -2,34 +2,20 @@
 @using JJMasterData.Core.DataDictionary.Models
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject JJMasterDataLogo MasterDataLogo
 
 @model DataDictionaryViewModel;
 
 
 @{
-    var backUrl = @Url.Action("Index", "Element");
+    var backUrl = Url.Action("Index", "Element")!;
+    List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl), new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl), new BreadcrumbItem(Model.ElementName)];
 }
 
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
 
-<div class="border-bottom mb-3">
-    <nav class="mb-2 pb-2" aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-                <a href="@backUrl">
-                    <img class="img-responsive md-logo" src="~/_content/JJMasterData.Web/images/JJMasterData.png" alt="JJMasterData">
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="@backUrl">@StringLocalizer["Data Dictionary"]</a>
-            </li>
-            <li class="breadcrumb-item active">
-                @Model.ElementName
-            </li>
-        </ol>
-    </nav>
-</div>
+<breadcrumb items="breadcrumbs"/>
 
 <ul class="nav nav-tabs mb-3">
     @{

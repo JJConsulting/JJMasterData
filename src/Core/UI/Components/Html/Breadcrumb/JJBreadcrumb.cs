@@ -5,17 +5,17 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJBreadcrumb : HtmlComponent
 {
-    public List<BreadcrumbItem> Items { get; set; }
+    public List<BreadcrumbItem> Items { get; } = [];
 
     public JJBreadcrumb()
     {
-        Items = new List<BreadcrumbItem>();
+        Items = [];
         CssClass = "border-bottom mb-3";
     }
 
     internal override HtmlBuilder BuildHtml()
     {
-        var html = new HtmlBuilder(HtmlTag.Div)
+        var html = new Div()
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
@@ -31,21 +31,21 @@ public class JJBreadcrumb : HtmlComponent
 
     private HtmlBuilder GetHtmlOlItems()
     {
-        var ol = new HtmlBuilder(HtmlTag.Ol);
+        var ol = new Ol();
         ol.WithCssClass("breadcrumb mb-0");
 
-        int totItems = Items.Count;
-        for (var index = 0; index < totItems; index++)
+        var totalItems = Items.Count;
+        for (var index = 0; index < totalItems; index++)
         {
             var item = Items[index];
-            var isLast = index == totItems - 1;
+            var isLast = index == totalItems - 1;
             ol.Append(GetHtmlItem(item, isLast));
         }
 
         return ol;
     }
 
-    private HtmlBuilder GetHtmlItem(BreadcrumbItem item, bool isLast)
+    private static HtmlBuilder GetHtmlItem(BreadcrumbItem item, bool isLast)
     {
         var li = new Li();
         li.WithCssClass("breadcrumb-item");

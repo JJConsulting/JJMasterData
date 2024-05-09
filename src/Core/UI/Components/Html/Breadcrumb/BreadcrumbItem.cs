@@ -8,13 +8,12 @@ public class BreadcrumbItem
 {
     public string? Url { get; set; }
     
-    public HtmlBuilder HtmlContent { get; set; }
-    
-    public BreadcrumbItem()
+    public HtmlBuilder HtmlContent { get; }
+
+    private BreadcrumbItem() : this(new HtmlBuilder())
     {
-        HtmlContent = new HtmlBuilder();
     }
-    
+
     public BreadcrumbItem(string text) : this()
     {
         HtmlContent.AppendText(text);
@@ -24,5 +23,15 @@ public class BreadcrumbItem
     {
         Url = url;
     }
+
+    public BreadcrumbItem(HtmlBuilder htmlContent)
+    {
+        HtmlContent = htmlContent;
+    }
     
+    public BreadcrumbItem(HtmlBuilder htmlContent, string url)
+    {
+        HtmlContent = htmlContent;
+        Url = url;
+    }
 }
