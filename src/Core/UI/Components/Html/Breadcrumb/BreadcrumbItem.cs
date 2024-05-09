@@ -10,7 +10,12 @@ public class BreadcrumbItem
     
     public HtmlBuilder HtmlContent { get; }
 
-    private BreadcrumbItem() : this(new HtmlBuilder())
+    public string Content
+    {
+        init => HtmlContent.AppendText(value);
+    }
+
+    public BreadcrumbItem() : this(new HtmlBuilder())
     {
     }
 
