@@ -19,20 +19,24 @@
         </div>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divReplaceTextOnGrid">
-        <div class="form-floating">
-            <select asp-for="DataItem!.GridBehavior" class="form-control form-select" data-bs-toggle="tooltip" title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]">
-                <option value="0">@StringLocalizer["Id"]</option>
-                <option value="1">@StringLocalizer["Description"]</option>
-                @if (Model.DataItem!.ShowIcon)
-                {
-                <option value="2">@StringLocalizer["Icon"]</option>
-                <option value="3">@StringLocalizer["Icon with Description"]</option>
-                }
-            </select>
-            <label asp-for="DataItem!.GridBehavior"></label>
+    @if (ViewBag.IsForm)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divReplaceTextOnGrid">
+            <div class="form-floating">
+                <select asp-for="DataItem!.GridBehavior" class="form-control form-select" data-bs-toggle="tooltip" title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]">
+                    <option value="0">@StringLocalizer["Id"]</option>
+                    <option value="1">@StringLocalizer["Description"]</option>
+                    @if (Model.DataItem!.ShowIcon)
+                    {
+                        <option value="2">@StringLocalizer["Icon"]</option>
+                        <option value="3">@StringLocalizer["Icon with Description"]</option>
+                    }
+                </select>
+                <label asp-for="DataItem!.GridBehavior"></label>
+            </div>
         </div>
-    </div>
+
+    }
 
     @if (Model.Component is FormComponent.ComboBox)
     {
@@ -54,7 +58,7 @@
         </div>
     }
     
-    @if (Model.Component is FormComponent.ComboBox)
+    @if (Model.Component is FormComponent.ComboBox && ViewBag.IsForm)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
             <checkbox tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]" for="DataItem!.EnableMultiSelect" switch="true"/>

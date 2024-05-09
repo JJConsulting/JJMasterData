@@ -34,6 +34,9 @@ public class FormElement : Element
     
     [JsonProperty("icon")]
     public IconType? Icon { get; set; }
+
+    [JsonProperty("typeIdentifier")]
+    public char TypeIdentifier { get; init; } = 'F';
     
     [Required]
     [JsonProperty("fields")]

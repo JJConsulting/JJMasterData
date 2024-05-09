@@ -3,9 +3,27 @@
 @inject IComponentFactory ComponentFactory
 @model DuplicateElementViewModel
 
-<jj-title 
-    title="@ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml()" 
-    subtitle="@StringLocalizer["Duplicate Element"]"/>
+@{
+    var backUrl = @Url.Action("Index", "Element");
+}
+
+<div class="border-bottom mb-3">
+    <nav class="mb-2 pb-2" aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="@backUrl">
+                    <img class="img-responsive md-logo" src="~/_content/JJMasterData.Web/images/JJMasterData.png" alt="JJMasterData">
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="@backUrl">@StringLocalizer["Data Dictionary"]</a>
+            </li>
+            <li class="breadcrumb-item active">
+                @StringLocalizer["Duplicate Element"]"
+            </li>
+        </ol>
+    </nav>
+</div>
 
 @using (Html.BeginMasterDataForm())
 {
@@ -42,7 +60,7 @@
 
     <div class="row">
         <div class="col-sm-6">
-            <link-button icon="Times" text="Cancel" type="@LinkButtonType.Button" on-client-click="location.href='@(Url.Action("Index")!)'"/>
+            <link-button icon="Times" text="Cancel" type="@LinkButtonType.Button" on-client-click="location.href='@backUrl'"/>
             <link-button icon="Clone" text="Duplicate" type="LinkButtonType.Submit" color="Primary"/>
         </div>
     </div>

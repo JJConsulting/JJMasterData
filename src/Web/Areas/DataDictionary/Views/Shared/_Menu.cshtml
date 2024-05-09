@@ -2,24 +2,37 @@
 @using JJMasterData.Core.DataDictionary.Models
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IComponentFactory ComponentFactory
 
 @model DataDictionaryViewModel;
+
+
+@{
+    var backUrl = @Url.Action("Index", "Element");
+}
 
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
 
-<div class="@BootstrapHelper.PageHeader">
-    <h1>
-        @Html.Raw(ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml())
-        <small class="sub-title">@Model.ElementName</small>
-    </h1>
+<div class="border-bottom mb-3">
+    <nav class="mb-2 pb-2" aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="@backUrl">
+                    <img class="img-responsive md-logo" src="~/_content/JJMasterData.Web/images/JJMasterData.png" alt="JJMasterData">
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="@backUrl">@StringLocalizer["Data Dictionary"]</a>
+            </li>
+            <li class="breadcrumb-item active">
+                @Model.ElementName
+            </li>
+        </ol>
+    </nav>
 </div>
 
 <ul class="nav nav-tabs mb-3">
     @{
-
-        NavItem("Back", IconType.Backward.GetCssClass(), Url.Action("Index", "Element", new { elementName = Model.ElementName }));
         NavItem("Entity", IconType.Database.GetCssClass(), Url.Action("Index", "Entity", new { elementName = Model.ElementName }));
         NavItem("Fields", IconType.RegularRectangleList.GetCssClass(), Url.Action("Index", "Field", new { elementName = Model.ElementName }));
         NavItem("Panels", "fa-solid fa-layer-group", Url.Action("Index", "Panel", new { elementName = Model.ElementName }));
@@ -28,7 +41,6 @@
         NavItem("Options", IconType.Gears.GetCssClass(), Url.Action("Index", "UIOptions", new { elementName = Model.ElementName }));
         NavItem("Actions", "fa-solid fa-bolt", Url.Action("Index", "Actions", new { elementName = Model.ElementName }));
         NavItem("WebApi", "fa-solid fa-globe", Url.Action("Index", "Api", new { elementName = Model.ElementName }));
-            
     }
     <li class="nav-item dropdown ms-auto">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

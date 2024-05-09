@@ -168,7 +168,7 @@ public class SqlDataDictionaryRepository(
             { DataDictionaryStructure.Name, name },
             { DataDictionaryStructure.TableName, formElement.TableName },
             { DataDictionaryStructure.Info, formElement.Info },
-            { DataDictionaryStructure.Type, "F" },
+            { DataDictionaryStructure.Type, formElement.TypeIdentifier },
             { DataDictionaryStructure.Owner, null },
             { DataDictionaryStructure.Json, jsonForm },
             { DataDictionaryStructure.EnableSynchronism, formElement.EnableSynchronism },

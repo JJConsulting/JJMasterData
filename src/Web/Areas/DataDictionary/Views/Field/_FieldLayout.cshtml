@@ -29,14 +29,16 @@
         </div>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <div class="form-floating">
-            <select asp-for="GridAlignment" class="form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
-            <label asp-for="GridAlignment"></label>
+    @if (ViewBag.IsForm)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <div class="form-floating">
+                <select asp-for="GridAlignment" class="form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
+                <label asp-for="GridAlignment"></label>
+            </div>
         </div>
-      
-    </div>
-                
+    }
+
     @if (Model.SupportsFloatingLabel())
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">

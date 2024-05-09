@@ -29,20 +29,23 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <div class="form-floating">
-            <select asp-for="Filter.Type" class="form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
-            <label asp-for="Filter.Type"></label>
+@if (ViewBag.IsForm)
+{
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+            <div class="form-floating">
+                <select asp-for="Filter.Type" class="form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
+                <label asp-for="Filter.Type"></label>
+            </div>
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+            <div class="form-floating">
+                <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()" data-bs-html="true" data-bs-toggle="tooltip" title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"></select>
+                <label asp-for="DataBehavior"></label>
+            </div>
         </div>
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <div class="form-floating">
-            <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()" data-bs-html="true" data-bs-toggle="tooltip" title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"></select>
-            <label asp-for="DataBehavior"></label>
-        </div>
-    </div>
-</div>
+}
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
@@ -69,18 +72,20 @@
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
         <checkbox for="IsRequired" switch="true"/>
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <checkbox for="IsPk" switch="true"/>
-    </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <checkbox for="AutoNum" switch="true"/>
-    </div>
-</div>
-
-<div class="row">
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <checkbox for="Export" switch="true"/>
-    </div>
+    
+    @if (ViewBag.IsForm)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <checkbox for="IsPk" switch="true"/>
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <checkbox for="AutoNum" switch="true"/>
+        </div>
+    
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <checkbox for="Export" switch="true"/>
+        </div>
+    }
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
         <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
     </div>

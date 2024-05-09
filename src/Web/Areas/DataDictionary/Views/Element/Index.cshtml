@@ -5,7 +5,20 @@
     ViewData["Title"] = StringLocalizer["Data Dictionary"];
 }
 
+<div class="border-bottom mb-3">
+    <nav class="mb-2 pb-2" aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <img class="img-responsive md-logo" src="~/_content/JJMasterData.Web/images/JJMasterData.png" alt="JJMasterData">
+            </li>
+            <li class="breadcrumb-item active">
+                @StringLocalizer["Data Dictionary"]
+            </li>
+        </ol>
+    </nav>
+</div>
+
+
 <master-data-form asp-action="Index" asp-controller="Element" asp-area="DataDictionary">
     @Html.Raw(ViewBag.FormViewHtml)
 </master-data-form>
-

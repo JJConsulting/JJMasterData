@@ -15,11 +15,9 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 public class DataDictionaryFormElementFactory(
     IOptionsSnapshot<MasterDataCoreOptions> options,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IHttpContext httpContext,
     IMasterDataUrlHelper urlHelper)
 {
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IHttpContext HttpContext { get; } = httpContext;
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private readonly MasterDataCoreOptions _options = options.Value;
 
@@ -41,10 +39,7 @@ public class DataDictionaryFormElementFactory(
 
     private FormElement GetFormElement(Element element)
     {
-        var formElement = new FormElement(element)
-        {
-            Title = $"val:{new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml()}",
-        };
+        var formElement = new FormElement(element);
 
         formElement.SubTitle = $"val:{StringLocalizer[formElement.SubTitle!]}";
 

@@ -142,7 +142,9 @@ public class ElementService(
         {
             formView.GridView.CurrentOrder.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
         }
-        
+
+        formView.ShowTitle = false;
+        formView.GridView.ShowTitle = false;
         formView.GridView.EnableMultiSelect = true;
         formView.GridView.FilterAction.ExpandedByDefault = true;
         
