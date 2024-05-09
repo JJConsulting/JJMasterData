@@ -82,7 +82,7 @@ public class SqlDataDictionaryRepository(
         if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement formElement))
             return formElement.DeepCopy();
         
-        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         var values =  entityRepository.GetFields(_masterDataElement, filter);
 
@@ -106,7 +106,7 @@ public class SqlDataDictionaryRepository(
         if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement formElement))
             return formElement.DeepCopy();
         
-        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         var values = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
 

@@ -6,12 +6,13 @@
 
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
-
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @{
     ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Fields"]}";
+    Layout = !ViewBag.IsForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
 @{
