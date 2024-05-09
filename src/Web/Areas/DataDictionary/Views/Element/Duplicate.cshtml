@@ -6,28 +6,14 @@
 
 @{
     var backUrl = Url.Action("Index", "Element")!;
-    List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl),  new BreadcrumbItem(StringLocalizer["Add Element"])];
+    List<BreadcrumbItem> breadcrumbs = [
+        new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),
+        new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl), 
+        new BreadcrumbItem(StringLocalizer["Duplicate Element"])
+    ];
 }
 
 <breadcrumb items="breadcrumbs"/>
-
-<div class="border-bottom mb-3">
-    <nav class="mb-2 pb-2" aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-                <a href="@backUrl">
-                    <img class="img-responsive md-logo" src="~/_content/JJMasterData.Web/images/JJMasterData.png" alt="JJMasterData">
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="@backUrl">@StringLocalizer["Data Dictionary"]</a>
-            </li>
-            <li class="breadcrumb-item active">
-                @StringLocalizer["Duplicate Element"]"
-            </li>
-        </ol>
-    </nav>
-</div>
 
 @using (Html.BeginMasterDataForm())
 {

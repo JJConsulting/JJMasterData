@@ -9,7 +9,7 @@ public class JJImage : HtmlComponent
     public string Src { get; set; }
     public string? Title { get; set; }
     
-    internal JJImage(string src)
+    public JJImage(string src)
     {
         Src = src;
     }

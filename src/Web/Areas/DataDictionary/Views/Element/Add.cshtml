@@ -7,7 +7,11 @@
 
 @{
     var backUrl = Url.Action("Index", "Element")!;
-    List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl),  new BreadcrumbItem(StringLocalizer["Add Element"])];
+    List<BreadcrumbItem> breadcrumbs = [
+        new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),
+        new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl),  
+        new BreadcrumbItem(StringLocalizer["Add Element"])
+    ];
 }
 
 <breadcrumb items="breadcrumbs"/>
