@@ -361,7 +361,7 @@ internal class DataPanelControl
         if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
             control.CssClass = "is-invalid";
 
-        if (field.AutoPostBack && PageState is PageState.Insert or PageState.Update)
+        if (field.AutoPostBack && PageState is PageState.Insert or PageState.Update or PageState.Filter)
             control.SetAttr("onchange", GetScriptReload(field));
 
         if(control is JJTextGroup textGroup && PageState is PageState.View)

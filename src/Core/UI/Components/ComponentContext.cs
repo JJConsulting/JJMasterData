@@ -15,10 +15,6 @@ public enum ComponentContext
 
     GridViewFilterReload,
     
-    /// <summary>
-    /// The component is requesting a JJSearchBox result from a GridView filter
-    /// </summary>
-    GridViewFilterSearchBox,
     
     /// <summary>
     /// Reloads the current JJDataPanel
@@ -42,6 +38,12 @@ public enum ComponentContext
     /// The component is requesting a JJSearchBox result
     /// </summary>
     SearchBox,
+    
+    /// <summary>
+    /// The component is requesting a JJSearchBox result from a PageState.Filter
+    /// </summary>
+    SearchBoxFilter,
+    
     DownloadFile,
     
     AuditLogView,

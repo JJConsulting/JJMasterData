@@ -208,6 +208,7 @@ public class JJDataPanel : AsyncComponent
             case ComponentContext.TextFileFileUpload:
                 return await GetFieldResultAsync<JJTextFile>();
             case ComponentContext.SearchBox:
+            case ComponentContext.SearchBoxFilter:
                 return await GetFieldResultAsync<JJSearchBox>();
             case ComponentContext.LookupDescription:
                 return await GetFieldResultAsync<JJLookup>();

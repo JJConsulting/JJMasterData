@@ -448,7 +448,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.DataExportation:
             case ComponentContext.GridViewReload:
             case ComponentContext.GridViewFilterReload:
-            case ComponentContext.GridViewFilterSearchBox:
+            case ComponentContext.SearchBoxFilter:
                 return await GridView.GetResultAsync();
             case ComponentContext.DownloadFile:
                 return ComponentFactory.Downloader.Create().GetDownloadResult();
