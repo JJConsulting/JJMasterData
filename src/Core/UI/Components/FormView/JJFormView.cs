@@ -675,7 +675,7 @@ public class JJFormView : AsyncComponent
 
         var formStateData = await GetFormStateDataAsync();
         var parsedValues = ExpressionsService.ParseExpression(sqlAction.SqlCommand, formStateData);
-        var sqlCommand = SqlExpressionProvider.GetParsedDataAccessCommand(sqlAction.SqlCommand, parsedValues);
+        var sqlCommand = ExpressionDataAccessCommandFactory.Create(sqlAction.SqlCommand, parsedValues);
 
         try
         {

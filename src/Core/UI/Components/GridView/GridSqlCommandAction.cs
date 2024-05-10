@@ -6,6 +6,7 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Logging;
@@ -61,7 +62,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
             var formData = new FormStateData(row, gridView.UserValues, PageState.List);
             var sql = sqlCommandAction.SqlCommand;
             var parsedValues = gridView.ExpressionsService.ParseExpression(sql, formData);
-            var command = SqlExpressionProvider.GetParsedDataAccessCommand(sql, parsedValues);
+            var command = ExpressionDataAccessCommandFactory.Create(sql, parsedValues);
             commandList.Add(command);
         }
 
@@ -84,7 +85,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
         var formStateData = new FormStateData(formValues, gridView.UserValues, PageState.List);
         var sql = sqlCommandAction.SqlCommand;
         var parsedValues = gridView.ExpressionsService.ParseExpression(sql, formStateData);
-        var sqlCommand = SqlExpressionProvider.GetParsedDataAccessCommand(sql, parsedValues);
+        var sqlCommand = ExpressionDataAccessCommandFactory.Create(sql, parsedValues);
         
         await gridView.EntityRepository.SetCommandAsync(sqlCommand, gridView.FormElement.ConnectionId);
     }

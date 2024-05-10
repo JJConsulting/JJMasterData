@@ -206,6 +206,6 @@ public class DataItemService(
 
         var parsedValues = ExpressionParser.ParseExpression(sql, formStateData);
 
-        return SqlExpressionProvider.GetParsedDataAccessCommand(sql, parsedValues);
+        return ExpressionDataAccessCommandFactory.Create(sql, parsedValues);
     }
 }
