@@ -207,19 +207,10 @@ internal class DataPanelControl
         var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var field in fields)
         {
-            var fieldClass = GetHorizontalFieldClass(colCount);
-            var labelClass = GetHorizontalLabelClass(colCount);
-            
+            var labelClass = "col-sm-2";
+            var fieldClass = GetHorizontalFieldClass(cols);
             var hasCssClass = !string.IsNullOrEmpty(field.CssClass);
-            if (hasCssClass)
-                fieldClass = field.CssClass;
-
-            if (BootstrapHelper.Version > 3)
-            {
-                labelClass += " d-flex justify-content-end align-items-center";
-                fieldClass += " d-flex justify-content-start align-items-center";
-            }
-
+            
             //Visible expression
             bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
@@ -229,11 +220,11 @@ internal class DataPanelControl
             object? value = null;
             if (Values != null && Values.TryGetValue(field.Name, out var nonFormattedValue))
                 value = FieldsService.FormatValue(field, nonFormattedValue);
-            
-            var label = CreateLabel(field, IsRange(field, PageState));
-            label.CssClass = labelClass;
-            
+
+            var isRange = IsRange(field, PageState);
+            var label = CreateLabel(field, isRange);
             var cssClass = string.Empty;
+            
             if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(field.Name))
                 cssClass += " has-error";
 
@@ -246,12 +237,22 @@ internal class DataPanelControl
 
                 html.Append(row);
             }
-
-            string? colClass = fieldClass;
+            
+            if (isRange)
+            {
+                if (field.Component is FormComponent.Date)
+                    fieldClass = "col-sm-6";
+                else
+                    fieldClass = "col-sm-10";
+            }
+            
+            if (hasCssClass)
+                fieldClass = field.CssClass;
+            
             if (field.Component is FormComponent.TextArea)
             {
                 colCount = 1;
-                colClass = GetHorizontalTextAreaClass(cols);
+                fieldClass = GetHorizontalTextAreaClass(cols);
             }
             else if (field.Component is FormComponent.CheckBox)
             {
@@ -263,14 +264,21 @@ internal class DataPanelControl
             {
                 colCount++;
             }
-
+            
+            if (BootstrapHelper.Version > 3)
+            {
+                labelClass += " d-flex justify-content-end align-items-center";
+                fieldClass += " d-flex justify-content-start align-items-center";
+            }
+            
+            label.CssClass = labelClass;
+            
             row?.WithCssClass(cssClass)
              .AppendComponent(label);
-
-   
+            
             await row?.AppendAsync(HtmlTag.Div, async col =>
             {
-                col.WithCssClass(colClass);
+                col.WithCssClass(fieldClass);
                 col.Append(IsViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value));
             })!;
             
@@ -278,16 +286,7 @@ internal class DataPanelControl
 
         return html;
     }
-    
-    private static string GetHorizontalLabelClass(int cols) => cols switch
-    {
-        1 => "col-sm-2",
-        2 => "col-sm-2",
-        3 => "col-sm-2",
-        4 => "col-sm-1",
-        _ => throw new ArgumentException("Invalid number of columns", nameof(cols))
-    };
-
+   
     private static string GetHorizontalFieldClass(int cols) => cols switch
     {
         //With spaces of 12 subtracting from the label, we consider:
