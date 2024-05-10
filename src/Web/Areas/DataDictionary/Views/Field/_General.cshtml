@@ -89,9 +89,14 @@
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
         <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <checkbox tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]" for="EncodeHtml" switch="true"/>
-    </div>
+    
+    @if (ViewBag.IsForm)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <checkbox tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]" for="EncodeHtml" switch="true"/>
+        </div>
+    }
+    
     @if (Options.Value.SupportNetFramework)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
