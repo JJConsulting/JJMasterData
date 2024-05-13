@@ -179,10 +179,6 @@ public class FormElementField : ElementField
     [Display(Name = "Encode HTML")]
     public bool EncodeHtml { get; set; } = true;
 
-    [JsonProperty("floatingLabel")]
-    [Display(Name = "Floating Label")]
-    public bool FloatingLabel { get; set; }
-
     /// <summary>
     /// The field will be disabled but the value send to the server
     /// </summary>

@@ -26,6 +26,10 @@ public class FormElementOptions
     [JsonProperty("enableAuditLog")]
     [Display(Name = "Enable Audit Log")]
     public bool EnableAuditLog { get; set; }
+    
+    [JsonProperty("useFloatingLabels")]
+    [Display(Name = "Use Floating Labels")]
+    public bool UseFloatingLabels { get; set; }
 
     public FormElementOptions()
     {
@@ -57,10 +61,11 @@ public class FormElementOptions
         {
             Grid = Grid.DeepCopy(),
             Form = Form.DeepCopy(),
-            EnableAuditLog = EnableAuditLog,
             FormToolbarActions = FormToolbarActions.DeepCopy(),
             GridTableActions = GridTableActions.DeepCopy(),
-            GridToolbarActions = GridToolbarActions.DeepCopy()
+            GridToolbarActions = GridToolbarActions.DeepCopy(),
+            UseFloatingLabels = UseFloatingLabels,
+            EnableAuditLog = EnableAuditLog
         };
     }
 }

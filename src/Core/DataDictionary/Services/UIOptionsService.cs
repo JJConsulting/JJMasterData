@@ -46,6 +46,7 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
                 formElement.Options.Form = options.Form;
                 formElement.Options.Grid = options.Grid;
                 formElement.Options.EnableAuditLog = options.EnableAuditLog;
+                formElement.Options.UseFloatingLabels = options.UseFloatingLabels;
                 
                 await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
             }

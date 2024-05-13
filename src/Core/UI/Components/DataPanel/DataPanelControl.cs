@@ -112,11 +112,14 @@ internal class DataPanelControl
         int lineGroup = int.MinValue;
         HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
+        
         foreach (var field in fields)
         {
             bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
+
+            var useFloatingLabel = FormElement.Options.UseFloatingLabels && field.SupportsFloatingLabel();
 
             object? value = null;
             if (Values != null && Values.ContainsKey(field.Name))
@@ -155,18 +158,18 @@ internal class DataPanelControl
             if (PageState == PageState.View && FormUI.ShowViewModeAsStatic)
                 htmlField.WithCssClass("jjborder-static");
 
-            if (field.Component is not FormComponent.CheckBox && !field.FloatingLabel)
+            if (field.Component is not FormComponent.CheckBox && !useFloatingLabel)
             {
                 var label = CreateLabel(field, IsRange(field, PageState));
                 htmlField.AppendComponent(label);
             }
             
-            if(field.FloatingLabel)
+            if(useFloatingLabel)
                 field.SetAttr("placeholder",field.LabelOrName);
 
             HtmlBuilder parentDiv;
 
-            if (field.FloatingLabel)
+            if (useFloatingLabel)
             {
                 var formFloating = new Div().WithCssClass("form-floating");
                 htmlField.Append(formFloating);
@@ -180,12 +183,12 @@ internal class DataPanelControl
             else
             {
                 var controlHtml = await GetControlFieldHtml(field, value);
-                if(field.FloatingLabel && !string.IsNullOrEmpty(field.HelpDescription))
+                if(useFloatingLabel && !string.IsNullOrEmpty(field.HelpDescription))
                     controlHtml.WithToolTip(StringLocalizer[field.HelpDescription!]);
                 parentDiv.Append(controlHtml);
             }
             
-            if (field.FloatingLabel)
+            if (useFloatingLabel)
                 parentDiv.Append(CreateFloatingLabel(field, IsRange(field,PageState)));
            
         }

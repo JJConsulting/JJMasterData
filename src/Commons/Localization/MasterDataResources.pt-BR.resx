@@ -4055,8 +4055,8 @@
   <data name="Enable Data Dictionary Caching" xml:space="preserve">
     <value>Habilitar Cache do Dicionário de Dados</value>
   </data>
-  <data name="Floating Label" xml:space="preserve">
-    <value>Label Flutuante</value>
+  <data name="Use Floating Labels" xml:space="preserve">
+    <value>Usar Labels Flutuantes</value>
   </data>
   <data name="Additional Info" xml:space="preserve">
     <value>Informações Adicionais</value>
@@ -4088,5 +4088,7 @@
   <data name="Operation Performed" xml:space="preserve">
     <value>Operação Realizada!</value>
   </data>
-  
+  <data name="Show a label floating within the field. Not all fields support this option.">
+    <value>Show a label floating within the field. Not all fields support this option.</value>
+  </data>
 </root>
