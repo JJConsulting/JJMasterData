@@ -202,7 +202,7 @@ public class PdfWriter(
             else
             {
                 var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
-                value = await FieldFormattingService.FormatGridValueAsync(fieldSelector, row,null);
+                value = await FieldFormattingService.FormatGridValueAsync(fieldSelector, new FormStateData(row,PageState.List));
             }
         }
 
