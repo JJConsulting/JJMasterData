@@ -4028,10 +4028,10 @@
   <data name="File successfully deleted." xml:space="preserve">
     <value>Arquivo deletado com sucesso.</value>
   </data>
-  <data name="This field support runtime values between {}." xml:space="preserve">
-    <value>Este campo suporta valores do runtime entre {}.</value>
+  <data name="This field support runtime values between curly bracets." xml:space="preserve">
+    <value>Este campo suporta valores do runtime entre chaves.</value>
   </data>
-  <data name="Table Or View Name" xml:space="preserve">
+  <data name="Table or View Name" xml:space="preserve">
     <value>Nome da Tabela ou View</value>
   </data>
   <data name="Add Element" xml:space="preserve">
@@ -4095,6 +4095,6 @@
     <value>Template de Renderização</value>
   </data>
   <data name="HTML template to render the field in the grid. Runtime values supported between curly bracets.">
-    <value>Template HTML para renderizar o campo na grid. Valores do runtime suportados entre chaves.</value>
+    <value>Template HTML para renderizar o campo na grid. Valores do runtime são suportados entre chaves.</value>
   </data>
 </root>

@@ -181,6 +181,7 @@ public class FormElementField : ElementField
     /// Template used to render the field at the Grid.
     /// </summary>
     [LanguageInjection("html")]
+    [JsonProperty("gridRenderingTemplate")]
     [Display(Name = "Rendering Template")]
     public string? GridRenderingTemplate { get; set; }
     
