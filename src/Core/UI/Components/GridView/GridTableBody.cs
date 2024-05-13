@@ -10,6 +10,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
@@ -185,9 +186,8 @@ internal class GridTableBody(JJGridView gridView)
         }
         else if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
-            var expressionService = GridView.ExpressionsService;
-            var replacedTemplate = expressionService.ReplaceExpressionWithParsedValues(field.GridRenderingTemplate, formStateData);
-            cell = new HtmlBuilder(replacedTemplate ?? string.Empty);
+            var replacedTemplate = ExpressionHelper.ReplaceExpression(field.GridRenderingTemplate!, formStateData.Values);
+            cell = new HtmlBuilder(replacedTemplate);
         }
         else
         {
