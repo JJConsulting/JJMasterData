@@ -38,8 +38,7 @@ internal class DbLogger(string categoryName, LoggerBuffer loggerBuffer) : ILogge
         var message = new StringBuilder();
         if (eventId.Name != null)
         {
-            message.Append($"Event - {eventId}");
-            message.AppendLine(eventId.Name);
+            message.AppendLine($"Event - {eventId}");
         }
 
         message.AppendLine(formatterMessage);
