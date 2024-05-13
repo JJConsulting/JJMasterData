@@ -50,12 +50,12 @@
     <div class="col-sm-12">
         @if (Model.Relationships.Any())
         {
-            <ul class="list-group jjsortable" id="sortable">
+            <div class="list-group jjsortable" id="sortable">
                 @foreach (var relationship in Model.Relationships)
                 {
                     var id = relationship.ElementRelationship?.ChildElement ?? "parent";
                     var title = relationship.ElementRelationship?.ChildElement ?? Model.ElementName;
-                    <li class="list-group-item" id="@id">
+                    <div class="list-group-item" id="@id">
                         <div style="height: 33px;">
                             <div style="float: left; margin-top: 10px;">
                                 <span class="fa-solid @GetRelationshipIconCssClass(relationship)"></span>&nbsp;
@@ -67,9 +67,9 @@
                                 </button>
                             </div>
                         </div>
-                    </li>
+                    </div>
                 }
-            </ul>
+            </div>
         }
         else
         {
