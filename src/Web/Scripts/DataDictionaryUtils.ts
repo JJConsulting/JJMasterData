@@ -82,4 +82,8 @@
             SpinnerOverlay.hide()
         });
     }
+    
+    static async showAbout(url) {
+        await OffcanvasHelper.populateOffcanvas("about-offcanvas",url);
+    }
 }
