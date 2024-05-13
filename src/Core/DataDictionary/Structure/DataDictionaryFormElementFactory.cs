@@ -139,18 +139,14 @@ public class DataDictionaryFormElementFactory(
                 FormAction = UrlHelper.Action("Delete", "Element", new {Area="DataDictionary"}),
             },
 
-            new UrlRedirectAction
+            new ScriptAction()
             {
                 Name = "btnAbout",
                 Text = StringLocalizer["About"],
                 Icon = IconType.InfoCircle,
                 ShowAsButton = false,
-                IsModal = true,
-                IsIframe = false,
                 IsGroup = true,
-                ModalTitle = StringLocalizer["About"],
-                ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.Action("Index", "About", new {Area="DataDictionary"}),
+                OnClientClick = $"DataDictionaryUtils.showAbout('{UrlHelper.Action("Index", "About", new {Area="DataDictionary"})}')",
                 Order = 14,
                 CssClass = BootstrapHelper.PullRight
             },

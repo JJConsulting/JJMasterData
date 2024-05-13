@@ -495,6 +495,11 @@ class DataDictionaryUtils {
             SpinnerOverlay.hide();
         }));
     }
+    static showAbout(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield OffcanvasHelper.populateOffcanvas("about-offcanvas", url);
+        });
+    }
 }
 class DataExportationHelper {
     static startProgressVerification(componentName, routeContext) {
@@ -2118,6 +2123,24 @@ class popup {
     }
     static hide() {
         defaultModal.hide();
+    }
+}
+class OffcanvasHelper {
+    static showOffcanvas(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
+            offcanvasElement.show();
+        });
+    }
+    static populateOffcanvas(id, url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
+            const response = yield fetch(url);
+            const data = yield response.text();
+            const offcanvasBody = document.getElementById(`${id}-body`);
+            offcanvasBody.innerHTML = data;
+            offcanvasElement.show();
+        });
     }
 }
 var PageState;

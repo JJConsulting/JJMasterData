@@ -36,6 +36,8 @@ public class HtmlComponentFactory(
     
     public MessageToastFactory MessageToast =>  new(stringLocalizer);
     
+    public OffcanvasFactory Offcanvas => new();
+    
     public ModalDialogFactory ModalDialog => new();
     
     public SpinnerFactory Spinner => new();

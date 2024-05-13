@@ -48,7 +48,8 @@ public static class FactoriesServiceExtensions
         services.AddScoped<IComponentFactory<JJCard>, CardFactory>();
         services.AddScoped<IComponentFactory<JJBreadcrumb>, BreadcrumbFactory>();
         services.AddScoped<IComponentFactory<JJImage>, ImageFactory>();
-
+        services.AddScoped<IComponentFactory<JJOffcanvas>, OffcanvasFactory>();
+        
         services.AddScoped<JJMasterDataLogo>();
         
         services.AddScoped<RouteContextFactory>();
