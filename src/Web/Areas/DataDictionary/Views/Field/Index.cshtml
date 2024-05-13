@@ -296,7 +296,7 @@
         }
     
         function loadFieldDetails(url, fieldName) {
-            document.querySelector("#sortable-grid .active").classList.remove("active");
+            document.querySelector("#sortable-grid .active")?.classList?.remove("active");
     
             if (fieldName !== "")
                 document.querySelector("#" + fieldName).classList.add("active");
