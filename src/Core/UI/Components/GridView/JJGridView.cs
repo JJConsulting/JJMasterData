@@ -655,7 +655,7 @@ public class JJGridView : AsyncComponent
             return new ContentComponentResult(html);
         }
         
-        if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
+        if (ComponentContext is ComponentContext.SearchBoxFilter)
         {
             var fieldName = CurrentContext.Request.QueryString["fieldName"];
             var field = FormElement.Fields[fieldName];

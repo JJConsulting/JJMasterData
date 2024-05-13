@@ -241,7 +241,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     {
         var fieldName = Request.QueryString["fieldName"];
         
-        if (ComponentContext is ComponentContext.SearchBox && FieldName == fieldName)
+        if (ComponentContext is ComponentContext.SearchBox or ComponentContext.SearchBoxFilter && FieldName == fieldName)
         {
             return GetItemsResult();
         }
@@ -314,7 +314,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         var url = new StringBuilder();
 
         var componentContext = FormStateData.PageState is PageState.Filter
-            ? ComponentContext.GridViewFilterSearchBox
+            ? ComponentContext.SearchBoxFilter
             : ComponentContext.SearchBox;
         
         var context = new RouteContext(ElementName, ParentElementName, componentContext);
