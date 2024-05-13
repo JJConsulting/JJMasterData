@@ -1,4 +1,10 @@
 ﻿class OffcanvasHelper{
+    
+    static async showOffcanvas(id){
+        const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
+        offcanvasElement.show();
+    }
+    
     static async populateOffcanvas(id, url) {
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
         const response = await fetch(url);
