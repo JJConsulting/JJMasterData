@@ -818,8 +818,8 @@ public class JJGridView : AsyncComponent
         var row = DataSource?[rowIndex];
 
         string result = string.Empty;
-        await foreach (var builder in Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
-            result = result + builder;
+        foreach (var builder in await Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
+            result += builder;
         
         return result;
     }

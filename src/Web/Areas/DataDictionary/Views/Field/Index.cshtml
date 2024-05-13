@@ -178,11 +178,23 @@
 
 <script type="text/javascript">
          function setupCodeMirror(){
-            CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql",{
-                mode: "text/x-sql",
-                hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
-                hintKey: '{'
-            });
+            @if (Model.DataItem is not null)
+            {
+                <text>
+                 CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m=>m.DataItem!.Command!.Sql)",{
+                     mode: "text/x-sql",
+                     hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+                     hintKey: '{'
+                 });
+                </text>
+              
+            }
+             CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m=>m.GridRenderingTemplate)",{
+                 mode: "text/html",
+                 hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+                 hintKey: '{',
+                 size: 100
+             });
          }
          
            

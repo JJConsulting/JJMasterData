@@ -20,12 +20,11 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
     public async Task<string> FormatGridValueAsync(
         FormElementFieldSelector fieldSelector, 
-        Dictionary<string, object> values,
-        Dictionary<string, object> userValues)
+        FormStateData formStateData)
     {
         var field = fieldSelector.Field;
         
-        values.TryGetValue(field.Name, out var value);
+        formStateData.Values.TryGetValue(field.Name, out var value);
         
         if (value == null || value == DBNull.Value)
             return string.Empty;
@@ -56,21 +55,17 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
             case FormComponent.Lookup
                  when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id}:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
-                var formData = new FormStateData(values, PageState.List);
-                stringValue = await LookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formData, value.ToString(), allowOnlyNumerics);
+                stringValue = await LookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formStateData, value.ToString(), allowOnlyNumerics);
                 break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
                 break;
             case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
                  when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
-                var searchFormData = new FormStateData(values, userValues, PageState.List);
-
-                values.TryGetValue(field.Name, out var searchId);
                 
-                var dataQuery = new DataQuery(searchFormData, fieldSelector.FormElement.ConnectionId)
+                var dataQuery = new DataQuery(formStateData, fieldSelector.FormElement.ConnectionId)
                 {
-                    SearchId = searchId?.ToString()
+                    SearchId = value?.ToString()
                 };
                 
                 var searchBoxValues = await DataItemService.GetValuesAsync(field.DataItem, dataQuery);

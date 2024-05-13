@@ -1329,8 +1329,8 @@
     <value>Ajuda</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Help Description" xml:space="preserve">
-    <value>Descrição da Ajuda</value>
+  <data name="Tooltip" xml:space="preserve">
+    <value>Tooltip</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Hide Log" xml:space="preserve">
@@ -4089,6 +4089,12 @@
     <value>Operação Realizada!</value>
   </data>
   <data name="Show a label floating within the field. Not all fields support this option.">
-    <value>Show a label floating within the field. Not all fields support this option.</value>
+    <value>Mostra uma label flutuando dentro do campo. Nem todos os campos suportam esta opção.</value>
+  </data>
+  <data name="Rendering Template">
+    <value>Template de Renderização</value>
+  </data>
+  <data name="HTML template to render the field in the grid. Runtime values supported between curly bracets.">
+    <value>Template HTML para renderizar o campo na grid. Valores do runtime suportados entre chaves.</value>
   </data>
 </root>

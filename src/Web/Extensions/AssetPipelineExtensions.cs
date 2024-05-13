@@ -64,6 +64,9 @@ public static class AssetPipelineExtensions
         {
             "_content/JJMasterData.Web/js/codemirror/lib/codemirror.js",
             "_content/JJMasterData.Web/js/codemirror/mode/sql.js",
+            "_content/JJMasterData.Web/js/codemirror/mode/html.js",
+            "_content/JJMasterData.Web/js/codemirror/mode/css.js",
+            "_content/JJMasterData.Web/js/codemirror/mode/xml.js",
             "_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js",
             "_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js",
         };

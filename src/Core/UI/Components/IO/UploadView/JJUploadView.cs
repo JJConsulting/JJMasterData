@@ -550,8 +550,8 @@ public class JJUploadView : AsyncComponent
                         table.WithCssClass("table-gallery");
                         var fileValues = ConvertFormFileToDictionary(file);
                         var formStateData = new FormStateData(fileValues, UserValues, PageState.List);
-                        var htmlActions = GridView.Table.Body.GetActionsHtmlListAsync(formStateData);
-                        await table.AppendRangeAsync(htmlActions);
+                        var htmlActions = await GridView.Table.Body.GetActionsHtmlListAsync(formStateData); 
+                        table.AppendRange(htmlActions);
                     });
                 });
             });

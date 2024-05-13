@@ -348,6 +348,7 @@ class CodeMirrorWrapper {
         return textArea.codeMirrorInstance != null;
     }
     static setupCodeMirror(elementId, options) {
+        var _a;
         const textArea = document.getElementById(elementId);
         if (!textArea)
             return;
@@ -375,7 +376,7 @@ class CodeMirrorWrapper {
             });
         }
         else {
-            codeMirrorTextArea.setSize(null, 250);
+            codeMirrorTextArea.setSize(null, (_a = options.size) !== null && _a !== void 0 ? _a : 250);
         }
         CodeMirror.registerHelper('hint', 'hintList', function (_) {
             const cur = codeMirrorTextArea.getCursor();
