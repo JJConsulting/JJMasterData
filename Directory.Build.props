@@ -3,9 +3,9 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>4.1.11</Version>
+		<Version>4.2.0</Version>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
-		<PackageVersion>$(Version)</PackageVersion>
+		<PackageVersion>$(Version)-preview1</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
 		<WarningsAsErrors>CA1859;CS4014</WarningsAsErrors>
