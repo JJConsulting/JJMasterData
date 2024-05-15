@@ -8,7 +8,13 @@
 @{
     string title = StringLocalizer["Application Settings"];
     ViewData["Title"] = title;
-    List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder()), new BreadcrumbItem(title)];
+    List<BreadcrumbItem> breadcrumbs = [
+        new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder())
+        {
+            Url = Url.Action("Index","Element", new {Area="DataDictionary"})
+        }, 
+        new BreadcrumbItem(title)
+    ];
 
 }
 
