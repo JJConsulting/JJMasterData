@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using IntegrationTests.PageObjects;
+using OpenQA.Selenium;
 using TestesMasterData.Fixture;
 using TestesMasterData.PageObjects;
 
@@ -7,6 +8,7 @@ public class AoAcessarTelaDicionarioDeDados : TestFixture
 {
 
     private tela_home_dicionarios_PO _telahomedicionariosPo;
+    private tela_renderizacao_dicionarios_PO _telarederizacaodicionariosPo;
 
     public void Setup(TestFixture fixture)
     {
@@ -18,6 +20,7 @@ public class AoAcessarTelaDicionarioDeDados : TestFixture
     {
 
         _telahomedicionariosPo = new tela_home_dicionarios_PO(Driver);
+        _telarederizacaodicionariosPo = new tela_renderizacao_dicionarios_PO(Driver);
 
     }
 
@@ -32,12 +35,11 @@ public class AoAcessarTelaDicionarioDeDados : TestFixture
     }
 
     [Test]
-
     public void AdicionarDicionario()
     {
         SetupMasterData();
 
-        _telahomedicionariosPo.NavegarParaURL();
+        _telahomedicionariosPo.NavegarParaURL(); 
         _telahomedicionariosPo.AdicionarDicionario();
         _telahomedicionariosPo.AdicionarCampoID();
         _telahomedicionariosPo.AdicionarCampoDesc();
@@ -51,8 +53,8 @@ public class AoAcessarTelaDicionarioDeDados : TestFixture
         _telahomedicionariosPo.AdicionarCampoPassword();
         _telahomedicionariosPo.AdicionarCampoPhone();
         _telahomedicionariosPo.Renderizar();
-
     }
+
 
     [Test]
 
@@ -61,7 +63,19 @@ public class AoAcessarTelaDicionarioDeDados : TestFixture
         SetupMasterData();
 
         _telahomedicionariosPo.NavegarParaURL();
+        _telarederizacaodicionariosPo.RenderizarDicionario();
+    }
 
+
+    [Test]
+
+    public void ExportarRegistros()
+    {
+        SetupMasterData();
+
+        _telahomedicionariosPo.NavegarParaURL();
+        _telarederizacaodicionariosPo.RenderizarDicionario();
+        _telarederizacaodicionariosPo.ExportarRegistros();
     }
 
 }

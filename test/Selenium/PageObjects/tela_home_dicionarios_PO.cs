@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using IntegrationTests.Utils;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
 namespace TestesMasterData.PageObjects
@@ -33,7 +34,9 @@ namespace TestesMasterData.PageObjects
         private By ByCampoNumberCasasDecimais;
         private By ByBotaoMais;
         private By ByBotaoRenderizar;
-        private By ByBotaoAdicionarRegistros;
+
+
+
 
         public tela_home_dicionarios_PO(IWebDriver driver)
         {
@@ -43,13 +46,13 @@ namespace TestesMasterData.PageObjects
             ByNomeTabela = By.Id("Name");
             ByBotaoAdicionarTabela = By.XPath("/html/body/div/form/div[4]/div/button[2]");
             ByFiltroElemento = By.Id("filter_name");
-            ByBotaoExluirSelecionados = By.XPath("/html/body/div/form/div/div/div[3]/div/div/button");
-            ByBotaoFiltrarElemento = By.XPath("/html/body/div/form/div/div/div[2]/div/div/div/div/div/div[2]/div/button");
+            ByBotaoExluirSelecionados = By.XPath("/html/body/div[1]/form/div/div/div[2]/div/div/button");
+            ByBotaoFiltrarElemento = By.CssSelector("button.btn.btn-secondary[onclick*='GridViewFilterHelper.filter']");
             ByBotaoSelecionarDicionario = By.XPath("//*[@id=\"jjchk_0-checkbox\"]");
             ByBotaoAlterar = By.CssSelector(".fa-pencil");
             ByAlterarNomeTabela = By.Id("Entity_TableName");
             ByBotaoSalvar = By.CssSelector("button.btn");
-            ByBotaoCampos = By.CssSelector("li.nav-item:nth-child(3) > a:nth-child(1)");
+            ByBotaoCampos = By.CssSelector("a[href*='/DataDictionary/Field/Index']");
             ByCampoNome = By.Id("Name");
             ByCampoLabel = By.Id("Label");
             ByCampoModoDoFiltro = By.Id("Filter_Type");
@@ -63,19 +66,16 @@ namespace TestesMasterData.PageObjects
             ByCampoComponente = By.Id("Component");
             ByCampoGeral = By.CssSelector("#nav-general");
             ByCampoNumberCasasDecimais = By.CssSelector("#NumberOfDecimalPlaces");
-            ByBotaoMais = By.XPath("/html/body/div/nav/div/ul/li[10]/a");
-            ByBotaoRenderizar = By.XPath("/html/body/div/nav/div/ul/li[10]/ul/li[3]/a");
-            ByBotaoAdicionarRegistros = By.XPath("/html/body/div[1]/form/div/div/div[2]/div/div/a[1]");
-            
+            ByBotaoMais = By.CssSelector("a.nav-link.dropdown-toggle");
+            ByBotaoRenderizar = By.XPath("/html/body/div/ul/li[9]/ul/li[3]/a");
 
-
-    }
+        }
 
 
 
         public void NavegarParaURL()
         {
-            driver.Navigate().GoToUrl("http://localhost/masterdata/pt-BR/DataDictionary/Element/Index");           
+            driver.Navigate().GoToUrl("http://localhost/masterdataINFINITY/pt-BR/DataDictionary/Element/Index");           
         }
 
         public void AdicionarDicionario()
@@ -91,6 +91,7 @@ namespace TestesMasterData.PageObjects
             driver.FindElement(ByAlterarNomeTabela).Clear();
             driver.FindElement(ByAlterarNomeTabela).SendKeys("tb_teste");
             driver.FindElement(ByBotaoSalvar).Click();
+
                       
         }
 
@@ -353,15 +354,9 @@ namespace TestesMasterData.PageObjects
 
         public void Renderizar()
         {
-           driver.FindElement(ByBotaoMais).Click();
-           driver.FindElement(ByBotaoRenderizar).Click();          
+            driver.FindElement(ByBotaoMais).Click();
+            driver.FindElement(ByBotaoRenderizar).Click();
         }
-
-        public void AdicionarRegistros()
-        {
-            driver.FindElement(ByBotaoAdicionarRegistros).Click();
-        }
-
 
     }
 }
