@@ -118,9 +118,7 @@ internal class DataPanelControl
             bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
-
-            var useFloatingLabel = FormElement.Options.UseFloatingLabels && field.SupportsFloatingLabel();
-
+            
             object? value = null;
             if (Values != null && Values.ContainsKey(field.Name))
                 value = FieldsService.FormatValue(field, Values[field.Name]);
@@ -132,10 +130,10 @@ internal class DataPanelControl
                 html.Append(row);
             }
 
-            var htmlField = new Div()
+            var formGroup = new Div()
                 .WithCssClass(BootstrapHelper.FormGroup);
             
-            row?.Append(htmlField);
+            row?.Append(formGroup);
 
             string? fieldClass;
             
@@ -150,47 +148,29 @@ internal class DataPanelControl
                 else
                     fieldClass = colClass;
             }
-            htmlField.WithCssClass(fieldClass);
+            formGroup.WithCssClass(fieldClass);
 
             if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(field.Name))
-                htmlField.WithCssClass("has-error");
+                formGroup.WithCssClass("has-error");
 
             if (PageState == PageState.View && FormUI.ShowViewModeAsStatic)
-                htmlField.WithCssClass("jjborder-static");
+                formGroup.WithCssClass("jjborder-static");
 
+            var useFloatingLabel = FormElement.Options.UseFloatingLabels && field.SupportsFloatingLabel();
+            
             if (field.Component is not FormComponent.CheckBox && !useFloatingLabel)
             {
                 var label = CreateLabel(field, IsRange(field, PageState));
-                htmlField.AppendComponent(label);
+                formGroup.AppendComponent(label);
             }
-            
-            if(useFloatingLabel)
-                field.SetAttr("placeholder",field.LabelOrName);
-
-            HtmlBuilder parentDiv;
-
-            if (useFloatingLabel)
-            {
-                var formFloating = new Div().WithCssClass("form-floating");
-                htmlField.Append(formFloating);
-                parentDiv = formFloating;
-            }
-            else
-                parentDiv = htmlField;
             
             if (IsViewModeAsStatic)
-                parentDiv.Append(await GetStaticField(field));
+                formGroup.Append(await GetStaticField(field));
             else
             {
                 var controlHtml = await GetControlFieldHtml(field, value);
-                if(useFloatingLabel && !string.IsNullOrEmpty(field.HelpDescription))
-                    controlHtml.WithToolTip(StringLocalizer[field.HelpDescription!]);
-                parentDiv.Append(controlHtml);
+                formGroup.Append(controlHtml);
             }
-            
-            if (useFloatingLabel)
-                parentDiv.Append(CreateFloatingLabel(field, IsRange(field,PageState)));
-           
         }
 
         return html;
@@ -326,18 +306,6 @@ internal class DataPanelControl
 
         return label;
     }
-    private HtmlBuilder CreateFloatingLabel(FormElementField field, bool isRange)
-    {
-        var label = new HtmlBuilder(HtmlTag.Label);
-        var fieldName = GetFieldNameWithPrefix(field);
-        
-        if (isRange)
-            fieldName += "_from";
-        
-        label.WithAttribute("for", fieldName);
-        label.AppendText(field.LabelOrName);
-        return label;
-    }
 
 
     private async Task<HtmlBuilder> GetStaticField(FormElementField field)
@@ -373,6 +341,14 @@ internal class DataPanelControl
         
         if(control is JJTextFile file)
             file.ParentName = FormElement.Name;
+
+        var useFloatingLabels = FormUI.IsVerticalLayout && FormElement.Options.UseFloatingLabels;
+        
+        if (useFloatingLabels && control is IFloatingLabelControl floatingLabelControl)
+        {
+            floatingLabelControl.FloatingLabel = StringLocalizer[field.LabelOrName];
+            floatingLabelControl.UseFloatingLabel = field.SupportsFloatingLabel();
+        }
         
         if (PageState != PageState.Filter) 
             return control.GetHtmlBuilderAsync();

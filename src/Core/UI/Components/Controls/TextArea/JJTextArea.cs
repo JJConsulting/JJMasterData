@@ -6,8 +6,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextArea : ControlBase
+public class JJTextArea : ControlBase, IFloatingLabelControl
 {
+    
+    public string FloatingLabel { get; set; }
+    public bool UseFloatingLabel { get; set; }
+    
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
 
@@ -27,7 +31,7 @@ public class JJTextArea : ControlBase
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        var html = new HtmlBuilder(HtmlTag.TextArea)
+        var textArea = new HtmlBuilder(HtmlTag.TextArea)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass)
@@ -42,6 +46,20 @@ public class JJTextArea : ControlBase
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .AppendText(Text);
 
-        return html;
+        if (UseFloatingLabel)
+        {
+            textArea.WithSingleAttribute("placeholder");
+
+            return new Div()
+                .WithCssClass("form-floating")
+                .Append(textArea)
+                .AppendLabel(label =>
+                {
+                    label.AppendText(FloatingLabel);
+                    label.WithAttribute("for",Name);
+                });
+        }
+        
+        return textArea;
     }
 }

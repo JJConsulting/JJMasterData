@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJComboBox : ControlBase, IDataItemControl
+public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 {
     private string? _selectedValue;
 
@@ -52,6 +52,9 @@ public class JJComboBox : ControlBase, IDataItemControl
     }
 
     public bool EnableLocalization { get; set; } = true;
+    
+    public string? FloatingLabel { get; set; }
+    public bool UseFloatingLabel { get; set; }
 
     public JJComboBox(
         IFormValues formValues,
@@ -104,6 +107,17 @@ public class JJComboBox : ControlBase, IDataItemControl
             .WithAttributes(Attributes)
             .AppendRange(GetOptions(values));
 
+        if (UseFloatingLabel)
+        {
+            return new Div().WithCssClass("form-floating")
+                .Append(select)
+                .AppendLabel(label =>
+                {
+                    label.AppendText(FloatingLabel);
+                    label.WithAttribute("for", Name);
+                });
+        }
+        
         return select;
     }
 

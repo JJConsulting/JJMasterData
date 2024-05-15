@@ -255,3 +255,9 @@ input.form-control:read-only {
 .dropdown-toggle.form-dropdown:after{
   content:  none  !important;
 }
+
+.btn-floating-action{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

@@ -291,13 +291,16 @@ public class FormElementField : ElementField
     public bool SupportsFloatingLabel() =>
         Component
             is FormComponent.Text
+            or FormComponent.TextArea
+            or FormComponent.Date
+            or FormComponent.DateTime
             or FormComponent.Number
             or FormComponent.Cep
             or FormComponent.Cpf
             or FormComponent.CnpjCpf
             or FormComponent.Tel
             or FormComponent.ComboBox
-        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels() && Actions.Count == 0));
+        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels()));
 
     /// <summary>
     /// Set if the field is enabled.
