@@ -1,6 +1,6 @@
 ﻿class OffcanvasHelper{
     
-    static async showOffcanvas(id){
+    static showOffcanvas(id){
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
         offcanvasElement.show();
     }
