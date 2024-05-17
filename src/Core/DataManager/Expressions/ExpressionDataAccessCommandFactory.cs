@@ -33,7 +33,7 @@ public static class ExpressionDataAccessCommandFactory
             var value = keyValuePair.Value;
 
             if (value is string stringValue)
-                value = stringValue.Trim(); //this prevents erros when coalescing string to numeric values.
+                value = stringValue.Trim(); //this prevents errors when coalescing string to numeric values.
             
             command.AddParameter(parameterName, value, dbType);
         }
