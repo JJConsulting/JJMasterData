@@ -1799,6 +1799,16 @@ MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
 const messageBox = MessageBox;
 const showConfirmationDialog = MessageBox.showConfirmationDialog;
 const showConfirmationMessage = MessageBox.showConfirmationMessage;
+class MessageToastHelper {
+    static showWhenDOMLoaded(name) {
+        document.addEventListener("DOMContentLoaded", () => this.show(name));
+    }
+    static show(name) {
+        const toastElement = document.getElementById(name);
+        const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
+        toast.show();
+    }
+}
 var ModalSize;
 (function (ModalSize) {
     ModalSize[ModalSize["Fullscreen"] = 0] = "Fullscreen";

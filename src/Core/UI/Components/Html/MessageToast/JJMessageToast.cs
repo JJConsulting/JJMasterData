@@ -12,7 +12,8 @@ public class JJMessageToast : HtmlComponent
     public string? Message { get; set; }
     public JJIcon? Icon { get; set; }
     public BootstrapColor TitleColor { get; set; }
-    
+    public bool ShowAsOpened { get; set; } = true;
+
     internal JJMessageToast()
     {
         TitleColor = BootstrapColor.Default;
@@ -22,70 +23,56 @@ public class JJMessageToast : HtmlComponent
     internal override HtmlBuilder BuildHtml()
     {
         var htmlToast = new HtmlBuilder(HtmlTag.Div)
-        .WithCssClass("position-fixed bottom-0 end-0 p-3")
-        .WithAttribute("style","z-index: 5")
-        .AppendDiv(alert =>
-        {
-            alert.WithId(Name)
-            .WithCssClass("toast fade")
-            .WithAttribute("role", "alert")
-            .WithAttribute("aria-live", "assertive")
-            .WithAttribute("aria-atomic", "true")
-            .AppendDiv(header =>
+            .WithCssClass("position-fixed bottom-0 end-0 p-3")
+            .WithAttribute("style", "z-index: 5")
+            .AppendDiv(alert =>
             {
-                header.WithCssClass("toast-header")
-                .Append(HtmlTag.Strong)
-                .WithCssClass($"me-auto text-{TitleColor.ToColorString()}")
-                .Append(HtmlTag.Strong, s =>
-                {
-                    s.WithCssClass($"me-auto text-{@TitleColor.ToColorString()}")
-                        .AppendComponent(Icon)
-                        .AppendText(Title);
-                })
-                .AppendIf(TitleMuted != null, HtmlTag.Small, small =>
-                {
-                    small.WithCssClass("text-muted")
-                        .AppendText(TitleMuted!);
-                })
-                .Append(HtmlTag.Button, b =>
-                {
-                    b.WithCssClass("btn ms-2 p-0")
-                    .WithAttribute("type", "button")
-                    .WithAttribute("data-bs-dismiss", "toast")
-                    .WithAttribute("aria-label", "Close")
-                    .AppendSpan(uil =>
+                alert.WithId(Name)
+                    .WithCssClass("toast fade")
+                    .WithAttribute("role", "alert")
+                    .WithAttribute("aria-live", "assertive")
+                    .WithAttribute("aria-atomic", "true")
+                    .AppendDiv(header =>
                     {
-                        uil.WithCssClass("uil uil-times fs-7");
+                        header.WithCssClass("toast-header")
+                            .Append(HtmlTag.Strong)
+                            .WithCssClass($"me-auto text-{TitleColor.ToColorString()}")
+                            .Append(HtmlTag.Strong, s =>
+                            {
+                                s.WithCssClass($"me-auto text-{TitleColor.ToColorString()}")
+                                    .Append(Icon?.GetHtmlBuilder()?.WithCssClass("fs-7 me-1"))
+                                    .AppendText(Title);
+                            })
+                            .AppendIf(TitleMuted != null, HtmlTag.Small, small =>
+                            {
+                                small.WithCssClass("text-muted")
+                                    .AppendText(TitleMuted!);
+                            })
+                            .Append(HtmlTag.Button, b =>
+                            {
+                                b.WithCssClass("btn ms-2 p-0")
+                                    .WithAttribute("type", "button")
+                                    .WithAttribute("data-bs-dismiss", "toast")
+                                    .WithAttribute("aria-label", "Close")
+                                    .AppendSpan(uil => { uil.WithCssClass("uil uil-times fs-7"); });
+                            });
                     });
+                alert.AppendIf(Message != null, HtmlTag.Div, body =>
+                {
+                    body.WithCssClass("toast-body")
+                        .AppendText(Message!);
                 });
             });
-            alert.AppendIf(Message != null, HtmlTag.Div, body =>
-            {
-                body.WithCssClass("toast-body")
-                    .AppendText(Message!);
-            });
-        });
 
-        var script = new HtmlBuilder(HtmlTag.Script)
-            .WithAttribute("type", "text/javascript")
-            .WithAttribute("lang", "javascript")
-            .AppendText(GetDomContentLoadedScript());
-        
         var html = new HtmlBuilder();
         html.Append(htmlToast);
-        html.Append(script);
+        html.AppendIf(ShowAsOpened, HtmlTag.Script, script =>
+        {
+            script.WithAttribute("type", "text/javascript")
+                .WithAttribute("lang", "javascript")
+                .AppendText($"MessageToastHelper.showWhenDOMLoaded('{Name}');");
+        });
 
         return html;
     }
-
-    private string GetDomContentLoadedScript()
-    {
-        return $$"""
-                 $(function() {
-                       $("#{{Name}}").toast('show');
-                    });
-                 """;
-    }
-
-  
 }

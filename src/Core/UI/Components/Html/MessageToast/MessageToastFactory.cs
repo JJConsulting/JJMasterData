@@ -20,7 +20,6 @@ public class MessageToastFactory(IStringLocalizer<MasterDataResources> stringLoc
         messageToast.TitleMuted = DateTime.Now.ToShortTimeString();
         messageToast.TitleColor = color;
         messageToast.Icon = new JJIcon();
-        messageToast.Icon.CssClass = "fs-7 me-1";
         
         switch (color)
         {
