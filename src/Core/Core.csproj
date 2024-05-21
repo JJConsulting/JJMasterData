@@ -106,21 +106,4 @@
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="UI\Html\Extensions\" />
-    </ItemGroup>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 </Project>
