@@ -23,7 +23,7 @@ public static class MasterDataServiceBuilderExtensions
         builder.Services.PostConfigure<NCalcExpressionProviderOptions>(o =>
         {
             o.ReplaceDefaultExpressionProvider = options.ReplaceDefaultExpressionProvider;
-            o.EvaluateOptions = options.EvaluateOptions;
+            o.ExpressionOptions = options.ExpressionOptions;
             o.AdditionalFunctions = options.AdditionalFunctions;
         });
         

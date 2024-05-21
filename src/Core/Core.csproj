@@ -107,6 +107,10 @@
       </Compile>
     </ItemGroup>
     
+    <ItemGroup>
+      <Folder Include="UI\Html\Extensions\" />
+    </ItemGroup>
+    
     
     
     

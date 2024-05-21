@@ -17,7 +17,7 @@ public sealed class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProv
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
-        var ncalcExpression = new Expression(replacedExpression, Options.EvaluateOptions);
+        var ncalcExpression = new Expression(replacedExpression, Options.ExpressionOptions);
     
         foreach (var function in Options.AdditionalFunctions)
             ncalcExpression.EvaluateFunction += function;
