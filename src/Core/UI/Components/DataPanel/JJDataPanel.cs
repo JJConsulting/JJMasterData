@@ -263,7 +263,7 @@ public class JJDataPanel : AsyncComponent
         AppendHiddenInputs(html);
 
         var panelGroup = new DataPanelLayout(this);
-        await html.AppendRangeAsync(panelGroup.GetHtmlPanelList());
+        html.AppendRange(await panelGroup.GetHtmlPanelList());
         html.AppendScript(GetHtmlFormScript());
 
         return html;

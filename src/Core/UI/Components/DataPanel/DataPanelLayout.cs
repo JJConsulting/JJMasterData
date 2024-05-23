@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -26,52 +27,54 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
     private PageState PageState { get; } = dataPanel.PageState;
 
     private ExpressionsService ExpressionsService { get; } = dataPanel.ExpressionsService;
-    
-    public async IAsyncEnumerable<HtmlBuilder> GetHtmlPanelList()
+    public async Task<List<HtmlBuilder>> GetHtmlPanelList()
     {
-        await foreach (var panel in GetTabPanels())
-            yield return panel;
+        List<HtmlBuilder> panels = [];
 
-        await foreach (var nonTabPanel in GetNonTabPanels()) 
-            yield return nonTabPanel;
+        panels.Add(await GetTabPanelsHtml());
+        panels.AddRange(await GetNonTabPanels());
+        panels.AddRange(await GetFieldsWithoutPanel());
 
-        await foreach (var fieldWithoutPanel in GetFieldsWithoutPanel())
-            yield return fieldWithoutPanel;
+        return panels;
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetTabPanels()
+    [ItemCanBeNull]
+    private async Task<HtmlBuilder> GetTabPanelsHtml()
     {
-
+        List<HtmlBuilder> tabPanels = [];
         var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
 
         if (tabs.Count <= 0)
-            yield break;
+            return null;
         
         var navTab = await GetTabNav(tabs);
-        yield return navTab.GetHtmlBuilder();
+        return navTab.GetHtmlBuilder();
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetNonTabPanels()
+    private async Task<List<HtmlBuilder>> GetNonTabPanels()
     {
+        List<HtmlBuilder> htmlList = [];
         foreach (var panel in FormElement.Panels.Where(p => p.Layout != PanelLayout.Tab))
         {
             var htmlPanel = await GetHtmlPanelGroup(panel);
             if (htmlPanel != null)
-                yield return htmlPanel;
+                htmlList.Add(htmlPanel);
         }
+
+        return htmlList;
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetFieldsWithoutPanel()
+    private async Task<List<HtmlBuilder>> GetFieldsWithoutPanel()
     {
+        List<HtmlBuilder> htmlList = [];
         bool dontContainsVisibleFields = !FormElement.Fields.ToList()
-            .Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression,DataPanelControl.FormStateData));
-        
+            .Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression, DataPanelControl.FormStateData));
+    
         if (dontContainsVisibleFields)
-            yield break;
-        
+            return htmlList;
+    
         if (!RenderPanelGroup)
-            yield return await GetHtmlForm(null);
-        
+            htmlList.Add(await GetHtmlForm(null));
         else
         {
             var card = new JJCard
@@ -79,8 +82,10 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
                 Layout = PanelLayout.Well,
                 HtmlBuilderContent = await GetHtmlForm(null)
             };
-            yield return card.GetHtmlBuilder();
+            htmlList.Add(card.GetHtmlBuilder());
         }
+    
+        return htmlList;
     }
 
     private async Task<JJTabNav> GetTabNav(List<FormElementPanel> tabs)
