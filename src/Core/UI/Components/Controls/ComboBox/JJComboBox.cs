@@ -167,7 +167,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
         }
 
         var content = new HtmlBuilder();
-        content.AppendComponentIf(DataItem.ShowIcon, new JJIcon(value.Icon, value.IconColor));
+        content.AppendComponentIf(DataItem.ShowIcon, ()=> new JJIcon(value.Icon, value.IconColor));
         content.Append(HtmlTag.Span, span =>
         {
             span.AppendText(label);

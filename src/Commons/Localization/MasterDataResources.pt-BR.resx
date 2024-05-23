@@ -4097,4 +4097,7 @@
   <data name="HTML template to render the field in the grid. Runtime values supported between curly bracets.">
     <value>Template HTML para renderizar o campo na grid. Valores do runtime são suportados entre chaves.</value>
   </data>
+  <data name="Edit Element" xml:space="preserve">
+    <value>Editar Elemento</value>
+  </data>
 </root>

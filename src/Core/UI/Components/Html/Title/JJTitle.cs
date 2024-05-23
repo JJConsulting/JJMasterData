@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Html;
 
@@ -6,10 +8,12 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJTitle : HtmlComponent
 {
-    public string Title { get; set; }
-    public string SubTitle { get; set; }
+    public string? Title { get; set; }
+    public string? SubTitle { get; set; }
     public HeadingSize Size { get; set; }
     public IconType? Icon { get; set; }
+
+    public List<TitleAction>? Actions { get; set; }
     
     private HtmlTag Tag => Size switch
     {
@@ -21,9 +25,7 @@ public class JJTitle : HtmlComponent
         HeadingSize.H6 => HtmlTag.H6,
         _ => throw new ArgumentOutOfRangeException()
     };
-
-
-
+    
     public JJTitle()
     {
         Size = HeadingSize.H1;
@@ -38,27 +40,52 @@ public class JJTitle : HtmlComponent
 
     internal override HtmlBuilder BuildHtml()
     {
-        if (string.IsNullOrWhiteSpace(Title) && string.IsNullOrWhiteSpace(SubTitle))
+        if (string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(SubTitle))
             return new HtmlBuilder();
         
-        return new HtmlBuilder(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
             .WithCssClass(BootstrapHelper.PageHeader)
-            .Append(Tag, e =>
+            .WithCssClass("d-flex justify-content-between")
+            .Append(Tag, tag =>
             {
-                e.AppendIf(Icon.HasValue,HtmlTag.Span,span =>
+                tag.AppendIf(Icon.HasValue,HtmlTag.Span,span =>
                 {
                     span.AppendComponent(new JJIcon(Icon!.Value));
                 });
-                e.AppendText(Title);
-                e.Append(HtmlTag.Small, small =>
+                tag.AppendText(Title);
+                tag.Append(HtmlTag.Small, small =>
                 {
                     small.WithCssClass("sub-title");
                     small.AppendText($" {SubTitle}");
                 });
             });
+
+        if (Actions == null) 
+            return div;
+
+        div.AppendDiv(div =>
+        {
+            foreach (var action in Actions)
+            {
+                div.Append(HtmlTag.A,a =>
+                {
+                    a.WithCssClass("btn btn-secondary");
+                    a.WithHref(action.Url);
+                    a.AppendComponentIf(Icon.HasValue, () => new JJIcon(action.Icon!.Value)
+                    {
+                        CssClass = "fs-8"
+                    });
+                    a.AppendTextIf(!string.IsNullOrEmpty(action.Text),"&nbsp;"+ action.Text!);
+                    a.WithToolTip(action.Tooltip);
+                });
+            }
+        });
+
+        
+        return div;
     }
 
 

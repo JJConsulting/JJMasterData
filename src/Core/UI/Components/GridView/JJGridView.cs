@@ -199,8 +199,11 @@ public class JJGridView : AsyncComponent
     }
 
     private bool IsUserSetDataSource { get; set; }
+    
     public bool ShowTitle { get; set; }
-
+    
+    public List<TitleAction>? TitleActions { get; set; }
+    
     public bool EnableFilter { get; set; }
 
     public string? ParentComponentName { get; set; }
@@ -837,7 +840,7 @@ public class JJGridView : AsyncComponent
     
     internal async Task<JJTitle> GetTitleAsync()
     {
-        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync());
+        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync(), TitleActions);
     }
 
     internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();

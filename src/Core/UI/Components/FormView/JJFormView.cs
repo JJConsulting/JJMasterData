@@ -207,7 +207,8 @@ public class JJFormView : AsyncComponent
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
             _gridView.ShowTitle = ShowTitle;
-
+            _gridView.TitleActions = TitleActions;
+            
             if (_gridView.InsertAction.InsertActionLocation is InsertActionLocation.AboveGrid)
                 _gridView.OnBeforeTableRenderAsync += RenderInsertActionAtGrid;
             
@@ -301,13 +302,15 @@ public class JJFormView : AsyncComponent
             return _routeContext;
         }
     }
+    
+    public bool ShowTitle { get; set; }
+    
+    public List<TitleAction>? TitleActions { get; set; }
 
     internal ComponentContext ComponentContext => RouteContext.IsCurrentFormElement(FormElement.Name) 
         ? RouteContext.ComponentContext : default;
 
     internal FormViewScripts Scripts => _scripts ??= new(this);
-
-    public bool ShowTitle { get; set; }
 
     internal bool IsChildFormView => RelationshipType is not RelationshipType.Parent;
 
@@ -696,7 +699,7 @@ public class JJFormView : AsyncComponent
 
         if (result is HtmlComponentResult htmlComponentResult)
         {
-            htmlComponentResult.HtmlBuilder.AppendComponentIf(messageBox is not null, messageBox);
+            htmlComponentResult.HtmlBuilder.AppendComponentIf(messageBox is not null,()=> messageBox);
         }
 
         return result;
@@ -1520,12 +1523,7 @@ public class JJFormView : AsyncComponent
     
     private JJTitle GetTitle(FormStateData formStateData)
     {
-        return ComponentFactory.Html.Title.Create(FormElement,formStateData);
-    }
-
-    private async Task<JJTitle> GetTitleAsync()
-    {
-        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync());
+        return ComponentFactory.Html.Title.Create(FormElement,formStateData, TitleActions);
     }
     
     #region "Legacy inherited GridView compatibility"

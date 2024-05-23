@@ -37,7 +37,7 @@ internal class DataImportationHelp
 
         var html = panel.BuildHtml()
             .AppendHiddenInput("filename", "")
-            .AppendComponentIf(!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText), new JJAlert
+            .AppendComponentIf(!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText), ()=>new JJAlert
             {
                 Title = StringLocalizer["Information"],
                 Icon = IconType.InfoCircle,

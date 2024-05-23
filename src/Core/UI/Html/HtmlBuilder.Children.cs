@@ -249,10 +249,10 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public HtmlBuilder AppendComponentIf(bool condition, HtmlComponent? component)
+    public HtmlBuilder AppendComponentIf(bool condition, Func<HtmlComponent?> componentFunc)
     {
         if (condition)
-            AppendComponent(component);
+            AppendComponent(componentFunc());
 
         return this;
     }

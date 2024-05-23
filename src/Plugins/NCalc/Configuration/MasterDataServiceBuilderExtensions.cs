@@ -30,7 +30,7 @@ public static class MasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static MasterDataServiceBuilder WithNCalcExpression(this MasterDataServiceBuilder builder)
+    public static MasterDataServiceBuilder WithNCalcExpressions(this MasterDataServiceBuilder builder)
     {
         builder.WithNCalcExpressionProvider(new NCalcExpressionProviderOptions
         {

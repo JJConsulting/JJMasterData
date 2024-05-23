@@ -97,7 +97,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.AddSession();
-        services.AddDistributedMemoryCache();
+        services.AddMemoryCache();
         services.AddActionFilters();
     }
 
