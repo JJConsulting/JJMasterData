@@ -144,7 +144,7 @@ public class JJFormView : AsyncComponent
             if (_dataPanel == null)
             {
                 _dataPanel = ComponentFactory.DataPanel.Create(FormElement);
-                _dataPanel.AutoReloadFormFields = _dataPanel.PageState is not PageState.View;
+                _dataPanel.AutoReloadFormFields = _dataPanel.PageState is not PageState.View || IsInsertAtGridView;
                 _dataPanel.UserValues = UserValues;
                 _dataPanel.RenderPanelGroup = true;
 
