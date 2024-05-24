@@ -29,7 +29,7 @@ internal class GridTableHeader
         await html.AppendAsync(HtmlTag.Tr, async tr =>
         {
             tr.AppendIf(GridView.EnableMultiSelect, GetMultSelectThHtmlElement);
-            await tr.AppendRangeAsync(GetVisibleFieldsThList());
+            tr.AppendRange(await GetVisibleFieldsThList());
             tr.AppendRange(GetActionsThList());
         });
 
@@ -55,8 +55,9 @@ internal class GridTableHeader
         }
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsThList()
+    private async Task<List<HtmlBuilder>> GetVisibleFieldsThList()
     {
+        List<HtmlBuilder> thList = [];
         foreach (var field in await GridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
@@ -114,15 +115,17 @@ internal class GridTableHeader
             if (IsAppliedFilter(field, currentFilter))
             {
                 th.AppendText("&nbsp;");
-                th.Append((HtmlBuilder)new JJIcon("fa fa-filter").GetHtmlBuilder()
+                th.Append(new JJIcon("fa fa-filter").GetHtmlBuilder()
                     .WithToolTip(StringLocalizer["Applied filter"]));
             }
 
-            yield return th;
+            thList.Add(th);
         }
+
+        return thList;
     }
 
-    private bool IsAppliedFilter(ElementField field, Dictionary<string, object> currentFilter)
+    private static bool IsAppliedFilter(ElementField field, Dictionary<string, object> currentFilter)
     {
         var hasFilterType = field.Filter.Type is not FilterMode.None;
         var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");

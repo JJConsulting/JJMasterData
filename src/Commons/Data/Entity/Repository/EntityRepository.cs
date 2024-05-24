@@ -166,7 +166,13 @@ public class EntityRepository(
 
     public async Task<string> GetAlterTableScriptAsync(Element element)
     {
-        var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
+        List<ElementField> addedFields = [];
+
+        await foreach (var field in GetAddedFieldsAsync(element))
+        {
+            addedFields.Add(field);
+        }
+        
         return Provider.GetAlterTableScript(element, addedFields);
     }
 

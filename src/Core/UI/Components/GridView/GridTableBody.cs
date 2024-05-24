@@ -35,19 +35,23 @@ internal class GridTableBody(JJGridView gridView)
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
 
         tbody.WithAttribute("id", Name);
-        await tbody.AppendRangeAsync(GetRowsList());
+        tbody.AppendRange(await GetRowsList());
 
         return tbody;
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetRowsList()
+    private async Task<List<HtmlBuilder>> GetRowsList()
     {
-        var rows = GridView.DataSource;
+        List<HtmlBuilder> rows = [];
+        
+        var dataSource = GridView.DataSource;
 
-        for (var i = 0; i < rows?.Count; i++)
+        for (var i = 0; i < dataSource?.Count; i++)
         {
-            yield return await GetRowHtml(rows[i], i);
+            rows.Add(await GetRowHtml(dataSource[i], i));
         }
+
+        return rows;
     }
 
     private async Task<HtmlBuilder> GetRowHtml(Dictionary<string, object?> row, int index)

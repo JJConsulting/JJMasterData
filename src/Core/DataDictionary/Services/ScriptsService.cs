@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -12,9 +11,11 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ScriptsService(IEntityRepository entityRepository, 
     IDataDictionaryRepository dataDictionaryRepository)
 {
+    
+    
     public async Task<ScriptsResult> GetScriptsAsync(FormElement formElement)
     {
-        var relationships = await GetFormElementRelationships(formElement).ToListAsync();
+        var relationships = await GetFormElementRelationships(formElement);
         
         var createTableScript = entityRepository.GetCreateTableScript(formElement,relationships);
         var readProcedureScript = formElement.UseReadProcedure ? entityRepository.GetReadProcedureScript(formElement) : null;
@@ -30,14 +31,16 @@ public class ScriptsService(IEntityRepository entityRepository,
         };
     }
 
-    private async IAsyncEnumerable<RelationshipReference> GetFormElementRelationships(FormElement formElement)
+    private async Task<List<RelationshipReference>> GetFormElementRelationships(FormElement formElement)
     {
+        List<RelationshipReference> relationshipList = [];
         foreach (var r in formElement.Relationships.GetElementRelationships())
         {
             var tableName = (await dataDictionaryRepository.GetFormElementAsync(r.ChildElement)).TableName;
 
-            yield return new(r.ChildElement, tableName);
+            relationshipList.Add(new(r.ChildElement, tableName));
         }
+        return relationshipList;
     }
 
     public async Task ExecuteScriptsAsync(string id, string scriptOption)
@@ -52,7 +55,7 @@ public class ScriptsService(IEntityRepository entityRepository,
                 await entityRepository.ExecuteBatchAsync(sql.ToString(), formElement.ConnectionId);
                 break;
             case "ExecuteCreateDataModel":
-                var relationships = await GetFormElementRelationships(formElement).ToListAsync();
+                var relationships = await GetFormElementRelationships(formElement);
                 await entityRepository.CreateDataModelAsync(formElement,relationships);
                 break;
             case "ExecuteAlterTable":
