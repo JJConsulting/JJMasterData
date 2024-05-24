@@ -1131,7 +1131,8 @@ public class JJFormView : AsyncComponent
             var bottomActions = 
                 toolbarActions.Where(a => a.Location is FormToolbarActionLocation.Bottom).ToList();
         
-            toolbarActions.BackAction.SetVisible(true);
+            if(!IsChildFormView)
+                toolbarActions.BackAction.SetVisible(true);
         
             html.AppendComponent(await GetFormToolbarAsync(bottomActions));
 
