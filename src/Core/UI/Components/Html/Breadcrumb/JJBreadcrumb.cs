@@ -5,7 +5,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJBreadcrumb : HtmlComponent
 {
-    public List<BreadcrumbItem> Items { get; } = [];
+    public List<BreadcrumbItem> Items { get; }
 
     public JJBreadcrumb()
     {
