@@ -1,12 +1,10 @@
 ﻿#nullable enable
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace JJMasterData.Commons.Configuration.Options;
 
 public class ConnectionString()
 {
-    [SetsRequiredMembers]
     public ConnectionString(string connectionString, string connectionProvider) : this()
     {
         Connection = connectionString;
@@ -14,7 +12,7 @@ public class ConnectionString()
     }
 
     public Guid Guid { get; init; } = Guid.NewGuid();
-    public required string? Name { get; init; }
-    public required string Connection { get; init; }
-    public required string ConnectionProvider { get; init; }
+    public string? Name { get; init; }
+    public string Connection { get; init; } = null!;
+    public string ConnectionProvider { get; init; } = null!;
 }
