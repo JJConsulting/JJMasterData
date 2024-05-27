@@ -17,6 +17,7 @@ public sealed class H3() : HtmlBuilder(HtmlTag.H3);
 public sealed class H4() : HtmlBuilder(HtmlTag.H4);
 public sealed class H5() : HtmlBuilder(HtmlTag.H5);
 public sealed class H6() : HtmlBuilder(HtmlTag.H6);
+public sealed class Ol() : HtmlBuilder(HtmlTag.Ol);
 public sealed class Small() : HtmlBuilder(HtmlTag.Small);
 public sealed class Ul() : HtmlBuilder(HtmlTag.Ul);
 public sealed class Li() : HtmlBuilder(HtmlTag.Li);

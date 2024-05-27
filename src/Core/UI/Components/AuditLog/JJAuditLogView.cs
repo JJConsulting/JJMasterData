@@ -195,7 +195,7 @@ public class JJAuditLogView : AsyncComponent
 
         var filter = new Dictionary<string, object> { { AuditLogService.DicId, logId } };
 
-        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
+        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(FormElement.ConnectionId), filter);
         var json = values[AuditLogService.DicJson]?.ToString();
         var recordsKey = values[AuditLogService.DicKey]?.ToString();
         var auditLogValues = JsonConvert.DeserializeObject<Dictionary<string, object>>(json ?? string.Empty);
@@ -226,7 +226,7 @@ public class JJAuditLogView : AsyncComponent
                     divFields.Append(HtmlTag.Div, group =>
                     {
                         group.WithAttribute("id", "sortable-grid");
-                        group.WithCssClass("list-group sortable-grid");
+                        group.WithCssClass("list-group jj-list-group sortable-grid");
                         group.Append(logListGroupHtml);
                     });
                 });
@@ -262,7 +262,7 @@ public class JJAuditLogView : AsyncComponent
     {
         var filter = new Dictionary<string, object> { { AuditLogService.DicId, logId } };
 
-        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
+        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(FormElement.ConnectionId), filter);
         string json = values[AuditLogService.DicJson].ToString();
 
         var fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
@@ -280,7 +280,7 @@ public class JJAuditLogView : AsyncComponent
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var gridViewFormElement = AuditLogService.GetFormElement(FormElement.Name);
+        var gridViewFormElement = AuditLogService.GetFormElement(FormElement);
         gridViewFormElement.ParentName = FormElement.ParentName;
         var grid = _componentFactory.GridView.Create(gridViewFormElement);
         grid.FormElement.Title = FormElement.Title;
@@ -400,7 +400,7 @@ public class JJAuditLogView : AsyncComponent
                     $"javascript:AuditLogViewHelper.loadAuditLog('{FormElement.ParentName}','{logId}', '{encryptedRouteContext}')");
                 a.WithNameAndId(logId);
                 a.WithCssClass("list-group-item ui-sortable-handle");
-                a.WithCssClassIf(logId.Equals(viewId), "active");
+                a.WithCssClassIf(logId!.Equals(viewId), "active");
 
                 a.Append(HtmlTag.Div, div =>
                 {

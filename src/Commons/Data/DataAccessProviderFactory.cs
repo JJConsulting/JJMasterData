@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Data;
 
 public static class DataAccessProviderFactory
 {
-    public static DataAccessProvider GetDataAccessProviderFromString(string description)
+    private static DataAccessProvider GetDataAccessProviderFromString(string description)
     {
         foreach(var field in typeof(DataAccessProvider).GetFields())
         {
@@ -29,7 +29,8 @@ public static class DataAccessProviderFactory
         
         return default;
     }
-    public static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
+
+    private static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
     {
         var instance = ReflectionUtils.GetStaticProperty(dbProviderFactoryTypename, "Instance");
         if (instance == null)
@@ -53,14 +54,14 @@ public static class DataAccessProviderFactory
             case DataAccessProvider.SqlServer:
                 return SqlClientFactory.Instance; // this library has a ref to SqlClient so this works
             case DataAccessProvider.Oracle:
-                return GetDbProviderFactory(type.GetDescription(), "Oracle.ManagedDataAccess");
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Oracle.ManagedDataAccess");
             case DataAccessProvider.OracleNetCore:
-                return GetDbProviderFactory(type.GetDescription(), "Oracle.ManagedDataAccess.Core");
-            case DataAccessProvider.SqLite:
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Oracle.ManagedDataAccess.Core");
+            case DataAccessProvider.SQLite:
             case DataAccessProvider.MySql:
-                return GetDbProviderFactory(type.GetDescription(), "MySql.Data");
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "MySql.Data");
             case DataAccessProvider.PostgreSql:
-                return GetDbProviderFactory(type.GetDescription(), "Npgsql");
+                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Npgsql");
             default:
                 throw new NotSupportedException($"Not supported {type}");
         }

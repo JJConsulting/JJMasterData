@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data;
@@ -38,30 +39,21 @@ public partial class DataAccess
     }
 
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
-    public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
+    public async Task<DataTable> GetDataTableAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         try
         {
-#if NET
-            await
-#endif
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-
-#if NET
-            await
-#endif
+            
             using (dbCommand.Connection)
             {
-#if NET
-                await
-#endif
                 using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
                     var dataTable = new DataTable();
                     dataTable.Load(reader);
  
-                    foreach (var parameter in cmd.Parameters)
+                    foreach (var parameter in command.Parameters)
                     {
                         if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                             parameter.Value = dbCommand.Parameters[parameter.Name].Value;
@@ -73,10 +65,56 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
     }
     
+    ///<inheritdoc cref="GetDataSet(string)"/>
+    public Task<DataSet> GetDataSetAsync(string sql)
+    {
+        return GetDataSetAsync(new DataAccessCommand(sql));
+    }
+    
+    ///<inheritdoc cref="GetDataSet(DataAccessCommand)"/>
+    public async Task<DataSet> GetDataSetAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var dbCommand = CreateDbCommand(command);
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+        
+            using (dbCommand.Connection)
+            {
+                using (var reader = await dbCommand.ExecuteReaderAsync( cancellationToken))
+                {
+                    var dataSet = new DataSet();
+
+                    var index = 1;
+                    do
+                    {
+                        var dataTable = new DataTable();
+                        dataTable.TableName = $"Result {index}";
+                        dataTable.Load(reader);
+                        dataSet.Tables.Add(dataTable);
+                        index++;
+                    } while(!reader.IsClosed);
+                    
+                    foreach (var parameter in command.Parameters)
+                    {
+                        if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                            parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                    }
+           
+                    return dataSet;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw GetDataAccessException(ex, command);
+        }
+    }
+
     /// <inheritdoc cref="GetResult(string)"/>
     public Task<object?> GetResultAsync(string sql, CancellationToken cancellationToken = default)
     {
@@ -342,7 +380,7 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="TryConnection"/>
-    public async Task<(bool, string?)> TryConnectionAsync(CancellationToken cancellationToken = default)
+    public async Task<ConnectionResult> TryConnectionAsync(CancellationToken cancellationToken = default)
     {
         bool result;
         DbConnection? connection = null;
@@ -359,7 +397,7 @@ public partial class DataAccess
             result = false;
             var error = new StringBuilder();
             error.AppendLine(ex.Message);
-            if (ex.InnerException is { Message: { } })
+            if (ex.InnerException is { Message: not null })
                 error.Append(ex.InnerException.Message);
 
             errorMessage = error.ToString();
@@ -381,7 +419,7 @@ public partial class DataAccess
             }
         }
 
-        return (result, errorMessage);
+        return new(result, errorMessage);
     }
     
     

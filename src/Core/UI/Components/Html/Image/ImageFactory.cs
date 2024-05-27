@@ -1,27 +1,14 @@
-using JJMasterData.Core.Http.Abstractions;
-
 namespace JJMasterData.Core.UI.Components;
 
-public class ImageFactory(IHttpContext httpContext)
+public class ImageFactory : IComponentFactory<JJImage>
 {
+    JJImage IComponentFactory<JJImage>.Create()
+    {
+        return new JJImage(string.Empty);
+    }
+    
     public JJImage Create(string src)
     {
         return new JJImage(src);
     }
-
-    public JJImage CreateMasterDataLogo()
-    {
-        var appPath = httpContext.Request.ApplicationPath;
-        var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath;
-
-        if (!baseUrl.EndsWith("/"))
-            baseUrl += "/";
-        
-        var logoSrc = $"{baseUrl}_content/JJMasterData.Web/images/JJMasterData.png";
-        var image = Create(logoSrc);
-        image.SetAttr("style","width:8%;height:8%;");
-        image.Title = "JJMasterData";
-        return image;
-    }
-    
 }

@@ -20,18 +20,21 @@ public class TitleTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
     [HtmlAttributeName("icon")]
     public IconType? Icon { get; set; }
     
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    [HtmlAttributeName("actions")]
+    public List<TitleAction>? Actions {get; set; }
+    
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var title = htmlComponentFactory.Title.Create(Title ?? string.Empty, SubTitle ?? string.Empty, Icon);
 
+        title.Actions = Actions;
+        
         if (Size is not null)
         {
             title.Size = Size.Value;
         }
 
-        output.TagMode = TagMode.StartTagAndEndTag;
+        output.SuppressOutput();
         output.Content.SetHtmlContent(title.GetHtml());
-
-        return Task.CompletedTask;
     }
 }

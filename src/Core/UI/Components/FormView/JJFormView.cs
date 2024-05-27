@@ -144,7 +144,7 @@ public class JJFormView : AsyncComponent
             if (_dataPanel == null)
             {
                 _dataPanel = ComponentFactory.DataPanel.Create(FormElement);
-                _dataPanel.AutoReloadFormFields = PageState is not PageState.View;
+                _dataPanel.AutoReloadFormFields = _dataPanel.PageState is not PageState.View || IsInsertAtGridView;
                 _dataPanel.UserValues = UserValues;
                 _dataPanel.RenderPanelGroup = true;
 
@@ -207,8 +207,8 @@ public class JJFormView : AsyncComponent
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
             _gridView.ShowTitle = ShowTitle;
-            _gridView.ToolbarActions.Add(new DeleteSelectedRowsAction());
-
+            _gridView.TitleActions = TitleActions;
+            
             if (_gridView.InsertAction.InsertActionLocation is InsertActionLocation.AboveGrid)
                 _gridView.OnBeforeTableRenderAsync += RenderInsertActionAtGrid;
             
@@ -302,13 +302,15 @@ public class JJFormView : AsyncComponent
             return _routeContext;
         }
     }
+    
+    public bool ShowTitle { get; set; }
+    
+    public List<TitleAction>? TitleActions { get; set; }
 
     internal ComponentContext ComponentContext => RouteContext.IsCurrentFormElement(FormElement.Name) 
         ? RouteContext.ComponentContext : default;
 
     internal FormViewScripts Scripts => _scripts ??= new(this);
-
-    public bool ShowTitle { get; set; }
 
     internal bool IsChildFormView => RelationshipType is not RelationshipType.Parent;
 
@@ -449,7 +451,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.DataExportation:
             case ComponentContext.GridViewReload:
             case ComponentContext.GridViewFilterReload:
-            case ComponentContext.GridViewFilterSearchBox:
+            case ComponentContext.SearchBoxFilter:
                 return await GridView.GetResultAsync();
             case ComponentContext.DownloadFile:
                 return ComponentFactory.Downloader.Create().GetDownloadResult();
@@ -618,8 +620,6 @@ public class JJFormView : AsyncComponent
             result = await GetAuditLogResult();
         else if (CurrentAction is DeleteAction)
             result = await GetDeleteResult();
-        else if (CurrentAction is DeleteSelectedRowsAction)
-            result = await GetDeleteSelectedRowsResult();
         else if (CurrentAction is SaveAction)
             result = await GetSaveActionResult();
         else if (CurrentAction is BackAction)
@@ -678,11 +678,11 @@ public class JJFormView : AsyncComponent
 
         var formStateData = await GetFormStateDataAsync();
         var parsedValues = ExpressionsService.ParseExpression(sqlAction.SqlCommand, formStateData);
-        var sqlCommand = SqlExpressionProvider.GetParsedDataAccessCommand(sqlAction.SqlCommand, parsedValues);
+        var sqlCommand = ExpressionDataAccessCommandFactory.Create(sqlAction.SqlCommand, parsedValues);
 
         try
         {
-            await EntityRepository.SetCommandAsync(sqlCommand);
+            await EntityRepository.SetCommandAsync(sqlCommand, FormElement.ConnectionId);
         }
         catch (Exception ex)
         {
@@ -699,7 +699,7 @@ public class JJFormView : AsyncComponent
 
         if (result is HtmlComponentResult htmlComponentResult)
         {
-            htmlComponentResult.HtmlBuilder.AppendComponentIf(messageBox is not null, messageBox);
+            htmlComponentResult.HtmlBuilder.AppendComponentIf(messageBox is not null,()=> messageBox);
         }
 
         return result;
@@ -921,8 +921,7 @@ public class JJFormView : AsyncComponent
         var mappedFkValues = DataHelper.GetRelationValues(FormElement, selectionValues, true);
 
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert),
-                true);
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert));
         
         var errors = await InsertFormValuesAsync(values, false);
 
@@ -1009,86 +1008,6 @@ public class JJFormView : AsyncComponent
         }
 
         html.Append(await GridView.GetHtmlBuilderAsync());
-        PageState = PageState.List;
-
-        return new RenderedComponentResult(html);
-    }
-
-    private async Task<ComponentResult> GetDeleteSelectedRowsResult()
-    {
-        var html = new Div();
-        var messageFactory = ComponentFactory.Html.MessageBox;
-        var errorMessage = new StringBuilder();
-        int errorCount = 0;
-        int successCount = 0;
-
-        try
-        {
-            var rows = GridView.GetSelectedGridValues();
-
-            foreach (var row in rows)
-            {
-                var errors = await DeleteFormValuesAsync(row!);
-
-                if (errors.Count > 0)
-                {
-                    foreach (var err in errors)
-                    {
-                        errorMessage.Append(" - ");
-                        errorMessage.Append(err.Value);
-                        errorMessage.Append("<br>");
-                    }
-
-                    errorCount++;
-                }
-                else
-                {
-                    successCount++;
-                }
-            }
-
-            if (rows.Count > 0)
-            {
-                var message = new StringBuilder();
-                var icon = MessageIcon.Info;
-                if (successCount > 0)
-                {
-                    message.Append("<p class=\"text-success\">");
-                    message.Append(StringLocalizer["{0} Record(s) deleted successfully", successCount]);
-                    message.Append("</p><br>");
-                }
-
-                if (errorCount > 0)
-                {
-                    message.Append("<p class=\"text-danger\">");
-                    message.Append(StringLocalizer["{0} Record(s) with error", successCount]);
-                    message.Append(StringLocalizer["Details:"]);
-                    message.Append("<br>");
-                    message.Append(errorMessage);
-                    icon = MessageIcon.Warning;
-                }
-
-                html.AppendComponent(messageFactory.Create(message.ToString(), icon));
-
-                GridView.ClearSelectedGridValues();
-            }
-        }
-        catch (Exception ex)
-        {
-            html.AppendComponent(messageFactory.Create(ex.Message, MessageIcon.Error));
-        }
-
-        var gridViewResult = await GetGridViewResult();
-
-        if (gridViewResult is RenderedComponentResult)
-        {
-            html.Append(new HtmlBuilder(gridViewResult));
-        }
-        else
-        {
-            return gridViewResult;
-        }
-
         PageState = PageState.List;
 
         return new RenderedComponentResult(html);
@@ -1212,7 +1131,8 @@ public class JJFormView : AsyncComponent
             var bottomActions = 
                 toolbarActions.Where(a => a.Location is FormToolbarActionLocation.Bottom).ToList();
         
-            toolbarActions.BackAction.SetVisible(true);
+            if(!IsChildFormView)
+                toolbarActions.BackAction.SetVisible(true);
         
             html.AppendComponent(await GetFormToolbarAsync(bottomActions));
 
@@ -1476,7 +1396,7 @@ public class JJFormView : AsyncComponent
     public async Task<Dictionary<string, string>> DeleteFormValuesAsync(Dictionary<string, object?>? filter)
     {
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,  new FormStateData(filter!, UserValues, PageState.Delete), true);
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,  new FormStateData(filter!, UserValues, PageState.Delete));
         var result = await FormService.DeleteAsync(FormElement, values,
             new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
@@ -1604,12 +1524,7 @@ public class JJFormView : AsyncComponent
     
     private JJTitle GetTitle(FormStateData formStateData)
     {
-        return ComponentFactory.Html.Title.Create(FormElement,formStateData);
-    }
-
-    private async Task<JJTitle> GetTitleAsync()
-    {
-        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync());
+        return ComponentFactory.Html.Title.Create(FormElement,formStateData, TitleActions);
     }
     
     #region "Legacy inherited GridView compatibility"

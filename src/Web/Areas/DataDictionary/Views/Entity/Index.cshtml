@@ -1,4 +1,5 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+﻿
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model EntityViewModel;
 
@@ -30,13 +31,9 @@
     </collapse-panel>
 
     <collapse-panel  icon="RegularRectangleList" title="@StringLocalizer["Form Title"]" expanded-by-default="true">
-        <partial name="_FormElementPanel" model="Model"/>
+        <partial name="_FormTitle" model="Model"/>
     </collapse-panel>
 
-    <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="false">
-        <partial name="_Options" model="Model"/>
-    </collapse-panel>
-    
     if (Model.FormEvent != null)
     {
         <collapse-panel  name="eventsPanel" icon="SolidBoltLightning" title="@StringLocalizer["Events"]" expanded-by-default="true">

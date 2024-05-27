@@ -6,8 +6,13 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory, IFormValues formValues) : JJTextBox(formValues)
+public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory, IFormValues formValues) 
+    : JJTextBox(formValues), IFloatingLabelControl
 {
+    public string FloatingLabel { get; set; }
+
+    public bool UseFloatingLabel { get; set; }
+    
     /// <summary>
     /// Actions of input
     /// </summary>
@@ -46,6 +51,18 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
 
         if (!hasAction && !hasAddons)
         {
+            if (UseFloatingLabel)
+            {
+                input.WithSingleAttribute("placeholder");
+                return new Div().WithCssClass("form-floating")
+                    .Append(input)
+                    .AppendLabel(label =>
+                    {
+                        label.AppendText(FloatingLabel);
+                        label.WithAttribute("for", Name);
+                    });
+            }
+            
             return input;
         }
 
@@ -62,10 +79,26 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
         if (hasAddons)
             inputGroup.Append(GetHtmlAddons());
 
-        inputGroup.Append(input);
-
         if (hasAction)
             AddActionsAt(inputGroup);
+        
+        if (UseFloatingLabel)
+        {
+            input.WithSingleAttribute("placeholder");
+            inputGroup.AppendDiv(div =>
+            {
+                div.WithCssClass("form-floating");
+                div.Append(input);
+                div.AppendLabel(label =>
+                {
+                    label.AppendText(FloatingLabel);
+                    label.WithAttribute("for", Name);
+                });
+            });
+            return inputGroup;
+        }
+        
+        inputGroup.Append(input);
         
         return inputGroup;
     }
@@ -87,6 +120,10 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
 
         var btnGroup = linkButtonGroupFactory.Create();
         btnGroup.Actions = Actions;
+
+        if (UseFloatingLabel)
+            Actions.ForEach(a=>a.CssClass += "btn-floating-action");
+        
         btnGroup.ShowAsButton = true;
 
         //Add builder Actions
@@ -104,7 +141,4 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
 
         return html;
     }
-
-
-
 }

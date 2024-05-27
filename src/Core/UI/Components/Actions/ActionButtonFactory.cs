@@ -96,7 +96,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
             case ConfigAction:
                 button.OnClientClick = BootstrapHelper.GetModalScript($"config-modal-{actionContext.ParentComponentName}");
                 break;
-            case DeleteSelectedRowsAction or AuditLogGridToolbarAction:
+            case AuditLogGridToolbarAction:
                 button.OnClientClick =
                     ActionScripts.GetFormActionScript(actionContext, ActionSource.GridToolbar);
                 break;

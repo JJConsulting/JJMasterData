@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;
@@ -31,16 +29,14 @@ public class DataAccessCommand
 
     [JsonProperty("parameters")]
     public List<DataAccessParameter> Parameters { get; private set; }
-
-    [SetsRequiredMembers]
+    
     public DataAccessCommand()
     {
         Sql = string.Empty;
         Type = CommandType.Text;
         Parameters = [];
     }
-
-    [SetsRequiredMembers]
+    
     public DataAccessCommand(string sql) : this()
     {
         Sql = sql;

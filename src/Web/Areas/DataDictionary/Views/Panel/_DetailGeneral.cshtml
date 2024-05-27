@@ -5,36 +5,31 @@
 
 <div class="row mb-3">
     <div class="col-sm-4 required">
-        <div class="form-floating">
-            <select asp-for="Layout" class="form-control form-select" asp-items="Html.GetEnumSelectList<PanelLayout>()"></select>
-            <label asp-for="Layout"></label>
-        </div>
+        <label class="form-label" asp-for="Layout"></label>
+        <select asp-for="Layout" class="form-control form-select" asp-items="Html.GetEnumSelectList<PanelLayout>()"></select>
     </div>
     <div class=" col-sm-4 required">
-        <div class="form-floating">
-            <select asp-for="Color" class="form-control form-select" asp-items="Html.GetEnumSelectList<BootstrapColor>()"></select>
-            <label asp-for="Color"></label>
-        </div>
-    </div>
-    <div class="col-sm-4 required" id="divExpandedByDefault">
-        <div class="form-floating">
-            <select asp-for="ExpandedByDefault" class="form-control form-select">
-                <option value="true">@StringLocalizer["Yes"]</option>
-                <option value="false">@StringLocalizer["No"]</option>
-            </select>
-            <label asp-for="ExpandedByDefault"></label>
-        </div>
+
+        <label class="form-label" asp-for="Color"></label>
+        <select asp-for="Color" class="form-control form-select" asp-items="Html.GetEnumSelectList<BootstrapColor>()"></select>
 
     </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <expression for="Title"/>
+    <div class="col-sm-4 required" id="divExpandedByDefault">
+        <label class="form-label" asp-for="ExpandedByDefault"></label>
+        <select asp-for="ExpandedByDefault" class="form-control form-select">
+            <option value="true">@StringLocalizer["Yes"]</option>
+            <option value="false">@StringLocalizer["No"]</option>
+        </select>
     </div>
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <expression for="SubTitle"/>
+        <expression for="Title" use-floating-label="false"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <expression for="SubTitle" use-floating-label="false"/>
     </div>
 </div>
 <div class="row mb-3">

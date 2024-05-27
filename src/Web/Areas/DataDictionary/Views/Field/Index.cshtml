@@ -6,12 +6,13 @@
 
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
-
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @{
     ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Fields"]}";
+    Layout = !ViewBag.IsForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
 @{
@@ -35,8 +36,8 @@
 
         return sql.ToString();
     }
-    
-    
+
+
     static IconType GetFontAwesomeIconClass(FormComponent component)
     {
         return component switch
@@ -69,9 +70,93 @@
     }
 }
 
-@section Scripts{
 
-    <script>
+@if (ViewBag.IsForm)
+{
+    <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
+}
+
+@using (Html.BeginMasterDataForm("Index", "Field"))
+{
+    <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="input-group jjform-action ">
+                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
+                <a href="javascript: void(0);" class="input-group-text link-underline link-underline-opacity-0" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                    <span class="fa fa-plus  bi"></span>
+                </a>
+            </div>
+            <br/>
+            <div class="jjrelative">
+                <div id="field-list">
+                    <div class="list-group jj-list-group jjsortable" id="sortable-grid">
+                        @if (ViewBag.Fields.Count == 0)
+                        {
+                            <div>@StringLocalizer["No record found"]</div>
+                        }
+                        @for (int i = 0; i < ViewBag.Fields.Count; i++)
+                        {
+                            FormElementField field = ViewBag.Fields[i];
+                            var fieldName = field.Name;
+
+                            <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
+                               class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
+                               id="@fieldName">
+                                <div style="height: 33px;">
+                                    <div class="@BootstrapHelper.PullLeft">
+                                        <b>@fieldName</b>
+                                        @if (field.IsPk)
+                                        {
+                                            <span class="fa fa-star" style="color:#efd829;" data-bs-toggle="tooltip" data-bs-original-title="@StringLocalizer["Primary key"]"></span>
+                                        }
+                                        @if (field.Component is not FormComponent.Text)
+                                        {
+                                            <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Component.ToString()"></span>
+                                        }
+                                        @if (field.Filter.Type is not FilterMode.None)
+                                        {
+                                            <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Filter.Type.ToString()"></span>
+                                        }
+                                        <br>
+                                        <small>
+                                            @if (field.Label != null && !string.Equals(fieldName, field.Label, StringComparison.InvariantCultureIgnoreCase))
+                                            {
+                                                var label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
+                                                if (label.Length > 35)
+                                                {
+                                                    label = $"{label[..30]}...";
+                                                }
+
+                                                <span>@label</span>
+                                                <span> - </span>
+                                            }
+
+                                            @GetFieldDataTypeText(field)
+                                        </small>
+                                    </div>
+                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
+                                    </div>
+                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
+                                        @i
+                                    </span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9" style="padding-left:0px">
+            <div class="jjrelative" id="field-details">
+                <partial name="_Detail" model="Model"/>
+            </div>
+        </div>
+        <br/>
+    </div>
+}
+
+<script>
         function saveScrollPosition() {
             const listField = document.getElementById('field-list');
             if (listField) {
@@ -91,13 +176,25 @@
         window.addEventListener('beforeunload', saveScrollPosition);
     </script>
 
-    <script type="text/javascript">
+<script type="text/javascript">
          function setupCodeMirror(){
-            CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql",{
-                mode: "text/x-sql",
-                hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
-                hintKey: '{'
-            });
+            @if (Model.DataItem is not null)
+            {
+                <text>
+                 CodeMirrorWrapper.setupCodeMirror("@Html.IdFor(m=>m.DataItem!.Command!.Sql)",{
+                     mode: "text/x-sql",
+                     hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+                     hintKey: '{'
+                 });
+                </text>
+              
+            }
+             CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m=>m.GridRenderingTemplate)",{
+                 mode: "text/html",
+                 hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+                 hintKey: '{',
+                 size: 100
+             });
          }
          
            
@@ -127,7 +224,7 @@
          document.addEventListener("DOMContentLoaded", listenTabs);
     </script>
 
-    <script type="text/javascript">        
+<script type="text/javascript">        
         document.addEventListener("DOMContentLoaded",function (){
             sortableGrid();
             saveTabState();
@@ -199,7 +296,7 @@
         }
     
         function loadFieldDetails(url, fieldName) {
-            document.querySelector("#sortable-grid .active").classList.remove("active");
+            document.querySelector("#sortable-grid .active")?.classList?.remove("active");
     
             if (fieldName !== "")
                 document.querySelector("#" + fieldName).classList.add("active");
@@ -226,87 +323,3 @@
             });
         }
     </script>
-    }
-
-    <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
-
-    @using (Html.BeginMasterDataForm("Index", "Field", FormMethod.Post))
-    {
-        <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
-        <div class="row">
-            <div class="col-sm-3">
-                <div class="input-group jjform-action ">
-                    <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
-                    <a href="javascript: void(0);" class="input-group-text link-underline link-underline-opacity-0" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
-                        <span class="fa fa-plus  bi"></span>
-                    </a>
-                </div>
-                <br/>
-                <div class="jjrelative">
-                    <div id="field-list">
-                        <div class="list-group jjsortable" id="sortable-grid">
-                            @if (ViewBag.Fields.Count == 0)
-                            {
-                                <div>@StringLocalizer["No record found"]</div>
-                            }
-                            @for (int i = 0; i < ViewBag.Fields.Count; i++)
-                            {
-                                FormElementField field = ViewBag.Fields[i];
-                                var fieldName = field.Name;
-
-                                <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
-                                   class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
-                                   id="@fieldName">
-                                    <div style="height: 33px;">
-                                        <div class="@BootstrapHelper.PullLeft">
-                                            <b>@fieldName</b>
-                                            @if (field.IsPk)
-                                            {
-                                                <span class="fa fa-star" style="color:#efd829;" data-bs-toggle="tooltip" data-bs-original-title="@StringLocalizer["Primary key"]"></span>
-                                            }
-                                            @if (field.Component is not FormComponent.Text)
-                                            {
-                                                <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Component.ToString()"></span>
-                                            }
-                                            @if (field.Filter.Type is not FilterMode.None)
-                                            {
-                                                <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Filter.Type.ToString()"></span>
-                                            }
-                                            <br>
-                                            <small>
-                                            @if (field.Label != null && !string.Equals(fieldName, field.Label, StringComparison.InvariantCultureIgnoreCase))
-                                            {
-                                                var label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
-                                                if (label.Length > 35)
-                                                {
-                                                    label = $"{label[..30]}...";
-                                                }
-
-                                                <span>@label</span>
-                                                <span> - </span>
-                                            }
-                                     
-                                            @GetFieldDataTypeText(field)
-                                            </small>
-                                        </div>
-                                        <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
-                                        </div>
-                                        <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
-                                            @i
-                                        </span>
-                                    </div>
-                                </a>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-9" style="padding-left:0px">
-                <div class="jjrelative" id="field-details">
-                    <partial name="_Detail" model="Model"/>
-                </div>
-            </div>
-            <br/>
-        </div>
-    }
-

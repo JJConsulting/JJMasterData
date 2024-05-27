@@ -23,10 +23,29 @@ public static class MasterDataServiceBuilderExtensions
         builder.Services.PostConfigure<NCalcExpressionProviderOptions>(o =>
         {
             o.ReplaceDefaultExpressionProvider = options.ReplaceDefaultExpressionProvider;
-            o.EvaluateOptions = options.EvaluateOptions;
+            o.ExpressionOptions = options.ExpressionOptions;
             o.AdditionalFunctions = options.AdditionalFunctions;
         });
         
         return builder;
     }
+    
+    public static MasterDataServiceBuilder WithNCalcExpressions(this MasterDataServiceBuilder builder)
+    {
+        builder.WithNCalcExpressionProvider(new NCalcExpressionProviderOptions
+        {
+            ReplaceDefaultExpressionProvider = true,
+            AdditionalFunctions =
+            [
+                (name, args) =>
+                {
+                    if (name == "now")
+                        args.Result = DateTime.Now;
+                }
+            ]
+        });
+        
+        return builder;
+    }
+    
 }

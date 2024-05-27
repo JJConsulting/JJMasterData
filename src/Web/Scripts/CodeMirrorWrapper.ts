@@ -5,6 +5,7 @@ class CodeMirrorWrapperOptions{
     hintList: string
     hintKey: string
     singleLine: boolean
+    size: number
 }
 
 class CodeMirrorWrapper{
@@ -45,7 +46,7 @@ class CodeMirrorWrapper{
             });
         }
         else{
-            codeMirrorTextArea.setSize(null, 250);
+            codeMirrorTextArea.setSize(null, options.size ?? 250);
         }
 
         

@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public class ConnectionString
+public class ConnectionStringModel
 {
     [Required] public string? Server { get; init; }
 
@@ -19,21 +19,21 @@ public class ConnectionString
 
     public int? Timeout { get; init; }
 
-    public bool? TrustServerCertificate { get; init; }
+    public bool TrustServerCertificate { get; init; }
 
-    public bool? Encrypt { get; init; }
+    public bool Encrypt { get; init; }
 
-    public bool? Pooling { get; init; }
+    public bool Pooling { get; init; }
 
     public int? MinPoolSize { get; init; }
 
     public int? MaxPoolSize { get; init; }
 
-    public ConnectionString()
+    public ConnectionStringModel()
     {
     }
 
-    public ConnectionString(string? connectionString)
+    public ConnectionStringModel(string? connectionString)
     {
         var builder = new DbConnectionStringBuilder
         {
@@ -143,13 +143,13 @@ public class ConnectionString
         if (Timeout != null)
             builder["timeout"] = Timeout;
 
-        if (TrustServerCertificate != null)
+        if (TrustServerCertificate)
             builder["trust server certificate"] = TrustServerCertificate;
 
-        if (Encrypt != null)
+        if (Encrypt)
             builder["encrypt"] = Encrypt;
 
-        if (Pooling != null)
+        if (Pooling)
             builder["pooling"] = Pooling;
 
         if (MinPoolSize != null)

@@ -1,11 +1,17 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-
+﻿@using JJMasterData.Core.UI.Components
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject JJMasterDataLogo MasterDataLogo
 
 @{
-    ViewData["Title"] = StringLocalizer["Data Dictionary"];
+    string title = StringLocalizer["Data Dictionary"];
+    ViewData["Title"] = title;
+    List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder()), new BreadcrumbItem(title)];
 }
+
+<breadcrumb items="breadcrumbs"/>
 
 <master-data-form asp-action="Index" asp-controller="Element" asp-area="DataDictionary">
     @Html.Raw(ViewBag.FormViewHtml)
 </master-data-form>
 
+<offcanvas name="about-offcanvas" position="End"/>

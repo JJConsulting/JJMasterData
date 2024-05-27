@@ -208,6 +208,7 @@ public class JJDataPanel : AsyncComponent
             case ComponentContext.TextFileFileUpload:
                 return await GetFieldResultAsync<JJTextFile>();
             case ComponentContext.SearchBox:
+            case ComponentContext.SearchBoxFilter:
                 return await GetFieldResultAsync<JJSearchBox>();
             case ComponentContext.LookupDescription:
                 return await GetFieldResultAsync<JJLookup>();
@@ -262,7 +263,7 @@ public class JJDataPanel : AsyncComponent
         AppendHiddenInputs(html);
 
         var panelGroup = new DataPanelLayout(this);
-        await html.AppendRangeAsync(panelGroup.GetHtmlPanelList());
+        html.AppendRange(await panelGroup.GetHtmlPanelList());
         html.AppendScript(GetHtmlFormScript());
 
         return html;

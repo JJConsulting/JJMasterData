@@ -18,19 +18,25 @@ public class HtmlComponentFactory(
 
     public AlertFactory Alert => new();
 
+    public BreadcrumbFactory Breadcrumb => new();
+    
     public CardFactory Card => new();
     
     public CollapsePanelFactory CollapsePanel => new(currentContext.Request.Form);
-    
+   
     public IconFactory Icon => new();
     
-    public ImageFactory Image =>  new(currentContext);
+    public ImageFactory Image => new();
     
     public LabelFactory Label => new(stringLocalizer);
     
     public LinkButtonFactory LinkButton => serviceProvider.GetRequiredService<LinkButtonFactory>();
     
     public MessageBoxFactory MessageBox =>  new(stringLocalizer);
+    
+    public MessageToastFactory MessageToast =>  new(stringLocalizer);
+    
+    public OffcanvasFactory Offcanvas => new();
     
     public ModalDialogFactory ModalDialog => new();
     

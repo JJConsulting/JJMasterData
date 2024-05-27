@@ -88,7 +88,7 @@ public partial class HtmlBuilder
         }
 
         html.Append('<');
-        html.Append(Tag.TagName.ToString().ToLower());
+        html.Append(Tag.TagName.GetTagName());
         html.Append(GetAttributesHtml());
 
         if (!Tag.HasClosingTag)
@@ -112,7 +112,7 @@ public partial class HtmlBuilder
         }
        
         html.Append("</");
-        html.Append(Tag.TagName.ToString().ToLower());
+        html.Append(Tag.TagName.GetTagName());
         html.Append('>');
 
         return html.ToString();

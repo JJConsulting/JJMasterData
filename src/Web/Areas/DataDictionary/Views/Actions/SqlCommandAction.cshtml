@@ -45,7 +45,7 @@
 }
 
 @using (Html.BeginMasterDataForm("SqlCommandAction", "Actions",
-            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
 {
     <ul class="nav nav-underline">
         <li id="nav-general" class="nav-item active">
@@ -59,7 +59,7 @@
         </li>
     </ul>
 
-    <div class="tab-content" style="margin-top: 20px;">
+    <div class="tab-content" style="margin-top: 1.25rem;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
             @await Html.PartialAsync("_NavGeneral", Model)
         </div>

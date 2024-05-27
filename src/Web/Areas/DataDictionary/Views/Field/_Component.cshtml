@@ -9,11 +9,19 @@
         @{
             var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
 
+            if (!ViewBag.IsForm)
+            {
+                componentList.RemoveAll(c => c.Text == "File");
+            }
+            
             foreach (var component in componentList)
                 component.Group.Name = StringLocalizer[component.Group.Name];
         }
         <div class="form-floating">
-            <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="componentList.OrderBy(c => c.Group.Name).ThenBy(c => c.Text)"></select>
+            <select asp-for="Component" 
+                    class="form-control form-select"
+                    onchange="this.form.submit();"
+                    asp-items="componentList.OrderBy(c => c.Group.Name).ThenBy(c => c.Text)"></select>
             <label asp-for="Component"></label>
         </div>
     </div>
@@ -38,7 +46,7 @@
      or FormComponent.Cep
      or FormComponent.Cnpj
      or FormComponent.Cpf
-     or FormComponent.CnpjCpf)
+     or FormComponent.CnpjCpf && ViewBag.IsForm)
 {
     if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
     {

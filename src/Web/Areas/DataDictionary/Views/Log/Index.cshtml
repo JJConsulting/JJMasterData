@@ -8,6 +8,12 @@
     Layout = Model.IsModal ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
+<style>
+    .table th:nth-child(2) {
+        width: 85px;
+    }
+</style>
+
 <master-data-form asp-action="Index" asp-controller="Log" asp-area="DataDictionary" asp-route-isModal="@Model.IsModal">
     @Html.Raw(Model.FormViewHtml)
 </master-data-form>

@@ -9,7 +9,8 @@ namespace JJMasterData.Core.UI.Components;
 public interface IControlFactory<out TControl> where TControl : ControlBase
 {
     public TControl Create();
-    internal TControl Create(FormElement formElement,
+    internal TControl Create(
+        FormElement formElement,
         FormElementField field,
         ControlContext context);
 }

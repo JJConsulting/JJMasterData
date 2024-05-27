@@ -26,7 +26,6 @@
 		</PackageReference>
 		<PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
 		<PackageReference Include="System.Diagnostics.EventLog" Version="6.0.0" />
-		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 		<PackageReference Include="System.Threading.Channels" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>

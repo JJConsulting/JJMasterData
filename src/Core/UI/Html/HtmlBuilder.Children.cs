@@ -161,11 +161,11 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert raw text as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendText(string rawText)
+    public HtmlBuilder AppendText(string? rawText)
     {
         if (!string.IsNullOrEmpty(rawText))
         {
-            var child = new HtmlBuilder(rawText);
+            var child = new HtmlBuilder(rawText!);
             Append(child);
         }
                 
@@ -249,10 +249,10 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public HtmlBuilder AppendComponentIf(bool condition, HtmlComponent? component)
+    public HtmlBuilder AppendComponentIf(bool condition, Func<HtmlComponent?> componentFunc)
     {
         if (condition)
-            AppendComponent(component);
+            AppendComponent(componentFunc());
 
         return this;
     }

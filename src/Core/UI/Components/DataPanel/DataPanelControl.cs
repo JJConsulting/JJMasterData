@@ -112,12 +112,13 @@ internal class DataPanelControl
         int lineGroup = int.MinValue;
         HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
+        
         foreach (var field in fields)
         {
             bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
-
+            
             object? value = null;
             if (Values != null && Values.ContainsKey(field.Name))
                 value = FieldsService.FormatValue(field, Values[field.Name]);
@@ -129,10 +130,10 @@ internal class DataPanelControl
                 html.Append(row);
             }
 
-            var htmlField = new Div()
+            var formGroup = new Div()
                 .WithCssClass(BootstrapHelper.FormGroup);
             
-            row?.Append(htmlField);
+            row?.Append(formGroup);
 
             string? fieldClass;
             
@@ -147,47 +148,29 @@ internal class DataPanelControl
                 else
                     fieldClass = colClass;
             }
-            htmlField.WithCssClass(fieldClass);
+            formGroup.WithCssClass(fieldClass);
 
             if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(field.Name))
-                htmlField.WithCssClass("has-error");
+                formGroup.WithCssClass("has-error");
 
             if (PageState == PageState.View && FormUI.ShowViewModeAsStatic)
-                htmlField.WithCssClass("jjborder-static");
+                formGroup.WithCssClass("jjborder-static");
 
-            if (field.Component is not FormComponent.CheckBox && !field.FloatingLabel)
+            var useFloatingLabel = FormElement.Options.UseFloatingLabels && field.SupportsFloatingLabel();
+            
+            if (field.Component is not FormComponent.CheckBox && !useFloatingLabel)
             {
                 var label = CreateLabel(field, IsRange(field, PageState));
-                htmlField.AppendComponent(label);
+                formGroup.AppendComponent(label);
             }
-            
-            if(field.FloatingLabel)
-                field.SetAttr("placeholder",field.LabelOrName);
-
-            HtmlBuilder parentDiv;
-
-            if (field.FloatingLabel)
-            {
-                var formFloating = new Div().WithCssClass("form-floating");
-                htmlField.Append(formFloating);
-                parentDiv = formFloating;
-            }
-            else
-                parentDiv = htmlField;
             
             if (IsViewModeAsStatic)
-                parentDiv.Append(await GetStaticField(field));
+                formGroup.Append(await GetStaticField(field));
             else
             {
                 var controlHtml = await GetControlFieldHtml(field, value);
-                if(field.FloatingLabel && !string.IsNullOrEmpty(field.HelpDescription))
-                    controlHtml.WithToolTip(StringLocalizer[field.HelpDescription!]);
-                parentDiv.Append(controlHtml);
+                formGroup.Append(controlHtml);
             }
-            
-            if (field.FloatingLabel)
-                parentDiv.Append(CreateFloatingLabel(field, IsRange(field,PageState)));
-           
         }
 
         return html;
@@ -207,19 +190,10 @@ internal class DataPanelControl
         var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var field in fields)
         {
-            var fieldClass = GetHorizontalFieldClass(colCount);
-            var labelClass = GetHorizontalLabelClass(colCount);
-            
+            var labelClass = "col-sm-2";
+            var fieldClass = GetHorizontalFieldClass(cols);
             var hasCssClass = !string.IsNullOrEmpty(field.CssClass);
-            if (hasCssClass)
-                fieldClass = field.CssClass;
-
-            if (BootstrapHelper.Version > 3)
-            {
-                labelClass += " d-flex justify-content-end align-items-center";
-                fieldClass += " d-flex justify-content-start align-items-center";
-            }
-
+            
             //Visible expression
             bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
@@ -229,11 +203,11 @@ internal class DataPanelControl
             object? value = null;
             if (Values != null && Values.TryGetValue(field.Name, out var nonFormattedValue))
                 value = FieldsService.FormatValue(field, nonFormattedValue);
-            
-            var label = CreateLabel(field, IsRange(field, PageState));
-            label.CssClass = labelClass;
-            
+
+            var isRange = IsRange(field, PageState);
+            var label = CreateLabel(field, isRange);
             var cssClass = string.Empty;
+            
             if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(field.Name))
                 cssClass += " has-error";
 
@@ -246,12 +220,22 @@ internal class DataPanelControl
 
                 html.Append(row);
             }
-
-            string? colClass = fieldClass;
+            
+            if (isRange)
+            {
+                if (field.Component is FormComponent.Date)
+                    fieldClass = "col-sm-6";
+                else
+                    fieldClass = "col-sm-10";
+            }
+            
+            if (hasCssClass)
+                fieldClass = field.CssClass;
+            
             if (field.Component is FormComponent.TextArea)
             {
                 colCount = 1;
-                colClass = GetHorizontalTextAreaClass(cols);
+                fieldClass = GetHorizontalTextAreaClass(cols);
             }
             else if (field.Component is FormComponent.CheckBox)
             {
@@ -263,14 +247,21 @@ internal class DataPanelControl
             {
                 colCount++;
             }
-
+            
+            if (BootstrapHelper.Version > 3)
+            {
+                labelClass += " d-flex justify-content-end align-items-center";
+                fieldClass += " d-flex justify-content-start align-items-center";
+            }
+            
+            label.CssClass = labelClass;
+            
             row?.WithCssClass(cssClass)
              .AppendComponent(label);
-
-   
+            
             await row?.AppendAsync(HtmlTag.Div, async col =>
             {
-                col.WithCssClass(colClass);
+                col.WithCssClass(fieldClass);
                 col.Append(IsViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value));
             })!;
             
@@ -278,16 +269,7 @@ internal class DataPanelControl
 
         return html;
     }
-    
-    private static string GetHorizontalLabelClass(int cols) => cols switch
-    {
-        1 => "col-sm-2",
-        2 => "col-sm-2",
-        3 => "col-sm-2",
-        4 => "col-sm-1",
-        _ => throw new ArgumentException("Invalid number of columns", nameof(cols))
-    };
-
+   
     private static string GetHorizontalFieldClass(int cols) => cols switch
     {
         //With spaces of 12 subtracting from the label, we consider:
@@ -324,23 +306,12 @@ internal class DataPanelControl
 
         return label;
     }
-    private HtmlBuilder CreateFloatingLabel(FormElementField field, bool isRange)
-    {
-        var label = new HtmlBuilder(HtmlTag.Label);
-        var fieldName = GetFieldNameWithPrefix(field);
-        
-        if (isRange)
-            fieldName += "_from";
-        
-        label.WithAttribute("for", fieldName);
-        label.AppendText(field.LabelOrName);
-        return label;
-    }
 
 
     private async Task<HtmlBuilder> GetStaticField(FormElementField field)
     {
-        var staticValue = await FieldsService.FormatGridValueAsync(field, Values, UserValues);
+        var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
+        var staticValue = await FieldsService.FormatGridValueAsync(fieldSelector, FormStateData);
         var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
             .AppendText(field.EncodeHtml ? HttpUtility.HtmlEncode(staticValue) : staticValue);
@@ -361,7 +332,7 @@ internal class DataPanelControl
         if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
             control.CssClass = "is-invalid";
 
-        if (field.AutoPostBack && PageState is PageState.Insert or PageState.Update)
+        if (field.AutoPostBack && PageState is PageState.Insert or PageState.Update or PageState.Filter)
             control.SetAttr("onchange", GetScriptReload(field));
 
         if(control is JJTextGroup textGroup && PageState is PageState.View)
@@ -370,6 +341,14 @@ internal class DataPanelControl
         
         if(control is JJTextFile file)
             file.ParentName = FormElement.Name;
+
+        var useFloatingLabels = FormUI.IsVerticalLayout && FormElement.Options.UseFloatingLabels;
+        
+        if (useFloatingLabels && control is IFloatingLabelControl floatingLabelControl)
+        {
+            floatingLabelControl.FloatingLabel = StringLocalizer[field.LabelOrName];
+            floatingLabelControl.UseFloatingLabel = field.SupportsFloatingLabel();
+        }
         
         if (PageState != PageState.Filter) 
             return control.GetHtmlBuilderAsync();

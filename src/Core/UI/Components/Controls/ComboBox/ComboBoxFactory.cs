@@ -34,6 +34,7 @@ internal class ComboBoxFactory(IFormValues formValues,
             throw new ArgumentNullException(nameof(field.DataItem));
 
         var comboBox = Create();
+        comboBox.ConnectionId = formElement.ConnectionId;
         comboBox.DataItem = field.DataItem;
         comboBox.Name = field.Name;
         comboBox.Visible = true;

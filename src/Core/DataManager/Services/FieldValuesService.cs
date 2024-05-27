@@ -19,8 +19,7 @@ public class FieldValuesService(ExpressionsService expressionsService)
     /// Apply default and triggers expression values
     /// </summary>
     /// <param name="formElement"></param>
-    /// <param name="formValues">Form values</param>
-    /// <param name="pageState">FormStateData</param>
+    /// <param name="formStateData">Form values</param>
     /// <param name="replaceNullValues">Change the field's default value even if it is empty</param>
     /// <returns>
     /// Returns a new Dictionary with the updated values
@@ -50,7 +49,8 @@ public class FieldValuesService(ExpressionsService expressionsService)
         
         foreach (var field in fieldsWithDefaultValue)
         {
-            var defaultValue = await ExpressionsService.GetDefaultValueAsync(field, formStateData);
+            var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
+            var defaultValue = await ExpressionsService.GetDefaultValueAsync(fieldSelector, formStateData);
             if (!string.IsNullOrEmpty(defaultValue?.ToString()))
             {
                 defaultValues.Add(field.Name, defaultValue);
@@ -108,7 +108,8 @@ public class FieldValuesService(ExpressionsService expressionsService)
         
         foreach (var field in fieldsWithTrigger)
         {
-            var value = await ExpressionsService.GetTriggerValueAsync(field, formStateData);
+            var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
+            var value = await ExpressionsService.GetTriggerValueAsync(fieldSelector, formStateData);
             if (value != null)
             {
                 formStateData.Values[field.Name] = value;

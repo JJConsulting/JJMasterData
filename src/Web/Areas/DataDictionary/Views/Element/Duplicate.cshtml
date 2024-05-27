@@ -1,11 +1,19 @@
 ﻿@using JJMasterData.Core.UI.Components
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IComponentFactory ComponentFactory
+@inject JJMasterDataLogo MasterDataLogo
+
 @model DuplicateElementViewModel
 
-<jj-title 
-    title="@ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml()" 
-    subtitle="@StringLocalizer["Duplicate Element"]"/>
+@{
+    var backUrl = Url.Action("Index", "Element")!;
+    List<BreadcrumbItem> breadcrumbs = [
+        new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),
+        new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl), 
+        new BreadcrumbItem(StringLocalizer["Duplicate Element"])
+    ];
+}
+
+<breadcrumb items="breadcrumbs"/>
 
 @using (Html.BeginMasterDataForm())
 {
@@ -42,7 +50,7 @@
 
     <div class="row">
         <div class="col-sm-6">
-            <link-button icon="Times" text="Cancel" type="@LinkButtonType.Button" on-client-click="location.href='@(Url.Action("Index")!)'"/>
+            <link-button icon="Times" text="Cancel" type="@LinkButtonType.Button" on-client-click="location.href='@backUrl'"/>
             <link-button icon="Clone" text="Duplicate" type="LinkButtonType.Submit" color="Primary"/>
         </div>
     </div>

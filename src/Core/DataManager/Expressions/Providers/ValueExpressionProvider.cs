@@ -5,7 +5,7 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-public class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExpressionProvider
+public sealed class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExpressionProvider
 {
     public string Prefix => "val";
     public string Title => "Value";

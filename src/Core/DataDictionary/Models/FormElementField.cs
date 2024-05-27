@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
@@ -85,7 +86,7 @@ public class FormElementField : ElementField
     /// Help text will be displayed next to the label
     /// </summary>
     [JsonProperty("helpDescription")]
-    [Display(Name = "Help Description")]
+    [Display(Name = "Tooltip")]
     public string? HelpDescription { get; set; }
 
     /// <summary>
@@ -163,7 +164,8 @@ public class FormElementField : ElementField
     [JsonProperty("panelId")]
     public int PanelId { get; set; }
 
-    [JsonProperty("actions")] public FormElementFieldActionList Actions { get; set; }
+    [JsonProperty("actions")] 
+    public FormElementFieldActionList Actions { get; set; }
 
     /// <summary>
     /// Internal developer notes
@@ -174,22 +176,25 @@ public class FormElementField : ElementField
     [JsonProperty("gridAlignment")]
     [Display(Name = "Alignment At Grid")]
     public GridAlignment GridAlignment { get; set; }
-
+    
+    /// <summary>
+    /// Template used to render the field at the Grid.
+    /// </summary>
+    [LanguageInjection("html")]
+    [JsonProperty("gridRenderingTemplate")]
+    [Display(Name = "Rendering Template")]
+    public string? GridRenderingTemplate { get; set; }
+    
     [JsonProperty("encodeHtml")]
     [Display(Name = "Encode HTML")]
     public bool EncodeHtml { get; set; } = true;
-
-    [JsonProperty("floatingLabel")]
-    [Display(Name = "Floating Label")]
-    public bool FloatingLabel { get; set; }
 
     /// <summary>
     /// The field will be disabled but the value send to the server
     /// </summary>
     [JsonIgnore]
     public string? ReadOnlyExpression { get; set; }
-
-
+    
     public FormElementField()
     {
         Component = FormComponent.Text;
@@ -286,13 +291,16 @@ public class FormElementField : ElementField
     public bool SupportsFloatingLabel() =>
         Component
             is FormComponent.Text
+            or FormComponent.TextArea
+            or FormComponent.Date
+            or FormComponent.DateTime
             or FormComponent.Number
             or FormComponent.Cep
             or FormComponent.Cpf
             or FormComponent.CnpjCpf
             or FormComponent.Tel
             or FormComponent.ComboBox
-        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels() && Actions.Count == 0));
+        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels()));
 
     /// <summary>
     /// Set if the field is enabled.

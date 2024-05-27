@@ -3,22 +3,27 @@
 @model SettingsViewModel
 @inject IComponentFactory ComponentFactory
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject JJMasterDataLogo MasterDataLogo
+
 @{
-    ViewData["Title"] = StringLocalizer["Application Settings"];
+    string title = StringLocalizer["Application Settings"];
+    ViewData["Title"] = title;
+    List<BreadcrumbItem> breadcrumbs = [
+        new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder())
+        {
+            Url = Url.Action("Index","Element", new {Area="DataDictionary"})
+        }, 
+        new BreadcrumbItem(title)
+    ];
+
 }
 
 <form asp-action="Save">
     <input asp-for="FilePath" hidden="hidden"/>
 
-    <div class="pb-2 mb-2 border-bottom">
-        <h1>
-            @Html.Raw(ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml())
-            <small class="sub-title">@StringLocalizer["Application Settings"]</small>
-        </h1>
-    </div>
+    <breadcrumb items="breadcrumbs"/>
     
     <div id="connection-result">
-        
     </div>
 
     @if (!ViewData.ModelState.IsValid && Model.ValidationSummary != null)

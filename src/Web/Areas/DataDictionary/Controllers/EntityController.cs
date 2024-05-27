@@ -1,17 +1,16 @@
-﻿using JJMasterData.Commons.Configuration.Options;
+﻿
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.UI.Events.Abstractions;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class EntityController(
     EntityService entityService,
-    IOptions<MasterDataCommonsOptions> options,
     IFormEventHandlerResolver? formEventHandlerFactory = null,
     IGridEventHandlerResolver? gridEventHandlerResolver = null)
     : DataDictionaryController
@@ -20,7 +19,25 @@ public class EntityController(
     {
         return View(await Populate(elementName, true));
     }
+    
+    [HttpPost]        
+    public async Task<ActionResult> Index(
+        EntityViewModel model)
+    {
+        var entity = await entityService.EditEntityAsync(model.Entity, model.ElementName);
 
+        if (entity != null)
+        {
+            return View(model);
+        }
+
+        model.MenuId = "Entity";
+        model.ValidationSummary = entityService.GetValidationSummary();
+            
+        return View(model);
+
+    }
+    
     public async Task<IActionResult> Edit(string elementName)
     {
         return View(await Populate(elementName, false));
@@ -54,12 +71,6 @@ public class EntityController(
             FormEvent = formEventHandlerFactory?.GetFormEventHandler(elementName) as IEventHandler ?? gridEventHandlerResolver?.GetGridEventHandler(elementName),
             Disabled = readOnly
         };
-
-        if (string.IsNullOrEmpty(viewModel.Entity.ReadProcedureName))
-            entity.ReadProcedureName = options.Value.GetReadProcedureName(formElement);
-
-        if (string.IsNullOrEmpty(viewModel.Entity.WriteProcedureName))
-            entity.WriteProcedureName = options.Value.GetWriteProcedureName(formElement);
     
         return viewModel;
     }

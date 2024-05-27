@@ -34,6 +34,9 @@ public class FormElement : Element
     
     [JsonProperty("icon")]
     public IconType? Icon { get; set; }
+
+    [JsonProperty("typeIdentifier")]
+    public char TypeIdentifier { get; init; } = 'F';
     
     [Required]
     [JsonProperty("fields")]
@@ -89,6 +92,7 @@ public class FormElement : Element
         SynchronismMode = element.SynchronismMode;
         Title = element.Name;
         SubTitle = element.Info;
+        ConnectionId = element.ConnectionId;
         Fields = new FormElementFieldList(element.Fields);
         Panels = [];
         ApiOptions = new FormElementApiOptions();

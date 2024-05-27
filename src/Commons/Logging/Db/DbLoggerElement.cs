@@ -23,7 +23,7 @@ public static class DbLoggerElement
             {
                 new ElementField
                 {
-                    Name = "Id",
+                    Name = options.IdColumnName,
                     Label = "Id",
                     IsPk = true,
                     AutoNum = true,

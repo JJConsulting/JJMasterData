@@ -25,6 +25,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Logging;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
@@ -198,8 +199,11 @@ public class JJGridView : AsyncComponent
     }
 
     private bool IsUserSetDataSource { get; set; }
+    
     public bool ShowTitle { get; set; }
-
+    
+    public List<TitleAction>? TitleActions { get; set; }
+    
     public bool EnableFilter { get; set; }
 
     public string? ParentComponentName { get; set; }
@@ -655,7 +659,7 @@ public class JJGridView : AsyncComponent
             return new ContentComponentResult(html);
         }
         
-        if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
+        if (ComponentContext is ComponentContext.SearchBoxFilter)
         {
             var fieldName = CurrentContext.Request.QueryString["fieldName"];
             var field = FormElement.Fields[fieldName];
@@ -817,8 +821,8 @@ public class JJGridView : AsyncComponent
         var row = DataSource?[rowIndex];
 
         string result = string.Empty;
-        await foreach (var builder in Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
-            result = result + builder;
+        foreach (var builder in await Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
+            result += builder;
         
         return result;
     }
@@ -836,7 +840,7 @@ public class JJGridView : AsyncComponent
     
     internal async Task<JJTitle> GetTitleAsync()
     {
-        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync());
+        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync(), TitleActions);
     }
 
     internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
@@ -1125,37 +1129,45 @@ public class JJGridView : AsyncComponent
 
     private async Task<DictionaryListResult> GetDataSourceAsync(EntityParameters parameters)
     {
-        if (IsUserSetDataSource && DataSource != null)
+        try
         {
-
-            using var dataView = new DataView(EnumerableHelper.ConvertToDataTable( new List<Dictionary<string,object?>>(DataSource)));
-            dataView.Sort = parameters.OrderBy.ToQueryParameter();
-            var dataTable = dataView.ToTable();
-            
-            return DictionaryListResult.FromDataTable(dataTable);
-        }
-
-        if (OnDataLoadAsync != null)
-        {
-            var args = new GridDataLoadEventArgs
+            if (IsUserSetDataSource && DataSource != null)
             {
-                Filters = parameters.Filters,
-                OrderBy = parameters.OrderBy,
-                RecordsPerPage = parameters.RecordsPerPage,
-                CurrentPage = parameters.CurrentPage,
-            };
+
+                using var dataView = new DataView(EnumerableHelper.ConvertToDataTable( new List<Dictionary<string,object?>>(DataSource)));
+                dataView.Sort = parameters.OrderBy.ToQueryParameter();
+                var dataTable = dataView.ToTable();
             
-            await OnDataLoadAsync.Invoke(this, args);
-            
-            if (args.DataSource is not null)
-            {
-                TotalOfRecords = args.TotalOfRecords;
-            
-                return new DictionaryListResult(args.DataSource, args.TotalOfRecords);
+                return DictionaryListResult.FromDataTable(dataTable);
             }
-        }
 
-        return await EntityRepository.GetDictionaryListResultAsync(FormElement, parameters);
+            if (OnDataLoadAsync != null)
+            {
+                var args = new GridDataLoadEventArgs
+                {
+                    Filters = parameters.Filters,
+                    OrderBy = parameters.OrderBy,
+                    RecordsPerPage = parameters.RecordsPerPage,
+                    CurrentPage = parameters.CurrentPage,
+                };
+            
+                await OnDataLoadAsync.Invoke(this, args);
+            
+                if (args.DataSource is not null)
+                {
+                    TotalOfRecords = args.TotalOfRecords;
+            
+                    return new DictionaryListResult(args.DataSource, args.TotalOfRecords);
+                }
+            }
+
+            return await EntityRepository.GetDictionaryListResultAsync(FormElement, parameters);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogGridViewDataSourceException(ex, FormElement.Name);
+            throw;
+        }
     }
 
     /// <remarks>

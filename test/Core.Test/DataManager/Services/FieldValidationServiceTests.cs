@@ -64,7 +64,7 @@ public class FieldValidationServiceTests
         var value = "";
 
         // Act
-        var result = service.ValidateField(field, fieldId, value, true);
+        var result = service.ValidateField(field, fieldId, value);
 
         // Assert
         Assert.Equal("Field is required", result);

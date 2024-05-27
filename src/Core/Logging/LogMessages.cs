@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using JJMasterData.Commons.Data;
+using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Logging;
@@ -60,4 +61,14 @@ internal static partial class LogMessages
         string provider,
         string? expression,
         string? fieldName);
+    
+    [LoggerMessage(
+        EventId = 7,
+        Message = "Error recovering DataSource at GridView.\nElement Name: {ElementName}.",
+        Level = LogLevel.Error)]
+    internal static partial void LogGridViewDataSourceException(
+        this ILogger logger,
+        Exception exception,
+        string elementName
+        );
 }

@@ -25,6 +25,9 @@ public class CollapsePanelTagHelper(IComponentFactory<JJCollapsePanel> collapseP
 
     [HtmlAttributeName("color")]
     public BootstrapColor Color { get; set; }
+
+    [HtmlAttributeName("visible")] 
+    public bool Visible { get; set; } = true;
     
     private IComponentFactory<JJCollapsePanel> CollapsePanelFactory { get; } = collapsePanelFactory;
 
@@ -33,10 +36,11 @@ public class CollapsePanelTagHelper(IComponentFactory<JJCollapsePanel> collapseP
         AssertAttributes();
 
         var panel = CollapsePanelFactory.Create();
-        panel.Name = Title!.ToLower().Replace(" ", "_");
+        panel.Name = Title!.ToLowerInvariant().Replace(" ", "_");
         panel.Title = Title;
         panel.ExpandedByDefault = ExpandedByDefault;
         panel.Color = Color;
+        panel.Visible = Visible;
 
         if (Icon != default)
         {

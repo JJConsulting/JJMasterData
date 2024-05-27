@@ -101,7 +101,7 @@ public class JJCollapsePanel : HtmlComponent
             button.WithAttribute("id", $"heading-{Name.ToLower()}");
             button.WithDataAttribute("toggle", "collapse");
             button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
-            button.AppendComponentIf(TitleIcon != null, TitleIcon);
+            button.AppendComponentIf(TitleIcon != null, ()=>TitleIcon);
             button.AppendTextIf(TitleIcon != null, "&nbsp;");
             button.AppendText(Title);
         });

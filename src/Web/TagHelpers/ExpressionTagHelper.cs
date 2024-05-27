@@ -44,6 +44,9 @@ public class ExpressionTagHelper(
     [HtmlAttributeName("disabled")] 
     public bool Disabled { get; set; }
 
+    [HtmlAttributeName("use-floating-label")] 
+    public bool UseFloatingLabel { get; set; } = true;
+
     private bool IsSyncExpression
     {
         get
@@ -92,12 +95,23 @@ public class ExpressionTagHelper(
 
         var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
 
-        fieldSet.AppendIf(displayName is not null, HtmlTag.Div, div =>
+        var label = new Label();
+        label.WithAttribute("for", name + "-ExpressionValue");
+        label.AppendText(displayName!);
+        
+        if (!UseFloatingLabel)
         {
-            var label = new Label();
-            label.WithAttribute("for", name + "-ExpressionValue");
-            label.AppendText(displayName!);
+            label.WithCssClass("form-label");
+            fieldSet.Append(label);
+        }
+        
+        fieldSet.Append(HtmlTag.Div, div =>
+        {
+
+            div.WithCssClass("mb-3");
+            
             var isAdvanced = options.Value.UseAdvancedModeAtExpressions;
+
             if (!isAdvanced)
             {
                 div.WithCssClass("input-group");
@@ -106,16 +120,27 @@ public class ExpressionTagHelper(
                     .WithAttribute("id", name + "-ExpressionValue"));
             }
 
-            div.AppendDiv(div =>
-                {
-                    div.WithCssClass("form-floating");
-                    div.WithAttributeIf(!isAdvanced, "style", "width:80%");
-                    div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
-                    div.Append(label);
-                }).WithAttribute("placeholder", displayName!)
-                .WithCssClass("mb-3")
-                .WithCssClassIf(isInvalid, "form-control is-invalid")
-                .WithAttribute("id", name + "-ExpressionValue");
+
+            var editor = GetEditorHtml(name, selectedExpressionType, selectedExpressionValue);
+            
+            editor.WithAttributeIf(UseFloatingLabel,"placeholder", displayName!);
+            editor.WithCssClassIf(isInvalid, "form-control is-invalid");
+            editor.WithAttribute("id", name + "-ExpressionValue");
+            editor.WithAttributeIf(!isAdvanced && !UseFloatingLabel, "style", "width:80%");
+            
+            if (UseFloatingLabel)
+            {
+                var formFloating = new Div();
+                formFloating.WithCssClass("form-floating");
+                formFloating.Append(editor);
+                formFloating.Append(label);
+                formFloating.WithAttributeIf(!isAdvanced, "style", "width:75%");
+                div.Append(formFloating);
+            }
+            else
+            {
+                div.Append(editor);
+            }
         });
 
         output.TagMode = TagMode.StartTagAndEndTag;

@@ -19,22 +19,21 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
     public async Task<Dictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
         var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
-        var filters = await GetFilters(childElement,elementMap, value, formStateData);
+        var filters = GetFilters(elementMap, value, formStateData);
         return await EntityRepository.GetFieldsAsync(childElement, filters);
     }
     
     public async Task<List<Dictionary<string, object?>>> GetDictionaryList(DataElementMap elementMap, object? value, FormStateData formStateData)
     {
         var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
-        var filters = await GetFilters(childElement,elementMap, value, formStateData);
+        var filters = GetFilters(elementMap, value, formStateData);
         return await EntityRepository.GetDictionaryListAsync(childElement, new EntityParameters
         {
             Filters = filters!
         });
     }
     
-    private async Task<Dictionary<string, object>> GetFilters(
-        FormElement childElement,
+    private Dictionary<string, object> GetFilters(
         DataElementMap elementMap, 
         object? value, 
         FormStateData? formStateData)
@@ -49,9 +48,7 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
             {
                 if (formStateData != null)
                 {
-                    var field = childElement.Fields[filter.Key];
-                    var filterParsed =
-                        await ExpressionsService.GetExpressionValueAsync(filter.Value.ToString(), field,formStateData) ?? string.Empty;
+                    var filterParsed = ExpressionsService.GetExpressionValue(filter.Value.ToString(), formStateData) ?? string.Empty;
                     filters[filter.Key] = filterParsed;
                 }
             }

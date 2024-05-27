@@ -30,7 +30,7 @@ public class SqlServerWriteProcedureScripts(
         var sql = new StringBuilder();
         string procedureFinalName = Options.GetWriteProcedureName(element);
 
-        if (SqlServerInfo.GetCompatibilityLevel() >= 130)
+        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
             sql.Append("CREATE OR ALTER PROCEDURE [");
         }

@@ -1,16 +1,17 @@
 ﻿class DataDictionaryUtils {
     static deleteAction(actionName: string, url: string, confirmationMessage: string): void {
-        let confirmed = confirm(confirmationMessage);
-        if (confirmed == true) {
-            postFormValues({
-                url:url,
-                success:function(data){
-                    if (data.success) {
-                        document.getElementById(actionName).remove();
+        showConfirmationMessage(confirmationMessage).then(function(confirmed){
+            if(confirmed){
+                postFormValues({
+                    url:url,
+                    success:function(data){
+                        if (data.success) {
+                            document.getElementById(actionName).remove();
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     }
 
     static sortAction(context: string, url: string, errorMessage: string): void {
@@ -80,5 +81,9 @@
             window.URL.revokeObjectURL(url);
             SpinnerOverlay.hide()
         });
+    }
+    
+    static async showAbout(url) {
+        await OffcanvasHelper.populateOffcanvas("about-offcanvas",url);
     }
 }

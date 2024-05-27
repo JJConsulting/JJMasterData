@@ -1,7 +1,12 @@
 ﻿@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
 
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-4">
         <checkbox for="EnableAuditLog" switch="true"/>
+    </div>
+    <div class="col-sm-4">
+        <checkbox for="UseFloatingLabels" tooltip="@StringLocalizer["Show a label floating within the field. Not all fields support this option."]" switch="true"/>
     </div>
 </div>

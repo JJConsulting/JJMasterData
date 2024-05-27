@@ -82,7 +82,7 @@ public class SqlDataDictionaryRepository(
         if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement formElement))
             return formElement.DeepCopy();
         
-        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         var values =  entityRepository.GetFields(_masterDataElement, filter);
 
@@ -106,7 +106,7 @@ public class SqlDataDictionaryRepository(
         if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement formElement))
             return formElement.DeepCopy();
         
-        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         var values = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
 
@@ -168,7 +168,7 @@ public class SqlDataDictionaryRepository(
             { DataDictionaryStructure.Name, name },
             { DataDictionaryStructure.TableName, formElement.TableName },
             { DataDictionaryStructure.Info, formElement.Info },
-            { DataDictionaryStructure.Type, "F" },
+            { DataDictionaryStructure.Type, formElement.TypeIdentifier },
             { DataDictionaryStructure.Owner, null },
             { DataDictionaryStructure.Json, jsonForm },
             { DataDictionaryStructure.EnableSynchronism, formElement.EnableSynchronism },
@@ -201,7 +201,7 @@ public class SqlDataDictionaryRepository(
 
     public async Task CreateStructureIfNotExistsAsync()
     {
-        if (!await entityRepository.TableExistsAsync(_masterDataElement.Name))
+        if (!await entityRepository.TableExistsAsync(_masterDataElement.Name, _masterDataElement.ConnectionId))
             await entityRepository.CreateDataModelAsync(_masterDataElement,[]);
             
     }

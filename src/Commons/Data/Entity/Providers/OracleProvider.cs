@@ -14,10 +14,9 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class OracleProvider(
-    DataAccess dataAccess,
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
-    : EntityProviderBase(dataAccess, options, loggerFactory)
+    : EntityProviderBase(options, loggerFactory)
 {
     private const string InsertKeyword = "I";
     private const string UpdateKeyword = "A";
@@ -1024,10 +1023,8 @@ public class OracleProvider(
         }
         return ret;
     }
-
- 
     
-    public override Task<Element> GetElementFromTableAsync(string tableName)
+    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }

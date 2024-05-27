@@ -203,6 +203,7 @@ public class FieldController(FieldService fieldService)
         else
             ViewBag.OriginalName = field.Name;
 
+        ViewBag.IsForm = formElement.TypeIdentifier == 'F';
         ViewBag.MenuId = "Fields";
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;

@@ -94,12 +94,12 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <ul class="list-group @sortableClass" id="sortable-@Model.Source.ToString()">
+        <div class="list-group @sortableClass" id="sortable-@Model.Source.ToString()">
             @foreach (var action in Model.Actions!)
             {
-                <li class="list-group-item" id="@action.Name">
-                    <div style="height: 33px;">
-                        <div style="float: left; margin-top: 10px;">
+                <div class="list-group-item" id="@action.Name">
+                    <div style="height: 1.875rem;">
+                        <div style="float: left; margin-top: 0.625rem;">
                             <span class="@action.Icon.GetCssClass() fa-fw"></span>&nbsp;
                             @{
                                 var actionName = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
@@ -141,10 +141,9 @@
                             }
                         </div>
                     </div>
-                </li>
+                </div>
             }
-        </ul>
-
+        </div>
     </div>
 </div>
 

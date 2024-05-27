@@ -204,6 +204,7 @@ internal class GridPagination(JJGridView gridView)
         string multipleRecordsSelected = GridView.StringLocalizer["{0} selected records", selectedValues.Count];
 
         var span = new HtmlBuilder(HtmlTag.Span);
+        span.WithCssClass("small");
         span.WithAttribute("id", $"selected-text-{GridView.Name}");
         span.WithAttribute("no-record-selected-label", noRecordSelected);
         span.WithAttribute("one-record-selected-label", oneRecordSelected);

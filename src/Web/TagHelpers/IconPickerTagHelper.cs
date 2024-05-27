@@ -1,14 +1,14 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Http.Abstractions;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory, IMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
+public class IconPickerTagHelper(
+    IHtmlHelper htmlHelper,
+    IControlFactory<JJIconPicker> iconPickerFactory) : TagHelper
 {
     
     [HtmlAttributeName("for")] 
@@ -25,16 +25,18 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
 
     [HtmlAttributeName("enabled")]
     public bool Enabled { get; set; } = true;
-
-    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
-    private IControlFactory<JJIconPicker> IconPickerFactory { get; } = iconPickerFactory;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    
+    [ViewContext] 
+    [HtmlAttributeNotBound] 
+    public ViewContext ViewContext { get; set; } = null!;
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var name = For?.Name ?? Name ?? throw new ArgumentException("For or Name properties are required.");
+        Contextualize(ViewContext);
+        
+        var name = htmlHelper.Name(For?.Name) ?? Name ?? throw new ArgumentException("For or Name properties are required.");
 
-        var id = Id ?? name;
+        var id = htmlHelper.Id(For?.Name) ?? name;
         
         IconType? modelValue = null;
 
@@ -46,7 +48,7 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
         {
             modelValue = Value;
         }
-        var iconPicker = IconPickerFactory.Create();
+        var iconPicker = iconPickerFactory.Create();
         iconPicker.Id = id;
         iconPicker.Name = name;
         iconPicker.Enabled = Enabled;
@@ -57,5 +59,12 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
         output.TagMode = TagMode.StartTagAndEndTag;
         
         output.Content.SetHtmlContent((await iconPicker.GetHtmlBuilderAsync()).ToString());
+    }
+    
+    public void Contextualize(ViewContext viewContext)
+    {
+        if (htmlHelper is IViewContextAware aware) {
+            aware.Contextualize(viewContext);
+        }
     }
 }

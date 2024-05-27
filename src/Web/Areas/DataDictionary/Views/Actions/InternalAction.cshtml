@@ -49,7 +49,7 @@
 </script>
 
 @using (Html.BeginMasterDataForm("InternalAction", "Actions",
-   new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+   new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
 {
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab" />
 
@@ -59,7 +59,7 @@
         <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
     </ul>
 
-    <div class="tab-content" style="margin-top: 20px;">
+    <div class="tab-content" style="margin-top: 1.25rem;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
             @await Html.PartialAsync("_NavGeneral", Model)
         </div>
