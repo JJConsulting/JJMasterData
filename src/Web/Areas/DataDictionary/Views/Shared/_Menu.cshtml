@@ -22,11 +22,11 @@
             <span class="@IconType.Code.GetCssClass() fs-8">
             </span>
         </a>
-        <a class="btn btn-secondary" href="javascript:defaultModal.showUrl('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);" data-bs-toggle="tooltip" title="@StringLocalizer["Database Scripts"]">
+        <a class="btn btn-secondary" href="javascript:defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);" data-bs-toggle="tooltip" title="@StringLocalizer["Database Scripts"]">
             <span class="@IconType.SolidScroll.GetCssClass() fs-8">
             </span>
         </a>
-        <a class="btn btn-secondary" href="javascript:window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();" data-bs-toggle="tooltip" title="@StringLocalizer["Render"]">
+        <a class="btn btn-secondary" href="@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })" data-bs-toggle="tooltip" title="@StringLocalizer["Render"]">
             <span class="@IconType.Play.GetCssClass() fs-8">
             </span>
         </a>
