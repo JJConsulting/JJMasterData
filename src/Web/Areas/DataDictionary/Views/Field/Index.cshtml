@@ -108,15 +108,19 @@
                                         <b>@fieldName</b>
                                         @if (field.IsPk)
                                         {
-                                            <span class="fa fa-star" style="color:#efd829;" data-bs-toggle="tooltip" data-bs-original-title="@StringLocalizer["Primary key"]"></span>
+                                            <span class="fa fa-star text-warning"  data-bs-toggle="tooltip" title="@StringLocalizer["Primary key"]"></span>
                                         }
                                         @if (field.Component is not FormComponent.Text)
                                         {
-                                            <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Component.ToString()"></span>
+                                            <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" title="@field.Component.ToString()"></span>
                                         }
                                         @if (field.Filter.Type is not FilterMode.None)
                                         {
-                                            <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Filter.Type.ToString()"></span>
+                                            <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip" title="@field.Filter.Type.ToString()"></span>
+                                        }
+                                        @if (field.AutoPostBack)
+                                        {
+                                            <span class="@IconType.SolidBoltLightning.GetCssClass() text-warning ms-1" data-bs-toggle="tooltip" title="AutoPostBack"></span>
                                         }
                                         <br>
                                         <small>
