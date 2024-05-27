@@ -74,7 +74,7 @@ public class JJTitle : HtmlComponent
                 {
                     a.WithCssClass("btn btn-secondary");
                     a.WithHref(action.Url);
-                    a.AppendComponentIf(Icon.HasValue, () => new JJIcon(action.Icon!.Value)
+                    a.AppendComponentIf(action.Icon.HasValue, () => new JJIcon(action.Icon!.Value)
                     {
                         CssClass = "fs-8"
                     });
