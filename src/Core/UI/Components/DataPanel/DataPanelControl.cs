@@ -49,6 +49,7 @@ internal class DataPanelControl
 
     public string? FieldNamePrefix { get; init; }
 
+    private bool IsGridViewFilter { get; }
 
     private FieldsService FieldsService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -70,6 +71,7 @@ internal class DataPanelControl
         FieldNamePrefix = dataPanel.FieldNamePrefix;
         StringLocalizer = dataPanel.StringLocalizer;
         FormStateData = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
+        IsGridViewFilter = false;
     }
 
     public DataPanelControl(JJGridView gridView, Dictionary<string, object?> values)
@@ -88,6 +90,7 @@ internal class DataPanelControl
         FieldsService = gridView.FieldsService;
         StringLocalizer = gridView.StringLocalizer;
         FormStateData = new FormStateData(values, gridView.UserValues, PageState.Filter);
+        IsGridViewFilter = true;
     }
 
     public Task<HtmlBuilder> GetHtmlForm(List<FormElementField> fields)
@@ -332,7 +335,7 @@ internal class DataPanelControl
         if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
             control.CssClass = "is-invalid";
 
-        if (field.AutoPostBack && PageState is PageState.Insert or PageState.Update or PageState.Filter)
+        if (field.AutoPostBack && !IsGridViewFilter && PageState is PageState.Insert or PageState.Update or PageState.Filter)
             control.SetAttr("onchange", GetScriptReload(field));
 
         if(control is JJTextGroup textGroup && PageState is PageState.View)
