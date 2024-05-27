@@ -15,7 +15,24 @@
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
 
-<breadcrumb items="breadcrumbs"/>
+<div class="mb-2 pb-2 border-bottom d-flex justify-content-between">
+    <breadcrumb items="breadcrumbs" css-class=""/>
+    <div>
+        <a class="btn btn-secondary" href="javascript:defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["C# Class"]',1);" data-bs-toggle="tooltip" title="@StringLocalizer["C# Class"]">
+            <span class="@IconType.Code.GetCssClass() fs-8">
+            </span>
+        </a>
+        <a class="btn btn-secondary" href="javascript:defaultModal.showUrl('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);" data-bs-toggle="tooltip" title="@StringLocalizer["Database Scripts"]">
+            <span class="@IconType.SolidScroll.GetCssClass() fs-8">
+            </span>
+        </a>
+        <a class="btn btn-secondary" href="javascript:window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();" data-bs-toggle="tooltip" title="@StringLocalizer["Render"]">
+            <span class="@IconType.Play.GetCssClass() fs-8">
+            </span>
+        </a>
+    </div>
+</div>
+
 
 <ul class="nav nav-tabs mb-3">
     @{
@@ -28,29 +45,6 @@
         NavItem("Actions", "fa-solid fa-bolt", Url.Action("Index", "Actions", new { elementName = Model.ElementName }));
         NavItem("WebApi", "fa-solid fa-globe", Url.Action("Index", "Api", new { elementName = Model.ElementName }));
     }
-    <li class="nav-item dropdown ms-auto">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            @StringLocalizer["More"]
-        </a>
-        <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start">
-            <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
-                <a class="dropdown-item" href="#">
-                    <span class="@IconType.SolidScroll.GetCssClass() fa-fw fa-xs"></span> @StringLocalizer["Database Scripts"]
-                </a>
-            </li>
-            <li onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["C# Class"]',1);">
-                <a class="dropdown-item" href="#">
-                    <span class="@IconType.SolidFileCode.GetCssClass() fa-fw fa-xs"></span> @StringLocalizer["C# Class"]
-                </a>
-            </li>
-            <li onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
-                <a class="dropdown-item" href="#">
-                    <span class="@IconType.SolidCirclePlay.GetCssClass() fa-fw fa-xs"></span> @StringLocalizer["Render"]
-                </a>
-            </li>
-        </ul>
-    </li>
-  
 </ul>
 
 @functions
@@ -66,6 +60,7 @@
 
         return cssClass;
     }
+
     private void NavItem(
         string label,
         string iconCssClass,
