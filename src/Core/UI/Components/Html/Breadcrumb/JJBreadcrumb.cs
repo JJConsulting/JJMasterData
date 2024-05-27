@@ -10,7 +10,7 @@ public class JJBreadcrumb : HtmlComponent
     public JJBreadcrumb()
     {
         Items = [];
-        CssClass = "border-bottom mb-3";
+        CssClass = "border-bottom pb-2 mb-2";
     }
 
     internal override HtmlBuilder BuildHtml()
@@ -21,8 +21,7 @@ public class JJBreadcrumb : HtmlComponent
             .WithCssClass(CssClass)
             .Append(HtmlTag.Nav, nav =>
             {
-                nav.WithCssClass("mb-2 pb-2")
-                    .WithAttribute("aria-label", "breadcrumb")
+                    nav.WithAttribute("aria-label", "breadcrumb")
                     .Append(GetHtmlOlItems());
             });
 
