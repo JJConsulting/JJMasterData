@@ -5,7 +5,7 @@
 		<PackageIcon>JJMasterData.png</PackageIcon>
 		<Version>4.2.0</Version>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
-		<PackageVersion>$(Version)-preview1</PackageVersion>
+		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
 		<WarningsAsErrors>CA1859;CS4014</WarningsAsErrors>

@@ -5,9 +5,9 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Description>JJMasterData Hangfire support to background tasks, like exportation and importation.</Description>
 		<PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
-		<AssemblyVersion>2.0.2</AssemblyVersion>
-		<FileVersion>2.0.2</FileVersion>
-		<Version>2.0.2</Version>
+		<AssemblyVersion>2.0.3</AssemblyVersion>
+		<FileVersion>2.0.3</FileVersion>
+		<Version>2.0.3</Version>
 		<PackageTags>hangfire,jjmasterdata</PackageTags>
 		<RootNamespace>JJMasterData.Hangfire</RootNamespace>
 		<AssemblyName>JJMasterData.Hangfire</AssemblyName>
