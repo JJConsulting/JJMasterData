@@ -1607,7 +1607,7 @@ function getMasterDataForm() {
     const mdForm = document.getElementById("masterdata-form");
     if (mdForm)
         return mdForm;
-    return document.forms[0];
+    return document.forms[document.forms.length - 1];
 }
 var TMessageIcon;
 (function (TMessageIcon) {
