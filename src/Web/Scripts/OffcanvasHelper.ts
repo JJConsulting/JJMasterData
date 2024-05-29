@@ -4,6 +4,11 @@
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
         offcanvasElement.show();
     }
+
+    static hide(id){
+        const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
+        offcanvasElement.hide();
+    }
     
     static async populateOffcanvas(id, url) {
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));

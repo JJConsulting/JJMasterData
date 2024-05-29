@@ -2141,6 +2141,10 @@ class OffcanvasHelper {
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
         offcanvasElement.show();
     }
+    static hide(id) {
+        const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
+        offcanvasElement.hide();
+    }
     static populateOffcanvas(id, url) {
         return __awaiter(this, void 0, void 0, function* () {
             const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
