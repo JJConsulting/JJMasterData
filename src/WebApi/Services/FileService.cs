@@ -117,7 +117,7 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         await DeleteEntityFileAsync(formElement, field, pkValues, fileName);
     }
     
-    private void DeletePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
+    private static void DeletePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         var builder = new FormFilePathBuilder(formElement);
 

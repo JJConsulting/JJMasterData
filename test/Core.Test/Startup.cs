@@ -22,7 +22,7 @@ public class Startup
             .ConfigureServices(ConfigureServices);
 
     }
-    private void ConfigureServices(HostBuilderContext host, IServiceCollection services)
+    private static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
     {
         services.AddJJMasterDataCore()
             .WithFileSystemDataDictionary();

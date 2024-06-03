@@ -109,7 +109,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         return result.TotalOfRecords;
     }
     
-    private Dictionary<string,object?> GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
+    private static Dictionary<string,object?> GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
     {
         var filters = new Dictionary<string,object?>();
         var fields = metadata.Fields;

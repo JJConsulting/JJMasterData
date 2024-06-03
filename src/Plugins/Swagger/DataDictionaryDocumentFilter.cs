@@ -72,7 +72,7 @@ namespace JJMasterData.Swagger
             swaggerDoc.paths = paths.ToDictionary(e => e.Key, e => e.Value);
         }
 
-        private PathItem GetPatchPathItem(FormElement formElement, FormElementApiOptions apiOptions)
+        private static PathItem GetPatchPathItem(FormElement formElement, FormElementApiOptions apiOptions)
         {
             string modelName = formElement.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -134,7 +134,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPostPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
+        private static PathItem GetPostPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -205,7 +205,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPutPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
+        private static PathItem GetPutPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -268,7 +268,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDelPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
+        private static PathItem GetDelPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -325,7 +325,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDetailPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
+        private static PathItem GetDetailPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -382,7 +382,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetAllPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
+        private static PathItem GetAllPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "");
             var oPathItem = new PathItem();
@@ -536,7 +536,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private Schema GetValidationLetterSchema(bool enableDataField = false)
+        private static Schema GetValidationLetterSchema(bool enableDataField = false)
         {
             var modelSchema = new Schema();
             modelSchema.title = "validationLetter";
@@ -587,7 +587,7 @@ namespace JJMasterData.Swagger
             return modelSchema;
         }
 
-        private Schema GetDictionarySchema(FormElement f, FormElementApiOptions metadataApiOptions, string modelName, bool ignoreIdentity = false)
+        private static Schema GetDictionarySchema(FormElement f, FormElementApiOptions metadataApiOptions, string modelName, bool ignoreIdentity = false)
         {
             var modelSchema = new Schema();
             modelSchema.title = modelName;
@@ -615,7 +615,7 @@ namespace JJMasterData.Swagger
             return modelSchema;
         }
 
-        private Schema GetFieldSchema(FormElementField item)
+        private static Schema GetFieldSchema(FormElementField item)
         {
             var itemSchema = new Schema();
             itemSchema.description = item.Label;
@@ -666,7 +666,7 @@ namespace JJMasterData.Swagger
             return itemSchema;
         }
 
-        private Parameter GetAcceptLanguageHeaderAttr()
+        private static Parameter GetAcceptLanguageHeaderAttr()
         {
             return new Parameter
             {

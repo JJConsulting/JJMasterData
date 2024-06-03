@@ -18,13 +18,13 @@ public class ExpressionsServiceTests
     private readonly Mock<ISyncExpressionProvider> _expressionBooleanProviderMock = new();
     private readonly Mock<IEncryptionService> _encryptionServiceMock = new();
 
-    private IHttpContext MockHttpContext()
+    private static IHttpContext MockHttpContext()
     {
         var mockHttpContext = new Mock<IHttpContext>();
         return mockHttpContext.Object;
     }
 
-    private ILogger<ExpressionParser> MockLogger()
+    private static ILogger<ExpressionParser> MockLogger()
     {
         return new Mock<ILogger<ExpressionParser>>().Object;
     }

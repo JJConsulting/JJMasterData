@@ -41,7 +41,6 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
     [ItemCanBeNull]
     private async Task<HtmlBuilder> GetTabPanelsHtml()
     {
-        List<HtmlBuilder> tabPanels = [];
         var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
 
         if (tabs.Count <= 0)

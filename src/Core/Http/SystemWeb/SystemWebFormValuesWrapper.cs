@@ -8,8 +8,8 @@ namespace JJMasterData.Core.Http.SystemWeb;
 
 internal class SystemWebFormValuesWrapper : IFormValues
 {
-    private UnvalidatedRequestValues UnvalidatedFormCollection => HttpContext.Request.Unvalidated;
-    private NameValueCollection FormCollection => HttpContext.Request.Form;
+    private static UnvalidatedRequestValues UnvalidatedFormCollection => HttpContext.Request.Unvalidated;
+    private static NameValueCollection FormCollection => HttpContext.Request.Form;
     private static HttpContext HttpContext => HttpContext.Current;
     
     public bool ContainsFormValues() => FormCollection is { Count: > 0 };

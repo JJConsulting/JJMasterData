@@ -67,13 +67,13 @@ public class ExpressionParserTests
     // Add more test cases to cover other scenarios
     // ...
 
-    private IHttpContext MockHttpContext()
+    private static IHttpContext MockHttpContext()
     {
         var mockHttpContext = new Mock<IHttpContext>();
         return mockHttpContext.Object;
     }
 
-    private ILogger<ExpressionParser> MockLogger()
+    private static ILogger<ExpressionParser> MockLogger()
     {
         return new Mock<ILogger<ExpressionParser>>().Object;
     }

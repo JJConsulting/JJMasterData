@@ -38,7 +38,7 @@ public class WritableJsonOptionsTests
     private const string Section = "Logging";
     private const string FilePath = "settings.json";
 
-    private void Cleanup()
+    private static void Cleanup()
     {
         if (File.Exists(FilePath))
         {

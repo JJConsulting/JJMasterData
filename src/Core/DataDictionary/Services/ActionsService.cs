@@ -29,7 +29,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         return true;
     }
 
-    private void DeleteAction(FormElement formElement, string originalName, ActionSource context, string fieldName = null)
+    private static void DeleteAction(FormElement formElement, string originalName, ActionSource context, string fieldName = null)
     {
         if (originalName == null)
             return;
