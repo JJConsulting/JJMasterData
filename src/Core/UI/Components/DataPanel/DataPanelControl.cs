@@ -353,15 +353,17 @@ internal class DataPanelControl
             floatingLabelControl.UseFloatingLabel = field.SupportsFloatingLabel();
         }
         
-        if (PageState != PageState.Filter) 
+        if (PageState is not PageState.Filter) 
             return control.GetHtmlBuilderAsync();
-        
+
+
+        var isMultivalues = field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain;
         switch (control)
         {
             case JJTextRange range:
                 range.IsVerticalLayout = FormUI.IsVerticalLayout;
                 break;
-            case JJTextGroup when field.Filter.Type is not (FilterMode.MultValuesContain or FilterMode.MultValuesEqual):
+            case JJTextGroup when !isMultivalues:
                 return control.GetHtmlBuilderAsync();
             case JJTextGroup:
                 control.Attributes.Add("data-role", "tagsinput");
@@ -369,13 +371,14 @@ internal class DataPanelControl
                 break;
             case JJComboBox comboBox:
             {
-                if (field.Filter.IsRequired || field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
+                if ((field.Filter.IsRequired || isMultivalues) && IsGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.None;
-                else
+                else if (IsGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.All;
 
                 if (field.Filter.Type == FilterMode.MultValuesEqual)
                     comboBox.MultiSelect = true;
+                
                 break;
             }
         }
