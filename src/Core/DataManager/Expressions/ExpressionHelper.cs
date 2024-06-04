@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Web;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
@@ -10,7 +11,7 @@ public static class ExpressionHelper
     public const char Begin = '{';
     public const char End = '}';
 
-    public static string ReplaceExpression(string expression, Dictionary<string, object?> values)
+    public static string ReplaceExpression(string expression, Dictionary<string, object?> values, bool encodeValue = false)
     {
         var stringBuilder = new StringBuilder(expression);
 
@@ -26,7 +27,7 @@ public static class ExpressionHelper
                 _ => value?.ToString() ?? string.Empty
             };
 
-            stringBuilder.Replace($"{Begin}{kvp.Key}{End}", stringValue);
+            stringBuilder.Replace($"{Begin}{kvp.Key}{End}", encodeValue ? HttpUtility.HtmlEncode(stringValue) : stringValue);
         }
 
         return stringBuilder.ToString();
