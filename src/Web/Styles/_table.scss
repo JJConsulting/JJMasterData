@@ -44,7 +44,7 @@ table.table-fixed-header th {
   position: sticky;
   top: var(--md-sticky-top-height);
   z-index: 2;
-  background: var(--#{$prefix}body-bg);
+  background: var(--md-sticky-top-color);
 }
 
 table.table-fixed-header th[scope=row] {
@@ -74,4 +74,16 @@ table.table-fixed-header:nth-of-type(2) th:not([scope=row]):first-child {
 
 .table-sm > :not(caption) > * > *{
   padding: 0.25rem 0.25rem !important;
+}
+
+:root{
+  --md-sticky-top-height: 0;
+}
+
+:root:not([data-bs-theme=dark]){
+  --md-sticky-top-color: #eee !important;
+}
+
+:root, [data-bs-theme=dark] {
+  --md-sticky-top-color: #242833 !important;
 }
