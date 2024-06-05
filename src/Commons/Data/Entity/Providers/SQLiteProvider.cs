@@ -338,7 +338,7 @@ public class SQLiteProvider(
         return command;
     }
 
-    private DataAccessCommand GetScriptInsert(Element element, Dictionary<string, object?> values, bool isReplace)
+    private static DataAccessCommand GetScriptInsert(Element element, Dictionary<string, object?> values, bool isReplace)
     {
         var fields = element.Fields
             .ToList()
@@ -550,7 +550,7 @@ public class SQLiteProvider(
         return val;
     }
 
-    private DbType GetDbType(FieldType dataType)
+    private static DbType GetDbType(FieldType dataType)
     {
         DbType t = DbType.String;
         switch (dataType)

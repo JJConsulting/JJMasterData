@@ -148,7 +148,7 @@ public class OracleProvider(
         return sqlScript.ToString();
     }
 
-    private string GetRelationshipsScript(Element element)
+    private static string GetRelationshipsScript(Element element)
     {
         var sql = new StringBuilder();
 
@@ -948,7 +948,7 @@ public class OracleProvider(
         return cmd;
     }
     
-    private string GetStrType(FieldType dataType)
+    private static string GetStrType(FieldType dataType)
     {
         var sType = dataType.ToString();
         switch (dataType)
@@ -975,7 +975,7 @@ public class OracleProvider(
 
     }
 
-    private DbType GetDbType(FieldType dataType)
+    private static DbType GetDbType(FieldType dataType)
     {
         var t = DbType.String;
         switch (dataType)
@@ -996,7 +996,7 @@ public class OracleProvider(
         return t;
     }
 
-    private bool HasPk(Element element)
+    private static bool HasPk(Element element)
     {
         var ret = false;
         foreach (var f in element.Fields)
@@ -1010,7 +1010,7 @@ public class OracleProvider(
         return ret;
     }
 
-    private bool HasUpdateFields(Element element)
+    private static bool HasUpdateFields(Element element)
     {
         var ret = false;
         foreach (var f in element.Fields)

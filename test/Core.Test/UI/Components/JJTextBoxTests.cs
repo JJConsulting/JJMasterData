@@ -47,7 +47,7 @@ namespace JJMasterData.Core.Test.UI.Components
         }
 
 
-        private JJTextBox GetTextBox()
+        private static JJTextBox GetTextBox()
         {
             return new JJTextBox(new Mock<IFormValues>().Object)
             {

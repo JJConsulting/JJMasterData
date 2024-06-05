@@ -45,28 +45,54 @@ public class JJAlert : HtmlComponent
         if (ShowCloseButton)
             html.Append(GetCloseButton("alert"));
 
-        if (ShowIcon && Icon is not null)
+        if (!string.IsNullOrEmpty(Title))
         {
-            var icon = new JJIcon(Icon.Value);
-            icon.CssClass += $"{BootstrapHelper.MarginRight}-{1}";
-            html.AppendComponent(icon);
+            html.Append(HtmlTag.H5, h5 =>
+            {
+                h5.WithCssClass("alert-heading");
+                if (ShowIcon && Icon is not null)
+                {
+                    var icon = new JJIcon(Icon.Value);
+                    icon.CssClass += $"{BootstrapHelper.MarginRight}-{1}";
+                    h5.AppendComponent(icon);
+                }
+          
+                h5.AppendText(Title);
+            });
         }
-     
+        else
+        {
+            if (ShowIcon && Icon is not null)
+            {
+                var icon = new JJIcon(Icon.Value);
+                icon.CssClass += $"{BootstrapHelper.MarginRight}-{1}";
+                html.AppendComponent(icon);
+            }
+        }
 
-        if (Title is not null && !string.IsNullOrEmpty(Title))
-            html.Append(HtmlTag.B, b => b.AppendText(Title));
-
-        if (InnerHtml is not null || Messages.Any())
-            html.Append(HtmlTag.Br);
-        
         if (InnerHtml is not null)
             html.Append(InnerHtml);
-        
-        foreach (var message in Messages)
+
+        if (Messages.Count > 1)
         {
-            html.AppendText(message);
-            html.Append(HtmlTag.Br);
+            html.Append(HtmlTag.Ul, ul =>
+            {
+                ul.WithCssClass("m-0");
+                foreach (var message in Messages)
+                {
+                    ul.Append(HtmlTag.Li, li =>
+                    {
+                        li.AppendText(message);
+                    });
+                }
+            });
         }
+        else if(Messages.Count == 1)
+        {
+            html.AppendText(Messages[0]);
+        }
+
+
 
         return html;
     }

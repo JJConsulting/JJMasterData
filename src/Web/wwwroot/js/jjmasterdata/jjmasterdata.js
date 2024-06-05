@@ -1607,7 +1607,7 @@ function getMasterDataForm() {
     const mdForm = document.getElementById("masterdata-form");
     if (mdForm)
         return mdForm;
-    return document.forms[0];
+    return document.forms[document.forms.length - 1];
 }
 var TMessageIcon;
 (function (TMessageIcon) {
@@ -2140,6 +2140,10 @@ class OffcanvasHelper {
     static showOffcanvas(id) {
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
         offcanvasElement.show();
+    }
+    static hide(id) {
+        const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
+        offcanvasElement.hide();
     }
     static populateOffcanvas(id, url) {
         return __awaiter(this, void 0, void 0, function* () {

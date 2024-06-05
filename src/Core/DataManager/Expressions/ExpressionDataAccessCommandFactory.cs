@@ -51,6 +51,7 @@ public static class ExpressionDataAccessCommandFactory
             decimal => DbType.Decimal,
             float => DbType.Double,
             string => DbType.String,
+            Guid => DbType.Guid,
             DateTime => DbType.DateTime,
             bool => DbType.Boolean,
             _ => DbType.String

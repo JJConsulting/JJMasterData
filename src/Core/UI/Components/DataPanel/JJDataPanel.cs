@@ -170,8 +170,8 @@ public class JJDataPanel : AsyncComponent
         UrlRedirectService = urlRedirectService;
         StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
-        Values = new Dictionary<string, object>();
-        Errors = new Dictionary<string, string>();
+        Values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        Errors = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         AutoReloadFormFields = true;
     }
 

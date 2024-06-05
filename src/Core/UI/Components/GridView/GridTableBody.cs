@@ -1,9 +1,7 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
@@ -123,7 +121,7 @@ internal class GridTableBody(JJGridView gridView)
         string onClickScript)
     {
         List<HtmlBuilder> result = [];
-        var formStateData = new FormStateData(GetEncodedValues(values), GridView.UserValues, PageState.List);
+        var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
         foreach (var field in await GridView.GetVisibleFieldsAsync())
         {
             var formattedValue = string.Empty;
@@ -190,7 +188,7 @@ internal class GridTableBody(JJGridView gridView)
         }
         else if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
-            var replacedTemplate = ExpressionHelper.ReplaceExpression(field.GridRenderingTemplate!, formStateData.Values);
+            var replacedTemplate = ExpressionHelper.ReplaceExpression(field.GridRenderingTemplate!, formStateData.Values, field.EncodeHtml);
             cell = new HtmlBuilder(replacedTemplate);
         }
         else
@@ -217,25 +215,7 @@ internal class GridTableBody(JJGridView gridView)
         return args.HtmlResult ?? cell;
 
     }
-
-    private Dictionary<string, object?> GetEncodedValues(Dictionary<string, object?> values)
-    {
-        var result = new Dictionary<string, object?>(StringComparer.CurrentCultureIgnoreCase);
-        foreach (var kvp in values)
-        {
-            if (GridView.FormElement.Fields.TryGetField(kvp.Key, out var field) && field.EncodeHtml)
-            {
-                result[kvp.Key] = HttpUtility.HtmlEncode(kvp.Value);
-            }
-            else
-            {
-                result[kvp.Key] = kvp.Value;
-            }
-        }
-
-        return result;
-    }
-
+    
     private async Task<HtmlBuilder> GetDataItemIconCell(FormElementDataItem dataItem, FormStateData formStateData, string stringValue)
     {
         HtmlBuilder cell;

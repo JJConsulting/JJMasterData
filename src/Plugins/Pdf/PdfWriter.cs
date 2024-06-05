@@ -338,7 +338,7 @@ public class PdfWriter(
         return (value, image);
     }
 
-    private PdfFont CreateFontAwesomeIcon()
+    private static PdfFont CreateFontAwesomeIcon()
     {
         var fontBytes = ExtractResource("JJMasterData.Pdf.Fonts.fontawesome-webfont.ttf");
         var fontProgram = FontProgramFactory.CreateFont(fontBytes, true);
