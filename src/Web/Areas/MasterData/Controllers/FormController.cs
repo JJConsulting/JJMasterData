@@ -47,7 +47,7 @@ public class FormController(
                 {
                     Url = Url.Action("Index","Entity", new {Area="DataDictionary", elementName=formView.FormElement.Name})!,
                     Icon = IconType.Pencil,
-                    Tooltip = stringLocalizer["Edit Element"]
+                    Text = stringLocalizer["Edit Element"]
                 }
             ];
         }

@@ -74,10 +74,7 @@ public class JJTitle : HtmlComponent
                 {
                     a.WithCssClass("btn btn-secondary");
                     a.WithHref(action.Url);
-                    a.AppendComponentIf(action.Icon.HasValue, () => new JJIcon(action.Icon!.Value)
-                    {
-                        CssClass = "fs-8"
-                    });
+                    a.AppendComponentIf(action.Icon.HasValue, () => new JJIcon(action.Icon!.Value));
                     a.AppendTextIf(!string.IsNullOrEmpty(action.Text),"&nbsp;"+ action.Text!);
                     a.WithToolTip(action.Tooltip);
                 });
