@@ -69,6 +69,9 @@ public class JJDataImportation : ProcessComponent
 
     internal FormService FormService { get; }
     internal IComponentFactory ComponentFactory { get; }
+    
+    internal DataItemService DataItemService { get; }
+    
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
     private RouteContext RouteContext
@@ -104,6 +107,7 @@ public class JJDataImportation : ProcessComponent
         IBackgroundTaskManager backgroundTaskManager,
         IHttpContext currentContext,
         IComponentFactory componentFactory,
+        DataItemService dataItemService,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
@@ -115,6 +119,7 @@ public class JJDataImportation : ProcessComponent
         DataImportationWorkerFactory = dataImportationWorkerFactory;
         FormService = formService;
         ComponentFactory = componentFactory;
+        DataItemService = dataItemService;
         FormElement = formElement;
         ImportAction = formElement.Options.GridToolbarActions.ImportAction;
         if (ImportAction is not null)
