@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
@@ -21,43 +20,26 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class DataImportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
-    IEntityRepository entityRepository,
+    IFormEventHandlerResolver formEventHandlerResolver,
     ExpressionsService expressionsService,
-    IBackgroundTaskManager backgroundTaskManager,
     FormService formService,
     FieldsService fieldsService,
-    IFormEventHandlerResolver formEventHandlerResolver,
+    IBackgroundTaskManager backgroundTaskManager,
     IHttpContext httpContext,
     IComponentFactory componentFactory,
+    DataItemService dataItemService,
     DataImportationWorkerFactory dataImportationWorkerFactory,
     IEncryptionService encryptionService,
     ILoggerFactory loggerFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : IFormElementComponentFactory<JJDataImportation>
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    private FieldsService FieldsService { get; } = fieldsService;
-    private IBackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
-    private FormService FormService { get; } = formService;
-    private IFormEventHandlerResolver FormEventHandlerResolver { get; } = formEventHandlerResolver;
-    private IHttpContext HttpContext { get; } = httpContext;
-    private IComponentFactory ComponentFactory { get; } = componentFactory;
-
-    private DataImportationWorkerFactory DataImportationWorkerFactory { get; } = dataImportationWorkerFactory;
-
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
-
     public JJDataImportation Create(FormElement formElement)
     {
-        return new JJDataImportation(formElement, ExpressionsService, FormService,
-            FieldsService, BackgroundTaskManager, HttpContext, ComponentFactory,
-            DataImportationWorkerFactory, EncryptionService, LoggerFactory,
-            StringLocalizer);
+        return new JJDataImportation(formElement, expressionsService, formService,
+            fieldsService, backgroundTaskManager, httpContext, componentFactory,dataItemService,
+            dataImportationWorkerFactory, encryptionService, loggerFactory,
+            stringLocalizer);
     }
 
     public async Task<JJDataImportation> CreateAsync(string elementName)
@@ -65,12 +47,12 @@ internal class DataImportationFactory(
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
-        var dataContext = new DataContext(HttpContext.Request, DataContextSource.Upload,
-            DataHelper.GetCurrentUserId(HttpContext, null));
+        var dataContext = new DataContext(httpContext.Request, DataContextSource.Upload,
+            DataHelper.GetCurrentUserId(httpContext, null));
 
-        var formEvent = FormEventHandlerResolver.GetFormEventHandler(elementName);
+        var formEvent = formEventHandlerResolver.GetFormEventHandler(elementName);
 
         var dataImp = Create(formElement);
 
