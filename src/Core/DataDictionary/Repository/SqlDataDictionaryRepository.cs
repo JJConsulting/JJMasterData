@@ -79,8 +79,8 @@ public class SqlDataDictionaryRepository(
 
     public FormElement? GetFormElement(string elementName)
     {
-        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement formElement))
-            return formElement.DeepCopy();
+        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement? formElement))
+            return formElement!.DeepCopy();
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
@@ -103,8 +103,8 @@ public class SqlDataDictionaryRepository(
 
     public async Task<FormElement?> GetFormElementAsync(string elementName)
     {
-        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement formElement))
-            return formElement.DeepCopy();
+        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement? formElement))
+            return formElement!.DeepCopy();
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 

@@ -23,7 +23,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NCalcSync" Version="4.0.0" />
+      <PackageReference Include="NCalc.DependencyInjection" Version="4.2.0" />
+      <PackageReference Include="NCalc.MemoryCache" Version="4.2.0" />
+      <PackageReference Include="NCalcSync" Version="4.2.0" />
     </ItemGroup>
 
 

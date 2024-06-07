@@ -82,9 +82,9 @@ public class SqlServerProvider(
         else
         {
             var cacheKey = $"{element.Name}_ReadScript";
-            if (MemoryCache.TryGetValue(cacheKey, out string readScript))
+            if (MemoryCache.TryGetValue(cacheKey, out string? readScript))
             {
-                sql = readScript;
+                sql = readScript!;
             }
             else
             {
@@ -177,9 +177,9 @@ public class SqlServerProvider(
         else
         {
             var cacheKey = $"{element.Name}_WriteScript";
-            if (MemoryCache.TryGetValue(cacheKey, out string writeScript))
+            if (MemoryCache.TryGetValue(cacheKey, out string? writeScript))
             {
-                sql = writeScript;
+                sql = writeScript!;
             }
             else
             {

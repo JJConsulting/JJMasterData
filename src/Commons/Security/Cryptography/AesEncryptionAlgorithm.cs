@@ -57,9 +57,9 @@ public class AesEncryptionAlgorithm(IMemoryCache? memoryCache = null) : IEncrypt
         Aes? aes = null;
         try
         {
-            if (memoryCache != null && memoryCache.TryGetValue(secretKey, out AesEntry aesEntry))
+            if (memoryCache != null && memoryCache.TryGetValue(secretKey, out AesEntry? aesEntry))
             {
-                aes = CreateAes(aesEntry);
+                aes = CreateAes(aesEntry!);
                 return aes;
             }
             

@@ -2,6 +2,8 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using Microsoft.Extensions.DependencyInjection;
+using NCalc.Cache.Configuration;
+using NCalc.DependencyInjection;
 
 namespace JJMasterData.NCalc.Configuration;
 
@@ -17,7 +19,8 @@ public static class MasterDataServiceBuilderExtensions
 
             builder.Services.Remove(defaultExpressionProvider);
         }
-        
+
+        builder.Services.AddNCalc().WithMemoryCache();
         builder.Services.AddScoped<IExpressionProvider,NCalcExpressionProvider>();
         
         builder.Services.PostConfigure<NCalcExpressionProviderOptions>(o =>
