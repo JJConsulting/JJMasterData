@@ -192,7 +192,7 @@ public class SqlServerProvider(
             Type = element.UseWriteProcedure ? CommandType.StoredProcedure : CommandType.Text,
             Sql = sql
         };
-        writeCommand.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
+        writeCommand.Parameters.Add(new DataAccessParameter("@action", action, DbType.AnsiString, 1));
 
         var fields = element.Fields
             .ToList()
@@ -265,7 +265,7 @@ public class SqlServerProvider(
             FieldType.Int => DbType.Int32,
             FieldType.Bit => DbType.Boolean,
             FieldType.UniqueIdentifier => DbType.Guid,
-            _ => DbType.String
+            _ => DbType.AnsiString
         };
     }
 

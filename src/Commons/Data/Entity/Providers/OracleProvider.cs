@@ -827,7 +827,7 @@ public class OracleProvider(
             Type = CommandType.StoredProcedure
         };
         cmd.Sql = Options.GetWriteProcedureName(element);
-        cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.String, 1));
+        cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.AnsiString, 1));
 
         var fields = element.Fields
             .ToList()
@@ -977,7 +977,7 @@ public class OracleProvider(
 
     private static DbType GetDbType(FieldType dataType)
     {
-        var t = DbType.String;
+        var t = DbType.AnsiString;
         switch (dataType)
         {
             case FieldType.Date:
