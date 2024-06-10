@@ -265,6 +265,9 @@ public class SqlServerProvider(
             FieldType.Int => DbType.Int32,
             FieldType.Bit => DbType.Boolean,
             FieldType.UniqueIdentifier => DbType.Guid,
+            FieldType.NVarchar => DbType.String,
+            FieldType.NText => DbType.String,
+            FieldType.Varchar => DbType.AnsiString,
             _ => DbType.AnsiString
         };
     }
