@@ -279,50 +279,22 @@ public class SqlServerProvider(
 
         databaseType = databaseType.ToLower().Trim();
 
-        if (databaseType.Equals("varchar") ||
-            databaseType.Equals("char"))
-            return FieldType.Varchar;
-        
-        if (databaseType.Equals("bit"))
-            return FieldType.Bit;
-        
-        if (databaseType.Equals("nvarchar") ||
-            databaseType.Equals("nchar"))
-            return FieldType.NVarchar;
-
-        if (databaseType.Equals("int") ||
-            databaseType.Equals("int identity") ||
-            databaseType.Equals("bigint") ||
-            databaseType.Equals("tinyint"))
-            return FieldType.Int;
-
-        if (databaseType.Equals("float") ||
-            databaseType.Equals("decimal") ||
-            databaseType.Equals("numeric") ||
-            databaseType.Equals("money") ||
-            databaseType.Equals("smallmoney") ||
-            databaseType.Equals("real"))
-            return FieldType.Float;
-
-        if (databaseType.Equals("time"))
-            return FieldType.Time;
-        
-        if (databaseType.Equals("date"))
-            return FieldType.Date;
-
-        if (databaseType.Equals("datetime"))
-            return FieldType.DateTime;
-        
-        if (databaseType.Equals("datetime2"))
-            return FieldType.DateTime2;
-
-        if (databaseType.Equals("text"))
-            return FieldType.Text;
-        
-        if (databaseType.Equals("uniqueidentifier"))
-            return FieldType.UniqueIdentifier;
-
-        return databaseType.Equals("ntext") ? FieldType.NText : FieldType.NVarchar;
+        return databaseType switch
+        {
+            "varchar" or "char" => FieldType.Varchar,
+            "bit" => FieldType.Bit,
+            "nvarchar" or "nchar" => FieldType.NVarchar,
+            "int" or "int identity" or "bigint" or "tinyint" => FieldType.Int,
+            "float" or "decimal" or "numeric" or "money" or "smallmoney" or "real" => FieldType.Float,
+            "time" => FieldType.Time,
+            "date" => FieldType.Date,
+            "datetime" => FieldType.DateTime,
+            "datetime2" => FieldType.DateTime2,
+            "text" => FieldType.Text,
+            "ntext" => FieldType.NText,
+            "uniqueidentifier" => FieldType.UniqueIdentifier,
+            _ => FieldType.Varchar
+        };
     }
     
     public override async Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
