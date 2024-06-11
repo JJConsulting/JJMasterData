@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -23,7 +22,6 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
@@ -230,7 +228,7 @@ public class JJFormView : AsyncComponent
 
         DataPanel.PageState = PageState.Insert;
         
-        var result = await GetFormResult(new FormContext(formStateData.Values, DataPanel.Errors, PageState.Insert), true);
+        var result = await GetFormResult(formStateData.Values, DataPanel.Errors, PageState.Insert, true);
 
         if (result is HtmlComponentResult htmlComponentResult)
             args.HtmlBuilder.Append(htmlComponentResult.HtmlBuilder);
@@ -519,7 +517,7 @@ public class JJFormView : AsyncComponent
         DataPanel.Errors = errors;
         
         if (errors.Count != 0 && !IsInsertAtGridView)
-            return await GetFormResult(new FormContext(values, errors, PageState), true);
+            return await GetFormResult(values, errors, PageState, true);
 
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
@@ -530,7 +528,7 @@ public class JJFormView : AsyncComponent
         
         if (PageState is PageState.Insert && insertAction.ReopenForm)
         {
-            var formResult = await GetFormResult(new FormContext(new Dictionary<string,object?>(RelationValues!), PageState.Insert), false);
+            var formResult = await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, false);
 
             if (formResult is HtmlComponentResult htmlComponent)
             {
@@ -545,7 +543,7 @@ public class JJFormView : AsyncComponent
         if (ContainsRelationshipLayout(new FormStateData(values, PageState)) && DataPanel.ContainsPanelState())
         {
             DataPanel.PageState = PageState.View;
-            return await GetFormResult(new FormContext(values, PageState.View), false);
+            return await GetFormResult(values, PageState.View, false);
         }
 
         if (PageState is PageState.Insert)
@@ -555,7 +553,7 @@ public class JJFormView : AsyncComponent
             if(visibleRelationships.Any())
             {
                 PageState = PageState.Update;
-                return await GetFormResult(new FormContext(values, PageState.View), false);
+                return await GetFormResult(values, PageState.View, false);
             }
         }
 
@@ -809,7 +807,7 @@ public class JJFormView : AsyncComponent
         }
 
         PageState = PageState.Update;
-        return await GetFormResult(new FormContext(values, PageState), autoReloadFields);
+        return await GetFormResult(values, PageState, autoReloadFields);
     }
 
     private async Task<ComponentResult> GetDefaultResult(Dictionary<string, object?>? formValues = null)
@@ -823,10 +821,10 @@ public class JJFormView : AsyncComponent
             {
                 formValues ??= new Dictionary<string, object?>();
                 DataHelper.CopyIntoDictionary(formValues,RelationValues!);
-                var formContext = new FormContext(formValues, PageState);
                 var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
                 return await GetFormResult(
-                    formContext,
+                    formValues,
+                    PageState,
                     reloadFields);
             }
 
@@ -834,8 +832,7 @@ public class JJFormView : AsyncComponent
             {
                 formValues ??= await GetFormValuesAsync();
                 var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
-                var formContext = new FormContext(formValues, PageState);
-                return await GetFormResult(formContext, reloadFields);
+                return await GetFormResult(formValues,PageState, reloadFields);
             }
             default:
                 return await GetGridViewResult();
@@ -854,13 +851,13 @@ public class JJFormView : AsyncComponent
         if (PageState == PageState.Insert)
         {
             var formValues = await GetFormValuesAsync();
-            return await GetFormResult(new FormContext(formValues, PageState), true);
+            return await GetFormResult(formValues, PageState, true);
         }
 
         PageState = PageState.Insert;
 
         if (string.IsNullOrEmpty(insertAction.ElementNameToSelect))
-            return await GetFormResult(new FormContext(new Dictionary<string,object?>(RelationValues!), PageState.Insert), false);
+            return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, false);
 
         return await GetInsertSelectionListResult();
     }
@@ -945,7 +942,7 @@ public class JJFormView : AsyncComponent
         {
             PageState = PageState.Update;
 
-            var result = await GetFormResult(new FormContext(values, PageState), false);
+            var result = await GetFormResult(values, PageState, false);
 
             if (result is RenderedComponentResult renderedComponentResult)
             {
@@ -975,7 +972,7 @@ public class JJFormView : AsyncComponent
         PageState = PageState.View;
         var filter = CurrentActionMap.PkFieldValues;
         var values = await EntityRepository.GetFieldsAsync(FormElement, filter);
-        return await GetFormResult(new FormContext(values, PageState), false);
+        return await GetFormResult(values, PageState, false);
     }
 
     private async Task<ComponentResult> GetDeleteResult()
@@ -1083,11 +1080,14 @@ public class JJFormView : AsyncComponent
 
         return new RenderedComponentResult(html);
     }
-
-    private Task<ComponentResult> GetFormResult(FormContext formContext, bool autoReloadFormFields)
+    
+    private Task<ComponentResult> GetFormResult(Dictionary<string,object?> values, PageState pageState, bool autoReloadFormFields)
     {
-        var (values, errors, pageState) = formContext;
+        return GetFormResult(values, new(), pageState, autoReloadFormFields);
+    }
 
+    private Task<ComponentResult> GetFormResult(Dictionary<string,object?> values, Dictionary<string,string> errors, PageState pageState, bool autoReloadFormFields)
+    {
         var visibleRelationships = GetVisibleRelationships(values, pageState);
         var containsRelationshipLayout = ContainsRelationshipLayout(visibleRelationships);
         
