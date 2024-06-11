@@ -336,7 +336,7 @@ public class JJDataPanel : AsyncComponent
         Values = await EntityRepository.GetFieldsAsync(FormElement, pks);
     }
 
-    public async Task LoadValuesFromPkAsync(params object[] pks)
+    public Task LoadValuesFromPkAsync(params object[] pks)
     {
         var primaryKeys = FormElement.GetPrimaryKeys();
         if (primaryKeys.Count == 0)
@@ -352,7 +352,7 @@ public class JJDataPanel : AsyncComponent
             filter.Add(field.Name, pks[index]);
         }
 
-        await LoadValuesFromPkAsync(filter);
+        return LoadValuesFromPkAsync(filter);
     }
     
     
