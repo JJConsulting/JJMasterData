@@ -31,6 +31,10 @@ public class MessageToastFactory(IStringLocalizer<MasterDataResources> stringLoc
                 messageToast.Icon.IconClass = IconType.Warning.GetCssClass();
                 messageToast.Title = stringLocalizer["Warning"];
                 break;
+            case BootstrapColor.Info:
+                messageToast.Icon.IconClass = IconType.SolidCircleInfo.GetCssClass();
+                messageToast.Title = stringLocalizer["Operation Performed"];
+                break;
             default:
                 messageToast.Icon.IconClass = IconType.Check.GetCssClass();
                 messageToast.Title = stringLocalizer["Operation Performed"];
