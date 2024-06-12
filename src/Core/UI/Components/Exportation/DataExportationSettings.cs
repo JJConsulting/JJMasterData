@@ -72,7 +72,7 @@ internal class DataExportationSettings(JJDataExportation dataExportation)
 
         div.Append(GetFirstLineField());
 
-        div.AppendComponent(GetFilesPanelHtmlElement(exportationFolderPath));
+        div.Append(GetFilesCollapsePanelHtmlBuilder(exportationFolderPath));
 
         div.Append(HtmlTag.Div, div =>
         {
@@ -275,7 +275,7 @@ internal class DataExportationSettings(JJDataExportation dataExportation)
         return alert;
     }
 
-    private  JJCollapsePanel GetFilesPanelHtmlElement(string exportationFolderPath)
+    private HtmlBuilder GetFilesCollapsePanelHtmlBuilder(string exportationFolderPath)
     {
         var files = GetGeneratedFiles(exportationFolderPath);
         var filesCount = files.Count;
@@ -286,13 +286,13 @@ internal class DataExportationSettings(JJDataExportation dataExportation)
             TitleIcon = new JJIcon(IconType.FolderOpenO),
             Visible = filesCount  > 0,
             Title = $"{StringLocalizer["Recently generated files"]} ({filesCount})",
-            HtmlBuilderContent = GetLastFilesHtmlElement(files)
+            HtmlBuilderContent = GetLastFilesHtml(files)
         };
 
-        return panel;
+        return panel.GetHtmlBuilder()?.WithCssClass($"col-sm-12 {BootstrapHelper.FormGroup}");
     }
 
-    private HtmlBuilder GetLastFilesHtmlElement(List<FileInfo> files)
+    private HtmlBuilder GetLastFilesHtml(List<FileInfo> files)
     {
         if (files == null || files.Count == 0)
             return new HtmlBuilder(StringLocalizer["No recently generated files."]);

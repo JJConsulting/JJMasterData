@@ -49,8 +49,8 @@
     <table class="table table-striped table-hover">
         <thead>
         <tr>
-            <th style="width:9.375rem;">@StringLocalizer["Id"]</th>
-            <th>@StringLocalizer["Description"]</th>
+            <th style="width:6.25rem;">@StringLocalizer["Id"]</th>
+            <th style="width:9.375rem">@StringLocalizer["Description"]</th>
             @if (showImage)
             {
                 <th>@StringLocalizer["IconId"]</th>
@@ -58,7 +58,7 @@
             }
             @if (Model.Component is FormComponent.ComboBox)
             {
-                <th style="width:12.5rem">@StringLocalizer["Group"]</th>
+                <th style="width:7.5rem">@StringLocalizer["Group"]</th>
             }
             <th style="width:3.75rem"></th>
         </tr>

@@ -34,9 +34,9 @@ public class IconPickerTagHelper(
     {
         Contextualize(ViewContext);
         
-        var name = htmlHelper.Name(For?.Name) ?? Name ?? throw new ArgumentException("For or Name properties are required.");
+        var name =  Name ?? htmlHelper.Name(For?.Name) ?? throw new ArgumentException("For or Name properties are required.");
 
-        var id = htmlHelper.Id(For?.Name) ?? name;
+        var id = Id ?? htmlHelper.Id(For?.Name) ?? name;
         
         IconType? modelValue = null;
 
