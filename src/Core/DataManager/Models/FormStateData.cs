@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Models;
@@ -15,12 +14,12 @@ public class FormStateData
 
     public FormStateData()
     {
-        
+
     }
-    
+
     [SetsRequiredMembers]
     public FormStateData(
-        Dictionary<string, object?> values, 
+        Dictionary<string, object?> values,
         Dictionary<string, object?>? userValues,
         PageState pageState)
     {
@@ -46,5 +45,15 @@ public class FormStateData
         values = Values;
         userValues = UserValues;
         pageState = PageState;
+    }
+
+    public FormStateData DeepCopy()
+    {
+        return new FormStateData
+        {
+            Values = new Dictionary<string, object?>(Values),
+            UserValues = new Dictionary<string, object?>(UserValues ?? new()),
+            PageState = PageState
+        };
     }
 }

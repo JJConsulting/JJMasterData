@@ -1250,6 +1250,8 @@ public class JJFormView : AsyncComponent
     {
         var formHtml = new Div();
 
+        DataPanel.Values = await DataPanel.GetFormValuesAsync();
+        
         if (!DataPanel.ContainsPanelState())
             DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState : PageState.View;
         
