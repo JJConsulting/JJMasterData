@@ -44,17 +44,18 @@ public class FieldValuesService(ExpressionsService expressionsService)
     public async Task<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
         var defaultValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var formStateDataCopy = formStateData.DeepCopy();
         var fieldsWithDefaultValue = formElement.Fields
             .Where(FieldNeedsDefaultValue(formStateData));
         
         foreach (var field in fieldsWithDefaultValue)
         {
             var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
-            var defaultValue = await ExpressionsService.GetDefaultValueAsync(fieldSelector, formStateData);
+            var defaultValue = await ExpressionsService.GetDefaultValueAsync(fieldSelector, formStateDataCopy);
             if (!string.IsNullOrEmpty(defaultValue?.ToString()))
             {
                 defaultValues.Add(field.Name, defaultValue);
-                DataHelper.CopyIntoDictionary(formStateData.Values, defaultValues);
+                formStateDataCopy.Values[field.Name] = defaultValue;
             }
         }
 

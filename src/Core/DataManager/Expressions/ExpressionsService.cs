@@ -23,7 +23,7 @@ public class ExpressionsService(
     IEncryptionService encryptionService,
     ILogger<ExpressionsService> logger)
 {
-    private record Expression(string Prefix, string Content);
+    private record struct Expression(string Prefix, string Content);
 
     private string? _valueExpressionPrefix;
 
@@ -166,17 +166,17 @@ public class ExpressionsService(
 
     private Expression GetExpressionFromString(string? expression)
     {
-        var splittedExpression = expression?.Split([':'], 2) ;
+        var splitExpression = expression?.Split([':'], 2) ;
 
-        if (splittedExpression?.Length < 2)
+        if (splitExpression?.Length < 2)
             return new Expression(ValueExpressionPrefix, expression ?? string.Empty);
         
-        var prefix = splittedExpression?[0];
+        var prefix = splitExpression?[0];
 
-        if (!ExpressionProviders.GetProvidersPrefixes().Contains(prefix) || splittedExpression is null)
+        if (!ExpressionProviders.GetProvidersPrefixes().Contains(prefix) || splitExpression is null)
             return new Expression(ValueExpressionPrefix, expression ?? string.Empty);
         
-        return new Expression(splittedExpression[0], splittedExpression[1]);
+        return new Expression(splitExpression[0], splitExpression[1]);
     }
 
 
