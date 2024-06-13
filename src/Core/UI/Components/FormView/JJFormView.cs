@@ -922,6 +922,12 @@ public class JJFormView : AsyncComponent
         
         var errors = await InsertFormValuesAsync(values, false);
 
+        var pks = DataHelper.GetPkValues(FormElement, values);
+        
+        var dbValues = await EntityRepository.GetFieldsAsync(FormElement, pks);
+
+        DataHelper.CopyIntoDictionary(values,dbValues);
+        
         if (errors.Count > 0)
         {
             html.AppendComponent(ComponentFactory.Html.MessageBox.Create(errors, MessageIcon.Warning));
