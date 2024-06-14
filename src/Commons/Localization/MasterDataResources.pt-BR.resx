@@ -1329,10 +1329,6 @@
     <value>Ajuda</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Tooltip" xml:space="preserve">
-    <value>Tooltip</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Hide Log" xml:space="preserve">
     <value>Ocultar Log</value>
     <comment>JJMasterDataCore</comment>
