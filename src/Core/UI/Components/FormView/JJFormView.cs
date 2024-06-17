@@ -364,7 +364,7 @@ public class JJFormView : AsyncComponent
         IComponentFactory componentFactory)
     {
         FormElement = formElement;
-        Name = ComponentNameGenerator.Create(FormElement.Name);
+        Name = formElement.Name.ToLowerInvariant();
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         ShowTitle = formElement.Options.Grid.ShowTitle;

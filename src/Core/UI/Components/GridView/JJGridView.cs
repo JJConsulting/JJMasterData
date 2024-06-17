@@ -592,7 +592,7 @@ public class JJGridView : AsyncComponent
         ILogger<JJGridView> logger,
         IComponentFactory componentFactory)
     {
-        Name = $"{ComponentNameGenerator.Create(formElement.Name)}";
+        Name = formElement.Name.ToLowerInvariant();
         FormElement = formElement;
         ShowTitle =  formElement.Options.Grid.ShowTitle;
         EnableFilter = true;

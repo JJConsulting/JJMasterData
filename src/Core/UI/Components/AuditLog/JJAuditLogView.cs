@@ -90,7 +90,7 @@ public class JJAuditLogView : AsyncComponent
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
-        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-audit-log-view";
+        Name = $"{formElement.Name.ToLowerInvariant()}-audit-log-view";
         _componentFactory = componentFactory;
         FormElement = formElement;
         CurrentContext = currentContext;

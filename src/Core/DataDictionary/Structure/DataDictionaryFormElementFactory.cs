@@ -186,7 +186,7 @@ public class DataDictionaryFormElementFactory(
                 Order = 10,
                 CssClass = BootstrapHelper.PullRight,
                 OnClientClick =
-                    $"DataDictionaryUtils.exportElement('{ComponentNameGenerator.Create(_options.DataDictionaryTableName)}', '{UrlHelper.Action("Export", "Element", new{Area="DataDictionary"})}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                    $"DataDictionaryUtils.exportElement('{_options.DataDictionaryTableName.ToLowerInvariant()}', '{UrlHelper.Action("Export", "Element", new{Area="DataDictionary"})}', '{StringLocalizer["Select one or more dictionaries"]}');"
             },
             
             new UrlRedirectAction

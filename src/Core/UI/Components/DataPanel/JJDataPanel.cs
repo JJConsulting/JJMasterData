@@ -188,7 +188,7 @@ public class JJDataPanel : AsyncComponent
         IComponentFactory componentFactory
     ) : this(entityRepository,  currentContext, encryptionService, fieldsService, formValuesService, expressionsService, urlRedirectService,stringLocalizer,componentFactory)
     {
-        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
+        Name = $"{formElement.Name.ToLowerInvariant()}-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
