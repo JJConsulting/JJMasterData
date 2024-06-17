@@ -741,7 +741,7 @@ class DataImportationHelper {
             target.append(spinnerDiv);
         }
     }
-    static checkProgress(componentName, importationRouteContext, gridRouteContext, intervalId) {
+    static checkProgress(componentName, importationRouteContext, intervalId) {
         showSpinnerOnPost = false;
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
@@ -831,8 +831,10 @@ class DataImportationHelper {
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
+                        DataImportationModal.getInstance().modalElement.addEventListener('hidden.bs.modal', _ => {
+                            getMasterDataForm().submit();
+                        });
                         document.querySelector("#" + componentName).innerHTML = html;
-                        GridViewHelper.refreshGrid(componentName.replace("-importation", String()), gridRouteContext);
                     }
                 });
             }
@@ -841,7 +843,7 @@ class DataImportationHelper {
             console.error('Error fetching data:', error);
         });
     }
-    static show(componentName, modalTitle, routeContext, gridRouteContext) {
+    static show(componentName, modalTitle, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         const requestOptions = getRequestOptions();
@@ -849,16 +851,16 @@ class DataImportationHelper {
             url: urlBuilder.build(),
             requestOptions: requestOptions
         }, modalTitle, ModalSize.ExtraLarge).then(_ => {
-            DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+            DataImportationHelper.addPasteListener(componentName, routeContext);
             UploadAreaListener.listenFileUpload();
         });
     }
-    static back(componentName, routeContext, gridRouteContext) {
+    static back(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         postFormValues({ url: urlBuilder.build(), success: html => {
                 document.querySelector("#" + componentName).innerHTML = html;
-                DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+                DataImportationHelper.addPasteListener(componentName, routeContext);
                 UploadAreaListener.listenFileUpload();
             } });
     }
@@ -873,10 +875,10 @@ class DataImportationHelper {
             }
         });
     }
-    static startProgressVerification(componentName, routeContext, gridRouteContext) {
+    static startProgressVerification(componentName, routeContext) {
         DataImportationHelper.setSpinner();
         let intervalId = setInterval(function () {
-            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext, intervalId);
+            DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
         }, 3000);
     }
     static help(componentName, routeContext) {
@@ -903,7 +905,7 @@ class DataImportationHelper {
             }
         });
     }
-    static addPasteListener(componentName, routeContext, gridRouteContext) {
+    static addPasteListener(componentName, routeContext) {
         DataImportationHelper.pasteEventListener = function onPaste(e) {
             DataImportationHelper.removePasteListener();
             let pastedText = undefined;
@@ -923,7 +925,7 @@ class DataImportationHelper {
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector("#" + componentName).innerHTML = html;
-                        DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
+                        DataImportationHelper.startProgressVerification(componentName, routeContext);
                     }
                 });
             }
@@ -939,7 +941,7 @@ class DataImportationHelper {
             url: urlBuilder.build(),
             success: html => {
                 document.querySelector("#" + componentName).innerHTML = html;
-                DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
+                DataImportationHelper.startProgressVerification(componentName, routeContext);
             }
         });
     }
