@@ -101,7 +101,7 @@ public class SqlDataDictionaryRepository(
         return null;
     }
 
-    public async Task<FormElement?> GetFormElementAsync(string elementName)
+    public async ValueTask<FormElement?> GetFormElementAsync(string elementName)
     {
         if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement? formElement))
             return formElement!.DeepCopy();

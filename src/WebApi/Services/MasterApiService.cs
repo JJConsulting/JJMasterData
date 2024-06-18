@@ -443,7 +443,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return new DataContext(HttpContext.Request, DataContextSource.Api, userId);
     }
 
-    private Task<FormElement> GetDataDictionary(string elementName)
+    private ValueTask<FormElement> GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

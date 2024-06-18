@@ -112,7 +112,7 @@ public class ElementController(
         return View(new DuplicateElementViewModel{ OriginalElementName = elementName });
     }
 
-    public async Task<IActionResult> ClassSourceCode(string elementName)
+    public async ValueTask<IActionResult> ClassSourceCode(string elementName)
     {
         ViewBag.ClassSourceCode = await classGenerationService.GetClassSourceCode(elementName);
         ViewBag.ElementName = elementName;

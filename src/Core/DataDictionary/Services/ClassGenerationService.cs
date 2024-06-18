@@ -10,8 +10,8 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepository)
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-
-    public async Task<string> GetClassSourceCode(string elementName)
+    
+    public async ValueTask<string> GetClassSourceCode(string elementName)
     {
         const string propertyTemplate = "public @PropertyType @PropertyName { get; set; } ";
 
