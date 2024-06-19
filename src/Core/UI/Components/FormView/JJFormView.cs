@@ -29,6 +29,7 @@ using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -37,7 +38,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 #if NET48
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Core.Tasks;
 #endif
 
 namespace JJMasterData.Core.UI.Components;
@@ -217,7 +217,7 @@ public class JJFormView : AsyncComponent
         }
     }
 
-    private async Task RenderInsertActionAtGrid(object _, GridRenderEventArgs args)
+    private async ValueTask RenderInsertActionAtGrid(object _, GridRenderEventArgs args)
     {
         var insertAction = GridView.InsertAction;
         var formStateData = await GridView.GetFormStateDataAsync();
@@ -1360,18 +1360,18 @@ public class JJFormView : AsyncComponent
         return toolbar;
     }
 
-    private Task InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
+    private ValueTask InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
     {
         if (sender is not JJGridView)
-            return Task.CompletedTask;
+            return ValueTaskHelper.CompletedTask;
 
         if (args.ActionName is not InsertSelectionAction.ActionName)
-            return Task.CompletedTask;
+            return ValueTaskHelper.CompletedTask;
 
         args.LinkButton.Tooltip = StringLocalizer["Select"];
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
 
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 
 
