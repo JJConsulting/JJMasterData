@@ -80,7 +80,7 @@ public class ExpressionsServiceTests
     public bool GetBoolValue_ShouldReturnBooleanValue()
     {
         // Arrange
-        var expression = "bool_example:sampleExpression";
+        const string expression = "bool_example:sampleExpression";
         var values = new Dictionary<string, object?>();
         
         var formStateData = new FormStateData(
