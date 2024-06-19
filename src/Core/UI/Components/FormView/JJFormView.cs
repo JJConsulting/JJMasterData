@@ -524,7 +524,6 @@ public class JJFormView : AsyncComponent
             CurrentActionMap = null;
             return new RedirectComponentResult(UrlRedirect!);
         }
-
         
         if (PageState is PageState.Insert && insertAction.ReopenForm)
         {
@@ -540,7 +539,11 @@ public class JJFormView : AsyncComponent
             return formResult;
         }
 
-        if (ContainsRelationshipLayout(new FormStateData(values, PageState)) && DataPanel.ContainsPanelState())
+        var isAtRelationship =
+                IsChildFormView || 
+                (ContainsRelationshipLayout(new FormStateData(values, PageState)) && DataPanel.ContainsPanelState());
+        
+        if (isAtRelationship)
         {
             DataPanel.PageState = PageState.View;
             return await GetFormResult(values, PageState.View, false);
