@@ -27,6 +27,7 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.Tasks;
+using JJMasterData.Core.UI.Events;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -68,7 +69,7 @@ public class JJGridView : AsyncComponent
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
-    public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
+    public event GridOnDataLoadEventHandler? OnDataLoadAsync;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
     public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
@@ -1151,7 +1152,7 @@ public class JJGridView : AsyncComponent
                     CurrentPage = parameters.CurrentPage,
                 };
             
-                await OnDataLoadAsync.Invoke(this, args);
+                await OnDataLoadAsync(this, args);
             
                 if (args.DataSource is not null)
                 {

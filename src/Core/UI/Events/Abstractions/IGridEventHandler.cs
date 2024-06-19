@@ -34,10 +34,10 @@ public interface IGridEventHandler : IEventHandler
         ;
 #endif
     
-    public ValueTask OnDataLoadAsync(object sender, GridDataLoadEventArgs eventArgs)
+    public Task OnDataLoadAsync(object sender, GridDataLoadEventArgs eventArgs)
 #if NET
     {
-        return ValueTaskHelper.CompletedTask;
+        return Task.CompletedTask;
     }
 #else
         ;
