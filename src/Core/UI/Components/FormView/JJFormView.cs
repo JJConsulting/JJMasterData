@@ -1303,7 +1303,7 @@ public class JJFormView : AsyncComponent
         return toolbarActions;
     }
 
-    private async Task<JJToolbar> GetAuditLogBottomBar()
+    private async ValueTask<JJToolbar> GetAuditLogBottomBar()
     {
         var formStateData = await GetFormStateDataAsync();
         var hideAuditLogButton =
@@ -1318,7 +1318,7 @@ public class JJFormView : AsyncComponent
         return toolbar;
     }
 
-    private async Task<JJToolbar> GetFormToolbarAsync(IList<BasicAction> actions)
+    private async ValueTask<JJToolbar> GetFormToolbarAsync(IList<BasicAction> actions)
     {
         var toolbar = new JJToolbar
         {
@@ -1443,20 +1443,20 @@ public class JJFormView : AsyncComponent
     }
 
 
-    public async Task<FormStateData> GetFormStateDataAsync()
+    public async ValueTask<FormStateData> GetFormStateDataAsync()
     {
         if (_formStateData != null)
             return _formStateData;
 
-        var initalValues = new Dictionary<string, object?>();
+        var initialValues = new Dictionary<string, object?>();
         
         if(_dataPanel is not null)
-            DataHelper.CopyIntoDictionary(initalValues, DataPanel.Values);
+            DataHelper.CopyIntoDictionary(initialValues, DataPanel.Values);
         
         if(_currentActionMap is not null)
-            DataHelper.CopyIntoDictionary(initalValues, CurrentActionMap!.PkFieldValues!);
+            DataHelper.CopyIntoDictionary(initialValues, CurrentActionMap!.PkFieldValues!);
         
-        var initialFormStateData = new FormStateData(initalValues, UserValues, PageState);
+        var initialFormStateData = new FormStateData(initialValues, UserValues, PageState);
         var autoReloadFormFields = CurrentContext.Request.Form.ContainsFormValues();
         var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, autoReloadFormFields);
         

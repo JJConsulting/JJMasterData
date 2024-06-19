@@ -899,10 +899,10 @@ public class JJGridView : AsyncComponent
         return alert.GetHtmlBuilder();
     }
 
-    internal async Task<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
+    internal async ValueTask<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
 
-    internal async Task<FormStateData> GetFormStateDataAsync()
+    internal async ValueTask<FormStateData> GetFormStateDataAsync()
     {
         if (_formStateData == null)
         {
@@ -918,7 +918,7 @@ public class JJGridView : AsyncComponent
         return _formStateData;
     }
     
-    private async Task<HtmlBuilder> GetSettingsHtml()
+    private async ValueTask<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
         var formData = await GetFormStateDataAsync();
@@ -953,7 +953,7 @@ public class JJGridView : AsyncComponent
 
     private bool CanCustomPaging() => IsPagingEnabled() && CurrentSettings.RecordsPerPage % 5 == 0 && CurrentSettings.RecordsPerPage <= 50;
 
-    private async Task<HtmlBuilder> GetExportHtml()
+    private async ValueTask<HtmlBuilder> GetExportHtml()
     {
         var action = ExportAction;
         var formData = await GetFormStateDataAsync();
@@ -970,7 +970,7 @@ public class JJGridView : AsyncComponent
         return modal.GetHtmlBuilder();
     }
 
-    private async Task<HtmlBuilder> GetLegendHtml()
+    private async ValueTask<HtmlBuilder> GetLegendHtml()
     {
         var action = LegendAction;
         var formData = await GetFormStateDataAsync();
