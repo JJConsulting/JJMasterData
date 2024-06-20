@@ -350,7 +350,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
             _values ??= await DataItemService.GetValuesAsync(DataItem, dataQuery);
         }
 
-        var item = _values?.First(x => x.Id.Equals(searchId));
+        var item = _values?.FirstOrDefault(x => x.Id.Equals(searchId));
 
         if (item != null)
             description = item.Description;

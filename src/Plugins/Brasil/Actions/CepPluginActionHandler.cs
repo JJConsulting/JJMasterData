@@ -45,8 +45,4 @@ public class CepPluginActionHandler(ICepService cepService,
         return cepResult.ToDictionary();
     }
 
-
-    public override HtmlBuilder AdditionalInformationHtml { get; } = new();
-
-    private MessageBoxFactory MessageBoxFactory { get; } = htmlComponentFactory.MessageBox;
 }

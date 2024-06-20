@@ -37,7 +37,7 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
         }
     }
     
-    public virtual IEnumerable<PluginConfigurationField> ConfigurationFields
+    public IEnumerable<PluginConfigurationField> ConfigurationFields
     {
         get
         {
@@ -62,8 +62,6 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
             };
         }
     }
-
-    public abstract HtmlBuilder? AdditionalInformationHtml { get; }
 
     private static void ClearFields(PluginFieldActionContext context)
     {
