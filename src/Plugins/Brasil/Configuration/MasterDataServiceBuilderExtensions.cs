@@ -109,7 +109,7 @@ public static class MasterDataServiceBuilderExtensions
         builder.Services.TryAddSingleton<HttpClient>();
         builder.WithHubDevCnpjActionPlugin();
         builder.WithHubDevCpfActionPlugin();
-        builder.WithHubDevCepActionPlugin();
+        builder.WithViaCep();
         
         return builder;
     }
