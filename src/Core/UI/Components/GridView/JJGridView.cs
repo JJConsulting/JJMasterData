@@ -333,8 +333,8 @@ public class JJGridView : AsyncComponent
             if (_currentSettings != null)
                 return _currentSettings;
             
-            var action = CurrentActionMap?.GetAction(FormElement);
-            if (action is ConfigAction)
+            var action = CurrentActionMap?.GetAction<ConfigAction>(FormElement);
+            if (action is not null)
             {
                 CurrentSettings = GridSettingsForm.LoadFromForm();
                 return _currentSettings!;
@@ -733,9 +733,9 @@ public class JJGridView : AsyncComponent
 
         var html = new Div();
 
-        if (CheckForSqlCommand())
+        if (TryGetSqlAction(out SqlCommandAction? sqlCommandAction))
         {
-            var errorMessage = await ExecuteSqlCommand();
+            var errorMessage = await ExecuteSqlCommand(sqlCommandAction);
             if (errorMessage == null)
                 currentAction = null;
             else
@@ -851,22 +851,28 @@ public class JJGridView : AsyncComponent
 
     private Task<HtmlBuilder> GetSortingConfigAsync() => new GridSortingConfig(this).GetHtmlBuilderAsync();
 
-    private bool CheckForSqlCommand()
+    private bool TryGetSqlAction(out SqlCommandAction? sqlCommandAction)
     {
         var action = CurrentActionMap?.GetAction(FormElement);
-        return action is SqlCommandAction;
+        if (action is SqlCommandAction sqlAction)
+        {
+            sqlCommandAction = sqlAction;
+            return true;
+        }
+
+        sqlCommandAction = null;
+        
+        return false;
     }
 
-    private Task<JJMessageBox?> ExecuteSqlCommand()
+    private Task<JJMessageBox?> ExecuteSqlCommand(SqlCommandAction? action)
     {
-        var action = CurrentActionMap!.GetAction(FormElement);
-        
         if (action is null)
             throw new JJMasterDataException("Action not found at your FormElement");
         
         var gridSqlAction = new GridSqlCommandAction(this);
         
-        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
+        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, action);
     }
 
     private void AssertProperties()
