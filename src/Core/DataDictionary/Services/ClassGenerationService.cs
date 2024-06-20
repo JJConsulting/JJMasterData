@@ -18,7 +18,7 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var properties = new StringBuilder();
 
-        foreach (var item in formElement.Fields.ToList())
+        foreach (var item in formElement.Fields)
         {
             var propertyName = StringManager.ToPascalCase(item.Name);
             var propertyType = GetPropertyType(item.DataType, item.IsRequired);

@@ -83,7 +83,7 @@ public static class DataHelper
         if (values == null || values.Length == 0)
             throw new ArgumentException("Invalid parameter or not found in values");
 
-        var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
+        var elementPks = element.Fields.FindAll(x => x.IsPk);
         if (values.Length != elementPks.Count)
             throw new JJMasterDataException("Invalid primary key");
 
@@ -135,7 +135,7 @@ public static class DataHelper
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
+        var elementPks = formElement.Fields.FindAll(x => x.IsPk);
         if (elementPks == null || elementPks.Count == 0)
             throw new JJMasterDataException($"Primary key not defined for dictionary {formElement.Name}");
 

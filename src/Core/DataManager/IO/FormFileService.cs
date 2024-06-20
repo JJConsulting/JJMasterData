@@ -10,7 +10,7 @@ public class FormFileService(FormFileManagerFactory formFileManagerFactory)
 
     public void SaveFormMemoryFiles(FormElement formElement, Dictionary<string, object> primaryKeys)
     {
-        var uploadFields = formElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        var uploadFields = formElement.Fields.FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
             return;
 
@@ -25,7 +25,7 @@ public class FormFileService(FormFileManagerFactory formFileManagerFactory)
 
     public void DeleteFiles(FormElement formElement, Dictionary<string, object> primaryKeys)
     {
-        var uploadFields = formElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        var uploadFields = formElement.Fields.FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
             return;
         

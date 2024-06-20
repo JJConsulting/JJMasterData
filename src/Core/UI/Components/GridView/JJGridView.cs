@@ -143,7 +143,7 @@ public class JJGridView : AsyncComponent
             if (FormElement == null)
                 throw new ArgumentNullException(nameof(FormElement));
 
-            _pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+            _pkFields = FormElement.Fields.FindAll(x => x.IsPk);
 
             return _pkFields;
         }

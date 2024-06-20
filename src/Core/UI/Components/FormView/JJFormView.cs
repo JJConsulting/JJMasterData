@@ -1130,7 +1130,7 @@ public class JJFormView : AsyncComponent
 
         if (relationshipsResult is HtmlComponentResult htmlResult)
         {
-            var topActions = GetTopToolbarActions(FormElement).ToList();
+            var topActions = GetTopToolbarActions(FormElement);
 
             html.PrependComponent(await GetFormToolbarAsync(topActions));
             
@@ -1138,7 +1138,7 @@ public class JJFormView : AsyncComponent
             var toolbarActions = FormElement.Options.FormToolbarActions;
 
             var bottomActions = 
-                toolbarActions.Where(a => a.Location is FormToolbarActionLocation.Bottom).ToList();
+                toolbarActions.FindAll(a => a.Location is FormToolbarActionLocation.Bottom);
         
             if(!IsChildFormView)
                 toolbarActions.BackAction.SetVisible(true);
@@ -1206,11 +1206,9 @@ public class JJFormView : AsyncComponent
     {
         var visibleRelationships = FormElement
             .Relationships
-            .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
-            .Where(r =>
-                ExpressionsService.GetBoolValue(r.Panel.VisibleExpression,
-                    new FormStateData(values, pageState)))
-            .ToList();
+            .FindAll(r => 
+                r.ViewType != RelationshipViewType.None || r.IsParent
+                && ExpressionsService.GetBoolValue(r.Panel.VisibleExpression, new FormStateData(values, pageState)));
         return visibleRelationships;
     }
 
@@ -1231,7 +1229,7 @@ public class JJFormView : AsyncComponent
         
         ConfigureFormToolbar();
 
-        var topToolbarActions = GetTopToolbarActions(FormElement).ToList();
+        var topToolbarActions = GetTopToolbarActions(FormElement);
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
         
@@ -1240,7 +1238,7 @@ public class JJFormView : AsyncComponent
             
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
-        var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement).ToList();
+        var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement);
         panelAndBottomToolbarActions.AddRange(GetBottomToolbarActions(FormElement));
 
         var toolbar = await GetFormToolbarAsync(panelAndBottomToolbarActions);
@@ -1268,7 +1266,7 @@ public class JJFormView : AsyncComponent
 
         ConfigureFormToolbar();
         
-        var panelToolbarActions = GetPanelToolbarActions(FormElement).ToList();
+        var panelToolbarActions = GetPanelToolbarActions(FormElement);
 
         var toolbar = await GetFormToolbarAsync(panelToolbarActions);
 
@@ -1282,26 +1280,26 @@ public class JJFormView : AsyncComponent
         return formHtml;
     }
 
-    private static IEnumerable<BasicAction> GetPanelToolbarActions(FormElement formElement)
+    private static List<BasicAction> GetPanelToolbarActions(FormElement formElement)
     {
         var toolbarActions = formElement.Options.FormToolbarActions
-            .Where(a => a.Location == FormToolbarActionLocation.Panel);
+            .FindAll(a => a.Location == FormToolbarActionLocation.Panel);
 
         return toolbarActions;
     }
 
-    private static IEnumerable<BasicAction> GetTopToolbarActions(FormElement formElement)
+    private static List<BasicAction> GetTopToolbarActions(FormElement formElement)
     {
         var toolbarActions = formElement.Options.FormToolbarActions
-            .Where(a => a.Location == FormToolbarActionLocation.Top);
+            .FindAll(a => a.Location == FormToolbarActionLocation.Top);
 
         return toolbarActions;
     }
 
-    private static IEnumerable<BasicAction> GetBottomToolbarActions(FormElement formElement)
+    private static List<BasicAction> GetBottomToolbarActions(FormElement formElement)
     {
         var toolbarActions = formElement.Options.FormToolbarActions
-            .Where(a => a.Location == FormToolbarActionLocation.Bottom);
+            .FindAll(a => a.Location == FormToolbarActionLocation.Bottom);
 
         return toolbarActions;
     }
@@ -1349,7 +1347,7 @@ public class JJFormView : AsyncComponent
             var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
             btnGroup.CaretText = StringLocalizer["More"];
 
-            foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
+            foreach (var groupedAction in actions.Where(a => a.IsGroup))
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
                 var factory = ComponentFactory.ActionButton;
@@ -1436,7 +1434,7 @@ public class JJFormView : AsyncComponent
     
     private void ClearTempFiles()
     {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        var uploadFields = FormElement.Fields.FindAll(x => x.Component == FormComponent.File);
         foreach (var field in uploadFields)
         {
             string sessionName = $"{field.Name}-upload-view_jjfiles";

@@ -123,6 +123,11 @@ public abstract class FormElementActionList : IList<BasicAction>
         List.RemoveAll(match);
     }
 
+    public List<BasicAction> FindAll(Predicate<BasicAction> match)
+    {
+        return List.FindAll(match);
+    }
+    
     public BasicAction this[int index]
     {
         get => List[index];

@@ -350,7 +350,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
             _values ??= await DataItemService.GetValuesAsync(DataItem, dataQuery);
         }
 
-        var item = _values?.ToList().Find(x => x.Id.Equals(searchId));
+        var item = _values?.First(x => x.Id.Equals(searchId));
 
         if (item != null)
             description = item.Description;
@@ -390,12 +390,12 @@ public class JJSearchBox : ControlBase, IDataItemControl
     {
         var searchText = Request.Form[Name + "_text"];
         var values = await GetValuesAsync(searchText);
-        return values.Select(v=>new DataItemResult()
+        return values.ConvertAll(v=>new DataItemResult()
         {
             Id = v.Id,
             Description = v.Description,
             IconCssClass = DataItem.ShowIcon ? v.Icon.GetCssClass() : null,
             IconColor =  DataItem.ShowIcon ? v.IconColor : null
-        }).ToList();
+        });
     }
 }

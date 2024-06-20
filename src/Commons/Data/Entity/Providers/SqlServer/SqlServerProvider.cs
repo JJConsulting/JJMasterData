@@ -195,7 +195,6 @@ public class SqlServerProvider(
         writeCommand.Parameters.Add(new DataAccessParameter("@action", action, DbType.AnsiString, 1));
 
         var fields = element.Fields
-            .ToList()
             .FindAll(x => x.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly);
 
         foreach (var field in fields)
