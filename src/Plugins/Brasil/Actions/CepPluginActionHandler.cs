@@ -7,14 +7,12 @@ using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
 public class CepPluginActionHandler(ICepService cepService,
-        ExpressionsService expressionService,
-        HtmlComponentFactory htmlComponentFactory)
+        ExpressionsService expressionService)
     : BrasilPluginActionHandler(expressionService)
 {
     private ICepService CepService { get; } = cepService;

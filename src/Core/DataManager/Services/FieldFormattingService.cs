@@ -191,20 +191,17 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 switch (type)
                 {
                     case FieldType.Date:
-                        {
-                            var dVal = DateTime.Parse(stringValue);
-                            stringValue = dVal == DateTime.MinValue ? string.Empty : dVal.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
-                            break;
-                        }
+                    {
+                        if (DateTime.TryParse(stringValue, out var dateValue))
+                            stringValue = dateValue.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
+                        break;
+                    }
                     case FieldType.DateTime or FieldType.DateTime2:
-                        {
-                            var dateValue = DateTime.Parse(stringValue);
-                            stringValue = dateValue == DateTime.MinValue
-                                ? string.Empty
-                                : dateValue.ToString(
-                                    $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} {DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
-                            break;
-                        }
+                    {
+                        if (DateTime.TryParse(stringValue, out var dateValue))
+                            stringValue = dateValue.ToString($"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} {DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
+                        break;
+                    }
                 }
 
                 break;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -196,8 +197,10 @@ public class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 5;
                 textGroup.GroupCssClass = "flatpickr date jjform-hour";
-                // textGroup.SetAttr("data-inputmask",
-                //     $"'alias': 'datetime','inputFormat': '[{Format.TimeFormat.ToLower()}]', 'displayFormat': '[{Format.TimeFormat.ToLower()}]','placeholder':''");
+                textGroup.SetAttr("data-inputmask-alias", "datetime");
+                textGroup.SetAttr("data-inputmask-inputFormat", "HH:M");
+                textGroup.SetAttr("data-inputmask-displayFormat","HH:M");
+                textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
             case FormComponent.Date:
@@ -205,8 +208,10 @@ public class TextGroupFactory(
                 textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
-                // textGroup.SetAttr("data-inputmask",
-                //     $"'alias': 'datetime','inputFormat': '[{Format.DateFormat.ToLower()}]','displayFormat': '[{Format.DateFormat.ToLower()}]',  'placeholder':''");
+                textGroup.SetAttr("data-inputmask-alias", "datetime");
+                textGroup.SetAttr("data-inputmask-inputFormat", Format.DateFormat);
+                textGroup.SetAttr("data-inputmask-displayFormat", Format.DateFormat);
+                textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
             case FormComponent.DateTime:
@@ -214,8 +219,10 @@ public class TextGroupFactory(
                 textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
-                // textGroup.SetAttr("data-inputmask",
-                //     $"'alias': 'datetime','inputFormat': '[{Format.DateTimeFormat.ToLower()}]','displayFormat': '[{Format.DateTimeFormat.ToLower()}]', 'placeholder':''");
+                textGroup.SetAttr("data-inputmask-alias", "datetime");
+                textGroup.SetAttr("data-inputmask-inputFormat", $"{Format.DateFormat} HH:M");
+                textGroup.SetAttr("data-inputmask-displayFormat", $"{Format.DateFormat} HH:M");
+                textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
             default:
