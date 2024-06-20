@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -661,11 +662,11 @@ public class JJFormView : AsyncComponent
             
 
             html.AppendHiddenInput($"current-action-map-{Name}",
-                EncryptionService.EncryptActionMap(CurrentActionMap));
+                EncryptionService.EncryptObject(CurrentActionMap));
             html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
-                EncryptionService.EncryptDictionary(RelationValues));
+                EncryptionService.EncryptObject(RelationValues));
             html.AppendHiddenInput($"form-view-route-context-{Name}",
-                EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(FormElement, ComponentContext.FormViewReload)));
+                EncryptionService.EncryptObject(RouteContext.FromFormElement(FormElement, ComponentContext.FormViewReload)));
         }
     }
 
@@ -749,29 +750,50 @@ public class JJFormView : AsyncComponent
         {
             Values = values,
             UserValues = UserValues,
-            PageState = PageState,
+            PageState = PageState
         };
 
         switch (pluginHandler)
         {
             case IPluginActionHandler pluginActionHandler:
-                return pluginActionHandler.ExecuteActionAsync(new PluginActionContext
+            {
+                var context = new PluginActionContext
                 {
                     ActionContext = GetActionContext(pluginAction, formStateData),
                     ConfigurationMap = pluginAction.ConfigurationMap
-                });
+                };
+                
+                var result = pluginActionHandler.ExecuteActionAsync(context);
+                
+                if (context.SecretValues.Any())
+                    SetSecretValues(context.SecretValues);
+
+                return result;
+            }
             case IPluginFieldActionHandler pluginFieldActionHandler:
-                return pluginFieldActionHandler.ExecuteActionAsync(context: new PluginFieldActionContext
+            {
+                var context = new PluginFieldActionContext
                 {
                     ActionContext = GetActionContext(pluginAction,
                         formStateData, fieldName),
                     FieldMap = ((PluginFieldAction)pluginAction).FieldMap,
                     ConfigurationMap = pluginAction.ConfigurationMap
-                });
+                };
+                
+                var result = pluginFieldActionHandler.ExecuteActionAsync(context);
+                
+                if (context.SecretValues.Any())
+                    SetSecretValues(context.SecretValues);
+
+                return result;
+            }
             default:
                 throw new JJMasterDataException("Invalid plugin handler");
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetSecretValues(Dictionary<string, object?> secretValues) => DataPanel.SecretValues = secretValues;
 
     private void SetFormServiceEvents()
     {

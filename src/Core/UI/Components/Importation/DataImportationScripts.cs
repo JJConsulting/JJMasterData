@@ -24,7 +24,7 @@ internal class DataImportationScripts(
     private string GetEncryptedRouteContext()
     {
         var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataImportation);
-        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
         return encryptedRouteContext;
     }
 

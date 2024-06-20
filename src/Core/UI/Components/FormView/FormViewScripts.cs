@@ -11,7 +11,7 @@ public class FormViewScripts(JJFormView formView)
     private string GetEncryptedRouteContext(ComponentContext context)
     {
         var routeContext = RouteContext.FromFormElement(formView.FormElement, context);
-        return formView.EncryptionService.EncryptRouteContext(routeContext);
+        return formView.EncryptionService.EncryptObject(routeContext);
     }
 
     public string GetShowInsertSuccessScript()
@@ -24,7 +24,7 @@ public class FormViewScripts(JJFormView formView)
     public string GetInsertSelectionScript(Dictionary<string, object?> values)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.InsertSelection);
-        var encryptedValues = formView.EncryptionService.EncryptDictionary(values);
+        var encryptedValues = formView.EncryptionService.EncryptObject(values);
         //language=Javascript
         return $"FormViewHelper.insertSelection('{formView.Name}', '{encryptedValues}', '{encryptedRouteContext}')";
     }

@@ -73,22 +73,18 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
     {
         foreach (var parameter in context.FieldMap)
         {
-            if (context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
-            {
-                var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
+            if (!context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
+                continue;
+            
+            var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
 
-                if (!isEnabled)
-                {
-                    field.SetEnabled(true);
-                    field.SetReadOnly(true);
-                }
-            }
+            if (!isEnabled)
+                context.SecretValues[parameter.Value] = result[parameter.Key];
+
+            context.Values[parameter.Value] = result[parameter.Key];
         }
 
         result[IsResultValidKey] = true;
-        
-        foreach (var parameter in context.FieldMap)
-            context.Values[parameter.Value] = result[parameter.Key];
         
         return PluginActionResult.Success();
     }

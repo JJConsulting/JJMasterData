@@ -43,7 +43,7 @@ public class GridScripts(JJGridView gridView)
     private string GetEncryptedRouteContext(ComponentContext componentContext = ComponentContext.GridViewReload)
     {
         var routeContext = RouteContext.FromFormElement(gridView.FormElement, componentContext);
-        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
         return encryptedRouteContext;
     }
 
@@ -71,7 +71,7 @@ public class GridScripts(JJGridView gridView)
     public string GetGridSettingsScript(ConfigAction action, Dictionary<string, object> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, gridView.FormElement, formValues, action.Name);
-        string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
+        string encryptedActionMap = EncryptionService.EncryptObject(actionMap);
         var encryptedRouteContext = GetEncryptedRouteContext();
         // language=JavaScript
         return $"GridViewHelper.setGridSettings('{gridView.Name}','{encryptedRouteContext}','{encryptedActionMap}');";
@@ -119,7 +119,7 @@ public class GridScripts(JJGridView gridView)
     {
         var componentName = gridView.Name;
         
-        var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(gridView.FormElement,ComponentContext.GridViewRow));
+        var routeContext = EncryptionService.EncryptObject(RouteContext.FromFormElement(gridView.FormElement,ComponentContext.GridViewRow));
         
         //language=Javascript
         return $"GridViewHelper.reloadGridRow('{componentName}','{fieldName}',{gridViewRowIndex},'{routeContext}');";

@@ -36,6 +36,8 @@ public class JJDataPanel : AsyncComponent
     private PageState? _pageState;
     private bool _isAtModal;
     private FormUI _formUI;
+    private Dictionary<string, object> _secretValues;
+
     #endregion
     #region "Properties"
 
@@ -88,6 +90,22 @@ public class JJDataPanel : AsyncComponent
     /// Key=Field Name, Value=Field Value
     /// </summary>
     public Dictionary<string, object> Values { get; set; }
+
+
+    /// <summary>
+    /// Values not intended to be edited at the client. They are encrypted using <see cref="IEncryptionService"/>.
+    /// </summary>
+    [CanBeNull]
+    public Dictionary<string, object> SecretValues
+    {
+        get
+        {
+            if (_secretValues == null && CurrentContext.Request.Form[$"data-panel-secret-values-{Name}"] != null)
+                _secretValues = EncryptionService.DecryptDictionary(CurrentContext.Request.Form[$"data-panel-secret-values-{Name}"]);
+            return _secretValues;
+        }
+        set => _secretValues = value;
+    }
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form
@@ -277,6 +295,7 @@ public class JJDataPanel : AsyncComponent
         }
         html.AppendHiddenInput($"data-panel-state-{Name}", ((int)PageState).ToString());
         html.AppendHiddenInput($"data-panel-is-at-modal-{Name}", IsAtModal.ToString());
+        html.AppendHiddenInput($"data-panel-secret-values-{Name}", EncryptionService.EncryptObject(SecretValues));
     }
 
     private string GetPkHiddenInput()
@@ -318,6 +337,9 @@ public class JJDataPanel : AsyncComponent
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
+
+        if (SecretValues?.Any() is true)
+            DataHelper.CopyIntoDictionary(mergedValues, SecretValues, true);
         
         DataHelper.CopyIntoDictionary(Values, mergedValues, true);
         DataHelper.RemoveNullValues(Values);

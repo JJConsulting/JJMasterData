@@ -319,7 +319,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         
         var context = new RouteContext(ElementName, ParentElementName, componentContext);
         
-        var encryptedRoute = EncryptionService.EncryptRouteContext(context);
+        var encryptedRoute = EncryptionService.EncryptObject(context);
 
         url.Append($"routeContext={encryptedRoute}");
         url.Append($"&fieldName={FieldName}");
