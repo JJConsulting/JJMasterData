@@ -12,7 +12,7 @@ public class PluginFieldAction : PluginAction
     
     public override BasicAction DeepCopy()
     {
-        var newAction = (PluginFieldAction)CopyAction();
+        var newAction = (PluginFieldAction)MemberwiseClone();
         newAction.ConfigurationMap = new Dictionary<string, object?>(ConfigurationMap);
         newAction.FieldMap = new Dictionary<string, string>(FieldMap);
         newAction.TriggerOnChange = TriggerOnChange;

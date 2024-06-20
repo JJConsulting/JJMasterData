@@ -20,5 +20,5 @@ public sealed class FormEditAction : FormToolbarAction
         Order = 0;
         Text = "Edit";
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }
