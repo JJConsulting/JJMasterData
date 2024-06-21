@@ -741,7 +741,7 @@ public class JJFormView : AsyncComponent
         return GetPluginActionResult(pluginAction, formValues, CurrentActionMap!.FieldName);
     }
 
-    private Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
+    private async Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
         Dictionary<string, object?> values, string? fieldName)
     {
         var pluginHandler = PluginHandlers.First(p => p.Id == pluginAction.PluginId);
@@ -763,7 +763,7 @@ public class JJFormView : AsyncComponent
                     ConfigurationMap = pluginAction.ConfigurationMap
                 };
                 
-                var result = pluginActionHandler.ExecuteActionAsync(context);
+                var result = await pluginActionHandler.ExecuteActionAsync(context);
                 
                 if (context.SecretValues.Any())
                     SetSecretValues(context.SecretValues);
@@ -780,7 +780,7 @@ public class JJFormView : AsyncComponent
                     ConfigurationMap = pluginAction.ConfigurationMap
                 };
                 
-                var result = pluginFieldActionHandler.ExecuteActionAsync(context);
+                var result = await pluginFieldActionHandler.ExecuteActionAsync(context);
                 
                 if (context.SecretValues.Any())
                     SetSecretValues(context.SecretValues);
