@@ -376,24 +376,12 @@ public class JJDataPanel : AsyncComponent
 
         return LoadValuesFromPkAsync(filter);
     }
-    
-    
-    /// <summary>
-    /// Validate form fields and return a list with errors
-    ///  </summary>
-    /// <returns>
-    /// Key = Field Name
-    /// Valor = Error message
-    /// </returns>
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
-    {
-        return ValidateFields(values, pageState, true);
-    }
+
 
     /// <inheritdoc cref="ValidateFields()"/>
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values)
     {
-        return ValidateFields(values, PageState, true);
+        return ValidateFields(values, PageState);
     }
     
     /// <summary>
@@ -403,7 +391,7 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
     {
         return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }

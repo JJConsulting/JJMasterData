@@ -15,10 +15,7 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FieldFormattingService(DataItemService dataItemService, LookupService lookupService)
 {
-    private DataItemService DataItemService { get; } = dataItemService;
-    private LookupService LookupService { get; } = lookupService;
-
-    public async Task<string> FormatGridValueAsync(
+    public async ValueTask<string> FormatGridValueAsync(
         FormElementFieldSelector fieldSelector, 
         FormStateData formStateData)
     {
@@ -55,7 +52,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
             case FormComponent.Lookup
                  when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id}:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
-                stringValue = await LookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formStateData, value.ToString(), allowOnlyNumerics);
+                stringValue = await lookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formStateData, value.ToString(), allowOnlyNumerics);
                 break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
@@ -68,9 +65,8 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                     SearchId = value?.ToString()
                 };
                 
-                var searchBoxValues = await DataItemService.GetValuesAsync(field.DataItem, dataQuery);
-                var rowValue = searchBoxValues.FirstOrDefault(v => v.Id == value?.ToString());
-                
+                var searchBoxValues = await dataItemService.GetValuesAsync(field.DataItem, dataQuery);
+                var rowValue = searchBoxValues.FirstOrDefault(v => string.Equals(v.Id, value?.ToString(), StringComparison.InvariantCultureIgnoreCase));
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
             case FormComponent.Email:
                 stringValue = GetEmailLink(value?.ToString());

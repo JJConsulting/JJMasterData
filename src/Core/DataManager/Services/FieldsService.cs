@@ -25,7 +25,7 @@ public class FieldsService(
         return FieldValidationService.ValidateField(field, fieldId, value, enableErrorLink);
     }
 
-    public Task<string> FormatGridValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
+    public ValueTask<string> FormatGridValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
     {
         return FieldFormattingService.FormatGridValueAsync(fieldSelector, formStateData);
     }
