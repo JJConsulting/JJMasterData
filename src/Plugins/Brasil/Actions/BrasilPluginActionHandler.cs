@@ -66,7 +66,10 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
     private static void ClearFields(PluginFieldActionContext context)
     {
         foreach (var parameter in context.FieldMap)
+        {
             context.Values[parameter.Value] = null;
+            context.SecretValues[parameter.Value] = null;
+        }
     }
 
     private PluginActionResult OnResultFound(PluginFieldActionContext context, Dictionary<string,object?> result)
