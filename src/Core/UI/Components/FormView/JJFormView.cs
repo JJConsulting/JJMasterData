@@ -791,9 +791,12 @@ public class JJFormView : AsyncComponent
                 throw new JJMasterDataException("Invalid plugin handler");
         }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetSecretValues(Dictionary<string, object?> secretValues) => DataPanel.SecretValues = secretValues;
+    
+    private void SetSecretValues(Dictionary<string, object?> secretValues)
+    {
+        DataPanel.SecretValues ??= new();
+        DataHelper.CopyIntoDictionary(DataPanel.SecretValues, secretValues, true);
+    }
 
     private void SetFormServiceEvents()
     {
