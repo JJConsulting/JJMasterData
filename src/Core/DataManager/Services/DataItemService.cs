@@ -24,11 +24,6 @@ public class DataItemService(
     ElementMapService elementMapService,
     ILogger<DataItemService> logger)
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private ExpressionParser ExpressionParser { get; } = expressionParser;
-    private ElementMapService ElementMapService { get; } = elementMapService;
-    private ILogger<DataItemService> Logger { get; } = logger;
-
     public async Task<List<DataItemValue>> GetValuesAsync(
         FormElementDataItem dataItem,
         DataQuery dataQuery)
@@ -93,7 +88,7 @@ public class DataItemService(
         string? searchText = dataQuery.SearchText;
         
         var elementMap = dataItem.ElementMap;
-        var values = await ElementMapService.GetDictionaryList(elementMap!, searchId, formStateData);
+        var values = await elementMapService.GetDictionaryList(elementMap!, searchId, formStateData);
 
         List<DataItemValue> result = [];
         
@@ -143,11 +138,11 @@ public class DataItemService(
         
         try
         {
-             dataTable = await EntityRepository.GetDataTableAsync(command, connectionId);
+             dataTable = await entityRepository.GetDataTableAsync(command, connectionId);
         }
         catch (Exception ex)
         {
-            Logger.LogDataAccessCommandException(ex, command);
+            logger.LogDataAccessCommandException(ex, command);
             throw;
         }
         
@@ -197,23 +192,14 @@ public class DataItemService(
         string? searchId)
     {
         var sql = dataItem.Command!.Sql;
-        if (sql.Contains("{"))
-        {
-            if (searchId != null)
-            {
-                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("SearchId"))
-                    formStateData.UserValues.Add("SearchId", searchId);
-            }
+        var parsedValues = expressionParser.ParseExpression(sql, formStateData);
+        
+        if (searchId != null)
+            parsedValues["SearchId"] = searchId;
 
-            if (searchText != null)
-            {
-                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("SearchText"))
-                    formStateData.UserValues.Add("SearchText", searchText);
-            }
-        }
-
-        var parsedValues = ExpressionParser.ParseExpression(sql, formStateData);
-
+        if (searchText != null)
+            parsedValues["SearchText"] = searchId;
+        
         return ExpressionDataAccessCommandFactory.Create(sql, parsedValues);
     }
 }
