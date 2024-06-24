@@ -156,7 +156,8 @@ public class JJDataPanel : AsyncComponent
     public IEntityRepository EntityRepository { get; }
     internal IHttpContext CurrentContext { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal FieldsService FieldsService { get; }
+    internal FieldValidationService FieldValidationService { get; }
+    internal FieldFormattingService FieldFormattingService { get; }
     internal FormValuesService FormValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
     private UrlRedirectService UrlRedirectService { get; }
@@ -171,7 +172,8 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        FieldsService fieldsService,
+        FieldFormattingService fieldFormattingService,
+        FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         UrlRedirectService urlRedirectService,
@@ -182,7 +184,8 @@ public class JJDataPanel : AsyncComponent
         EntityRepository = entityRepository;
         CurrentContext = currentContext;
         EncryptionService = encryptionService;
-        FieldsService = fieldsService;
+        FieldFormattingService = fieldFormattingService;
+        FieldValidationService = fieldValidationService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         UrlRedirectService = urlRedirectService;
@@ -198,13 +201,14 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        FieldsService fieldsService,
+        FieldFormattingService fieldFormattingService,
+        FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         UrlRedirectService urlRedirectService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory
-    ) : this(entityRepository,  currentContext, encryptionService, fieldsService, formValuesService, expressionsService, urlRedirectService,stringLocalizer,componentFactory)
+    ) : this(entityRepository,  currentContext, encryptionService, fieldFormattingService, fieldValidationService, formValuesService, expressionsService, urlRedirectService,stringLocalizer,componentFactory)
     {
         Name = $"{formElement.Name.ToLowerInvariant()}-data-panel";
         FormElement = formElement;
@@ -394,7 +398,7 @@ public class JJDataPanel : AsyncComponent
     /// </returns>
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
     {
-        return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
+        return FieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
     
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)

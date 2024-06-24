@@ -146,7 +146,7 @@ internal class GridFilter(JJGridView gridView)
         }
 
         var defaultValues =
-            await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement, new FormStateData(values,GridView.UserValues, PageState.List));
+            await GridView.FieldValuesService.MergeWithDefaultValuesAsync(GridView.FormElement, new FormStateData(values,GridView.UserValues, PageState.List));
         
         DataHelper.CopyIntoDictionary(values, defaultValues);
         DataHelper.CopyIntoDictionary(_currentFilter, values);

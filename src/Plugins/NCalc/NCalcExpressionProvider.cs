@@ -2,7 +2,6 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.NCalc.Configuration;
 using Microsoft.Extensions.Options;
-using NCalc;
 using NCalc.Factories;
 
 namespace JJMasterData.NCalc;
@@ -28,6 +27,6 @@ public sealed class NCalcExpressionProvider(
         return ncalcExpression.Evaluate();
     }
 
-    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues) 
-        => Task.FromResult(Evaluate(expression,parsedValues));
+    public ValueTask<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues) =>
+        new(Evaluate(expression, parsedValues));
 }

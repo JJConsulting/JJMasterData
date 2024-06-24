@@ -194,7 +194,7 @@ internal class GridTableBody(JJGridView gridView)
         else
         {
             var selector = new FormElementFieldSelector(GridView.FormElement, field.Name);
-            var gridValue = await GridView.FieldsService.FormatGridValueAsync(selector, formStateData);
+            var gridValue = await GridView.FieldFormattingService.FormatGridValueAsync(selector, formStateData);
             var gridStringValue = gridValue?.Trim() ?? string.Empty;
             cell = new HtmlBuilder(gridStringValue);
         }

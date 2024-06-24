@@ -173,8 +173,6 @@ public class JJGridView : AsyncComponent
         return field.DataBehavior is not FieldBehavior.WriteOnly && field.DataBehavior is not FieldBehavior.Virtual;
     }
 
-    internal FormValuesService FormValuesService { get; }
-
     /// <summary>
     /// <see cref="FormElement"/>
     /// </summary>
@@ -544,9 +542,10 @@ public class JJGridView : AsyncComponent
     #endregion
 
     #region Injected Services
-    internal FieldsService FieldsService { get; }
     internal ExpressionsService ExpressionsService { get; }
-
+    internal FormValuesService FormValuesService { get; }
+    internal FieldValuesService FieldValuesService { get; }
+    internal FieldValidationService FieldValidationService { get; }
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private UrlRedirectService UrlRedirectService { get; }
     internal IComponentFactory ComponentFactory { get; }
@@ -573,6 +572,7 @@ public class JJGridView : AsyncComponent
     }
 
     internal ILogger<JJGridView> Logger { get; }
+    internal FieldFormattingService FieldFormattingService { get; }
 
     #endregion
 
@@ -585,8 +585,10 @@ public class JJGridView : AsyncComponent
         IEncryptionService encryptionService,
         DataItemService dataItemService,
         ExpressionsService expressionsService,
-        FieldsService fieldsService,
         FormValuesService formValuesService,
+        FieldFormattingService fieldFormattingService,
+        FieldValuesService fieldValuesService,
+        FieldValidationService fieldValidationService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         UrlRedirectService urlRedirectService,
         ILogger<JJGridView> logger,
@@ -597,6 +599,7 @@ public class JJGridView : AsyncComponent
         ShowTitle =  formElement.Options.Grid.ShowTitle;
         EnableFilter = true;
         EnableSorting = formElement.Options.Grid.EnableSorting;
+        FieldFormattingService = fieldFormattingService;
         ShowHeaderWhenEmpty = formElement.Options.Grid.ShowHeaderWhenEmpty;
         ShowPagging = formElement.Options.Grid.ShowPagging;
         ShowToolbar = formElement.Options.Grid.ShowToolBar;
@@ -604,8 +607,7 @@ public class JJGridView : AsyncComponent
         AutoReloadFormFields = true;
         RelationValues = new Dictionary<string, object>();
         TitleSize = formElement.TitleSize;
-
-        FieldsService = fieldsService;
+        
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
@@ -616,6 +618,8 @@ public class JJGridView : AsyncComponent
         CurrentContext = currentContext;
         DataItemService = dataItemService;
         FormValuesService = formValuesService;
+        FieldValuesService = fieldValuesService;
+        FieldValidationService = fieldValidationService;
     }
 
     #endregion
@@ -905,14 +909,14 @@ public class JJGridView : AsyncComponent
         return alert.GetHtmlBuilder();
     }
 
-    internal async Task<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
-        await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
+    internal async ValueTask<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
+        await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
 
-    internal async Task<FormStateData> GetFormStateDataAsync()
+    internal async ValueTask<FormStateData> GetFormStateDataAsync()
     {
         if (_formStateData == null)
         {
-            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(RelationValues!),UserValues, PageState.List));
+            var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(RelationValues!),UserValues, PageState.List));
             var userValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
 
             DataHelper.CopyIntoDictionary(userValues, RelationValues!, true);
@@ -1309,7 +1313,7 @@ public class JJGridView : AsyncComponent
                         val = row[field.Name]?.ToString();
 
                     string objname = GetFieldName(field.Name, row);
-                    string err = FieldsService.ValidateField(field, objname, val);
+                    string err = FieldValidationService.ValidateField(field, objname, val);
                     if (!string.IsNullOrEmpty(err))
                     {
                         string errMsg = $"{StringLocalizer["Line"]} {line}: {err}";
