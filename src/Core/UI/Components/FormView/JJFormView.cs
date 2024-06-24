@@ -949,12 +949,6 @@ public class JJFormView : AsyncComponent
             await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert));
         
         var errors = await InsertFormValuesAsync(values, false);
-
-        var pks = DataHelper.GetPkValues(FormElement, values);
-        
-        var dbValues = await EntityRepository.GetFieldsAsync(FormElement, pks);
-
-        DataHelper.CopyIntoDictionary(values,dbValues);
         
         if (errors.Count > 0)
         {
@@ -974,6 +968,12 @@ public class JJFormView : AsyncComponent
         }
         else
         {
+            var pks = DataHelper.GetPkValues(FormElement, values);
+        
+            var dbValues = await EntityRepository.GetFieldsAsync(FormElement, pks);
+
+            DataHelper.CopyIntoDictionary(values,dbValues);
+            
             PageState = PageState.Update;
 
             var result = await GetFormResult(values, PageState, false);
