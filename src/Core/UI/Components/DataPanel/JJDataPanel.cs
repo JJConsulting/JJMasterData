@@ -290,12 +290,13 @@ public class JJDataPanel : AsyncComponent
     private void AppendHiddenInputs(HtmlBuilder html)
     {
         if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
-        {
             html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
-        }
+        
         html.AppendHiddenInput($"data-panel-state-{Name}", ((int)PageState).ToString());
         html.AppendHiddenInput($"data-panel-is-at-modal-{Name}", IsAtModal.ToString());
-        html.AppendHiddenInput($"data-panel-secret-values-{Name}", EncryptionService.EncryptObject(SecretValues));
+
+        if (SecretValues?.Any() is true)
+            html.AppendHiddenInput($"data-panel-secret-values-{Name}", EncryptionService.EncryptObject(SecretValues));
     }
 
     private string GetPkHiddenInput()
