@@ -23,7 +23,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NCalc.MemoryCache" Version="4.3.3" />
+        <PackageReference Include="NCalc.MemoryCache" Version="4.3.3" />
+        <PackageReference Include="NCalc.DependencyInjection" Version="4.3.3" />
+        <PackageReference Include="NCalcSync" Version="4.3.3" />
     </ItemGroup>
 
 
