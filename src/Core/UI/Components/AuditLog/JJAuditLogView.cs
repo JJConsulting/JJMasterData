@@ -413,7 +413,7 @@ public class JJAuditLogView : AsyncComponent
                     });
                     div.Append(HtmlTag.B, b => { b.AppendText(message); });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText((string)row["modified"]!.ToString()); });
+                    div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b =>
                     {

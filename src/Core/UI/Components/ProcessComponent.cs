@@ -84,7 +84,7 @@ public abstract class ProcessComponent(
                 break;
         }
 
-        processKey.Append((string)FormElement.Name);
+        processKey.Append(FormElement.Name);
 
         if (ProcessOptions.Scope != ProcessScope.User)
             return processKey.ToString();
