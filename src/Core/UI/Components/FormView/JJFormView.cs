@@ -541,7 +541,7 @@ public class JJFormView : AsyncComponent
         }
 
         var isAtRelationship =
-                IsChildFormView || 
+                IsChildFormView && RelationshipType is not RelationshipType.OneToMany || 
                 (ContainsRelationshipLayout(new FormStateData(values, PageState)) && DataPanel.ContainsPanelState());
         
         if (isAtRelationship)
