@@ -61,15 +61,10 @@ public static class DataHelper
 
         foreach (var field in elementPks)
         {
-            if (!values.ContainsKey(field.Name))
+            if (!values.TryGetValue(field.Name, out var value))
                 throw new JJMasterDataException($"Primary key from {field.Name} not entered");
 
-            var value = values[field.Name];
-
-            if (value is null)
-                primaryKeys.Add(field.Name, DBNull.Value);
-            else
-                primaryKeys.Add(field.Name, value);
+            primaryKeys.Add(field.Name, value ?? DBNull.Value);
         }
 
         return primaryKeys;
@@ -139,42 +134,42 @@ public static class DataHelper
         if (elementPks == null || elementPks.Count == 0)
             throw new JJMasterDataException($"Primary key not defined for dictionary {formElement.Name}");
 
-        string name = string.Empty;
+        var name = string.Empty;
         foreach (var field in elementPks)
         {
             if (name.Length > 0)
                 name += separator.ToString();
                 
-            if (!formValues.ContainsKey(field.Name))
+            if (!formValues.TryGetValue(field.Name, out var formValue))
                 throw new JJMasterDataException($"Primary key {field.Name} not entered");
 
-
             string value;
-            
+
             if (field.DataType is FieldType.DateTime or FieldType.Date)
             {
-                if (DateTime.TryParse(formValues[field.Name]?.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None,out DateTime dateValue))
+                if (DateTime.TryParse(formValue?.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dateValue))
                 {
                     value = dateValue.ToString(CultureInfo.InvariantCulture);
                 }
-                else if (DateTime.TryParse(formValues[field.Name]?.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None,out DateTime invariantDateValue))
+                else if (DateTime.TryParse(formValue?.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime invariantDateValue))
                 {
                     value = invariantDateValue.ToString(CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    throw new JJMasterDataException($"Invalid DateTime for field {field.Name}: {formValues[field.Name]}");
+                    throw new JJMasterDataException($"Invalid DateTime for field {field.Name}: {formValue}");
                 }
             }
             else
             {
-                value = formValues[field.Name]?.ToString() ?? string.Empty;
+                value = formValue?.ToString() ?? string.Empty;
             }
-            
+
             if (value.Contains(separator))
                 throw new JJMasterDataException($"Primary key value {value} contains invalid characters.");
-                
+
             name += value;
+
         }
 
         return name;
