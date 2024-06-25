@@ -75,12 +75,9 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
         var inputGroup = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("input-group jjform-action ")
             .WithCssClass(GroupCssClass);
-
+        
         if (hasAddons)
             inputGroup.Append(GetHtmlAddons());
-
-        if (hasAction)
-            AddActionsAt(inputGroup);
         
         if (UseFloatingLabel)
         {
@@ -95,10 +92,14 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
                     label.WithAttribute("for", Name);
                 });
             });
-            return inputGroup;
         }
-        
-        inputGroup.Append(input);
+        else
+        {
+            inputGroup.Append(input);
+        }
+
+        if (hasAction)
+            AddActionsAt(inputGroup);
         
         return inputGroup;
     }

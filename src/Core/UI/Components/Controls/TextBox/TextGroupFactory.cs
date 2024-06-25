@@ -236,7 +236,7 @@ public class TextGroupFactory(
     private JJLinkButton GetDateAction(FormComponent component, bool isEnabled)
     {
         var btn = ActionButtonFactory.Create();
-        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : $"fa fa-{BootstrapHelper.DateIcon}";
+        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : "fa fa-calendar";
         btn.Tooltip = component is FormComponent.Hour ? StringLocalizer["Clock"] : StringLocalizer["Calendar"];
         btn.Enabled = isEnabled;
         btn.SetAttr("data-toggle", "date");

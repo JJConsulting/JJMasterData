@@ -92,18 +92,6 @@ public static class BootstrapHelper
         _ => " form-horizontal"
     };
     
-    public static string DateIcon => Version switch
-    {
-        >= 4 => "calendar",
-        _ => "th"
-    };
-
-    public static string Well => Version switch
-    {
-        >= 4 => " card",
-        _ => " well"
-    };
-
     public static string HasError => Version switch
     {
         >= 4 => "is-invalid",
@@ -250,13 +238,5 @@ public static class BootstrapHelper
     
     
     #endregion
-    public static string ApplyCompatibility(string cssClass)
-    {
-        if (Version == 3) return null;
-
-        cssClass = cssClass?.Replace("pull-right", PullRight);
-
-        return cssClass;
-    }
 }
 

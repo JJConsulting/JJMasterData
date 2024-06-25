@@ -44,25 +44,25 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
 
     internal void AddActionsAt(HtmlBuilder html)
     {
-        var listAction = Actions.FindAll(x => !x.IsGroup && x.Visible);
-        var listActionGroup = Actions.FindAll(x => x.IsGroup && x.Visible);
+        var actionList = Actions.FindAll(x => !x.IsGroup && x.Visible);
+        var actionListGroup = Actions.FindAll(x => x.IsGroup && x.Visible);
 
-        if (listAction.Count == 0 && listActionGroup.Count == 0)
+        if (actionList.Count == 0 && actionListGroup.Count == 0)
             return;
 
-        foreach (var action in listAction)
+        foreach (var action in actionList)
         {
             action.ShowAsButton = ShowAsButton;
             html.AppendComponent(action);
         }
 
-        if (listActionGroup.Count > 0)
+        if (actionListGroup.Count > 0)
         {
             html.Append(GetHtmlCaretButton());
             html.Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("dropdown-menu dropdown-menu-right dropdown-menu-end");
-                AddGroupActions(ul, listActionGroup);
+                AddGroupActions(ul, actionListGroup);
             });
         }
     }
