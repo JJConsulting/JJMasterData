@@ -25,7 +25,6 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         sql.AppendLine("] (");
 
         var fields = element.Fields
-            .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
         bool isFirst = true;

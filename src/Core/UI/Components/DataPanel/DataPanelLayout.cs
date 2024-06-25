@@ -66,8 +66,7 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
     private async Task<List<HtmlBuilder>> GetFieldsWithoutPanel()
     {
         List<HtmlBuilder> htmlList = [];
-        bool dontContainsVisibleFields = !FormElement.Fields.ToList()
-            .Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression, DataPanelControl.FormStateData));
+        bool dontContainsVisibleFields = !FormElement.Fields.Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression, DataPanelControl.FormStateData));
     
         if (dontContainsVisibleFields)
             return htmlList;

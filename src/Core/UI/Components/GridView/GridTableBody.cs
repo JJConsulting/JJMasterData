@@ -194,7 +194,7 @@ internal class GridTableBody(JJGridView gridView)
         else
         {
             var selector = new FormElementFieldSelector(GridView.FormElement, field.Name);
-            var gridValue = await GridView.FieldsService.FormatGridValueAsync(selector, formStateData);
+            var gridValue = await GridView.FieldFormattingService.FormatGridValueAsync(selector, formStateData);
             var gridStringValue = gridValue?.Trim() ?? string.Empty;
             cell = new HtmlBuilder(gridStringValue);
         }
@@ -330,7 +330,7 @@ internal class GridTableBody(JJGridView gridView)
     }
 
 
-    private async Task<HtmlBuilder> GetActionsGroupHtmlAsync(IEnumerable<BasicAction> actions,
+    private async Task<HtmlBuilder> GetActionsGroupHtmlAsync(List<BasicAction> actions,
         FormStateData formStateData)
     {
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -340,7 +340,7 @@ internal class GridTableBody(JJGridView gridView)
 
         var factory = GridView.ComponentFactory.ActionButton;
 
-        foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
+        foreach (var groupedAction in actions.FindAll(a => a.IsGroup))
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
             var linkButton = factory.CreateGridTableButton(groupedAction, GridView, formStateData);

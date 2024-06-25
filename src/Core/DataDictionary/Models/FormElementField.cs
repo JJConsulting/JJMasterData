@@ -292,6 +292,7 @@ public class FormElementField : ElementField
         Component
             is FormComponent.Text
             or FormComponent.TextArea
+            or FormComponent.Hour
             or FormComponent.Date
             or FormComponent.DateTime
             or FormComponent.Number

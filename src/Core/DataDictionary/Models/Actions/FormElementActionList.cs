@@ -37,9 +37,9 @@ public abstract class FormElementActionList : IList<BasicAction>
         return List.First(a => a.Name == actionName);
     }
     
-    public BasicAction? GetOrDefault(string actionName)
+    public TAction? GetOrDefault<TAction>(string actionName) where TAction : BasicAction
     {
-        return List.FirstOrDefault(a => a.Name == actionName);
+        return List.OfType<TAction>().FirstOrDefault(a => a.Name == actionName);
     }
 
     public List<BasicAction> GetAllSorted()
@@ -123,17 +123,27 @@ public abstract class FormElementActionList : IList<BasicAction>
         List.RemoveAll(match);
     }
 
+    public List<BasicAction> FindAll(Predicate<BasicAction> match)
+    {
+        return List.FindAll(match);
+    }
+    
     public BasicAction this[int index]
     {
         get => List[index];
         set => List[index] = value;
     }
     
-    protected void EnsureActionExists<T>() where T : BasicAction, new()
+    protected T EnsureActionExists<T>() where T : BasicAction, new()
     {
-        if (List.OfType<T>().FirstOrDefault() == null)
-        {
-            List.Add(new T());
-        }
+        var action = List.OfType<T>().FirstOrDefault();
+        
+        if (action != null) 
+            return action;
+        
+        action = new T();
+        List.Add(action);
+        
+        return action;
     }
 }

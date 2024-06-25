@@ -18,5 +18,5 @@ public sealed class AuditLogFormToolbarAction : FormToolbarAction
         Location = FormToolbarActionLocation.Panel;
     }
 
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

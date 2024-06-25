@@ -33,5 +33,5 @@ public sealed class UrlRedirectAction : UserCreatedAction
     {
         Icon = IconType.ExternalLink;
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

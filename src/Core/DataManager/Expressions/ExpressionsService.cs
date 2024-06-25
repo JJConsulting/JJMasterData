@@ -103,19 +103,19 @@ public class ExpressionsService(
         return result;
     }
 
-    public Task<object?> GetTriggerValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
+    public ValueTask<object?> GetTriggerValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
     {
         var field = fieldSelector.Field;
         return GetExpressionValueAsync(fieldSelector,field.TriggerExpression, formStateData);
     }
     
-    public Task<object?> GetDefaultValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
+    public ValueTask<object?> GetDefaultValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
     {
         var field = fieldSelector.Field;
         return GetExpressionValueAsync(fieldSelector,field.DefaultValue, formStateData);
     }
     
-    private async Task<object?> GetExpressionValueAsync(
+    private async ValueTask<object?> GetExpressionValueAsync(
         FormElementFieldSelector fieldSelector,
         string? expression,
         FormStateData formStateData)

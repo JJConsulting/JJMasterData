@@ -166,7 +166,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
             case FieldType.Date:
             case FieldType.DateTime:
             case FieldType.DateTime2:
-                if (!DateTime.TryParse(value?.ToString(), out var date) || date.Year < 1900)
+                if (!DateTime.TryParse(value?.ToString(), out _))
                 {
                     return Localizer["{0} field is an invalid date",
                         fieldName];

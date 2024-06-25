@@ -14,7 +14,7 @@ public abstract class AsyncComponent : ComponentBase
         if (Visible)
             return await BuildResultAsync();
 
-        return new EmptyComponentResult();
+        return EmptyComponentResult.Value;
     }
 
     protected abstract Task<ComponentResult> BuildResultAsync();

@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -386,7 +387,7 @@ public class JJFormView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (!RouteContext.CanRender(FormElement))
-            return new EmptyComponentResult();
+            return EmptyComponentResult.Value;
 
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
             return await GetFormResultAsync();
@@ -524,7 +525,6 @@ public class JJFormView : AsyncComponent
             CurrentActionMap = null;
             return new RedirectComponentResult(UrlRedirect!);
         }
-
         
         if (PageState is PageState.Insert && insertAction.ReopenForm)
         {
@@ -540,7 +540,11 @@ public class JJFormView : AsyncComponent
             return formResult;
         }
 
-        if (ContainsRelationshipLayout(new FormStateData(values, PageState)) && DataPanel.ContainsPanelState())
+        var isAtRelationship =
+                IsChildFormView && RelationshipType is not RelationshipType.OneToMany || 
+                (ContainsRelationshipLayout(new FormStateData(values, PageState)) && DataPanel.ContainsPanelState());
+        
+        if (isAtRelationship)
         {
             DataPanel.PageState = PageState.View;
             return await GetFormResult(values, PageState.View, false);
@@ -658,11 +662,11 @@ public class JJFormView : AsyncComponent
             
 
             html.AppendHiddenInput($"current-action-map-{Name}",
-                EncryptionService.EncryptActionMap(CurrentActionMap));
+                EncryptionService.EncryptObject(CurrentActionMap));
             html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
-                EncryptionService.EncryptDictionary(RelationValues));
+                EncryptionService.EncryptObject(RelationValues));
             html.AppendHiddenInput($"form-view-route-context-{Name}",
-                EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(FormElement, ComponentContext.FormViewReload)));
+                EncryptionService.EncryptObject(RouteContext.FromFormElement(FormElement, ComponentContext.FormViewReload)));
         }
     }
 
@@ -737,7 +741,7 @@ public class JJFormView : AsyncComponent
         return GetPluginActionResult(pluginAction, formValues, CurrentActionMap!.FieldName);
     }
 
-    private Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
+    private async Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
         Dictionary<string, object?> values, string? fieldName)
     {
         var pluginHandler = PluginHandlers.First(p => p.Id == pluginAction.PluginId);
@@ -746,28 +750,52 @@ public class JJFormView : AsyncComponent
         {
             Values = values,
             UserValues = UserValues,
-            PageState = PageState,
+            PageState = PageState
         };
 
         switch (pluginHandler)
         {
             case IPluginActionHandler pluginActionHandler:
-                return pluginActionHandler.ExecuteActionAsync(new PluginActionContext
+            {
+                var context = new PluginActionContext
                 {
                     ActionContext = GetActionContext(pluginAction, formStateData),
                     ConfigurationMap = pluginAction.ConfigurationMap
-                });
+                };
+                
+                var result = await pluginActionHandler.ExecuteActionAsync(context);
+                
+                if (context.SecretValues.Any())
+                    SetSecretValues(context.SecretValues);
+
+                return result;
+            }
             case IPluginFieldActionHandler pluginFieldActionHandler:
-                return pluginFieldActionHandler.ExecuteActionAsync(context: new PluginFieldActionContext
+            {
+                var context = new PluginFieldActionContext
                 {
                     ActionContext = GetActionContext(pluginAction,
                         formStateData, fieldName),
                     FieldMap = ((PluginFieldAction)pluginAction).FieldMap,
                     ConfigurationMap = pluginAction.ConfigurationMap
-                });
+                };
+                
+                var result = await pluginFieldActionHandler.ExecuteActionAsync(context);
+                
+                if (context.SecretValues.Any())
+                    SetSecretValues(context.SecretValues);
+
+                return result;
+            }
             default:
                 throw new JJMasterDataException("Invalid plugin handler");
         }
+    }
+    
+    private void SetSecretValues(Dictionary<string, object?> secretValues)
+    {
+        DataPanel.SecretValues ??= new();
+        DataHelper.CopyIntoDictionary(DataPanel.SecretValues, secretValues, true);
     }
 
     private void SetFormServiceEvents()
@@ -921,12 +949,6 @@ public class JJFormView : AsyncComponent
             await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert));
         
         var errors = await InsertFormValuesAsync(values, false);
-
-        var pks = DataHelper.GetPkValues(FormElement, values);
-        
-        var dbValues = await EntityRepository.GetFieldsAsync(FormElement, pks);
-
-        DataHelper.CopyIntoDictionary(values,dbValues);
         
         if (errors.Count > 0)
         {
@@ -946,6 +968,12 @@ public class JJFormView : AsyncComponent
         }
         else
         {
+            var pks = DataHelper.GetPkValues(FormElement, values);
+        
+            var dbValues = await EntityRepository.GetFieldsAsync(FormElement, pks);
+
+            DataHelper.CopyIntoDictionary(values,dbValues);
+            
             PageState = PageState.Update;
 
             var result = await GetFormResult(values, PageState, false);
@@ -1127,7 +1155,7 @@ public class JJFormView : AsyncComponent
 
         if (relationshipsResult is HtmlComponentResult htmlResult)
         {
-            var topActions = GetTopToolbarActions(FormElement).ToList();
+            var topActions = GetTopToolbarActions(FormElement);
 
             html.PrependComponent(await GetFormToolbarAsync(topActions));
             
@@ -1135,7 +1163,7 @@ public class JJFormView : AsyncComponent
             var toolbarActions = FormElement.Options.FormToolbarActions;
 
             var bottomActions = 
-                toolbarActions.Where(a => a.Location is FormToolbarActionLocation.Bottom).ToList();
+                toolbarActions.FindAll(a => a.Location is FormToolbarActionLocation.Bottom);
         
             if(!IsChildFormView)
                 toolbarActions.BackAction.SetVisible(true);
@@ -1203,11 +1231,9 @@ public class JJFormView : AsyncComponent
     {
         var visibleRelationships = FormElement
             .Relationships
-            .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
-            .Where(r =>
-                ExpressionsService.GetBoolValue(r.Panel.VisibleExpression,
-                    new FormStateData(values, pageState)))
-            .ToList();
+            .FindAll(r => 
+                r.ViewType != RelationshipViewType.None || r.IsParent
+                && ExpressionsService.GetBoolValue(r.Panel.VisibleExpression, new FormStateData(values, pageState)));
         return visibleRelationships;
     }
 
@@ -1228,7 +1254,7 @@ public class JJFormView : AsyncComponent
         
         ConfigureFormToolbar();
 
-        var topToolbarActions = GetTopToolbarActions(FormElement).ToList();
+        var topToolbarActions = GetTopToolbarActions(FormElement);
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
         
@@ -1237,7 +1263,7 @@ public class JJFormView : AsyncComponent
             
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
-        var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement).ToList();
+        var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement);
         panelAndBottomToolbarActions.AddRange(GetBottomToolbarActions(FormElement));
 
         var toolbar = await GetFormToolbarAsync(panelAndBottomToolbarActions);
@@ -1265,7 +1291,7 @@ public class JJFormView : AsyncComponent
 
         ConfigureFormToolbar();
         
-        var panelToolbarActions = GetPanelToolbarActions(FormElement).ToList();
+        var panelToolbarActions = GetPanelToolbarActions(FormElement);
 
         var toolbar = await GetFormToolbarAsync(panelToolbarActions);
 
@@ -1279,26 +1305,26 @@ public class JJFormView : AsyncComponent
         return formHtml;
     }
 
-    private static IEnumerable<BasicAction> GetPanelToolbarActions(FormElement formElement)
+    private static List<BasicAction> GetPanelToolbarActions(FormElement formElement)
     {
         var toolbarActions = formElement.Options.FormToolbarActions
-            .Where(a => a.Location == FormToolbarActionLocation.Panel);
+            .FindAll(a => a.Location == FormToolbarActionLocation.Panel);
 
         return toolbarActions;
     }
 
-    private static IEnumerable<BasicAction> GetTopToolbarActions(FormElement formElement)
+    private static List<BasicAction> GetTopToolbarActions(FormElement formElement)
     {
         var toolbarActions = formElement.Options.FormToolbarActions
-            .Where(a => a.Location == FormToolbarActionLocation.Top);
+            .FindAll(a => a.Location == FormToolbarActionLocation.Top);
 
         return toolbarActions;
     }
 
-    private static IEnumerable<BasicAction> GetBottomToolbarActions(FormElement formElement)
+    private static List<BasicAction> GetBottomToolbarActions(FormElement formElement)
     {
         var toolbarActions = formElement.Options.FormToolbarActions
-            .Where(a => a.Location == FormToolbarActionLocation.Bottom);
+            .FindAll(a => a.Location == FormToolbarActionLocation.Bottom);
 
         return toolbarActions;
     }
@@ -1346,7 +1372,7 @@ public class JJFormView : AsyncComponent
             var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
             btnGroup.CaretText = StringLocalizer["More"];
 
-            foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
+            foreach (var groupedAction in actions.Where(a => a.IsGroup))
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
                 var factory = ComponentFactory.ActionButton;
@@ -1433,7 +1459,7 @@ public class JJFormView : AsyncComponent
     
     private void ClearTempFiles()
     {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        var uploadFields = FormElement.Fields.FindAll(x => x.Component == FormComponent.File);
         foreach (var field in uploadFields)
         {
             string sessionName = $"{field.Name}-upload-view_jjfiles";

@@ -156,7 +156,7 @@ public class ElementService(
                 await DataDictionaryRepository.GetFormElementInfoListAsync(filter, args.OrderBy, args.RecordsPerPage,
                     args.CurrentPage);
 
-            var dictionaryList = result.Data.Select(info => info.ToDictionary()).ToList();
+            var dictionaryList = result.Data.ConvertAll(info => info.ToDictionary());
 
             args.DataSource = dictionaryList;
             args.TotalOfRecords = result.TotalOfRecords;

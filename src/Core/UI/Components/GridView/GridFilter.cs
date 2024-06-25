@@ -146,7 +146,7 @@ internal class GridFilter(JJGridView gridView)
         }
 
         var defaultValues =
-            await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement, new FormStateData(values,GridView.UserValues, PageState.List));
+            await GridView.FieldValuesService.MergeWithDefaultValuesAsync(GridView.FormElement, new FormStateData(values,GridView.UserValues, PageState.List));
         
         DataHelper.CopyIntoDictionary(values, defaultValues);
         DataHelper.CopyIntoDictionary(_currentFilter, values);
@@ -157,7 +157,7 @@ internal class GridFilter(JJGridView gridView)
     private async Task<HtmlBuilder> GetDefaultFilter()
     {
         var action = GridView.FilterAction;
-        var fields = GridView.FormElement.Fields.ToList().FindAll(
+        var fields = GridView.FormElement.Fields.FindAll(
             field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"));
 
         foreach (var field in fields)
@@ -338,7 +338,7 @@ internal class GridFilter(JJGridView gridView)
             values = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson)!;
         }
 
-        var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
+        var fieldsFilter = GridView.FormElement.Fields.FindAll(x => x.Filter.Type != FilterMode.None);
 
         foreach (var field in fieldsFilter)
         {
@@ -406,7 +406,7 @@ internal class GridFilter(JJGridView gridView)
     private Dictionary<string, object>  GetFilterQueryString()
     {
         Dictionary<string, object>  values = null;
-        var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
+        var fieldsFilter = GridView.FormElement.Fields.FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
             string name = $"{FilterFieldPrefix}{f.Name}";

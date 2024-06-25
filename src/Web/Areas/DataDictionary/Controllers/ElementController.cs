@@ -187,11 +187,10 @@ public class ElementController(
     {
         var formView = elementService.GetFormView();
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
-    
+
         var elementNamesToDelete = selectedGridValues
             .Where(value => value.TryGetValue("name", out var nameValue) && nameValue is string)
-            .Select(value => value["name"].ToString())
-            .ToList();
+            .Select(value => value["name"].ToString());
 
         foreach (var elementName in elementNamesToDelete)
         {

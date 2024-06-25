@@ -67,7 +67,7 @@ public abstract class DataExportationWriterBase(
                 return _fields;
             if (Configuration.ExportAllFields)
             {
-                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+                _fields = FormElement.Fields.FindAll(x => x.Export);
             }
 
             else

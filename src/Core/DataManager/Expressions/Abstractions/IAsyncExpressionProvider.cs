@@ -7,5 +7,5 @@ namespace JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 public interface IAsyncExpressionProvider : IExpressionProvider
 {
-    Task<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues);
+    ValueTask<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues);
 }

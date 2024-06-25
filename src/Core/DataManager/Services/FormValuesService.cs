@@ -77,16 +77,20 @@ public class FormValuesService(
             case FormComponent.Hour:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-                
-                parsedValue = TimeSpan.Parse(value);
+
+                if (TimeSpan.TryParse(value, out var parsedTimeValue))
+                    parsedValue = parsedTimeValue;
+                else
+                    parsedValue = value;
                 break;
             case FormComponent.Date:
             case FormComponent.DateTime:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-                
-                parsedValue = DateTime.Parse(value);
-                
+                if (DateTime.TryParse(value, out var parsedDateTimeValue))
+                    parsedValue = parsedDateTimeValue;
+                else
+                    parsedValue = value;
                 break;
             case FormComponent.Currency:
                 if (string.IsNullOrWhiteSpace(value))
@@ -108,7 +112,7 @@ public class FormValuesService(
 
                 if (field.DataType is FieldType.Bit)
                     parsedValue = boolValue;
-                else //Legacy compatibility when FieldType.Bit didn't exists.
+                else //Legacy compatibility when FieldType.Bit didn't exist.
                     parsedValue = boolValue ? "1" : "0";
                 break;
             default:

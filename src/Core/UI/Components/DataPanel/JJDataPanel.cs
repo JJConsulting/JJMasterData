@@ -36,6 +36,8 @@ public class JJDataPanel : AsyncComponent
     private PageState? _pageState;
     private bool _isAtModal;
     private FormUI _formUI;
+    private Dictionary<string, object> _secretValues;
+
     #endregion
     #region "Properties"
 
@@ -89,6 +91,22 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     public Dictionary<string, object> Values { get; set; }
 
+
+    /// <summary>
+    /// Values not intended to be edited at the client. They are encrypted using <see cref="IEncryptionService"/>.
+    /// </summary>
+    [CanBeNull]
+    public Dictionary<string, object> SecretValues
+    {
+        get
+        {
+            if (_secretValues == null && CurrentContext.Request.Form[$"data-panel-secret-values-{Name}"] != null)
+                _secretValues = EncryptionService.DecryptDictionary(CurrentContext.Request.Form[$"data-panel-secret-values-{Name}"]);
+            return _secretValues;
+        }
+        set => _secretValues = value;
+    }
+
     /// <summary>
     /// When reloading the panel, keep the values entered in the form
     /// (Default=True)
@@ -138,7 +156,8 @@ public class JJDataPanel : AsyncComponent
     public IEntityRepository EntityRepository { get; }
     internal IHttpContext CurrentContext { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal FieldsService FieldsService { get; }
+    internal FieldValidationService FieldValidationService { get; }
+    internal FieldFormattingService FieldFormattingService { get; }
     internal FormValuesService FormValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
     private UrlRedirectService UrlRedirectService { get; }
@@ -153,7 +172,8 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        FieldsService fieldsService,
+        FieldFormattingService fieldFormattingService,
+        FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         UrlRedirectService urlRedirectService,
@@ -164,7 +184,8 @@ public class JJDataPanel : AsyncComponent
         EntityRepository = entityRepository;
         CurrentContext = currentContext;
         EncryptionService = encryptionService;
-        FieldsService = fieldsService;
+        FieldFormattingService = fieldFormattingService;
+        FieldValidationService = fieldValidationService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         UrlRedirectService = urlRedirectService;
@@ -180,13 +201,14 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        FieldsService fieldsService,
+        FieldFormattingService fieldFormattingService,
+        FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         UrlRedirectService urlRedirectService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory
-    ) : this(entityRepository,  currentContext, encryptionService, fieldsService, formValuesService, expressionsService, urlRedirectService,stringLocalizer,componentFactory)
+    ) : this(entityRepository,  currentContext, encryptionService, fieldFormattingService, fieldValidationService, formValuesService, expressionsService, urlRedirectService,stringLocalizer,componentFactory)
     {
         Name = $"{formElement.Name.ToLowerInvariant()}-data-panel";
         FormElement = formElement;
@@ -198,7 +220,7 @@ public class JJDataPanel : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (!RouteContext.CanRender(FormElement))
-            return new EmptyComponentResult();
+            return EmptyComponentResult.Value;
         
         Values = await GetFormValuesAsync();
 
@@ -242,7 +264,7 @@ public class JJDataPanel : AsyncComponent
         var controlContext = new ControlContext(formStateData, Name);
 
         if (!FormElement.Fields.TryGetField(fieldName, out var field))
-            return new EmptyComponentResult();
+            return EmptyComponentResult.Value;
         
         var control = ComponentFactory.Controls.Create<TControl>(FormElement, field, controlContext);
         control.Name = FieldNamePrefix + fieldName;
@@ -272,11 +294,13 @@ public class JJDataPanel : AsyncComponent
     private void AppendHiddenInputs(HtmlBuilder html)
     {
         if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
-        {
             html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
-        }
+        
         html.AppendHiddenInput($"data-panel-state-{Name}", ((int)PageState).ToString());
         html.AppendHiddenInput($"data-panel-is-at-modal-{Name}", IsAtModal.ToString());
+
+        if (SecretValues?.Any() is true)
+            html.AppendHiddenInput($"data-panel-secret-values-{Name}", EncryptionService.EncryptObject(SecretValues));
     }
 
     private string GetPkHiddenInput()
@@ -318,6 +342,9 @@ public class JJDataPanel : AsyncComponent
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
+
+        if (SecretValues?.Any() is true)
+            DataHelper.CopyIntoDictionary(mergedValues, SecretValues, true);
         
         DataHelper.CopyIntoDictionary(Values, mergedValues, true);
         DataHelper.RemoveNullValues(Values);
@@ -354,24 +381,12 @@ public class JJDataPanel : AsyncComponent
 
         return LoadValuesFromPkAsync(filter);
     }
-    
-    
-    /// <summary>
-    /// Validate form fields and return a list with errors
-    ///  </summary>
-    /// <returns>
-    /// Key = Field Name
-    /// Valor = Error message
-    /// </returns>
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
-    {
-        return ValidateFields(values, pageState, true);
-    }
+
 
     /// <inheritdoc cref="ValidateFields()"/>
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values)
     {
-        return ValidateFields(values, PageState, true);
+        return ValidateFields(values, PageState);
     }
     
     /// <summary>
@@ -381,9 +396,9 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
     {
-        return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
+        return FieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
     
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)

@@ -395,7 +395,7 @@ public class JJAuditLogView : AsyncComponent
             {
                 var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.AuditLogView);
 
-                var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+                var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
 
                 a.WithAttribute("href",
                     $"javascript:AuditLogViewHelper.loadAuditLog('{FormElement.ParentName}','{logId}', '{encryptedRouteContext}')");

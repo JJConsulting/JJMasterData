@@ -74,7 +74,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
     public static string GetKey(Element element, Dictionary<string, object>values)
     {
         var key = new StringBuilder();
-        var pks = element.Fields.ToList().FindAll(x => x.IsPk);
+        var pks = element.Fields.FindAll(x => x.IsPk);
         foreach (var field in pks)
         {
             if (key.Length > 0)

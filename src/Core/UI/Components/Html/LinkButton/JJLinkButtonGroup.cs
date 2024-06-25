@@ -44,8 +44,8 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
 
     internal void AddActionsAt(HtmlBuilder html)
     {
-        var listAction = Actions.Where(x => !x.IsGroup && x.Visible).ToList();
-        var listActionGroup = Actions.Where(x => x.IsGroup && x.Visible).ToList();
+        var listAction = Actions.FindAll(x => !x.IsGroup && x.Visible);
+        var listActionGroup = Actions.FindAll(x => x.IsGroup && x.Visible);
 
         if (listAction.Count == 0 && listActionGroup.Count == 0)
             return;

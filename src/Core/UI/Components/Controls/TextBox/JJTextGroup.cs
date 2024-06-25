@@ -46,7 +46,7 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
         }
 
         var input = base.GetHtmlBuilder();
-        var hasAction = Actions.ToList().Exists(x => x.Visible);
+        var hasAction = Actions.Exists(x => x.Visible);
         var hasAddons = Addons != null;
 
         if (!hasAction && !hasAddons)

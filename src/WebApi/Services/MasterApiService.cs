@@ -21,18 +21,15 @@ public class MasterApiService(ExpressionsService expressionsService,
     IHttpContextAccessor httpContextAccessor,
     IHttpContext httpContext,
     DataItemService dataItemService,
+    FieldValuesService fieldValuesService,
     FormService formService,
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
-    FieldsService fieldsService,
+
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private readonly HttpContext _httpContext = httpContextAccessor.HttpContext!;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    private IHttpContext HttpContext { get; } = httpContext;
-    private DataItemService DataItemService { get; } = dataItemService;
-    private FormService FormService { get; } = formService;
-    private FieldsService FieldsService { get; } = fieldsService;
+
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     public async Task<string> GetListFieldAsTextAsync(string elementName, int pag, int regporpag, string? orderby)
@@ -176,8 +173,8 @@ public class MasterApiService(ExpressionsService expressionsService,
         ResponseLetter ret;
         try
         {
-            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Insert), true);
-            var formResult = await FormService.InsertAsync(formElement, values, GetDataContext());
+            var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Insert), true);
+            var formResult = await formService.InsertAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter
@@ -205,8 +202,8 @@ public class MasterApiService(ExpressionsService expressionsService,
         ResponseLetter ret;
         try
         {
-            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Update), true);
-            var formResult = await FormService.UpdateAsync(formElement, values, GetDataContext());
+            var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Update), true);
+            var formResult = await formService.UpdateAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 if (formResult.NumberOfRowsAffected == 0)
@@ -238,8 +235,8 @@ public class MasterApiService(ExpressionsService expressionsService,
         ResponseLetter ret;
         try
         {
-            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement,  new FormStateData(apiValues, PageState.Import), true);
-            var formResult =await FormService.InsertOrReplaceAsync(formElement, values, GetDataContext());
+            var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement,  new FormStateData(apiValues, PageState.Import), true);
+            var formResult =await formService.InsertOrReplaceAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter();
@@ -305,8 +302,8 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
-        var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
-        var formResult = await FormService.DeleteAsync(formElement, values, GetDataContext());
+        var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
+        var formResult = await formService.DeleteAsync(formElement, values, GetDataContext());
 
         if (formResult.IsValid)
         {
@@ -345,15 +342,15 @@ public class MasterApiService(ExpressionsService expressionsService,
             { "componentName", objname }
         };
 
-        var newValues = await FieldsService.MergeWithExpressionValuesAsync(dictionary,  new FormStateData(values!,pageState), false);
+        var newValues = await fieldValuesService.MergeWithExpressionValuesAsync(dictionary,  new FormStateData(values!,pageState), false);
         var formData = new FormStateData(newValues, userValues, pageState);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (var field in dictionary.Fields)
         {
             var formValues = new FormValues
             {
-                Enable = ExpressionsService.GetBoolValue(field.EnableExpression, formData),
-                Visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData)
+                Enable = expressionsService.GetBoolValue(field.EnableExpression, formData),
+                Visible = expressionsService.GetBoolValue(field.VisibleExpression, formData)
             };
 
             if (newValues != null && newValues.TryGetValue(field.Name, out var newvalue))
@@ -364,7 +361,7 @@ public class MasterApiService(ExpressionsService expressionsService,
                 if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
                     var dataQuery = new DataQuery(formData, dictionary.ConnectionId);
-                    formValues.DataItems = await DataItemService.GetValuesAsync(field.DataItem!, dataQuery);
+                    formValues.DataItems = await dataItemService.GetValuesAsync(field.DataItem!, dataQuery);
                 }
             }
 
@@ -434,13 +431,13 @@ public class MasterApiService(ExpressionsService expressionsService,
 
     private string GetUserId()
     {
-        return DataHelper.GetCurrentUserId(HttpContext, null)!;
+        return DataHelper.GetCurrentUserId(httpContext, null)!;
     }
 
     private DataContext GetDataContext()
     {
         var userId = GetUserId();
-        return new DataContext(HttpContext.Request, DataContextSource.Api, userId);
+        return new DataContext(httpContext.Request, DataContextSource.Api, userId);
     }
 
     private ValueTask<FormElement> GetDataDictionary(string elementName)

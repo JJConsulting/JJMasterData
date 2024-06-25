@@ -97,7 +97,7 @@ public abstract class EntityProviderBase(
     private static CommandOperation GetCommandOperation(Element element, Dictionary<string,object?> values, DataAccessCommand command,
         CommandOperation commandType, Dictionary<string, object?>? newFields)
     {
-        var resultParameter = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
+        var resultParameter = command.Parameters.First(x => x.Name.Equals("@RET"));
 
         if (resultParameter.Value != DBNull.Value)
         {
@@ -264,10 +264,10 @@ public abstract class EntityProviderBase(
     
     private static CommandOperation GetCommandFromValuesNoResult(Element element, DataAccessCommand command, CommandOperation ret)
     {
-        var oret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
-        if (oret.Value != DBNull.Value)
+        var retParameter = command.Parameters.First(x => x.Name.Equals("@RET"));
+        if (retParameter.Value != DBNull.Value)
         {
-            if (!int.TryParse(oret.Value.ToString(), out var result))
+            if (!int.TryParse(retParameter.Value.ToString(), out var result))
             {
                 string err = "Element";
                 err += $" {element.Name}";

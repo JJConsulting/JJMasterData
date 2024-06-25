@@ -74,7 +74,7 @@ public class SqlDataDictionaryRepository(
         var dt = await entityRepository.GetDictionaryListResultAsync(_masterDataElement,
             new EntityParameters { Filters = filter }, false);
 
-        return dt.Data.Select(row => row[DataDictionaryStructure.Name]!.ToString()!).ToList();
+        return dt.Data.ConvertAll(row => row[DataDictionaryStructure.Name]!.ToString()!);
     }
 
     public FormElement? GetFormElement(string elementName)

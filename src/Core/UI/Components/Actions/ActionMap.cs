@@ -64,13 +64,13 @@ public class ActionMap
     {
         var action = ActionSource switch
         {
-            ActionSource.GridTable => formElement.Options.GridTableActions.GetOrDefault(ActionName),
-            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetOrDefault(ActionName),
-            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetOrDefault(ActionName),
-            ActionSource.Field => formElement.Fields[FieldName!].Actions.GetOrDefault(ActionName),
+            ActionSource.GridTable => formElement.Options.GridTableActions.GetOrDefault<TAction>(ActionName),
+            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetOrDefault<TAction>(ActionName),
+            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetOrDefault<TAction>(ActionName),
+            ActionSource.Field => formElement.Fields[FieldName!].Actions.GetOrDefault<TAction>(ActionName),
             _ => throw new JJMasterDataException("Invalid ActionSource")
         };
 
-        return action as TAction;
+        return action;
     }
 }

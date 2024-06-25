@@ -189,7 +189,5 @@ public abstract class BasicAction
         ShowAsButton = action.ShowAsButton;
         CssClass = action.CssClass;
     }
-
-    protected BasicAction CopyAction() => (BasicAction)MemberwiseClone();
     public abstract BasicAction DeepCopy();
 }
