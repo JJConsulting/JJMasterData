@@ -387,7 +387,7 @@ public class JJFormView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (!RouteContext.CanRender(FormElement))
-            return new EmptyComponentResult();
+            return EmptyComponentResult.Value;
 
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
             return await GetFormResultAsync();

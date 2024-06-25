@@ -220,7 +220,7 @@ public class JJDataPanel : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (!RouteContext.CanRender(FormElement))
-            return new EmptyComponentResult();
+            return EmptyComponentResult.Value;
         
         Values = await GetFormValuesAsync();
 
@@ -264,7 +264,7 @@ public class JJDataPanel : AsyncComponent
         var controlContext = new ControlContext(formStateData, Name);
 
         if (!FormElement.Fields.TryGetField(fieldName, out var field))
-            return new EmptyComponentResult();
+            return EmptyComponentResult.Value;
         
         var control = ComponentFactory.Controls.Create<TControl>(FormElement, field, controlContext);
         control.Name = FieldNamePrefix + fieldName;

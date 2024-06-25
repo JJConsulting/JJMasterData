@@ -627,7 +627,7 @@ public class JJGridView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (!RouteContext.CanRender(FormElement))
-            return new EmptyComponentResult();
+            return EmptyComponentResult.Value;
         
         if (ComponentContext is ComponentContext.GridViewReload)
             return new ContentComponentResult(await GetTableHtmlBuilder());
@@ -1091,7 +1091,7 @@ public class JJGridView : AsyncComponent
                 return new JsonComponentResult(new {});
         }
 
-        return new EmptyComponentResult();
+        return EmptyComponentResult.Value;
     }
 
     public async Task ExportFileInBackground()
