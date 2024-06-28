@@ -12,9 +12,6 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FieldValuesService(ExpressionsService expressionsService)
 {
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-
-
     /// <summary>
     /// Apply default and triggers expression values
     /// </summary>
@@ -45,13 +42,15 @@ public class FieldValuesService(ExpressionsService expressionsService)
     {
         var defaultValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var formStateDataCopy = formStateData.DeepCopy();
+        var values = formStateData.Values;
         var fieldsWithDefaultValue = formElement.Fields
-            .Where(FieldNeedsDefaultValue(formStateData));
+            .Where(f => !string.IsNullOrEmpty(f.DefaultValue) && 
+                        (!values.ContainsKey(f.Name) || string.IsNullOrEmpty(values[f.Name]?.ToString())));
         
         foreach (var field in fieldsWithDefaultValue)
         {
             var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
-            var defaultValue = await ExpressionsService.GetDefaultValueAsync(fieldSelector, formStateDataCopy);
+            var defaultValue = await expressionsService.GetDefaultValueAsync(fieldSelector, formStateDataCopy);
             if (!string.IsNullOrEmpty(defaultValue?.ToString()))
             {
                 defaultValues.Add(field.Name, defaultValue);
@@ -61,12 +60,6 @@ public class FieldValuesService(ExpressionsService expressionsService)
 
         return defaultValues;
     }
-
-    private static Func<FormElementField, bool> FieldNeedsDefaultValue(FormStateData formStateData)
-    {
-        return f => !string.IsNullOrEmpty(f.DefaultValue) && 
-                    (!formStateData.Values.ContainsKey(f.Name) || string.IsNullOrEmpty(formStateData.Values[f.Name]?.ToString()));
-    }
     
     public async ValueTask<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
@@ -74,7 +67,6 @@ public class FieldValuesService(ExpressionsService expressionsService)
   
         foreach (var v in formStateData.Values)
             values.Add(v.Key, v.Value);
-        
 
         await ApplyDefaultValues(formElement, formStateData, false);
         return values;
@@ -110,7 +102,7 @@ public class FieldValuesService(ExpressionsService expressionsService)
         foreach (var field in fieldsWithTrigger)
         {
             var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
-            var value = await ExpressionsService.GetTriggerValueAsync(fieldSelector, formStateData);
+            var value = await expressionsService.GetTriggerValueAsync(fieldSelector, formStateData);
             if (value != null)
             {
                 formStateData.Values[field.Name] = value;
