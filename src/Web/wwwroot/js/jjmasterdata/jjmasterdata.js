@@ -2807,8 +2807,8 @@ var jjutil = (function () {
         }
     };
 })();
-function requestSubmitParentWindow() {
-    window.parent.getMasterDataForm().requestSubmit();
+function submitParentWindow() {
+    window.parent.getMasterDataForm().submit();
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function onDOMReady(callback) {
