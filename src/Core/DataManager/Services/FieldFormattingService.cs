@@ -61,14 +61,16 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
             case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
 
+                var searchId = value?.ToString().Trim();
+                
                 var dataQuery = new DataQuery(formStateData, fieldSelector.FormElement.ConnectionId)
                 {
-                    SearchId = value?.ToString()
+                    SearchId = searchId
                 };
 
                 var searchBoxValues = await dataItemService.GetValuesAsync(field.DataItem, dataQuery);
                 var rowValue = searchBoxValues.FirstOrDefault(v =>
-                    string.Equals(v.Id, value?.ToString()!.Trim(), StringComparison.InvariantCultureIgnoreCase));
+                    string.Equals(v.Id.Trim(), searchId, StringComparison.InvariantCultureIgnoreCase));
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
             case FormComponent.Email:
                 stringValue = GetEmailLink(value?.ToString());
