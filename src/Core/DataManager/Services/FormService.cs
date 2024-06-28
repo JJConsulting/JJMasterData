@@ -192,6 +192,8 @@ public class FormService(
         if (formElement.Options.EnableAuditLog)
             await AuditLogService.LogAsync(formElement, dataContext, values, result.Result);
 
+        if (dataContext.Source == DataContextSource.Form)
+            FormFileService.SaveFormMemoryFiles(formElement, values);
         
         if (result.Result == CommandOperation.Insert && OnAfterInsertAsync != null)
         {
