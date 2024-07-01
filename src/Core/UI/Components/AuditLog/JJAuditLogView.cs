@@ -90,7 +90,7 @@ public class JJAuditLogView : AsyncComponent
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
-        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-audit-log-view";
+        Name = $"{formElement.Name.ToLowerInvariant()}-audit-log-view";
         _componentFactory = componentFactory;
         FormElement = formElement;
         CurrentContext = currentContext;
@@ -394,7 +394,7 @@ public class JJAuditLogView : AsyncComponent
             {
                 var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.AuditLogView);
 
-                var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+                var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
 
                 a.WithAttribute("href",
                     $"javascript:AuditLogViewHelper.loadAuditLog('{FormElement.ParentName}','{logId}', '{encryptedRouteContext}')");
@@ -413,7 +413,7 @@ public class JJAuditLogView : AsyncComponent
                     });
                     div.Append(HtmlTag.B, b => { b.AppendText(message); });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText((string)row["modified"]!.ToString()); });
+                    div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b =>
                     {

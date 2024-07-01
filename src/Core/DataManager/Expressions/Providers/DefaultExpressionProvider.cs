@@ -22,6 +22,6 @@ public sealed class DefaultExpressionProvider : ISyncExpressionProvider, IAsyncE
         return result!;
     }
 
-    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues) 
-        => Task.FromResult<object?>(Evaluate(expression,parsedValues));
+    public ValueTask<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues) 
+        => new(Evaluate(expression,parsedValues));
 }

@@ -415,7 +415,7 @@ public class JJUploadView : AsyncComponent
         if (file.IsInMemory)
         {
             var base64 = Convert.ToBase64String(file.Content.Bytes.ToArray());
-            src = $"data:image/{Path.GetExtension((string)fileName).Replace(".", "")};base64,{base64}";
+            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
         }
         else
         {
@@ -439,7 +439,7 @@ public class JJUploadView : AsyncComponent
             c.Append(HtmlTag.Img, img =>
             {
                 img.WithAttribute("id", "img")
-                    .WithAttribute("src", src).WithAttribute((string)"alt", (string)fileName)
+                    .WithAttribute("src", src).WithAttribute("alt", fileName)
                    .WithStyle( "max-height:350px;display:none;")
                    .WithCssClass("img-responsive");
             });

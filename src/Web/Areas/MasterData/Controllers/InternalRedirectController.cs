@@ -6,7 +6,9 @@ using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -19,7 +21,8 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
-    IStringLocalizer<MasterDataResources> localizer,
+    FormService formService,
+    IHttpRequest request,
     IEncryptionService encryptionService) : MasterDataController
 {
     private string? _elementName;
@@ -118,21 +121,12 @@ public class InternalRedirectController(
             panel.SetUserValues("USERID", userId);
 
         var values = await panel.GetFormValuesAsync();
-        var errors =  panel.ValidateFields(values, PageState.Update);
-        var formElement = panel.FormElement;
-        try
-        {
-            if (errors.Count == 0)
-                await panel.EntityRepository.SetValuesAsync(formElement, values);
-        }
-        catch (SqlException ex)
-        {
-            errors.Add("DB", localizer[ExceptionManager.GetMessage(ex)]);
-        }
 
-        if (errors.Count > 0)
+        var letter =await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request,DataContextSource.Form,userId));
+
+        if (letter.Errors.Count > 0)
         {
-            ViewBag.Error = componentFactory.Html.ValidationSummary.Create(errors).GetHtml();
+            ViewBag.Error = componentFactory.Html.ValidationSummary.Create(letter.Errors).GetHtml();
             ViewBag.Success = false;
         }
         else

@@ -22,7 +22,7 @@ public class ViaCepService(HttpClient httpClient, IMemoryCache memoryCache) : IC
              if (string.IsNullOrEmpty(cep))
                  throw new ArgumentNullException(nameof(cep));
 
-             if (MemoryCache.TryGetValue(cep, out CepResult cepResult))
+             if (MemoryCache.TryGetValue(cep, out CepResult? cepResult) && cepResult != null)
                  return cepResult;
              
              var url = $"{ViaCepUrl}{StringManager.ClearCpfCnpjChars(cep)}/json";

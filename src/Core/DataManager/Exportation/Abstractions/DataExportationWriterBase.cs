@@ -67,7 +67,7 @@ public abstract class DataExportationWriterBase(
                 return _fields;
             if (Configuration.ExportAllFields)
             {
-                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+                _fields = FormElement.Fields.FindAll(x => x.Export);
             }
 
             else
@@ -157,7 +157,7 @@ public abstract class DataExportationWriterBase(
         }
         catch (Exception ex)
         {
-            string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
+            const string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
             throw new JJMasterDataException(message, ex);
         }
     }

@@ -189,6 +189,16 @@ public class FormElementFieldList : IList<FormElementField>
         return _baseFields.GetAsList();
     }
 
+    public List<FormElementField> FindAll(Predicate<FormElementField> predicate)
+    {
+        return _formFields.FindAll(predicate);
+    }
+    
+    public bool Exists(Predicate<FormElementField> predicate)
+    {
+        return _formFields.Exists(predicate);
+    }
+    
     public FormElementFieldList DeepCopy()
     {
         return new FormElementFieldList(

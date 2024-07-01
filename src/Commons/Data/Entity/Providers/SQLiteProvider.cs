@@ -552,7 +552,7 @@ public class SQLiteProvider(
 
     private static DbType GetDbType(FieldType dataType)
     {
-        DbType t = DbType.String;
+        DbType t = DbType.AnsiString;
         switch (dataType)
         {
             case FieldType.Date:

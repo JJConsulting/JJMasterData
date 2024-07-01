@@ -41,24 +41,9 @@ public static class EncryptionServiceExtensions
         return JsonConvert.DeserializeObject<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!);
     }
     
-    public static string EncryptDictionary(this IEncryptionService service, Dictionary<string,object> dictionary)
-    {
-        return service.EncryptObject(dictionary);
-    }
-    
     public static Dictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)
     {
         return service.DecryptObject<Dictionary<string,object>>(encryptedDictionary);
-    }
-    
-    internal static string EncryptActionMap(this IEncryptionService service, ActionMap actionMap)
-    {
-        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
-    }
-    
-    public static string EncryptRouteContext(this IEncryptionService service, RouteContext routeContext)
-    {
-        return service.EncryptObject(routeContext);
     }
     
     public static RouteContext DecryptRouteContext(this IEncryptionService service, string encryptedRouteContext)

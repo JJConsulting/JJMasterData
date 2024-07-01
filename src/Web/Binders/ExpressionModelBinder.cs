@@ -33,7 +33,7 @@ public class ExpressionModelBinder(IEnumerable<IExpressionProvider> providers) :
             }
 
             if (expressionType is null)
-                expressionType = "val";
+                expressionType = ValueExpressionProvider.Prefix;
       
             var result = $"{expressionType}:{expressionValue}";
             bindingContext.Result = ModelBindingResult.Success(result);

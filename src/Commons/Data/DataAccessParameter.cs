@@ -49,7 +49,7 @@ public class DataAccessParameter
     {
         Name = name;
         Value = value;
-        Type = DbType.String;
+        Type = DbType.AnsiString;
         Direction = ParameterDirection.Input;
     }
 

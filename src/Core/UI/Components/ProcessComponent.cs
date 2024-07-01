@@ -16,7 +16,6 @@ namespace JJMasterData.Core.UI.Components;
 public abstract class ProcessComponent(
         IHttpContext currentContext,
         ExpressionsService expressionsService,
-        FieldsService fieldsService,
         IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
         IEncryptionService encryptionService,
@@ -62,7 +61,6 @@ public abstract class ProcessComponent(
     /// </summary>
     public FormElement FormElement { get; set; }
     
-    internal FieldsService FieldsService { get; } = fieldsService;
     internal IBackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
     private ILogger<ProcessComponent> Logger { get; } = logger;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
@@ -86,7 +84,7 @@ public abstract class ProcessComponent(
                 break;
         }
 
-        processKey.Append((string)FormElement.Name);
+        processKey.Append(FormElement.Name);
 
         if (ProcessOptions.Scope != ProcessScope.User)
             return processKey.ToString();

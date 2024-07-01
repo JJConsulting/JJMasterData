@@ -76,9 +76,9 @@ public class WritableJsonOptions<T>(
 
     private PropertyInfo[] GetCachedProperties(Type type)
     {
-        if (memoryCache.TryGetValue(type, out PropertyInfo[] cachedProperties))
+        if (memoryCache.TryGetValue(type, out PropertyInfo[]? cachedProperties))
         {
-            return cachedProperties;
+            return cachedProperties!;
         }
 
         var properties = type.GetProperties();

@@ -21,7 +21,7 @@ internal class DataExportationScripts(string componentName,FormElement formEleme
         get
         {
             var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataExportation);
-            var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+            var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
             return encryptedRouteContext;
         }
     }

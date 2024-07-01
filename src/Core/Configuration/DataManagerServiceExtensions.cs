@@ -15,7 +15,6 @@ public static class DataManagerServiceExtensions
         services.AddScoped<FieldValidationService>();
         services.AddScoped<FormService>();
         services.AddScoped<FieldValuesService>();
-        services.AddScoped<FieldsService>();
         services.AddScoped<UploadAreaService>();
         services.AddScoped<FormValuesService>();
         services.AddScoped<FormFileManagerFactory>();

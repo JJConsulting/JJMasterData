@@ -45,8 +45,7 @@ public class SqlServerWriteProcedureScripts(
         sql.AppendLine("@action varchar(1), ");
 
         var fields = element.Fields
-            .Where(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly)
-            .ToList();
+            .FindAll(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly);
 
         foreach (var field in fields)
         {

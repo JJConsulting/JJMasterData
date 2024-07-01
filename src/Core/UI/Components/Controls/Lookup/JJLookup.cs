@@ -184,7 +184,7 @@ public class JJLookup : ControlBase
         var routeContext = new RouteContext(ElementName, ParentElementName,
             ComponentContext.LookupDescription);
         
-        Attributes["route-context"] = EncryptionService.EncryptRouteContext(routeContext);
+        Attributes["route-context"] = EncryptionService.EncryptObject(routeContext);
 
         var flexLayout = GetFlexLayout();
         

@@ -23,5 +23,5 @@ public sealed class DeleteAction : GridTableAction, ISubmittableAction
         Icon = IconType.SolidTrashCan;
         Order = 3;
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

@@ -14,7 +14,7 @@ public sealed class InternalAction : UserCreatedAction
 
     public override BasicAction DeepCopy()
     { 
-        var newAction = (InternalAction)CopyAction();
+        var newAction = (InternalAction)MemberwiseClone();
         newAction.ElementRedirect = ElementRedirect.DeepCopy();
         return newAction;
     }

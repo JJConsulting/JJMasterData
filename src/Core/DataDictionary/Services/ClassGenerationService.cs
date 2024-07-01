@@ -10,15 +10,15 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepository)
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-
-    public async Task<string> GetClassSourceCode(string elementName)
+    
+    public async ValueTask<string> GetClassSourceCode(string elementName)
     {
         const string propertyTemplate = "public @PropertyType @PropertyName { get; set; } ";
 
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var properties = new StringBuilder();
 
-        foreach (var item in formElement.Fields.ToList())
+        foreach (var item in formElement.Fields)
         {
             var propertyName = StringManager.ToPascalCase(item.Name);
             var propertyType = GetPropertyType(item.DataType, item.IsRequired);

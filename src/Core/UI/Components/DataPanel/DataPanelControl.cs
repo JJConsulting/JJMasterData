@@ -51,7 +51,7 @@ internal class DataPanelControl
 
     private bool IsGridViewFilter { get; }
 
-    private FieldsService FieldsService { get; }
+    private FieldFormattingService FieldFormattingService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     internal ExpressionsService ExpressionsService { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -65,7 +65,7 @@ internal class DataPanelControl
         ComponentFactory = dataPanel.ComponentFactory;
         Errors = dataPanel.Errors;
         EncryptionService = dataPanel.EncryptionService;
-        FieldsService = dataPanel.FieldsService;
+        FieldFormattingService = dataPanel.FieldFormattingService;
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
@@ -87,7 +87,7 @@ internal class DataPanelControl
         Name = gridView.Name;
         ComponentFactory = gridView.ComponentFactory;
         ExpressionsService = gridView.ExpressionsService;
-        FieldsService = gridView.FieldsService;
+        FieldFormattingService = gridView.FieldFormattingService;
         StringLocalizer = gridView.StringLocalizer;
         FormStateData = new FormStateData(values, gridView.UserValues, PageState.Filter);
         IsGridViewFilter = true;
@@ -124,7 +124,7 @@ internal class DataPanelControl
             
             object? value = null;
             if (Values != null && Values.ContainsKey(field.Name))
-                value = FieldsService.FormatValue(field, Values[field.Name]);
+                value = FieldFormattingService.FormatValue(field, Values[field.Name]);
 
             if (lineGroup != field.LineGroup)
             {
@@ -205,7 +205,7 @@ internal class DataPanelControl
             //Value
             object? value = null;
             if (Values != null && Values.TryGetValue(field.Name, out var nonFormattedValue))
-                value = FieldsService.FormatValue(field, nonFormattedValue);
+                value = FieldFormattingService.FormatValue(field, nonFormattedValue);
 
             var isRange = IsRange(field, PageState);
             var label = CreateLabel(field, isRange);
@@ -314,7 +314,7 @@ internal class DataPanelControl
     private async Task<HtmlBuilder> GetStaticField(FormElementField field)
     {
         var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
-        var staticValue = await FieldsService.FormatGridValueAsync(fieldSelector, FormStateData);
+        var staticValue = await FieldFormattingService.FormatGridValueAsync(fieldSelector, FormStateData);
         var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
             .AppendText(staticValue);

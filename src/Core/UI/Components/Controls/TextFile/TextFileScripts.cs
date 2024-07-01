@@ -16,14 +16,14 @@ internal class TextFileScripts(JJTextFile textFile)
 
         var routeContext = RouteContext.FromFormElement(textFile.FormElement, ComponentContext.TextFileUploadView);
         
-        return $"TextFileHelper.showUploadView('{textFile.FieldName}','{title}','{textFile.EncryptionService.EncryptRouteContext(routeContext)}');";
+        return $"TextFileHelper.showUploadView('{textFile.FieldName}','{title}','{textFile.EncryptionService.EncryptObject(routeContext)}');";
     }
 
     public string GetRefreshScript()
     {
         var routeContext = RouteContext.FromFormElement(textFile.FormElement, ComponentContext.TextFileUploadView);
 
-        return $"TextFileHelper.refresh('{textFile.FieldName}','{textFile.EncryptionService.EncryptRouteContext(routeContext)}')";
+        return $"TextFileHelper.refresh('{textFile.FieldName}','{textFile.EncryptionService.EncryptObject(routeContext)}')";
     }
     
     public string GetRefreshInputsScript()

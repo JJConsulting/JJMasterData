@@ -15,7 +15,8 @@ internal sealed class DataPanelFactory(IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext httpContext,
         IEncryptionService encryptionService,
-        FieldsService fieldsService,
+        FieldFormattingService fieldFormattingService,
+        FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -23,35 +24,25 @@ internal sealed class DataPanelFactory(IEntityRepository entityRepository,
         UrlRedirectService urlRedirectService)
     : IFormElementComponentFactory<JJDataPanel>
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private IHttpContext HttpContext { get; } = httpContext;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private FieldsService FieldsService { get; } = fieldsService;
-    private FormValuesService FormValuesService { get; } = formValuesService;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IComponentFactory ComponentFactory { get; } = componentFactory;
-    private UrlRedirectService UrlRedirectService { get; } = urlRedirectService;
-
     public JJDataPanel Create(FormElement formElement)
     {
         return new JJDataPanel(
             formElement, 
-            EntityRepository, 
-            HttpContext,
-            EncryptionService, 
-            FieldsService, 
-            FormValuesService, 
-            ExpressionsService,
-            UrlRedirectService,
-            StringLocalizer,
-            ComponentFactory);
+            entityRepository, 
+            httpContext,
+            encryptionService, 
+            fieldFormattingService, 
+            fieldValidationService,
+            formValuesService, 
+            expressionsService,
+            urlRedirectService,
+            stringLocalizer,
+            componentFactory);
     }
 
     public async Task<JJDataPanel> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         return Create(formElement);
     }
 }

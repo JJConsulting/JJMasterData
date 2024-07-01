@@ -13,5 +13,5 @@ public sealed class AuditLogGridToolbarAction : GridToolbarAction
         Order = 20;
         SetVisible(false);
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

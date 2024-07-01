@@ -24,7 +24,7 @@
     Inputmask().mask(document.querySelectorAll("input"));
     
     if(bootstrapVersion === 5){
-        TooltipHelper.listen(selectorPrefix)
+        TooltipHelper.listen(selectorPrefix);
     }else{
         $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
     }
@@ -35,7 +35,6 @@
         responsiveTables.addEventListener( 'show.bs.dropdown', () => {
             responsiveTables.style.overflow = 'inherit';
         });
-
         responsiveTables.addEventListener('hide.bs.dropdown', () => {
             responsiveTables.style.overflow = 'auto';
         });

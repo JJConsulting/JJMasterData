@@ -3,6 +3,7 @@ using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 
@@ -10,72 +11,45 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public static class IconHelper
 {
-    private static FrozenSet<IconType>? _icons;
-    public static FrozenSet<IconType> GetIconList()
-    {
-        if (_icons != null)
-            return _icons;
-
-        _icons = new List<IconType>((IconType[])Enum.GetValues(typeof(IconType))).ToFrozenSet();
-
-        return _icons;
-    }
+    private static readonly FrozenSet<IconType> Icons;
+    private static readonly FrozenDictionary<IconType, string> CssClasses;
     
-    private static FrozenDictionary<IconType, string>? _cssClasses;
-    private static FrozenDictionary<IconType, string> CssClasses
+    static IconHelper()
     {
-        get
+        Icons = new List<IconType>((IconType[])Enum.GetValues(typeof(IconType))).ToFrozenSet();
+
+        var cssClasses = new Dictionary<IconType, string>();
+        foreach (var icon in Icons)
         {
-            if (_cssClasses is not null) 
-                return _cssClasses;
-            
-            var cssClasses = new Dictionary<IconType, string>();
-            var icons = GetIconList();
-            foreach (var icon in icons)
-            {
-                var enumField = typeof(IconType).GetField(icon.ToString());
-                var attribute = enumField!.GetCustomAttribute<IconCssClassAttribute>();
-                cssClasses[icon] = attribute!.CssClass;
-            }
-
-            _cssClasses = cssClasses.ToFrozenDictionary();
-
-            return _cssClasses;
+            var enumField = typeof(IconType).GetField(icon.ToString());
+            var attribute = enumField!.GetCustomAttribute<IconCssClassAttribute>();
+            cssClasses[icon] = attribute!.CssClass;
         }
-    }
-    
-    
-    public static int GetId(this IconType icon)
-    {
-        return (int)icon;
+        
+        CssClasses = cssClasses.ToFrozenDictionary();
     }
 
-    public static string GetCssClass(this IconType icon)
-    {
-        return CssClasses[icon];
-    }
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static FrozenSet<IconType> GetIconList() => Icons;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetId(this IconType icon) => (int)icon;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetCssClass(this IconType icon) => CssClasses[icon];
+
     internal static IconType GetIconTypeFromField(ElementField field, object value)
     {
-        IconType iconType;
         if (value is int intValue)
         {
-            iconType = (IconType)intValue;
+            return (IconType)intValue;
         }
-        else
+
+        if (int.TryParse(value.ToString(), out var parsedInt))
         {
-            if (int.TryParse(value.ToString(), out var parsedInt))
-            {
-                iconType = (IconType)parsedInt;
-            }
-            else
-            {
-                throw new JJMasterDataException($"Invalid IconType id at {field.LabelOrName}.");
-            }
+            return (IconType)parsedInt;
         }
 
-        return iconType;
+        throw new JJMasterDataException($"Invalid IconType id at {field.LabelOrName}.");
     }
-
-
 }

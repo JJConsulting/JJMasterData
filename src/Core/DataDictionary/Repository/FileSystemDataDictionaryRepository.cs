@@ -102,10 +102,10 @@ public class FileSystemDataDictionaryRepository
         return GetMetadata(elementName);
     }
 
-    public Task<FormElement> GetFormElementAsync(string elementName)
+    public ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
         var result = GetMetadata(elementName);
-        return Task.FromResult(result);
+        return new ValueTask<FormElement>(result);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>

@@ -20,7 +20,6 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
     private IReceitaFederalService ReceitaFederalService { get; } = receitaFederalService;
     public override Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
     public override string Title => "Cnpj";
-    public override HtmlBuilder? AdditionalInformationHtml => null;
     
     protected override IEnumerable<string> CustomFieldMapKeys
     {

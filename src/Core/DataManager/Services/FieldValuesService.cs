@@ -12,9 +12,6 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FieldValuesService(ExpressionsService expressionsService)
 {
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-
-
     /// <summary>
     /// Apply default and triggers expression values
     /// </summary>
@@ -24,7 +21,7 @@ public class FieldValuesService(ExpressionsService expressionsService)
     /// <returns>
     /// Returns a new Dictionary with the updated values
     /// </returns>
-    public async Task<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, FormStateData formStateData, bool replaceNullValues = true)
+    public async ValueTask<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, FormStateData formStateData, bool replaceNullValues = true)
     {
         var formValues = formStateData.Values;
         foreach (var f in formElement.Fields)
@@ -41,17 +38,19 @@ public class FieldValuesService(ExpressionsService expressionsService)
         return new Dictionary<string, object?>(formStateData.Values);
     }
 
-    public async Task<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
+    public async ValueTask<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
         var defaultValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var formStateDataCopy = formStateData.DeepCopy();
+        var values = formStateData.Values;
         var fieldsWithDefaultValue = formElement.Fields
-            .Where(FieldNeedsDefaultValue(formStateData));
+            .Where(f => !string.IsNullOrEmpty(f.DefaultValue) && 
+                        (!values.ContainsKey(f.Name) || string.IsNullOrEmpty(values[f.Name]?.ToString())));
         
         foreach (var field in fieldsWithDefaultValue)
         {
             var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
-            var defaultValue = await ExpressionsService.GetDefaultValueAsync(fieldSelector, formStateDataCopy);
+            var defaultValue = await expressionsService.GetDefaultValueAsync(fieldSelector, formStateDataCopy);
             if (!string.IsNullOrEmpty(defaultValue?.ToString()))
             {
                 defaultValues.Add(field.Name, defaultValue);
@@ -61,26 +60,19 @@ public class FieldValuesService(ExpressionsService expressionsService)
 
         return defaultValues;
     }
-
-    private static Func<FormElementField, bool> FieldNeedsDefaultValue(FormStateData formStateData)
-    {
-        return f => !string.IsNullOrEmpty(f.DefaultValue) && 
-                    (!formStateData.Values.ContainsKey(f.Name) || string.IsNullOrEmpty(formStateData.Values[f.Name]?.ToString()));
-    }
     
-    public async Task<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
+    public async ValueTask<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
         var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
   
         foreach (var v in formStateData.Values)
             values.Add(v.Key, v.Value);
-        
 
         await ApplyDefaultValues(formElement, formStateData, false);
         return values;
     }
 
-    private async Task ApplyDefaultValues(FormElement formElement, FormStateData formStateData, bool replaceNullValues)
+    private async ValueTask ApplyDefaultValues(FormElement formElement, FormStateData formStateData, bool replaceNullValues)
     {
         var defaultValues = await GetDefaultValuesAsync(formElement,formStateData);
 
@@ -102,7 +94,7 @@ public class FieldValuesService(ExpressionsService expressionsService)
         }
     }
 
-    private async Task ApplyTriggerValues(FormElement formElement, FormStateData formStateData)
+    private async ValueTask ApplyTriggerValues(FormElement formElement, FormStateData formStateData)
     {
         var fieldsWithTrigger = formElement.Fields
             .Where(x => !string.IsNullOrEmpty(x.TriggerExpression));
@@ -110,7 +102,7 @@ public class FieldValuesService(ExpressionsService expressionsService)
         foreach (var field in fieldsWithTrigger)
         {
             var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
-            var value = await ExpressionsService.GetTriggerValueAsync(fieldSelector, formStateData);
+            var value = await expressionsService.GetTriggerValueAsync(fieldSelector, formStateData);
             if (value != null)
             {
                 formStateData.Values[field.Name] = value;

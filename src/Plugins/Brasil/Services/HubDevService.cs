@@ -35,7 +35,7 @@ public class HubDevService(HttpClient httpClient,
             if (string.IsNullOrEmpty(identifier))
                 throw new ArgumentNullException(nameof(identifier));
 
-            if (MemoryCache.TryGetValue(identifier, out T cacheResult) && !IgnoreDb)
+            if (MemoryCache.TryGetValue(identifier, out T? cacheResult) && cacheResult != null && !IgnoreDb)
                 return cacheResult;
             
             var protocol = IsHttps ? "https://" : "http://";

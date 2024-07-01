@@ -112,7 +112,7 @@ public class ElementController(
         return View(new DuplicateElementViewModel{ OriginalElementName = elementName });
     }
 
-    public async Task<IActionResult> ClassSourceCode(string elementName)
+    public async ValueTask<IActionResult> ClassSourceCode(string elementName)
     {
         ViewBag.ClassSourceCode = await classGenerationService.GetClassSourceCode(elementName);
         ViewBag.ElementName = elementName;
@@ -187,11 +187,10 @@ public class ElementController(
     {
         var formView = elementService.GetFormView();
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
-    
+
         var elementNamesToDelete = selectedGridValues
             .Where(value => value.TryGetValue("name", out var nameValue) && nameValue is string)
-            .Select(value => value["name"].ToString())
-            .ToList();
+            .Select(value => value["name"].ToString());
 
         foreach (var elementName in elementNamesToDelete)
         {

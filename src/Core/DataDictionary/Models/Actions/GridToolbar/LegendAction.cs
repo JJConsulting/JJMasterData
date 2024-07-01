@@ -13,5 +13,5 @@ public sealed class LegendAction : GridToolbarAction
         Order = 7;
         SetVisible(false);
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

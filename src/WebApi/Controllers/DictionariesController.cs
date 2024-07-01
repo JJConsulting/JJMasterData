@@ -46,7 +46,7 @@ public class DictionariesController(DictionariesService dictionariesService,
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
     [Route("api/dictionaries/{id}")]
-    public Task<FormElement> Get(string id)
+    public ValueTask<FormElement> Get(string id)
     {
         return dataDictionaryRepository.GetFormElementAsync(id);
     }

@@ -201,7 +201,7 @@ public class JJTextFile(IHttpRequest request,
     }
     private bool HasPk()
     {
-        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var pkFields = FormElement.Fields.FindAll(x => x.IsPk);
         if (pkFields.Count == 0)
             return false;
 

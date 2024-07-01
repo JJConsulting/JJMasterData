@@ -86,6 +86,6 @@ public class Element()
     
     public List<ElementField> GetPrimaryKeys()
     {
-        return Fields.Where(x => x.IsPk).ToList();
+        return Fields.FindAll(x => x.IsPk);
     }
 }

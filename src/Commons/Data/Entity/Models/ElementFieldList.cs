@@ -237,6 +237,11 @@ public class ElementFieldList : IList<ElementField>
     {
         return _list;
     }
+
+    public List<ElementField> FindAll(Predicate<ElementField> predicate)
+    {
+        return _list.FindAll(predicate);
+    }
     
     public ElementFieldList DeepCopy()
     {

@@ -174,7 +174,7 @@ public class JJUploadArea : AsyncComponent
         div.WithAttributes(Attributes);
         div.WithAttributeIf(Url is not null,"upload-url", Url!);
         div.WithAttribute("js-callback",JsCallback);
-        div.WithAttribute((string)"route-context", EncryptionService.EncryptRouteContext(RouteContext));
+        div.WithAttribute((string)"route-context", EncryptionService.EncryptObject(RouteContext));
         div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
         div.WithAttribute("query-string-params", GetQueryStringParams());
         div.WithAttribute("max-file-size", MaxFileSize.ToString());

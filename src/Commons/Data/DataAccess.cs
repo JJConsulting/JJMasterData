@@ -712,8 +712,8 @@ public partial class DataAccess
                 @"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
         };
 
-        command.AddParameter("@TableName", tableName, DbType.String);
-        command.AddParameter("@ColumnName", columnName, DbType.String);
+        command.AddParameter("@TableName", tableName, DbType.AnsiString);
+        command.AddParameter("@ColumnName", columnName, DbType.AnsiString);
 
         return command;
     }

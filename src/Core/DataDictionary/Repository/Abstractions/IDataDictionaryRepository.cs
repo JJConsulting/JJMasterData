@@ -13,7 +13,7 @@ public interface IDataDictionaryRepository
 {
     Task CreateStructureIfNotExistsAsync();
     FormElement GetFormElement(string elementName);
-    Task<FormElement> GetFormElementAsync(string elementName);
+    ValueTask<FormElement> GetFormElementAsync(string elementName);
     Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null);
     Task<List<string>> GetNameListAsync();
     List<FormElement> GetFormElementList(bool? apiSync = null);

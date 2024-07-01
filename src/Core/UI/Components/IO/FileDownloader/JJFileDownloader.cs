@@ -147,7 +147,7 @@ public class JJFileDownloader(
         var uriBuilder = new UriBuilder(url);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         var routeContext = new RouteContext( ComponentContext.DownloadFile);
-        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
         
         query["routeContext"] = encryptedRouteContext;
         query[DirectDownloadParameter] = encryptedFilePath;
@@ -162,7 +162,7 @@ public class JJFileDownloader(
         var uriBuilder = new UriBuilder(absoluteUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         var routeContext = new RouteContext( ComponentContext.DownloadFile);
-        var encryptedRouteContext = encryptionService.EncryptRouteContext(routeContext);
+        var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
         var encryptedFilePath = encryptionService.EncryptStringWithUrlEscape(filePath);
         query["routeContext"] = encryptedRouteContext;
         query[DirectDownloadParameter] = encryptedFilePath;

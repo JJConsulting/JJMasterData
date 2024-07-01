@@ -88,7 +88,7 @@ public class WritableJsonOptionsTests
     {
         Cleanup();
 
-        var initialContent = "{\"Logging\":{\"Console\":{\"Bar\":\"None\"}}}";
+        const string initialContent = "{\"Logging\":{\"Console\":{\"Bar\":\"None\"}}}";
         await File.WriteAllTextAsync(FilePath, initialContent);
 
         var writableOptions = new WritableJsonOptions<LoggingOptions>(_optionsMock.Object, _memoryCacheMock.Object,Section, FilePath);

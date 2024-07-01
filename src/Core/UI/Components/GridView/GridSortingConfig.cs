@@ -93,7 +93,7 @@ internal class GridSortingConfig(JJGridView gridView)
         tbody.WithCssClass("ui-sortable jjsortable");
 
         var sortList = GetSortList();
-        var fieldsList = sortList.Select(sort => FormElement.Fields[sort.FieldName]).ToList();
+        var fieldsList = sortList.ConvertAll(sort => FormElement.Fields[sort.FieldName]);
 
         foreach (var item in FormElement.Fields)
         {

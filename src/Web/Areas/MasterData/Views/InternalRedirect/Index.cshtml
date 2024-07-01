@@ -1,4 +1,5 @@
 ﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
+@using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.Extensions
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
@@ -15,7 +16,7 @@
     if (ViewBag.Success == true)
     {
         <script lang="js" type="text/javascript">
-            requestSubmitParentWindow()
+            submitParentWindow()
         </script>
     }
 
@@ -24,7 +25,7 @@
     if (Model.ShowToolBar)
     {
         <div id="divToolbar">
-            <link-button text="Save" icon="Check" color="Primary" asp-action="Save" asp-route-parameters="@Context.Request.Query["parameters"]"/>
+            <link-button text="Save" type="LinkButtonType.Submit" icon="Check" color="Primary" asp-action="Save" asp-route-parameters="@Context.Request.Query["parameters"]"/>
             <link-button text="Cancel" icon="SolidXmark" on-client-click="window.parent.defaultModal.hide();"/>
         </div>
         

@@ -39,7 +39,7 @@ public class FieldValidationServiceTests
 
         var formElement = new FormElement();
         var formValues = new Dictionary<string, object>();
-        var pageState = new PageState();
+        const PageState pageState = new();
 
         // Act
         var result = service.ValidateFields(formElement, formValues, pageState, true);
@@ -60,8 +60,8 @@ public class FieldValidationServiceTests
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);
 
         var field = new FormElementField { IsRequired = true, Label = "Field" };
-        var fieldId = "fieldId";
-        var value = "";
+        const string fieldId = "fieldId";
+        const string value = "";
 
         // Act
         var result = service.ValidateField(field, fieldId, value);

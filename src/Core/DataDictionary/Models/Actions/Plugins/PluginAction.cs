@@ -20,7 +20,7 @@ public class PluginAction : UserCreatedAction
 
     public override BasicAction DeepCopy()
     {
-        var newAction = (PluginAction)CopyAction();
+        var newAction = (PluginAction)MemberwiseClone();
         newAction.ConfigurationMap = new Dictionary<string, object?>(ConfigurationMap);
         return newAction;
     }

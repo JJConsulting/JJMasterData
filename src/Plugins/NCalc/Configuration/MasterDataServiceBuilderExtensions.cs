@@ -1,7 +1,11 @@
+using System.Collections.Frozen;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using Microsoft.Extensions.DependencyInjection;
+using NCalc;
+using NCalc.Cache.Configuration;
+using NCalc.DependencyInjection;
 
 namespace JJMasterData.NCalc.Configuration;
 
@@ -17,14 +21,14 @@ public static class MasterDataServiceBuilderExtensions
 
             builder.Services.Remove(defaultExpressionProvider);
         }
-        
+
+        builder.Services.AddNCalc().WithMemoryCache();
         builder.Services.AddScoped<IExpressionProvider,NCalcExpressionProvider>();
         
         builder.Services.PostConfigure<NCalcExpressionProviderOptions>(o =>
         {
             o.ReplaceDefaultExpressionProvider = options.ReplaceDefaultExpressionProvider;
-            o.ExpressionOptions = options.ExpressionOptions;
-            o.AdditionalFunctions = options.AdditionalFunctions;
+            o.Context = options.Context;
         });
         
         return builder;
@@ -35,14 +39,17 @@ public static class MasterDataServiceBuilderExtensions
         builder.WithNCalcExpressionProvider(new NCalcExpressionProviderOptions
         {
             ReplaceDefaultExpressionProvider = true,
-            AdditionalFunctions =
-            [
-                (name, args) =>
+            Context =
+            {
+                Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions 
+                          | ExpressionOptions.AllowNullParameter
+                          | ExpressionOptions.OrdinalStringComparer
+                          | ExpressionOptions.CaseInsensitiveStringComparer,
+                Functions = new Dictionary<string, ExpressionFunction>
                 {
-                    if (name == "now")
-                        args.Result = DateTime.Now;
-                }
-            ]
+                    {"now", _ => DateTime.Now}
+                }.ToFrozenDictionary()
+            }
         });
         
         return builder;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -163,6 +164,11 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     {
         var relationship = GetById(id);
         return _formRelationships.IndexOf(relationship);
+    }
+
+    public List<FormElementRelationship> FindAll(Predicate<FormElementRelationship> predicate)
+    {
+        return _formRelationships.FindAll(predicate);
     }
 
     public FormElementRelationshipList DeepCopy()

@@ -14,5 +14,5 @@ internal sealed class InsertSelectionAction : GridTableAction
         Icon = IconType.CaretRight;
         Order = -1;
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

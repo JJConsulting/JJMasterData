@@ -22,7 +22,7 @@ public static class ExpressionDataAccessCommandFactory
             
             if (oldExpression != expression)
             {
-                dbType = DbType.String;
+                dbType = DbType.AnsiString;
             }
             else
             {
@@ -50,11 +50,11 @@ public static class ExpressionDataAccessCommandFactory
             double => DbType.Double,
             decimal => DbType.Decimal,
             float => DbType.Double,
-            string => DbType.String,
+            string => DbType.AnsiString,
             Guid => DbType.Guid,
             DateTime => DbType.DateTime,
             bool => DbType.Boolean,
-            _ => DbType.String
+            _ => DbType.AnsiString
         };
     }
 }

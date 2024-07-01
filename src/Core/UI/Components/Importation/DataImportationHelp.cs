@@ -250,7 +250,7 @@ internal class DataImportationHelp
 
     private async Task<string> GetHtmlComboHelp(FormElementField field)
     {
-        var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,
+        var defaultValues = await DataImportation.FieldValuesService.GetDefaultValuesAsync(DataImportation.FormElement,
             new FormStateData(new Dictionary<string, object>(), DataImportation.UserValues, PageState.Import));
         var formStateData = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         var dataQuery = new DataQuery(formStateData, DataImportation.FormElement.ConnectionId);

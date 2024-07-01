@@ -67,7 +67,6 @@ public class JJDataExportation : ProcessComponent
     internal JJDataExportation(
         FormElement formElement,
         ExpressionsService expressionsService,
-        FieldsService fieldsService,
         IOptionsSnapshot<MasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -76,7 +75,7 @@ public class JJDataExportation : ProcessComponent
         IHttpContext currentContext, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
+        base(currentContext, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         DataExportationWriterFactory = dataExportationWriterFactory;
         ComponentFactory = componentFactory;

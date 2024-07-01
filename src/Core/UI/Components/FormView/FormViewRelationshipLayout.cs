@@ -147,8 +147,6 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     {
         var parentPanel = parentFormView.DataPanel;
 
-        var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
-        
         if (relationship.IsParent)
             return new RenderedComponentResult(await parentFormView.GetParentPanelHtmlAtRelationship(relationship));
 
@@ -159,9 +157,9 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
 
         var filter = new Dictionary<string, object?>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
-                     formContext.Values.ContainsKey(col.PkColumn)))
+                     parentPanel.Values.ContainsKey(col.PkColumn)))
         {
-            var value = formContext.Values[col.PkColumn];
+            var value = parentPanel.Values[col.PkColumn];
             filter[col.FkColumn] = value;
         }
 

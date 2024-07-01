@@ -125,13 +125,13 @@ public class EntityRepository(
         return dataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
     }
 
-    public async Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId = null)
+    public Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
-        return await dataAccess.GetDictionaryAsync(command);
+        return dataAccess.GetDictionaryAsync(command);
     }
 
-    public async Task<Dictionary<string, object?>> GetFieldsAsync(Element element,
+    public Task<Dictionary<string, object?>> GetFieldsAsync(Element element,
         Dictionary<string, object> primaryKeys)
     {
         if (!primaryKeys.Any())
@@ -146,7 +146,7 @@ public class EntityRepository(
         
         var dataAccess = GetDataAccess(element.ConnectionId);
 
-        return await dataAccess.GetDictionaryAsync(cmd);
+        return dataAccess.GetDictionaryAsync(cmd);
     }
 
     public Task CreateDataModelAsync(Element element, List<RelationshipReference>? relationships = null) =>

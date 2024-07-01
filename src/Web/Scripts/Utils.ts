@@ -129,9 +129,9 @@
     
 })();
 
-function requestSubmitParentWindow() {
+function submitParentWindow() {
     // @ts-ignore
-    window.parent.getMasterDataForm().requestSubmit();
+    window.parent.getMasterDataForm().submit();
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
