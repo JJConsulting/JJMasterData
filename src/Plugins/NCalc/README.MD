@@ -47,14 +47,11 @@ builder.WithNCalcExpressionProvider(new NCalcExpressionProviderOptions
         Functions = new Dictionary<string, ExpressionFunction>
         {
             {"now", _ => DateTime.Now},
-            {"myawesomefunction", args => MyCustomClass.Execute(args[0], args[1])}
+            {"myAwesomeFunction", args => MyCustomClass.Execute(args[0], args[1])}
         }.ToFrozenDictionary()
     }
 });
 ```
-
-> [!WARNING] 
-> NCalc sends function names in lowercase.
 
 At your expression:
 ```
