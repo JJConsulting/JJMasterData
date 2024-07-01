@@ -5,66 +5,66 @@ namespace JJMasterData.Core.Events.Abstractions;
 
 public interface IFormEventHandler : IEventHandler
 {
-    public Task OnBeforeInsertAsync(object sender, FormBeforeActionEventArgs args)
+    public ValueTask OnBeforeInsertAsync(object sender, FormBeforeActionEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;
 #endif
-    public Task OnBeforeUpdateAsync(object sender, FormBeforeActionEventArgs args)
+    public ValueTask OnBeforeUpdateAsync(object sender, FormBeforeActionEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;
 #endif
-    public Task OnBeforeDeleteAsync(object sender, FormBeforeActionEventArgs args)
+    public ValueTask OnBeforeDeleteAsync(object sender, FormBeforeActionEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;
 #endif
-    public Task OnBeforeImportAsync(object sender, FormBeforeActionEventArgs args)
+    public ValueTask OnBeforeImportAsync(object sender, FormBeforeActionEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;
 #endif
-    public Task OnAfterInsertAsync(object sender, FormAfterActionEventArgs args)
+    public ValueTask OnAfterInsertAsync(object sender, FormAfterActionEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;
 #endif
-    public Task OnAfterUpdateAsync(object sender, FormAfterActionEventArgs args)
+    public ValueTask OnAfterUpdateAsync(object sender, FormAfterActionEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;
 #endif
-    public Task OnAfterDeleteAsync(object sender, FormAfterActionEventArgs args)
+    public ValueTask OnAfterDeleteAsync(object sender, FormAfterActionEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;
 #endif
-    public Task OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args)
+    public ValueTask OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
     ;

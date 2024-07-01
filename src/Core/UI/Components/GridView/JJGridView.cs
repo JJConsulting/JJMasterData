@@ -27,6 +27,7 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.Tasks;
+using JJMasterData.Core.UI.Events;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -68,7 +69,7 @@ public class JJGridView : AsyncComponent
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
-    public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
+    public event GridOnDataLoadEventHandler? OnDataLoadAsync;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
     public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
@@ -928,7 +929,7 @@ public class JJGridView : AsyncComponent
         return _formStateData;
     }
     
-    private async Task<HtmlBuilder> GetSettingsHtml()
+    private async ValueTask<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
         var formData = await GetFormStateDataAsync();
@@ -963,7 +964,7 @@ public class JJGridView : AsyncComponent
 
     private bool CanCustomPaging() => IsPagingEnabled() && CurrentSettings.RecordsPerPage % 5 == 0 && CurrentSettings.RecordsPerPage <= 50;
 
-    private async Task<HtmlBuilder> GetExportHtml()
+    private async ValueTask<HtmlBuilder> GetExportHtml()
     {
         var action = ExportAction;
         var formData = await GetFormStateDataAsync();
@@ -980,7 +981,7 @@ public class JJGridView : AsyncComponent
         return modal.GetHtmlBuilder();
     }
 
-    private async Task<HtmlBuilder> GetLegendHtml()
+    private async ValueTask<HtmlBuilder> GetLegendHtml()
     {
         var action = LegendAction;
         var formData = await GetFormStateDataAsync();
@@ -1161,7 +1162,7 @@ public class JJGridView : AsyncComponent
                     CurrentPage = parameters.CurrentPage,
                 };
             
-                await OnDataLoadAsync.Invoke(this, args);
+                await OnDataLoadAsync(this, args);
             
                 if (args.DataSource is not null)
                 {

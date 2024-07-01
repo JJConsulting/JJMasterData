@@ -34,10 +34,10 @@ public class LocalizationService(
         return formView;
     }
 
-    private Task ClearCache(object sender, FormAfterActionEventArgs args)
+    private ValueTask ClearCache(object sender, FormAfterActionEventArgs args)
     {
         ClearCache();
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
     
     public async Task<byte[]> GetAllStringsFile()

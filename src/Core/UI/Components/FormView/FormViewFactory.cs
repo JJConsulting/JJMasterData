@@ -12,6 +12,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -64,7 +65,7 @@ internal class FormViewFactory(
         return formView;
     }
 
-    private Task SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
+    private ValueTask SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
     {
         var formEventHandler = formEventHandlerResolver.GetFormEventHandler(formElement.Name);
         formView.AddFormEventHandler(formEventHandler);
@@ -73,7 +74,7 @@ internal class FormViewFactory(
             return formEventHandler.OnFormElementLoadAsync(formView, new FormElementLoadEventArgs(formElement))!;
         }
 
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
     
 }

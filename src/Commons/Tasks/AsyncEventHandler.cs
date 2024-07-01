@@ -3,4 +3,4 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Commons.Tasks;
 
-public delegate Task AsyncEventHandler<in TEventArgs>(object sender, TEventArgs e);
+public delegate ValueTask AsyncEventHandler<in TEventArgs>(object sender, TEventArgs e);
