@@ -41,6 +41,10 @@ public static class MasterDataServiceBuilderExtensions
             ReplaceDefaultExpressionProvider = true,
             Context =
             {
+                Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions 
+                          | ExpressionOptions.AllowNullParameter
+                          | ExpressionOptions.OrdinalStringComparer
+                          | ExpressionOptions.CaseInsensitiveStringComparer,
                 Functions = new Dictionary<string, ExpressionFunction>
                 {
                     {"now", _ => DateTime.Now}
