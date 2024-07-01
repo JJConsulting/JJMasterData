@@ -1,7 +1,9 @@
+using System.Collections.Frozen;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using Microsoft.Extensions.DependencyInjection;
+using NCalc;
 using NCalc.Cache.Configuration;
 using NCalc.DependencyInjection;
 
@@ -26,8 +28,7 @@ public static class MasterDataServiceBuilderExtensions
         builder.Services.PostConfigure<NCalcExpressionProviderOptions>(o =>
         {
             o.ReplaceDefaultExpressionProvider = options.ReplaceDefaultExpressionProvider;
-            o.ExpressionOptions = options.ExpressionOptions;
-            o.AdditionalFunctions = options.AdditionalFunctions;
+            o.Context = options.Context;
         });
         
         return builder;
@@ -38,14 +39,13 @@ public static class MasterDataServiceBuilderExtensions
         builder.WithNCalcExpressionProvider(new NCalcExpressionProviderOptions
         {
             ReplaceDefaultExpressionProvider = true,
-            AdditionalFunctions =
-            [
-                (name, args) =>
+            Context =
+            {
+                Functions = new Dictionary<string, ExpressionFunction>
                 {
-                    if (name == "now")
-                        args.Result = DateTime.Now;
-                }
-            ]
+                    {"now", _ => DateTime.Now}
+                }.ToFrozenDictionary()
+            }
         });
         
         return builder;

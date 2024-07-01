@@ -19,11 +19,7 @@ public sealed class NCalcExpressionProvider(
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
-        var ncalcExpression = expressionFactory.Create(replacedExpression, Options.ExpressionOptions);
-    
-        foreach (var function in Options.AdditionalFunctions)
-            ncalcExpression.EvaluateFunction += function;
-        
+        var ncalcExpression = expressionFactory.Create(replacedExpression, Options.Context);
         return ncalcExpression.Evaluate();
     }
 

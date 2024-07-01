@@ -11,12 +11,7 @@ public class NCalcExpressionProviderOptions
     public bool ReplaceDefaultExpressionProvider { get; set; } = false;
 
     /// <summary>
-    /// ExpressionOptions [Flags] enum. Check NCalc wiki for more information
+    /// Context of the expression. Declare here custom parameters and functions.
     /// </summary>
-    public ExpressionOptions ExpressionOptions { get; set; } = ExpressionOptions.IgnoreCase | ExpressionOptions.CaseInsensitiveStringComparer;
-
-    /// <summary>
-    /// Additional functions to be used at expressions. Check NCalc wiki for more information
-    /// </summary>
-    public List<EvaluateFunctionHandler> AdditionalFunctions { get; set; } = [];
+    public ExpressionContext Context { get; set; } = new();
 }

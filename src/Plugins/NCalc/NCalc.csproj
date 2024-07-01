@@ -12,7 +12,7 @@
         <PackageId>JJMasterData.NCalc</PackageId>
         <PackageTags>ncalc,jjmasterdata</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageReleaseNotes>Update NCalc to 4.3.3</PackageReleaseNotes>
+        <PackageReleaseNotes>Update NCalc to 5.0.0</PackageReleaseNotes>
    	    <Version>3.0.0</Version>
     	<AssemblyVersion>3.0.0</AssemblyVersion>
         <FileVersion>3.0.0</FileVersion>
@@ -23,9 +23,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NCalc.MemoryCache" Version="4.3.3" />
-        <PackageReference Include="NCalc.DependencyInjection" Version="4.3.3" />
-        <PackageReference Include="NCalcSync" Version="4.3.3" />
+        <PackageReference Include="NCalc.MemoryCache" Version="5.0.0" />
+        <PackageReference Include="NCalc.DependencyInjection" Version="5.0.0" />
+        <PackageReference Include="NCalcSync" Version="5.0.0" />
     </ItemGroup>
 
 

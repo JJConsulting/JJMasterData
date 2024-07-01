@@ -38,27 +38,19 @@ Check [NCalc wiki](https://github.com/ncalc/ncalc/wiki) for more information.
 You can execute C# code using the following example;
 
 Program.cs:
-
 ```
-builder.Services.AddJJMasterDataWeb()
-.WithNCalcExpressionProvider(
-    new NCalcExpressionProviderOptions
+builder.WithNCalcExpressionProvider(new NCalcExpressionProviderOptions
+{
+    ReplaceDefaultExpressionProvider = true,
+    Context =
     {
-        ReplaceDefaultExpressionProvider = true,
-        AdditionalFunctions = [
-            (name, args) =>
-            {
-                args.Result = name switch
-                {
-                    "now" => DateTime.Now,
-                    "myawesomefunction" => MyCustomClass.Execute(args.Parameters[0], args.Parameters[1]),
-                     _ => args.Result
-                };
-            }
-        ]
+        Functions = new Dictionary<string, ExpressionFunction>
+        {
+            {"now", _ => DateTime.Now},
+            {"myawesomefunction", args => MyCustomClass.Execute(args[0], args[1])}
+        }.ToFrozenDictionary()
     }
-);
-
+});
 ```
 
 > [!WARNING] 
