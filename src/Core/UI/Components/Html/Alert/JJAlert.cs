@@ -73,27 +73,30 @@ public class JJAlert : HtmlComponent
         if (InnerHtml is not null)
             html.Append(InnerHtml);
 
-        if (Messages.Count > 1)
+        html.AppendDiv(div =>
         {
-            html.Append(HtmlTag.Ul, ul =>
+            div.WithCssClass("alert-content");
+            
+            if (Messages.Count > 1)
             {
-                ul.WithCssClass("m-0");
-                foreach (var message in Messages)
+                div.Append(HtmlTag.Ul, ul =>
                 {
-                    ul.Append(HtmlTag.Li, li =>
+                    ul.WithCssClass("m-0");
+                    foreach (var message in Messages)
                     {
-                        li.AppendText(message);
-                    });
-                }
-            });
-        }
-        else if(Messages.Count == 1)
-        {
-            html.AppendText(Messages[0]);
-        }
-
-
-
+                        ul.Append(HtmlTag.Li, li =>
+                        {
+                            li.AppendText(message);
+                        });
+                    }
+                });
+            }
+            else if(Messages.Count == 1)
+            {
+                div.AppendText(Messages[0]);
+            }
+        });
+        
         return html;
     }
 
