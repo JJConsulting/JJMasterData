@@ -30,7 +30,7 @@ public class JJAuditLogView : AsyncComponent
     private RouteContext _routeContext;
 
 
-    internal RouteContext RouteContext
+    private RouteContext RouteContext
     {
         get
         {
@@ -44,7 +44,7 @@ public class JJAuditLogView : AsyncComponent
         }
     }
 
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    private ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     /// <summary>
     /// Id do usuário Atual
@@ -57,12 +57,12 @@ public class JJAuditLogView : AsyncComponent
 
     private IHttpContext CurrentContext { get; }
 
-    public AuditLogService AuditLogService { get; }
+    private AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
 
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
-    internal JJDataPanel DataPanel
+    private JJDataPanel DataPanel
     {
         get
         {
@@ -79,7 +79,7 @@ public class JJAuditLogView : AsyncComponent
     public FormElement FormElement { get; private set; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    internal IEntityRepository EntityRepository { get; }
+    private IEntityRepository EntityRepository { get; }
 
     public JJAuditLogView(
         FormElement formElement,

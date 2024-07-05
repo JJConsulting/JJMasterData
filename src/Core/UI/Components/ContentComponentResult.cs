@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 #endif
 namespace JJMasterData.Core.UI.Components;
 
-public class ContentComponentResult(HtmlBuilder htmlBuilder) : HtmlComponentResult(htmlBuilder)
+public sealed class ContentComponentResult(HtmlBuilder htmlBuilder) : HtmlComponentResult(htmlBuilder)
 #if NET
     ,IActionResult
 #endif

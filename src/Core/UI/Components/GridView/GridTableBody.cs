@@ -313,8 +313,8 @@ internal class GridTableBody(JJGridView gridView)
     {
         List<HtmlBuilder> result = [];
         var basicActions = GridView.GridTableActions.OrderBy(x => x.Order).ToList();
-        var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
-        var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
+        var actionsWithoutGroup = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: false });
+        var groupedActions = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: true });
         
         foreach (var action in await GetActionsWithoutGroupHtmlAsync(actionsWithoutGroup, formStateData))
         {

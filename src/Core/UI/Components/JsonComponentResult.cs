@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JsonComponentResult(object objectResult) : ComponentResult
+public sealed class JsonComponentResult(object objectResult) : ComponentResult
 #if NET
     ,IActionResult
 #endif

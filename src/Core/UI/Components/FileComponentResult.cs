@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class FileComponentResult(string filePath) : ComponentResult
+public sealed class FileComponentResult(string filePath) : ComponentResult
 #if NET
     ,IActionResult
 #endif
