@@ -674,9 +674,13 @@ public partial class DataAccess
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = Factory.CreateCommand();
+        
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
-
+        
+        if (string.IsNullOrEmpty(command.Sql))
+            throw new DataAccessException("Sql Command cannot be null or empty.");
+        
         dbCommand.CommandType = command.Type;
         dbCommand.CommandText = command.Sql;
         dbCommand.CommandTimeout = TimeOut;
