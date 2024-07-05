@@ -178,7 +178,7 @@ public class JJAuditLogView : AsyncComponent
         var html = new Div();
         html.WithCssClass("mb-2");
         if (GridView.ShowTitle)
-            html.AppendComponent(await GridView.GetTitleAsync());
+            html.AppendComponent(GridView.GetTitle());
 
         if (string.IsNullOrEmpty(logId))
         {
