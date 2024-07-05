@@ -7,7 +7,7 @@
     bool showIcon = Model.DataItem!.ShowIcon;
 }
 
-<div id="divSqlCommand">
+<div id="div-sql-command">
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <label asp-for="DataItem!.Command!.Sql" class="form-label"></label>
         <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>

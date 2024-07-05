@@ -66,6 +66,7 @@ public class ActionsController(ActionsService actionsService,
             nameof(UrlRedirectAction) => new UrlRedirectAction(),
             nameof(InternalAction) => new InternalAction(),
             nameof(SqlCommandAction) => new SqlCommandAction(),
+            nameof(HtmlTemplateAction) => new HtmlTemplateAction(),
             nameof(PluginAction) => new PluginAction
             {
                 PluginId = pluginId!.Value
@@ -78,7 +79,7 @@ public class ActionsController(ActionsService actionsService,
         };
 
         await PopulateViewBag(elementName, action, context, fieldName);
-        return View(action.GetType().Name, action);
+        return View(actionType, action);
     }
 
     private async Task<IActionResult> EditActionResult<TAction>(
@@ -263,11 +264,23 @@ public class ActionsController(ActionsService actionsService,
     }
 
     [HttpPost]
-    public Task<IActionResult> SqlCommandAction(string elementName, SqlCommandAction sqlAction,
+    public Task<IActionResult> SqlCommandAction(
+        string elementName, 
+        SqlCommandAction sqlAction,
         ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         return EditActionResult(elementName, sqlAction, context, isActionSave, originalName, fieldName);
+    }
+    
+    [HttpPost]
+    public Task<IActionResult> HtmlTemplateAction(
+        string elementName,
+        HtmlTemplateAction htmlTemplateAction,
+        ActionSource context,
+        string? originalName, bool isActionSave, string? fieldName)
+    {
+        return EditActionResult(elementName, htmlTemplateAction, context, isActionSave, originalName, fieldName);
     }
 
 

@@ -1,0 +1,98 @@
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
+
+@model JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+
+@section Scripts{
+    <script lang="javascript" type="text/javascript">
+    function setupCodeMirror(){
+        CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
+        CodeMirrorWrapper.setupCodeMirror('@nameof(Model.HtmlTemplate)',{mode: "text/x-liquid"})
+    }
+
+    document.addEventListener("DOMContentLoaded",()=>{
+        listenTabs();
+    });
+
+    function listenTabs (){
+        setupCodeMirror();
+
+        const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
+
+        if(!tabs)
+            return;
+
+        tabs.forEach((tab)=>{
+            tab.addEventListener('shown.bs.tab', () => {
+                const codeMirrorElements = document.querySelectorAll(".CodeMirror");
+                if (codeMirrorElements){
+                    codeMirrorElements.forEach(function (c){
+                        c.CodeMirror.refresh();
+                    })
+                }
+                else{
+                    setupCodeMirror();
+                }
+            })
+        })
+    }
+
+</script>
+    }
+    <master-data-form  method="post" asp-action="HtmlTemplateAction" asp-controller="Actions" asp-route-context="@ViewBag.ContextAction" asp-route-fieldName="@ViewBag.FieldName" asp-route-elementName="@ViewBag.ElementName">
+        <ul class="nav nav-underline">
+            <li id="nav-general" class="nav-item active">
+                <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+            </li>
+            <li id="nav-sql-command" class="nav-item">
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-sql-command">@StringLocalizer["SQL Command"]</a>
+            </li>
+            <li id="nav-html-template" class="nav-item">
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-html-template">@StringLocalizer["HTML Template"]</a>
+            </li>
+            <li id="nav-advanced" class="nav-item">
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" style="margin-top: 1.25rem;">
+            <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+                <partial name="_NavGeneral"/>
+            </div>
+
+            <div id="div-sql-command" class="tab-pane fade">
+                <div class="row">
+                    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
+                        <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
+                        <div style="margin-bottom: 0">
+                            @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "10" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="div-html-template" class="tab-pane fade">
+                <div class="row">
+                    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["HTML Template"]</label>
+                        <div style="margin-bottom: 0">
+                            <textarea asp-for="HtmlTemplate" rows="10" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="div-advanced" class="tab-pane fade">
+                <partial name="_NavAdvanced"/>
+            </div>
+        </div>
+        <partial name="_Toolbar"/>
+    </master-data-form>
+
+

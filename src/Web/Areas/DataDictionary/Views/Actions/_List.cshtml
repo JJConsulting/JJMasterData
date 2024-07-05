@@ -51,6 +51,12 @@
                         @StringLocalizer["JavaScript Script"]
                     </a>
                 </li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                       onclick="@GetAddScript(typeof(HtmlTemplateAction))">
+                        @StringLocalizer["HTML Template"]
+                    </a>
+                </li>
                 @if (ActionPluginHandlers.Any())
                 {
                     <li>
