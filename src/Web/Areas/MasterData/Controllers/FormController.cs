@@ -24,13 +24,10 @@ public class FormController(
         if (result is IActionResult actionResult)
             return actionResult;
 
-        var model = new FormViewModel
-        {
-            FormTitle = formView.FormElement.Name,
-            FormViewHtml = result.Content
-        };
+        ViewData["Title"] = formView.FormElement.Name;
+        ViewData["FormViewHtml"] = result.Content;
         
-        return View(model);
+        return View();
     }
     
     private void ConfigureFormView(JJFormView formView)

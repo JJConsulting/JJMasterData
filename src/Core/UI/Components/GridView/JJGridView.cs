@@ -688,7 +688,7 @@ public class JJGridView : AsyncComponent
         await html.AppendAsync(HtmlTag.Div, async div =>
         {
             if (ShowTitle)
-                div.AppendComponent(await GetTitleAsync());
+                div.AppendComponent(GetTitle());
             
             if (FilterAction.IsVisible)
                 div.Append(await Filter.GetFilterHtml());
@@ -831,20 +831,14 @@ public class JJGridView : AsyncComponent
         return result;
     }
     
-    [Obsolete("Please use GetTitleHtmlAsync")]
     public string GetTitleHtml()
     {
-        return AsyncHelper.RunSync(GetTitleAsync).GetHtml();
+        return GetTitle().GetHtml();
     }
     
-    public async Task<string> GetTitleHtmlAsync()
+    internal JJTitle GetTitle()
     {
-        return (await GetTitleAsync()).GetHtml();
-    }
-    
-    internal async Task<JJTitle> GetTitleAsync()
-    {
-        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync(), TitleActions);
+        return ComponentFactory.Html.Title.Create(FormElement, new FormStateData(RelationValues!,UserValues, PageState.List), TitleActions);
     }
 
     internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
