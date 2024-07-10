@@ -1,10 +1,10 @@
 class ActionHelper {
-    static submitWithScrollPosition(){
+    static submitWithScrollPosition() {
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
         SpinnerOverlay.show();
         getMasterDataForm().submit();
     }
-    
+
     static async executeSqlCommand(
         componentName: string,
         encryptedActionMap: string,
@@ -41,6 +41,38 @@ class ActionHelper {
                 }
             })
         }
+    }
+
+    static async executeHTMLTemplate(
+        componentName: string,
+        title: string,
+        encryptedActionMap: string,
+        encryptedRouteContext: string,
+        confirmMessage: string) {
+
+        if (confirmMessage) {
+            const result = await showConfirmationMessage(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+
+        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#current-action-map-" + componentName);
+
+        if (gridViewActionInput) {
+            gridViewActionInput.value = encryptedActionMap;
+        } 
+        if (formViewActionInput) {
+            formViewActionInput.value = encryptedActionMap;
+        }
+
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+        defaultModal.showUrl({
+            url: urlBuilder.build(),
+            requestOptions: {method: "POST", body: new FormData(getMasterDataForm())}
+        }, title, ModalSize.Default);
     }
 
     static async executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {
@@ -110,10 +142,9 @@ class ActionHelper {
             url: url,
             success: (data: UrlRedirectModel) => {
                 if (data.urlAsModal) {
-                    if(data.isIframe){
+                    if (data.isIframe) {
                         defaultModal.showIframe(data.urlRedirect, data.modalTitle, data.modalSize);
-                    }
-                    else{
+                    } else {
                         defaultModal.showUrl(data.urlRedirect, data.modalTitle, data.modalSize);
                     }
                 } else {
@@ -133,7 +164,7 @@ class ActionHelper {
 
         defaultModal.showIframe(url, "", modalSize);
     }
-    
+
     static async executeActionData(actionData: ActionData) {
         const {
             componentName,
@@ -228,19 +259,19 @@ class ActionHelper {
             }
         }
     }
-    
-    static executeAction(actionDataJson: string){
+
+    static executeAction(actionDataJson: string) {
         const actionData = JSON.parse(actionDataJson);
-        
+
         return this.executeActionData(actionData);
     }
-    
-    static hideActionModal(componentName:string){
+
+    static hideActionModal(componentName: string) {
         const modal = new Modal();
         modal.modalId = componentName + "-modal";
         modal.hide();
     }
-    
+
     static async launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
         if (confirmationMessage) {
             const result = await showConfirmationMessage(confirmationMessage);

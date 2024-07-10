@@ -610,30 +610,22 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetFormActionResult()
     {
         SetFormServiceEvents();
-        
-        ComponentResult? result;
-        if (CurrentAction is ViewAction)
-            result = await GetViewResult();
-        else if (CurrentAction is EditAction)
-            result = await GetUpdateResult();
-        else if (CurrentAction is InsertAction)
-            result = await GetInsertResult();
-        else if (CurrentAction is AuditLogFormToolbarAction or AuditLogGridToolbarAction)
-            result = await GetAuditLogResult();
-        else if (CurrentAction is DeleteAction)
-            result = await GetDeleteResult();
-        else if (CurrentAction is SaveAction)
-            result = await GetSaveActionResult();
-        else if (CurrentAction is BackAction)
-            result = await GetBackActionResult();
-        else if (CurrentAction is CancelAction)
-            result = await GetCancelActionResult();
-        else if (CurrentAction is SqlCommandAction)
-            result = await GetSqlCommandActionResult();
-        else if (CurrentAction is PluginAction)
-            result = await GetPluginActionResult();
-        else
-            result = await GetDefaultResult();
+
+        var result = CurrentAction switch
+        {
+            ViewAction => await GetViewResult(),
+            EditAction => await GetUpdateResult(),
+            InsertAction => await GetInsertResult(),
+            AuditLogFormToolbarAction or AuditLogGridToolbarAction => await GetAuditLogResult(),
+            DeleteAction => await GetDeleteResult(),
+            SaveAction => await GetSaveActionResult(),
+            BackAction => await GetBackActionResult(),
+            CancelAction => await GetCancelActionResult(),
+            SqlCommandAction => await GetSqlCommandActionResult(),
+            HtmlTemplateAction => await GetHtmlTemplateActionResult(),
+            PluginAction => await GetPluginActionResult(),
+            _ => await GetDefaultResult()
+        };
 
         if (result is HtmlComponentResult htmlComponent)
         {
@@ -670,6 +662,13 @@ public class JJFormView : AsyncComponent
         }
     }
 
+    private async Task<ComponentResult> GetHtmlTemplateActionResult()
+    {
+        var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
+        var dataSource = await EntityRepository.GetDataSetAsync(new(htmlTemplateAction.SqlCommand));
+        return new ContentComponentResult(new(htmlTemplateAction.HtmlTemplate));
+    }
+    
     private async Task<ComponentResult> GetSqlCommandActionResult()
     {
         JJMessageBox? messageBox = null;

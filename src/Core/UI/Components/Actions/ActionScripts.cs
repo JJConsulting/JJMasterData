@@ -61,6 +61,26 @@ public class ActionScripts(
             $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}');";
     }
 
+    
+    private string GetHtmlTemplateScript(
+        ActionContext actionContext,
+        ActionSource actionSource
+    )
+    {
+        var action = actionContext.Action;
+        var actionMap = actionContext.ToActionMap(actionSource);
+        var encryptedActionMap = EncryptionService.EncryptObject(actionMap);
+
+        var encryptedRouteContext =
+            EncryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
+                ComponentContext.FormViewReload));
+
+        var confirmationMessage =
+            GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+
+        return
+            $"ActionHelper.executeHTMLTemplate('{actionContext.ParentComponentName}','{StringLocalizer[action.Text]}','{encryptedActionMap}','{encryptedRouteContext}',{(string.IsNullOrEmpty(confirmationMessage) ? "''" : $"'{confirmationMessage}'")});";
+    }
 
     private string GetUrlRedirectScript(
         UrlRedirectAction action,
@@ -176,6 +196,7 @@ public class ActionScripts(
                 ExpressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ??
                 string.Empty),
             InternalAction internalAction => GetInternalUrlScript(internalAction, actionContext),
+            HtmlTemplateAction  => GetHtmlTemplateScript(actionContext, actionSource),
             _ => GetFormActionScript(actionContext, actionSource)
         };
     }
