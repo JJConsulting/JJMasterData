@@ -50,7 +50,7 @@
                 <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
             </li>
             <li id="nav-sql-command" class="nav-item">
-                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-sql-command">@StringLocalizer["SQL Command"]</a>
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-sql-command">@StringLocalizer["Data Source"]</a>
             </li>
             <li id="nav-html-template" class="nav-item">
                 <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-html-template">@StringLocalizer["HTML Template"]</a>
@@ -68,8 +68,8 @@
             <div id="div-sql-command" class="tab-pane fade">
                 <div class="row">
                     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
-                        <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
+                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") >@StringLocalizer["Sql Command"]</label>
+                        <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
                         <div style="margin-bottom: 0">
                             @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "15" })
                         </div>
@@ -80,7 +80,8 @@
             <div id="div-html-template" class="tab-pane fade">
                 <div class="row">
                     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["HTML Template"]</label>
+                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") >@StringLocalizer["HTML Template"]</label>
+                        <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["Here we use a Liquid template to render the HTML. Use the DataSource property to access your tables and columns."]</span>
                         <div style="margin-bottom: 0">
                             <textarea asp-for="HtmlTemplate" rows="15" class="form-control"></textarea>
                         </div>

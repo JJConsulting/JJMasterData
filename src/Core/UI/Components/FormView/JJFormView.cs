@@ -338,6 +338,7 @@ public class JJFormView : AsyncComponent
     internal FormValuesService FormValuesService { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
+    public HtmlTemplateService HtmlTemplateService { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IOptionsSnapshot<MasterDataCoreOptions> Options { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -361,6 +362,7 @@ public class JJFormView : AsyncComponent
         FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
+        HtmlTemplateService htmlTemplateService,
         IEnumerable<IPluginHandler> pluginHandlers,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -377,6 +379,7 @@ public class JJFormView : AsyncComponent
         FormValuesService = formValuesService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
+        HtmlTemplateService = htmlTemplateService;
         PluginHandlers = pluginHandlers;
         Options = options;
         StringLocalizer = stringLocalizer;
@@ -669,41 +672,7 @@ public class JJFormView : AsyncComponent
     {
         var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
 
-        var command = ExpressionDataAccessCommandFactory.Create(htmlTemplateAction.SqlCommand, CurrentActionMap!.PkFieldValues!);
-        var dataSource = await EntityRepository.GetDataSetAsync(command);
-        
-        var parser = new FluidParser();
-
-        string renderedTemplate;
-        
-        if (parser.TryParse(htmlTemplateAction.HtmlTemplate, out var template, out var error))
-        {   
-            var context = new TemplateContext(new {DataSource = EnumerableHelper.ConvertDataSetToObject(dataSource)});
-
-            renderedTemplate = template.Render(context);
-        }
-        else
-        {
-            renderedTemplate = error;
-        }
-        
-        var html = new HtmlBuilder();
-        html.AppendDiv(div =>
-        {
-            div.WithCssClass("text-end").AppendComponent(new JJLinkButton(StringLocalizer)
-            {
-                Icon = IconType.CloudDownload,
-                ShowAsButton = true,
-                Tooltip = "Download",
-                OnClientClick = "printTemplateIframe()"
-            });
-        });
-        html.Append(HtmlTag.Iframe, iframe =>
-        {
-            iframe.WithCssClass("modal-iframe");
-            iframe.WithId("jjmasterdata-template-iframe");
-            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(renderedTemplate));
-        });
+        var html = await HtmlTemplateService.RenderTemplate(htmlTemplateAction, CurrentActionMap!.PkFieldValues);
         
         return new ContentComponentResult(html);
     }

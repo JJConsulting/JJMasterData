@@ -10,7 +10,7 @@
 <div id="div-sql-command">
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <label asp-for="DataItem!.Command!.Sql" class="form-label"></label>
-        <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
+        <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
         <div class="well" style="margin-bottom: 0">
             @Html.TextAreaFor(model => model.DataItem!.Command!.Sql, new { @class = "form-control", rows = "10" })
         </div>
