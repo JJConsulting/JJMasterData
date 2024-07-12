@@ -32,14 +32,14 @@ public class HtmlTemplateService(
         {   
             var context = new TemplateContext(new {DataSource = EnumerableHelper.ConvertDataSetToArray(dataSource)});
             
-            var translate = new FunctionValue((args, _) => 
+            var localize = new FunctionValue((args, _) => 
             {
                 var firstArg = args.At(0).ToStringValue();
                 var localizedString = stringLocalizer[firstArg, args.Values.Select(v => v.ToStringValue())];
                 return new ValueTask<FluidValue>(new StringValue(localizedString));
             });
             
-            context.SetValue("localize", translate);
+            context.SetValue("localize", localize);
             
             renderedTemplate = await template.RenderAsync(context);
         }
