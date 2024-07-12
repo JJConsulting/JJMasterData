@@ -42,9 +42,9 @@ public class HtmlTemplateService(
         {
             div.WithCssClass("text-end").AppendComponent(new JJLinkButton(stringLocalizer)
             {
-                Icon = IconType.CloudDownload,
+                Icon = IconType.Print,
                 ShowAsButton = true,
-                Tooltip = "Download",
+                Tooltip = stringLocalizer["Print"],
                 OnClientClick = "printTemplateIframe()"
             });
         });
