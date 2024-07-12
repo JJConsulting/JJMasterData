@@ -9,7 +9,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class ContentComponentResult(HtmlBuilder htmlBuilder) : HtmlComponentResult(htmlBuilder)
 #if NET
-    ,IActionResult
+    , IActionResult
 #endif
 {
 #if NET 

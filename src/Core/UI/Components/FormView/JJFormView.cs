@@ -10,12 +10,15 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using Fluid;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -335,6 +338,7 @@ public class JJFormView : AsyncComponent
     internal FormValuesService FormValuesService { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
+    public HtmlTemplateService HtmlTemplateService { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IOptionsSnapshot<MasterDataCoreOptions> Options { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -358,6 +362,7 @@ public class JJFormView : AsyncComponent
         FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
+        HtmlTemplateService htmlTemplateService,
         IEnumerable<IPluginHandler> pluginHandlers,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -374,6 +379,7 @@ public class JJFormView : AsyncComponent
         FormValuesService = formValuesService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
+        HtmlTemplateService = htmlTemplateService;
         PluginHandlers = pluginHandlers;
         Options = options;
         StringLocalizer = stringLocalizer;
@@ -610,30 +616,22 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetFormActionResult()
     {
         SetFormServiceEvents();
-        
-        ComponentResult? result;
-        if (CurrentAction is ViewAction)
-            result = await GetViewResult();
-        else if (CurrentAction is EditAction)
-            result = await GetUpdateResult();
-        else if (CurrentAction is InsertAction)
-            result = await GetInsertResult();
-        else if (CurrentAction is AuditLogFormToolbarAction or AuditLogGridToolbarAction)
-            result = await GetAuditLogResult();
-        else if (CurrentAction is DeleteAction)
-            result = await GetDeleteResult();
-        else if (CurrentAction is SaveAction)
-            result = await GetSaveActionResult();
-        else if (CurrentAction is BackAction)
-            result = await GetBackActionResult();
-        else if (CurrentAction is CancelAction)
-            result = await GetCancelActionResult();
-        else if (CurrentAction is SqlCommandAction)
-            result = await GetSqlCommandActionResult();
-        else if (CurrentAction is PluginAction)
-            result = await GetPluginActionResult();
-        else
-            result = await GetDefaultResult();
+
+        var result = CurrentAction switch
+        {
+            ViewAction => await GetViewResult(),
+            EditAction => await GetUpdateResult(),
+            InsertAction => await GetInsertResult(),
+            AuditLogFormToolbarAction or AuditLogGridToolbarAction => await GetAuditLogResult(),
+            DeleteAction => await GetDeleteResult(),
+            SaveAction => await GetSaveActionResult(),
+            BackAction => await GetBackActionResult(),
+            CancelAction => await GetCancelActionResult(),
+            SqlCommandAction => await GetSqlCommandActionResult(),
+            HtmlTemplateAction => await GetHtmlTemplateActionResult(),
+            PluginAction => await GetPluginActionResult(),
+            _ => await GetDefaultResult()
+        };
 
         if (result is HtmlComponentResult htmlComponent)
         {
@@ -670,6 +668,15 @@ public class JJFormView : AsyncComponent
         }
     }
 
+    private async Task<ComponentResult> GetHtmlTemplateActionResult()
+    {
+        var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
+
+        var html = await HtmlTemplateService.RenderTemplate(htmlTemplateAction, CurrentActionMap!.PkFieldValues);
+        
+        return new ContentComponentResult(html);
+    }
+    
     private async Task<ComponentResult> GetSqlCommandActionResult()
     {
         JJMessageBox? messageBox = null;

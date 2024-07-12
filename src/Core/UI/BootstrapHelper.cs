@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.UI;
+﻿using System.Runtime.CompilerServices;
+
+namespace JJMasterData.Core.UI;
 
 /// <summary>
 /// Helper to Bootstrap strings, everything defaults to version 5.
@@ -113,6 +115,7 @@ public static class BootstrapHelper
     #endregion
 
     #region Bootstrap5 Breaking Changes
+
     public static string TextRight => Version switch
     {
         5 => " text-end",

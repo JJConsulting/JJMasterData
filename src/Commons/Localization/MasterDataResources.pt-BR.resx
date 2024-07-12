@@ -125,10 +125,6 @@
     <value>(Selecione)</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="(Type Ctrl+Space to AutoComplete)" xml:space="preserve">
-    <value>(Digite Ctrl + Espaço para AutoCompletar)</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="({0} characters remaining)" xml:space="preserve">
     <value>({0} caracteres restantes)</value>
     <comment>JJMasterDataCore</comment>
@@ -4095,5 +4091,17 @@
   </data>
   <data name="Edit Element" xml:space="preserve">
     <value>Editar Elemento</value>
+  </data>
+  <data name="Data Source" xml:space="preserve">
+    <value>Fonte de Dados</value>
+  </data>
+  <data name="HTML Template" xml:space="preserve">
+    <value>Template HTML</value>
+  </data>
+  <data name="(Type Ctrl+Space to autocomplete)" xml:space="preserve">
+    <value>(Utilize Ctrl+Espaço para autocompletar)</value>
+  </data>
+  <data name="Here we use a Liquid template to render the HTML. Use the DataSource property to access your tables and columns." xml:space="preserve">
+    <value>Aqui usamos um template Liquid para renderizar o HTML. Use a propriedade DataSource para acessar suas tabelas e colunas.</value>
   </data>
 </root>

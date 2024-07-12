@@ -48,7 +48,9 @@ public enum HtmlTag
     U,
     OptGroup,
     Nav,
-    Ol
+    Ol,
+    Style,
+    Iframe
 }
 
 public static class HtmlTagExtensions
@@ -102,6 +104,8 @@ public static class HtmlTagExtensions
             HtmlTag.OptGroup => "optgroup",
             HtmlTag.Nav => "nav",
             HtmlTag.Ol => "ol",
+            HtmlTag.Style => "style",
+            HtmlTag.Iframe => "iframe",
             _ => throw new ArgumentOutOfRangeException(nameof(tag), tag, null)
         };
     }
