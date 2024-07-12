@@ -116,17 +116,11 @@ public static class BootstrapHelper
 
     #region Bootstrap5 Breaking Changes
 
-    public static string TextRight
+    public static string TextRight => Version switch
     {
-        get
-        {
-            return Version switch
-            {
-                5 => " text-end",
-                _ => " text-right"
-            };
-        }
-    }
+        5 => " text-end",
+        _ => " text-right"
+    };
 
     public static string TextLeft => Version switch
     {
