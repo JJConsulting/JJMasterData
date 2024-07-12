@@ -72,7 +72,7 @@
                     <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
                     <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
                     <div class="well" style="margin-bottom: 0">
-                        @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "10" })
+                        @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "15" })
                     </div>
                 </div>
                 @if (ViewBag.ContextAction is ActionSource.GridToolbar)

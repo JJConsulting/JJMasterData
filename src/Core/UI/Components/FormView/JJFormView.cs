@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -666,7 +667,27 @@ public class JJFormView : AsyncComponent
     {
         var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
         var dataSource = await EntityRepository.GetDataSetAsync(new(htmlTemplateAction.SqlCommand));
-        return new ContentComponentResult(new(htmlTemplateAction.HtmlTemplate));
+        
+        
+        var html = new HtmlBuilder();
+        html.AppendDiv(div =>
+        {
+            div.WithCssClass("text-end").AppendComponent(new JJLinkButton(StringLocalizer)
+            {
+                Icon = IconType.CloudDownload,
+                ShowAsButton = true,
+                Tooltip = "Download",
+                OnClientClick = "printTemplateIframe()"
+            });
+        });
+        html.Append(HtmlTag.Iframe, iframe =>
+        {
+            iframe.WithCssClass("modal-iframe");
+            iframe.WithId("jjmasterdata-template-iframe");
+            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(htmlTemplateAction.HtmlTemplate));
+        });
+        
+        return new ContentComponentResult(html);
     }
     
     private async Task<ComponentResult> GetSqlCommandActionResult()

@@ -71,7 +71,7 @@
                         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
                         <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
                         <div style="margin-bottom: 0">
-                            @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "10" })
+                            @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "15" })
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
                         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["HTML Template"]</label>
                         <div style="margin-bottom: 0">
-                            <textarea asp-for="HtmlTemplate" rows="10" class="form-control"></textarea>
+                            <textarea asp-for="HtmlTemplate" rows="15" class="form-control"></textarea>
                         </div>
                     </div>
                 </div>
