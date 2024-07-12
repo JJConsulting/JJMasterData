@@ -11,12 +11,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Fluid;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -666,8 +668,24 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetHtmlTemplateActionResult()
     {
         var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
-        var dataSource = await EntityRepository.GetDataSetAsync(new(htmlTemplateAction.SqlCommand));
+
+        var command = ExpressionDataAccessCommandFactory.Create(htmlTemplateAction.SqlCommand, CurrentActionMap!.PkFieldValues!);
+        var dataSource = await EntityRepository.GetDataSetAsync(command);
         
+        var parser = new FluidParser();
+
+        string renderedTemplate;
+        
+        if (parser.TryParse(htmlTemplateAction.HtmlTemplate, out var template, out var error))
+        {   
+            var context = new TemplateContext(new {DataSource = EnumerableHelper.ConvertDataSetToObject(dataSource)});
+
+            renderedTemplate = template.Render(context);
+        }
+        else
+        {
+            renderedTemplate = error;
+        }
         
         var html = new HtmlBuilder();
         html.AppendDiv(div =>
@@ -684,7 +702,7 @@ public class JJFormView : AsyncComponent
         {
             iframe.WithCssClass("modal-iframe");
             iframe.WithId("jjmasterdata-template-iframe");
-            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(htmlTemplateAction.HtmlTemplate));
+            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(renderedTemplate));
         });
         
         return new ContentComponentResult(html);

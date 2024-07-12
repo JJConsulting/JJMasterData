@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
 
@@ -10,7 +11,35 @@ namespace JJMasterData.Commons.Util;
 
 public static class EnumerableHelper
 {
-    
+    public static object ConvertDataSetToObject(DataSet dataSet)
+    {
+        var result = new List<object>();
+
+        if (dataSet.Tables.Count == 1)
+        {
+            return ConvertToObject(dataSet.Tables[0]);
+        }
+
+        foreach (DataTable table in dataSet.Tables)
+        {
+            result.Add(ConvertToObject(table));
+        }
+
+        return result.ToArray();
+    }
+
+    private static object ConvertToObject(DataTable table)
+    {
+        if (table.Rows.Count == 1)
+        {
+            var row = table.Rows[0];
+            return row.Table.Columns
+                .Cast<DataColumn>()
+                .ToDictionary(col => col.ColumnName, col => row[col]);
+        }
+        return ConvertToDictionaryList(table).Cast<object>().ToList();
+    }
+
     public static List<Dictionary<string, object?>> ConvertToDictionaryList(DataTable dataTable)
     {
         var list = new List<Dictionary<string, object?>>();

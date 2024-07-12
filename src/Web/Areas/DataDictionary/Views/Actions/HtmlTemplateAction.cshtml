@@ -11,8 +11,8 @@
 @section Scripts{
     <script lang="javascript" type="text/javascript">
     function setupCodeMirror(){
-        CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
-        CodeMirrorWrapper.setupCodeMirror('@nameof(Model.HtmlTemplate)',{mode: "text/x-liquid"})
+        CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql", size: 320, hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
+        CodeMirrorWrapper.setupCodeMirror('@nameof(Model.HtmlTemplate)',{mode: "text/x-liquid", size: 320})
     }
 
     document.addEventListener("DOMContentLoaded",()=>{
