@@ -18,7 +18,7 @@ public sealed class HtmlTemplateAction : UserCreatedAction
         Name = "html-template";
         Icon = IconType.RegularFileLines;
         Text = "Template";
-        ShowAsButton = true;
+        ShowAsButton = false;
     }
     
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
