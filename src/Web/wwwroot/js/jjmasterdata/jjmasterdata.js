@@ -2831,30 +2831,10 @@ var jjutil = (function () {
         }
     };
 })();
-function printCustom(newTitle) {
-    var localPage = window.parent.$('title').text();
-    var ReportPortalPage1 = window.parent.parent.$('title').text();
-    var ReportPortalPage2 = window.parent.parent.parent.$('title').text();
-    var isVisible = $("#btnDadosCadastrais").is(":visible");
-    if (isVisible) {
-        $("#btnDadosCadastrais").hide();
-    }
-    $("#divPrint").hide();
-    window.parent.$('title').text(newTitle);
-    window.parent.parent.$('title').text(newTitle);
-    window.parent.parent.parent.$('title').text(newTitle);
-    window.print();
-    window.parent.$('title').text(localPage);
-    window.parent.parent.$('title').text(ReportPortalPage1);
-    window.parent.parent.parent.$('title').text(ReportPortalPage2);
-    $("#divPrint").show();
-    if (isVisible) {
-        $("#btnDadosCadastrais").show();
-    }
-}
 function printTemplateIframe() {
     const iframe = document.getElementById('jjmasterdata-template-iframe');
     if (iframe) {
+        iframe.contentWindow.document.title = document.title;
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
     }

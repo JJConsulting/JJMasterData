@@ -28,8 +28,7 @@ public class HtmlTemplateService(
         
         if (fluidParser.TryParse(action.HtmlTemplate, out var template, out var error))
         {   
-            var context = new TemplateContext(new {DataSource = EnumerableHelper.ConvertDataSetToObject(dataSource)});
-
+            var context = new TemplateContext(new {DataSource = EnumerableHelper.ConvertDataSetToArray(dataSource)});
             renderedTemplate = await template.RenderAsync(context);
         }
         else

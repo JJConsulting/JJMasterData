@@ -11,34 +11,18 @@ namespace JJMasterData.Commons.Util;
 
 public static class EnumerableHelper
 {
-    public static object ConvertDataSetToObject(DataSet dataSet)
+    public static List<Dictionary<string,object?>>[] ConvertDataSetToArray(DataSet dataSet)
     {
-        var result = new List<object>();
-
-        if (dataSet.Tables.Count == 1)
-        {
-            return ConvertToObject(dataSet.Tables[0]);
-        }
+        var result = new List<List<Dictionary<string,object?>>>();
 
         foreach (DataTable table in dataSet.Tables)
         {
-            result.Add(ConvertToObject(table));
+            result.Add(ConvertToDictionaryList(table));
         }
 
         return result.ToArray();
     }
-
-    private static object ConvertToObject(DataTable table)
-    {
-        if (table.Rows.Count == 1)
-        {
-            var row = table.Rows[0];
-            return row.Table.Columns
-                .Cast<DataColumn>()
-                .ToDictionary(col => col.ColumnName, col => row[col]);
-        }
-        return ConvertToDictionaryList(table).Cast<object>().ToList();
-    }
+    
 
     public static List<Dictionary<string, object?>> ConvertToDictionaryList(DataTable dataTable)
     {
