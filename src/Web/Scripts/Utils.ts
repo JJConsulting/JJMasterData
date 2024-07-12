@@ -129,41 +129,6 @@
     
 })();
 
-
-function printCustom(newTitle) {
-    var localPage = window.parent.$('title').text();
-    var ReportPortalPage1 = window.parent.parent.$('title').text();
-    var ReportPortalPage2 = window.parent.parent.parent.$('title').text();
-
-    var isVisible = $("#btnDadosCadastrais").is(":visible");
-
-    if (isVisible) {
-        $("#btnDadosCadastrais").hide()
-    }
-
-    $("#divPrint").hide()
-
-
-    window.parent.$('title').text(newTitle); //local
-    window.parent.parent.$('title').text(newTitle); // reportPortal1
-    window.parent.parent.parent.$('title').text(newTitle); // reportPortal2
-
-
-    window.print();
-
-    window.parent.$('title').text(localPage); //local
-    window.parent.parent.$('title').text(ReportPortalPage1); // reportPortal1
-    window.parent.parent.parent.$('title').text(ReportPortalPage2); // reportPortal2
-
-    $("#divPrint").show()
-
-    if (isVisible) {
-        $("#btnDadosCadastrais").show()
-    }
-
-
-}
-
 function printTemplateIframe() {
     // @ts-ignore
     const iframe: HTMLIFrameElement = document.getElementById('jjmasterdata-template-iframe');
