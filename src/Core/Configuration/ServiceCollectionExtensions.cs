@@ -1,5 +1,4 @@
-﻿using Fluid;
-using JJMasterData.Commons.Configuration;
+﻿using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -52,8 +51,6 @@ public static class ServiceCollectionExtensions
         services.AddExpressionServices();
         services.AddActionServices();
 
-        services.AddSingleton<FluidParser>();
-        
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
 
         services.AddScoped<IExcelWriter, ExcelWriter>();

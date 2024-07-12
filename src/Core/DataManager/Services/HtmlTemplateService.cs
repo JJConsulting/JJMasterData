@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Fluid;
+using Fluid.Values;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
@@ -29,6 +31,16 @@ public class HtmlTemplateService(
         if (fluidParser.TryParse(action.HtmlTemplate, out var template, out var error))
         {   
             var context = new TemplateContext(new {DataSource = EnumerableHelper.ConvertDataSetToArray(dataSource)});
+            
+            var translate = new FunctionValue((args, _) => 
+            {
+                var firstArg = args.At(0).ToStringValue();
+                var localizedString = stringLocalizer[firstArg, args.Values.Select(v => v.ToStringValue())];
+                return new ValueTask<FluidValue>(new StringValue(localizedString));
+            });
+            
+            context.SetValue("localize", translate);
+            
             renderedTemplate = await template.RenderAsync(context);
         }
         else
