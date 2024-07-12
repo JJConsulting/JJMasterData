@@ -26,6 +26,9 @@
     </ItemGroup>
     
     <ItemGroup>
+        <PackageReference Include="NCalc.MemoryCache" Version="5.1.0" />
+        <PackageReference Include="NCalc.DependencyInjection" Version="5.1.0" />
+        <PackageReference Include="NCalcSync" Version="5.1.0" />
         <PackageReference Include="Fluid.Core" Version="2.11.0" />
         <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     </ItemGroup>

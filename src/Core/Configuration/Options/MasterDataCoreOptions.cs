@@ -1,8 +1,12 @@
 #nullable enable
 
+using System;
+using System.Collections.Frozen;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using JJMasterData.Commons.Util;
+using NCalc;
 
 namespace JJMasterData.Core.Configuration.Options;
 
@@ -37,4 +41,19 @@ public sealed class MasterDataCoreOptions
     /// </summary>
     [Display(Name = "Exportation Folder Path")]
     public string ExportationFolderPath { get; set; } = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
+
+    /// <summary>
+    /// Context of the expressions starting with "exp:". Declare here custom parameters and functions.
+    /// </summary>
+    public ExpressionContext ExpressionsContext { get; set; } = new()
+    {
+        Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions
+                  | ExpressionOptions.AllowNullParameter
+                  | ExpressionOptions.OrdinalStringComparer
+                  | ExpressionOptions.CaseInsensitiveStringComparer,
+        Functions = new Dictionary<string, ExpressionFunction>
+        {
+            { "now", _ => DateTime.Now }
+        }.ToFrozenDictionary()
+    };
 }
