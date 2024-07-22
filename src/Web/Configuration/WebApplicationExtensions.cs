@@ -5,6 +5,7 @@ using JJMasterData.Web.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Session;
 using Microsoft.Extensions.FileProviders;
 
 namespace JJMasterData.Web.Configuration;
@@ -70,7 +71,15 @@ public static class WebApplicationExtensions
 
     private static void UseRequiredMiddlewares(this WebApplication app)
     {
-        app.UseSession();
+        app.UseSession(new SessionOptions
+        {
+            Cookie = new CookieBuilder
+            {
+                IsEssential = true,
+                Name = SessionDefaults.CookieName,
+                Path = SessionDefaults.CookiePath
+            }
+        });
 
         //Debug for typescript        
 #if DEBUG
