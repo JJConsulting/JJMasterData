@@ -64,7 +64,7 @@ internal class GridFilter(JJGridView gridView)
         if (_currentFilter != null)
             return _currentFilter;
         
-        _currentFilter ??= new Dictionary<string, object>();
+        _currentFilter ??= new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         
         DataHelper.CopyIntoDictionary(_currentFilter, _userFilters);
      
