@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace JJMasterData.Core.UI;
 
@@ -41,11 +42,6 @@ public static class BootstrapHelper
         {
             >= 4 => " card-group",
             _ => " panel-group"
-        };
-        PanelCollapse = Version switch
-        {
-            >= 4 => " panel-collapse in collapse show",
-            _ => " panel-collapse collapse in"
         };
         InputGroupBtn = Version switch
         {
@@ -147,7 +143,7 @@ public static class BootstrapHelper
             4 => "float-left",
             _ => "pull-left"
         };
-        LabelSucess = Version switch
+        LabelSuccess = Version switch
         {
             >= 4 => "badge bg-success",
             _ => "label label-success"
@@ -175,7 +171,103 @@ public static class BootstrapHelper
     }
 
     #region Panel
+    
+    public static readonly string PanelTitle;
 
+    public static readonly string PanelBody;
+
+    public static readonly string PanelGroup;
+
+    #endregion
+
+    #region InputGroup
+
+    public static readonly string InputGroupBtn;
+
+    public static readonly string InputGroupAddon;
+
+    #endregion
+
+    #region Miscellaneous
+
+    public static readonly string Show;
+
+    public static readonly string Label;
+
+    public static readonly string FormHorizontal;
+
+    public static readonly string HasError;
+
+    public static readonly string CenterBlock;
+
+    public static readonly string PageHeader;
+
+    #endregion
+
+    #region Bootstrap5 Breaking Changes
+
+    public static readonly string TextRight;
+
+    public static readonly string TextLeft;
+
+    public static readonly string MarginLeft;
+
+    public static readonly string MarginRight;
+
+
+    public static readonly string FormGroup;
+
+    public static readonly string Close;
+
+    public static readonly string CloseButtonTimes;
+
+    public static readonly string DataDismiss;
+    
+    public static readonly string DataToggle;
+
+    public static readonly string PullRight;
+
+    public static readonly string PullLeft;
+
+
+    public static readonly string LabelSuccess;
+
+    public static readonly string LabelDefault;
+
+    public static readonly string LabelWarning;
+
+    public static readonly string LabelDanger;
+
+    public static readonly string BtnDefault;
+
+    #endregion
+
+    #region Methods
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetDataToggle(string value)
+    {
+        return $"{DataToggle}={value}";
+    }
+
+    public static string GetModalScript(string modalCssId) => Version switch
+    {
+        5 => $"bootstrap.Modal.getOrCreateInstance(document.getElementById('{modalCssId}'),{{}}).show();",
+        _ => $"$('#{modalCssId}').modal();"
+    };
+
+    public static string GetCloseModalScript(string modalCssId) => Version switch
+    {
+        5 => $"bootstrap.Modal.getOrCreateInstance(document.getElementById('{modalCssId}'),{{}}).hide();",
+        _ => $"$('#{modalCssId}').modal('hide');"
+    };
+    
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetDataDismiss(string value)
+    {
+        return $"{DataDismiss}={value}";
+    }
+    
     public static string GetPanel(string className)
     {
         if (Version == 3)
@@ -194,98 +286,5 @@ public static class BootstrapHelper
             _ => " panel-heading"
         };
     }
-
-    public static string PanelTitle { get; }
-
-    public static string PanelBody { get; }
-
-    public static string PanelGroup { get; }
-
-    public static string PanelCollapse { get; }
-
-    #endregion
-
-    #region InputGroup
-
-    public static string InputGroupBtn { get; }
-
-    public static string InputGroupAddon { get; }
-
-    #endregion
-
-    #region Miscellaneous
-
-    public static string Show { get; }
-
-    public static string Label { get; }
-
-    public static string FormHorizontal { get; }
-
-    public static string HasError { get; }
-
-    public static string CenterBlock { get; }
-
-    public static string PageHeader { get; }
-
-    #endregion
-
-    #region Bootstrap5 Breaking Changes
-
-    public static string TextRight { get; }
-
-    public static string TextLeft { get; }
-
-    public static string MarginLeft { get; }
-
-    public static string MarginRight { get; }
-
-
-    public static string FormGroup { get; }
-
-    public static string Close { get; }
-
-    public static string CloseButtonTimes { get; }
-
-    public static string DataDismiss { get; }
-    
-    public static string GetDataDismiss(string value)
-    {
-        return $"{DataDismiss}={value}";
-    }
-    
-    public static string DataToggle { get; }
-
-    public static string PullRight { get; }
-
-    public static string PullLeft { get; }
-
-
-    public static string LabelSucess { get; }
-
-    public static string LabelDefault { get; }
-
-    public static string LabelWarning { get; }
-
-    public static string LabelDanger { get; }
-
-    public static string BtnDefault { get; }
-
-    public static string GetDataToggle(string value)
-    {
-        return $"{DataToggle}={value}";
-    }
-
-    public static string GetModalScript(string modalCssId) => Version switch
-    {
-        5 => $"bootstrap.Modal.getOrCreateInstance(document.getElementById('{modalCssId}'),{{}}).show();",
-        _ => $"$('#{modalCssId}').modal();"
-    };
-
-    public static string GetCloseModalScript(string modalCssId) => Version switch
-    {
-        5 => $"bootstrap.Modal.getOrCreateInstance(document.getElementById('{modalCssId}'),{{}}).hide();",
-        _ => $"$('#{modalCssId}').modal('hide');"
-    };
-
     #endregion
 }

@@ -45,37 +45,36 @@ public class JJAlert : HtmlComponent
         if (ShowCloseButton)
             html.Append(GetCloseButton("alert"));
 
-        if (!string.IsNullOrEmpty(Title))
+
+        var hasTitle = !string.IsNullOrEmpty(Title);
+        
+        if (hasTitle)
         {
             html.Append(HtmlTag.H5, h5 =>
             {
                 h5.WithCssClass("alert-heading");
-                if (ShowIcon && Icon is not null)
+                if (ShowIcon)
                 {
-                    var icon = new JJIcon(Icon.Value);
-                    icon.CssClass += $"{BootstrapHelper.MarginRight}-{1}";
-                    h5.AppendComponent(icon);
+                    AppendAlertIcon(h5);
                 }
           
                 h5.AppendText(Title);
             });
         }
-        else
-        {
-            if (ShowIcon && Icon is not null)
-            {
-                var icon = new JJIcon(Icon.Value);
-                icon.CssClass += $"{BootstrapHelper.MarginRight}-{1}";
-                html.AppendComponent(icon);
-            }
-        }
 
         if (InnerHtml is not null)
+        {
+            if (!hasTitle && ShowIcon)
+                AppendAlertIcon(html);
             html.Append(InnerHtml);
-
+        }
+        
         html.AppendDiv(div =>
         {
             div.WithCssClass("alert-content");
+            
+            if (!hasTitle && ShowIcon)
+                AppendAlertIcon(div);
             
             if (Messages.Count > 1)
             {
@@ -100,6 +99,16 @@ public class JJAlert : HtmlComponent
         return html;
     }
 
+    private void AppendAlertIcon(HtmlBuilder div)
+    {
+        if (Icon == null)
+            return;
+        
+        var icon = new JJIcon(Icon.Value);
+        icon.CssClass += $"{BootstrapHelper.MarginRight}-{1}";
+        div.AppendComponent(icon);
+    }
+
     private string GetClassType()
     {
         if (Color == BootstrapColor.Default)
@@ -108,12 +117,12 @@ public class JJAlert : HtmlComponent
         return $"alert-{Color.ToColorString()}";
     }
 
-    internal static HtmlBuilder GetCloseButton(string dimissValue)
+    internal static HtmlBuilder GetCloseButton(string dismissValue)
     {
         var btn = new HtmlBuilder(HtmlTag.Button)
             .WithAttribute("type", "button")
             .WithAttribute("aria-label", "Close")
-            .WithDataAttribute("dismiss", dimissValue)
+            .WithDataAttribute("dismiss", dismissValue)
             .WithCssClass(BootstrapHelper.Close)
             .AppendIf(BootstrapHelper.Version == 3, HtmlTag.Span, span =>
             {
