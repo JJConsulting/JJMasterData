@@ -1,7 +1,5 @@
 ﻿using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -11,10 +9,7 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 

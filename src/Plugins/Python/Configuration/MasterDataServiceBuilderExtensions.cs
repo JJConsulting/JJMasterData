@@ -9,7 +9,6 @@ using JJMasterData.Python.Engine;
 using JJMasterData.Python.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.Scripting.Hosting;
 
 namespace JJMasterData.Python.Configuration;
 public static class MasterDataServiceBuilderExtensions

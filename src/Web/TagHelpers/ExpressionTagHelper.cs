@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel;
-using JJMasterData.Core.DataManager.Expressions.Providers;
-using JJMasterData.Core.UI;
 using JJMasterData.Web.Configuration.Options;
 using Microsoft.Extensions.Options;
 

@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 

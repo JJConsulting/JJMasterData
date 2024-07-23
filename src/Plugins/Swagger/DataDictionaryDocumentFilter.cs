@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Http.Description;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger
 {

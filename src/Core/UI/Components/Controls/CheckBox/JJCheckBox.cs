@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
