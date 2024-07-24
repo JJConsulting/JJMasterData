@@ -76,6 +76,8 @@ public static class WebApplicationExtensions
             Cookie = new CookieBuilder
             {
                 IsEssential = true,
+                SameSite = SameSiteMode.None,
+                SecurePolicy = CookieSecurePolicy.Always,
                 Name = SessionDefaults.CookieName,
                 Path = SessionDefaults.CookiePath
             }
