@@ -9,6 +9,7 @@ using JJMasterData.Web.Binders;
 using JJMasterData.Web.Configuration.Options;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,6 +82,11 @@ public static class ServiceCollectionExtensions
         IServiceCollection services, 
         MasterDataWebOptionsConfiguration? configuration = null)
     {
+        
+        services.Configure<CookieTempDataProviderOptions>(options => {
+            options.Cookie.IsEssential = true;
+        }); 
+        
         services.AddMvcServices(configuration ?? new());
         
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
