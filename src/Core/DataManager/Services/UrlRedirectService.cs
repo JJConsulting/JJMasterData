@@ -1,17 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 
 public class UrlRedirectService(
+    IHttpRequest httpRequest,
     IEntityRepository entityRepository,
     FormValuesService formValuesService,
     ExpressionsService expressionsService)
@@ -60,7 +63,7 @@ public class UrlRedirectService(
     private JsonComponentResult GetJsonResult(Dictionary<string, object> values, UrlRedirectAction action)
     {
         var formStateData = new FormStateData(values, PageState.List);
-        var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(System.Web.HttpUtility.UrlDecode(action.UrlRedirect), formStateData, action.EncryptParameters);
+        var parsedUrl = GetParsedUrl(action, formStateData);
         var parsedTitle =  ExpressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
         
         var model = new UrlRedirectModel
@@ -73,5 +76,16 @@ public class UrlRedirectService(
         };
         
         return new JsonComponentResult(model);
+    }
+
+    public string GetParsedUrl(UrlRedirectAction action, FormStateData formStateData)
+    {
+        var formStateDataCopy = formStateData.DeepCopy();
+        
+        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationPath);
+        
+        var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
+        
+        return ExpressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateData, action.EncryptParameters);
     }
 }

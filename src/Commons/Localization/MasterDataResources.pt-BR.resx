@@ -201,6 +201,18 @@
     <value>Ação</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="This field support runtime values between {}. Use {AppPath} for the base path of the application." xml:space="preserve">
+    <value>Este campo oferece suporte a valores do runtime entre {}. Use {AppPath} para o caminho da raiz da aplicação.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Is Modal?" xml:space="preserve">
+    <value>É Modal?</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Is Iframe?" xml:space="preserve">
+    <value>É Iframe?</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Action execution confirmation text" xml:space="preserve">
     <value>Texto de confirmação antes de executar a ação</value>
     <comment>JJMasterDataWeb</comment>

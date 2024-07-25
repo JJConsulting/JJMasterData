@@ -10,7 +10,6 @@ internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFa
 {
     private RouteContext? _routeContext;
     private HtmlComponentFactory? _htmlComponentFactory;
-    private IServiceProvider ServiceProvider => serviceProvider;
 
     public IFormElementComponentFactory<JJAuditLogView> AuditLog =>
         GetFactory<IFormElementComponentFactory<JJAuditLogView>>();
@@ -43,16 +42,16 @@ internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFa
         GetFactory<ControlFactory>();
 
     public HtmlComponentFactory Html  =>
-        _htmlComponentFactory ??= ServiceProvider.GetRequiredService<HtmlComponentFactory>();
+        _htmlComponentFactory ??= serviceProvider.GetRequiredService<HtmlComponentFactory>();
 
-    public ActionButtonFactory ActionButton =>  GetFactory<ActionButtonFactory>();
-    public TextGroupFactory TextGroup  =>  GetFactory<TextGroupFactory>();
+    public ActionButtonFactory ActionButton => GetFactory<ActionButtonFactory>();
+    public TextGroupFactory TextGroup  => GetFactory<TextGroupFactory>();
 
     public RouteContext RouteContext =>
-        _routeContext ??= ServiceProvider.GetRequiredService<RouteContextFactory>().Create();
+        _routeContext ??= serviceProvider.GetRequiredService<RouteContextFactory>().Create();
 
     private T GetFactory<T>() where T : notnull
     {
-        return ServiceProvider.GetRequiredService<T>();
+        return serviceProvider.GetRequiredService<T>();
     }
 }
