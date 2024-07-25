@@ -82,7 +82,7 @@ public class UrlRedirectService(
     {
         var formStateDataCopy = formStateData.DeepCopy();
         
-        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationPath);
+        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationUri);
         
         var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
         
