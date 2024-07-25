@@ -82,10 +82,10 @@ public class UrlRedirectService(
     {
         var formStateDataCopy = formStateData.DeepCopy();
         
-        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationUri);
+        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationPath);
         
         var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
         
-        return ExpressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateData, action.EncryptParameters);
+        return ExpressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateDataCopy, action.EncryptParameters);
     }
 }
