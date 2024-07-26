@@ -19,6 +19,7 @@ using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -173,7 +174,7 @@ public class JJUploadView : AsyncComponent
                     } 
                 }
 
-                return Task.CompletedTask;
+                return ValueTaskHelper.CompletedTask;
             };
 
             _gridView.GridTableActions.Add(RenameAction);

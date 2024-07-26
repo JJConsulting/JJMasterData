@@ -92,7 +92,7 @@ public class ElementController(
         upload.OnFileUploadedAsync += FileUploaded;
     }
 
-    private async Task FileUploaded(object? sender, FormUploadFileEventArgs e)
+    private async ValueTask FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
         await elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)

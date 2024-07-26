@@ -13,6 +13,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -174,7 +175,7 @@ public class ElementService(
                 }
             }
 
-            return Task.CompletedTask;
+            return ValueTaskHelper.CompletedTask;
         };
 
         formView.GridView.OnRenderActionAsync += (_, args) =>
@@ -199,7 +200,7 @@ public class ElementService(
                     break;
             }
 
-            return Task.CompletedTask;
+            return ValueTaskHelper.CompletedTask;
         };
         
         return formView;

@@ -1,33 +1,34 @@
 using System.Threading.Tasks;
 using JJMasterData.Core.Events.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 
 namespace JJMasterData.Core.UI.Events.Abstractions;
 
 public interface IGridEventHandler : IEventHandler
 {
-    public Task OnFilterLoadAsync(object sender, GridFilterLoadEventArgs eventArgs)
+    public ValueTask OnFilterLoadAsync(object sender, GridFilterLoadEventArgs eventArgs)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 #else
         ;
 #endif
     
-    public Task OnRenderCellAsync(object sender, GridCellEventArgs eventArgs)
+    public ValueTask OnRenderCellAsync(object sender, GridCellEventArgs eventArgs)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 #else
         ;
 #endif
 
-    public Task OnRenderSelectedCellAsync(object sender, GridSelectedCellEventArgs eventArgs)
+    public ValueTask OnRenderSelectedCellAsync(object sender, GridSelectedCellEventArgs eventArgs)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 #else
         ;
@@ -41,26 +42,26 @@ public interface IGridEventHandler : IEventHandler
 #else
         ;
 #endif
-    public Task OnRenderActionAsync(object sender, ActionEventArgs eventArgs)
+    public ValueTask OnRenderActionAsync(object sender, ActionEventArgs eventArgs)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 #else
         ;
 #endif
-    Task OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs e)
+    ValueTask OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs e)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 #else
         ;
 #endif
-    Task OnRenderRowAsync(object sender, GridRowEventArgs e)
+    ValueTask OnRenderRowAsync(object sender, GridRowEventArgs e)
 #if NET
     {
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 #else
         ;
