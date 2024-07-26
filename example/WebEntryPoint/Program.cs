@@ -1,8 +1,5 @@
 // This is a debug and example purposes Program.cs
 
-using System.Globalization;
-using JJMasterData.Core.Configuration;
-using JJMasterData.NCalc.Configuration;
 using JJMasterData.Web.Configuration;
 using Microsoft.AspNetCore.ResponseCompression;
 using JJMasterData.Pdf;
@@ -25,10 +22,7 @@ builder.Services.Configure<HostOptions>(options =>
     options.BackgroundServiceExceptionBehavior = 
         BackgroundServiceExceptionBehavior.Ignore;
 });
-builder.Services.AddJJMasterDataWeb(builder.Configuration).WithNCalcExpressionProvider(new()
-{
-    ReplaceDefaultExpressionProvider = true
-}).WithPdfExportation();
+builder.Services.AddJJMasterDataWeb(builder.Configuration).WithPdfExportation();
 
 var app = builder.Build();
 
