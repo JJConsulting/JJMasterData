@@ -4,7 +4,7 @@ using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Commons.Tasks;
 
-internal class TaskWrapper
+internal sealed class TaskWrapper
 {
     public string Key { get; internal set; }
 

@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridViewFactory(IHttpContext currentContext,
+internal sealed class GridViewFactory(IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IEncryptionService encryptionService,
@@ -79,7 +79,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         return gridView;
     }
 
-    public async Task<JJGridView> CreateAsync(string elementName)
+    public async ValueTask<JJGridView> CreateAsync(string elementName)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 

@@ -12,7 +12,6 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using Microsoft.Extensions.Logging;
 

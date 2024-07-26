@@ -5,7 +5,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
 
-internal class TextRangeFactory(
+internal sealed class TextRangeFactory(
         IHttpContext httpContext,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         TextGroupFactory textGroupFactory

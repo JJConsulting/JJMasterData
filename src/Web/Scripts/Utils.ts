@@ -129,9 +129,19 @@
     
 })();
 
-function requestSubmitParentWindow() {
+function printTemplateIframe() {
     // @ts-ignore
-    window.parent.getMasterDataForm().requestSubmit();
+    const iframe: HTMLIFrameElement = document.getElementById('jjmasterdata-template-iframe');
+    if (iframe) {
+        iframe.contentWindow.document.title = document.title;
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+
+function submitParentWindow() {
+    // @ts-ignore
+    window.parent.getMasterDataForm().submit();
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

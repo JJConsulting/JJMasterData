@@ -16,7 +16,7 @@ public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBox
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
 
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
@@ -50,7 +50,7 @@ public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBox
         
         var result = new RenderedComponentResult(html);
         
-        return Task.FromResult<ComponentResult>(result);
+        return new ValueTask<ComponentResult>(result);
     }
     
     private HtmlBuilder GetHtmlSlider()

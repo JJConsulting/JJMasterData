@@ -7,9 +7,10 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public sealed class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExpressionProvider
 {
-    public string Prefix => "val";
+    public const string Prefix = "val";
+    string IExpressionProvider.Prefix => Prefix;
+    
     public string Title => "Value";
-
     public object Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         if (expression.Contains(ExpressionHelper.Begin.ToString()))

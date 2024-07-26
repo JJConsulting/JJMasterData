@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Logging.File;
 
 [ProviderAlias(ProviderName)]
-internal class FileLoggerProvider(FileLoggerBuffer buffer, IOptionsMonitor<FileLoggerOptions> options)
+internal sealed class FileLoggerProvider(FileLoggerBuffer buffer, IOptionsMonitor<FileLoggerOptions> options)
     : ILoggerProvider
 {
     private const string ProviderName = "File";

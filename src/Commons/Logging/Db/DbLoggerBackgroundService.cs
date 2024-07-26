@@ -26,7 +26,7 @@ internal sealed class DbLoggerBackgroundService(
         var entityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         if (!TableExists)
         {
-            if (!await entityRepository.TableExistsAsync(options.TableName, null))
+            if (!await entityRepository.TableExistsAsync(options.TableName, options.ConnectionStringId))
             {
                 await entityRepository.CreateDataModelAsync(element,[]);
             }

@@ -18,7 +18,10 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapshot<MasterDataCoreOptions> options, IStringLocalizer<MasterDataResources> stringLocalizer)
+public class AuditLogService(
+    IEntityRepository entityRepository,
+    IOptionsSnapshot<MasterDataCoreOptions> options,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public const string DicId = "id";
     public const string DicName = "dictionary";
@@ -30,10 +33,6 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
     public const string DicIp = "ip";
     public const string DicBrowser = "browser";
     public const string DicJson = "json";
-    
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private MasterDataCoreOptions Options { get; } = options.Value;
 
     public async Task LogAsync(Element element,DataContext dataContext, Dictionary<string, object> formValues, CommandOperation action)
     {
@@ -52,14 +51,14 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
 
         var logElement = GetElement(element.ConnectionId);
         await CreateTableIfNotExistsAsync(element.ConnectionId);
-        await EntityRepository.InsertAsync(logElement, values);
+        await entityRepository.InsertAsync(logElement, values);
     }
 
     private async Task CreateTableIfNotExistsAsync(Guid? connectionId)
     {
         var logElement = GetElement(connectionId);
-        if (!await EntityRepository.TableExistsAsync(logElement.TableName, logElement.ConnectionId))
-            await EntityRepository.CreateDataModelAsync(logElement);
+        if (!await entityRepository.TableExistsAsync(logElement.TableName, logElement.ConnectionId))
+            await entityRepository.CreateDataModelAsync(logElement);
     }
 
     private static string GetJsonFields(Dictionary<string, object>formValues)
@@ -88,8 +87,8 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
 
     public Element GetElement(Guid? connectionId)
     {
-        string tableName = Options.AuditLogTableName;
-        var element = new Element(tableName, StringLocalizer["Audit Log"]);
+        string tableName = options.Value.AuditLogTableName;
+        var element = new Element(tableName, stringLocalizer["Audit Log"]);
         element.Fields.AddPk(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicName, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);
         element.Fields.Add(DicAction, "Action", FieldType.Int, 1, true, FilterMode.Equal);

@@ -6,15 +6,13 @@ using Hangfire.Console;
 using Hangfire.Console.Progress;
 using Hangfire.Server;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Importation;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
-internal class TaskTrigger
+internal sealed class TaskTrigger
 {
     public string RunInBackground(string key, IBackgroundTaskWorker worker)
     {

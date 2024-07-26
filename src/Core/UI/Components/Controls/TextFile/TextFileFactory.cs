@@ -7,22 +7,16 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextFileFactory(IHttpRequest request,
+internal sealed class TextFileFactory(
+        IHttpRequest request,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJTextFile>
 {
-    private IHttpRequest Request { get; } = request;
-    private IComponentFactory ComponentFactory { get; } = componentFactory;
-
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
-
     public JJTextFile Create()
     {
-        return new JJTextFile(Request,ComponentFactory, StringLocalizer, EncryptionService);
+        return new JJTextFile(request,componentFactory, stringLocalizer, encryptionService);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)

@@ -5,7 +5,7 @@ namespace JJMasterData.MongoDB.Models;
 
 [BsonIgnoreExtraElements]
 [BsonNoId]
-internal class MongoDBFormElement(FormElement formElement)
+internal sealed class MongoDBFormElement(FormElement formElement)
 {
     public FormElement FormElement { get; set; } = formElement;
     public DateTime LastModified { get; set; } = DateTime.Now;

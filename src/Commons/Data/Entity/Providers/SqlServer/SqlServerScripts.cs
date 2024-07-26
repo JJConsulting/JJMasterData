@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;

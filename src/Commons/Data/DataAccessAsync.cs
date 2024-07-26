@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data;

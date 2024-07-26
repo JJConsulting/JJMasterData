@@ -18,14 +18,10 @@ public class TextGroupFactory(
         ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>
 {
-    private IFormValues FormValues { get; } = formValues;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IComponentFactory<JJLinkButtonGroup> LinkButtonGroupFactory { get; } = linkButtonGroupFactory;
-    private ActionButtonFactory ActionButtonFactory { get; } = actionButtonFactory;
     
     public JJTextGroup Create()
     {
-        return new JJTextGroup(LinkButtonGroupFactory,FormValues);
+        return new JJTextGroup(linkButtonGroupFactory,formValues);
     }
     
     public JJTextGroup Create(FormElementField field, object value)
@@ -34,7 +30,7 @@ public class TextGroupFactory(
 
         if (field.Component == FormComponent.Currency)
         {
-            value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
+            value = value?.ToString()?.Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
         }
         
         textGroup.Text = value?.ToString() ?? string.Empty;
@@ -81,7 +77,7 @@ public class TextGroupFactory(
                 ParentComponentName = controlContext.ParentComponentName
             };
 
-            var link = ActionButtonFactory.CreateFieldButton(action,actionContext);
+            var link = actionButtonFactory.CreateFieldButton(action,actionContext);
             
             textGroup.Actions.Add(link);
         }
@@ -104,7 +100,7 @@ public class TextGroupFactory(
 
     public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup(LinkButtonGroupFactory,FormValues);
+        var textGroup = new JJTextGroup(linkButtonGroupFactory,formValues);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }
@@ -235,9 +231,9 @@ public class TextGroupFactory(
 
     private JJLinkButton GetDateAction(FormComponent component, bool isEnabled)
     {
-        var btn = ActionButtonFactory.Create();
-        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : $"fa fa-{BootstrapHelper.DateIcon}";
-        btn.Tooltip = component is FormComponent.Hour ? StringLocalizer["Clock"] : StringLocalizer["Calendar"];
+        var btn = actionButtonFactory.Create();
+        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : "fa fa-calendar";
+        btn.Tooltip = component is FormComponent.Hour ? stringLocalizer["Clock"] : stringLocalizer["Calendar"];
         btn.Enabled = isEnabled;
         btn.SetAttr("data-toggle", "date");
         btn.SetAttr("tabindex", "-1");

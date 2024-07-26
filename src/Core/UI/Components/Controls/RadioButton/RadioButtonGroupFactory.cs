@@ -4,14 +4,11 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class RadioButtonGroupFactory(DataItemService dataItemService, IFormValues formValues) : IControlFactory<JJRadioButtonGroup>
+internal sealed class RadioButtonGroupFactory(DataItemService dataItemService, IFormValues formValues) : IControlFactory<JJRadioButtonGroup>
 {
-    private DataItemService DataItemService { get; } = dataItemService;
-    private IFormValues FormValues { get; } = formValues;
-
     public JJRadioButtonGroup Create()
     {
-        return new JJRadioButtonGroup(DataItemService, FormValues);
+        return new JJRadioButtonGroup(dataItemService, formValues);
     }
 
     public JJRadioButtonGroup Create(FormElement formElement, FormElementField field, ControlContext context)

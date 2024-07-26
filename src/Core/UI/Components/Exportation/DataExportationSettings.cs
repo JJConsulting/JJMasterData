@@ -12,7 +12,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataExportationSettings(JJDataExportation dataExportation)
+internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 {
     private JJDataExportation DataExportation { get; } = dataExportation;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = dataExportation.StringLocalizer;

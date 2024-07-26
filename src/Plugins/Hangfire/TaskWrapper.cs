@@ -3,7 +3,7 @@ using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Hangfire;
 
-internal class TaskWrapper
+internal sealed class TaskWrapper
 {
     public string Key { get; set; }
 

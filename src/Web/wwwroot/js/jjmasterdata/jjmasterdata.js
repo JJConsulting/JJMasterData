@@ -47,6 +47,30 @@ class ActionHelper {
             }
         });
     }
+    static executeHTMLTemplate(componentName, title, encryptedActionMap, encryptedRouteContext, confirmMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (confirmMessage) {
+                const result = yield showConfirmationMessage(confirmMessage);
+                if (!result) {
+                    return false;
+                }
+            }
+            const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
+            const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
+            if (gridViewActionInput) {
+                gridViewActionInput.value = encryptedActionMap;
+            }
+            if (formViewActionInput) {
+                formViewActionInput.value = encryptedActionMap;
+            }
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+            defaultModal.showUrl({
+                url: urlBuilder.build(),
+                requestOptions: { method: "POST", body: new FormData(getMasterDataForm()) }
+            }, title, ModalSize.Default);
+        });
+    }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (confirmationMessage) {
@@ -2807,8 +2831,16 @@ var jjutil = (function () {
         }
     };
 })();
-function requestSubmitParentWindow() {
-    window.parent.getMasterDataForm().requestSubmit();
+function printTemplateIframe() {
+    const iframe = document.getElementById('jjmasterdata-template-iframe');
+    if (iframe) {
+        iframe.contentWindow.document.title = document.title;
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+function submitParentWindow() {
+    window.parent.getMasterDataForm().submit();
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function onDOMReady(callback) {

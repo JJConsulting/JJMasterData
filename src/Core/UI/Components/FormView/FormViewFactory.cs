@@ -19,7 +19,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class FormViewFactory(
+internal sealed class FormViewFactory(
     IHttpContext currentContext,
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
@@ -28,6 +28,7 @@ internal class FormViewFactory(
     FormValuesService formValuesService,
     FieldValuesService fieldValuesService,
     ExpressionsService expressionsService,
+    HtmlTemplateService htmlTemplateService,
     IEnumerable<IPluginHandler> pluginHandlers,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCoreOptions> options,
@@ -48,6 +49,7 @@ internal class FormViewFactory(
             formValuesService,
             fieldValuesService,
             expressionsService,
+            htmlTemplateService,
             pluginHandlers,
             options,
             stringLocalizer,
@@ -57,7 +59,7 @@ internal class FormViewFactory(
         return formView;
     }
 
-    public async Task<JJFormView> CreateAsync(string elementName)
+    public async ValueTask<JJFormView> CreateAsync(string elementName)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         var formView = Create(formElement);

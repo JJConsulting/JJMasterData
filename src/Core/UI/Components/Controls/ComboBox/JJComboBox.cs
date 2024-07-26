@@ -72,7 +72,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
         FormStateData = new FormStateData(defaultValues, PageState.List);
     }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         if (DataItem == null)
             throw new ArgumentException($"FormElementDataItem property is null for JJComboBox {Name}");

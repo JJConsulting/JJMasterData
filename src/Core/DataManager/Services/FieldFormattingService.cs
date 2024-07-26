@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,19 +15,19 @@ namespace JJMasterData.Core.DataManager.Services;
 public class FieldFormattingService(DataItemService dataItemService, LookupService lookupService)
 {
     public async ValueTask<string> FormatGridValueAsync(
-        FormElementFieldSelector fieldSelector, 
+        FormElementFieldSelector fieldSelector,
         FormStateData formStateData)
     {
         var field = fieldSelector.Field;
-        
+
         formStateData.Values.TryGetValue(field.Name, out var value);
-        
+
         if (value == null || value == DBNull.Value)
             return string.Empty;
-        
+
         if (field.EncodeHtml)
             value = HttpUtility.HtmlEncode(value);
-        
+
         string stringValue;
         switch (field.Component)
         {
@@ -38,35 +37,39 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 break;
             case FormComponent.Currency:
                 CultureInfo cultureInfo;
-                if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) 
+                if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName)
                     && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
                     cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString());
                 else
                     cultureInfo = CultureInfo.CurrentUICulture;
-                
-                if (double.TryParse(value?.ToString(),NumberStyles.Currency,cultureInfo, out var currencyValue))
+
+                if (double.TryParse(value?.ToString(), NumberStyles.Currency, cultureInfo, out var currencyValue))
                     stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
                 else
                     stringValue = null;
                 break;
             case FormComponent.Lookup
-                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id}:
+                when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
-                stringValue = await lookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formStateData, value.ToString(), allowOnlyNumerics);
+                stringValue = await lookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formStateData,
+                    value.ToString(), allowOnlyNumerics);
                 break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
                 break;
             case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
-                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
+                when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
+
+                var searchId = value?.ToString().Trim();
                 
                 var dataQuery = new DataQuery(formStateData, fieldSelector.FormElement.ConnectionId)
                 {
-                    SearchId = value?.ToString()
+                    SearchId = searchId
                 };
-                
+
                 var searchBoxValues = await dataItemService.GetValuesAsync(field.DataItem, dataQuery);
-                var rowValue = searchBoxValues.FirstOrDefault(v => string.Equals(v.Id, value?.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                var rowValue = searchBoxValues.FirstOrDefault(v =>
+                    string.Equals(v.Id.Trim(), searchId, StringComparison.InvariantCultureIgnoreCase));
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
             case FormComponent.Email:
                 stringValue = GetEmailLink(value?.ToString());
@@ -83,18 +86,19 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
     {
         if (string.IsNullOrEmpty(value))
             return string.Empty;
-        
+
         var a = new A();
         a.WithAttribute("href", $"mailto:{value}");
         a.AppendText(value);
-        
+
         return a.ToString();
     }
 
     private static string GetCurrencyValueAsString(FormElementField field, object value)
     {
         CultureInfo cultureInfo;
-        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
+        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) &&
+            !string.IsNullOrEmpty(cultureInfoName?.ToString()))
             cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString());
         else
             cultureInfo = CultureInfo.CurrentUICulture;
@@ -107,7 +111,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         }
         else if (field.DataType == FieldType.Int)
         {
-            if (int.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo,out var intVal))
+            if (int.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out var intVal))
                 stringValue = intVal.ToString("0", cultureInfo);
         }
         else
@@ -128,7 +132,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         }
         else if (field.DataType == FieldType.Int)
         {
-            if (int.TryParse(value.ToString(),out var intVal))
+            if (int.TryParse(value.ToString(), out var intVal))
                 stringValue = intVal.ToString("0");
         }
         else
@@ -138,7 +142,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
         return stringValue;
     }
-    
+
     public static string FormatValue(FormElementField field, object value)
     {
         if (value == null)
@@ -165,6 +169,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                         return GetCurrencyValueAsString(field, value);
                     }
                 }
+
                 break;
             case FormComponent.Slider:
             case FormComponent.Number:
@@ -176,6 +181,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                         return GetNumericValueAsString(field, value);
                     }
                 }
+
                 break;
             case FormComponent.Hour:
                 if (TimeSpan.TryParse(stringValue, out var timeSpan))
@@ -195,7 +201,9 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                     case FieldType.DateTime or FieldType.DateTime2:
                     {
                         if (DateTime.TryParse(stringValue, out var dateValue))
-                            stringValue = dateValue.ToString($"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} {DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
+                            stringValue =
+                                dateValue.ToString(
+                                    $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} {DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
                         break;
                     }
                 }

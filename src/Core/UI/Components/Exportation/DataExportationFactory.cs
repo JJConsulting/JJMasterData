@@ -7,7 +7,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -28,7 +27,7 @@ internal class DataExportationFactory(
     DataExportationWriterFactory dataExportationWriterFactory
         ) : IFormElementComponentFactory<JJDataExportation>
 {
-    public async Task<JJDataExportation> CreateAsync(string elementName)
+    public async ValueTask<JJDataExportation> CreateAsync(string elementName)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         return Create(formElement);

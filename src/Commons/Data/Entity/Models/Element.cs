@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using JJMasterData.Commons.Configuration.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;

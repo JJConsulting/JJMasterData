@@ -5,16 +5,16 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
+internal sealed class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
 {
     public string Id { get; set; }
     public HtmlBuilder LabelHtml { get; } = new();
     public bool IsChecked { get; set; }
     public DataItemRadioLayout Layout { get; set; }
     
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
-        return Task.FromResult<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
+        return new ValueTask<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
     }
 
     public HtmlBuilder GetHtmlBuilder()

@@ -10,24 +10,23 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class ElementMapService(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository,ExpressionsService expressionsService)
+public class ElementMapService(
+    IDataDictionaryRepository dataDictionaryRepository,
+    IEntityRepository entityRepository,
+    ExpressionsService expressionsService)
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-
     public async Task<Dictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
-        var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var childElement = await dataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
         var filters = GetFilters(elementMap, value, formStateData);
-        return await EntityRepository.GetFieldsAsync(childElement, filters);
+        return await entityRepository.GetFieldsAsync(childElement, filters);
     }
     
     public async Task<List<Dictionary<string, object?>>> GetDictionaryList(DataElementMap elementMap, object? value, FormStateData formStateData)
     {
-        var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var childElement = await dataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
         var filters = GetFilters(elementMap, value, formStateData);
-        return await EntityRepository.GetDictionaryListAsync(childElement, new EntityParameters
+        return await entityRepository.GetDictionaryListAsync(childElement, new EntityParameters
         {
             Filters = filters!
         });
@@ -48,7 +47,7 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
             {
                 if (formStateData != null)
                 {
-                    var filterParsed = ExpressionsService.GetExpressionValue(filter.Value.ToString(), formStateData) ?? string.Empty;
+                    var filterParsed = expressionsService.GetExpressionValue(filter.Value.ToString(), formStateData) ?? string.Empty;
                     filters[filter.Key] = filterParsed;
                 }
             }

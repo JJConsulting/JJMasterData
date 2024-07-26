@@ -305,8 +305,8 @@ public class JJDataPanel : AsyncComponent
 
     private string GetPkHiddenInput()
     {
-        string pkval = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return EncryptionService.EncryptStringWithUrlEscape(pkval);
+        var pkValues = DataHelper.ParsePkValues(FormElement, Values, '|');
+        return EncryptionService.EncryptStringWithUrlEscape(pkValues);
     }
 
     private string GetHtmlFormScript()
@@ -344,7 +344,10 @@ public class JJDataPanel : AsyncComponent
         var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
 
         if (SecretValues?.Any() is true)
+        {
+            DataHelper.RemoveNullValues(SecretValues);
             DataHelper.CopyIntoDictionary(mergedValues, SecretValues, true);
+        }
         
         DataHelper.CopyIntoDictionary(Values, mergedValues, true);
         DataHelper.RemoveNullValues(Values);

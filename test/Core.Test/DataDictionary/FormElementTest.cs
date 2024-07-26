@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Drawing;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary;

@@ -18,7 +18,7 @@ public partial class HtmlBuilder
     private readonly string? _rawText;
     private readonly bool _hasRawText;
     private readonly Dictionary<string, string> _attributes;
-    private readonly List<HtmlBuilder> _children;
+    private readonly List<HtmlBuilder?> _children;
 
     /// <summary>
     /// Tag of the current builder.
@@ -126,7 +126,7 @@ public partial class HtmlBuilder
         var content = new StringBuilder();
         foreach (var child in _children)
         {
-            content.Append(child.ParseHtmlAsString(tabCount));
+            content.Append(child?.ParseHtmlAsString(tabCount));
         }
         return content.ToString();
     }
@@ -136,7 +136,7 @@ public partial class HtmlBuilder
         var attributes = new StringBuilder();
         foreach (var item in _attributes)
         {
-            attributes.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
+            attributes.Append($" {item.Key}=\"{item.Value}\"");
         }
         
         return attributes.ToString();

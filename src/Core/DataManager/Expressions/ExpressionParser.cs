@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Util;
@@ -14,11 +13,6 @@ namespace JJMasterData.Core.DataManager.Expressions;
 
 public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser> logger)
 {
-    private IHttpContext HttpContext { get; } = httpContext;
-    private ILogger<ExpressionParser> Logger { get; } = logger;
-    private IHttpRequest Request => HttpContext.Request;
-    private IHttpSession Session => HttpContext.Session;
-
     public Dictionary<string, object?> ParseExpression(
         string? expression,
         FormStateData formStateData)
@@ -34,7 +28,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
         {
             var value = GetParsedValue(field, formStateData);
             result[field] = value;
-            Logger.LogExpressionParsedValue(field, value);
+            logger.LogExpressionParsedValue(field, value);
         }
 
         return result;
@@ -74,10 +68,10 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
                 parsedValue = pageState is PageState.Delete ? 1 : 0;
                 break;
             case "fieldname":
-                parsedValue = $"{Request.QueryString["fieldName"]}";
+                parsedValue = $"{httpContext.Request.QueryString["fieldName"]}";
                 break;
             case "userid":
-                parsedValue = DataHelper.GetCurrentUserId(HttpContext, userValues!);
+                parsedValue = DataHelper.GetCurrentUserId(httpContext, userValues!);
                 break;
             default:
             {
@@ -93,10 +87,10 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
                         parsedValue = objValue;
                 }
                 
-                else if (Session.HasSession() && Session[field] != null)
-                    parsedValue = Session[field];
-                else if (HttpContext.User?.HasClaim(c => c.Type == field) ?? false)
-                    parsedValue = HttpContext.User.Claims.First(c => c.Type == field).Value;
+                else if (httpContext.Session.HasSession() && httpContext.Session[field] != null)
+                    parsedValue = httpContext.Session[field];
+                else if (httpContext.User?.HasClaim(c => c.Type == field) ?? false)
+                    parsedValue = httpContext.User.Claims.First(c => c.Type == field).Value;
                 else
                     parsedValue = string.Empty;
                 break;

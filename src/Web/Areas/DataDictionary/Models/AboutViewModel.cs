@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace JJMasterData.Web.Areas.DataDictionary.Models;
+﻿namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public sealed class AboutViewModel
 {

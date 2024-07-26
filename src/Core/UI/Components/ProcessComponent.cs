@@ -6,7 +6,6 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -84,7 +83,7 @@ public abstract class ProcessComponent(
                 break;
         }
 
-        processKey.Append((string)FormElement.Name);
+        processKey.Append(FormElement.Name);
 
         if (ProcessOptions.Scope != ProcessScope.User)
             return processKey.ToString();

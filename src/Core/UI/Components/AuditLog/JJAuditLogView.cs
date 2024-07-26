@@ -31,7 +31,7 @@ public class JJAuditLogView : AsyncComponent
     private RouteContext _routeContext;
 
 
-    internal RouteContext RouteContext
+    private RouteContext RouteContext
     {
         get
         {
@@ -45,7 +45,7 @@ public class JJAuditLogView : AsyncComponent
         }
     }
 
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    private ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     /// <summary>
     /// Id do usuário Atual
@@ -58,12 +58,12 @@ public class JJAuditLogView : AsyncComponent
 
     private IHttpContext CurrentContext { get; }
 
-    public AuditLogService AuditLogService { get; }
+    private AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
 
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
-    internal JJDataPanel DataPanel
+    private JJDataPanel DataPanel
     {
         get
         {
@@ -80,7 +80,7 @@ public class JJAuditLogView : AsyncComponent
     public FormElement FormElement { get; private set; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    internal IEntityRepository EntityRepository { get; }
+    private IEntityRepository EntityRepository { get; }
 
     public JJAuditLogView(
         FormElement formElement,
@@ -179,7 +179,7 @@ public class JJAuditLogView : AsyncComponent
         var html = new Div();
         html.WithCssClass("mb-2");
         if (GridView.ShowTitle)
-            html.AppendComponent(await GridView.GetTitleAsync());
+            html.AppendComponent(GridView.GetTitle());
 
         if (string.IsNullOrEmpty(logId))
         {
@@ -414,7 +414,7 @@ public class JJAuditLogView : AsyncComponent
                     });
                     div.Append(HtmlTag.B, b => { b.AppendText(message); });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText((string)row["modified"]!.ToString()); });
+                    div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b =>
                     {

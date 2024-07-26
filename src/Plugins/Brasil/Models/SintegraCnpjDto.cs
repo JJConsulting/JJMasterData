@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Brasil.Models;
 
-internal class SintegraCnpjDto
+internal sealed class SintegraCnpjDto
 {
     [JsonProperty("code")]
     public required string Code { get; set; }

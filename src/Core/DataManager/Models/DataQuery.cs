@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace JJMasterData.Core.DataManager.Models;
 

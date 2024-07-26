@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
@@ -19,7 +18,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridFilter(JJGridView gridView)
+internal sealed class GridFilter(JJGridView gridView)
 {
     private const string FilterActionName = "filter";
     private const string ClearActionName = "clear";
@@ -64,7 +63,7 @@ internal class GridFilter(JJGridView gridView)
         if (_currentFilter != null)
             return _currentFilter;
         
-        _currentFilter ??= new Dictionary<string, object>();
+        _currentFilter ??= new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         
         DataHelper.CopyIntoDictionary(_currentFilter, _userFilters);
      

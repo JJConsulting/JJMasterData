@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-internal class FormValuesWrapper(IHttpContextAccessor httpContextAccessor) : IFormValues
+internal sealed class FormValuesWrapper(IHttpContextAccessor httpContextAccessor) : IFormValues
 {
     private IFormCollection? _formCollection;
 

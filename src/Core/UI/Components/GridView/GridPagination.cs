@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridPagination(JJGridView gridView)
+internal sealed class GridPagination(JJGridView gridView)
 {
     private JJGridView GridView { get; } = gridView;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = gridView.StringLocalizer;

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -148,7 +147,7 @@ public class JJLookup : ControlBase
 
     #endregion
     
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         if (ComponentContext is ComponentContext.LookupDescription && HttpRequest.QueryString["fieldName"] == FieldName)
         {

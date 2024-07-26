@@ -21,8 +21,8 @@ public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
             .WithCssClass("form-control form-control-color");
     }
     
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
-        return Task.FromResult<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
+        return new ValueTask<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
     }
 }

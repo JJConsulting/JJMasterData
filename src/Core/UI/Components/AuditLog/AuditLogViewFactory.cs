@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class AuditLogViewFactory(IHttpContext httpContext,
+internal sealed class AuditLogViewFactory(IHttpContext httpContext,
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -19,23 +19,15 @@ internal class AuditLogViewFactory(IHttpContext httpContext,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IFormElementComponentFactory<JJAuditLogView>
 {
-    private IHttpContext HttpContext { get; } = httpContext;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private AuditLogService AuditLogService { get; } = auditLogService;
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private IComponentFactory ComponentFactory { get; } = componentFactory;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
     public JJAuditLogView Create(FormElement formElement)
     {
-        return new JJAuditLogView(formElement, HttpContext, EntityRepository, AuditLogService, ComponentFactory,
-            EncryptionService, StringLocalizer);
+        return new JJAuditLogView(formElement, httpContext, entityRepository, auditLogService, componentFactory,
+            encryptionService, stringLocalizer);
     }
     
-    public async Task<JJAuditLogView> CreateAsync(string elementName)
+    public async ValueTask<JJAuditLogView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         return Create(formElement);
     }
 }

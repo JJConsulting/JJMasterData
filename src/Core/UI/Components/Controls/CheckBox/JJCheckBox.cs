@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -44,13 +43,13 @@ public class JJCheckBox : ControlBase
     }
 
 
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
 
         var result = new RenderedComponentResult(html);
         
-        return Task.FromResult<ComponentResult>(result);
+        return new ValueTask<ComponentResult>(result);
         
     }
 

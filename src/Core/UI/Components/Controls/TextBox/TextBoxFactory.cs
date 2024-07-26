@@ -4,20 +4,17 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextBoxFactory(IFormValues formValues, IEncryptionService encryptionService)
+internal sealed class TextBoxFactory(IFormValues formValues)
     : IControlFactory<JJTextBox>
 {
-    private IFormValues FormValues { get; } = formValues;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-
     public JJTextBox Create()
     {
-        return new JJTextBox(FormValues);
+        return new JJTextBox(formValues);
     }
 
     public JJTextBox Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        return new JJTextBox(FormValues)
+        return new JJTextBox(formValues)
         {
             Name = field.Name,
             Text = context.Value?.ToString()

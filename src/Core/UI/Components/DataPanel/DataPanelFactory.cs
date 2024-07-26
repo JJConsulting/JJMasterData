@@ -40,7 +40,7 @@ internal sealed class DataPanelFactory(IEntityRepository entityRepository,
             componentFactory);
     }
 
-    public async Task<JJDataPanel> CreateAsync(string elementName)
+    public async ValueTask<JJDataPanel> CreateAsync(string elementName)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         return Create(formElement);

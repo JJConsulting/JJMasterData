@@ -2,10 +2,8 @@
 using Hangfire;
 using Hangfire.States;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 

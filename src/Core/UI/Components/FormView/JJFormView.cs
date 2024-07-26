@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -69,6 +68,7 @@ public class JJFormView : AsyncComponent
 
     private JJDataPanel? _dataPanel;
     private JJGridView? _gridView;
+    private JJFormView? _insertSelectionFormView;
     private FormViewScripts? _scripts;
     private ActionMap? _currentActionMap;
     private BasicAction? _currentAction;
@@ -335,6 +335,7 @@ public class JJFormView : AsyncComponent
     internal FormValuesService FormValuesService { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
+    public HtmlTemplateService HtmlTemplateService { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IOptionsSnapshot<MasterDataCoreOptions> Options { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -358,6 +359,7 @@ public class JJFormView : AsyncComponent
         FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
+        HtmlTemplateService htmlTemplateService,
         IEnumerable<IPluginHandler> pluginHandlers,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -374,6 +376,7 @@ public class JJFormView : AsyncComponent
         FormValuesService = formValuesService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
+        HtmlTemplateService = htmlTemplateService;
         PluginHandlers = pluginHandlers;
         Options = options;
         StringLocalizer = stringLocalizer;
@@ -610,30 +613,22 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetFormActionResult()
     {
         SetFormServiceEvents();
-        
-        ComponentResult? result;
-        if (CurrentAction is ViewAction)
-            result = await GetViewResult();
-        else if (CurrentAction is EditAction)
-            result = await GetUpdateResult();
-        else if (CurrentAction is InsertAction)
-            result = await GetInsertResult();
-        else if (CurrentAction is AuditLogFormToolbarAction or AuditLogGridToolbarAction)
-            result = await GetAuditLogResult();
-        else if (CurrentAction is DeleteAction)
-            result = await GetDeleteResult();
-        else if (CurrentAction is SaveAction)
-            result = await GetSaveActionResult();
-        else if (CurrentAction is BackAction)
-            result = await GetBackActionResult();
-        else if (CurrentAction is CancelAction)
-            result = await GetCancelActionResult();
-        else if (CurrentAction is SqlCommandAction)
-            result = await GetSqlCommandActionResult();
-        else if (CurrentAction is PluginAction)
-            result = await GetPluginActionResult();
-        else
-            result = await GetDefaultResult();
+
+        var result = CurrentAction switch
+        {
+            ViewAction => await GetViewResult(),
+            EditAction => await GetUpdateResult(),
+            InsertAction => await GetInsertResult(),
+            AuditLogFormToolbarAction or AuditLogGridToolbarAction => await GetAuditLogResult(),
+            DeleteAction => await GetDeleteResult(),
+            SaveAction => await GetSaveActionResult(),
+            BackAction => await GetBackActionResult(),
+            CancelAction => await GetCancelActionResult(),
+            SqlCommandAction => await GetSqlCommandActionResult(),
+            HtmlTemplateAction => await GetHtmlTemplateActionResult(),
+            PluginAction => await GetPluginActionResult(),
+            _ => await GetDefaultResult()
+        };
 
         if (result is HtmlComponentResult htmlComponent)
         {
@@ -670,6 +665,15 @@ public class JJFormView : AsyncComponent
         }
     }
 
+    private async Task<ComponentResult> GetHtmlTemplateActionResult()
+    {
+        var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
+
+        var html = await HtmlTemplateService.RenderTemplate(htmlTemplateAction, CurrentActionMap!.PkFieldValues);
+        
+        return new ContentComponentResult(html);
+    }
+    
     private async Task<ComponentResult> GetSqlCommandActionResult()
     {
         JJMessageBox? messageBox = null;
@@ -871,11 +875,21 @@ public class JJFormView : AsyncComponent
     {
         var insertAction = GridView.ToolbarActions.InsertAction;
         var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
-
+        var isInsertSelection = !string.IsNullOrEmpty(insertAction.ElementNameToSelect);
+        
         bool isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action is not enabled"]);
-
+        
+        if (isInsertSelection)
+        {
+            var insertSelectionFormView = await GetInsertSelectionFormView();
+            if (insertSelectionFormView.GridView.HasAction())
+            {
+                return await GetInsertSelectionListResult();
+            }
+        }
+        
         if (PageState == PageState.Insert)
         {
             var formValues = await GetFormValuesAsync();
@@ -884,27 +898,19 @@ public class JJFormView : AsyncComponent
 
         PageState = PageState.Insert;
 
-        if (string.IsNullOrEmpty(insertAction.ElementNameToSelect))
-            return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, false);
+        if (isInsertSelection)
+        {
+            return await GetInsertSelectionListResult();
+        }
 
-        return await GetInsertSelectionListResult();
+        return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, false);
     }
 
     private async Task<ComponentResult> GetInsertSelectionListResult()
     {
-        var insertAction = GridView.ToolbarActions.InsertAction;
+        var formView = await GetInsertSelectionFormView();
         var html = new Div();
         html.AppendHiddenInput($"form-view-insert-selection-values-{Name}");
-
-
-        var formView = await ComponentFactory.FormView.CreateAsync(insertAction.ElementNameToSelect);
-        formView.FormElement.ParentName = FormElement.Name;
-        formView.UserValues = UserValues;
-        formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
-        
-        formView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
-
-        formView.GridView.GridTableActions.Add(new InsertSelectionAction());
 
         var result = await formView.GetFormResultAsync();
 
@@ -918,6 +924,34 @@ public class JJFormView : AsyncComponent
         }
 
         return new RenderedComponentResult(html);
+    }
+
+    private async ValueTask<JJFormView> GetInsertSelectionFormView()
+    {
+        if (_insertSelectionFormView != null)
+            return _insertSelectionFormView;
+        
+        _insertSelectionFormView = await ComponentFactory.FormView.CreateAsync(GridView.InsertAction.ElementNameToSelect);
+        _insertSelectionFormView.FormElement.ParentName = FormElement.Name;
+        _insertSelectionFormView.UserValues = UserValues;
+        _insertSelectionFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        _insertSelectionFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
+        _insertSelectionFormView.GridView.GridTableActions.Add(new InsertSelectionAction());
+        
+        return _insertSelectionFormView;
+    }
+    
+    private async Task<JJFormView> HasInsertSelectionAction(InsertAction insertAction)
+    {
+        var formView = await ComponentFactory.FormView.CreateAsync(insertAction.ElementNameToSelect);
+        formView.FormElement.ParentName = FormElement.Name;
+        formView.UserValues = UserValues;
+        formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        
+        formView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
+
+        formView.GridView.GridTableActions.Add(new InsertSelectionAction());
+        return formView;
     }
 
     private ScriptAction GetInsertSelectionBackAction()

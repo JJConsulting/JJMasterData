@@ -6,7 +6,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI;
-using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 

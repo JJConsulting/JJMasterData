@@ -8,24 +8,20 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class ComboBoxFactory(IFormValues formValues,
+internal sealed class ComboBoxFactory(
+        IFormValues formValues,
         DataItemService dataItemService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     : IControlFactory<JJComboBox>
 {
-    private IFormValues FormValues { get; } = formValues;
-    private DataItemService DataItemService { get; } = dataItemService;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
-
     public JJComboBox Create()
     {
         return new JJComboBox(
-            FormValues,
-            DataItemService,
-            StringLocalizer,
-            LoggerFactory.CreateLogger<JJComboBox>());
+            formValues,
+            dataItemService,
+            stringLocalizer,
+            loggerFactory.CreateLogger<JJComboBox>());
     }
 
     public JJComboBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)

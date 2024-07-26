@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -20,7 +19,7 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Render components fields in a div
 /// </summary>
-internal class DataPanelControl
+internal sealed class DataPanelControl
 {
 
     private DataPanelScripts? _panelScripts;
@@ -311,7 +310,7 @@ internal class DataPanelControl
     }
 
 
-    private async Task<HtmlBuilder> GetStaticField(FormElementField field)
+    private async ValueTask<HtmlBuilder> GetStaticField(FormElementField field)
     {
         var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
         var staticValue = await FieldFormattingService.FormatGridValueAsync(fieldSelector, FormStateData);
@@ -322,7 +321,7 @@ internal class DataPanelControl
         return html;
     }
 
-    private Task<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
+    private ValueTask<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var control = ComponentFactory.Controls.Create(FormElement, field, formStateData, ParentComponentName, value);

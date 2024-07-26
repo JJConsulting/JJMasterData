@@ -6,6 +6,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Routing;
@@ -16,20 +17,16 @@ namespace JJMasterData.Core.UI.Components;
 
 public class ActionScripts(
     ExpressionsService expressionsService,
+    UrlRedirectService urlRedirectService,
     IMasterDataUrlHelper urlHelper,
     IEncryptionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-
     private string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
     {
         var elementRedirect = action.ElementRedirect;
         string confirmationMessage =
-            GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
         int popupSize = (int)elementRedirect.ModalSize;
 
         var @params = new StringBuilder();
@@ -50,17 +47,37 @@ public class ActionScripts(
             }
         }
 
-        string url = UrlHelper.Action("Index", "InternalRedirect",
+        string url = urlHelper.Action("Index", "InternalRedirect",
             new
             {
                 Area = "MasterData",
-                parameters = EncryptionService.EncryptStringWithUrlEscape(@params.ToString())
+                parameters = encryptionService.EncryptStringWithUrlEscape(@params.ToString())
             });
 
         return
             $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}');";
     }
 
+    
+    private string GetHtmlTemplateScript(
+        ActionContext actionContext,
+        ActionSource actionSource
+    )
+    {
+        var action = actionContext.Action;
+        var actionMap = actionContext.ToActionMap(actionSource);
+        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+
+        var encryptedRouteContext =
+            encryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
+                ComponentContext.FormViewReload));
+
+        var confirmationMessage =
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+
+        return
+            $"ActionHelper.executeHTMLTemplate('{actionContext.ParentComponentName}','{stringLocalizer[action.Text]}','{encryptedActionMap}','{encryptedRouteContext}',{(string.IsNullOrEmpty(confirmationMessage) ? "''" : $"'{confirmationMessage}'")});";
+    }
 
     private string GetUrlRedirectScript(
         UrlRedirectAction action,
@@ -69,24 +86,23 @@ public class ActionScripts(
     )
     {
         string confirmationMessage =
-            GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
         if (actionSource is ActionSource.Field or ActionSource.FormToolbar)
         {
             var actionMap = actionContext.ToActionMap(actionSource);
-            var encryptedActionMap = EncryptionService.EncryptObject(actionMap);
+            var encryptedActionMap = encryptionService.EncryptObject(actionMap);
 
             var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
 
-            var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
+            var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
 
             return
                 $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
 
         var script = new StringBuilder();
-        string url = ExpressionsService.ReplaceExpressionWithParsedValues(HttpUtility.UrlDecode(action.UrlRedirect),
-            actionContext.FormStateData, action.EncryptParameters);
+        string url = urlRedirectService.GetParsedUrl(action, actionContext.FormStateData);
         string isModal = action.IsModal ? "true" : "false";
         string isIframe = action.IsIframe ? "true" : "false";
 
@@ -103,7 +119,7 @@ public class ActionScripts(
         script.Append("',");
         script.Append(isIframe);
         script.Append(",'");
-        script.Append(StringLocalizer[action.ConfirmationMessage]);
+        script.Append(stringLocalizer[action.ConfirmationMessage]);
         script.Append("');");
 
         return script.ToString();
@@ -118,9 +134,9 @@ public class ActionScripts(
         var formElement = actionContext.FormElement;
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = EncryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
         var confirmationMessage =
-            GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
         
         var actionData = new ActionData
         {
@@ -156,7 +172,7 @@ public class ActionScripts(
     private string GetGridRouteContext(FormElement formElement)
     {
         var gridRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
-        var encryptedRouteContext = EncryptionService.EncryptObject(gridRouteContext);
+        var encryptedRouteContext = encryptionService.EncryptObject(gridRouteContext);
         return encryptedRouteContext;
     }
 
@@ -173,9 +189,10 @@ public class ActionScripts(
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetSqlCommandScript(actionContext, actionSource),
             ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(
-                ExpressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ??
+                expressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ??
                 string.Empty),
             InternalAction internalAction => GetInternalUrlScript(internalAction, actionContext),
+            HtmlTemplateAction  => GetHtmlTemplateScript(actionContext, actionSource),
             _ => GetFormActionScript(actionContext, actionSource)
         };
     }
@@ -185,14 +202,14 @@ public class ActionScripts(
     {
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = EncryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
 
         var encryptedRouteContext =
-            EncryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
+            encryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
                 ComponentContext.FormViewReload));
 
         var confirmationMessage =
-            GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
         return
             $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}', {(actionContext.IsSubmit ? "true" : "false")},{(string.IsNullOrEmpty(confirmationMessage) ? "''" : $"'{confirmationMessage}'")});";
@@ -203,6 +220,6 @@ public class ActionScripts(
     private string GetParsedConfirmationMessage(string originalMessage,
         FormStateData formStateData)
     {
-        return ExpressionsService.ReplaceExpressionWithParsedValues(originalMessage, formStateData);
+        return expressionsService.ReplaceExpressionWithParsedValues(originalMessage, formStateData);
     }
 }

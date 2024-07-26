@@ -1,7 +1,5 @@
 ﻿#nullable enable
 using System;
-using JJMasterData.Commons.Data;
-using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Logging;

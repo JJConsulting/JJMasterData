@@ -7,13 +7,12 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridSqlCommandAction(JJGridView gridView)
+internal sealed class GridSqlCommandAction(JJGridView gridView)
 {
     public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
     {

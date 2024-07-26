@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -26,8 +27,6 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
-using JJMasterData.Core.Tasks;
-using JJMasterData.Core.UI.Events;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -69,7 +68,7 @@ public class JJGridView : AsyncComponent
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
-    public event GridOnDataLoadEventHandler? OnDataLoadAsync;
+    public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
     public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
@@ -521,8 +520,6 @@ public class JJGridView : AsyncComponent
         set => _selectedRowsId = value ?? "";
     }
     
-
-    
     protected RouteContext RouteContext
     {
         get
@@ -689,7 +686,7 @@ public class JJGridView : AsyncComponent
         await html.AppendAsync(HtmlTag.Div, async div =>
         {
             if (ShowTitle)
-                div.AppendComponent(await GetTitleAsync());
+                div.AppendComponent(GetTitle());
             
             if (FilterAction.IsVisible)
                 div.Append(await Filter.GetFilterHtml());
@@ -738,7 +735,7 @@ public class JJGridView : AsyncComponent
 
         var html = new Div();
 
-        if (TryGetSqlAction(out SqlCommandAction? sqlCommandAction))
+        if (TryGetSqlAction(out var sqlCommandAction))
         {
             var errorMessage = await ExecuteSqlCommand(sqlCommandAction);
             if (errorMessage == null)
@@ -790,7 +787,7 @@ public class JJGridView : AsyncComponent
             html.Append(await GetLegendHtml());
         }
 
-        html.Append(HtmlTag.Div, div => { div.WithCssClass("clearfix"); });
+        html.Append(HtmlTag.Div, div => div.WithCssClass("clearfix"));
 
         return html;
     }
@@ -832,20 +829,14 @@ public class JJGridView : AsyncComponent
         return result;
     }
     
-    [Obsolete("Please use GetTitleHtmlAsync")]
     public string GetTitleHtml()
     {
-        return AsyncHelper.RunSync(GetTitleAsync).GetHtml();
+        return GetTitle().GetHtml();
     }
     
-    public async Task<string> GetTitleHtmlAsync()
+    internal JJTitle GetTitle()
     {
-        return (await GetTitleAsync()).GetHtml();
-    }
-    
-    internal async Task<JJTitle> GetTitleAsync()
-    {
-        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync(), TitleActions);
+        return ComponentFactory.Html.Title.Create(FormElement, new FormStateData(RelationValues!,UserValues, PageState.List), TitleActions);
     }
 
     internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
@@ -929,7 +920,7 @@ public class JJGridView : AsyncComponent
         return _formStateData;
     }
     
-    private async ValueTask<HtmlBuilder> GetSettingsHtml()
+    private async Task<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
         var formData = await GetFormStateDataAsync();
@@ -981,7 +972,7 @@ public class JJGridView : AsyncComponent
         return modal.GetHtmlBuilder();
     }
 
-    private async ValueTask<HtmlBuilder> GetLegendHtml()
+    private async Task<HtmlBuilder> GetLegendHtml()
     {
         var action = LegendAction;
         var formData = await GetFormStateDataAsync();
@@ -1063,20 +1054,18 @@ public class JJGridView : AsyncComponent
                         var exportationResult = await DataExportation.ExecuteExportationAsync(result);
                         return exportationResult;
                     }
-                    else
+
+                    try
                     {
-                        try
-                        {
-                            await ExportFileInBackground();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError(ex, "Error executing DataExportation.");
-                            var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
-                            var validationSummary =ComponentFactory.Html.ValidationSummary.Create(errorMessage);
-                            validationSummary.MessageTitle = StringLocalizer["Error"];
-                            return new ContentComponentResult(validationSummary.GetHtmlBuilder());
-                        }
+                        await ExportFileInBackground();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Error executing DataExportation.");
+                        var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
+                        var validationSummary =ComponentFactory.Html.ValidationSummary.Create(errorMessage);
+                        validationSummary.MessageTitle = StringLocalizer["Error"];
+                        return new ContentComponentResult(validationSummary.GetHtmlBuilder());
                     }
 
                     var html = new DataExportationLog(DataExportation).GetLoadingHtml();
@@ -1162,7 +1151,7 @@ public class JJGridView : AsyncComponent
                     CurrentPage = parameters.CurrentPage,
                 };
             
-                await OnDataLoadAsync(this, args);
+                await OnDataLoadAsync.Invoke(this, args);
             
                 if (args.DataSource is not null)
                 {
@@ -1461,16 +1450,16 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(action.Name))
             throw new ArgumentException("Property name action is not valid");
     }
-
-    public void SetGridOptions(GridUI options)
-    {
-        FormElement.Options.Grid = options;
-    }
+    
+    public void SetGridOptions(GridUI options) => FormElement.Options.Grid = options;
 
     public bool IsExportPost()
     {
         return "startProcess".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal bool HasAction() => CurrentActionMap is not null;
 
     public ActionContext GetActionContext(BasicAction basicAction, FormStateData formStateData)
     {

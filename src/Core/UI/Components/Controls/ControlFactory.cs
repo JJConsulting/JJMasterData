@@ -14,9 +14,6 @@ namespace JJMasterData.Core.UI.Components;
 public class ControlFactory(IServiceProvider serviceProvider,
     ExpressionsService expressionsService)
 {
-    private IServiceProvider ServiceProvider { get; } = serviceProvider;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-
     public IControlFactory<JJCheckBox> CheckBox => GetControlFactory<JJCheckBox>();
     public IControlFactory<JJComboBox> ComboBox => GetControlFactory<JJComboBox>();
     public IControlFactory<JJLookup> Lookup => GetControlFactory<JJLookup>();
@@ -31,13 +28,13 @@ public class ControlFactory(IServiceProvider serviceProvider,
 
     private IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase
     {
-        return ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
+        return serviceProvider.GetRequiredService<IControlFactory<TControl>>();
     }
 
     internal TControl Create<TControl>(FormElement formElement, FormElementField field, ControlContext controlContext)
         where TControl : ControlBase
     {
-        var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
+        var factory = serviceProvider.GetRequiredService<IControlFactory<TControl>>();
 
         return factory.Create(
             formElement,
@@ -60,10 +57,10 @@ public class ControlFactory(IServiceProvider serviceProvider,
         }
 
         var control = Create(formElement, field, context);
-        control.Enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formStateData);
+        control.Enabled = expressionsService.GetBoolValue(field.EnableExpression, formStateData);
         
         if (field.ReadOnlyExpression != null)
-            control.ReadOnly = ExpressionsService.GetBoolValue(field.ReadOnlyExpression, formStateData);
+            control.ReadOnly = expressionsService.GetBoolValue(field.ReadOnlyExpression, formStateData);
         
         return control;
     }

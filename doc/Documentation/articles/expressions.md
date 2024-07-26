@@ -25,7 +25,7 @@ In the Data Dictionary UI, the expression editor is simplified like this:
 
 ## What are the default expression providers?
 - Type [val:] returns a value; (1 or 0) (true or false) ("foo") etc..
-- Type [exp:] returns the result of the expression from `DataTable.Compute`;
+- Type [exp:] returns the result of the expression from [NCalc](https://github.com/ncalc/ncalc);
 - Type [sql:] returns the result of a sql command;
 
 > [!TIP] 
@@ -105,4 +105,23 @@ At your `Program.cs` simply:
 builder.Services.AddJJMasterDataWeb().WithExpressionProvider<TMyCustomProvider>();
 ```
 
-[!include[Readme](../../../src/Plugins/NCalc/README.MD)]
+## Executing C# code at your expressions
+You can execute C# code using the following example;
+
+Program.cs:
+```
+builder.Services.PostConfigure<MasterDataCoreOptions>(options =>
+{
+    options.ExpressionsContext.Functions = new Dictionary<string, ExpressionFunction>
+    {
+        {"now", _ => DateTime.Now},
+        {"myAwesomeFunction", args => MyCustomClass.Execute(args[0], args[1])}
+    }.ToFrozenDictionary()
+});
+
+```
+
+At your expression:
+```
+exp: myAwesomeFunction('{StringValue}',{IntValue})
+```

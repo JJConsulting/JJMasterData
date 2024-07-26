@@ -6,7 +6,7 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
-internal class SystemWebHttpSessionWrapper : IHttpSession
+internal sealed class SystemWebHttpSessionWrapper : IHttpSession
 {
     private static HttpSessionState Session => HttpContext.Current.Session;
     public string this[string key]

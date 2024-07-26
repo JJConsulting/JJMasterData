@@ -185,9 +185,7 @@ public class JJLinkButton : HtmlComponent
         {
             icon.CssClass = "fa-fw";
         }
-
-        icon.CssClass += " bi";
-
+        
         return icon;
     }
 

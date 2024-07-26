@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTableHeader
+internal sealed class GridTableHeader
 {
     private JJGridView GridView { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -98,7 +98,7 @@ internal class GridTableHeader
 
                     if (order.Equals($"{field.Name} DESC"))
                         th.Append(GetDescendingIcon());
-                    else if (order.Equals($"{field.Name} ASC") || order.Equals((string)field.Name))
+                    else if (order.Equals($"{field.Name} ASC") || order.Equals(field.Name))
                         th.Append(GetAscendingIcon());
                 }
             }
