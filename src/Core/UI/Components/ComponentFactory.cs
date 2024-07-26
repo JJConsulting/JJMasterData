@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFactory
+internal sealed class ComponentFactory(IServiceProvider serviceProvider) : IComponentFactory
 {
     private RouteContext? _routeContext;
     private HtmlComponentFactory? _htmlComponentFactory;
@@ -50,8 +50,5 @@ internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFa
     public RouteContext RouteContext =>
         _routeContext ??= serviceProvider.GetRequiredService<RouteContextFactory>().Create();
 
-    private T GetFactory<T>() where T : notnull
-    {
-        return serviceProvider.GetRequiredService<T>();
-    }
+    private T GetFactory<T>() where T : notnull => serviceProvider.GetRequiredService<T>();
 }

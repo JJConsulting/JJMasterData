@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationScripts(
+internal sealed class DataImportationScripts(
     string name,
     FormElement formElement, 
     IStringLocalizer<MasterDataResources> stringLocalizer,

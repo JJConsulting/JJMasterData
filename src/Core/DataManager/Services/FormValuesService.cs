@@ -23,10 +23,6 @@ public class FormValuesService(
     IEncryptionService encryptionService,
     IHttpRequest httpRequest)
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private FieldValuesService FieldValuesService { get; } = fieldValuesService;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IFormValues FormValues { get; } = httpRequest.Form;
 
     private Dictionary<string, object?> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
@@ -41,10 +37,10 @@ public class FormValuesService(
 
 #if NET48
             var value = field.ValidateRequest
-                ? FormValues[fieldName]
-                : FormValues.GetUnvalidated(fieldName);
+                ? httpRequest.Form[fieldName]
+                : httpRequest.Form.GetUnvalidated(fieldName);
 #else
-            var value = FormValues[fieldName];
+            var value = httpRequest.Form[fieldName];
 #endif
             HandleFieldValue(field, values, value);
         }
@@ -191,39 +187,39 @@ public class FormValuesService(
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
         }
 
-        if (FormValues.ContainsFormValues() && autoReloadFormFields)
+        if (httpRequest.Form.ContainsFormValues() && autoReloadFormFields)
         {
             var formValues = GetFormValues(formElement, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
 
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
-            !FormValues.ContainsFormValues());
+        return await fieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
+            !httpRequest.Form.ContainsFormValues());
     }
 
 
     private async Task<Dictionary<string, object?>> GetDbValues(Element element)
     {
-        string encryptedPkValues = FormValues[
+        string encryptedPkValues = httpRequest.Form[
             $"data-panel-pk-values-{element.Name}"];
 
         if (string.IsNullOrEmpty(encryptedPkValues))
         {
-            var encryptedFkValues = FormValues[
+            var encryptedFkValues = httpRequest.Form[
                 $"form-view-relation-values-{element.Name}"];
 
             if (!string.IsNullOrEmpty(encryptedFkValues))
             {
-                return EncryptionService.DecryptDictionary(encryptedFkValues)!;
+                return encryptionService.DecryptDictionary(encryptedFkValues)!;
             }
         }
 
         if (encryptedPkValues is null)
             return new Dictionary<string, object?>();
 
-        string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
+        string pkValues = encryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
-        return await EntityRepository.GetFieldsAsync(element, filters);
+        return await entityRepository.GetFieldsAsync(element, filters);
     }
 }

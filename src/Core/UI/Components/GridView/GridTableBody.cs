@@ -17,7 +17,7 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTableBody(JJGridView gridView)
+internal sealed class GridTableBody(JJGridView gridView)
 {
     private string Name { get; } = $"{gridView.Name}-table";
     private JJGridView GridView { get; } = gridView;

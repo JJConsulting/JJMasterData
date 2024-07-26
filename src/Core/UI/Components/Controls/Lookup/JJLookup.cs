@@ -147,7 +147,7 @@ public class JJLookup : ControlBase
 
     #endregion
     
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         if (ComponentContext is ComponentContext.LookupDescription && HttpRequest.QueryString["fieldName"] == FieldName)
         {

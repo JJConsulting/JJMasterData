@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTableHeader
+internal sealed class GridTableHeader
 {
     private JJGridView GridView { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }

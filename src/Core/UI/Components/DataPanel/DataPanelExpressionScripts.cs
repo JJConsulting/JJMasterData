@@ -7,7 +7,7 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
+internal sealed class DataPanelExpressionScripts(JJDataPanel dataPanel)
 {
     private JJDataPanel DataPanel { get; } = dataPanel;
 

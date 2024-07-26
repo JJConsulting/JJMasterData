@@ -14,7 +14,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationHelp
+internal sealed class DataImportationHelp
 {
     private JJDataImportation DataImportation { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-internal class DbLogger(string categoryName, LoggerBuffer loggerBuffer) : ILogger
+internal sealed class DbLogger(string categoryName, LoggerBuffer loggerBuffer) : ILogger
 {
     IDisposable ILogger.BeginScope<TState>(TState state1) => default!;
 

@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationFactory(
+internal sealed class DataImportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
     IFormEventHandlerResolver formEventHandlerResolver,
     ExpressionsService expressionsService,
@@ -51,7 +51,7 @@ internal class DataImportationFactory(
             stringLocalizer);
     }
 
-    public async Task<JJDataImportation> CreateAsync(string elementName)
+    public async ValueTask<JJDataImportation> CreateAsync(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

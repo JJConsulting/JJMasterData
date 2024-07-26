@@ -22,11 +22,11 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
         Rows = 5;
     }
 
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
 
-        return Task.FromResult<ComponentResult>(new RenderedComponentResult(html));
+        return new ValueTask<ComponentResult>(new RenderedComponentResult(html));
     }
 
     public HtmlBuilder GetHtmlBuilder()

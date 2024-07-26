@@ -7,19 +7,15 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class SearchBoxFactory(
+internal sealed class SearchBoxFactory(
         DataItemService dataItemService,
         IHttpRequest httpRequest,
         IEncryptionService encryptionService)
     : IControlFactory<JJSearchBox>
 {
-    private DataItemService DataItemService { get; } = dataItemService;
-    private IHttpRequest HttpRequest { get; } = httpRequest;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-
     public JJSearchBox Create()
     {
-        return new JJSearchBox(HttpRequest, EncryptionService, DataItemService);
+        return new JJSearchBox(httpRequest, encryptionService, dataItemService);
     }
 
     public JJSearchBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
@@ -27,7 +23,7 @@ internal class SearchBoxFactory(
         if (field.DataItem == null)
             throw new ArgumentNullException(nameof(field.DataItem));
 
-        var search = new JJSearchBox(HttpRequest, EncryptionService, DataItemService)
+        var search = new JJSearchBox(httpRequest, encryptionService, dataItemService)
         {
             DataItem = field.DataItem,
             ConnectionId = formElement.ConnectionId,

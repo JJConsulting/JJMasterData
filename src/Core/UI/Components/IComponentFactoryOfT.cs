@@ -13,5 +13,5 @@ public interface IFormElementComponentFactory<TComponent>  where TComponent : Co
 {
     TComponent Create(FormElement formElement);
 
-    Task<TComponent> CreateAsync(string elementName);
+    ValueTask<TComponent> CreateAsync(string elementName);
 }

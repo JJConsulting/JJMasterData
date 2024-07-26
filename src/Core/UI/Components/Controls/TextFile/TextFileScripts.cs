@@ -6,7 +6,7 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextFileScripts(JJTextFile textFile)
+internal sealed class TextFileScripts(JJTextFile textFile)
 {
     public string GetShowScript()
     {

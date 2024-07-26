@@ -19,10 +19,6 @@ public class UrlRedirectService(
     FormValuesService formValuesService,
     ExpressionsService expressionsService)
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private FormValuesService FormValuesService { get; } = formValuesService;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    
     public async Task<JsonComponentResult> GetUrlRedirectResult(
         JJDataPanel dataPanel,
         ActionMap actionMap)
@@ -33,14 +29,14 @@ public class UrlRedirectService(
 
         if (actionMap.PkFieldValues.Any())
         {
-            dbValues = await EntityRepository.GetFieldsAsync(dataPanel.FormElement, actionMap.PkFieldValues);
+            dbValues = await entityRepository.GetFieldsAsync(dataPanel.FormElement, actionMap.PkFieldValues);
         }
         else
         {
             dbValues = new Dictionary<string, object>();
         }
            
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(dataPanel.FormElement,new FormStateData(dbValues,dataPanel.UserValues,dataPanel.PageState), true, dataPanel.FieldNamePrefix);
+        var values = await formValuesService.GetFormValuesWithMergedValuesAsync(dataPanel.FormElement,new FormStateData(dbValues,dataPanel.UserValues,dataPanel.PageState), true, dataPanel.FieldNamePrefix);
         
         DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
         
@@ -53,7 +49,7 @@ public class UrlRedirectService(
     {
         var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(gridView.FormElement);
 
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(gridView.FormElement,new FormStateData(new Dictionary<string, object>(),gridView.UserValues,PageState.List), true);
+        var values = await formValuesService.GetFormValuesWithMergedValuesAsync(gridView.FormElement,new FormStateData(new Dictionary<string, object>(),gridView.UserValues,PageState.List), true);
         
         DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
         
@@ -64,7 +60,7 @@ public class UrlRedirectService(
     {
         var formStateData = new FormStateData(values, PageState.List);
         var parsedUrl = GetParsedUrl(action, formStateData);
-        var parsedTitle =  ExpressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
+        var parsedTitle =  expressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
         
         var model = new UrlRedirectModel
         {
@@ -86,6 +82,6 @@ public class UrlRedirectService(
         
         var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
         
-        return ExpressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateDataCopy, action.EncryptParameters);
+        return expressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateDataCopy, action.EncryptParameters);
     }
 }

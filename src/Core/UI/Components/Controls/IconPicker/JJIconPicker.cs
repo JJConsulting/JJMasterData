@@ -21,7 +21,7 @@ public class JJIconPicker(
     public IconType? SelectedIcon { get; set; }
     public string? Id { get; set; }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         var id = Id ?? Name;
         var comboBox = comboBoxFactory.Create();

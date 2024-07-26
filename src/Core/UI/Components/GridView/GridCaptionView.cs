@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridCaptionView(
+internal sealed class GridCaptionView(
     string title,
     IControlFactory<JJComboBox> comboBoxFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer)

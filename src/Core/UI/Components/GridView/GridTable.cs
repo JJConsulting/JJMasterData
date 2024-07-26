@@ -4,7 +4,7 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTable(JJGridView gridView)
+internal sealed class GridTable(JJGridView gridView)
 {
     internal GridSettings Settings { get; } = gridView.CurrentSettings;
 

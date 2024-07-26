@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -736,7 +737,7 @@ public class JJGridView : AsyncComponent
 
         var html = new Div();
 
-        if (TryGetSqlAction(out SqlCommandAction? sqlCommandAction))
+        if (TryGetSqlAction(out var sqlCommandAction))
         {
             var errorMessage = await ExecuteSqlCommand(sqlCommandAction);
             if (errorMessage == null)
@@ -788,7 +789,7 @@ public class JJGridView : AsyncComponent
             html.Append(await GetLegendHtml());
         }
 
-        html.Append(HtmlTag.Div, div => { div.WithCssClass("clearfix"); });
+        html.Append(HtmlTag.Div, div => div.WithCssClass("clearfix"));
 
         return html;
     }
@@ -956,7 +957,7 @@ public class JJGridView : AsyncComponent
 
     private bool CanCustomPaging() => IsPagingEnabled() && CurrentSettings.RecordsPerPage % 5 == 0 && CurrentSettings.RecordsPerPage <= 50;
 
-    private async Task<HtmlBuilder> GetExportHtml()
+    private async ValueTask<HtmlBuilder> GetExportHtml()
     {
         var action = ExportAction;
         var formData = await GetFormStateDataAsync();
@@ -1055,20 +1056,18 @@ public class JJGridView : AsyncComponent
                         var exportationResult = await DataExportation.ExecuteExportationAsync(result);
                         return exportationResult;
                     }
-                    else
+
+                    try
                     {
-                        try
-                        {
-                            await ExportFileInBackground();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError(ex, "Error executing DataExportation.");
-                            var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
-                            var validationSummary =ComponentFactory.Html.ValidationSummary.Create(errorMessage);
-                            validationSummary.MessageTitle = StringLocalizer["Error"];
-                            return new ContentComponentResult(validationSummary.GetHtmlBuilder());
-                        }
+                        await ExportFileInBackground();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Error executing DataExportation.");
+                        var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
+                        var validationSummary =ComponentFactory.Html.ValidationSummary.Create(errorMessage);
+                        validationSummary.MessageTitle = StringLocalizer["Error"];
+                        return new ContentComponentResult(validationSummary.GetHtmlBuilder());
                     }
 
                     var html = new DataExportationLog(DataExportation).GetLoadingHtml();
@@ -1453,11 +1452,8 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(action.Name))
             throw new ArgumentException("Property name action is not valid");
     }
-
-    public void SetGridOptions(GridUI options)
-    {
-        FormElement.Options.Grid = options;
-    }
+    
+    public void SetGridOptions(GridUI options) => FormElement.Options.Grid = options;
 
     public bool IsExportPost()
     {

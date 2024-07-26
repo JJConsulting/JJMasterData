@@ -7,7 +7,7 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridToolbar(JJGridView gridView)
+internal sealed class GridToolbar(JJGridView gridView)
 {
     internal event AsyncEventHandler<GridToolbarActionEventArgs> OnRenderToolbarActionAsync;
     

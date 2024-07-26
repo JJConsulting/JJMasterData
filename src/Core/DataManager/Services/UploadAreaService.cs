@@ -18,8 +18,6 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private IHttpContext CurrentContext { get; } = currentContext;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
 
@@ -66,7 +64,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
     /// </summary>
     private FormFileContent? GetFile(string fileName)
     {
-        var fileData = CurrentContext.Request.Form.GetFile(fileName);
+        var fileData = currentContext.Request.Form.GetFile(fileName);
 
         if (fileData is null)
             return null;
@@ -158,7 +156,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
 
         string ext = FileIO.GetFileNameExtension(filename);
         if (list.Contains(ext))
-            throw new JJMasterDataException(StringLocalizer["You cannot upload system files"]);
+            throw new JJMasterDataException(stringLocalizer["You cannot upload system files"]);
 
     }
 }

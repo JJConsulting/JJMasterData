@@ -12,7 +12,7 @@ using JJMasterData.Core.DataManager.Importation;
 
 namespace JJMasterData.Hangfire;
 
-internal class TaskTrigger
+internal sealed class TaskTrigger
 {
     public string RunInBackground(string key, IBackgroundTaskWorker worker)
     {

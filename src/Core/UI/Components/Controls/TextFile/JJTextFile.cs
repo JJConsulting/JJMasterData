@@ -13,7 +13,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextFile(IHttpRequest request,
+public sealed class JJTextFile(IHttpRequest request,
         IComponentFactory componentFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEncryptionService encryptionService)
@@ -109,7 +109,7 @@ public class JJTextFile(IHttpRequest request,
         }
     }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         switch (RouteContext.ComponentContext)
         {

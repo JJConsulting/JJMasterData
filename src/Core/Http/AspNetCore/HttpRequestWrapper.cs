@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-internal class HttpRequestWrapper(
+internal sealed class HttpRequestWrapper(
     IHttpContextAccessor httpContextAccessor,
     IFormValues formValues,
     IQueryString queryString)

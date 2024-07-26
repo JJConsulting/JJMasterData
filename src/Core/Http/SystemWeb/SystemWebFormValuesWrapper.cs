@@ -6,7 +6,7 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
-internal class SystemWebFormValuesWrapper : IFormValues
+internal sealed class SystemWebFormValuesWrapper : IFormValues
 {
     private static UnvalidatedRequestValues UnvalidatedFormCollection => HttpContext.Request.Unvalidated;
     private static NameValueCollection FormCollection => HttpContext.Request.Form;

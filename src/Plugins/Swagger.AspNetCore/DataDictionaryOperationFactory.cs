@@ -8,7 +8,7 @@ using static JJMasterData.Swagger.AspNetCore.DataDictionarySchema;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
-internal class DataDictionaryOperationFactory
+internal sealed class DataDictionaryOperationFactory
 {
     private FormElement FormElement { get; }
     private FormElementApiOptions Options { get; }

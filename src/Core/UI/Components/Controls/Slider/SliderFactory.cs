@@ -3,16 +3,14 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class SliderFactory(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory)
+internal sealed class SliderFactory(
+    IFormValues formValues,
+    IControlFactory<JJTextBox> textBoxFactory)
     : IControlFactory<JJSlider>
 {
-    private IFormValues FormValues { get; } = formValues;
-    private IControlFactory<JJTextBox> TextBoxFactory { get; } = textBoxFactory;
-
-
     public JJSlider Create()
     {
-        return new JJSlider(FormValues,TextBoxFactory);
+        return new JJSlider(formValues,textBoxFactory);
     }
 
     public JJSlider Create(FormElement formElement, FormElementField field, ControlContext context)

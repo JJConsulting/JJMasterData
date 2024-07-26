@@ -5,7 +5,7 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataPanelScripts(DataPanelControl dataPanelControl)
+internal sealed class DataPanelScripts(DataPanelControl dataPanelControl)
 {
     private IEncryptionService EncryptionService => dataPanelControl.EncryptionService;
 

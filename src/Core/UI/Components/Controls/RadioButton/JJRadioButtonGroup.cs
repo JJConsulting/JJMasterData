@@ -34,7 +34,7 @@ public class JJRadioButtonGroup(
     public Guid? ConnectionId { get; set; }
     public FormStateData FormStateData { get; set; } = null!;
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         var values = await GetValuesAsync();
 

@@ -12,7 +12,7 @@ using JJMasterData.Core.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridSqlCommandAction(JJGridView gridView)
+internal sealed class GridSqlCommandAction(JJGridView gridView)
 {
     public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
     {

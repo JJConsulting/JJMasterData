@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridSortingConfig(JJGridView gridView)
+internal sealed class GridSortingConfig(JJGridView gridView)
 {
     private FormElement FormElement { get; } = gridView.FormElement;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = gridView.StringLocalizer;

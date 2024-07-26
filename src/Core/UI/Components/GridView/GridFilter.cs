@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridFilter(JJGridView gridView)
+internal sealed class GridFilter(JJGridView gridView)
 {
     private const string FilterActionName = "filter";
     private const string ClearActionName = "clear";

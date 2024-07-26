@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Logging.File;
 
-internal class FileLogger(
+internal sealed class FileLogger(
     string categoryName,
     LoggerBuffer buffer, 
     IOptionsMonitor<FileLoggerOptions> options) : ILogger

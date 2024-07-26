@@ -9,7 +9,7 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Class responsible to render the UI on JJGridView
 /// </summary>
-internal class GridSettingsForm(
+internal sealed class GridSettingsForm(
     string name,
     IHttpContext currentContext,
     IStringLocalizer<MasterDataResources> stringLocalizer)

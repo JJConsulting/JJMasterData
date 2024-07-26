@@ -23,7 +23,7 @@ public class JJTextRange(IFormValues formValues,
     
     public bool IsVerticalLayout { get; set; }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         var div = new Div();
         div.WithCssClass("row");
