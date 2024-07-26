@@ -68,6 +68,7 @@ public class JJFormView : AsyncComponent
 
     private JJDataPanel? _dataPanel;
     private JJGridView? _gridView;
+    private JJFormView? _insertSelectionFormView;
     private FormViewScripts? _scripts;
     private ActionMap? _currentActionMap;
     private BasicAction? _currentAction;
@@ -874,11 +875,21 @@ public class JJFormView : AsyncComponent
     {
         var insertAction = GridView.ToolbarActions.InsertAction;
         var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
-
+        var isInsertSelection = !string.IsNullOrEmpty(insertAction.ElementNameToSelect);
+        
         bool isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action is not enabled"]);
-
+        
+        if (isInsertSelection)
+        {
+            var insertSelectionFormView = await GetInsertSelectionFormView();
+            if (insertSelectionFormView.GridView.HasAction())
+            {
+                return await GetInsertSelectionListResult();
+            }
+        }
+        
         if (PageState == PageState.Insert)
         {
             var formValues = await GetFormValuesAsync();
@@ -887,27 +898,19 @@ public class JJFormView : AsyncComponent
 
         PageState = PageState.Insert;
 
-        if (string.IsNullOrEmpty(insertAction.ElementNameToSelect))
-            return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, false);
+        if (isInsertSelection)
+        {
+            return await GetInsertSelectionListResult();
+        }
 
-        return await GetInsertSelectionListResult();
+        return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, false);
     }
 
     private async Task<ComponentResult> GetInsertSelectionListResult()
     {
-        var insertAction = GridView.ToolbarActions.InsertAction;
+        var formView = await GetInsertSelectionFormView();
         var html = new Div();
         html.AppendHiddenInput($"form-view-insert-selection-values-{Name}");
-
-
-        var formView = await ComponentFactory.FormView.CreateAsync(insertAction.ElementNameToSelect);
-        formView.FormElement.ParentName = FormElement.Name;
-        formView.UserValues = UserValues;
-        formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
-        
-        formView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
-
-        formView.GridView.GridTableActions.Add(new InsertSelectionAction());
 
         var result = await formView.GetFormResultAsync();
 
@@ -921,6 +924,34 @@ public class JJFormView : AsyncComponent
         }
 
         return new RenderedComponentResult(html);
+    }
+
+    private async ValueTask<JJFormView> GetInsertSelectionFormView()
+    {
+        if (_insertSelectionFormView != null)
+            return _insertSelectionFormView;
+        
+        _insertSelectionFormView = await ComponentFactory.FormView.CreateAsync(GridView.InsertAction.ElementNameToSelect);
+        _insertSelectionFormView.FormElement.ParentName = FormElement.Name;
+        _insertSelectionFormView.UserValues = UserValues;
+        _insertSelectionFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        _insertSelectionFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
+        _insertSelectionFormView.GridView.GridTableActions.Add(new InsertSelectionAction());
+        
+        return _insertSelectionFormView;
+    }
+    
+    private async Task<JJFormView> HasInsertSelectionAction(InsertAction insertAction)
+    {
+        var formView = await ComponentFactory.FormView.CreateAsync(insertAction.ElementNameToSelect);
+        formView.FormElement.ParentName = FormElement.Name;
+        formView.UserValues = UserValues;
+        formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        
+        formView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
+
+        formView.GridView.GridTableActions.Add(new InsertSelectionAction());
+        return formView;
     }
 
     private ScriptAction GetInsertSelectionBackAction()

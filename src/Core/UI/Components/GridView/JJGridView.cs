@@ -520,8 +520,6 @@ public class JJGridView : AsyncComponent
         set => _selectedRowsId = value ?? "";
     }
     
-
-    
     protected RouteContext RouteContext
     {
         get
@@ -1459,6 +1457,9 @@ public class JJGridView : AsyncComponent
     {
         return "startProcess".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal bool HasAction() => CurrentActionMap is not null;
 
     public ActionContext GetActionContext(BasicAction basicAction, FormStateData formStateData)
     {
