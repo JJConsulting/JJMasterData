@@ -8,6 +8,7 @@
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<WarningsAsErrors>CA1859;CS4014</WarningsAsErrors>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<FileVersion>$(Version)</FileVersion>

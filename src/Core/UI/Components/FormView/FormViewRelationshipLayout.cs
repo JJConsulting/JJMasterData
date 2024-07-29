@@ -15,7 +15,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
 {
     public async Task<ComponentResult> GetRelationshipsResult()
     {
-        var relationshipsDiv = new Div();
+        var relationshipsDiv = new HtmlBuilder(HtmlTag.Div);
 
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
@@ -123,7 +123,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
                 return panel.GetHtmlBuilder();
             case PanelLayout.NoDecoration:
                 var title = GetExpressionValue(relationship.Panel.Title);
-                var div = new Div();
+                var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);
                 if (title is not null)
                 {       

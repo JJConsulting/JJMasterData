@@ -87,7 +87,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         if (string.IsNullOrEmpty(value))
             return string.Empty;
 
-        var a = new A();
+        var a = new HtmlBuilder(HtmlTag.A);
         a.WithAttribute("href", $"mailto:{value}");
         a.AppendText(value);
 

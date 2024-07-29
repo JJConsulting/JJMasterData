@@ -268,7 +268,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
         var selectedValue = await GetSelectedValueAsync();
 
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         await div.AppendAsync(HtmlTag.Input, async input =>
         {
             input.WithAttribute("id", $"{HtmlId}_text");

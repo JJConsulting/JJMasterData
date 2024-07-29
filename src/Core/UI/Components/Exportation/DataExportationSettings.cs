@@ -19,7 +19,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     
     internal HtmlBuilder GetHtmlBuilder()
     {
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         
         var folderPath = DataExportationHelper.GetFolderPath(DataExportation);
         
@@ -59,7 +59,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 
     private HtmlBuilder GetFormHtmlElement(string exportationFolderPath)
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("row");
 
         div.Append(GetFileExtensionField());
@@ -239,7 +239,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 
     private HtmlBuilder GetFirstLineField()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("col-sm-12");
         div.WithCssClass(BootstrapHelper.FormGroup);
         var exportFirstLineCheckbox = DataExportation.ComponentFactory.Controls.CheckBox.Create();
@@ -297,7 +297,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         if (files == null || files.Count == 0)
             return new HtmlBuilder(StringLocalizer["No recently generated files."]);
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         foreach (var file in files)
         {
             if (FileIO.IsFileLocked(file))
@@ -306,7 +306,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             var icon = JJDataExportation.GetFileIcon(file.Extension);
             string url = DataExportation.GetDownloadUrl(file.FullName);
 
-            var div = new Div();
+            var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");
             div.AppendComponent(icon);
             div.AppendText("&nbsp;");

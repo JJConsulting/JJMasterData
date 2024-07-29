@@ -180,7 +180,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (IsRunning())
                 {
-                    htmlBuilder = new Div();
+                    htmlBuilder = new HtmlBuilder(HtmlTag.Div);
                     htmlBuilder.WithId(Name);
                     htmlBuilder.Append(GetLoadingHtml());
                     htmlBuilder.AppendScript(DataImportationScripts.GetStartProgressVerificationScript());

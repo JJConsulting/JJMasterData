@@ -25,7 +25,7 @@ public class JJTextRange(IFormValues formValues,
 
     protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("row");
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
@@ -139,7 +139,7 @@ public class JJTextRange(IFormValues formValues,
 
     private static HtmlBuilder GetListItem(string label, string script)
     {
-        return new Li()
+        return new HtmlBuilder(HtmlTag.Li)
             .WithOnClick( script)
             .Append(HtmlTag.A, a =>
             {

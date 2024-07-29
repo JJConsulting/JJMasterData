@@ -50,7 +50,7 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
         {
             textArea.WithSingleAttribute("placeholder");
 
-            return new Div()
+            return new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass("form-floating")
                 .Append(textArea)
                 .AppendLabel(label =>

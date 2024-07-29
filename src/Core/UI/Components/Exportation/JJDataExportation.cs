@@ -117,7 +117,7 @@ public class JJDataExportation : ProcessComponent
         if (!reporter.HasError)
         {
             string url = GetDownloadUrl(reporter.FilePath);
-            var html = new Div();
+            var html = new HtmlBuilder(HtmlTag.Div);
 
             if (reporter.HasError)
             {

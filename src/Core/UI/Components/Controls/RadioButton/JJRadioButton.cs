@@ -19,7 +19,7 @@ internal sealed class JJRadioButton(IFormValues formValues) : ControlBase(formVa
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("form-check");
         div.WithCssClass(CssClass);
         div.WithCssClassIf(Layout is DataItemRadioLayout.Horizontal, "form-check-inline");

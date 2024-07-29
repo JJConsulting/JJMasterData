@@ -58,7 +58,7 @@ public class JJCollapsePanel : HtmlComponent
 
     internal override HtmlBuilder BuildHtml()
     {
-        var root = new Div();
+        var root = new HtmlBuilder(HtmlTag.Div);
 
         root.Append(HtmlTag.Input, input =>
         {
@@ -165,7 +165,7 @@ public class JJCollapsePanel : HtmlComponent
 
     private HtmlBuilder GetBody()
     {
-        var panelBody = new Div();
+        var panelBody = new HtmlBuilder(HtmlTag.Div);
 
         if (!string.IsNullOrEmpty(SubTitle))
         {
