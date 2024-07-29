@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Localization;
 
-public class MasterDataStringLocalizerFactory : IStringLocalizerFactory, IDisposable
+public sealed class MasterDataStringLocalizerFactory : IStringLocalizerFactory
 {
     private ResourceManagerStringLocalizerFactory ResourceManagerStringLocalizerFactory { get; }
     private IEntityRepository EntityRepository { get; }
@@ -39,6 +39,4 @@ public class MasterDataStringLocalizerFactory : IStringLocalizerFactory, IDispos
         var resourceLocalizer = (ResourceManagerStringLocalizer)ResourceManagerStringLocalizerFactory.Create(baseName,location);
         return new MasterDataStringLocalizer($"{baseName}_{location}", resourceLocalizer, EntityRepository, Cache, Options);
     }
-
-    public void Dispose() => Cache?.Dispose();
 }

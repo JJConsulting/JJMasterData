@@ -32,7 +32,7 @@ public static class XmlHelper
         if (value == null)
             throw new ArgumentNullException(nameof(value), "Serialize");
 
-        var stringwriter = new Utf8StringWriter();
+        using var stringwriter = new Utf8StringWriter();
         var serializer = new XmlSerializer(value.GetType());
         serializer.Serialize(stringwriter, value);
         return stringwriter.ToString();

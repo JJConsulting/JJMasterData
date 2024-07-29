@@ -77,59 +77,62 @@ public static class Email
 
         try
         {
-            msgMail = new MailMessage();
-            if (!string.IsNullOrEmpty(toEmail))
+            using (msgMail = new MailMessage())
             {
-                msgMail.To.Add(toEmail.Replace(";", ",").Replace("\r\n", "").ToLower());
-            }
+                if (!string.IsNullOrEmpty(toEmail))
+                {
+                    msgMail.To.Add(toEmail.Replace(";", ",").Replace("\r\n", "").ToLower());
+                }
 
-            if (!string.IsNullOrEmpty(ccEmail))
-            {
-                msgMail.CC.Add(ccEmail.Replace(";", ",").ToLower());
-            }
+                if (!string.IsNullOrEmpty(ccEmail))
+                {
+                    msgMail.CC.Add(ccEmail.Replace(";", ",").ToLower());
+                }
 
-            if (!string.IsNullOrEmpty(ccoEmail))
-            {
-                msgMail.Bcc.Add(ccoEmail.Replace(";", ",").ToLower());
-            }
+                if (!string.IsNullOrEmpty(ccoEmail))
+                {
+                    msgMail.Bcc.Add(ccoEmail.Replace(";", ",").ToLower());
+                }
 
-            msgMail.Attachments.Clear();
-            if (listAttach != null)
-            {
-                foreach (var atach in listAttach)
-                    msgMail.Attachments.Add(atach);
-            }
+                msgMail.Attachments.Clear();
+                if (listAttach != null)
+                {
+                    foreach (var atach in listAttach)
+                        msgMail.Attachments.Add(atach);
+                }
 
-            msgMail.Subject = subject;
-            msgMail.IsBodyHtml = IsBodyHtml;
-            msgMail.Body = body;
-            msgMail.SubjectEncoding = Encoding.GetEncoding("ISO-8859-1");
+                msgMail.Subject = subject;
+                msgMail.IsBodyHtml = IsBodyHtml;
+                msgMail.Body = body;
+                msgMail.SubjectEncoding = Encoding.GetEncoding("ISO-8859-1");
 
-            //msgMail.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+                //msgMail.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
 
-            oSmtp = new SmtpClient();
+                using (oSmtp = new SmtpClient())
+                {
+                    if (smtpconfig != null)
+                    {
+                        oSmtp.Host = smtpconfig.Server;
+                        oSmtp.Port = smtpconfig.Port;
+                        oSmtp.UseDefaultCredentials = false;
 
-            if (smtpconfig != null)
-            {
-                oSmtp.Host = smtpconfig.Server;
-                oSmtp.Port = smtpconfig.Port;
-                oSmtp.UseDefaultCredentials = false;
+                        NetworkCredential cred = new NetworkCredential(smtpconfig.User, smtpconfig.Password);
+                        oSmtp.Credentials = cred;
+                        oSmtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                        oSmtp.EnableSsl = smtpconfig.EnableSSL;
 
-                NetworkCredential cred = new NetworkCredential(smtpconfig.User, smtpconfig.Password);
-                oSmtp.Credentials = cred;
-                oSmtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                oSmtp.EnableSsl = smtpconfig.EnableSSL;
+                        MailAddress mailfrom = new MailAddress(smtpconfig.Email);
+                        msgMail.From = mailfrom;
+                    }
 
-                MailAddress mailfrom = new MailAddress(smtpconfig.Email);
-                msgMail.From = mailfrom;
-            }
+                    oSmtp.Send(msgMail);
 
-            oSmtp.Send(msgMail);
-
-            if (listAttach != null)
-            {
-                foreach (Attachment attachment in msgMail.Attachments)
-                    attachment.Dispose();
+                    if (listAttach != null)
+                    {
+                        foreach (Attachment attachment in msgMail.Attachments)
+                            attachment.Dispose();
+                    }
+                }
             }
         }
         catch (Exception ex)

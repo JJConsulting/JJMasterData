@@ -94,7 +94,8 @@ public class ElementController(
 
     private async ValueTask FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
-        await elementService.Import(new MemoryStream(e.File.Bytes));
+        await using var ms = new MemoryStream(e.File.Bytes);
+        await elementService.Import(ms);
         if (ModelState.IsValid)
         {
             e.SuccessMessage = stringLocalizer["Dictionary imported successfully!"];
