@@ -12,7 +12,7 @@ public sealed class MasterDataWebOptionsConfiguration
     public Func<Type,IStringLocalizerFactory,IStringLocalizer> ConfigureDataAnnotations { get; set; } = DefaultDataAnnotationsProviderImplementation;
 
     private static IStringLocalizer DefaultDataAnnotationsProviderImplementation(
-        Type modelType, 
+        Type modelType,
         IStringLocalizerFactory stringLocalizerFactory)
     {
         return stringLocalizerFactory.Create(modelType);

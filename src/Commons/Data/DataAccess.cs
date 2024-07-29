@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,7 +79,7 @@ public partial class DataAccess
     /// Waiting time to execute a command on the database (seconds - default 240s)
     /// </summary>
     public int TimeOut { get; set; } = 240;
-
+    
     /// <summary>
     /// Initialize a with a connectionString and a specific providerName.
     /// See also <see cref="DataAccessProvider"/>.
@@ -101,11 +102,11 @@ public partial class DataAccess
     public DataAccess(IOptionsSnapshot<MasterDataCommonsOptions> options)
     {
         var optionsValue = options.Value;
-        ConnectionString = optionsValue.ConnectionString ??
-                           throw new ArgumentNullException(nameof(optionsValue.ConnectionString));
+        ConnectionString = optionsValue.ConnectionString ?? throw new ArgumentNullException(nameof(optionsValue.ConnectionString));
         ConnectionProvider = optionsValue.ConnectionProvider;
     }
 
+    [MustDisposeResource]
     public DbConnection GetConnection()
     {
         var connection = Factory.CreateConnection();
@@ -167,15 +168,17 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-
-            using var dataAdapter = Factory.CreateDataAdapter();
-            dataAdapter!.SelectCommand = dbCommand;
-            fillAction(dataAdapter);
-
-            foreach (var parameter in cmd.Parameters)
+            using (dbCommand.Connection)
             {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                using var dataAdapter = Factory.CreateDataAdapter();
+                dataAdapter!.SelectCommand = dbCommand;
+                fillAction(dataAdapter);
+
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
@@ -236,12 +239,15 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-            scalarResult = dbCommand.ExecuteScalar();
-
-            foreach (var param in cmd.Parameters)
+            using (dbCommand.Connection)
             {
-                if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    param.Value = dbCommand.Parameters[param.Name].Value;
+                scalarResult = dbCommand.ExecuteScalar();
+
+                foreach (var param in cmd.Parameters)
+                {
+                    if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        param.Value = dbCommand.Parameters[param.Name].Value;
+                }
             }
         }
         catch (Exception ex)
@@ -271,7 +277,10 @@ public partial class DataAccess
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
 
-            scalarResult = dbCommand.ExecuteScalar();
+            using (dbCommand.Connection)
+            {
+                scalarResult = dbCommand.ExecuteScalar();
+            }
         }
         catch (Exception ex)
         {
@@ -292,12 +301,15 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-            rowsAffected += dbCommand.ExecuteNonQuery();
-
-            foreach (var parameter in cmd.Parameters)
+            using (dbCommand.Connection)
             {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                rowsAffected += dbCommand.ExecuteNonQuery();
+
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
@@ -383,7 +395,10 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
-            numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+            using (dbCommand.Connection)
+            {
+                numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+            }
         }
         catch (Exception ex)
         {
@@ -403,10 +418,9 @@ public partial class DataAccess
     /// If no record is found it returns null.
     /// </returns>
     public Hashtable? GetHashtable(string sql) => GetHashtable(new DataAccessCommand(sql));
-
-    public Dictionary<string, object?>? GetDictionary(string sql) => GetDictionary(new DataAccessCommand(sql));
-
-
+    
+    public Dictionary<string,object?>? GetDictionary(string sql) => GetDictionary(new DataAccessCommand(sql));
+    
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
     /// [key(database field), value(value stored in database)]
@@ -424,29 +438,32 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-
-            using var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow);
-            while (dr.Read())
+            using (dbCommand.Connection)
             {
-                retCollection = new Hashtable();
-                int nQtd = 0;
-
-                while (nQtd < dr.FieldCount)
+                using (var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    string fieldName = dr.GetName(nQtd);
-                    if (retCollection.ContainsKey(fieldName))
-                        throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                    while (dr.Read())
+                    {
+                        retCollection = new Hashtable();
+                        int nQtd = 0;
 
-                    retCollection.Add(fieldName, dr.GetValue(nQtd));
-                    nQtd += 1;
+                        while (nQtd < dr.FieldCount)
+                        {
+                            string fieldName = dr.GetName(nQtd);
+                            if (retCollection.ContainsKey(fieldName))
+                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+
+                            retCollection.Add(fieldName, dr.GetValue(nQtd));
+                            nQtd += 1;
+                        }
+                    }
                 }
-            }
 
-
-            foreach (var parameter in cmd.Parameters)
-            {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
@@ -456,7 +473,7 @@ public partial class DataAccess
 
         return retCollection;
     }
-
+    
     /// <summary>
     /// Retrieves the records of the sql statement in a Dictionary object.
     /// [key(database field), value(value stored in database)]
@@ -474,30 +491,32 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-
-            using (var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow))
+            using (dbCommand.Connection)
             {
-                if (dr.Read())
+                using (var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    retCollection = new Dictionary<string, object?>();
-                    int nQtd = 0;
-
-                    while (nQtd < dr.FieldCount)
+                    if (dr.Read())
                     {
-                        string fieldName = dr.GetName(nQtd);
-                        if (retCollection.ContainsKey(fieldName))
-                            throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                        retCollection = new Dictionary<string, object?>();
+                        int nQtd = 0;
 
-                        retCollection.Add(fieldName, dr.GetValue(nQtd));
-                        nQtd += 1;
+                        while (nQtd < dr.FieldCount)
+                        {
+                            string fieldName = dr.GetName(nQtd);
+                            if (retCollection.ContainsKey(fieldName))
+                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+
+                            retCollection.Add(fieldName, dr.GetValue(nQtd));
+                            nQtd += 1;
+                        }
                     }
                 }
-            }
 
-            foreach (var parameter in cmd.Parameters)
-            {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
@@ -529,12 +548,10 @@ public partial class DataAccess
         errorMessage = null;
         try
         {
-            using (connection = Factory.CreateConnection())
-            {
-                connection!.ConnectionString = ConnectionString;
-                connection.Open();
-                result = true;
-            }
+            connection = Factory.CreateConnection();
+            connection!.ConnectionString = ConnectionString;
+            connection.Open();
+            result = true;
         }
         catch (Exception ex)
         {
@@ -620,7 +637,6 @@ public partial class DataAccess
 
         return command;
     }
-
     private static Exception GetDataAccessException(Exception ex, DataAccessCommand? cmd)
     {
         return GetDataAccessException(ex, cmd?.Sql ?? string.Empty, cmd?.Parameters);
@@ -633,9 +649,9 @@ public partial class DataAccess
     {
         ex.Data.Add("DataAccess Query", sql);
 
-        if (!(parameters?.Count > 0))
+        if (!(parameters?.Count > 0)) 
             return ex;
-
+        
         var error = new StringBuilder();
         foreach (var param in parameters)
         {
@@ -650,18 +666,17 @@ public partial class DataAccess
         ex.Data.Add("DataAccess Parameters", error.ToString());
 
         return ex;
+
     }
 
+    [MustDisposeResource]
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = Factory.CreateCommand();
-
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
-
         if (string.IsNullOrEmpty(command.Sql))
             throw new DataAccessException("Sql Command cannot be null or empty.");
-
         dbCommand.CommandType = command.Type;
         dbCommand.CommandText = command.Sql;
         dbCommand.CommandTimeout = TimeOut;
@@ -703,7 +718,7 @@ public partial class DataAccess
         return command;
     }
 
-    public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
+  public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
     {
         var dictionaryList = new List<Dictionary<string, object?>>();
 
@@ -711,33 +726,34 @@ public partial class DataAccess
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
-
-
-            using (var dataReader = dbCommand.ExecuteReader())
+            using (dbCommand.Connection)
             {
-                var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                    .Select(i => dataReader.GetName(i))
-                    .ToList();
-
-                while (dataReader.Read())
+                using (var dataReader =  dbCommand.ExecuteReader())
                 {
-                    var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-                    foreach (var columnName in columnNames)
+                    var columnNames = Enumerable.Range(0, dataReader.FieldCount)
+                        .Select(i => dataReader.GetName(i))
+                        .ToList();
+
+                    while ( dataReader.Read())
                     {
-                        var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
-                            ? null
-                            : dataReader.GetValue(dataReader.GetOrdinal(columnName));
-                        dictionary[columnName] = value;
+                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+                        foreach (var columnName in columnNames)
+                        {
+                            var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
+                                ? null
+                                : dataReader.GetValue(dataReader.GetOrdinal(columnName));
+                            dictionary[columnName] = value;
+                        }
+
+                        dictionaryList.Add(dictionary);
                     }
-
-                    dictionaryList.Add(dictionary);
                 }
-            }
 
-            foreach (var param in cmd.Parameters.Where(param =>
-                         param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
-            {
-                param.Value = dbCommand.Parameters[param.Name].Value;
+                foreach (var param in cmd.Parameters.Where(param =>
+                             param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
+                {
+                    param.Value = dbCommand.Parameters[param.Name].Value;
+                }
             }
         }
         catch (Exception ex)
