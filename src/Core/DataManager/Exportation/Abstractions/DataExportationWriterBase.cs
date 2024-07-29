@@ -169,7 +169,6 @@ public abstract class DataExportationWriterBase(
 
     #endregion
 
-
     public async Task RunWorkerAsync(CancellationToken token)
     {
 #if NETFRAMEWORK
@@ -268,27 +267,35 @@ public abstract class DataExportationWriterBase(
         var exportActionFileName = FormElement.Options.GridToolbarActions.ExportAction.FileName;
 
         if (!string.IsNullOrEmpty(exportActionFileName))
+        {
             fileName = exportActionFileName;
-
+        }
         else if (!string.IsNullOrEmpty(FormElement.Title))
+        {
             fileName = ExpressionsService.GetExpressionValue(FormElement.Title, new FormStateData()
             {
                 Values = new Dictionary<string, object>(),
                 UserValues = new Dictionary<string, object>(),
                 PageState = PageState.List
             })?.ToString() ?? string.Empty;
-
+        }
         else if (!string.IsNullOrEmpty(FormElement.Name))
+        {
             fileName = FormElement.Name.Trim().ToLower();
+        }
         else
+        {
             fileName = "file";
+        }
 
         fileName = StringManager.GetStringWithoutAccents(fileName);
 
         string[] escapeChars = ["/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " "];
 
         foreach (var @char in escapeChars)
+        {
             fileName = fileName.Replace(@char, string.Empty);
+        }
 
         fileName = HttpUtility.UrlEncode(fileName, Encoding.UTF8);
         var extension = Configuration.FileExtension.ToString().ToLower();

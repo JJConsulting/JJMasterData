@@ -18,7 +18,7 @@ public sealed class DefaultExpressionProvider(
 {
     public string Prefix => "exp";
     public string Title => "Expression";
-    
+
     public Guid? ConnectionId { get; set; }
     
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)

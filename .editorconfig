@@ -1,7 +1,7 @@
 ﻿[*.cs]
 
 # CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CA1841.severity = error
 dotnet_diagnostic.CS1591.severity = none
-
 dotnet_diagnostic.RCS1194.severity = none
 dotnet_diagnostic.RCS1139.severity = none
