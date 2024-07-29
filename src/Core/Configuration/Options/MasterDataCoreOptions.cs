@@ -43,9 +43,9 @@ public sealed class MasterDataCoreOptions
     public string ExportationFolderPath { get; set; } = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
 
     /// <summary>
-    /// Context of the expressions starting with "exp:". Declare here custom parameters and functions.
+    /// Context of expressions starting with "exp:". Declare here custom parameters and functions.
     /// </summary>
-    public ExpressionContext ExpressionsContext { get; set; } = new()
+    public ExpressionContext ExpressionContext { get; set; } = new()
     {
         Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions
                   | ExpressionOptions.AllowNullParameter
@@ -56,4 +56,20 @@ public sealed class MasterDataCoreOptions
             { "now", _ => DateTime.Now }
         }.ToFrozenDictionary()
     };
+
+    /// <summary>
+    /// Context of async expressions starting with "exp:". Declare here custom parameters and functions.
+    /// </summary>
+    public AsyncExpressionContext AsyncExpressionsContext { get; set; } = new()
+    {
+        Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions
+                  | ExpressionOptions.AllowNullParameter
+                  | ExpressionOptions.OrdinalStringComparer
+                  | ExpressionOptions.CaseInsensitiveStringComparer,
+        Functions = new Dictionary<string, AsyncExpressionFunction>
+        {
+            { "now", _ => new(DateTime.Now) }
+        }.ToFrozenDictionary()
+    };
+
 }
