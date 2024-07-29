@@ -356,7 +356,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             if (newValues != null && newValues.TryGetValue(field.Name, out var newvalue))
                 formValues.Value = newvalue!;
 
-            if (!field.Name.ToLower().Equals(objname.ToLower()))
+            if (!field.Name.Equals(objname, StringComparison.OrdinalIgnoreCase))
             {
                 if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {

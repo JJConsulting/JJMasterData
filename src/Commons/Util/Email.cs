@@ -7,7 +7,7 @@ using System.Text;
 
 namespace JJMasterData.Commons.Util;
 
-public class Email
+public static class Email
 {
 
     public static bool SendMail(string toEmail, string ccEmail, string ccoEmail, string subject, string body, bool IsBodyHtml)

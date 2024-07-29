@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace JJMasterData.Commons.Util;
 
-public class ReflectionUtils
+public static class ReflectionUtils
 {
 
     /// <summary>

@@ -197,15 +197,15 @@ public class FileSystemDataDictionaryRepository
 
             if (filter != null)
             {
-                if (!string.IsNullOrEmpty(filter.Name) && !formElement.Name.ToLower().Contains(filter.Name.ToLower()))
+                if (!string.IsNullOrEmpty(filter.Name) && formElement.Name.IndexOf(filter.Name, StringComparison.OrdinalIgnoreCase) < 0)
                     continue;
 
                 if (filter.ContainsTableName != null)
                 {
-                    bool containsName = filter.ContainsTableName.Any(tableName => formElement.TableName.ToLower().Contains(tableName.ToLower()));
+                    bool containsName = filter.ContainsTableName.Any(tableName => formElement.TableName.IndexOf(tableName, StringComparison.OrdinalIgnoreCase) >= 0);
                     if (!containsName)
                         continue;
-                }   
+                }
                 
                 if (filter.LastModifiedFrom.HasValue && file.LastWriteTime < filter.LastModifiedFrom)
                     continue;

@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace JJMasterData.Commons.Util;
 
-public class XmlHelper
+public static class XmlHelper
 {
     private static string RemoveText(Match m) { return ""; }
 
