@@ -27,27 +27,27 @@ public class HtmlTemplateService(
         var dataSource = await entityRepository.GetDataSetAsync(command);
 
         string renderedTemplate;
-        
-        if (fluidParser.TryParse(action.HtmlTemplate, out var template, out var error))
-        {   
-            var context = new TemplateContext(new {DataSource = EnumerableHelper.ConvertDataSetToArray(dataSource)});
-            
-            var localize = new FunctionValue((args, _) => 
+
+        if (!fluidParser.TryParse(action.HtmlTemplate, out var template, out var error))
+        {
+            renderedTemplate = error;
+        }
+        else
+        {
+            var context = new TemplateContext(new { DataSource = EnumerableHelper.ConvertDataSetToArray(dataSource) });
+
+            var localize = new FunctionValue((args, _) =>
             {
                 var firstArg = args.At(0).ToStringValue();
                 var localizedString = stringLocalizer[firstArg, args.Values.Select(v => v.ToStringValue())];
                 return new ValueTask<FluidValue>(new StringValue(localizedString));
             });
-            
+
             context.SetValue("localize", localize);
-            
+
             renderedTemplate = await template.RenderAsync(context);
         }
-        else
-        {
-            renderedTemplate = error;
-        }
-        
+
         var html = new HtmlBuilder();
         html.AppendDiv(div =>
         {
@@ -63,7 +63,7 @@ public class HtmlTemplateService(
         {
             iframe.WithCssClass("modal-iframe");
             iframe.WithId("jjmasterdata-template-iframe");
-            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(renderedTemplate));
+            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(renderedTemplate) ?? string.Empty);
         });
 
         return html;

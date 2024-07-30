@@ -14,7 +14,7 @@ public sealed class MasterDataStringLocalizerFactory : IStringLocalizerFactory
     private IEntityRepository EntityRepository { get; }
     private IMemoryCache Cache { get; }
     private IOptionsMonitor<MasterDataCommonsOptions> Options { get; }
-    
+
     public MasterDataStringLocalizerFactory(
         ResourceManagerStringLocalizerFactory resourceManagerStringLocalizerFactory,
         IMemoryCache cache,
