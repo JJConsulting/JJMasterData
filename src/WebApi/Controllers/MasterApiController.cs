@@ -83,8 +83,8 @@ public class MasterApiController(MasterApiService service) : ControllerBase
     private ActionResult<ResponseLetter> GetResponseMessage(IEnumerable<ResponseLetter> responseLetters)
     {
         var responseLetterList = responseLetters.ToList();
-        
-        if (!responseLetterList.Any())
+
+        if (responseLetterList.Count == 0)
             throw new ArgumentNullException(nameof(responseLetters), @"Response not found");
 
         if (responseLetterList.Count == 1)
