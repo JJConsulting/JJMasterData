@@ -56,7 +56,7 @@ public class FormValuesService(
 
             if (parsedValue is not null)
                 values.Add(field.Name, parsedValue);
-            else if (value == string.Empty)
+            else if (value?.Length == 0)
                 values.Add(field.Name, null);
         }
         catch (Exception ex)
@@ -181,7 +181,7 @@ public class FormValuesService(
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        if (!formStateData.Values.Any())
+        if (formStateData.Values.Count == 0)
         {
             var dbValues = await GetDbValues(formElement);
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);

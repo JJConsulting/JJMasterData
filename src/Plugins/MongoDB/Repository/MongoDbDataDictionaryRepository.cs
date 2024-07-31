@@ -44,14 +44,14 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
     {
         var formElements = await _formElementCollection.FindAsync(_ => true);
         var formElementEntities = await formElements.ToListAsync();
-        return formElementEntities.Select(f => f.FormElement).ToList();
+        return formElementEntities.ConvertAll(f => f.FormElement);
     }
     
     public List<FormElement> GetFormElementList(bool? apiSync = null)
     {
         var formElements =  _formElementCollection.Find(_ => true);
         var formElementEntities = formElements.ToList();
-        return formElementEntities.Select(f => f.FormElement).ToList();
+        return formElementEntities.ConvertAll(f => f.FormElement);
     }
 
     public async Task<List<string>> GetNameListAsync()
@@ -75,7 +75,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
 
         var list = await query.ToListAsync();
         
-        return new ListResult<FormElementInfo>(list.Select(formElement => new FormElementInfo(formElement.FormElement, formElement.LastModified)).ToList(),totalRecords);
+        return new ListResult<FormElementInfo>(list.ConvertAll(formElement => new FormElementInfo(formElement.FormElement, formElement.LastModified)),totalRecords);
     }
     
     

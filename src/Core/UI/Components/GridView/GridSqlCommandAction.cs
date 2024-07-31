@@ -72,7 +72,7 @@ internal sealed class GridSqlCommandAction(JJGridView gridView)
     {
         var formElement = gridView.FormElement;
         Dictionary<string, object> formValues;
-        if (map.PkFieldValues.Any())
+        if (map.PkFieldValues.Count > 0)
         {
             formValues = await gridView.EntityRepository.GetFieldsAsync(formElement, map.PkFieldValues);
         }

@@ -382,11 +382,11 @@ public class JJAuditLogView : AsyncComponent
             }
 
             if (row["origin"]!.Equals((int)DataContextSource.Api))
-                origem = DataContextSource.Api.ToString();
+                origem = nameof(DataContextSource.Api);
             else if (row["origin"].Equals((int)DataContextSource.Form))
-                origem = DataContextSource.Form.ToString();
+                origem = nameof(DataContextSource.Form);
             else if (row["origin"].Equals((int)DataContextSource.Api))
-                origem = DataContextSource.Upload.ToString();
+                origem = nameof(DataContextSource.Upload);
 
             string logId = row["id"].ToString();
             string message = $"{action} [{origem}] {row["userId"]?.ToString() ?? string.Empty}";

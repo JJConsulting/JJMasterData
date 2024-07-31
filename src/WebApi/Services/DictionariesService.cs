@@ -52,7 +52,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         foreach (var os in listSync)
         {
             var dStartObj = DateTime.Now;
-            var dictionary = dictionaries.FirstOrDefault(x => x.Name.Equals(os.Name));
+            var dictionary = dictionaries.Find(x => x.Name.Equals(os.Name));
             if (dictionary == null)
                 throw new JJMasterDataException($"Element {os.Name} not found or not configured for sync");
 

@@ -172,7 +172,7 @@ public class SqlServerWriteProcedureScripts(
 
         var autonumericFields = pks.FindAll(x => x.AutoNum);
 
-        if (autonumericFields.Any())
+        if (autonumericFields.Count > 0)
         {
             sql.Append(Tab, 2);
             sql.Append("OUTPUT ");

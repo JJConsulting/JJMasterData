@@ -61,7 +61,7 @@ public class DataDictionaryFilter
             result[DataDictionaryStructure.Name] = Name;
         }
         
-        if (ContainsTableName != null && ContainsTableName.Any())
+        if (ContainsTableName?.Count > 0)
         {
             string tableNameFilter = string.Empty;
             for (int i = 0; i < ContainsTableName.Count; i++)

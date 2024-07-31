@@ -11,9 +11,9 @@ public class SqlServerAlterTableScripts : SqlServerScriptsBase
     {
         var elementFields = fields.ToList();
     
-        if (!elementFields.Any())
+        if (elementFields.Count == 0)
         {
-            return string.Empty; 
+            return string.Empty;
         }
 
         var fieldDefinitions =

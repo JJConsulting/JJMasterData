@@ -68,7 +68,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 };
 
                 var searchBoxValues = await dataItemService.GetValuesAsync(field.DataItem, dataQuery);
-                var rowValue = searchBoxValues.FirstOrDefault(v =>
+                var rowValue = searchBoxValues.Find(v =>
                     string.Equals(v.Id.Trim(), searchId, StringComparison.InvariantCultureIgnoreCase));
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
             case FormComponent.Email:

@@ -46,13 +46,13 @@ public class LoggerFormElementFactory(
         {
             Items =
             [
-                new("0", LogLevel.Trace.ToString(), IconType.SolidMapLocation, "#808080"),
-                new("1", LogLevel.Debug.ToString(), IconType.Bug, "#198754"),
-                new("2", LogLevel.Information.ToString(), IconType.InfoCircle, "#0d6efd"),
-                new("3", LogLevel.Warning.ToString(), IconType.SolidTriangleExclamation, "#ffc107"),
-                new("4", LogLevel.Error.ToString(), IconType.TimesCircle, "#dc3545"),
-                new("5", LogLevel.Critical.ToString(), IconType.Fire, "#FF5733"),
-                new("6", LogLevel.None.ToString(), IconType.CircleO, "#808080")
+                new("0", nameof(LogLevel.Trace), IconType.SolidMapLocation, "#808080"),
+                new("1", nameof(LogLevel.Debug), IconType.Bug, "#198754"),
+                new("2", nameof(LogLevel.Information), IconType.InfoCircle, "#0d6efd"),
+                new("3", nameof(LogLevel.Warning), IconType.SolidTriangleExclamation, "#ffc107"),
+                new("4", nameof(LogLevel.Error), IconType.TimesCircle, "#dc3545"),
+                new("5", nameof(LogLevel.Critical), IconType.Fire, "#FF5733"),
+                new("6", nameof(LogLevel.None), IconType.CircleO, "#808080")
             ],
             GridBehavior = DataItemGridBehavior.Icon,
             ShowIcon = true

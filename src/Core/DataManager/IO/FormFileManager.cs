@@ -114,7 +114,7 @@ public class FormFileManager(string memoryFilesSessionName,
     public FormFileInfo GetFile(string fileName)
     {
         var files = GetFiles();
-        var file = files.FirstOrDefault(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
+        var file = files.Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
         
         return file;
     }

@@ -279,7 +279,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
             SearchId = searchId
         };
         var values = await DataItemService.GetValuesAsync(DataItem, dataQuery);
-        return values.FirstOrDefault(v => v.Id == searchId);
+        return values.Find(v => v.Id == searchId);
     }
 
 

@@ -177,7 +177,7 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (!_relationValues.Any())
+            if (_relationValues.Count == 0)
             {
                 _relationValues = GetRelationValuesFromForm();
             }
@@ -557,7 +557,7 @@ public class JJFormView : AsyncComponent
         {
             var visibleRelationships = GetVisibleRelationships(values, PageState.Update);
             
-            if(visibleRelationships.Any())
+            if(visibleRelationships.Count > 0)
             {
                 PageState = PageState.Update;
                 return await GetFormResult(values, PageState.View, false);
@@ -769,7 +769,7 @@ public class JJFormView : AsyncComponent
                 
                 var result = await pluginActionHandler.ExecuteActionAsync(context);
                 
-                if (context.SecretValues.Any())
+                if (context.SecretValues.Count > 0)
                     SetSecretValues(context.SecretValues);
 
                 return result;
@@ -786,7 +786,7 @@ public class JJFormView : AsyncComponent
                 
                 var result = await pluginFieldActionHandler.ExecuteActionAsync(context);
                 
-                if (context.SecretValues.Any())
+                if (context.SecretValues.Count > 0)
                     SetSecretValues(context.SecretValues);
 
                 return result;
@@ -1279,7 +1279,7 @@ public class JJFormView : AsyncComponent
     
     private static bool ContainsRelationshipLayout(List<FormElementRelationship> visibleRelationships)
     {
-        return visibleRelationships.Any() && visibleRelationships.Any(r => !r.IsParent);
+        return visibleRelationships.Count > 0 && visibleRelationships.Any(r => !r.IsParent);
     }
 
     private async Task<HtmlBuilder> GetDataPanelHtml()
@@ -1306,7 +1306,7 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(toolbar);
 
-        if (DataPanel.Errors.Any())
+        if (DataPanel.Errors.Count > 0)
             formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
         
         return formHtml;
@@ -1333,7 +1333,7 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(toolbar);
 
-        if (DataPanel.Errors.Any())
+        if (DataPanel.Errors.Count > 0)
             formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
         
         return formHtml;
@@ -1476,7 +1476,7 @@ public class JJFormView : AsyncComponent
     {
         var values = await DataPanel.GetFormValuesAsync();
 
-        if (!RelationValues.Any())
+        if (RelationValues.Count == 0)
             return values;
 
         DataHelper.CopyIntoDictionary(values, RelationValues!);

@@ -10,7 +10,7 @@ public class OrderByData
 {
     private Dictionary<string,OrderByDirection> Fields { get; } = new();
 
-    public bool Any() => Fields.Any();
+    public bool Any() => Fields.Count > 0;
     
     public string? ToQueryParameter()
     {
@@ -60,7 +60,7 @@ public class OrderByData
         {
             string[] fieldParts = field.Split(' ');
             
-            var directionStr = OrderByDirection.Asc.ToString(); 
+            var directionStr = nameof(OrderByDirection.Asc);
             
             if(fieldParts.Length == 2)
                 directionStr = fieldParts[1].ToUpper();

@@ -25,7 +25,7 @@ public static class ColorExtensions
     public static string ToButtonColorString(this BootstrapColor color)
     {
         if (BootstrapHelper.Version >= 4 && color == BootstrapColor.Default)
-            return BootstrapColor.Secondary.ToColorString();
+            return "secondary";
         
         return color.ToColorString();
     }
@@ -33,7 +33,7 @@ public static class ColorExtensions
     public static string ToLinkColorString(this BootstrapColor color)
     {
         if (BootstrapHelper.Version >= 4 && color == BootstrapColor.Default)
-            return BootstrapColor.Default.ToString().ToLower();
+            return "default";
 
         return color.ToColorString();
     }

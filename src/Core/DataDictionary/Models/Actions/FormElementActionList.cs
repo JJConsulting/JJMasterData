@@ -68,7 +68,7 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public void Set(BasicAction item)
     {
-        var existingAction = List.FirstOrDefault(a => a.Name == item.Name);
+        var existingAction = List.Find(a => a.Name == item.Name);
         if (existingAction != null)
         {
             var index = List.IndexOf(existingAction);

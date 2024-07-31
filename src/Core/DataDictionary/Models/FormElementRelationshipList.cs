@@ -82,7 +82,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     private void SetId(FormElementRelationship item)
     {
-        var highestId = _formRelationships.Any() ? _formRelationships.Max(x => x.Id) : 1;
+        var highestId = _formRelationships.Count > 0 ? _formRelationships.Max(x => x.Id) : 1;
         item.Id = highestId + 1;
     }
 
@@ -174,7 +174,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     public FormElementRelationshipList DeepCopy()
     {
         return new FormElementRelationshipList(
-            _baseRelationships.Select(b=>b.DeepCopy()).ToList(),
+            _baseRelationships.ConvertAll(b=>b.DeepCopy()),
             _formRelationships.ConvertAll(r=>r.DeepCopy()));
     }
 }

@@ -81,7 +81,7 @@ internal sealed class GridToolbar(JJGridView gridView)
                 groupedAction.Actions.Add(linkButton);
         }
 
-        if (groupedAction.Actions.Any())
+        if (groupedAction.Actions.Count > 0)
             toolbar.Items.Add(groupedAction.GetHtmlBuilder());
         
     }

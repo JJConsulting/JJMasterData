@@ -76,7 +76,7 @@ public class ExpressionTagHelper(
             modelValue = Value;
         }
 
-        var isInvalid = ViewContext.ModelState[name]?.Errors.Any() ?? false;
+        var isInvalid = ViewContext.ModelState[name]?.Errors.Count > 0;
 
         var splittedExpression = modelValue?.Split(':', 2);
 
