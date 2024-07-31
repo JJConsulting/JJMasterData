@@ -102,7 +102,11 @@ public static class ServiceCollectionExtensions
         services.AddMasterDataWebOptimizer();
 
         services.AddHttpContextAccessor();
-        services.AddSession();
+        services.AddSession(o =>
+        {
+            o.Cookie.Name =".JJMasterData.Session";
+            o.Cookie.IsEssential = true;
+        });
         services.AddMemoryCache();
         services.AddActionFilters();
     }
