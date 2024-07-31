@@ -11,7 +11,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
 
     internal HtmlBuilder GetLoadingHtml()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         
         div.WithCssClass("text-center");
         

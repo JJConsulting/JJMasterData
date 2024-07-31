@@ -163,9 +163,9 @@ public class ExcelWriter(
         string value = string.Empty;
         if (field.DataBehavior is not FieldBehavior.Virtual && field.DataBehavior is not FieldBehavior.WriteOnly)
         {
-            if (row.Keys.Contains(field.Name))
+            if (row.TryGetValue(field.Name, out var cellValue))
             {
-                value = FieldFormattingService.FormatValue(field, row[field.Name]);
+                value = FieldFormattingService.FormatValue(field, cellValue);
             }
         }
 
@@ -176,8 +176,7 @@ public class ExcelWriter(
                 value = $"<a href=\"{link}\">{value}</a>";
             else
             {
-                if (value != null)
-                    value = value.Replace(",", "<br style=\"mso-data-placement:same-cell;\"/>");
+                value = value?.Replace(",", "<br style=\"mso-data-placement:same-cell;\"/>");
             }
         }
 

@@ -7,6 +7,6 @@ public interface IExcelWriter : IExportationWriter
 {
     bool ShowBorder { get; set; }
     bool ShowRowStriped { get; set; }
-    
+
     event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
 }

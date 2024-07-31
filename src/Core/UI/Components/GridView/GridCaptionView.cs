@@ -34,7 +34,7 @@ internal sealed class GridCaptionView(
 
     private async Task<HtmlBuilder> GetCaptionHtmlBuilder(FormElementField field)
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
 
         if (field != null)
         {

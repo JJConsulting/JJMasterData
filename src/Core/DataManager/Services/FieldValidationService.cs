@@ -148,7 +148,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
                 break;
             case FormComponent.Text:
             case FormComponent.TextArea:
-                if (field.ValidateRequest && (value?.ToString().ToLower().Contains("<script") ?? false))
+                if (field.ValidateRequest && value.ToString()?.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     return Localizer["{0} field contains invalid or not allowed character", fieldName];
                 }

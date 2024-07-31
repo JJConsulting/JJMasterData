@@ -28,12 +28,12 @@ internal static class ValidateBrazil
             return false;
         }
 
-        if ((pInscr.Trim().ToUpper() == "ISENTO"))
+        if (string.Equals(pInscr.Trim(), "ISENTO", StringComparison.OrdinalIgnoreCase))
             return true;
 
         for (intPos = 1; intPos <= pInscr.Trim().Length; intPos++)
         {
-            if ((("0123456789P".IndexOf(pInscr.Substring((intPos - 1), 1), 0, StringComparison.OrdinalIgnoreCase) + 1) > 0))
+            if (("0123456789P".IndexOf(pInscr.Substring((intPos - 1), 1), 0, StringComparison.OrdinalIgnoreCase) + 1) > 0)
                 strOrigem = (strOrigem + pInscr.Substring((intPos - 1), 1));
         }
 

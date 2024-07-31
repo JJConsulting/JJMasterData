@@ -114,7 +114,7 @@ public class FormFileManager(string memoryFilesSessionName,
     public FormFileInfo GetFile(string fileName)
     {
         var files = GetFiles();
-        var file = files.FirstOrDefault(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
+        var file = files.Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
         
         return file;
     }
@@ -305,8 +305,8 @@ public class FormFileManager(string memoryFilesSessionName,
             Directory.CreateDirectory(FolderPath);
 
         string fileFullName = Path.Combine(FolderPath, file.FileName);
-        var ms = new MemoryStream(file.Bytes);
-        var fileStream = File.Create(fileFullName);
+        using var ms = new MemoryStream(file.Bytes);
+        using var fileStream = File.Create(fileFullName);
         ms.Seek(0, SeekOrigin.Begin);
         ms.CopyTo(fileStream);
         fileStream.Close();

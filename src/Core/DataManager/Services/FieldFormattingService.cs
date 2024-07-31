@@ -68,7 +68,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 };
 
                 var searchBoxValues = await dataItemService.GetValuesAsync(field.DataItem, dataQuery);
-                var rowValue = searchBoxValues.FirstOrDefault(v =>
+                var rowValue = searchBoxValues.Find(v =>
                     string.Equals(v.Id.Trim(), searchId, StringComparison.InvariantCultureIgnoreCase));
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
             case FormComponent.Email:
@@ -87,7 +87,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         if (string.IsNullOrEmpty(value))
             return string.Empty;
 
-        var a = new A();
+        var a = new HtmlBuilder(HtmlTag.A);
         a.WithAttribute("href", $"mailto:{value}");
         a.AppendText(value);
 

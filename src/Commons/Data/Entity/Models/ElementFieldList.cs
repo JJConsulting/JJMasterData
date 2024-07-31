@@ -39,7 +39,7 @@ public class ElementFieldList : IList<ElementField>
     {
         foreach(ElementField field in _list)
         {
-            if (field.Name.ToLower().Equals(name.ToLower()))
+            if (field.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                 return true;
         }
 
@@ -206,7 +206,7 @@ public class ElementFieldList : IList<ElementField>
         {
             foreach (ElementField val in _list)
             {
-                if (val.Name.ToLower().Equals(fieldName.ToLower()))
+                if (val.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase))
                     return val;
             }
 
@@ -218,7 +218,7 @@ public class ElementFieldList : IList<ElementField>
             for (int i = 0; i < _list.Count; i++)
             {
                 ElementField e = _list[i];
-                if (e.Name.ToLower().Equals(fieldName.ToLower()))
+                if (e.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase))
                 {
                     _list[i] = value;
                     isOk = true;

@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -96,7 +97,7 @@ public partial class DataAccess
         ConnectionString = connectionString;
         ConnectionProvider = dataAccessProvider;
     }
-    
+
     [ActivatorUtilitiesConstructor]
     public DataAccess(IOptionsSnapshot<MasterDataCommonsOptions> options)
     {
@@ -104,7 +105,8 @@ public partial class DataAccess
         ConnectionString = optionsValue.ConnectionString ?? throw new ArgumentNullException(nameof(optionsValue.ConnectionString));
         ConnectionProvider = optionsValue.ConnectionProvider;
     }
-    
+
+    [MustDisposeResource]
     public DbConnection GetConnection()
     {
         var connection = Factory.CreateConnection();
@@ -139,8 +141,8 @@ public partial class DataAccess
         ExecuteDataCommand(cmd, dataAdapter => dataAdapter.Fill(dataTable));
         return dataTable;
     }
-    
-    
+
+
     /// <summary>
     /// Returns a DataSet object populated by a SQL string. Use a <see cref="DataAccessCommand"/> if you need parameters.
     /// </summary>
@@ -148,7 +150,7 @@ public partial class DataAccess
     {
         return GetDataSet(new DataAccessCommand(sql));
     }
-    
+
     /// <summary>
     ///  Returns a DataSet object populated by a <see cref="DataAccessCommand"/>.
     /// </summary>
@@ -158,7 +160,7 @@ public partial class DataAccess
         ExecuteDataCommand(cmd, dataAdapter => dataAdapter.Fill(dataSet));
         return dataSet;
     }
-    
+
     private void ExecuteDataCommand(DataAccessCommand cmd, Action<DbDataAdapter> fillAction)
     {
         try
@@ -171,7 +173,7 @@ public partial class DataAccess
                 using var dataAdapter = Factory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
                 fillAction(dataAdapter);
-            
+
                 foreach (var parameter in cmd.Parameters)
                 {
                     if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
@@ -184,7 +186,7 @@ public partial class DataAccess
             throw GetDataAccessException(ex, cmd);
         }
     }
-    
+
     /// <summary>
     /// Returns a DataTable object populated from a sql.
     /// </summary>
@@ -393,8 +395,6 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
-
-
             using (dbCommand.Connection)
             {
                 numberOfRowsAffected += dbCommand.ExecuteNonQuery();
@@ -420,7 +420,6 @@ public partial class DataAccess
     public Hashtable? GetHashtable(string sql) => GetHashtable(new DataAccessCommand(sql));
     
     public Dictionary<string,object?>? GetDictionary(string sql) => GetDictionary(new DataAccessCommand(sql));
-
     
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
@@ -638,14 +637,13 @@ public partial class DataAccess
 
         return command;
     }
-    
     private static Exception GetDataAccessException(Exception ex, DataAccessCommand? cmd)
     {
         return GetDataAccessException(ex, cmd?.Sql ?? string.Empty, cmd?.Parameters);
     }
 
     private static Exception GetDataAccessException(
-        Exception ex, 
+        Exception ex,
         string sql,
         List<DataAccessParameter>? parameters = null)
     {
@@ -671,16 +669,14 @@ public partial class DataAccess
 
     }
 
+    [MustDisposeResource]
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = Factory.CreateCommand();
-        
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
-        
         if (string.IsNullOrEmpty(command.Sql))
             throw new DataAccessException("Sql Command cannot be null or empty.");
-        
         dbCommand.CommandType = command.Type;
         dbCommand.CommandText = command.Sql;
         dbCommand.CommandTimeout = TimeOut;
@@ -728,14 +724,10 @@ public partial class DataAccess
 
         try
         {
-
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection =  GetConnection();
-
-
+            dbCommand.Connection = GetConnection();
             using (dbCommand.Connection)
             {
-
                 using (var dataReader =  dbCommand.ExecuteReader())
                 {
                     var columnNames = Enumerable.Range(0, dataReader.FieldCount)
@@ -762,7 +754,6 @@ public partial class DataAccess
                 {
                     param.Value = dbCommand.Parameters[param.Name].Value;
                 }
-                
             }
         }
         catch (Exception ex)

@@ -196,7 +196,7 @@ public class SqlDataDictionaryRepository(
     {
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
         var fields = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
-        return fields.Any();
+        return fields.Count > 0;
     }
 
     public async Task CreateStructureIfNotExistsAsync()
@@ -218,7 +218,7 @@ public class SqlDataDictionaryRepository(
                 Filters = filters!, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
             });
 
-        var formElementInfoList = result.Data.Select(FormElementInfo.FromDictionary).ToList();
+        var formElementInfoList = result.Data.ConvertAll(FormElementInfo.FromDictionary);
 
         return new ListResult<FormElementInfo>(formElementInfoList, result.TotalOfRecords);
     }

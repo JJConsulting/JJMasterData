@@ -11,7 +11,7 @@ public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        return new Input()
+        return new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithValue(Text)
             .WithAttribute("title", Title)

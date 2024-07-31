@@ -27,7 +27,7 @@ public class UrlRedirectService(
 
         Dictionary<string,object> dbValues;
 
-        if (actionMap.PkFieldValues.Any())
+        if (actionMap.PkFieldValues.Count > 0)
         {
             dbValues = await entityRepository.GetFieldsAsync(dataPanel.FormElement, actionMap.PkFieldValues);
         }

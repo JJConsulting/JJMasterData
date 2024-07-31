@@ -247,7 +247,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
     private async Task<JJCollapsePanel> GetFilterScreenCollapse()
     {
-        var body = new Div();
+        var body = new HtmlBuilder(HtmlTag.Div);
         body.WithCssClass("col-sm-12");
         body.Append(await GetHtmlToolBarSearch(isToolBar:false));
         

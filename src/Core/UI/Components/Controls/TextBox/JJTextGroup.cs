@@ -55,7 +55,7 @@ public sealed class JJTextGroup(
             if (UseFloatingLabel)
             {
                 input.WithSingleAttribute("placeholder");
-                return new Div().WithCssClass("form-floating")
+                return new HtmlBuilder(HtmlTag.Div).WithCssClass("form-floating")
                     .Append(input)
                     .AppendLabel(label =>
                     {

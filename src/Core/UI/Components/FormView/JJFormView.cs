@@ -177,7 +177,7 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (!_relationValues.Any())
+            if (_relationValues.Count == 0)
             {
                 _relationValues = GetRelationValuesFromForm();
             }
@@ -557,7 +557,7 @@ public class JJFormView : AsyncComponent
         {
             var visibleRelationships = GetVisibleRelationships(values, PageState.Update);
             
-            if(visibleRelationships.Any())
+            if(visibleRelationships.Count > 0)
             {
                 PageState = PageState.Update;
                 return await GetFormResult(values, PageState.View, false);
@@ -573,7 +573,7 @@ public class JJFormView : AsyncComponent
         return await GridView.GetResultAsync();
     }
 
-    private static ComponentResult CloseModal() => new JsonComponentResult(new {closeModal = true});
+    private static JsonComponentResult CloseModal() => new(new {closeModal = true});
 
     private void AppendInsertSuccessAlert(HtmlBuilder htmlBuilder)
     {
@@ -769,7 +769,7 @@ public class JJFormView : AsyncComponent
                 
                 var result = await pluginActionHandler.ExecuteActionAsync(context);
                 
-                if (context.SecretValues.Any())
+                if (context.SecretValues.Count > 0)
                     SetSecretValues(context.SecretValues);
 
                 return result;
@@ -786,7 +786,7 @@ public class JJFormView : AsyncComponent
                 
                 var result = await pluginFieldActionHandler.ExecuteActionAsync(context);
                 
-                if (context.SecretValues.Any())
+                if (context.SecretValues.Count > 0)
                     SetSecretValues(context.SecretValues);
 
                 return result;
@@ -909,7 +909,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetInsertSelectionListResult()
     {
         var formView = await GetInsertSelectionFormView();
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendHiddenInput($"form-view-insert-selection-values-{Name}");
 
         var result = await formView.GetFormResultAsync();
@@ -970,7 +970,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
         var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         
         var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
         var childElement = await DataDictionaryRepository.GetFormElementAsync(childElementName);
@@ -1045,7 +1045,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetDeleteResult()
     {
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         var messageFactory = ComponentFactory.Html.MessageBox;
         try
         {
@@ -1097,7 +1097,7 @@ public class JJFormView : AsyncComponent
 
         if (PageState == PageState.View)
         {
-            var html = new Div();
+            var html = new HtmlBuilder(HtmlTag.Div);
             
             var logDetailsHtml = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
 
@@ -1122,7 +1122,7 @@ public class JJFormView : AsyncComponent
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         if (ShowTitle)
             html.AppendComponent(GetTitle(new FormStateData(UserValues, PageState.Import)));
@@ -1179,7 +1179,7 @@ public class JJFormView : AsyncComponent
         Dictionary<string, object?> values)
     {
         var formStateData = new FormStateData(values, UserValues, PageState);
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         if (ShowTitle)
             html.AppendComponent(GetTitle(formStateData));
 
@@ -1279,12 +1279,12 @@ public class JJFormView : AsyncComponent
     
     private static bool ContainsRelationshipLayout(List<FormElementRelationship> visibleRelationships)
     {
-        return visibleRelationships.Any() && visibleRelationships.Any(r => !r.IsParent);
+        return visibleRelationships.Count > 0 && visibleRelationships.Any(r => !r.IsParent);
     }
 
     private async Task<HtmlBuilder> GetDataPanelHtml()
     {
-        var formHtml = new Div();
+        var formHtml = new HtmlBuilder(HtmlTag.Div);
         
         ConfigureFormToolbar();
 
@@ -1306,7 +1306,7 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(toolbar);
 
-        if (DataPanel.Errors.Any())
+        if (DataPanel.Errors.Count > 0)
             formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
         
         return formHtml;
@@ -1314,7 +1314,7 @@ public class JJFormView : AsyncComponent
 
     internal async Task<HtmlBuilder> GetParentPanelHtmlAtRelationship(FormElementRelationship relationship)
     {
-        var formHtml = new Div();
+        var formHtml = new HtmlBuilder(HtmlTag.Div);
 
         DataPanel.Values = await DataPanel.GetFormValuesAsync();
         
@@ -1333,7 +1333,7 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(toolbar);
 
-        if (DataPanel.Errors.Any())
+        if (DataPanel.Errors.Count > 0)
             formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
         
         return formHtml;
@@ -1476,7 +1476,7 @@ public class JJFormView : AsyncComponent
     {
         var values = await DataPanel.GetFormValuesAsync();
 
-        if (!RelationValues.Any())
+        if (RelationValues.Count == 0)
             return values;
 
         DataHelper.CopyIntoDictionary(values, RelationValues!);

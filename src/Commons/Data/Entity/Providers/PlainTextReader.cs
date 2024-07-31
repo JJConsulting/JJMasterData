@@ -149,7 +149,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                 logMessage.Append(" ");
                 logMessage.AppendLine(element.Name);
 
-                if (filters.Any())
+                if (filters.Count > 0)
                 {
                     logMessage.Append("- ");
                     logMessage.Append("Filters");

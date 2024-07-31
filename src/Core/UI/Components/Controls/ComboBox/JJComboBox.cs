@@ -81,7 +81,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 
         if (ReadOnly && Enabled)
         {
-            var combobox = new Div();
+            var combobox = new HtmlBuilder(HtmlTag.Div);
             combobox.AppendRange(GetReadOnlyInputs(values));
             return new RenderedComponentResult(combobox);
         }
@@ -109,7 +109,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 
         if (UseFloatingLabel)
         {
-            return new Div().WithCssClass("form-floating")
+            return new HtmlBuilder(HtmlTag.Div).WithCssClass("form-floating")
                 .Append(select)
                 .AppendLabel(label =>
                 {
@@ -187,7 +187,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
     {
         if (SelectedValue != null)
         {
-            var hiddenInput = new Input()
+            var hiddenInput = new HtmlBuilder(HtmlTag.Input)
                 .WithAttribute("type", "hidden")
                 .WithNameAndId(Name)
                 .WithValue(SelectedValue);
@@ -197,7 +197,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 
         var selectedText = GetSelectedText(values);
 
-        var readonlyInput = new Input()
+        var readonlyInput = new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId($"cboview_{Name}")
             .WithCssClass("form-control form-select")
             .WithCssClass(CssClass)
@@ -249,7 +249,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 
         if (DataItem.ShowIcon)
         {
-            var div = new Div();
+            var div = new HtmlBuilder(HtmlTag.Div);
 
             var icon = new JJIcon(item.Icon, item.IconColor, item.Description)
             {
@@ -279,7 +279,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
             SearchId = searchId
         };
         var values = await DataItemService.GetValuesAsync(DataItem, dataQuery);
-        return values.FirstOrDefault(v => v.Id == searchId);
+        return values.Find(v => v.Id == searchId);
     }
 
 

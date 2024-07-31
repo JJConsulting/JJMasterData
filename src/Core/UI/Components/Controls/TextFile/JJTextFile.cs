@@ -179,7 +179,7 @@ public sealed class JJTextFile(IHttpRequest request,
 
     private HtmlBuilder GetHiddenInputHtml()
     {
-        var input = new Input();
+        var input = new HtmlBuilder(HtmlTag.Input);
         input.WithAttribute("type", "hidden")
             .WithNameAndId(Name)
             .WithAttribute("value", GetFileName());

@@ -106,7 +106,7 @@ public class EntityRepository(
     public Dictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys)
     {
         var dataAccess = GetDataAccess(element.ConnectionId);
-        if (!primaryKeys.Any())
+        if (primaryKeys.Count == 0)
             throw new ArgumentException("Your need at least one value at your primary keys.", nameof(primaryKeys));
 
         var totalOfRecords =
@@ -134,7 +134,7 @@ public class EntityRepository(
     public Task<Dictionary<string, object?>> GetFieldsAsync(Element element,
         Dictionary<string, object> primaryKeys)
     {
-        if (!primaryKeys.Any())
+        if (primaryKeys.Count == 0)
             throw new ArgumentException("Your need at least one value at your primary keys.", nameof(primaryKeys));
 
         var totalOfRecords =

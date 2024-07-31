@@ -103,7 +103,7 @@ public static class DataHelper
 
         foreach (var entry in values)
         {
-            var matchingRelationship = relationships.FirstOrDefault(r => r.Columns.Any(c => c.FkColumn == entry.Key));
+            var matchingRelationship = relationships.Find(r => r.Columns.Any(c => c.FkColumn == entry.Key));
 
             if (matchingRelationship != null)
             {
@@ -197,7 +197,7 @@ public static class DataHelper
 
     public static void CopyIntoDictionary(Dictionary<string, object?> valuesToBeReceived, Dictionary<string, object?>? valuesToBeCopied, bool replaceIfKeyExists = false)
     {
-        if (valuesToBeCopied == null || !valuesToBeCopied.Any())
+        if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;
 
         foreach (var entry in valuesToBeCopied)
@@ -216,7 +216,7 @@ public static class DataHelper
 
     public static void RemoveNullValues(Dictionary<string, object?>? values)
     {
-        if (values == null || !values.Any())
+        if (values == null || values.Count == 0)
             return;
 
         var keysToRemove = new List<string>();

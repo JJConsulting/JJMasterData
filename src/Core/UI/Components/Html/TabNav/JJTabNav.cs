@@ -51,7 +51,7 @@ public class JJTabNav : HtmlComponent
 
     private HtmlBuilder GetNavTabs()
     {
-        var ul = new Ul()
+        var ul = new HtmlBuilder(HtmlTag.Ul)
             .WithAttribute("role", "tablist")
             .WithCssClass("nav nav-tabs");
 

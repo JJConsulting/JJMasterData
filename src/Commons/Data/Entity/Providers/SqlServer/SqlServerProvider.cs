@@ -330,7 +330,7 @@ public class SqlServerProvider(
                 Name = row["COLUMN_NAME"].ToString()!.Replace(" ","_"),
                 Label = (string)row["COLUMN_NAME"],
                 Size = (int)row["LENGTH"],
-                AutoNum = ((string)row["TYPE_NAME"]).ToUpper().Contains("IDENTITY"),
+                AutoNum = ((string)row["TYPE_NAME"]).IndexOf("IDENTITY", StringComparison.OrdinalIgnoreCase) >= 0,
                 IsRequired = row["NULLABLE"].ToString()?.Equals("0") ?? false,
                 DataType = GetDataType((string)row["TYPE_NAME"])
             };

@@ -161,7 +161,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         foreach (string order in orders)
         {
             var parValue = order.Split(' ');
-            var isDesc = parValue.Length > 1 && parValue[1].Trim().ToUpper().Equals("DESC");
+            var isDesc = parValue.Length > 1 && parValue[1].Trim().Equals("DESC", System.StringComparison.OrdinalIgnoreCase);
             var sort = new SortItem(
                 parValue[0].Trim(),
                 !isDesc

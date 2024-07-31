@@ -28,7 +28,7 @@ public record ActionContext
             FieldName = FieldName
         };
 
-        if (!FormStateData.Values.Any()) 
+        if (FormStateData.Values.Count == 0)
             return actionMap;
         
         var values = FormStateData.Values;

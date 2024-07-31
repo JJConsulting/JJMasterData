@@ -110,7 +110,7 @@ internal sealed class DataPanelControl
         if (cols >= 1)
             colClass = $" col-sm-{12 / cols}";
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         int lineGroup = int.MinValue;
         HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
@@ -128,11 +128,11 @@ internal sealed class DataPanelControl
             if (lineGroup != field.LineGroup)
             {
                 lineGroup = field.LineGroup;
-                row = new Div().WithCssClass("row");
+                row = new HtmlBuilder(HtmlTag.Div).WithCssClass("row");
                 html.Append(row);
             }
 
-            var formGroup = new Div()
+            var formGroup = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
             
             row?.Append(formGroup);

@@ -113,7 +113,7 @@ public class DataItemService(
             if (elementMap.GroupFieldName != null)
                 item.Group = value[elementMap.GroupFieldName]?.ToString();
 
-            if (searchText == null || item.Description!.ToLower().Contains(searchText.ToLower()))
+            if (searchText == null || item.Description!.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 result.Add(item);
             }

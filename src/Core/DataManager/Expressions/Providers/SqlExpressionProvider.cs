@@ -19,7 +19,7 @@ public sealed class SqlExpressionProvider(IEntityRepository entityRepository) : 
         var command = ExpressionDataAccessCommandFactory.Create(expression, parsedValues);
 
         var result = await entityRepository.GetResultAsync(command,ConnectionId);
-            
+
         return result;
     }
 }

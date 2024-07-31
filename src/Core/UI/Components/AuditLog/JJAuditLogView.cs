@@ -104,7 +104,7 @@ public class JJAuditLogView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         string logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))
         {
@@ -176,7 +176,7 @@ public class JJAuditLogView : AsyncComponent
 
     private async Task<HtmlBuilder> GetLogDetailsHtmlAsync(string logId)
     {
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.WithCssClass("mb-2");
         if (GridView.ShowTitle)
             html.AppendComponent(GridView.GetTitle());
@@ -382,11 +382,11 @@ public class JJAuditLogView : AsyncComponent
             }
 
             if (row["origin"]!.Equals((int)DataContextSource.Api))
-                origem = DataContextSource.Api.ToString();
+                origem = nameof(DataContextSource.Api);
             else if (row["origin"].Equals((int)DataContextSource.Form))
-                origem = DataContextSource.Form.ToString();
+                origem = nameof(DataContextSource.Form);
             else if (row["origin"].Equals((int)DataContextSource.Api))
-                origem = DataContextSource.Upload.ToString();
+                origem = nameof(DataContextSource.Upload);
 
             string logId = row["id"].ToString();
             string message = $"{action} [{origem}] {row["userId"]?.ToString() ?? string.Empty}";

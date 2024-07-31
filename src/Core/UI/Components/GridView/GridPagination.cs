@@ -49,7 +49,7 @@ internal sealed class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetPaginationHtmlBuilder()
     {
-        var ul = new Ul();
+        var ul = new HtmlBuilder(HtmlTag.Ul);
         ul.WithCssClass("pagination");
 
         if (_startButtonIndex > _totalButtons)
@@ -100,7 +100,7 @@ internal sealed class GridPagination(JJGridView gridView)
         textBox.CssClass += " pagination-jump-to-page-input";
 
 
-        yield return new Li()
+        yield return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
             .Append(textBox.GetHtmlBuilder())
             .AppendDiv(div =>
@@ -110,7 +110,7 @@ internal sealed class GridPagination(JJGridView gridView)
                 div.AppendText(StringLocalizer["Page must be between 1 and {0}.", _totalPages]);
             });
 
-        yield return new Li()
+        yield return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
             .Append(new JJLinkButton(GridView.StringLocalizer)
             {
@@ -123,7 +123,7 @@ internal sealed class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetPageButton(int page, IconType? icon = null, string? tooltip = null)
     {
-        var li = new Li()
+        var li = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
             .WithCssClassIf(page == GridView.CurrentPage, "active")
             .Append(HtmlTag.A, a =>
@@ -147,7 +147,7 @@ internal sealed class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetTotalRecordsHtmlBuilder()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight} text-muted");
         div.Append(HtmlTag.Label, label =>
         {

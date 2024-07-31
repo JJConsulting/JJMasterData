@@ -682,7 +682,7 @@ public class JJGridView : AsyncComponent
 
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.WithAttribute("id", Name);
         await html.AppendAsync(HtmlTag.Div, async div =>
         {
@@ -734,7 +734,7 @@ public class JJGridView : AsyncComponent
 
         string? currentAction = CurrentContext.Request[$"grid-view-action-map-{Name}"];
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         if (TryGetSqlAction(out var sqlCommandAction))
         {

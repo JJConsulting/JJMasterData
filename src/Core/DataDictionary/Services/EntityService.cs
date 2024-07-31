@@ -14,7 +14,7 @@ public class EntityService(IValidationDictionary validationDictionary,
 {
     private async Task<bool> ValidateEntity(Entity entity, string originName)
     {
-        if (ValidateName(entity.Name) && !originName.ToLower().Equals(entity.Name.ToLower()))
+        if (ValidateName(entity.Name) && !originName.Equals(entity.Name, StringComparison.OrdinalIgnoreCase))
         {
             if (await DataDictionaryRepository.ExistsAsync(entity.Name))
                 AddError("Name", StringLocalizer["There is already a dictionary with the name {0}",entity.Name]);
@@ -27,7 +27,7 @@ public class EntityService(IValidationDictionary validationDictionary,
         if (!string.IsNullOrEmpty(entity.ReadProcedureName) &&
             !string.IsNullOrEmpty(entity.WriteProcedureName))
         { 
-            if (entity.ReadProcedureName.ToLower().Equals(entity.WriteProcedureName.ToLower()))
+            if (entity.ReadProcedureName.Equals(entity.WriteProcedureName, StringComparison.OrdinalIgnoreCase))
             {
                 AddError("CustomProcNameGet", StringLocalizer["Procedure names cannot be identical"]);
             }

@@ -60,7 +60,7 @@ public partial class HtmlBuilder
     
     public HtmlBuilder AppendBr()
     {
-        var child = new Br();
+        var child = new HtmlBuilder(HtmlTag.Br);
         Append(child);
         return this;
     }

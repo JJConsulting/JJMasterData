@@ -14,7 +14,7 @@ internal sealed class GridTable(JJGridView gridView)
 
     public async Task<HtmlBuilder> GetHtmlBuilder()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("pt-1");
         div.WithCssClassIf(Settings.IsResponsive && !Settings.IsHeaderFixed,  "table-responsive");
         

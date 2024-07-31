@@ -8,6 +8,7 @@
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<WarningsAsErrors>CA1859;CS4014</WarningsAsErrors>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<FileVersion>$(Version)</FileVersion>
@@ -29,6 +30,12 @@
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Roslynator.Analyzers" Version="4.12.4"/>
+		<PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.4"/>
+		<PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.12.4"/>
 	</ItemGroup>
 </Project>
 
