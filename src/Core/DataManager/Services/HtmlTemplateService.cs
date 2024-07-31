@@ -21,6 +21,7 @@ public class HtmlTemplateService(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     FluidParser fluidParser)
 {
+
     public async Task<HtmlBuilder> RenderTemplate(HtmlTemplateAction action, Dictionary<string,object> pkValues)
     {
         var command = ExpressionDataAccessCommandFactory.Create(action.SqlCommand, pkValues);
@@ -39,7 +40,11 @@ public class HtmlTemplateService(
             var localize = new FunctionValue((args, _) =>
             {
                 var firstArg = args.At(0).ToStringValue();
-                var localizedString = stringLocalizer[firstArg, args.Values.Select(v => v.ToStringValue())];
+                var localizerArgs = args.Values.Skip(1).Select(v => v.ToStringValue()).ToArray();
+                
+                // ReSharper disable once CoVariantArrayConversion
+                var localizedString = stringLocalizer[firstArg, localizerArgs.ToArray()];
+
                 return new ValueTask<FluidValue>(new StringValue(localizedString));
             });
 

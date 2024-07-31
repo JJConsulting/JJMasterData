@@ -63,9 +63,8 @@ public class ExpressionsService(
 
     public object? GetExpressionValue(string? expression, FormStateData formStateData)
     {
-        var extractedExpression = GetExpressionFromString(expression);
-        var (expressionType, expressionValue) = extractedExpression;
-
+        var (expressionType, expressionValue) = GetExpressionFromString(expression);
+        
         if (expressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is ISyncExpressionProvider) is
             not ISyncExpressionProvider provider)
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
@@ -109,8 +108,7 @@ public class ExpressionsService(
         string? expression,
         FormStateData formStateData)
     {
-        var extractedExpression = GetExpressionFromString(expression);
-        var (expressionType, expressionValue) = extractedExpression;
+        var (expressionType, expressionValue) = GetExpressionFromString(expression);
 
         if (expressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not
             IAsyncExpressionProvider provider)
