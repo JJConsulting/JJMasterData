@@ -67,7 +67,7 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
     {
         return Search<CpfResult>("cpf", cpf, new Dictionary<string, string>
         {
-            {"data", birthDate.ToString("ddMMyyyy")}
+            {"data", birthDate.ToString("dd/MM/yyyy")}
         });
     }
 
