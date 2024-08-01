@@ -14,16 +14,11 @@ using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Brasil.Services;
 
-public class HubDevService(HttpClient httpClient,
-        IMemoryCache memoryCache,
-        IOptions<HubDevSettings> options)
+public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> options)
     : IReceitaFederalService
 {
-    private HttpClient HttpClient { get; } = httpClient;
-    private IMemoryCache MemoryCache { get; } = memoryCache;
-    private HubDevSettings Settings { get; } = options.Value;
-
-
+    private readonly HubDevSettings _settings = options.Value;
+    
     public bool IsHttps { get; set; } = true;
     
     public bool IgnoreDb { get; set; }
@@ -34,13 +29,10 @@ public class HubDevService(HttpClient httpClient,
         {
             if (string.IsNullOrEmpty(identifier))
                 throw new ArgumentNullException(nameof(identifier));
-
-            if (MemoryCache.TryGetValue(identifier, out T? cacheResult) && cacheResult != null && !IgnoreDb)
-                return cacheResult;
             
             var protocol = IsHttps ? "https://" : "http://";
             var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
-            var url = $"{protocol}{Settings.Url}{endpoint}/?{endpoint}={identifier}&token={Settings.ApiKey}{ignoreDb}";
+            var url = $"{protocol}{_settings.Url}{endpoint}/?{endpoint}={identifier}&token={_settings.ApiKey}{ignoreDb}";
             
             if (additionalParameters is { Count: > 0 })
             {
@@ -48,7 +40,7 @@ public class HubDevService(HttpClient httpClient,
                 url = $"{url}&{additionalQueryString}";
             }
             
-            var message = await HttpClient.GetAsync(url);
+            var message = await httpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
             
             var apiResult = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings()
@@ -57,9 +49,7 @@ public class HubDevService(HttpClient httpClient,
             });
             
             var result = apiResult!["result"]!.ToObject<T>()!;
-
-            MemoryCache.Set<T>(identifier, result, TimeSpan.FromMinutes(30));
-
+            
             return result;
         }
         catch (Exception ex)
