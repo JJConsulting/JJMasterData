@@ -22,19 +22,19 @@ internal sealed class GridFilter(JJGridView gridView)
 {
     private const string FilterActionName = "filter";
     private const string ClearActionName = "clear";
-    
+
     internal const string FilterFieldPrefix = "filter_";
-    
+
     private readonly IHttpContext _currentContext = gridView.CurrentContext;
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = gridView.StringLocalizer;
-    
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer = gridView.StringLocalizer;
+
     private Dictionary<string, object> _currentFilter;
     private Dictionary<string, object> _userFilters;
-    
+
     public string Name => gridView.Name + "-filter";
 
     public event AsyncEventHandler<GridFilterLoadEventArgs> OnFilterLoadAsync;
-    
+
     internal async Task<HtmlBuilder> GetFilterHtml()
     {
         var filterAction = gridView.FilterAction;
@@ -53,16 +53,16 @@ internal sealed class GridFilter(JJGridView gridView)
 
         return filterHtml.Append(await GetDefaultFilter());
     }
-    
+
     public async Task<Dictionary<string, object>> GetCurrentFilterAsync()
     {
         if (_currentFilter != null)
             return _currentFilter;
-        
+
         _currentFilter ??= new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-        
+
         DataHelper.CopyIntoDictionary(_currentFilter, _userFilters);
-     
+
         //Action is captured here, because the user can call GetCurrentFilterAsync before GetResultAsync()
         var currentFilterAction = _currentContext.Request.Form[$"grid-view-filter-action-{gridView.Name}"];
         switch (currentFilterAction)
@@ -77,25 +77,25 @@ internal sealed class GridFilter(JJGridView gridView)
                 await ApplyCurrentFilter(null);
                 return _currentFilter;
         }
-        
+
         var sessionFilter = _currentContext.Session.GetSessionValue<Dictionary<string, object>>(
             $"jjcurrentfilter_{gridView.Name}");
-        
+
         if (sessionFilter != null && gridView.MaintainValuesOnLoad)
         {
             DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
             return _currentFilter;
         }
-        
+
         if (sessionFilter != null && (_currentContext.Request.Form.ContainsFormValues() || IsDynamicPost()))
         {
             DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
             return _currentFilter;
         }
 
-        
+
         await ApplyCurrentFilter(null);
-        
+
         return _currentFilter ?? new Dictionary<string, object>();
     }
 
@@ -109,7 +109,7 @@ internal sealed class GridFilter(JJGridView gridView)
     {
         return !string.IsNullOrEmpty(_currentContext.Request.QueryString["routeContext"]);
     }
-    
+
     public async Task ApplyCurrentFilter(Dictionary<string, object> values)
     {
         _currentFilter ??= new Dictionary<string, object>();
@@ -137,11 +137,12 @@ internal sealed class GridFilter(JJGridView gridView)
         }
 
         var defaultValues =
-            await gridView.FieldValuesService.MergeWithDefaultValuesAsync(gridView.FormElement, new FormStateData(values,gridView.UserValues, PageState.List));
-        
+            await gridView.FieldValuesService.MergeWithDefaultValuesAsync(gridView.FormElement,
+                new FormStateData(values, gridView.UserValues, PageState.List));
+
         DataHelper.CopyIntoDictionary(values, defaultValues);
         DataHelper.CopyIntoDictionary(_currentFilter, values);
-        
+
         _currentContext.Session.SetSessionValue($"jjcurrentfilter_{gridView.Name}", _currentFilter);
     }
 
@@ -166,7 +167,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
         if (fields.Count == 0)
             return new HtmlBuilder(string.Empty);
-        
+
         var values = await GetCurrentFilterAsync();
 
         if (OnFilterLoadAsync != null)
@@ -176,8 +177,8 @@ internal sealed class GridFilter(JJGridView gridView)
         {
             FieldNamePrefix = FilterFieldPrefix
         };
-        
-        var htmlPanel = await dataPanelControl.GetHtmlForm(fields.ConvertAll(f=>f.DeepCopy()));
+
+        var htmlPanel = await dataPanelControl.GetHtmlForm(fields.ConvertAll(f => f.DeepCopy()));
         htmlPanel.WithAttribute("id", $"current-grid-filter-{gridView.Name}");
 
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -202,7 +203,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
         if (action.ShowAsCollapse)
         {
-            var panel = new JJCollapsePanel( gridView.CurrentContext.Request.Form)
+            var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
             {
                 Name = $"grid-view-filter-collapse-{gridView.Name}",
                 HtmlBuilderContent = html,
@@ -221,14 +222,14 @@ internal sealed class GridFilter(JJGridView gridView)
             {
                 Name = $"{gridView.Name}-filter-modal"
             };
-            btnDoFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
-            btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
+            btnDoFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
+            btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
 
             modal.HtmlBuilderContent = html;
             modal.Title = gridView.StringLocalizer["Detailed Filters"];
             modal.Buttons.Add(btnDoFilter);
             modal.Buttons.Add(btnCancel);
-            
+
             html = modal.GetHtmlBuilder();
         }
 
@@ -241,9 +242,9 @@ internal sealed class GridFilter(JJGridView gridView)
     {
         var body = new HtmlBuilder(HtmlTag.Div);
         body.WithCssClass("col-sm-12");
-        body.Append(await GetHtmlToolBarSearch(isToolBar:false));
-        
-        var panel = new JJCollapsePanel( gridView.CurrentContext.Request.Form)
+        body.Append(await GetHtmlToolBarSearch(isToolBar: false));
+
+        var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
         {
             Name = $"filter_collapse_{gridView.Name}",
             HtmlBuilderContent = body,
@@ -258,7 +259,7 @@ internal sealed class GridFilter(JJGridView gridView)
     {
         var searchId = $"jjsearch_{gridView.Name}";
 
-        var textBox = new JJTextBox( gridView.CurrentContext.Request.Form)
+        var textBox = new JJTextBox(gridView.CurrentContext.Request.Form)
         {
             Attributes =
             {
@@ -270,7 +271,7 @@ internal sealed class GridFilter(JJGridView gridView)
             Name = searchId,
             Text = _currentContext.Request.Form[searchId]
         };
-        
+
         var html = new HtmlBuilder();
         if (isToolBar)
         {
@@ -298,23 +299,24 @@ internal sealed class GridFilter(JJGridView gridView)
         return html;
     }
 
-    private static object ParseFilterValue(FormElementField field,string value)
+    private static object ParseFilterValue(FormElementField field, string value)
     {
         var fieldType = field.DataType;
         var component = field.Component;
 
         if (component is FormComponent.Number && !string.IsNullOrEmpty(value))
             return FormValuesService.HandleNumericComponent(fieldType, value);
-    
+
         if (fieldType is FieldType.DateTime or FieldType.DateTime2 && component == FormComponent.Date)
         {
-            return DateTime.TryParse(value, out var dateTime) ?
-                $"{dateTime.ToShortDateString()} {DateTime.MaxValue.ToLongTimeString()}" : null;
+            return DateTime.TryParse(value, out var dateTime)
+                ? $"{dateTime.ToShortDateString()} {DateTime.MaxValue.ToLongTimeString()}"
+                : null;
         }
-    
+
         return value;
     }
-    
+
     private async Task<Dictionary<string, object>> GetFilterFormValues()
     {
         if (gridView.FormElement == null)
@@ -340,15 +342,15 @@ internal sealed class GridFilter(JJGridView gridView)
                 var fromStringValue = _currentContext.Request.Form[$"{name}_from"];
                 if (!string.IsNullOrEmpty(fromStringValue))
                 {
-                    var fromValue = ParseFilterValue(field,fromStringValue);
+                    var fromValue = ParseFilterValue(field, fromStringValue);
                     values.Add($"{field.Name}_from", fromValue);
                 }
 
                 var toStringValue = _currentContext.Request.Form[$"{name}_to"];
-                
-                if (string.IsNullOrEmpty(toStringValue)) 
+
+                if (string.IsNullOrEmpty(toStringValue))
                     continue;
-                
+
                 var toValue = ParseFilterValue(field, toStringValue);
                 values.Add($"{field.Name}_to", toValue);
             }
@@ -368,13 +370,15 @@ internal sealed class GridFilter(JJGridView gridView)
                         value = StringManager.ParseBool(value) ? "1" : "0";
                         break;
                     case FormComponent.Search:
-                        var search = (JJSearchBox)gridView.ComponentFactory.Controls.Create(gridView.FormElement,field, new(values,gridView.UserValues, PageState.Filter),Name,value);
+                        var search = (JJSearchBox)gridView.ComponentFactory.Controls.Create(gridView.FormElement, field,
+                            new(values, gridView.UserValues, PageState.Filter), Name, value);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = await search.GetSelectedValueAsync();
                         break;
                     case FormComponent.Lookup:
-                        var lookup = (JJLookup)gridView.ComponentFactory.Controls.Create(gridView.FormElement,field, new(values,gridView.UserValues, PageState.Filter),Name, value);
+                        var lookup = (JJLookup)gridView.ComponentFactory.Controls.Create(gridView.FormElement, field,
+                            new(values, gridView.UserValues, PageState.Filter), Name, value);
                         lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
                         value = lookup.SelectedValue?.ToString();
@@ -395,9 +399,9 @@ internal sealed class GridFilter(JJGridView gridView)
     }
 
 
-    private Dictionary<string, object>  GetFilterQueryString()
+    private Dictionary<string, object> GetFilterQueryString()
     {
-        Dictionary<string, object>  values = null;
+        Dictionary<string, object> values = null;
         var fieldsFilter = gridView.FormElement.Fields.FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var filter in fieldsFilter)
         {
@@ -423,8 +427,8 @@ internal sealed class GridFilter(JJGridView gridView)
             else
             {
                 var queryStringValue = _currentContext.Request.QueryString[name];
-                
-                if (string.IsNullOrEmpty(queryStringValue)) 
+
+                if (string.IsNullOrEmpty(queryStringValue))
                     continue;
                 values ??= new Dictionary<string, object>();
 
