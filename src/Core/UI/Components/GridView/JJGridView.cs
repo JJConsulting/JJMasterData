@@ -678,7 +678,7 @@ public class JJGridView : AsyncComponent
             return await UrlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
         }
 
-        var gridHtml = new HtmlBuilder();
+        HtmlBuilder? sqlActionError = null;
 
         if (TryGetSqlAction(out var sqlCommandAction))
         {
@@ -691,11 +691,16 @@ public class JJGridView : AsyncComponent
             }
             else if(sqlResult is RenderedComponentResult result)
             {
-                gridHtml.Append(result.HtmlBuilder);
+                sqlActionError = result.HtmlBuilder;
             }
         }
 
-        gridHtml.Append(await GetHtmlBuilderAsync());
+        var gridHtml = await GetHtmlBuilderAsync();
+
+        if (sqlActionError is not null)
+        {
+            gridHtml.Append(sqlActionError);
+        }
         
         return new RenderedComponentResult(gridHtml);
     }
