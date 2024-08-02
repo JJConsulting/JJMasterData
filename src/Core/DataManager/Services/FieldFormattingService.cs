@@ -200,9 +200,12 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                     case FieldType.DateTime or FieldType.DateTime2:
                     {
                         if (DateTime.TryParse(stringValue, out var dateValue))
+                        {
                             stringValue =
                                 dateValue.ToString(
                                     $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} {DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
+                        }
+
                         break;
                     }
                 }
