@@ -86,6 +86,11 @@
                         </div>
                     </div>
                 }
+                <div class="col-sm-12">
+                    <label asp-for="RedirectUrl" class="form-label"></label>
+                    <tooltip title="Redirects to this URL after the command is executed successfully."></tooltip>
+                    <input asp-for="RedirectUrl" class="form-control font-monospace"/>
+                </div>
             </div>
         </div>
         <div id="div-advanced" class="tab-pane fade">

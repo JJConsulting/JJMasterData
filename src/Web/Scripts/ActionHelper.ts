@@ -35,9 +35,14 @@ class ActionHelper {
             urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
             postFormValues({
                 url: urlBuilder.build(), success: data => {
-                    TooltipHelper.dispose("#" + componentName)
-                    HTMLHelper.setOuterHTML(componentName, data);
-                    listenAllEvents("#" + componentName);
+                    if(data){
+                        TooltipHelper.dispose("#" + componentName)
+                        HTMLHelper.setOuterHTML(componentName, data);
+                        listenAllEvents("#" + componentName);
+                    }
+                    else{
+                        SpinnerOverlay.show();
+                    }
                 }
             })
         }

@@ -513,6 +513,7 @@ public class JJGridView : AsyncComponent
             _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
             return _currentActionMap;
         }
+        set => _currentActionMap = value;
     }
 
     private string? SelectedRowsId
@@ -676,8 +677,27 @@ public class JJGridView : AsyncComponent
         {
             return await UrlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
         }
+
+        var gridHtml = new HtmlBuilder();
+
+        if (TryGetSqlAction(out var sqlCommandAction))
+        {
+            var sqlResult = await ExecuteSqlCommand(sqlCommandAction);
+            if (sqlResult == EmptyComponentResult.Value)
+                CurrentActionMap = null;
+            else if (sqlResult is RedirectComponentResult redirectResult)
+            {
+                return redirectResult;
+            }
+            else if(sqlResult is RenderedComponentResult result)
+            {
+                gridHtml.Append(result.HtmlBuilder);
+            }
+        }
+
+        gridHtml.Append(await GetHtmlBuilderAsync());
         
-        return new RenderedComponentResult(await GetHtmlBuilderAsync());
+        return new RenderedComponentResult(gridHtml);
     }
 
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
@@ -731,19 +751,8 @@ public class JJGridView : AsyncComponent
     private async Task<HtmlBuilder> GetTableHtmlBuilder()
     {
         AssertProperties();
-
-        string? currentAction = CurrentContext.Request[$"grid-view-action-map-{Name}"];
-
+        
         var html = new HtmlBuilder(HtmlTag.Div);
-
-        if (TryGetSqlAction(out var sqlCommandAction))
-        {
-            var errorMessage = await ExecuteSqlCommand(sqlCommandAction);
-            if (errorMessage == null)
-                currentAction = null;
-            else
-                html.AppendComponent(errorMessage);
-        }
 
         await SetDataSource();
 
@@ -754,7 +763,7 @@ public class JJGridView : AsyncComponent
         if (SortAction.IsVisible)
             await html.AppendAsync(GetSortingConfigAsync);
         
-        html.AppendRange(GetHiddenInputs(currentAction));
+        html.AppendRange(GetHiddenInputs());
 
         if (CurrentPage <= 0)
         {
@@ -806,11 +815,11 @@ public class JJGridView : AsyncComponent
         };
     }
 
-    private IEnumerable<HtmlBuilder> GetHiddenInputs(string? currentAction)
+    private IEnumerable<HtmlBuilder> GetHiddenInputs()
     {
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter() ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString());
-        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", currentAction ?? string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", EncryptionService.EncryptObject(CurrentActionMap) ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty);
 
         if (EnableMultiSelect)
@@ -862,7 +871,7 @@ public class JJGridView : AsyncComponent
         return false;
     }
 
-    private Task<JJMessageBox?> ExecuteSqlCommand(SqlCommandAction? action)
+    private Task<ComponentResult> ExecuteSqlCommand(SqlCommandAction? action)
     {
         if (action is null)
             throw new JJMasterDataException("Action not found at your FormElement");

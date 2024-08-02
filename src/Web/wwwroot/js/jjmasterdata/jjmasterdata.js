@@ -39,9 +39,14 @@ class ActionHelper {
                 urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
                 postFormValues({
                     url: urlBuilder.build(), success: data => {
-                        TooltipHelper.dispose("#" + componentName);
-                        HTMLHelper.setOuterHTML(componentName, data);
-                        listenAllEvents("#" + componentName);
+                        if (data) {
+                            TooltipHelper.dispose("#" + componentName);
+                            HTMLHelper.setOuterHTML(componentName, data);
+                            listenAllEvents("#" + componentName);
+                        }
+                        else {
+                            SpinnerOverlay.show();
+                        }
                     }
                 });
             }
@@ -2218,6 +2223,7 @@ function postFormValues(options) {
         }
         else if (response.redirected) {
             window.location.href = response.url;
+            return null;
         }
         else if (response.status == 440 || response.status == 403 || response.status == 401) {
             getMasterDataForm().submit();

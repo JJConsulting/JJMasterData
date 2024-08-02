@@ -189,6 +189,10 @@
     <value>Um registro selecionado</value>
     <comment>JJMasterDataApi</comment>
   </data>
+  <data name="Redirects to this URL after the command is executed successfully." xml:space="preserve">
+    <value>Redireciona para esta URL após o comando ser executado com sucesso.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="About" xml:space="preserve">
     <value>Sobre</value>
     <comment>JJMasterDataWeb</comment>
@@ -200,6 +204,10 @@
   <data name="Action" xml:space="preserve">
     <value>Ação</value>
     <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Redirect Url" xml:space="preserve">
+    <value>Url de Redirecionamento</value>
+    <comment>JJMasterDataWeb</comment>
   </data>
   <data name="This field support runtime values between {}. Use {AppPath} for the base path of the application." xml:space="preserve">
     <value>Este campo oferece suporte a valores do runtime entre {}. Use {AppPath} para o caminho da raiz da aplicação.</value>

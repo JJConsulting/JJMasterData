@@ -14,7 +14,7 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class GridSqlCommandAction(JJGridView gridView)
 {
-    public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
+    public async Task<ComponentResult> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
     {
         var messageFactory = gridView.ComponentFactory.Html.MessageBox;
         try
@@ -25,7 +25,7 @@ internal sealed class GridSqlCommandAction(JJGridView gridView)
                 if (selectedRows.Count == 0)
                 {
                     string msg = gridView.StringLocalizer["No lines selected."];
-                    return  messageFactory.Create(msg, MessageIcon.Warning);
+                    return new RenderedComponentResult(messageFactory.Create(msg, MessageIcon.Warning).GetHtmlBuilder());
                 }
 
                 await ExecuteOnList(sqlCommandAction, selectedRows);
@@ -40,10 +40,13 @@ internal sealed class GridSqlCommandAction(JJGridView gridView)
         {
             gridView.Logger.LogSqlActionException(ex, sqlCommandAction.SqlCommand);
             string msg = gridView.StringLocalizer[ExceptionManager.GetMessage(ex)];
-            return messageFactory.Create(msg, MessageIcon.Error);
+            return new RenderedComponentResult(messageFactory.Create(msg, MessageIcon.Error).GetHtmlBuilder());
         }
 
-        return null;
+        if (!string.IsNullOrEmpty(sqlCommandAction.RedirectUrl))
+            return new RedirectComponentResult(sqlCommandAction.RedirectUrl);
+        
+        return EmptyComponentResult.Value;
     }
 
     private bool IsApplyOnList(ActionMap map, SqlCommandAction sqlCommandAction)
