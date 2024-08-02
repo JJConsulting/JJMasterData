@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -24,10 +23,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
         if (value == null || value == DBNull.Value)
             return string.Empty;
-
-        if (field.EncodeHtml)
-            value = HttpUtility.HtmlEncode(value);
-
+        
         string stringValue;
         switch (field.Component)
         {
@@ -39,12 +35,12 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 CultureInfo cultureInfo;
                 if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName)
                     && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
-                    cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString());
+                    cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString()!);
                 else
                     cultureInfo = CultureInfo.CurrentUICulture;
 
-                if (double.TryParse(value?.ToString(), NumberStyles.Currency, cultureInfo, out var currencyValue))
-                    stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
+                if (value is double doubleValue || double.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out doubleValue))
+                    stringValue = doubleValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
                 else
                     stringValue = null;
                 break;
@@ -60,8 +56,8 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
             case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
 
-                var searchId = value?.ToString().Trim();
-                
+                var searchId = value.ToString()?.Trim();
+
                 var dataQuery = new DataQuery(formStateData, fieldSelector.FormElement.ConnectionId)
                 {
                     SearchId = searchId
@@ -78,7 +74,10 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 stringValue = FormatValue(field, value);
                 break;
         }
-
+        
+        if (field.EncodeHtml)
+            stringValue = HttpUtility.HtmlEncode(stringValue);
+        
         return stringValue ?? string.Empty;
     }
 
@@ -127,13 +126,13 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         string stringValue = null;
         if (field.DataType == FieldType.Float)
         {
-            if (double.TryParse(value.ToString(), out var doubleValue))
+            if (value is double doubleValue || double.TryParse(value.ToString(), out doubleValue))
                 stringValue = doubleValue.ToString($"N{field.NumberOfDecimalPlaces}");
         }
         else if (field.DataType == FieldType.Int)
         {
-            if (int.TryParse(value.ToString(), out var intVal))
-                stringValue = intVal.ToString("0");
+            if (value is int intValue || int.TryParse(value.ToString(), out intValue))
+                stringValue = intValue.ToString("0");
         }
         else
         {
