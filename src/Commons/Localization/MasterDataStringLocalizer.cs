@@ -122,12 +122,13 @@ public class MasterDataStringLocalizer(
 	{
 		try
 		{
-			var values = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+			var values = new Dictionary<string, string>(StringComparer.Ordinal);
 			var localizedStrings = resourcesStringLocalizer.GetAllStrings();
 
 			foreach (var localizedString in localizedStrings)
 			{
-				values.Add(localizedString.Name, localizedString.Value);
+				if(!values.ContainsKey(localizedString.Name))
+					values.Add(localizedString.Name, localizedString.Value);
 			}
 
 			return values;
