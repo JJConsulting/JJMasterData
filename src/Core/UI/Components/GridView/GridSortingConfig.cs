@@ -13,19 +13,19 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class GridSortingConfig(JJGridView gridView)
 {
-    private FormElement FormElement { get; } = gridView.FormElement;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = gridView.StringLocalizer;
-    private ExpressionsService ExpressionsService { get; } = gridView.ExpressionsService;
-    private IComponentFactory ComponentFactory { get; } = gridView.ComponentFactory;
-    
+    private readonly FormElement _formElement = gridView.FormElement;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer = gridView.StringLocalizer;
+    private readonly ExpressionsService _expressionsService = gridView.ExpressionsService;
+    private readonly IComponentFactory _componentFactory = gridView.ComponentFactory;
+
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        var dialog = ComponentFactory.Html.ModalDialog.Create();
+        var dialog = _componentFactory.Html.ModalDialog.Create();
         dialog.Name = $"{gridView.Name}-sort-modal";
-        dialog.Title =StringLocalizer["Sort Fields"];
+        dialog.Title = _stringLocalizer["Sort Fields"];
         dialog.Size = ModalSize.Small;
 
-        var btnSort = ComponentFactory.Html.LinkButton.Create();
+        var btnSort = _componentFactory.Html.LinkButton.Create();
         btnSort.Name = $"btnsort_{gridView.Name}";
         btnSort.IconClass = IconType.Check.GetCssClass();
         btnSort.ShowAsButton = true;
@@ -33,7 +33,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         btnSort.OnClientClick = gridView.Scripts.GetSortMultItemsScript();
         dialog.Buttons.Add(btnSort);
 
-        var btnCancel = ComponentFactory.Html.LinkButton.Create();
+        var btnCancel = _componentFactory.Html.LinkButton.Create();
         btnCancel.Text = "Cancel";
         btnCancel.IconClass = IconType.Times.GetCssClass();
         btnCancel.ShowAsButton = true;
@@ -43,7 +43,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         var htmlContent = new HtmlBuilder(HtmlTag.Div)
             .AppendComponent(new JJAlert
             {
-                Title =StringLocalizer["Drag and drop to change order."],
+                Title = _stringLocalizer["Drag and drop to change order."],
                 Icon = IconType.SolidCircleInfo,
                 Color = BootstrapColor.Info,
                 ShowIcon = true,
@@ -69,16 +69,13 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         {
             tr.Append(HtmlTag.Th, th =>
             {
-                th.WithStyle( "width:50px");
+                th.WithStyle("width:50px");
                 th.AppendText("#");
             });
+            tr.Append(HtmlTag.Th, th => { th.AppendText(gridView.StringLocalizer["Column"]); });
             tr.Append(HtmlTag.Th, th =>
             {
-                th.AppendText(gridView.StringLocalizer["Column"]);
-            });
-            tr.Append(HtmlTag.Th, th =>
-            {
-                th.WithStyle( "width:220px");
+                th.WithStyle("width:220px");
                 th.AppendText(gridView.StringLocalizer["Order"]);
             });
         });
@@ -93,9 +90,9 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         tbody.WithCssClass("ui-sortable jjsortable");
 
         var sortList = GetSortList();
-        var fieldsList = sortList.ConvertAll(sort => FormElement.Fields[sort.FieldName]);
+        var fieldsList = sortList.ConvertAll(sort => _formElement.Fields[sort.FieldName]);
 
-        foreach (var item in FormElement.Fields)
+        foreach (var item in _formElement.Fields)
         {
             var f = fieldsList.Find(x => x.Name.Equals(item.Name));
             if (f == null)
@@ -107,19 +104,19 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         foreach (var field in fieldsList.Where(
                      f =>
                          f.DataBehavior is FieldBehavior.Real &&
-                         ExpressionsService.GetBoolValue(f.VisibleExpression, formStateData)))
+                         _expressionsService.GetBoolValue(f.VisibleExpression, formStateData)))
         {
-            var comboBox = ComponentFactory.Controls.ComboBox.Create();
+            var comboBox = _componentFactory.Controls.ComboBox.Create();
             comboBox.Name = $"{field.Name}_order";
             comboBox.SelectedValue = "N";
             comboBox.DataItem.ShowIcon = true;
             comboBox.DataItem.Items =
             [
-                new("A", StringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
-                new("D", StringLocalizer["Descendant"], IconType.SortAmountDesc, null),
-                new("N", StringLocalizer["No Order"], IconType.Genderless, null)
+                new("A", _stringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
+                new("D", _stringLocalizer["Descendant"], IconType.SortAmountDesc, null),
+                new("N", _stringLocalizer["No Order"], IconType.Genderless, null)
             ];
-            
+
             var sort = sortList.Find(x => x.FieldName.Equals(field.Name));
             if (sort != null)
             {
@@ -130,14 +127,8 @@ internal sealed class GridSortingConfig(JJGridView gridView)
             {
                 tr.WithAttribute("id", field.Name);
                 tr.WithCssClass("ui-sortable-handle");
-                tr.Append(HtmlTag.Td, td =>
-                {
-                    td.AppendComponent(new JJIcon("fa fa-arrows"));
-                });
-                tr.Append(HtmlTag.Td, td =>
-                {
-                    td.AppendText(StringLocalizer[field.LabelOrName]);
-                });
+                tr.Append(HtmlTag.Td, td => { td.AppendComponent(new JJIcon("fa fa-arrows")); });
+                tr.Append(HtmlTag.Td, td => { td.AppendText(_stringLocalizer[field.LabelOrName]); });
                 await tr.AppendAsync(HtmlTag.Td, async td =>
                 {
                     var comboHtml = await comboBox.GetHtmlBuilderAsync();
@@ -161,7 +152,8 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         foreach (string order in orders)
         {
             var parValue = order.Split(' ');
-            var isDesc = parValue.Length > 1 && parValue[1].Trim().Equals("DESC", System.StringComparison.OrdinalIgnoreCase);
+            var isDesc = parValue.Length > 1 &&
+                         parValue[1].Trim().Equals("DESC", System.StringComparison.OrdinalIgnoreCase);
             var sort = new SortItem(
                 parValue[0].Trim(),
                 !isDesc
