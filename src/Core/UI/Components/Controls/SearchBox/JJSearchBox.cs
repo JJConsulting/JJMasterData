@@ -25,12 +25,12 @@ public class JJSearchBox : ControlBase, IDataItemControl
     #region "Events"
 
     /// <summary>
-    /// Evento disparado para recuperar os registros com parte do texto digitado
+    /// Event triggered to retrieve records with part of the text entered
     /// </summary>  
     public event EventHandler<SearchBoxQueryEventArgs>? OnSearchQuery;
 
     /// <summary>
-    /// Evento disparado para recuperar a descrição com base no Id
+    /// Event triggered to retrieve description based on Id
     /// </summary>
     public event EventHandler<SearchBoxItemEventArgs>? OnSearchId;
 
@@ -83,7 +83,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     }
 
     /// <summary>
-    /// Quantidade minima de caracteres digitado para disparar a pesquisa
+    /// Minimum number of characters entered to trigger the search
     /// (Default = 1)
     /// </summary>
     public int TriggerLength
@@ -98,8 +98,8 @@ public class JJSearchBox : ControlBase, IDataItemControl
     }
 
     /// <summary>
-    /// Numero máximo de itens que será exibido na lista de pesquisa
-    /// (Default = 10)
+    /// Maximum number of items that will be displayed in the search list
+    /// (Default = 30)
     /// </summary>
     public int NumberOfItems
     {
@@ -107,13 +107,13 @@ public class JJSearchBox : ControlBase, IDataItemControl
         {
             if (Attributes.TryGetValue(NumberOfItemsAttribute, out var attribute))
                 return int.Parse(attribute);
-            return 10;
+            return 30;
         }
         set => Attributes[NumberOfItemsAttribute] = value.ToString();
     }
 
     /// <summary>
-    /// Exibir barra de rolagem na lista de pesquisa
+    /// Show scrollbar in search list
     /// (Default = false)
     /// </summary>
     /// <remarks>
@@ -140,7 +140,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     }
 
     /// <summary>
-    /// Id correspondente ao texto pesquisado
+    /// Id corresponding to the searched text
     /// </summary>
     public async Task<string?> GetSelectedValueAsync()
     {
@@ -168,7 +168,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     }
     
     /// <summary>
-    /// Ao recarregar o painel, manter os valores digitados no formulário
+    /// When reloading the panel, keep the values entered in the form
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
@@ -328,10 +328,8 @@ public class JJSearchBox : ControlBase, IDataItemControl
     }
 
     /// <summary>
-    /// Recupera descrição com base no id
+    /// Retrieve description based on id
     /// </summary>
-    /// <param name="searchId">Id a ser pesquisado</param>
-    /// <returns>Retorna descrição referente ao id</returns>
     public async Task<string?> GetDescriptionAsync(string searchId)
     {
         string? description = null;
