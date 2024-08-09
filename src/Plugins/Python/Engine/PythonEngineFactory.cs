@@ -11,7 +11,7 @@ namespace JJMasterData.Python.Engine;
 /// <remarks>
 /// Gustavo Barros 05/01/2022
 /// </remarks>
-public class PythonEngineFactory
+public static class PythonEngineFactory
 {
     public static ScriptEngine CreateScriptEngine(IEnumerable<string> additionalPaths)
     {
