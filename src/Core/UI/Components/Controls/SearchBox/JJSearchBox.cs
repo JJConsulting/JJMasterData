@@ -226,7 +226,6 @@ public class JJSearchBox : ControlBase, IDataItemControl
         Enabled = true;
         TriggerLength = 1;
         PlaceHolder = "Search...";
-        NumberOfItems = 10;
         ScrollBar = true;
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
