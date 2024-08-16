@@ -2258,7 +2258,7 @@ class SearchBoxListener {
             if (triggerLength == null)
                 triggerLength = "1";
             if (numberOfItems == null)
-                numberOfItems = "10";
+                numberOfItems = "30";
             const urlBuilder = new UrlBuilder();
             for (const pair of queryString.split("&")) {
                 const [key, value] = pair.split("=");
