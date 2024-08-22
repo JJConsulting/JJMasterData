@@ -415,15 +415,14 @@ public class JJFormView : AsyncComponent
         var isInsertSelection = PageState is PageState.Insert &&
                                 GridView.ToolbarActions.InsertAction.ElementNameToSelect ==
                                 childFormView.FormElement.Name;
-        
+
         childFormView.ShowTitle = isInsertSelection;
 
         var panelState = DataPanel.PageState;
 
-        
         if (PageState is PageState.View || panelState is PageState.Insert || panelState is PageState.Update)
             childFormView.DisableActionsAtViewMode();
-        
+
         if (!isInsertSelection)
             return childFormView;
 
@@ -431,7 +430,6 @@ public class JJFormView : AsyncComponent
         childFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
         childFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
 
-        
         return childFormView;
     }
 
@@ -844,9 +842,15 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetDefaultResult(Dictionary<string, object?>? formValues = null)
     {
-        if (PageState is PageState.List || ContainsGridAction())
+        var containsGridAction = false;
+        if (GridView.GridTableActions.Any(a=> a is InsertSelectionAction))
+        {
+            containsGridAction = !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);
+        }
+
+        if (PageState is PageState.List || containsGridAction)
             return await GetGridViewResult();
-        
+
         switch (PageState)
         {
             case PageState.Insert:
@@ -941,19 +945,6 @@ public class JJFormView : AsyncComponent
         return _insertSelectionFormView;
     }
     
-    private async Task<JJFormView> HasInsertSelectionAction(InsertAction insertAction)
-    {
-        var formView = await ComponentFactory.FormView.CreateAsync(insertAction.ElementNameToSelect);
-        formView.FormElement.ParentName = FormElement.Name;
-        formView.UserValues = UserValues;
-        formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
-        
-        formView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
-
-        formView.GridView.GridTableActions.Add(new InsertSelectionAction());
-        return formView;
-    }
-
     private ScriptAction GetInsertSelectionBackAction()
     {
         return new ScriptAction
@@ -1263,11 +1254,12 @@ public class JJFormView : AsyncComponent
         Dictionary<string, object?> values,
         PageState pageState)
     {
+        var formStateData = new FormStateData(values, pageState);
         var visibleRelationships = FormElement
             .Relationships
             .FindAll(r => 
                 r.ViewType != RelationshipViewType.None || r.IsParent
-                && ExpressionsService.GetBoolValue(r.Panel.VisibleExpression, new FormStateData(values, pageState)));
+                && ExpressionsService.GetBoolValue(r.Panel.VisibleExpression, formStateData));
         return visibleRelationships;
     }
 
@@ -1533,8 +1525,6 @@ public class JJFormView : AsyncComponent
 
         return EncryptionService.DecryptDictionary(encryptedRelationValues);
     }
-    
-    private bool ContainsGridAction() => !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);
     
     internal void DisableActionsAtViewMode()
     {
