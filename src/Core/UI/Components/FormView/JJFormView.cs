@@ -480,13 +480,20 @@ public class JJFormView : AsyncComponent
         var field = FormElement.Fields[fieldName];
 
         var scripts = new HtmlBuilder();
+
+        var formStateData = new FormStateData
+        {
+            Values = values,
+            UserValues = UserValues,
+            PageState = PageState
+        };
         
         foreach (var action in field.Actions)
         {
             if (action is not PluginFieldAction { TriggerOnChange: true } pluginAction) 
                 continue;
             
-            var result = await GetPluginActionResult(pluginAction, values, fieldName);
+            var result = await GetPluginActionResult(pluginAction, formStateData, fieldName);
 
             if (result.JsCallback is not null)
                 scripts.AppendScript(result.JsCallback);
@@ -711,14 +718,13 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetPluginActionResult()
     {
-        var formValues = await GetFormValuesAsync();
-
-
+        var formStateData = await GetFormStateDataAsync();
+        
         PluginActionResult result;
         
         try
         {
-            result = await GetPluginActionResult(formValues);
+            result = await GetPluginActionResult((PluginAction)CurrentAction!,formStateData, CurrentActionMap!.FieldName);
         }
         catch (Exception exception)
         {
@@ -726,7 +732,7 @@ public class JJFormView : AsyncComponent
             result = PluginActionResult.Error(StringLocalizer["Error"], exception.Message);
         }
         
-        var formResult = await GetDefaultResult(formValues);
+        var formResult = await GetDefaultResult(formStateData.Values);
 
         if (formResult is HtmlComponentResult htmlComponentResult)
         {
@@ -736,25 +742,11 @@ public class JJFormView : AsyncComponent
         return formResult;
     }
 
-    private Task<PluginActionResult> GetPluginActionResult(Dictionary<string, object?> formValues)
-    {
-        var pluginAction = (PluginAction)CurrentAction!;
-
-        return GetPluginActionResult(pluginAction, formValues, CurrentActionMap!.FieldName);
-    }
-
     private async Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
-        Dictionary<string, object?> values, string? fieldName)
+        FormStateData formStateData, string? fieldName)
     {
         var pluginHandler = PluginHandlers.First(p => p.Id == pluginAction.PluginId);
-
-        var formStateData = new FormStateData
-        {
-            Values = values,
-            UserValues = UserValues,
-            PageState = PageState
-        };
-
+        
         switch (pluginHandler)
         {
             case IPluginActionHandler pluginActionHandler:
