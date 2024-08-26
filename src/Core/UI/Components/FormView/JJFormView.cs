@@ -868,7 +868,7 @@ public class JJFormView : AsyncComponent
             {
                 formValues ??= await GetFormValuesAsync();
                 var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
-                return await GetFormResult(formValues,PageState, reloadFields);
+                return await GetFormResult(formValues, PageState, reloadFields);
             }
             default:
                 return await GetGridViewResult();
@@ -1556,7 +1556,6 @@ public class JJFormView : AsyncComponent
             FormElement = FormElement,
             FormStateData = formStateData,
             FieldName = fieldName,
-            IsSubmit = action is ISubmittableAction { IsSubmit: true },
             ParentComponentName = Name
         };
     }

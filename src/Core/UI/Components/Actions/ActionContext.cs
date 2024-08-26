@@ -14,8 +14,7 @@ public record ActionContext
     public required FormElement FormElement { get; init; }
     public required FormStateData FormStateData { get; init; }
     public required string ParentComponentName { get; init; }
-    public required bool IsSubmit { get; init; }
-
+    public bool IsSubmit => Action is ISubmittableAction { IsSubmit: true };
     public string? FieldName { get; init; }
     
     internal ActionMap ToActionMap(ActionSource actionSource)

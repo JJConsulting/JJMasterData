@@ -1483,7 +1483,6 @@ public class JJGridView : AsyncComponent
             Action = basicAction,
             FormElement = FormElement,
             FormStateData = formStateData,
-            IsSubmit = basicAction is ISubmittableAction { IsSubmit: true },
             ParentComponentName = Name
         };
     }

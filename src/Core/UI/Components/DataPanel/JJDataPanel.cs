@@ -257,7 +257,7 @@ public class JJDataPanel : AsyncComponent
         }
     }
 
-    private async Task<ComponentResult> GetFieldResultAsync<TControl>() where TControl : ControlBase
+    private async ValueTask<ComponentResult> GetFieldResultAsync<TControl>() where TControl : ControlBase
     {
         var fieldName = CurrentContext.Request.QueryString["fieldName"];
         var formStateData = new FormStateData(await GetFormValuesAsync(), UserValues, PageState);

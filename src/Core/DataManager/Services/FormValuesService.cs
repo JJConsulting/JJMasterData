@@ -23,7 +23,6 @@ public class FormValuesService(
     IEncryptionService encryptionService,
     IHttpRequest httpRequest)
 {
-
     private Dictionary<string, object?> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
     {
@@ -138,12 +137,18 @@ public class FormValuesService(
             case FieldType.Float:
                 if (double.TryParse(value, NumberStyles.Any,
                         cultureInfo, out var doubleValue))
+                {
                     parsedValue = doubleValue;
+                }
+
                 break;
             case FieldType.Int:
-                if (int.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
+                if (int.TryParse(value, NumberStyles.Currency,
                         cultureInfo, out var numericValue))
+                {
                     parsedValue = numericValue;
+                }
+
                 break;
         }
 

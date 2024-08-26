@@ -73,7 +73,6 @@ public class TextGroupFactory(
                 FormElement = formElement,
                 FormStateData = controlContext.FormStateData,
                 FieldName = field.Name,
-                IsSubmit = action is ISubmittableAction { IsSubmit: true },
                 ParentComponentName = controlContext.ParentComponentName
             };
 
