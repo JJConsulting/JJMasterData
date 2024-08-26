@@ -148,7 +148,7 @@ public class SQLiteProvider(
 
 
     // ReSharper disable once UnusedMember.Local
-    private string GetRelationshipsScript(Element element)
+    private static string GetRelationshipsScript(Element element)
     {
         StringBuilder sSql = new StringBuilder();
 
@@ -572,7 +572,7 @@ public class SQLiteProvider(
     }
 
     // ReSharper disable once UnusedMember.Local
-    private DataAccessCommand GetScriptCount(Element element, Dictionary<string, object?> filters)
+    private static DataAccessCommand GetScriptCount(Element element, Dictionary<string, object?> filters)
     {
         var fields = element.Fields
             .ToList()

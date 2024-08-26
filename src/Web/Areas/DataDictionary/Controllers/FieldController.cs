@@ -208,7 +208,11 @@ public class FieldController(FieldService fieldService)
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
         ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
-        ViewBag.MaxRequestLength = GetMaxRequestLength();
+        
+        // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
+        // Under normal circumstances, there is no need to increase the size of the HTTP request.
+        ViewBag.MaxRequestLength = 30720000;
+        
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
 
@@ -279,15 +283,4 @@ public class FieldController(FieldService fieldService)
                 break;
         }
     }
-
-    public int GetMaxRequestLength()
-    {
-        // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
-        // Under normal circumstances, there is no need to increase the size of the HTTP request.
-
-        const int maxRequestLength = 30720000;
-
-        return maxRequestLength;
-    }
-
 }

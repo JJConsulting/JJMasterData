@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.UI.Components;
 
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 public class IconFactory
 {
     public JJIcon Create()
