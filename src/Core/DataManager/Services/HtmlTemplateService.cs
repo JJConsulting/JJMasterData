@@ -21,7 +21,6 @@ public class HtmlTemplateService(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     FluidParser fluidParser)
 {
-
     public async Task<HtmlBuilder> RenderTemplate(HtmlTemplateAction action, Dictionary<string,object> pkValues)
     {
         var command = ExpressionDataAccessCommandFactory.Create(action.SqlCommand, pkValues);

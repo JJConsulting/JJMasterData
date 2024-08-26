@@ -24,13 +24,13 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
     public async Task<UploadAreaResultDto> UploadFileAsync(FormFileContent formFile, string? allowedTypes = null)
     {
         UploadAreaResultDto dto = new();
-        
+
         try
         {
-            string message = string.Empty;
-            
+            var message = string.Empty;
+
             ValidateAllowedExtensions(formFile.FileName, allowedTypes);
-            
+
             var args = new FormUploadFileEventArgs(formFile);
             OnFileUploaded?.Invoke(this, args);
 
@@ -38,7 +38,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
             {
                 await OnFileUploadedAsync.Invoke(this, args);
             }
-            
+
             var errorMessage = args.ErrorMessage;
             if (args.SuccessMessage != null)
             {
@@ -47,9 +47,8 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
 
             if (!string.IsNullOrEmpty(errorMessage))
                 throw new JJMasterDataException(errorMessage);
-            
-            dto.SuccessMessage = message;
 
+            dto.SuccessMessage = message;
         }
         catch (JJMasterDataException ex)
         {
@@ -58,7 +57,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
 
         return dto;
     }
-    
+
     /// <summary>
     /// Recovers the file after the POST
     /// </summary>
@@ -68,10 +67,10 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
 
         if (fileData is null)
             return null;
-        
+
         using var stream = new MemoryStream();
         string filename = fileData.FileName;
-        
+
 #if NETFRAMEWORK
         fileData.InputStream.CopyTo(stream);
 #else
@@ -88,7 +87,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
 
         return content;
     }
-    
+
     public bool TryGetFile(string fileName, out FormFileContent? formFile)
     {
         formFile = GetFile(fileName);
@@ -157,6 +156,5 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
         string ext = FileIO.GetFileNameExtension(filename);
         if (list.Contains(ext))
             throw new JJMasterDataException(stringLocalizer["You cannot upload system files"]);
-
     }
 }

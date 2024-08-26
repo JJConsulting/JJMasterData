@@ -77,7 +77,7 @@ public class JJAuditLogView : AsyncComponent
         }
     }
 
-    public FormElement FormElement { get; private set; }
+    public FormElement FormElement { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     private IEntityRepository EntityRepository { get; }

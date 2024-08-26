@@ -40,9 +40,9 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
 
             if (!f.IsPk) continue;
             if (keys.Length > 0)
-                keys.Append(",");
+                keys.Append(',');
 
-            keys.Append("[");
+            keys.Append('[');
             keys.Append(f.Name);
             keys.Append("] ASC ");
         }
@@ -55,7 +55,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
             sql.Append(element.TableName);
             sql.Append("] PRIMARY KEY NONCLUSTERED (");
             sql.Append(keys);
-            sql.Append(")");
+            sql.Append(')');
         }
 
         sql.AppendLine("");
@@ -76,7 +76,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 sql.Append(index.IsClustered ? " CLUSTERED" : " NONCLUSTERED");
                 sql.Append(" INDEX [IX_");
                 sql.Append(element.TableName);
-                sql.Append("_");
+                sql.Append('_');
                 sql.Append(counter);
                 sql.Append("] ON ");
                 sql.AppendLine(element.TableName);
@@ -154,9 +154,9 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                     if (rc > 0)
                         sql.Append(", ");
 
-                    sql.Append("[");
+                    sql.Append('[');
                     sql.Append(relationship.Columns[rc].FkColumn);
-                    sql.Append("]");
+                    sql.Append(']');
                 }
 
                 sql.AppendLine(")");
@@ -169,12 +169,12 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                     if (rc > 0)
                         sql.Append(", ");
 
-                    sql.Append("[");
+                    sql.Append('[');
                     sql.Append(relationship.Columns[rc].PkColumn);
-                    sql.Append("]");
+                    sql.Append(']');
                 }
 
-                sql.Append(")");
+                sql.Append(')');
 
                 if (relationship.UpdateOnCascade)
                 {

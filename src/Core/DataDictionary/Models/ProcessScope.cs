@@ -3,7 +3,6 @@
 /// <summary>
 /// Escopo de execução do pocesso
 /// </summary>
-
 public enum ProcessScope
 {
     /// <summary>

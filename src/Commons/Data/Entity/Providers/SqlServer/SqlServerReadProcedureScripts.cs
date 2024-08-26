@@ -231,14 +231,14 @@ public class SqlServerReadProcedureScripts(
         {
             sql.Append("SET @sqlOrderBy  = ' ORDER BY ");
             sql.Append($"[{fields[0].Name}]");
-            sql.AppendLine("'");
         }
         else
         {
             sql.Append("SET @sqlOrderBy  = ' ORDER BY ");
             sql.Append($"[{listPk[0].Name}]");
-            sql.AppendLine("'");
         }
+
+        sql.AppendLine("'");
 
         sql.Append(Tab);
         sql.AppendLine("IF @orderby IS NOT NULL AND @orderby <> ''");
@@ -313,8 +313,8 @@ public class SqlServerReadProcedureScripts(
         sql.Append(Tab);
         sql.Append("N'");
         sql.Append(GetParameters(fields, addMasterDataParameters: true, tabLevel: 1));
-        sql.Append("'");
-        sql.Append(",");
+        sql.Append('\'');
+        sql.Append(',');
         sql.AppendLine();
         sql.Append(Tab);
         sql.AppendLine();
@@ -398,13 +398,13 @@ public class SqlServerReadProcedureScripts(
                 sql.AppendLine($"@{field.Name}_from,");
                 sql.Append(Tab, tabCount);
                 sql.AppendLine($"@{field.Name}_to,");
-                sql.Append(Tab, tabCount);
             }
             else
             {
                 sql.AppendLine($"@{field.Name},");
-                sql.Append(Tab, tabCount);
             }
+
+            sql.Append(Tab, tabCount);
         }
 
         return sql.ToString();
@@ -425,26 +425,26 @@ public class SqlServerReadProcedureScripts(
             {
                 case FilterMode.Range:
                 {
-                    sql.Append("@");
+                    sql.Append('@');
                     sql.Append(field.Name);
                     sql.Append("_from ");
                     sql.Append(field.DataType.ToString());
                     if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                     {
-                        sql.Append("(");
+                        sql.Append('(');
                         sql.Append(field.Size == -1 ? "MAX" : field.Size);
-                        sql.Append(")");
+                        sql.Append(')');
                     }
 
                     sql.AppendLine(",");
                     sql.Append(Tab, tabLevel);
-                    sql.Append("@");
+                    sql.Append('@');
                     sql.Append(field.Name);
                     sql.Append("_to ");
                     sql.Append(field.DataType.ToString());
                     if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                     {
-                        sql.Append("(");
+                        sql.Append('(');
                         sql.Append(field.Size == -1 ? "MAX" : field.Size);
                         sql.Append(") ");
                     }
@@ -453,9 +453,9 @@ public class SqlServerReadProcedureScripts(
                     break;
                 }
                 case FilterMode.MultValuesContain or FilterMode.MultValuesEqual:
-                    sql.Append("@");
+                    sql.Append('@');
                     sql.Append(field.Name);
-                    sql.Append(" ");
+                    sql.Append(' ');
                     sql.Append("VARCHAR");
                     sql.AppendLine("(MAX),");
                     sql.Append(Tab, tabLevel);
@@ -464,22 +464,22 @@ public class SqlServerReadProcedureScripts(
                 {
                     if (IsFilter(field))
                     {
-                        sql.Append("@");
+                        sql.Append('@');
                         sql.Append(field.Name);
-                        sql.Append(" ");
+                        sql.Append(' ');
                         sql.Append(field.DataType.ToString());
                         if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                         {
-                            sql.Append("(");
+                            sql.Append('(');
                             sql.Append(field.Size == -1 ? "MAX" : field.Size);
                             sql.AppendLine("), ");
-                            sql.Append(Tab, tabLevel);
                         }
                         else
                         {
                             sql.AppendLine(", ");
-                            sql.Append(Tab, tabLevel);
                         }
+
+                        sql.Append(Tab, tabLevel);
                     }
 
                     break;

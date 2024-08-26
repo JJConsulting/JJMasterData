@@ -5,14 +5,13 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class TextGroupTagHelper(IControlFactory<JJTextGroup> textGroupFactory) : TagHelper
 {
-    private IControlFactory<JJTextGroup> TextGroupFactory { get; set; } = textGroupFactory;
 
     [HtmlAttributeName("configure")] 
     public Action<JJTextGroup>? Configure { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var textGroup = TextGroupFactory.Create();
+        var textGroup = textGroupFactory.Create();
         
         Configure?.Invoke(textGroup);
         

@@ -61,9 +61,9 @@ internal sealed class FileLogger(
             case FileLoggerFormatting.Default:
 
                 log.Append(DateTime.Now);
-                log.Append(" ");
+                log.Append(' ');
                 log.Append($" [{categoryName}] ");
-                log.Append("(");
+                log.Append('(');
                 log.Append(logLevel.ToString());
                 log.AppendLine(")");
                 log.Append(formatterMessage);

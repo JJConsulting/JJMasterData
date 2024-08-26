@@ -53,12 +53,9 @@ public class EntityService(IValidationDictionary validationDictionary,
             if (!entityName.Equals(formElement.Name))
             {
                 await DataDictionaryRepository.DeleteAsync(entityName);
-                await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
             }
-            else
-            {
-                await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-            }
+
+            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
             return formElement;
 

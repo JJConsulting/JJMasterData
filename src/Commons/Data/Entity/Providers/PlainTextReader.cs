@@ -146,7 +146,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                 var ts = DateTime.Now - dStart;
                 var logMessage = new StringBuilder();
                 logMessage.Append("Synchronizing");
-                logMessage.Append(" ");
+                logMessage.Append(' ');
                 logMessage.AppendLine(element.Name);
 
                 if (filters.Count > 0)
@@ -159,7 +159,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                     {
                         logMessage.Append("  ");
                         logMessage.Append(filter.Key);
-                        logMessage.Append("=");
+                        logMessage.Append('=');
                         logMessage.Append(filter.Value);
                     }
 

@@ -13,8 +13,6 @@ public class CheckboxTagHelper(
     IControlFactory<JJCheckBox> checkboxFactory, 
     IHtmlHelper htmlHelper) : TagHelper 
 {
-    private IControlFactory<JJCheckBox> CheckboxFactory { get; set; } = checkboxFactory;
-
     [HtmlAttributeName("configure")]
     public Action<JJCheckBox>? Configure { get; set; }
 
@@ -53,7 +51,7 @@ public class CheckboxTagHelper(
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         Contextualize(ViewContext);
-        var checkBox = CheckboxFactory.Create();
+        var checkBox = checkboxFactory.Create();
         checkBox.Name = Name ?? htmlHelper.Name(For!.Name) ?? throw new JJMasterDataException("Either for or name attributes are required.");
         checkBox.Enabled = Enabled;
         var displayName = Label ?? For?.ModelExplorer.Metadata.GetDisplayName();

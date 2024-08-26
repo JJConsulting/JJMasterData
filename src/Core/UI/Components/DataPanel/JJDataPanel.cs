@@ -121,8 +121,8 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
-    private bool AppendPkValues { get; set; } = true;
-    
+    private static bool AppendPkValues => true;
+
     public string FieldNamePrefix { get; set; }
 
     private RouteContext RouteContext
@@ -298,8 +298,8 @@ public class JJDataPanel : AsyncComponent
         
         html.AppendHiddenInput($"data-panel-state-{Name}", ((int)PageState).ToString());
         html.AppendHiddenInput($"data-panel-is-at-modal-{Name}", IsAtModal.ToString());
-
-        if (SecretValues?.Any() is true)
+        
+        if (SecretValues?.Count > 0)
             html.AppendHiddenInput($"data-panel-secret-values-{Name}", EncryptionService.EncryptObject(SecretValues));
     }
 
@@ -343,7 +343,7 @@ public class JJDataPanel : AsyncComponent
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
 
-        if (SecretValues?.Any() is true)
+        if (SecretValues?.Count > 0)
         {
             DataHelper.RemoveNullValues(SecretValues);
             DataHelper.CopyIntoDictionary(mergedValues, SecretValues, true);
