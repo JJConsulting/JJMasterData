@@ -87,7 +87,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         message.Append(StringLocalizer["Synchronizing"]);
         message.Append(listSync.Length);
         message.Append(StringLocalizer["objects"]);
-        message.Append(" ");
+        message.Append(' ');
         message.AppendLine(" ...");
         message.AppendLine(StringLocalizer["{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(ts)]);
         Logger.LogInformation(message.ToString());
