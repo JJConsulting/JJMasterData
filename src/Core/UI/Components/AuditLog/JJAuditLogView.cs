@@ -419,8 +419,10 @@ public class JJAuditLogView : AsyncComponent
                     div.Append(HtmlTag.B, b =>
                     {
                         b.AppendText($"IP: {row["ip"]}");
-                        var infoIcon = _componentFactory.Html.Icon.Create(IconType.InfoCircle);
-                        infoIcon.CssClass = "help-description";
+                        var infoIcon = new JJIcon(IconType.InfoCircle)
+                        {
+                            CssClass = "help-description"
+                        };
                         b.AppendComponent(infoIcon);
                         b.WithToolTip(row["browser"]?.ToString());
                     });
