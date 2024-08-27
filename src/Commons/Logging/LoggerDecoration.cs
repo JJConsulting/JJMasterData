@@ -12,10 +12,14 @@ internal static class LoggerDecoration
     public static string GetMessageException(Exception exception)
     {
         var message = new StringBuilder();
-        message.Append("Message: ");
-        message.AppendLine();
-        message.AppendLine(exception.Message);
 
+        if (!string.IsNullOrEmpty(exception.Message))
+        {
+            message.Append("Message: ");
+            message.AppendLine();
+            message.AppendLine(exception.Message);
+        }
+        
         if (exception.InnerException != null)
         {
             message.AppendLine();
@@ -23,18 +27,25 @@ internal static class LoggerDecoration
             message.AppendLine(exception.InnerException.Message);
         }
 
-        if (exception.Data?.Count > 0)
+        if (exception.Data.Count > 0)
         {
             message.Append(GetDataAccessMessage(exception));
         }
 
-        message.AppendLine();
-        message.AppendLine("StackTrace:");
-        message.AppendLine(exception.StackTrace);
+        if (!string.IsNullOrEmpty(exception.StackTrace))
+        {
+            message.AppendLine();
+            message.AppendLine("StackTrace:");
+            message.AppendLine(exception.StackTrace);
+        }
 
-        message.AppendLine();
-        message.AppendLine("Source:");
-        message.AppendLine(exception.Source);
+        if (string.IsNullOrEmpty(exception.Source))
+        {
+            message.AppendLine();
+            message.AppendLine("Source:");
+            message.AppendLine(exception.Source);
+        }
+
 
         return message.ToString();
     }
