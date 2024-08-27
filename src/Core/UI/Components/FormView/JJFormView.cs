@@ -250,7 +250,7 @@ public class JJFormView : AsyncComponent
         internal set => _pageState = value;
     }
 
-    private ActionMap? CurrentActionMap
+    internal ActionMap? CurrentActionMap
     {
         get
         {
@@ -1411,7 +1411,7 @@ public class JJFormView : AsyncComponent
 
         if (args.ActionName is not InsertSelectionAction.ActionName)
             return ValueTaskHelper.CompletedTask;
-
+        
         args.LinkButton.Tooltip = StringLocalizer["Select"];
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
 

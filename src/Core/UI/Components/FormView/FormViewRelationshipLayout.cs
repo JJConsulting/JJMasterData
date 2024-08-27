@@ -234,9 +234,9 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
                 childFormView.DataPanel.PageState = relationship.EditModeOpenByDefault ? childFormView.PageState: PageState.View;
             else
                 childFormView.DataPanel.PageState = PageState.Insert;
-         
         }
         
+        childFormView.CurrentActionMap = null;
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
         childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
         childFormView.ShowTitle = false;
