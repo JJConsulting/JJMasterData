@@ -413,13 +413,13 @@ public class MasterApiService(ExpressionsService expressionsService,
             return filters;
 
         string userId = GetUserId();
-        if (!filters.ContainsKey(formElement.ApiOptions.ApplyUserIdOn))
+        if (!filters.TryGetValue(formElement.ApiOptions.ApplyUserIdOn, out var filter))
         {
             filters.Add(formElement.ApiOptions.ApplyUserIdOn, userId);
         }
         else
         {
-            if (!userId.Equals(filters[formElement.ApiOptions.ApplyUserIdOn].ToString()))
+            if (!userId.Equals(filter.ToString()))
             {
                 throw new UnauthorizedAccessException(
                     "Access denied to change user filter on {formElement.Name}");

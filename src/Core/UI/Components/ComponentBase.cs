@@ -55,8 +55,7 @@ public abstract class ComponentBase
     {
         if (value == null || string.IsNullOrEmpty(value.ToString()))
         {
-            if (Attributes.ContainsKey(key))
-                Attributes.Remove(key);
+            Attributes.Remove(key);
         }
         else
         {
