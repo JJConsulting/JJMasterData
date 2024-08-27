@@ -94,8 +94,12 @@ public abstract class EntityProviderBase(
         return GetCommandOperation(element, values, command, commandType, newFields);
     }
     
-    private static CommandOperation GetCommandOperation(Element element, Dictionary<string,object?> values, DataAccessCommand command,
-        CommandOperation commandType, Dictionary<string, object?>? newFields)
+    private static CommandOperation GetCommandOperation(
+        Element element, 
+        Dictionary<string,object?> values,
+        DataAccessCommand command,
+        CommandOperation commandType,
+        Dictionary<string, object?>? newFields)
     {
         var resultParameter = command.Parameters.First(x => x.Name.Equals("@RET"));
 
@@ -105,7 +109,7 @@ public abstract class EntityProviderBase(
             {
                 var err = "Element";
                 err += $" {element.Name}";
-                err += ": " + "Invalid return of @RET variable in procedure";
+                err += ": Invalid return of @RET variable in procedure";
                 throw new JJMasterDataException(err);
             }
 
@@ -115,7 +119,7 @@ public abstract class EntityProviderBase(
         if (newFields == null)
             return commandType;
         
-        foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key.ToString())))
+        foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
         {
             values[entry.Key] = entry.Value;
         }
@@ -271,7 +275,7 @@ public abstract class EntityProviderBase(
             {
                 string err = "Element";
                 err += $" {element.Name}";
-                err += ": " + "Invalid return of @RET variable in procedure";
+                err += ": Invalid return of @RET variable in procedure";
                 throw new JJMasterDataException(err);
             }
 

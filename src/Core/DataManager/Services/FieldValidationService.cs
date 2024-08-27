@@ -40,11 +40,11 @@ public class FieldValidationService(
             if (!isEnabled)
                 continue;
 
-            object value;
-            if (formValues.ContainsKey(field.Name) && formValues[field.Name] != null)
-                value = formValues[field.Name];
-            else
+
+            if (!formValues.TryGetValue(field.Name, out var value) || value == null)
+            {
                 value = "";
+            }
 
             var error = ValidateField(field, field.Name, value, enableErrorLink);
             if (!string.IsNullOrEmpty(error))

@@ -56,35 +56,37 @@ public class DataItemService(
 
     private static IEnumerable<DataItemValue> GetItemsValues(FormElementDataItem dataItem, string? searchId, string? searchText)
     {
-        if (dataItem.Items != null)
-            foreach (var item in dataItem.Items)
+        if (dataItem.Items == null)
+            yield break;
+        
+        foreach (var item in dataItem.Items)
+        {
+            if (searchId is not null)
             {
-                if (searchId is not null)
-                {
-                    if (item.Id == searchId)
-                    {
-                        yield return item;
-                    }
-                }
-                else if (searchText is not null)
-                {
-                    if (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false)
-                    {
-                        yield return item;
-                    }
-                }
-                else
+                if (item.Id == searchId)
                 {
                     yield return item;
                 }
             }
+            else if (searchText is not null)
+            {
+                if (item.Description?.ToLowerInvariant().Contains(searchText.ToLowerInvariant()) ?? false)
+                {
+                    yield return item;
+                }
+            }
+            else
+            {
+                yield return item;
+            }
+        }
     }
 
     private async Task<List<DataItemValue>> GetElementMapValues(FormElementDataItem dataItem, DataQuery dataQuery)
     {
-        FormStateData formStateData = dataQuery.FormStateData;
-        string? searchId = dataQuery.SearchId;
-        string? searchText = dataQuery.SearchText;
+        var formStateData = dataQuery.FormStateData;
+        var searchId = dataQuery.SearchId;
+        var searchText = dataQuery.SearchText;
         
         var elementMap = dataItem.ElementMap;
         var values = await elementMapService.GetDictionaryList(elementMap!, searchId, formStateData);
@@ -126,10 +128,10 @@ public class DataItemService(
         FormElementDataItem dataItem,
         DataQuery dataQuery)
     {
-        FormStateData formStateData = dataQuery.FormStateData;
-        string? searchId = dataQuery.SearchId;
-        string? searchText = dataQuery.SearchText;
-        Guid? connectionId = dataQuery.ConnectionId;
+        var formStateData = dataQuery.FormStateData;
+        var searchId = dataQuery.SearchId;
+        var searchText = dataQuery.SearchText;
+        var connectionId = dataQuery.ConnectionId;
         
         var command = GetDataItemCommand(dataItem, formStateData, searchText, searchId);
         
@@ -150,7 +152,7 @@ public class DataItemService(
         foreach (DataRow row in dataTable.Rows)
         {
             var item = new DataItemValue();
-            item.Id = row[0].ToString()!;
+            item.Id = row[0].ToString();
 
             if (row.Table.Columns.Count == 1)
             {

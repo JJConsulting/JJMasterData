@@ -905,8 +905,7 @@ public class OracleProvider(
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
                 object? value = DBNull.Value;
-                if (filters != null &&
-                    filters.ContainsKey(field.Name) &&
+                if (filters?.ContainsKey(field.Name) == true &&
                     filters[field.Name] != null)
                 {
                     value = filters[field.Name];

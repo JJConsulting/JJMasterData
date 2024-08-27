@@ -22,16 +22,8 @@ public static class StringManager
     {
         if (value == null)
             return false;
-
-        var stringValue = value.ToLower();
         
-        return ParseBoolString(stringValue);
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ParseBoolString(string? stringValue)
-    {
-        return stringValue switch
+        return value.ToLowerInvariant() switch
         {
             "true" => true,
             "1" => true,
@@ -541,7 +533,7 @@ public static class StringManager
         };
 #else
         if (!string.IsNullOrEmpty(input))
-            return input.First().ToString().ToUpper() + input[1..].ToLower();
+            return input[0].ToString().ToUpper() + input[1..].ToLower();
         return input;
 #endif
 

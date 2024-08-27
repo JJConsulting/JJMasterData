@@ -74,9 +74,9 @@ public class JJCheckBox : ControlBase
         {
             var checkboxHelperScript = $"CheckboxHelper.check('{Name.Replace(".", "_")}');";
             
-            if (Attributes.ContainsKey("onchange"))
+            if (Attributes.TryGetValue("onchange", out string value))
             {
-                Attributes["onchange"] = checkboxHelperScript + Attributes["onchange"];
+                Attributes["onchange"] = checkboxHelperScript + value;
             }
             else
             {

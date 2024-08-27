@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using Microsoft.Extensions.ObjectPool;
 
 namespace JJMasterData.Core.UI.Html;
 
@@ -13,18 +13,21 @@ namespace JJMasterData.Core.UI.Html;
 /// <example>
 /// [!include[Example](../../../doc/Documentation/articles/usages/htmlbuilder.md)]
 /// </example>
-public partial class HtmlBuilder
+public sealed partial class HtmlBuilder
 {
     private readonly string? _rawText;
     private readonly bool _hasRawText;
     private readonly Dictionary<string, string> _attributes;
     private readonly List<HtmlBuilder?> _children;
-
-    /// <summary>
-    /// Tag of the current builder.
-    /// </summary>
-    private HtmlBuilderTag? Tag { get; }
-
+    private readonly HtmlBuilderTag? _tag;
+    
+    private static readonly ObjectPool<StringBuilder> StringBuilderPool;
+    
+    static HtmlBuilder()
+    {
+        StringBuilderPool = new DefaultObjectPoolProvider().CreateStringBuilderPool();
+    }
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.
     /// </summary>
@@ -49,7 +52,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder(HtmlTag tag) : this()
     {
-        Tag = new HtmlBuilderTag(tag);
+        _tag = new HtmlBuilderTag(tag);
     }
     
     /// <summary>
@@ -63,7 +66,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Gets current builder HTML.
     /// </summary>
-    /// <param name="indentHtml">Generate html with indentation?</param>
+    /// <param name="indentHtml">Generate html with indentation if true.</param>
     public string ToString(bool indentHtml)
     {
         var tabCount = indentHtml ? 1 : 0;
@@ -72,50 +75,65 @@ public partial class HtmlBuilder
 
     private string ParseHtmlAsString(int tabCount)
     {
-        var html = new StringBuilder();
+        string html;
+        
+        var htmlBuilder = StringBuilderPool.Get();
         
         if (tabCount > 0 && !_hasRawText)
         {
-            html.AppendLine().Append(' ', tabCount * 2);
+            htmlBuilder.AppendLine().Append(' ', tabCount * 2);
         }
 
-        if (_hasRawText || Tag == null)
+        if (_hasRawText || _tag is null)
         {
-            html.Append(_rawText);
-            html.Append(GetHtmlContent(tabCount));
+            htmlBuilder.Append(_rawText);
+            htmlBuilder.Append(GetHtmlContent(tabCount));
 
-            return html.ToString();
+            html = htmlBuilder.ToString();
+
+            StringBuilderPool.Return(htmlBuilder);
+        
+            return html;
         }
 
-        html.Append('<');
-        html.Append(Tag.TagName.GetTagName());
-        html.Append(GetAttributesHtml());
+        htmlBuilder.Append('<');
+        htmlBuilder.Append(_tag.GetTagName());
+        htmlBuilder.Append(GetAttributesHtml());
 
-        if (!Tag.HasClosingTag)
+        if (!_tag.HasClosingTag)
         {
-            html.Append(" />");
-            return html.ToString();
+            htmlBuilder.Append(" />");
+           
+            html = htmlBuilder.ToString();
+
+            StringBuilderPool.Return(htmlBuilder);
+        
+            return html;
         }
 
-        html.Append('>');
+        htmlBuilder.Append('>');
 
-        if (Tag.TagName == HtmlTag.TextArea)
+        if (_tag.HtmlTag is HtmlTag.TextArea)
         {
-            html.Append(GetHtmlContent(0));
+            htmlBuilder.Append(GetHtmlContent(0));
         }
         else
         {
-            html.Append(GetHtmlContent(tabCount));
+            htmlBuilder.Append(GetHtmlContent(tabCount));
             
             if (tabCount > 0 && !_hasRawText)
-                html.AppendLine().Append(' ', tabCount * 2);
+                htmlBuilder.AppendLine().Append(' ', tabCount * 2);
         }
        
-        html.Append("</");
-        html.Append(Tag.TagName.GetTagName());
-        html.Append('>');
+        htmlBuilder.Append("</");
+        htmlBuilder.Append(_tag.GetTagName());
+        htmlBuilder.Append('>');
 
-        return html.ToString();
+        html = htmlBuilder.ToString();
+
+        StringBuilderPool.Return(htmlBuilder);
+        
+        return html;
     }
 
     private string GetHtmlContent(int tabCount)
@@ -123,23 +141,31 @@ public partial class HtmlBuilder
         if (tabCount > 0)
             tabCount++;
 
-        var content = new StringBuilder();
+        var contentBuilder = StringBuilderPool.Get();
         foreach (var child in _children)
         {
-            content.Append(child?.ParseHtmlAsString(tabCount));
+            contentBuilder.Append(child?.ParseHtmlAsString(tabCount));
         }
-        return content.ToString();
+        var content = contentBuilder.ToString();
+        
+        StringBuilderPool.Return(contentBuilder);
+
+        return content;
     }
 
     private string GetAttributesHtml()
     {
-        var attributes = new StringBuilder();
+        var attributesBuilder = StringBuilderPool.Get();
         foreach (var item in _attributes)
         {
-            attributes.Append($" {item.Key}=\"{item.Value}\"");
+            attributesBuilder.Append($" {item.Key}=\"{item.Value}\"");
         }
         
-        return attributes.ToString();
+        var attributes = attributesBuilder.ToString();
+        
+        StringBuilderPool.Return(attributesBuilder);
+
+        return attributes;
     }
     
     public string GetAttribute(string key)

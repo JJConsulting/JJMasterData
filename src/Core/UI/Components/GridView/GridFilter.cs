@@ -35,7 +35,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
     public event AsyncEventHandler<GridFilterLoadEventArgs> OnFilterLoadAsync;
 
-    internal async Task<HtmlBuilder> GetFilterHtml()
+    internal async ValueTask<HtmlBuilder> GetFilterHtml()
     {
         var filterAction = gridView.FilterAction;
         var formData = await gridView.GetFormStateDataAsync();
@@ -47,14 +47,14 @@ internal sealed class GridFilter(JJGridView gridView)
 
         if (gridView.FilterAction is { ShowAsCollapse: true, EnableScreenSearch: true })
         {
-            var collapse = await GetFilterScreenCollapse();
+            var collapse = GetFilterScreenCollapse();
             return filterHtml.AppendComponent(collapse);
         }
 
         return filterHtml.Append(await GetDefaultFilter());
     }
 
-    public async Task<Dictionary<string, object>> GetCurrentFilterAsync()
+    public async ValueTask<Dictionary<string, object>> GetCurrentFilterAsync()
     {
         if (_currentFilter != null)
             return _currentFilter;
@@ -110,7 +110,7 @@ internal sealed class GridFilter(JJGridView gridView)
         return !string.IsNullOrEmpty(_currentContext.Request.QueryString["routeContext"]);
     }
 
-    public async Task ApplyCurrentFilter(Dictionary<string, object> values)
+    public async ValueTask ApplyCurrentFilter(Dictionary<string, object> values)
     {
         _currentFilter ??= new Dictionary<string, object>();
 
@@ -146,7 +146,7 @@ internal sealed class GridFilter(JJGridView gridView)
         _currentContext.Session.SetSessionValue($"jjcurrentfilter_{gridView.Name}", _currentFilter);
     }
 
-    private async Task<HtmlBuilder> GetDefaultFilter()
+    private async ValueTask<HtmlBuilder> GetDefaultFilter()
     {
         var action = gridView.FilterAction;
         var fields = gridView.FormElement.Fields.FindAll(
@@ -238,11 +238,11 @@ internal sealed class GridFilter(JJGridView gridView)
     }
 
 
-    private async Task<JJCollapsePanel> GetFilterScreenCollapse()
+    private JJCollapsePanel GetFilterScreenCollapse()
     {
         var body = new HtmlBuilder(HtmlTag.Div);
         body.WithCssClass("col-sm-12");
-        body.Append(await GetHtmlToolBarSearch(isToolBar: false));
+        body.Append(GetHtmlToolBarSearch(isToolBar: false));
 
         var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
         {
@@ -255,7 +255,7 @@ internal sealed class GridFilter(JJGridView gridView)
         return panel;
     }
 
-    public async Task<HtmlBuilder> GetHtmlToolBarSearch(bool isToolBar = true)
+    public HtmlBuilder GetHtmlToolBarSearch(bool isToolBar = true)
     {
         var searchId = $"jjsearch_{gridView.Name}";
 
@@ -275,15 +275,15 @@ internal sealed class GridFilter(JJGridView gridView)
         var html = new HtmlBuilder();
         if (isToolBar)
         {
-            await html.AppendAsync(HtmlTag.Div, async div =>
+            html.Append(HtmlTag.Div, div =>
             {
-                div.WithCssClass($"{BootstrapHelper.PullRight}");
-                await div.AppendControlAsync(textBox);
+                div.WithCssClass(BootstrapHelper.PullRight);
+                div.Append(textBox.GetHtmlBuilder());
             });
         }
         else
         {
-            await html.AppendAsync(HtmlTag.Div, async div =>
+            html.Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass(BootstrapHelper.FormGroup);
                 div.WithCssClass("has-feedback jjsearch");
@@ -292,7 +292,7 @@ internal sealed class GridFilter(JJGridView gridView)
                     label.WithCssClass(BootstrapHelper.Label);
                     label.AppendText(_stringLocalizer["Filter by any field visible in the list"]);
                 });
-                await div.AppendControlAsync(textBox);
+                div.Append(textBox.GetHtmlBuilder());
             });
         }
 

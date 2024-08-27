@@ -12,11 +12,11 @@ internal sealed class GridTable(JJGridView gridView)
 
     internal GridTableBody Body { get; } = new(gridView);
 
-    public async Task<HtmlBuilder> GetHtmlBuilder()
+    public async ValueTask<HtmlBuilder> GetHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("pt-1");
-        div.WithCssClassIf(Settings.IsResponsive && !Settings.IsHeaderFixed,  "table-responsive");
+        div.WithCssClassIf(Settings is { IsResponsive: true, IsHeaderFixed: false },  "table-responsive");
         
         var table = new HtmlBuilder(HtmlTag.Table);
         table.WithCssClass("table");

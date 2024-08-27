@@ -28,7 +28,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
     public event AsyncEventHandler<GridRowEventArgs>? OnRenderRowAsync;
 
-    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
+    public async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
 
@@ -38,7 +38,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return tbody;
     }
 
-    private async Task<List<HtmlBuilder>> GetRowsList()
+    private async ValueTask<List<HtmlBuilder>> GetRowsList()
     {
         List<HtmlBuilder> rows = [];
         
@@ -52,7 +52,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return rows;
     }
 
-    private async Task<HtmlBuilder> GetRowHtml(Dictionary<string, object?> row, int index)
+    private async ValueTask<HtmlBuilder> GetRowHtml(Dictionary<string, object?> row, int index)
     {
         var tr = new HtmlBuilder(HtmlTag.Tr);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
@@ -76,7 +76,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return tr;
     }
 
-    internal async Task<List<HtmlBuilder>> GetTdHtmlList(Dictionary<string, object?> row, int index)
+    internal async ValueTask<List<HtmlBuilder>> GetTdHtmlList(Dictionary<string, object?> row, int index)
     {
         var values = await GetValues(row);
         var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
@@ -103,20 +103,13 @@ internal sealed class GridTableBody(JJGridView gridView)
             tdList.Add(td);
         }
 
-        foreach (var visibleFieldHtml in await GetVisibleFieldsHtmlList(row, index, values, onClickScript))
-        {
-            tdList.Add(visibleFieldHtml);
-        }
-
-        foreach (var actionHtml in await GetActionsHtmlListAsync(formStateData))
-        {
-            tdList.Add(actionHtml);
-        }
+        tdList.AddRange(await GetVisibleFieldsHtmlList(row, index, values, onClickScript));
+        tdList.AddRange(await GetActionsHtmlListAsync(formStateData));
 
         return tdList;
     }
 
-    private async Task<List<HtmlBuilder>> GetVisibleFieldsHtmlList(
+    private async ValueTask<List<HtmlBuilder>> GetVisibleFieldsHtmlList(
         Dictionary<string, object?> row, 
         int index,
         Dictionary<string, object?> values,
@@ -155,7 +148,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return result;
     }
 
-    private async Task<HtmlBuilder> GetGridFieldHtml(FormElementField field,
+    private async ValueTask<HtmlBuilder> GetGridFieldHtml(FormElementField field,
         FormStateData formStateData,
         Dictionary<string, object?> row,
         string stringValue)
@@ -263,7 +256,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return cell;
     }
 
-    private async Task<HtmlBuilder> GetEditModeFieldHtml(
+    private async ValueTask<HtmlBuilder> GetEditModeFieldHtml(
         FormElementField field,
         FormStateData formStateData,
         Dictionary<string, object?> row,
@@ -318,10 +311,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         var actionsWithoutGroup = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: false });
         var groupedActions = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: true });
         
-        foreach (var action in await GetActionsWithoutGroupHtmlAsync(actionsWithoutGroup, formStateData))
-        {
-            result.Add(action);
-        }
+        result.AddRange(await GetActionsWithoutGroupHtmlAsync(actionsWithoutGroup, formStateData));
 
         if (groupedActions.Count > 0)
         {
@@ -332,7 +322,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     }
 
 
-    private async Task<HtmlBuilder> GetActionsGroupHtmlAsync(List<BasicAction> actions,
+    private async ValueTask<HtmlBuilder> GetActionsGroupHtmlAsync(List<BasicAction> actions,
         FormStateData formStateData)
     {
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -361,8 +351,8 @@ internal sealed class GridTableBody(JJGridView gridView)
     }
 
 
-    private async Task<List<HtmlBuilder>> GetActionsWithoutGroupHtmlAsync(
-        IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
+    private async ValueTask<List<HtmlBuilder>> GetActionsWithoutGroupHtmlAsync(
+        List<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
         var factory = GridView.ComponentFactory.ActionButton;
         List<HtmlBuilder> result = [];
@@ -434,7 +424,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return string.Empty;
     }
 
-    private async Task<JJCheckBox> GetMultiSelectCheckbox(Dictionary<string, object?> row, int index,
+    private async ValueTask<JJCheckBox> GetMultiSelectCheckbox(Dictionary<string, object?> row, int index,
         Dictionary<string, object?> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
@@ -473,7 +463,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return checkBox;
     }
 
-    private async Task<string> GetOnClickScript(FormStateData formStateData, BasicAction? defaultAction)
+    private async ValueTask<string> GetOnClickScript(FormStateData formStateData, BasicAction? defaultAction)
     {
         if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
@@ -504,7 +494,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return string.Empty;
     }
 
-    private async Task<Dictionary<string, object?>> GetValues(Dictionary<string, object?> row)
+    private async ValueTask<Dictionary<string, object?>> GetValues(Dictionary<string, object?> row)
     {
         if (!GridView.EnableEditMode)
             return row;

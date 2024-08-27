@@ -117,13 +117,13 @@ internal sealed class DataPanelControl
         
         foreach (var field in fields)
         {
-            bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
+            var visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
             
             object? value = null;
-            if (Values != null && Values.ContainsKey(field.Name))
-                value = FieldFormattingService.FormatValue(field, Values[field.Name]);
+            if (Values != null && Values.TryGetValue(field.Name, out value))
+                value = FieldFormattingService.FormatValue(field, value);
 
             if (lineGroup != field.LineGroup)
             {

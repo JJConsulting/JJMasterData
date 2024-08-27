@@ -37,7 +37,7 @@ public class FormElementOptions
         Form = new FormUI();
         GridToolbarActions = [];
         FormToolbarActions = [];
-        GridTableActions = new GridTableActionList();
+        GridTableActions = [];
     }
 
     [JsonConstructor]

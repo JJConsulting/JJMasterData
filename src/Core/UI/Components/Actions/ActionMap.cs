@@ -47,9 +47,9 @@ public class ActionMap
             if (!f.IsPk) 
                 continue;
             
-            if (row.ContainsKey(f.Name) && row[f.Name] != null)
+            if (row.TryGetValue(f.Name, out var value) && value != null)
             {
-                PkFieldValues.Add(f.Name, row[f.Name].ToString()!);
+                PkFieldValues.Add(f.Name, value.ToString()!);
             }
         }
     }

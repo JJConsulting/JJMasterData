@@ -161,7 +161,7 @@ public class JJAuditLogView : AsyncComponent
         });
 
         if (result.Data.Count > 0)
-            entryId = result.Data.ElementAt(0).ElementAt(0).Value.ToString();
+            entryId = result.Data[0].ElementAt(0).Value.ToString();
 
         return entryId;
     }

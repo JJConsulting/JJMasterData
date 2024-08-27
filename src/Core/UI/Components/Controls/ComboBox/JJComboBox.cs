@@ -233,8 +233,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
     {
         return DataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
     }
-
-
+    
     /// <summary>
     /// Recovers the description from the selected value;
     /// </summary>
@@ -281,7 +280,6 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
         var values = await DataItemService.GetValuesAsync(DataItem, dataQuery);
         return values.Find(v => v.Id == searchId);
     }
-
 
     private bool IsManualValues()
     {

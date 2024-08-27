@@ -72,7 +72,7 @@ public class FieldController(FieldService fieldService)
     [ExportModelState]
     public async Task<IActionResult> Save(string elementName, FormElementField field, string? originalName)
     {
-        RecoverCustomAttibutes(ref field);
+        RecoverCustomAttributes(ref field);
         
         await fieldService.SaveFieldAsync(elementName, field, originalName);
         if (ModelState.IsValid)
@@ -219,15 +219,17 @@ public class FieldController(FieldService fieldService)
         if (field.Component is not FormComponent.Lookup && 
             field.Component is not FormComponent.Search && 
             field.Component is not FormComponent.ComboBox && 
-            field.Component is not FormComponent.RadioButtonGroup) 
+            field.Component is not FormComponent.RadioButtonGroup)
+        {
             return;
-        
+        }
+
         field.DataItem.ElementMap ??= new DataElementMap();
         
         ViewBag.ElementNameList = (await fieldService.GetElementsDictionaryAsync()).OrderBy(e=>e.Key);
         ViewBag.ElementFieldList = (await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap)).OrderBy(e=>e.Key);
     }
-    private void RecoverCustomAttibutes(ref FormElementField field)
+    private void RecoverCustomAttributes(ref FormElementField field)
     {
         field.Attributes = new Dictionary<string, object>();
         switch (field.Component)

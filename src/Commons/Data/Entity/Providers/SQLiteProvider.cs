@@ -528,22 +528,21 @@ public class SQLiteProvider(
 
     private static object GetElementValue(ElementField f, Dictionary<string, object?> values)
     {
-        if (!values.ContainsKey(f.Name))
+        if (!values.TryGetValue(f.Name, out object? value))
             return DBNull.Value;
 
-        object? val = values[f.Name];
-        if (val == null)
+        if (value == null)
         {
             return DBNull.Value;
         }
 
         if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-            string.IsNullOrEmpty(val.ToString()))
+            string.IsNullOrEmpty(value.ToString()))
         {
             return DBNull.Value;
         }
 
-        return val;
+        return value;
     }
 
     private static DbType GetDbType(FieldType dataType)

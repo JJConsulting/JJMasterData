@@ -127,10 +127,10 @@ public class JJSearchBox : ControlBase, IDataItemControl
     {
         get
         {
-            if (!Attributes.ContainsKey(ScrollbarAttribute))
+            if (!Attributes.TryGetValue(ScrollbarAttribute, out string? value))
                 return true;
             
-            return Attributes[ScrollbarAttribute].Equals("true");
+            return value.Equals("true");
         }
         set
         {
@@ -365,10 +365,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         {
             var args = new SearchBoxQueryEventArgs(searchText);
             OnSearchQuery.Invoke(this, args);
-            foreach (var value in args.Values)
-            {
-                list.Add(value);
-            }
+            list.AddRange(args.Values);
         }
         else
         {
@@ -387,7 +384,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     {
         var searchText = Request.Form[Name + "_text"];
         var values = await GetValuesAsync(searchText);
-        return values.ConvertAll(v=>new DataItemResult()
+        return values.ConvertAll(v=>new DataItemResult
         {
             Id = v.Id,
             Description = v.Description,

@@ -177,7 +177,7 @@ public class FormValuesService(
         return parsedValue;
     }
 
-    public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
+    public async ValueTask<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         FormStateData formStateData,
         bool autoReloadFormFields,

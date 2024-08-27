@@ -14,7 +14,7 @@ public class GridSettings
 
     public int TotalPaginationButtons { get; set; } = 5;
 
-    public bool ShowBorder { get; set; } = false;
+    public bool ShowBorder { get; set; }
 
     public bool ShowRowStriped { get; set; } = true;
 

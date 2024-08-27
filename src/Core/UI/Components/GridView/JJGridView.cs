@@ -150,7 +150,7 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    internal async Task<List<FormElementField>> GetVisibleFieldsAsync()
+    internal async ValueTask<List<FormElementField>> GetVisibleFieldsAsync()
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
@@ -718,29 +718,32 @@ public class JJGridView : AsyncComponent
                 div.Append(await Filter.GetFilterHtml());
 
             if (OnBeforeTableRenderAsync is not null)
+            {
                 await OnBeforeTableRenderAsync(this, new()
                 {
                     HtmlBuilder = div
                 });
-            
+            }
+
             if (ShowToolbar)
                 div.Append(await GetToolbarHtmlBuilder());
 
             div.Append(await GetTableHtmlBuilder());
             
             if (OnAfterTableRenderAsync is not null)
+            {
                 await OnAfterTableRenderAsync(this, new()
                 {
                     HtmlBuilder = div
                 });
-            
+            }
         });
 
 
         return html;
     }
 
-    public Task<Dictionary<string, object?>> GetCurrentFilterAsync()
+    public ValueTask<Dictionary<string, object?>> GetCurrentFilterAsync()
     {
         return Filter.GetCurrentFilterAsync();
     }
@@ -854,11 +857,11 @@ public class JJGridView : AsyncComponent
         return ComponentFactory.Html.Title.Create(FormElement, new FormStateData(RelationValues!,UserValues, PageState.List), TitleActions);
     }
 
-    internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
+    internal ValueTask<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
 
-    public Task<HtmlBuilder> GetFilterHtmlAsync() => Filter.GetFilterHtml();
+    public ValueTask<HtmlBuilder> GetFilterHtmlAsync() => Filter.GetFilterHtml();
 
-    public Task<HtmlBuilder> GetToolbarHtmlAsync() => GetToolbarHtmlBuilder();
+    public ValueTask<HtmlBuilder> GetToolbarHtmlAsync() => GetToolbarHtmlBuilder();
 
     private Task<HtmlBuilder> GetSortingConfigAsync() => new GridSortingConfig(this).GetHtmlBuilderAsync();
 

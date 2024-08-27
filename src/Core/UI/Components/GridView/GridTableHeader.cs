@@ -55,7 +55,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
         foreach (var field in await gridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
-            string style = GetThStyle(field);
+            var style = GetThStyle(field);
 
             th.WithAttributeIfNotEmpty("style", style);
             th.Append(HtmlTag.Span, span =>

@@ -11,7 +11,7 @@ internal sealed class GridToolbar(JJGridView gridView)
 {
     internal event AsyncEventHandler<GridToolbarActionEventArgs> OnRenderToolbarActionAsync;
     
-    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
+    public async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var toolbar = new JJToolbar();
 
@@ -20,7 +20,7 @@ internal sealed class GridToolbar(JJGridView gridView)
         return toolbar.GetHtmlBuilder().WithCssClass("mb-1");
     }
 
-    private async Task AddActionsToToolbar(JJToolbar toolbar)
+    private async ValueTask AddActionsToToolbar(JJToolbar toolbar)
     {
         var actions = gridView.ToolbarActions
             .OrderBy(a => a.Order);
@@ -44,7 +44,7 @@ internal sealed class GridToolbar(JJGridView gridView)
                 case InsertAction { ShowOpenedAtGrid: true }:
                     continue;
                 case FilterAction { EnableScreenSearch: true }:
-                    toolbar.Items.Add(await gridView.Filter.GetHtmlToolBarSearch());
+                    toolbar.Items.Add(gridView.Filter.GetHtmlToolBarSearch());
                     continue;
             }
 

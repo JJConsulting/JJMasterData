@@ -236,7 +236,7 @@ public partial class HtmlBuilder
     public HtmlBuilder AppendComponent(HtmlComponent? component)
     {
         if (component != null)
-            Append((HtmlBuilder?)component.GetHtmlBuilder());
+            Append(component.GetHtmlBuilder());
 
         return this;
     }

@@ -16,8 +16,6 @@ public class DataDictionaryFormElementFactory(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IMasterDataUrlHelper urlHelper)
 {
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private readonly MasterDataCoreOptions _options = options.Value;
 
     public FormElement GetFormElement()
@@ -40,7 +38,7 @@ public class DataDictionaryFormElementFactory(
     {
         var formElement = new FormElement(element);
 
-        formElement.SubTitle = $"val:{StringLocalizer[formElement.SubTitle!]}";
+        formElement.SubTitle = $"val:{stringLocalizer[formElement.SubTitle!]}";
 
         ConfigureFields(formElement);
 
@@ -58,7 +56,7 @@ public class DataDictionaryFormElementFactory(
         formElement.Fields[DataDictionaryStructure.Json].CssClass = "col-sm-4";
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "val:{IsFilter}";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription =
-            StringLocalizer["Filter by any data within the data dictionary structure."];
+            stringLocalizer["Filter by any data within the data dictionary structure."];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Fields[DataDictionaryStructure.LastModified].GridAlignment = GridAlignment.Right;
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].VisibleExpression = "val:0";
@@ -88,7 +86,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Icon = IconType.Pencil,
                 Name = "tools",
-                Tooltip = StringLocalizer["Edit"],
+                Tooltip = stringLocalizer["Edit"],
                 EnableExpression = "exp:'T' <> '{type}'",
                 IsDefaultOption = true
             },
@@ -96,7 +94,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Icon = IconType.FilesO,
                 Name = "duplicate",
-                Tooltip = StringLocalizer["Duplicate"],
+                Tooltip = stringLocalizer["Duplicate"],
                 EnableExpression = "exp:'T' <> '{type}'",
                 IsGroup = false,
             },
@@ -104,7 +102,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Icon = IconType.SolidCirclePlay,
                 Name = "render",
-                Tooltip = StringLocalizer["Render"],
+                Tooltip = stringLocalizer["Render"],
                 EnableExpression = "exp:'T' <> '{type}'",
                 IsGroup = false
             }
@@ -120,10 +118,10 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnAdd",
-                Text = StringLocalizer["New"],
+                Text = stringLocalizer["New"],
                 Icon = IconType.Plus,
                 ShowAsButton = true,
-                UrlRedirect = UrlHelper.Action("Add", "Element", new {Area="DataDictionary"})
+                UrlRedirect = urlHelper.Action("Add", "Element", new {Area="DataDictionary"})
             },
 
             new SubmitAction
@@ -131,21 +129,21 @@ public class DataDictionaryFormElementFactory(
                 Name = "btnDeleteSelected",
                 Order = 0,
                 Icon = IconType.Trash,
-                Text = StringLocalizer["Delete Selected"],
+                Text = stringLocalizer["Delete Selected"],
                 IsGroup = false,
-                ConfirmationMessage = StringLocalizer["Do you want to delete ALL selected records?"],
+                ConfirmationMessage = stringLocalizer["Do you want to delete ALL selected records?"],
                 ShowAsButton = true,
-                FormAction = UrlHelper.Action("Delete", "Element", new {Area="DataDictionary"}),
+                FormAction = urlHelper.Action("Delete", "Element", new {Area="DataDictionary"}),
             },
 
             new ScriptAction()
             {
                 Name = "btnAbout",
-                Text = StringLocalizer["About"],
+                Text = stringLocalizer["About"],
                 Icon = IconType.InfoCircle,
                 ShowAsButton = false,
                 IsGroup = true,
-                OnClientClick = $"DataDictionaryUtils.showAbout('{UrlHelper.Action("Index", "About", new {Area="DataDictionary"})}')",
+                OnClientClick = $"DataDictionaryUtils.showAbout('{urlHelper.Action("Index", "About", new {Area="DataDictionary"})}')",
                 Order = 14,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -153,7 +151,7 @@ public class DataDictionaryFormElementFactory(
             new ScriptAction
             {
                 Name = "btnHelp",
-                Text = StringLocalizer["Help"],
+                Text = stringLocalizer["Help"],
                 Icon = IconType.QuestionCircle,
                 IsGroup = true,
                 ShowAsButton = true,
@@ -165,13 +163,13 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnImport",
-                Tooltip = StringLocalizer["Import"],
+                Tooltip = stringLocalizer["Import"],
                 Icon = IconType.Upload,
                 ShowAsButton = true,
                 IsModal = true,
                 IsIframe = false,
                 ModalTitle = "Import",
-                UrlRedirect = UrlHelper.Action("Import", "Element", new {Area="DataDictionary"}),
+                UrlRedirect = urlHelper.Action("Import", "Element", new {Area="DataDictionary"}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -179,26 +177,26 @@ public class DataDictionaryFormElementFactory(
             new ScriptAction
             {
                 Name = "btnExport",
-                Tooltip = StringLocalizer["Export Selected"],
+                Tooltip = stringLocalizer["Export Selected"],
                 Icon = IconType.Download,
                 ShowAsButton = true,
                 Order = 10,
                 CssClass = BootstrapHelper.PullRight,
                 OnClientClick =
-                    $"DataDictionaryUtils.exportElement('{_options.DataDictionaryTableName.ToLowerInvariant()}', '{UrlHelper.Action("Export", "Element", new{Area="DataDictionary"})}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                    $"DataDictionaryUtils.exportElement('{_options.DataDictionaryTableName.ToLowerInvariant()}', '{urlHelper.Action("Export", "Element", new{Area="DataDictionary"})}', '{stringLocalizer["Select one or more dictionaries"]}');"
             },
             
             new UrlRedirectAction
             {
                 Name = "btnLog",
-                Text = StringLocalizer["Log"],
+                Text = stringLocalizer["Log"],
                 Icon = IconType.Film,
                 ShowAsButton = true,
                 IsModal = true,
                 IsGroup = true,
-                ModalTitle = StringLocalizer["Log"],
+                ModalTitle = stringLocalizer["Log"],
                 ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.Action("Index", "Log", new {Area="DataDictionary", isModal = true}),
+                UrlRedirect = urlHelper.Action("Index", "Log", new {Area="DataDictionary", isModal = true}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -206,11 +204,11 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnAppSettings",
-                Text = StringLocalizer["Application Settings"],
+                Text = stringLocalizer["Application Settings"],
                 Icon = IconType.SolidToolbox,
                 ShowAsButton = true,
                 IsGroup = true,
-                UrlRedirect = UrlHelper.Action("Index", "Settings", new {Area="DataDictionary"}),
+                UrlRedirect = urlHelper.Action("Index", "Settings", new {Area="DataDictionary"}),
                 Order = 12,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -218,14 +216,14 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnI18n",
-                Text = StringLocalizer["Internationalization"],
+                Text = stringLocalizer["Internationalization"],
                 Icon = IconType.SolidEarthAmericas,
                 ShowAsButton = true,
                 IsModal = true,
                 IsGroup = true,
-                ModalTitle = StringLocalizer["Internationalization"],
+                ModalTitle = stringLocalizer["Internationalization"],
                 ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.Action("Index", "Localization", new {Area="DataDictionary", isModal=true}),
+                UrlRedirect = urlHelper.Action("Index", "Localization", new {Area="DataDictionary", isModal=true}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             }

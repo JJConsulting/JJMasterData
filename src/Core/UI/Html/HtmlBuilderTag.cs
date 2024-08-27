@@ -1,37 +1,69 @@
-﻿namespace JJMasterData.Core.UI.Html;
+﻿using System;
+
+namespace JJMasterData.Core.UI.Html;
 
 /// <summary>
-/// Implementation of HTML tag.
+/// Represents a HTML tag of a <see cref="HtmlBuilder"/>
 /// </summary>
-public class HtmlBuilderTag(HtmlTag tag, bool hasClosingTag)
+public sealed class HtmlBuilderTag(HtmlTag htmlTag)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="HtmlBuilderTag"/> class.
-    /// </summary>
-    public HtmlBuilderTag(HtmlTag tag) : this(tag, CheckClosingTagPresence(tag))
-    {
-    }
-    
-    /// <summary>
-    /// Name of the tag.
-    /// </summary>
-    public HtmlTag TagName { get;} = tag;
+    public HtmlTag HtmlTag { get; } = htmlTag;
 
-    /// <summary>
-    /// Flag that indicates whether the tag is self closing (false) or not (true).
-    /// </summary>
-    public bool HasClosingTag { get; } = hasClosingTag;
-
-    private static bool CheckClosingTagPresence(HtmlTag htmlTag)
+    public bool HasClosingTag { get; } = htmlTag switch
     {
-        return htmlTag switch
-        {
-            HtmlTag.Area => false,
-            HtmlTag.Br => false,
-            HtmlTag.Hr => false,
-            HtmlTag.Img => false,
-            HtmlTag.Input => false,
-            _ => true
-        };
-    }
+        HtmlTag.Area or HtmlTag.Br or HtmlTag.Hr or HtmlTag.Img or HtmlTag.Input => false,
+        _ => true
+    };
+
+    public string GetTagName() => HtmlTag switch
+    {
+        HtmlTag.A => "a",
+        HtmlTag.B => "b",
+        HtmlTag.Blockquote => "blockquote",
+        HtmlTag.Area => "area",
+        HtmlTag.Br => "br",
+        HtmlTag.Div => "div",
+        HtmlTag.Span => "span",
+        HtmlTag.Label => "label",
+        HtmlTag.Input => "input",
+        HtmlTag.Strong => "strong",
+        HtmlTag.Button => "button",
+        HtmlTag.H1 => "h1",
+        HtmlTag.H2 => "h2",
+        HtmlTag.H3 => "h3",
+        HtmlTag.H4 => "h4",
+        HtmlTag.H5 => "h5",
+        HtmlTag.H6 => "h6",
+        HtmlTag.Small => "small",
+        HtmlTag.Ul => "ul",
+        HtmlTag.Li => "li",
+        HtmlTag.TextArea => "textarea",
+        HtmlTag.Script => "script",
+        HtmlTag.Select => "select",
+        HtmlTag.Option => "option",
+        HtmlTag.Table => "table",
+        HtmlTag.Tr => "tr",
+        HtmlTag.Th => "th",
+        HtmlTag.Td => "td",
+        HtmlTag.Thead => "thead",
+        HtmlTag.Tbody => "tbody",
+        HtmlTag.Hr => "hr",
+        HtmlTag.I => "i",
+        HtmlTag.Section => "section",
+        HtmlTag.P => "p",
+        HtmlTag.Footer => "footer",
+        HtmlTag.Img => "img",
+        HtmlTag.Center => "center",
+        HtmlTag.Video => "video",
+        HtmlTag.Form => "form",
+        HtmlTag.FieldSet => "fieldset",
+        HtmlTag.Legend => "legend",
+        HtmlTag.U => "u",
+        HtmlTag.OptGroup => "optgroup",
+        HtmlTag.Nav => "nav",
+        HtmlTag.Ol => "ol",
+        HtmlTag.Style => "style",
+        HtmlTag.Iframe => "iframe",
+        _ => throw new ArgumentOutOfRangeException(nameof(HtmlTag), HtmlTag, "HTML tag not implemented.")
+    };
 }

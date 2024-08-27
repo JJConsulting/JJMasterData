@@ -86,13 +86,13 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                     foreach (ElementField field in element.Fields)
                     {
                         currentField = field.Name;
-                        if (!columns.ContainsKey(field.Name))
+                        if (!columns.TryGetValue(field.Name, out var value))
                             throw new JJMasterDataException($"{field.Name} field not found");
 
                         if (col > 0)
                             sRet.Append(Delimiter);
 
-                        int ordinal = columns[field.Name];
+                        int ordinal = value;
                         if (!dr.IsDBNull(ordinal))
                         {
                             switch (field.DataType)
