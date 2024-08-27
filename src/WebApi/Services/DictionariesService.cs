@@ -128,13 +128,13 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         
         if (string.IsNullOrEmpty(fieldApplyUser)) 
             return filters;
-        if (!filters.ContainsKey(fieldApplyUser))
+        if (!filters.TryGetValue(fieldApplyUser, out var filter))
         {
             filters.Add(fieldApplyUser, userId);
         }
         else
         {
-            if (!filters[fieldApplyUser]!.ToString()!.Equals(userId))
+            if (!filter!.ToString()!.Equals(userId))
                 throw new UnauthorizedAccessException($"Access denied to change user filter on {metadata.Name}");
         }
 
