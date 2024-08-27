@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Text;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
@@ -11,22 +12,21 @@ public class OrderByData
 
     public bool Any() => Fields.Count > 0;
     
-    public string? ToQueryParameter()
+    public string ToQueryParameter()
     {
-        string? queryParameter = null;
+        var queryParameter = new StringBuilder();
         
         foreach (var field in Fields)
         {
-            if (queryParameter != null)
+            if (queryParameter.Length > 0)
             {
-                queryParameter += ",";
+                queryParameter.Append(',');
             }
 
-            queryParameter += $"{field.Key} {field.Value.ToString().ToUpper()}";
-
+            queryParameter.Append($"{field.Key} {field.Value.GetSqlString()}");
         }
 
-        return queryParameter;
+        return queryParameter.ToString();
     }
     
     public OrderByData AddOrReplace(string fieldName, OrderByDirection direction)
@@ -57,22 +57,28 @@ public class OrderByData
 
         foreach (var field in fields)
         {
-            string[] fieldParts = field.Split(' ');
+            var fieldParts = field.Split(' ');
             
             var directionStr = nameof(OrderByDirection.Asc);
             
             if(fieldParts.Length == 2)
-                directionStr = fieldParts[1].ToUpper();
+                directionStr = fieldParts[1].ToUpperInvariant();
 
             var fieldName = fieldParts[0];
-            
-            if (!Enum.TryParse(directionStr.ToLower().FirstCharToUpper(), out OrderByDirection direction) ||
-                !Enum.IsDefined(typeof(OrderByDirection), direction))
-            {
-                throw new ArgumentException("Invalid value for Direction in orderBy.");
-            }
+
+            var direction = ParseDirection(directionStr);
 
             Fields[fieldName] = direction;
         }
+    }
+
+    private static OrderByDirection ParseDirection(string directionStr)
+    {
+        return directionStr.ToLowerInvariant() switch
+        {
+            "asc" => OrderByDirection.Asc,
+            "desc" => OrderByDirection.Desc,
+            _ => throw new ArgumentException("Invalid OrderBy direction.")
+        };
     }
 }
