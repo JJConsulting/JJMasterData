@@ -245,6 +245,12 @@ public class JJFormView : AsyncComponent
             if (CurrentContext.Request.Form[$"form-view-page-state-{Name}"] != null && _pageState is null)
                 _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-page-state-{Name}"]);
 
+            if (CurrentContext.Request.QueryString.TryGetValue("pageState", out var queryStringPageState))
+            {
+                if(Enum.TryParse(queryStringPageState,ignoreCase: true, out PageState pageState))
+                    _pageState = pageState;
+            }
+            
             return _pageState ?? PageState.List;
         }
         internal set => _pageState = value;
