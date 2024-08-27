@@ -856,7 +856,6 @@ public class JJFormView : AsyncComponent
             {
                 return await GetInsertResult();
             }
-
             case PageState.Update or PageState.View:
             {
                 formValues ??= await GetFormValuesAsync();
@@ -886,24 +885,23 @@ public class JJFormView : AsyncComponent
                 return await GetInsertSelectionListResult();
             }
         }
-        
+        var formValues = await GetFormValuesAsync();
+
         if (PageState == PageState.Insert)
         {
-            var formValues = await GetFormValuesAsync();
-
             return await GetFormResult(formValues, PageState, true);
         }
 
         PageState = PageState.Insert;
 
         if (isInsertSelection)
-        {
             return await GetInsertSelectionListResult();
-        }
-
+        
         var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
         
-        return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, reloadFields);
+        DataHelper.CopyIntoDictionary(formValues,RelationValues!);
+        
+        return await GetFormResult(formValues, PageState.Insert, reloadFields);
     }
 
     private async Task<ComponentResult> GetInsertSelectionListResult()
