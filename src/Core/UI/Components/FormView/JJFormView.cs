@@ -245,7 +245,7 @@ public class JJFormView : AsyncComponent
             if (CurrentContext.Request.Form[$"form-view-page-state-{Name}"] != null && _pageState is null)
                 _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-page-state-{Name}"]);
 
-            if (CurrentContext.Request.QueryString.TryGetValue("pageState", out var queryStringPageState))
+            if (CurrentContext.Request.QueryString.TryGetValue($"{FormElement.Name}_PageState", out var queryStringPageState) && _pageState is null)
             {
                 if(Enum.TryParse(queryStringPageState,ignoreCase: true, out PageState pageState))
                     _pageState = pageState;
@@ -854,13 +854,7 @@ public class JJFormView : AsyncComponent
         {
             case PageState.Insert:
             {
-                formValues ??= new Dictionary<string, object?>();
-                DataHelper.CopyIntoDictionary(formValues,RelationValues!);
-                var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
-                return await GetFormResult(
-                    formValues,
-                    PageState,
-                    reloadFields);
+                return await GetInsertResult();
             }
 
             case PageState.Update or PageState.View:
@@ -887,7 +881,7 @@ public class JJFormView : AsyncComponent
         if (isInsertSelection)
         {
             var insertSelectionFormView = await GetInsertSelectionFormView();
-            if (insertSelectionFormView.GridView.HasAction())
+            if (insertSelectionFormView.GridView.HasAction() || PageState is PageState.Insert)
             {
                 return await GetInsertSelectionListResult();
             }
@@ -896,6 +890,7 @@ public class JJFormView : AsyncComponent
         if (PageState == PageState.Insert)
         {
             var formValues = await GetFormValuesAsync();
+
             return await GetFormResult(formValues, PageState, true);
         }
 
@@ -906,7 +901,9 @@ public class JJFormView : AsyncComponent
             return await GetInsertSelectionListResult();
         }
 
-        return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, false);
+        var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
+        
+        return await GetFormResult(new Dictionary<string,object?>(RelationValues!), PageState.Insert, reloadFields);
     }
 
     private async Task<ComponentResult> GetInsertSelectionListResult()
