@@ -88,7 +88,7 @@ public class JJGridView : AsyncComponent
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
     private GridTable? _table;
-    private IList<Dictionary<string,object?>>? _dataSource;
+    private List<Dictionary<string,object?>>? _dataSource;
     private List<FormElementField>? _pkFields;
     private Dictionary<string, object?>? _defaultValues;
     private FormStateData? _formStateData;
@@ -185,7 +185,7 @@ public class JJGridView : AsyncComponent
     /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the FormElement;
-    public IList<Dictionary<string,object?>>? DataSource
+    public List<Dictionary<string,object?>>? DataSource
     {
         get => _dataSource;
         set
@@ -283,10 +283,10 @@ public class JJGridView : AsyncComponent
                 }
                 else
                 {
-                    object tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
+                    var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
                     {
-                        if (int.TryParse(tablePage.ToString(), out var page))
+                        if (int.TryParse(tablePage, out var page))
                             currentPage = page;
                     }
                 }
@@ -298,10 +298,10 @@ public class JJGridView : AsyncComponent
                 int page = 1;
                 if (MaintainValuesOnLoad)
                 {
-                    object tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
+                    var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
                     {
-                        if (int.TryParse(tablePage.ToString(), out var nAuxPage))
+                        if (int.TryParse(tablePage, out var nAuxPage))
                             page = nAuxPage;
                     }
                 }
@@ -456,7 +456,7 @@ public class JJGridView : AsyncComponent
     /// <para/>
     /// If the TotalRecords property is equal to zero, pagination will not be displayed.
     /// </remarks>
-    public bool ShowPagging { get; set; }
+    public bool ShowPaging { get; set; }
 
     /// <summary>
     /// Key-Value pairs with the errors.
@@ -601,7 +601,7 @@ public class JJGridView : AsyncComponent
         EnableSorting = formElement.Options.Grid.EnableSorting;
         FieldFormattingService = fieldFormattingService;
         ShowHeaderWhenEmpty = formElement.Options.Grid.ShowHeaderWhenEmpty;
-        ShowPagging = formElement.Options.Grid.ShowPagging;
+        ShowPaging = formElement.Options.Grid.ShowPagging;
         ShowToolbar = formElement.Options.Grid.ShowToolBar;
         EmptyDataText = formElement.Options.Grid.EmptyDataText;
         AutoReloadFormFields = true;
@@ -999,14 +999,14 @@ public class JJGridView : AsyncComponent
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new GridCaptionView(action.Tooltip,ComponentFactory.Controls.ComboBox, StringLocalizer)
+        var captionView = new GridCaptionView(action.Tooltip,ComponentFactory.Controls.ComboBox, StringLocalizer)
         {
             Name = Name,
             ShowAsModal = true,
             FormElement = FormElement
         };
         
-        return await legend.GetHtmlBuilderAsync();
+        return await captionView.GetHtmlBuilderAsync();
     }
 
     internal string GetFieldName(string fieldName, Dictionary<string, object?> row)
@@ -1102,7 +1102,7 @@ public class JJGridView : AsyncComponent
         return EmptyComponentResult.Value;
     }
 
-    public async Task ExportFileInBackground()
+    public async ValueTask ExportFileInBackground()
     {
         DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder);
     }
@@ -1337,7 +1337,7 @@ public class JJGridView : AsyncComponent
     internal bool IsPagingEnabled()
     {
         return !(
-            !ShowPagging 
+            !ShowPaging 
             || CurrentPage == 0 
             || CurrentSettings.RecordsPerPage == 0 
             || TotalOfRecords == 0);

@@ -1636,13 +1636,7 @@ public class JJFormView : AsyncComponent
         get => GridView.ShowToolbar;
         set => GridView.ShowToolbar = value;
     }
-
-    [Obsolete("Please use GridView.ShowPagging")]
-    public bool ShowPagging
-    {
-        get => GridView.ShowPagging;
-        set => GridView.ShowPagging = value;
-    }
+    
 
     #if NETFRAMEWORK
     [Obsolete("Please use GridView.GetGridValuesAsync()")]

@@ -136,7 +136,7 @@ public class JJUploadView : AsyncComponent
             
             _gridView.Name = $"{Name}-grid-view";
             _gridView.UserValues = UserValues;
-            _gridView.ShowPagging = false;
+            _gridView.ShowPaging = false;
             _gridView.ShowTitle = false;
 
 

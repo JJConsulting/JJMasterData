@@ -106,7 +106,7 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
         grid.EnableSorting = gridOptions.EnableSorting;
         grid.EnableMultiSelect = gridOptions.EnableMultiSelect;
         grid.MaintainValuesOnLoad = gridOptions.MaintainValuesOnLoad;
-        grid.ShowPagging = gridOptions.ShowPagging;
+        grid.ShowPaging = gridOptions.ShowPagging;
         grid.ShowToolbar = gridOptions.ShowToolBar;
         
         if (!grid.GridSettingsForm.HasFormValues() || !grid.ShowToolbar || !grid.ConfigAction.IsVisible)
