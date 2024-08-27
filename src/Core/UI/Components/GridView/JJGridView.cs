@@ -802,7 +802,7 @@ public class JJGridView : AsyncComponent
 
             html.Append(await GetExportHtml());
 
-            html.Append(await GetLegendHtml());
+            html.Append(await GetCaptionHtml());
         }
 
         html.Append(HtmlTag.Div, div => div.WithCssClass("clearfix"));
@@ -990,7 +990,7 @@ public class JJGridView : AsyncComponent
         return modal.GetHtmlBuilder();
     }
 
-    private async Task<HtmlBuilder> GetLegendHtml()
+    private async Task<HtmlBuilder> GetCaptionHtml()
     {
         var action = LegendAction;
         var formData = await GetFormStateDataAsync();
