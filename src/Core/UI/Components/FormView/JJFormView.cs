@@ -333,24 +333,25 @@ public class JJFormView : AsyncComponent
 
     internal bool IsInsertAtGridView => PageState is PageState.List && 
                                         FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid;
-    
+
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
-    internal IQueryString QueryString => CurrentContext.Request.QueryString;
+    internal IEncryptionService EncryptionService { get; }
+    internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
-    internal FormValuesService FormValuesService { get; }
-    internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
-    public HtmlTemplateService HtmlTemplateService { get; }
+    
+    private IQueryString QueryString => CurrentContext.Request.QueryString;
+    private FormValuesService FormValuesService { get; }
+    private FieldValuesService FieldValuesService { get; }
+    private HtmlTemplateService HtmlTemplateService { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IOptionsSnapshot<MasterDataCoreOptions> Options { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILogger<JJFormView> Logger { get; }
-    internal IDataDictionaryRepository DataDictionaryRepository { get; }
-    internal FormService FormService { get; }
-    internal IEncryptionService EncryptionService { get; }
-    internal IComponentFactory ComponentFactory { get; }
-
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private FormService FormService { get; }
+    
     #endregion
 
     #region "Constructors"
@@ -641,18 +642,18 @@ public class JJFormView : AsyncComponent
             _ => await GetDefaultResult()
         };
 
-        if (result is HtmlComponentResult htmlComponent)
-        {
-            var html = htmlComponent.HtmlBuilder;
+        if (result is not HtmlComponentResult htmlComponent) 
+            return result;
+        
+        var html = htmlComponent.HtmlBuilder;
 
-            html.WithNameAndId(Name);
+        html.WithNameAndId(Name);
             
-            AppendFormViewHiddenInputs(html);
+        AppendFormViewHiddenInputs(html);
 
-            if (ComponentContext is ComponentContext.FormViewReload)
-            {
-                return new ContentComponentResult(html);
-            }
+        if (ComponentContext is ComponentContext.FormViewReload)
+        {
+            return new ContentComponentResult(html);
         }
 
         return result;
