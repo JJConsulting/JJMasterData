@@ -12,6 +12,10 @@
         <AssemblyName>JJMasterData.MongoDB</AssemblyName>
         <PackageIcon>JJMasterData.png</PackageIcon>
         <PackageId>JJMasterData.MongoDB</PackageId>
+        <PackageVersion>2.0.2</PackageVersion>
+        <Version>2.0.2</Version>
+        <AssemblyVersion>2.0.2</AssemblyVersion>
+        <FileVersion>2.0.2</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
