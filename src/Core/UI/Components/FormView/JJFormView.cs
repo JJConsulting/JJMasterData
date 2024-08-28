@@ -242,10 +242,10 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (CurrentContext.Request.Form[$"form-view-page-state-{Name}"] != null && _pageState is null)
+            if (_pageState is null && CurrentContext.Request.Form[$"form-view-page-state-{Name}"] != null)
                 _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-page-state-{Name}"]);
 
-            if (CurrentContext.Request.QueryString.TryGetValue($"{FormElement.Name}_PageState", out var queryStringPageState) && _pageState is null)
+            if (_pageState is null && CurrentContext.Request.QueryString.TryGetValue($"{FormElement.Name}_PageState", out var queryStringPageState))
             {
                 if(Enum.TryParse(queryStringPageState,ignoreCase: true, out PageState pageState))
                     _pageState = pageState;
@@ -885,21 +885,22 @@ public class JJFormView : AsyncComponent
                 return await GetInsertSelectionListResult();
             }
         }
+        
         var formValues = await GetFormValuesAsync();
 
+        var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
+        
         if (PageState == PageState.Insert)
         {
-            return await GetFormResult(formValues, PageState, true);
+            DataHelper.CopyIntoDictionary(formValues,RelationValues!);
+            
+            return await GetFormResult(formValues, PageState.Insert, reloadFields);
         }
 
         PageState = PageState.Insert;
 
         if (isInsertSelection)
             return await GetInsertSelectionListResult();
-        
-        var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
-        
-        DataHelper.CopyIntoDictionary(formValues,RelationValues!);
         
         return await GetFormResult(formValues, PageState.Insert, reloadFields);
     }
@@ -912,6 +913,8 @@ public class JJFormView : AsyncComponent
 
         var result = await formView.GetFormResultAsync();
 
+        CurrentActionMap = null;
+        
         if (result is HtmlComponentResult htmlComponentResult)
         {
             html.Append(htmlComponentResult.HtmlBuilder);

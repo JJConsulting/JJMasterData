@@ -63,7 +63,7 @@ public class JJDataPanel : AsyncComponent
     {
         get
         {
-            if (ContainsPanelState() && _pageState is null)
+            if (_pageState is null && ContainsPanelState())
                 _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"data-panel-state-{Name}"]);
 
             return _pageState ?? PageState.View;
@@ -77,7 +77,7 @@ public class JJDataPanel : AsyncComponent
 
     internal bool ContainsPanelState() => CurrentContext.Request.Form[$"data-panel-state-{Name}"] != null;
 
-    internal bool HasCustomPanelState { get; set; }
+    internal bool HasCustomPanelState { get; private set; }
     
     /// <summary>
     /// Fields with error.
