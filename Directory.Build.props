@@ -5,7 +5,7 @@
 		<PackageIcon>JJMasterData.png</PackageIcon>
 		<Version>4.3.0</Version>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
-		<PackageVersion>$(Version).0-rc</PackageVersion>
+		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
