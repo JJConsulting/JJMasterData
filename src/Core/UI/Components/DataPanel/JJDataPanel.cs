@@ -100,8 +100,8 @@ public class JJDataPanel : AsyncComponent
     {
         get
         {
-            if (_secretValues == null && CurrentContext.Request.Form[$"data-panel-secret-values-{Name}"] != null)
-                _secretValues = EncryptionService.DecryptDictionary(CurrentContext.Request.Form[$"data-panel-secret-values-{Name}"]);
+            if (_secretValues == null && CurrentContext.Request.Form.TryGetValue($"data-panel-secret-values-{Name}", out var secretValues))
+                _secretValues = EncryptionService.DecryptDictionary(secretValues);
             return _secretValues;
         }
         set => _secretValues = value;

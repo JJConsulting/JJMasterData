@@ -242,8 +242,8 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_pageState is null && CurrentContext.Request.Form[$"form-view-page-state-{Name}"] != null)
-                _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-page-state-{Name}"]);
+            if (_pageState is null && CurrentContext.Request.Form.TryGetValue($"form-view-page-state-{Name}", out var formPageState))
+                _pageState = (PageState)int.Parse(formPageState);
 
             if (_pageState is null && CurrentContext.Request.QueryString.TryGetValue($"{FormElement.Name}_PageState", out var queryStringPageState))
             {
@@ -323,8 +323,8 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (CurrentContext.Request.Form[$"form-view-relationship-type-{Name}"] != null && _relationshipType is null)
-                _relationshipType = (RelationshipType)int.Parse(CurrentContext.Request.Form[$"form-view-relationship-type-{Name}"]);
+            if (_relationshipType is null && CurrentContext.Request.Form.TryGetValue($"form-view-relationship-type-{Name}", out var relationshipType))
+                _relationshipType = (RelationshipType)int.Parse(relationshipType);
 
             return _relationshipType ?? RelationshipType.Parent;
         }
