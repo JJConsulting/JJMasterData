@@ -181,7 +181,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         }
         else if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
-            var replacedTemplate = ExpressionHelper.ReplaceExpression(field.GridRenderingTemplate!, formStateData.Values, field.EncodeHtml);
+            var replacedTemplate = await gridView.HtmlTemplateService.RenderTemplate(field.GridRenderingTemplate!, formStateData.Values);
             cell = new HtmlBuilder(replacedTemplate);
         }
         else

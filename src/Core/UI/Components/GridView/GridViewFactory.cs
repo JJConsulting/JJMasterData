@@ -29,6 +29,7 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerResolver gridEventHandlerResolver,
         UrlRedirectService urlRedirectService,
+        HtmlTemplateService htmlTemplateService,
         ILoggerFactory loggerFactory,
         IComponentFactory componentFactory)
     : IFormElementComponentFactory<JJGridView>
@@ -48,6 +49,7 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
             fieldValidationService,
             stringLocalizer,
             urlRedirectService,
+            htmlTemplateService,
             loggerFactory.CreateLogger<JJGridView>(),
             componentFactory);
 

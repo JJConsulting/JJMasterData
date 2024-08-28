@@ -44,7 +44,7 @@
     <div class="row">
         <div class="@BootstrapHelper.FormGroup col-sm-12 required">
             <label asp-for="GridRenderingTemplate" class="form-label"></label>
-            <tooltip title="@StringLocalizer["HTML template to render the field in the grid. Runtime values supported between curly bracets."]"/>
+            <tooltip title="@StringLocalizer["HTML template to render the field in the grid. Runtime values supported using a Liquid template."]"/>
             <div class="well" style="margin-bottom: 0">
                 <textarea asp-for="GridRenderingTemplate" class="form-control" rows="10"></textarea>
             </div>

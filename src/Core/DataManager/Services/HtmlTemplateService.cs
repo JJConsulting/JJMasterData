@@ -21,36 +21,15 @@ public class HtmlTemplateService(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     FluidParser fluidParser)
 {
-    public async Task<HtmlBuilder> RenderTemplate(HtmlTemplateAction action, Dictionary<string,object> pkValues)
+    public async Task<HtmlBuilder> RenderTemplate(HtmlTemplateAction action, Dictionary<string, object> pkValues)
     {
         var command = ExpressionDataAccessCommandFactory.Create(action.SqlCommand, pkValues);
         var dataSource = await entityRepository.GetDataSetAsync(command);
 
-        string renderedTemplate;
-
-        if (!fluidParser.TryParse(action.HtmlTemplate, out var template, out var error))
+        var renderedTemplate = await RenderTemplate(action.HtmlTemplate, new Dictionary<string, object>
         {
-            renderedTemplate = error;
-        }
-        else
-        {
-            var context = new TemplateContext(new { DataSource = EnumerableHelper.ConvertDataSetToArray(dataSource) });
-
-            var localize = new FunctionValue((args, _) =>
-            {
-                var firstArg = args.At(0).ToStringValue();
-                var localizerArgs = args.Values.Skip(1).Select(v => v.ToStringValue()).ToArray();
-                
-                // ReSharper disable once CoVariantArrayConversion
-                var localizedString = stringLocalizer[firstArg, localizerArgs.ToArray()];
-
-                return new ValueTask<FluidValue>(new StringValue(localizedString));
-            });
-
-            context.SetValue("localize", localize);
-
-            renderedTemplate = await template.RenderAsync(context);
-        }
+            { "DataSource", EnumerableHelper.ConvertDataSetToArray(dataSource) }
+        });
 
         var html = new HtmlBuilder();
         html.AppendDiv(div =>
@@ -67,9 +46,78 @@ public class HtmlTemplateService(
         {
             iframe.WithCssClass("modal-iframe");
             iframe.WithId("jjmasterdata-template-iframe");
-            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(renderedTemplate) ?? string.Empty);
+            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(renderedTemplate));
         });
 
         return html;
+    }
+
+    public async ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
+    {
+        if (!fluidParser.TryParse(templateString, out var template, out var error))
+        {
+            return error;
+        }
+
+        var context = new TemplateContext(values);
+
+        var localize = new FunctionValue((args, _) =>
+        {
+            var firstArg = args.At(0).ToStringValue();
+            var localizerArgs = args.Values.Skip(1).Select(v => v.ToStringValue()).ToArray();
+
+            var localizedString = stringLocalizer[firstArg, localizerArgs.ToArray()];
+
+            return new ValueTask<FluidValue>(new StringValue(localizedString));
+        });
+
+        context.SetValue("isNullOrWhiteSpace", new FunctionValue(IsNullOrWhiteSpace));
+        context.SetValue("isNullOrEmpty", new FunctionValue(IsNullOrEmpty));
+        context.SetValue("substring", new FunctionValue(Substring));
+        context.SetValue("localize", localize);
+
+        return await template.RenderAsync(context);
+    }
+
+    private static BooleanValue IsNullOrEmpty(FunctionArguments args, TemplateContext _)
+    {
+        var str = args.At(0).ToStringValue();
+
+        return BooleanValue.Create(string.IsNullOrEmpty(str));
+    }
+    
+    private static BooleanValue IsNullOrWhiteSpace(FunctionArguments args, TemplateContext _)
+    {
+        var str = args.At(0).ToStringValue();
+
+        return BooleanValue.Create(string.IsNullOrWhiteSpace(str));
+    }
+    
+    private static StringValue Substring(FunctionArguments args, TemplateContext _)
+    {
+        if (args.Count < 2)
+        {
+            return new StringValue("Error: Not enough arguments");
+        }
+
+        var str = args.At(0).ToObjectValue().ToString()!;
+        if (!int.TryParse(args.At(1).ToStringValue(), out var startIndex))
+        {
+            return new StringValue("Error: Invalid start index");
+        }
+
+        int length = 0;
+
+        if (args.Count > 2 && !int.TryParse(args.At(2).ToStringValue(), out length))
+        {
+            return new StringValue("Error: Invalid length");
+        }
+
+        // If length is not provided, use the length of the remaining string from the start index
+        var substring = args.Count > 2
+            ? str.Substring(startIndex, length)
+            : str.Substring(startIndex);
+
+        return new StringValue(substring);
     }
 }

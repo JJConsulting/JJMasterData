@@ -548,6 +548,7 @@ public class JJGridView : AsyncComponent
     internal FieldValidationService FieldValidationService { get; }
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private UrlRedirectService UrlRedirectService { get; }
+    internal HtmlTemplateService HtmlTemplateService { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
 
@@ -591,6 +592,7 @@ public class JJGridView : AsyncComponent
         FieldValidationService fieldValidationService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         UrlRedirectService urlRedirectService,
+        HtmlTemplateService htmlTemplateService,
         ILogger<JJGridView> logger,
         IComponentFactory componentFactory)
     {
@@ -612,6 +614,7 @@ public class JJGridView : AsyncComponent
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         UrlRedirectService = urlRedirectService;
+        HtmlTemplateService = htmlTemplateService;
         Logger = logger;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
