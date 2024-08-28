@@ -56,10 +56,7 @@ public class JJValidationSummary : HtmlComponent
             ShowCloseButton = ShowCloseButton,
         };
 
-        foreach (var message in Errors)
-        {
-            alert.Messages.Add(message);
-        }
+        alert.Messages.AddRange(Errors);
 
         return alert.BuildHtml();
     }

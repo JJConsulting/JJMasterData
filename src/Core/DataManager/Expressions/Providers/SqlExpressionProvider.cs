@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
@@ -16,12 +14,12 @@ public sealed class SqlExpressionProvider(IEntityRepository entityRepository) : 
     public string Title => "SQL";
     public Guid? ConnectionId { get; set; }
 
-    public async Task<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
+    public async ValueTask<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
     {
         var command = ExpressionDataAccessCommandFactory.Create(expression, parsedValues);
 
         var result = await entityRepository.GetResultAsync(command,ConnectionId);
-            
+
         return result;
     }
 }

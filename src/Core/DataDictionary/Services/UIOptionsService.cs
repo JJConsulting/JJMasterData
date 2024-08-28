@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
@@ -18,7 +17,7 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
         if (options.Grid.EnableMultiSelect)
         {
             var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
-            var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
+            var pks = formElement.Fields.FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
                 AddError("EnableMultiSelect", StringLocalizer["You cannot enable MultiSelect without setting a primary key"]);

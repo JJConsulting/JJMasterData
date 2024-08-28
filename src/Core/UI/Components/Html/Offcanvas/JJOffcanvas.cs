@@ -11,7 +11,7 @@ public class JJOffcanvas : HtmlComponent
 
     internal override HtmlBuilder BuildHtml()
     {
-        var offcanvas = new Div()
+        var offcanvas = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"offcanvas {Position.GetCssClass()}")
             .WithAttribute("tabindex", "-1")
             .WithId(Name)

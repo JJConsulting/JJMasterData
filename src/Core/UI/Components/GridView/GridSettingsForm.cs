@@ -9,7 +9,7 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Class responsible to render the UI on JJGridView
 /// </summary>
-internal class GridSettingsForm(
+internal sealed class GridSettingsForm(
     string name,
     IHttpContext currentContext,
     IStringLocalizer<MasterDataResources> stringLocalizer)
@@ -125,7 +125,7 @@ internal class GridSettingsForm(
     
     private HtmlBuilder GetPaginationHtml(GridSettings gridSettings)
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("col-sm-6");
 
         if (BootstrapHelper.Version is 3)
@@ -148,7 +148,7 @@ internal class GridSettingsForm(
 
     private HtmlBuilder GetPaginationLabel()
     {
-        var label = new Label();
+        var label = new HtmlBuilder(HtmlTag.Label);
         label.WithCssClass("form-label");
         label.WithAttribute("for", _tableTotalPerPage);
         label.AppendText(stringLocalizer["Records per page"]);
@@ -157,7 +157,7 @@ internal class GridSettingsForm(
 
     private HtmlBuilder GetPaginationSelect(GridSettings gridSettings)
     {
-        var select = new Select()
+        var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control form-select")
             .WithNameAndId(_tableTotalPerPage);
 

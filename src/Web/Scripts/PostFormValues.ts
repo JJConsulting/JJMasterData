@@ -24,6 +24,7 @@ function postFormValues(options : PostFormValuesOptions) {
             }
             else if (response.redirected) {
                 window.location.href = response.url;
+                return null;
             }
             else if(response.status == 440 || response.status == 403 || response.status == 401)
             {

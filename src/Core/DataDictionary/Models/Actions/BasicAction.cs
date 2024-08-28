@@ -78,6 +78,7 @@ public abstract class BasicAction
     /// Display grid title
     /// </summary>
     [JsonProperty("showTitle")]
+    [Display(Name = "Show Title")]
     public bool ShowTitle { get; set; }
 
     /// <summary>
@@ -86,6 +87,7 @@ public abstract class BasicAction
     /// Sim = Action will be executed
     /// </summary>
     [JsonProperty("confirmationMessage")]
+    [Display(Name = "Confirmation Message")]
     public string ConfirmationMessage { get; set; }
 
     /// <summary>
@@ -189,7 +191,5 @@ public abstract class BasicAction
         ShowAsButton = action.ShowAsButton;
         CssClass = action.CssClass;
     }
-
-    protected BasicAction CopyAction() => (BasicAction)MemberwiseClone();
     public abstract BasicAction DeepCopy();
 }

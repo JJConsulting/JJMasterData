@@ -9,10 +9,9 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridPagination(JJGridView gridView)
+internal sealed class GridPagination(JJGridView gridView)
 {
-    private JJGridView GridView { get; } = gridView;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = gridView.StringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = gridView.StringLocalizer;
     private int _totalPages;
     private int _totalButtons;
     private int _startButtonIndex;
@@ -20,9 +19,9 @@ internal class GridPagination(JJGridView gridView)
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        _totalPages = (int)Math.Ceiling(GridView.TotalOfRecords / (double)GridView.CurrentSettings.RecordsPerPage);
-        _totalButtons = GridView.CurrentSettings.TotalPaginationButtons;
-        _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
+        _totalPages = (int)Math.Ceiling(gridView.TotalOfRecords / (double)gridView.CurrentSettings.RecordsPerPage);
+        _totalButtons = gridView.CurrentSettings.TotalPaginationButtons;
+        _startButtonIndex = (int)Math.Floor((gridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClassIf(BootstrapHelper.Version > 3, "container-fluid p-0")
@@ -49,13 +48,13 @@ internal class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetPaginationHtmlBuilder()
     {
-        var ul = new Ul();
+        var ul = new HtmlBuilder(HtmlTag.Ul);
         ul.WithCssClass("pagination");
 
         if (_startButtonIndex > _totalButtons)
         {
-            ul.Append(GetPageButton(1, IconType.AngleDoubleLeft, StringLocalizer["First page"]));
-            ul.Append(GetPageButton(_startButtonIndex - 1, IconType.AngleLeft, StringLocalizer["Previous page"]));
+            ul.Append(GetPageButton(1, IconType.AngleDoubleLeft, _stringLocalizer["First page"]));
+            ul.Append(GetPageButton(_startButtonIndex - 1, IconType.AngleLeft, _stringLocalizer["Previous page"]));
         }
 
         for (int i = _startButtonIndex; i < _endButtonIndex; i++)
@@ -69,8 +68,8 @@ internal class GridPagination(JJGridView gridView)
         if (_endButtonIndex <= _totalPages)
         {
             ul.Append(GetPageButton(_endButtonIndex, IconType.AngleRight,
-                StringLocalizer["Next page"]));
-            ul.Append(GetPageButton(_totalPages, IconType.AngleDoubleRight, StringLocalizer["Last page"]));
+                _stringLocalizer["Next page"]));
+            ul.Append(GetPageButton(_totalPages, IconType.AngleDoubleRight, _stringLocalizer["Last page"]));
         }
 
         var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
@@ -85,8 +84,8 @@ internal class GridPagination(JJGridView gridView)
 
     private IEnumerable<HtmlBuilder> GetJumpToPageButtons()
     {
-        var jumpToPageName = GridView.Name + "-jump-to-page-input";
-        var textBox = GridView.ComponentFactory.Controls.TextGroup.Create();
+        var jumpToPageName = gridView.Name + "-jump-to-page-input";
+        var textBox = gridView.ComponentFactory.Controls.TextGroup.Create();
 
         textBox.Name = jumpToPageName;
         textBox.MinValue = 1;
@@ -95,24 +94,24 @@ internal class GridPagination(JJGridView gridView)
 
         textBox.Attributes["style"] = "display:none;width:150px";
 
-        textBox.Attributes["onfocusout"] = GridView.Scripts.GetJumpToPageScript();
-        textBox.PlaceHolder = StringLocalizer["Jump to page..."];
+        textBox.Attributes["onfocusout"] = gridView.Scripts.GetJumpToPageScript();
+        textBox.PlaceHolder = _stringLocalizer["Jump to page..."];
         textBox.CssClass += " pagination-jump-to-page-input";
 
 
-        yield return new Li()
+        yield return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
             .Append(textBox.GetHtmlBuilder())
             .AppendDiv(div =>
             {
                 div.WithId(jumpToPageName + "-invalid-feedback");
                 div.WithCssClass("invalid-feedback");
-                div.AppendText(StringLocalizer["Page must be between 1 and {0}.", _totalPages]);
+                div.AppendText(_stringLocalizer["Page must be between 1 and {0}.", _totalPages]);
             });
 
-        yield return new Li()
+        yield return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
-            .Append(new JJLinkButton(GridView.StringLocalizer)
+            .Append(new JJLinkButton(gridView.StringLocalizer)
             {
                 ShowAsButton = false,
                 Icon = IconType.SolidMagnifyingGlassArrowRight,
@@ -123,15 +122,15 @@ internal class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetPageButton(int page, IconType? icon = null, string? tooltip = null)
     {
-        var li = new Li()
+        var li = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
-            .WithCssClassIf(page == GridView.CurrentPage, "active")
+            .WithCssClassIf(page == gridView.CurrentPage, "active")
             .Append(HtmlTag.A, a =>
             {
                 a.WithCssClass("page-link");
                 a.WithStyle( "cursor:pointer; cursor:hand;");
                 a.WithToolTip(tooltip);
-                a.WithOnClick( $"javascript:{GridView.Scripts.GetPaginationScript(page)}");
+                a.WithOnClick( $"javascript:{gridView.Scripts.GetPaginationScript(page)}");
                 if (icon != null)
                 {
                     a.AppendComponent(new JJIcon(icon.Value));
@@ -147,68 +146,68 @@ internal class GridPagination(JJGridView gridView)
 
     private HtmlBuilder GetTotalRecordsHtmlBuilder()
     {
-        var div = new Div();
-        div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight}");
+        var div = new HtmlBuilder(HtmlTag.Div);
+        div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight} text-muted");
         div.Append(HtmlTag.Label, label =>
         {
-            label.WithAttribute("id", $"infotext_{GridView.Name}");
+            label.WithAttribute("id", $"infotext_{gridView.Name}");
             label.WithCssClass("small");
-            label.AppendText(StringLocalizer["Showing"]);
+            label.AppendText(_stringLocalizer["Showing"]);
             label.AppendText(" ");
 
             if (_totalPages <= 1)
             {
                 label.Append(HtmlTag.Span, span =>
                 {
-                    span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($" {GridView.TotalOfRecords:N0} ");
-                    span.AppendText(StringLocalizer["record(s)"]);
+                    span.WithAttribute("id", $"{gridView.Name}_totrows");
+                    span.AppendText($" {gridView.TotalOfRecords:N0} ");
+                    span.AppendText(_stringLocalizer["record(s)"]);
                 });
             }
             else
             {
-                var firstPageNumber = GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage -
-                    GridView.CurrentSettings.RecordsPerPage + 1;
+                var firstPageNumber = gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage -
+                    gridView.CurrentSettings.RecordsPerPage + 1;
 
                 var lastPageNumber =
-                    GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage > GridView.TotalOfRecords
-                        ? GridView.TotalOfRecords
-                        : GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage;
+                    gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage > gridView.TotalOfRecords
+                        ? gridView.TotalOfRecords
+                        : gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage;
 
-                label.AppendText($"{firstPageNumber}-{lastPageNumber} {StringLocalizer["From"]}");
+                label.AppendText($"{firstPageNumber}-{lastPageNumber} {_stringLocalizer["From"]}");
 
                 label.Append(HtmlTag.Span, span =>
                 {
-                    span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText(StringLocalizer["{0} records", GridView.TotalOfRecords]);
+                    span.WithAttribute("id", $"{gridView.Name}_totrows");
+                    span.AppendText(_stringLocalizer["{0} records", gridView.TotalOfRecords]);
                 });
             }
 
             label.Append(HtmlTag.Br);
 
             if (_endButtonIndex <= _totalPages)
-                label.AppendText(StringLocalizer["{0} pages", _totalPages]);
+                label.AppendText(_stringLocalizer["{0} pages", _totalPages]);
         });
 
-        div.AppendIf(GridView.EnableMultiSelect, HtmlTag.Br);
-        div.AppendIf(GridView.EnableMultiSelect, GetEnableMultSelectTotalRecords);
+        div.AppendIf(gridView.EnableMultiSelect, HtmlTag.Br);
+        div.AppendIf(gridView.EnableMultiSelect, GetEnableMultSelectTotalRecords);
 
         return div;
     }
 
     private HtmlBuilder GetEnableMultSelectTotalRecords()
     {
-        var selectedValues = GridView.GetSelectedGridValues();
-        string noRecordSelected = GridView.StringLocalizer["No record selected"];
-        string oneRecordSelected = GridView.StringLocalizer["A selected record"];
-        string multipleRecordsSelected = GridView.StringLocalizer["{0} selected records", selectedValues.Count];
+        var selectedValues = gridView.GetSelectedGridValues();
+        string noRecordSelected = gridView.StringLocalizer["No record selected"];
+        string oneRecordSelected = gridView.StringLocalizer["A selected record"];
+        string multipleRecordsSelected = gridView.StringLocalizer["{0} selected records", selectedValues.Count];
 
         var span = new HtmlBuilder(HtmlTag.Span);
         span.WithCssClass("small");
-        span.WithAttribute("id", $"selected-text-{GridView.Name}");
+        span.WithAttribute("id", $"selected-text-{gridView.Name}");
         span.WithAttribute("no-record-selected-label", noRecordSelected);
         span.WithAttribute("one-record-selected-label", oneRecordSelected);
-        span.WithAttribute("multiple-records-selected-label", StringLocalizer["{0} selected records"]);
+        span.WithAttribute("multiple-records-selected-label", _stringLocalizer["{0} selected records"]);
 
         if (selectedValues.Count == 0)
         {

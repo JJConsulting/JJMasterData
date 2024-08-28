@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
@@ -24,17 +23,13 @@ public class SqlServerScripts(
     
     public static string GetWriteScript(Element element)
     {
-        var fields = element.Fields
-            .ToList()
-            .FindAll(x => x.DataBehavior is FieldBehavior.Real);
+        var fields = element.Fields.FindAll(x => x.DataBehavior is FieldBehavior.Real);
         return SqlServerWriteProcedureScripts.GetWriteScript(element, fields);
     }
 
     public string GetReadScript(Element element)
     {
-        var fields = element.Fields
-            .ToList()
-            .FindAll(f => f.DataBehavior is FieldBehavior.Real);
+        var fields = element.Fields.FindAll(f => f.DataBehavior is FieldBehavior.Real);
         
         return ReadProcedureScripts.GetReadScript(element, fields);
     }

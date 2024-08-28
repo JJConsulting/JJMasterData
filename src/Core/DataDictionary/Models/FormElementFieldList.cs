@@ -135,7 +135,7 @@ public class FormElementFieldList : IList<FormElementField>
 
             foreach (var val in _formFields)
             {
-                if (val.Name.ToLower().Equals(fieldName.ToLower()))
+                if (val.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase))
                     return val;
             }
             throw new KeyNotFoundException($"Field {fieldName} not found.");
@@ -145,7 +145,7 @@ public class FormElementFieldList : IList<FormElementField>
             var isOk = false;
             for (var i = 0; i < _formFields.Count; i++)
             {
-                if (!_formFields[i].Name.ToLower().Equals(fieldName.ToLower()))
+                if (!_formFields[i].Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase))
                     continue;
                 
                 _formFields[i] = value;
@@ -189,6 +189,16 @@ public class FormElementFieldList : IList<FormElementField>
         return _baseFields.GetAsList();
     }
 
+    public List<FormElementField> FindAll(Predicate<FormElementField> predicate)
+    {
+        return _formFields.FindAll(predicate);
+    }
+    
+    public bool Exists(Predicate<FormElementField> predicate)
+    {
+        return _formFields.Exists(predicate);
+    }
+    
     public FormElementFieldList DeepCopy()
     {
         return new FormElementFieldList(

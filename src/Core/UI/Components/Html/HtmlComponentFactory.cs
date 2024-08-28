@@ -1,6 +1,7 @@
 # nullable enable
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Http.Abstractions;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 public class HtmlComponentFactory(
     ExpressionsService expressionsService,
     IStringLocalizer<MasterDataResources> stringLocalizer,

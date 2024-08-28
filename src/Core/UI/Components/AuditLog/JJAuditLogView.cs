@@ -14,6 +14,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
@@ -30,7 +31,7 @@ public class JJAuditLogView : AsyncComponent
     private RouteContext _routeContext;
 
 
-    internal RouteContext RouteContext
+    private RouteContext RouteContext
     {
         get
         {
@@ -44,7 +45,7 @@ public class JJAuditLogView : AsyncComponent
         }
     }
 
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    private ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     /// <summary>
     /// Id do usuário Atual
@@ -57,12 +58,12 @@ public class JJAuditLogView : AsyncComponent
 
     private IHttpContext CurrentContext { get; }
 
-    public AuditLogService AuditLogService { get; }
+    private AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
 
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
-    internal JJDataPanel DataPanel
+    private JJDataPanel DataPanel
     {
         get
         {
@@ -76,10 +77,10 @@ public class JJAuditLogView : AsyncComponent
         }
     }
 
-    public FormElement FormElement { get; private set; }
+    public FormElement FormElement { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    internal IEntityRepository EntityRepository { get; }
+    private IEntityRepository EntityRepository { get; }
 
     public JJAuditLogView(
         FormElement formElement,
@@ -90,7 +91,7 @@ public class JJAuditLogView : AsyncComponent
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
-        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-audit-log-view";
+        Name = $"{formElement.Name.ToLowerInvariant()}-audit-log-view";
         _componentFactory = componentFactory;
         FormElement = formElement;
         CurrentContext = currentContext;
@@ -103,7 +104,7 @@ public class JJAuditLogView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         string logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))
         {
@@ -160,7 +161,7 @@ public class JJAuditLogView : AsyncComponent
         });
 
         if (result.Data.Count > 0)
-            entryId = result.Data.ElementAt(0).ElementAt(0).Value.ToString();
+            entryId = result.Data[0].ElementAt(0).Value.ToString();
 
         return entryId;
     }
@@ -175,10 +176,10 @@ public class JJAuditLogView : AsyncComponent
 
     private async Task<HtmlBuilder> GetLogDetailsHtmlAsync(string logId)
     {
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.WithCssClass("mb-2");
         if (GridView.ShowTitle)
-            html.AppendComponent(await GridView.GetTitleAsync());
+            html.AppendComponent(GridView.GetTitle());
 
         if (string.IsNullOrEmpty(logId))
         {
@@ -314,7 +315,7 @@ public class JJAuditLogView : AsyncComponent
                 alert.Icon = IconType.SolidTriangleExclamation;
                 alert.Messages.Add(StringLocalizer["Audit Log is disabled. Please contact the administrator."]);
                 args.HtmlBuilder.AppendComponent(alert);
-                return Task.CompletedTask;
+                return ValueTaskHelper.CompletedTask;
             };
         }
         
@@ -381,11 +382,11 @@ public class JJAuditLogView : AsyncComponent
             }
 
             if (row["origin"]!.Equals((int)DataContextSource.Api))
-                origem = DataContextSource.Api.ToString();
+                origem = nameof(DataContextSource.Api);
             else if (row["origin"].Equals((int)DataContextSource.Form))
-                origem = DataContextSource.Form.ToString();
+                origem = nameof(DataContextSource.Form);
             else if (row["origin"].Equals((int)DataContextSource.Api))
-                origem = DataContextSource.Upload.ToString();
+                origem = nameof(DataContextSource.Upload);
 
             string logId = row["id"].ToString();
             string message = $"{action} [{origem}] {row["userId"]?.ToString() ?? string.Empty}";
@@ -394,7 +395,7 @@ public class JJAuditLogView : AsyncComponent
             {
                 var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.AuditLogView);
 
-                var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+                var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
 
                 a.WithAttribute("href",
                     $"javascript:AuditLogViewHelper.loadAuditLog('{FormElement.ParentName}','{logId}', '{encryptedRouteContext}')");
@@ -413,13 +414,15 @@ public class JJAuditLogView : AsyncComponent
                     });
                     div.Append(HtmlTag.B, b => { b.AppendText(message); });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText((string)row["modified"]!.ToString()); });
+                    div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b =>
                     {
                         b.AppendText($"IP: {row["ip"]}");
-                        var infoIcon = _componentFactory.Html.Icon.Create(IconType.InfoCircle);
-                        infoIcon.CssClass = "help-description";
+                        var infoIcon = new JJIcon(IconType.InfoCircle)
+                        {
+                            CssClass = "help-description"
+                        };
                         b.AppendComponent(infoIcon);
                         b.WithToolTip(row["browser"]?.ToString());
                     });

@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Data.Common;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Util;
 using Microsoft.Data.SqlClient;
 

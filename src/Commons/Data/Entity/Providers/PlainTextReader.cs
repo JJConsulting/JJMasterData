@@ -86,13 +86,13 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                     foreach (ElementField field in element.Fields)
                     {
                         currentField = field.Name;
-                        if (!columns.ContainsKey(field.Name))
+                        if (!columns.TryGetValue(field.Name, out var value))
                             throw new JJMasterDataException($"{field.Name} field not found");
 
                         if (col > 0)
                             sRet.Append(Delimiter);
 
-                        int ordinal = columns[field.Name];
+                        int ordinal = value;
                         if (!dr.IsDBNull(ordinal))
                         {
                             switch (field.DataType)
@@ -146,10 +146,10 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                 var ts = DateTime.Now - dStart;
                 var logMessage = new StringBuilder();
                 logMessage.Append("Synchronizing");
-                logMessage.Append(" ");
+                logMessage.Append(' ');
                 logMessage.AppendLine(element.Name);
 
-                if (filters.Any())
+                if (filters.Count > 0)
                 {
                     logMessage.Append("- ");
                     logMessage.Append("Filters");
@@ -159,7 +159,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                     {
                         logMessage.Append("  ");
                         logMessage.Append(filter.Key);
-                        logMessage.Append("=");
+                        logMessage.Append('=');
                         logMessage.Append(filter.Value);
                     }
 

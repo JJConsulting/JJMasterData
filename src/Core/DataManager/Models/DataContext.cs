@@ -6,19 +6,18 @@ namespace JJMasterData.Core.DataManager.Models;
 
 public class DataContext
 {
-    public DataContextSource Source { get; private set; }
+    public DataContextSource Source { get; }
 
-    public string? UserId { get; private set; }
+    public string? UserId { get; }
 
     public string? IpAddress { get; internal set; }
-    
+
     public string? BrowserInfo { get; internal set; }
 
     public DataContext()
     {
-        
     }
-    
+
     public DataContext(IHttpRequest request, DataContextSource source, string? userId)
     {
         Source = source;
@@ -26,5 +25,4 @@ public class DataContext
         IpAddress = request.UserHostAddress;
         BrowserInfo = request.UserAgent;
     }
-
 }

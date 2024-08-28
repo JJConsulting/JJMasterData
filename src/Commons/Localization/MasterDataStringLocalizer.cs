@@ -13,158 +13,143 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
-
 namespace JJMasterData.Commons.Localization;
 
-public sealed class MasterDataStringLocalizer<TResourceSource> : IStringLocalizer<TResourceSource>
+public sealed class MasterDataStringLocalizer<TResourceSource>(IStringLocalizerFactory factory)
+	: IStringLocalizer<TResourceSource>
 {
-    private readonly IStringLocalizer _localizer;
-    
-    public MasterDataStringLocalizer(IStringLocalizerFactory factory)
-    {
-        if (factory == null)
-        {
-            throw new ArgumentNullException(nameof(factory));
-        }
+	private readonly IStringLocalizer _localizer = factory.Create(typeof(TResourceSource));
 
-        _localizer = factory.Create(typeof(TResourceSource));
-    }
+	/// <inheritdoc />
+	public LocalizedString this[string? name] => _localizer[name!];
 
-    /// <inheritdoc />
-    public LocalizedString this[string? name] => _localizer[name!];
+	/// <inheritdoc />
+	public LocalizedString this[string? name, params object[] arguments] => _localizer[name!, arguments];
 
-    /// <inheritdoc />
-    public LocalizedString this[string? name, params object[] arguments] => _localizer[name!, arguments];
-
-    /// <inheritdoc />
-    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
-        _localizer.GetAllStrings(includeParentCultures);
+	/// <inheritdoc />
+	public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
+		_localizer.GetAllStrings(includeParentCultures);
 }
 
-
 public class MasterDataStringLocalizer(
-    string resourceName,
-    ResourceManagerStringLocalizer resourcesStringLocalizer,
-    IEntityRepository entityRepository,
-    IMemoryCache cache,
-    IOptionsMonitor<MasterDataCommonsOptions> options)
-    : IStringLocalizer
+	string resourceName,
+	ResourceManagerStringLocalizer resourcesStringLocalizer,
+	IEntityRepository entityRepository,
+	IMemoryCache cache,
+	IOptionsMonitor<MasterDataCommonsOptions> options)
+	: IStringLocalizer
 {
-    private ResourceManagerStringLocalizer ResourceManagerStringLocalizer { get; } = resourcesStringLocalizer;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private IMemoryCache Cache { get; } = cache;
-    private IOptionsMonitor<MasterDataCommonsOptions> Options { get; } = options;
+	public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+	{
+		return GetAllStringsAsDictionary().Select(e => new LocalizedString(e.Key, e.Value));
+	}
 
-    private string ResourceName { get; } = resourceName;
+	public LocalizedString this[string? name]
+	{
+		get
+		{
+			if (name == null)
+				return new LocalizedString(string.Empty, string.Empty, true);
 
-    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
-    {
-        return GetAllStringsAsDictionary().Select(e=>new LocalizedString(e.Key, e.Value));
-    }
+			var value = GetString(name);
+			return new LocalizedString(name, value, false);
+		}
+	}
 
-    public LocalizedString this[string? name]
-    {
-        get
-        {
-            if (name == null)
-                return new LocalizedString(string.Empty,string.Empty, true);
-            
-            var value = GetString(name);
-            return new LocalizedString(name, value, false);
-        }
-    }
+	public LocalizedString this[string? name, params object[] arguments]
+	{
+		get
+		{
+			if (name == null)
+				return new LocalizedString(string.Empty, string.Empty);
 
-    public LocalizedString this[string? name, params object[] arguments]
-    {
-        get
-        {
-            if (name == null)
-                return new LocalizedString(string.Empty,string.Empty);
-            
-            return new LocalizedString(name, string.Format(this[name], arguments));
-        }
-    }
+			return new LocalizedString(name, string.Format(this[name], arguments));
+		}
+	}
 
 
-    private string GetString(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-            return key;
-        
-        var culture = Thread.CurrentThread.CurrentCulture.Name;
-        var cacheKey = $"{ResourceName}_localization_strings_{culture}";
+	private string GetString(string key)
+	{
+		if (string.IsNullOrEmpty(key))
+			return key;
 
-        if (Cache.TryGetValue<FrozenDictionary<string, string>>(cacheKey, out var cachedDictionary))
-        {
-            return cachedDictionary.GetValueOrDefault(key, key);
-        }
+		var culture = Thread.CurrentThread.CurrentCulture.Name;
+		var cacheKey = $"{resourceName}_localization_strings_{culture}";
 
-        var localizedStrings = GetAllStringsAsDictionary();
-        
-        Cache.Set(cacheKey, localizedStrings);
+		if (cache.TryGetValue<FrozenDictionary<string, string>>(cacheKey, out var cachedDictionary))
+		{
+			return cachedDictionary.GetValueOrDefault(key, key);
+		}
 
-        return localizedStrings.GetValueOrDefault(key, key);
-    }
+		var localizedStrings = GetAllStringsAsDictionary();
 
-    private FrozenDictionary<string, string> GetAllStringsAsDictionary()
-    {
-        string culture = Thread.CurrentThread.CurrentCulture.Name;
+		cache.Set(cacheKey, localizedStrings);
 
-        var element = MasterDataStringLocalizerElement.GetElement(Options.CurrentValue);
+		return localizedStrings.GetValueOrDefault(key, key);
+	}
 
-        var hasConnectionString = !string.IsNullOrEmpty(Options.CurrentValue.ConnectionString);
-        
-        var tableExists = hasConnectionString && EntityRepository.TableExists(element.TableName);
-        
-        if (!tableExists && hasConnectionString)
-             EntityRepository.CreateDataModel(element,[]);
+	private FrozenDictionary<string, string> GetAllStringsAsDictionary()
+	{
+		var culture = Thread.CurrentThread.CurrentCulture.Name;
 
-        var stringLocalizerValues = GetStringLocalizerValues();
-        var databaseValues = hasConnectionString ? GetDatabaseValues(element, culture) : new Dictionary<string, object?>();
+		var element = MasterDataStringLocalizerElement.GetElement(options.CurrentValue);
 
-        if (databaseValues.Count > 0)
-        {
-            foreach (var dbValue in databaseValues.ToList())
-            {
-                stringLocalizerValues[dbValue.Key] = dbValue.Value?.ToString() ?? string.Empty;
-            }
-        }
-        
+		var hasConnectionString = !string.IsNullOrEmpty(options.CurrentValue.ConnectionString);
 
-        return stringLocalizerValues.ToFrozenDictionary();
-    }
-    
+		var tableExists = hasConnectionString && entityRepository.TableExists(element.TableName);
 
-    private Dictionary<string, string> GetStringLocalizerValues()
-    {
-        try
-        {
-            var values = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            var localizedStrings = ResourceManagerStringLocalizer.GetAllStrings();
+		if (!tableExists && hasConnectionString)
+			entityRepository.CreateDataModel(element, []);
 
-            foreach (var localizedString in localizedStrings)
-            {
-                values.Add(localizedString.Name, localizedString.Value);
-            }
+		var stringLocalizerValues = GetStringLocalizerValues();
+		var databaseValues =
+			hasConnectionString ? GetDatabaseValues(element, culture) : new Dictionary<string, object?>();
 
-            return values;
-        }
-        catch
-        {
-            return new Dictionary<string, string>();
-        }
-    }
+		if (databaseValues.Count > 0)
+		{
+			foreach (var dbValue in databaseValues.ToList())
+			{
+				stringLocalizerValues[dbValue.Key] = dbValue.Value?.ToString() ?? string.Empty;
+			}
+		}
 
-    private Dictionary<string, object?> GetDatabaseValues(Element element, string culture)
-    {
-        var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-        var filter = new Dictionary<string,object?> { { "cultureCode", culture} };
-        var result =EntityRepository.GetDictionaryListResult(element, new EntityParameters {Filters = filter},false);
-        foreach (var row in result.Data)
-        {
-            values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());
-        }
 
-        return values;
-    }
+		return stringLocalizerValues.ToFrozenDictionary();
+	}
+
+
+	private Dictionary<string, string> GetStringLocalizerValues()
+	{
+		try
+		{
+			var values = new Dictionary<string, string>(StringComparer.Ordinal);
+			var localizedStrings = resourcesStringLocalizer.GetAllStrings();
+
+			foreach (var localizedString in localizedStrings)
+			{
+				if(!values.ContainsKey(localizedString.Name))
+					values.Add(localizedString.Name, localizedString.Value);
+			}
+
+			return values;
+		}
+		catch
+		{
+			return new Dictionary<string, string>();
+		}
+	}
+
+	private Dictionary<string, object?> GetDatabaseValues(Element element, string culture)
+	{
+		var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+		var filter = new Dictionary<string, object?> { { "cultureCode", culture } };
+		var result =
+			entityRepository.GetDictionaryListResult(element, new EntityParameters { Filters = filter }, false);
+		foreach (var row in result.Data)
+		{
+			values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());
+		}
+
+		return values;
+	}
 }

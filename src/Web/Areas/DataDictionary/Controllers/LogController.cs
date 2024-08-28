@@ -43,12 +43,12 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
         formView.GridView.OnRenderCellAsync += (_, args) =>
         {
             if (!args.Field.Name.Equals(Options.MessageColumnName))
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             
             var message = args.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
             args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         };
         
         var result = await formView.GetResultAsync();

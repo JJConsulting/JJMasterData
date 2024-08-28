@@ -23,34 +23,23 @@ public class ExpressionsService(
     IEncryptionService encryptionService,
     ILogger<ExpressionsService> logger)
 {
-    private record struct Expression(string Prefix, string Content);
+    private readonly record struct Expression(string Prefix, string Content);
 
-    private string? _valueExpressionPrefix;
-
-    private string ValueExpressionPrefix => _valueExpressionPrefix ??= 
-        ExpressionProviders.First(p => p is ValueExpressionProvider).Prefix;
-
-    private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
-    private ExpressionParser ExpressionParser { get; } = expressionParser;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private ILogger<ExpressionsService> Logger { get; } = logger;
-    
     public Dictionary<string, object?> ParseExpression(string expression, FormStateData formStateData)
     {
-        return ExpressionParser.ParseExpression(expression, formStateData);
+        return expressionParser.ParseExpression(expression, formStateData);
     }
-    
+
     public string? ReplaceExpressionWithParsedValues(
         string? expression,
         FormStateData formStateData,
-        bool encryptValues = false
-        )
+        bool encryptValues = false)
     {
-        var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+        var parsedValues = expressionParser.ParseExpression(expression, formStateData);
 
         if (encryptValues)
             EncryptValues(parsedValues);
-        
+
         if (expression != null)
             return ExpressionHelper.ReplaceExpression(expression, parsedValues);
 
@@ -59,11 +48,11 @@ public class ExpressionsService(
 
     private void EncryptValues(Dictionary<string, object?> parsedValues)
     {
-        foreach(var kvp in parsedValues)
+        foreach (var kvp in parsedValues)
         {
             var value = parsedValues[kvp.Key];
-            if(value is not null)
-                parsedValues[kvp.Key] = EncryptionService.EncryptStringWithUrlEscape(value.ToString()!);
+            if (value is not null)
+                parsedValues[kvp.Key] = encryptionService.EncryptStringWithUrlEscape(value.ToString()!);
         }
     }
 
@@ -74,20 +63,21 @@ public class ExpressionsService(
 
     public object? GetExpressionValue(string? expression, FormStateData formStateData)
     {
-        var extractedExpression = GetExpressionFromString(expression);
-        var (expressionType, expressionValue) = extractedExpression;
+        var (expressionType, expressionValue) = GetExpressionFromString(expression);
 
-        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is ISyncExpressionProvider) is
+        if (expressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is ISyncExpressionProvider) is
             not ISyncExpressionProvider provider)
+        {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
+        }
 
         object? result;
 
         try
         {
-            Logger.LogExpression(expression);
+            logger.LogExpression(expression);
 
-            var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+            var parsedValues = expressionParser.ParseExpression(expression, formStateData);
 
             result = provider.Evaluate(expressionValue, parsedValues);
         }
@@ -95,7 +85,7 @@ public class ExpressionsService(
         {
             var exception = new ExpressionException("Unhandled exception at a expression provider.", ex);
 
-            Logger.LogExpressionError(exception, provider.Prefix, expression);
+            logger.LogExpressionError(exception, provider.Prefix, expression);
 
             throw exception;
         }
@@ -103,41 +93,39 @@ public class ExpressionsService(
         return result;
     }
 
-    public Task<object?> GetTriggerValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
+    public ValueTask<object?> GetTriggerValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
     {
         var field = fieldSelector.Field;
-        return GetExpressionValueAsync(fieldSelector,field.TriggerExpression, formStateData);
+        return GetExpressionValueAsync(fieldSelector, field.TriggerExpression, formStateData);
     }
-    
-    public Task<object?> GetDefaultValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
+
+    public ValueTask<object?> GetDefaultValueAsync(FormElementFieldSelector fieldSelector, FormStateData formStateData)
     {
         var field = fieldSelector.Field;
-        return GetExpressionValueAsync(fieldSelector,field.DefaultValue, formStateData);
+        return GetExpressionValueAsync(fieldSelector, field.DefaultValue, formStateData);
     }
-    
-    private async Task<object?> GetExpressionValueAsync(
+
+    private async ValueTask<object?> GetExpressionValueAsync(
         FormElementFieldSelector fieldSelector,
         string? expression,
         FormStateData formStateData)
     {
-        var extractedExpression = GetExpressionFromString(expression);
-        var (expressionType, expressionValue) = extractedExpression;
+        var (expressionType, expressionValue) = GetExpressionFromString(expression);
 
-        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not
+        if (expressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not
             IAsyncExpressionProvider provider)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");
         }
 
         var field = fieldSelector.Field;
-        
+
         try
         {
-            var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+            var parsedValues = expressionParser.ParseExpression(expression, formStateData);
 
-            if(provider is SqlExpressionProvider sqlProvider) 
-                sqlProvider.ConnectionId = fieldSelector.FormElement.ConnectionId;
-            
+            provider.ConnectionId = fieldSelector.FormElement.ConnectionId;
+
             var result = await provider.EvaluateAsync(expressionValue, parsedValues);
             if (result is string stringResult)
             {
@@ -158,7 +146,7 @@ public class ExpressionsService(
             var exception =
                 new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex);
 
-            Logger.LogExpressionErrorWithField(exception, provider.Prefix, expression, field.Name);
+            logger.LogExpressionErrorWithField(exception, provider.Prefix, expression, field.Name);
 
             throw exception;
         }
@@ -166,16 +154,16 @@ public class ExpressionsService(
 
     private Expression GetExpressionFromString(string? expression)
     {
-        var splitExpression = expression?.Split([':'], 2) ;
+        var splitExpression = expression?.Split([':'], 2);
 
         if (splitExpression?.Length < 2)
-            return new Expression(ValueExpressionPrefix, expression ?? string.Empty);
-        
+            return new Expression(ValueExpressionProvider.Prefix, expression ?? string.Empty);
+
         var prefix = splitExpression?[0];
 
-        if (!ExpressionProviders.GetProvidersPrefixes().Contains(prefix) || splitExpression is null)
-            return new Expression(ValueExpressionPrefix, expression ?? string.Empty);
-        
+        if (splitExpression is null || !expressionProviders.GetProvidersPrefixes().Contains(prefix))
+            return new Expression(ValueExpressionProvider.Prefix, expression ?? string.Empty);
+
         return new Expression(splitExpression[0], splitExpression[1]);
     }
 

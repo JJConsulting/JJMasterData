@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 public class CollapsePanelTagHelper(IComponentFactory<JJCollapsePanel> collapsePanelFactory)
     : TagHelper
 {
+    [HtmlAttributeName("name")]
+    public string? Name { get; set; }
+    
     [HtmlAttributeName("title")]
     [LocalizationRequired]
     public string? Title { get; set; }
@@ -36,7 +39,7 @@ public class CollapsePanelTagHelper(IComponentFactory<JJCollapsePanel> collapseP
         AssertAttributes();
 
         var panel = CollapsePanelFactory.Create();
-        panel.Name = Title!.ToLowerInvariant().Replace(" ", "_");
+        panel.Name = Name ?? Title!.ToLowerInvariant().Replace(" ", "_");
         panel.Title = Title;
         panel.ExpandedByDefault = ExpandedByDefault;
         panel.Color = Color;

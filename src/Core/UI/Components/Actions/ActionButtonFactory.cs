@@ -6,35 +6,23 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFactory,
+public class ActionButtonFactory(
+    IComponentFactory<JJLinkButton> linkButtonFactory,
+    ActionScripts actionScripts,
     ExpressionsService expressionsService,
-    IMasterDataUrlHelper urlHelper, 
     IEncryptionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private IComponentFactory<JJLinkButton> LinkButtonFactory { get; } = linkButtonFactory;
-
-    private ActionScripts _actionScripts;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-
-    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private ActionScripts ActionScripts => _actionScripts ??= new ActionScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
-
-    public JJLinkButton Create()
-    {
-        return LinkButtonFactory.Create();
-    }
     
+    public JJLinkButton Create() => linkButtonFactory.Create();
+
     public JJLinkButton Create(BasicAction action, bool visible, bool enabled)
     {
-        var button = LinkButtonFactory.Create();
+        var button = linkButtonFactory.Create();
         button.Tooltip = action.Tooltip;
         button.Text = action.Text;
         button.Color = action.Color;
@@ -54,8 +42,8 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
 
     private JJLinkButton Create(BasicAction action, FormStateData formStateData)
     {
-        var isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formStateData);
-        var isEnabled = ExpressionsService.GetBoolValue(action.EnableExpression, formStateData);
+        var isVisible = expressionsService.GetBoolValue(action.VisibleExpression, formStateData);
+        var isEnabled = expressionsService.GetBoolValue(action.EnableExpression, formStateData);
         return Create(action, isVisible, isEnabled);
     }
 
@@ -67,10 +55,10 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
         switch (action)
         {
             case UserCreatedAction:
-                button.OnClientClick = ActionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
+                button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
                 break;
             case GridTableAction:
-                button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
+                button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
                 break;
             default:
                 throw new JJMasterDataException("Action is not user created or a GridTableAction.");
@@ -87,7 +75,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
 
         if (action is UserCreatedAction)
         {
-            button.OnClientClick =  ActionScripts.GetUserActionScript(actionContext, ActionSource.GridToolbar);
+            button.OnClientClick =  actionScripts.GetUserActionScript(actionContext, ActionSource.GridToolbar);
             return button;
         }
 
@@ -98,17 +86,17 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                 break;
             case AuditLogGridToolbarAction:
                 button.OnClientClick =
-                    ActionScripts.GetFormActionScript(actionContext, ActionSource.GridToolbar);
+                    actionScripts.GetFormActionScript(actionContext, ActionSource.GridToolbar);
                 break;
             
             case ImportAction:
-                var importationScripts = new DataImportationScripts($"{actionContext.ParentComponentName}-importation", actionContext.FormElement,StringLocalizer, EncryptionService);
+                var importationScripts = new DataImportationScripts($"{actionContext.ParentComponentName}-importation", actionContext.FormElement,stringLocalizer, encryptionService);
                 button.OnClientClick =
                     importationScripts.GetShowScript();
                 break;
                 
             case ExportAction:
-                var exportationScripts = new DataExportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
+                var exportationScripts = new DataExportationScripts(actionContext.ParentComponentName, actionContext.FormElement, encryptionService);
                 button.OnClientClick =
                     exportationScripts.GetExportModalScript();
                 break;
@@ -120,7 +108,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                     BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-filter-modal");
                 break;
             case InsertAction:
-                button.OnClientClick = ActionScripts.GetFormActionScript(actionContext,
+                button.OnClientClick = actionScripts.GetFormActionScript(actionContext,
                     ActionSource.GridToolbar);
                 break;
             case LegendAction:
@@ -151,7 +139,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
     
         if (action is UserCreatedAction)
         {
-            button.OnClientClick = ActionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
+            button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
@@ -174,7 +162,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                         }
                         else
                         {
-                            button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                            button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
                         }        
                     }
                     break;
@@ -187,7 +175,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                     }
                     else
                     {
-                         button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                         button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
                     }
                     break;
 
@@ -195,7 +183,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                     button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.Update);
                     break;
                 case AuditLogFormToolbarAction:
-                    button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                    button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
                     break;
                 case SaveAction saveAction:
                     var isAtModal = formView.DataPanel.IsAtModal;
@@ -204,7 +192,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                     else
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
                     
-                    button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar,true,isAtModal);
+                    button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar,true,isAtModal);
                     break;
             }
         }
@@ -223,7 +211,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
 
         if (action is UserCreatedAction)
         {
-            button.OnClientClick = ActionScripts.GetUserActionScript(actionContext, ActionSource.Field);
+            button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.Field);
         }
 
         button.Enabled = button.Enabled && actionContext.FormStateData.PageState is not PageState.View;

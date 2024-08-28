@@ -140,6 +140,7 @@ public class FormElementField : ElementField
     [Display(Name = "Auto Reload")]
     public bool AutoPostBack { get; set; }
 
+
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
@@ -292,6 +293,7 @@ public class FormElementField : ElementField
         Component
             is FormComponent.Text
             or FormComponent.TextArea
+            or FormComponent.Hour
             or FormComponent.Date
             or FormComponent.DateTime
             or FormComponent.Number
@@ -300,7 +302,7 @@ public class FormElementField : ElementField
             or FormComponent.CnpjCpf
             or FormComponent.Tel
             or FormComponent.ComboBox
-        && (DataItem == null || (DataItem != null && DataItem.SupportsFloatingLabels()));
+        && DataItem?.SupportsFloatingLabels() != false;
 
     /// <summary>
     /// Set if the field is enabled.

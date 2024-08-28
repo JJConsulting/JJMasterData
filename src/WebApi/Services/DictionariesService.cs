@@ -52,7 +52,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         foreach (var os in listSync)
         {
             var dStartObj = DateTime.Now;
-            var dictionary = dictionaries.FirstOrDefault(x => x.Name.Equals(os.Name));
+            var dictionary = dictionaries.Find(x => x.Name.Equals(os.Name));
             if (dictionary == null)
                 throw new JJMasterDataException($"Element {os.Name} not found or not configured for sync");
 
@@ -87,7 +87,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         message.Append(StringLocalizer["Synchronizing"]);
         message.Append(listSync.Length);
         message.Append(StringLocalizer["objects"]);
-        message.Append(" ");
+        message.Append(' ');
         message.AppendLine(" ...");
         message.AppendLine(StringLocalizer["{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(ts)]);
         Logger.LogInformation(message.ToString());
@@ -128,13 +128,13 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         
         if (string.IsNullOrEmpty(fieldApplyUser)) 
             return filters;
-        if (!filters.ContainsKey(fieldApplyUser))
+        if (!filters.TryGetValue(fieldApplyUser, out var filter))
         {
             filters.Add(fieldApplyUser, userId);
         }
         else
         {
-            if (!filters[fieldApplyUser]!.ToString()!.Equals(userId))
+            if (!filter!.ToString()!.Equals(userId))
                 throw new UnauthorizedAccessException($"Access denied to change user filter on {metadata.Name}");
         }
 

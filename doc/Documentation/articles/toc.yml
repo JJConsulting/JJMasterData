@@ -65,8 +65,6 @@
     href: plugins/mongodb.md
   - name: Python
     href: plugins/python.md
-  - name: NCalc
-    href: plugins/ncalc.md
 - name: Miscellaneous
   items:
   - name: Multiple Forms Support

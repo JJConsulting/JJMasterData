@@ -7,8 +7,6 @@ namespace JJMasterData.Web.TagHelpers;
 [HtmlTargetElement("combobox")]
 public class ComboBoxTagHelper(IControlFactory<JJComboBox> comboBoxFactory) : TagHelper
 {
-    private IControlFactory<JJComboBox> ComboBoxFactory { get; set; } = comboBoxFactory;
-
     [HtmlAttributeName("configure")]
     public Action<JJComboBox>? Configure { get; set; }
 
@@ -21,10 +19,9 @@ public class ComboBoxTagHelper(IControlFactory<JJComboBox> comboBoxFactory) : Ta
     [HtmlAttributeName("form-element-data-item")]
     public FormElementDataItem? DataItem { get; set; }
 
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var comboBox = ComboBoxFactory.Create();
+        var comboBox = comboBoxFactory.Create();
         comboBox.Name = Name;
         comboBox.SelectedValue = Value?.ToString();
         if (DataItem != null) 

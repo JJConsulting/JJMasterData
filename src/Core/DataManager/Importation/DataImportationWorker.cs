@@ -45,7 +45,7 @@ public class DataImportationWorker(
     
     public ProcessOptions ProcessOptions { get; set; }
 
-    private CultureInfo Culture { get; set; } = Thread.CurrentThread.CurrentUICulture;
+    private CultureInfo Culture { get; } = Thread.CurrentThread.CurrentUICulture;
 
     public FormElement FormElement { get; } = context.FormElement;
     private DataContext DataContext { get; } = context.DataContext;

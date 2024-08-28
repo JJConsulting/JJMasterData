@@ -26,12 +26,18 @@
     </ItemGroup>
     
     <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.8" />
+        <PackageReference Include="NCalc.MemoryCache" Version="5.2.0" />
+        <PackageReference Include="NCalc.DependencyInjection" Version="5.2.0" />
+        <PackageReference Include="NCalcAsync" Version="5.2.0" />
+        <PackageReference Include="NCalcSync" Version="5.2.0" />
+        <PackageReference Include="Fluid.Core" Version="2.11.0" />
         <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     </ItemGroup>
     
     <!--Compile time dependencies-->
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0">
+        <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>

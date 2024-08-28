@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class LookupFactory(
+internal sealed class LookupFactory(
         IHttpRequest httpRequest,
         FormValuesService formValuesService,
         LookupService lookupService,
@@ -18,27 +18,19 @@ internal class LookupFactory(
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJLookup>
 {
-    private IHttpRequest HttpRequest { get; } = httpRequest;
-    private FormValuesService FormValuesService { get; } = formValuesService;
-    private LookupService LookupService { get; } = lookupService;
-    private IComponentFactory ComponentFactory { get; } = componentFactory;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private RouteContextFactory RouteContextFactory { get; } = routeContextFactory;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
-
+    
     public JJLookup Create()
     {
         return new JJLookup(
             null,
             null,
-            HttpRequest,
-            RouteContextFactory,
-            FormValuesService,
-            EncryptionService,
-            LookupService,
-            StringLocalizer,
-            ComponentFactory);
+            httpRequest,
+            routeContextFactory,
+            formValuesService,
+            encryptionService,
+            lookupService,
+            stringLocalizer,
+            componentFactory);
     }
 
     public JJLookup Create(FormElement formElement, FormElementField field, ControlContext controlContext)
@@ -46,13 +38,13 @@ internal class LookupFactory(
         var lookup = new JJLookup(
             field,
             controlContext,
-            HttpRequest,
-            RouteContextFactory,
-            FormValuesService,
-            EncryptionService,
-            LookupService,
-            StringLocalizer,
-            ComponentFactory);
+            httpRequest,
+            routeContextFactory,
+            formValuesService,
+            encryptionService,
+            lookupService,
+            stringLocalizer,
+            componentFactory);
 
         lookup.ElementName = formElement.Name;
         lookup.ParentElementName = formElement.ParentName;

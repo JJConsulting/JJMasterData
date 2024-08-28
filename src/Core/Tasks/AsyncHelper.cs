@@ -41,7 +41,7 @@ public static class AsyncHelper
 
         SynchronizationContext.SetSynchronizationContext(oldContext);
     }
-
+    
     /// <summary>
     /// Execute is an async Task method which has a T return type synchronously
     /// </summary>
@@ -74,7 +74,17 @@ public static class AsyncHelper
         return ret;
     }
 
-    private class ExclusiveSynchronizationContext : SynchronizationContext
+    public static void RunSync<T>(Func<ValueTask> task)
+    {
+        RunSync(()=>task().AsTask());
+    }
+    
+    public static T RunSync<T>(Func<ValueTask<T>> task)
+    {
+        return RunSync(()=>task().AsTask());
+    }
+    
+    private sealed class ExclusiveSynchronizationContext : SynchronizationContext
     {
         private bool done;
         public Exception InnerException { get; set; }

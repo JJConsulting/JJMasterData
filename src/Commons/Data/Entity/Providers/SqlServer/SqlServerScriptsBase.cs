@@ -21,7 +21,7 @@ public abstract class SqlServerScriptsBase
         {
             sql.Append(" (");
             sql.Append(field.Size == -1 ? "MAX" : field.Size);
-            sql.Append(")");
+            sql.Append(')');
         }
 
         if (field.IsRequired)
@@ -36,7 +36,7 @@ public abstract class SqlServerScriptsBase
     protected static string GetFieldDefinition(ElementField field)
     {
         var sql = new StringBuilder();
-        sql.Append("[");
+        sql.Append('[');
         sql.Append(field.Name);
         sql.Append("] ");
 
@@ -45,7 +45,7 @@ public abstract class SqlServerScriptsBase
         return sql.ToString();
     }
 
-    public string GetSqlDropIfExists(string objname)
+    public static string GetSqlDropIfExists(string objname)
     {
         var sql = new StringBuilder();
         sql.AppendLine("IF EXISTS (SELECT * ");

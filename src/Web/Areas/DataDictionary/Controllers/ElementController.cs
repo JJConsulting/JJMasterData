@@ -92,9 +92,10 @@ public class ElementController(
         upload.OnFileUploadedAsync += FileUploaded;
     }
 
-    private async Task FileUploaded(object? sender, FormUploadFileEventArgs e)
+    private async ValueTask FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
-        await elementService.Import(new MemoryStream(e.File.Bytes));
+        await using var ms = new MemoryStream(e.File.Bytes);
+        await elementService.Import(ms);
         if (ModelState.IsValid)
         {
             e.SuccessMessage = stringLocalizer["Dictionary imported successfully!"];
@@ -112,7 +113,7 @@ public class ElementController(
         return View(new DuplicateElementViewModel{ OriginalElementName = elementName });
     }
 
-    public async Task<IActionResult> ClassSourceCode(string elementName)
+    public async ValueTask<IActionResult> ClassSourceCode(string elementName)
     {
         ViewBag.ClassSourceCode = await classGenerationService.GetClassSourceCode(elementName);
         ViewBag.ElementName = elementName;
@@ -187,11 +188,10 @@ public class ElementController(
     {
         var formView = elementService.GetFormView();
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
-    
+
         var elementNamesToDelete = selectedGridValues
             .Where(value => value.TryGetValue("name", out var nameValue) && nameValue is string)
-            .Select(value => value["name"].ToString())
-            .ToList();
+            .Select(value => value["name"].ToString());
 
         foreach (var elementName in elementNamesToDelete)
         {

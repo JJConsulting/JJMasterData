@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory, IFormValues formValues) 
+public sealed class JJTextGroup(
+    IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory,
+    IFormValues formValues)
     : JJTextBox(formValues), IFloatingLabelControl
 {
     public string FloatingLabel { get; set; }
 
     public bool UseFloatingLabel { get; set; }
-    
+
     /// <summary>
     /// Actions of input
     /// </summary>
@@ -26,11 +27,11 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
 
     public string GroupCssClass { get; set; }
 
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var inputGroup = GetHtmlBuilder();
 
-        return Task.FromResult<ComponentResult>(new RenderedComponentResult(inputGroup));
+        return new ValueTask<ComponentResult>(new RenderedComponentResult(inputGroup));
     }
 
     public override HtmlBuilder GetHtmlBuilder()
@@ -46,7 +47,7 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
         }
 
         var input = base.GetHtmlBuilder();
-        var hasAction = Actions.ToList().Exists(x => x.Visible);
+        var hasAction = Actions.Exists(x => x.Visible);
         var hasAddons = Addons != null;
 
         if (!hasAction && !hasAddons)
@@ -54,7 +55,7 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
             if (UseFloatingLabel)
             {
                 input.WithSingleAttribute("placeholder");
-                return new Div().WithCssClass("form-floating")
+                return new HtmlBuilder(HtmlTag.Div).WithCssClass("form-floating")
                     .Append(input)
                     .AppendLabel(label =>
                     {
@@ -62,14 +63,14 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
                         label.WithAttribute("for", Name);
                     });
             }
-            
+
             return input;
         }
 
         if (defaultAction is { Enabled: true })
         {
             input.WithCssClass("default-option");
-            input.WithOnChange( defaultAction.OnClientClick);
+            input.WithOnChange(defaultAction.OnClientClick);
         }
 
         var inputGroup = new HtmlBuilder(HtmlTag.Div)
@@ -79,9 +80,6 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
         if (hasAddons)
             inputGroup.Append(GetHtmlAddons());
 
-        if (hasAction)
-            AddActionsAt(inputGroup);
-        
         if (UseFloatingLabel)
         {
             input.WithSingleAttribute("placeholder");
@@ -95,11 +93,15 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
                     label.WithAttribute("for", Name);
                 });
             });
-            return inputGroup;
         }
-        
-        inputGroup.Append(input);
-        
+        else
+        {
+            inputGroup.Append(input);
+        }
+
+        if (hasAction)
+            AddActionsAt(inputGroup);
+
         return inputGroup;
     }
 
@@ -122,8 +124,8 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
         btnGroup.Actions = Actions;
 
         if (UseFloatingLabel)
-            Actions.ForEach(a=>a.CssClass += "btn-floating-action");
-        
+            Actions.ForEach(a => a.CssClass += "btn-floating-action");
+
         btnGroup.ShowAsButton = true;
 
         //Add builder Actions
@@ -134,10 +136,10 @@ public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFac
     private HtmlBuilder GetHtmlAddons()
     {
         var html = new HtmlBuilder(HtmlTag.Span)
-             .WithCssClass(BootstrapHelper.InputGroupAddon)
-             .WithToolTip(Addons.Tooltip)
-             .AppendIf(Addons.Icon != null,()=> Addons.Icon.BuildHtml())
-             .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
+            .WithCssClass(BootstrapHelper.InputGroupAddon)
+            .WithToolTip(Addons.Tooltip)
+            .AppendIf(Addons.Icon != null, () => Addons.Icon.BuildHtml())
+            .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;
     }

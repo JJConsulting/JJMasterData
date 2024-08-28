@@ -72,7 +72,7 @@ public class FieldController(FieldService fieldService)
     [ExportModelState]
     public async Task<IActionResult> Save(string elementName, FormElementField field, string? originalName)
     {
-        RecoverCustomAttibutes(ref field);
+        RecoverCustomAttributes(ref field);
         
         await fieldService.SaveFieldAsync(elementName, field, originalName);
         if (ModelState.IsValid)
@@ -208,22 +208,28 @@ public class FieldController(FieldService fieldService)
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
         ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
-        ViewBag.MaxRequestLength = GetMaxRequestLength();
+        
+        // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
+        // Under normal circumstances, there is no need to increase the size of the HTTP request.
+        ViewBag.MaxRequestLength = 30720000;
+        
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
 
         if (field.Component is not FormComponent.Lookup && 
             field.Component is not FormComponent.Search && 
             field.Component is not FormComponent.ComboBox && 
-            field.Component is not FormComponent.RadioButtonGroup) 
+            field.Component is not FormComponent.RadioButtonGroup)
+        {
             return;
-        
+        }
+
         field.DataItem.ElementMap ??= new DataElementMap();
         
         ViewBag.ElementNameList = (await fieldService.GetElementsDictionaryAsync()).OrderBy(e=>e.Key);
         ViewBag.ElementFieldList = (await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap)).OrderBy(e=>e.Key);
     }
-    private void RecoverCustomAttibutes(ref FormElementField field)
+    private void RecoverCustomAttributes(ref FormElementField field)
     {
         field.Attributes = new Dictionary<string, object>();
         switch (field.Component)
@@ -279,15 +285,4 @@ public class FieldController(FieldService fieldService)
                 break;
         }
     }
-
-    public int GetMaxRequestLength()
-    {
-        // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
-        // Under normal circumstances, there is no need to increase the size of the HTTP request.
-
-        const int maxRequestLength = 30720000;
-
-        return maxRequestLength;
-    }
-
 }

@@ -68,12 +68,10 @@
 
                             if (i > 0)
                             {
-                                <text>,@(item.Columns[i])</text>
+                                @:,
                             }
-                            else
-                            {
-                                <text>@(item.Columns[i])</text>
-                            }
+
+                            @item.Columns[i]
                         }
                     </td>
                     <td>

@@ -174,7 +174,7 @@ public class JJUploadArea : AsyncComponent
         div.WithAttributes(Attributes);
         div.WithAttributeIf(Url is not null,"upload-url", Url!);
         div.WithAttribute("js-callback",JsCallback);
-        div.WithAttribute((string)"route-context", EncryptionService.EncryptRouteContext(RouteContext));
+        div.WithAttribute((string)"route-context", EncryptionService.EncryptObject(RouteContext));
         div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
         div.WithAttribute("query-string-params", GetQueryStringParams());
         div.WithAttribute("max-file-size", MaxFileSize.ToString());
@@ -226,20 +226,17 @@ public class JJUploadArea : AsyncComponent
     /// To change this in .NET Framework, change web.config in system.web/httpRuntime
     /// Measured in bytes
     /// </remarks>
-    public int GetMaxRequestLength()
+    public static int GetMaxRequestLength()
     {
-        int maxRequestLength;
-
 #if NETFRAMEWORK
-        maxRequestLength = 4194304; //4mb
+        var maxRequestLength = 4194304; //4mb
         if (System.Configuration.ConfigurationManager.GetSection("system.web/httpRuntime") is System.Web.Configuration.HttpRuntimeSection section)
             maxRequestLength = section.MaxRequestLength * 1024;
 #else
 
         // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
         // Under normal circumstances, there is no need to increase the size of the HTTP request.
-
-        maxRequestLength = 30720000;
+        const int maxRequestLength = 30720000;
 #endif
 
         return maxRequestLength;

@@ -11,11 +11,11 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormElementRelationship> relationships)
+internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List<FormElementRelationship> relationships)
 {
     public async Task<ComponentResult> GetRelationshipsResult()
     {
-        var relationshipsDiv = new Div();
+        var relationshipsDiv = new HtmlBuilder(HtmlTag.Div);
 
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
@@ -123,7 +123,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                 return panel.GetHtmlBuilder();
             case PanelLayout.NoDecoration:
                 var title = GetExpressionValue(relationship.Panel.Title);
-                var div = new Div();
+                var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);
                 if (title is not null)
                 {       
@@ -147,8 +147,6 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     {
         var parentPanel = parentFormView.DataPanel;
 
-        var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
-        
         if (relationship.IsParent)
             return new RenderedComponentResult(await parentFormView.GetParentPanelHtmlAtRelationship(relationship));
 
@@ -159,9 +157,9 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
 
         var filter = new Dictionary<string, object?>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
-                     formContext.Values.ContainsKey(col.PkColumn)))
+                     parentPanel.Values.ContainsKey(col.PkColumn)))
         {
-            var value = formContext.Values[col.PkColumn];
+            var value = parentPanel.Values[col.PkColumn];
             filter[col.FkColumn] = value;
         }
 
@@ -213,7 +211,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         FormElementRelationship relationship, Dictionary<string, object?> filter)
     {
         Dictionary<string, object?>? childValues = null;
-        if (filter.Any())
+        if (filter.Count > 0)
         {
             childValues =
                 await parentFormView.EntityRepository.GetFieldsAsync(childFormView.FormElement, filter!);
@@ -236,7 +234,6 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                 childFormView.DataPanel.PageState = relationship.EditModeOpenByDefault ? childFormView.PageState: PageState.View;
             else
                 childFormView.DataPanel.PageState = PageState.Insert;
-         
         }
         
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);

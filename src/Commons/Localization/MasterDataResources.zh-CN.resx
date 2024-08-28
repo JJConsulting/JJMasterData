@@ -129,7 +129,7 @@
     <value>(选择)</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="(Type Ctrl+Space to AutoComplete)" xml:space="preserve">
+  <data name="(Type Ctrl+Space to autocomplete)" xml:space="preserve">
     <value>(按下 Ctrl+Space 以自动完成)</value>
     <comment>JJMasterDataWeb</comment>
   </data>

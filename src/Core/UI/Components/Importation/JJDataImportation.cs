@@ -72,6 +72,8 @@ public class JJDataImportation : ProcessComponent
     
     internal DataItemService DataItemService { get; }
     
+    internal FieldValuesService FieldValuesService { get; }
+    
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
     private RouteContext RouteContext
@@ -103,7 +105,7 @@ public class JJDataImportation : ProcessComponent
         FormElement formElement,
         ExpressionsService expressionsService,
         FormService formService,
-        FieldsService fieldsService,
+        FieldValuesService fieldValuesService,
         IBackgroundTaskManager backgroundTaskManager,
         IHttpContext currentContext,
         IComponentFactory componentFactory,
@@ -112,12 +114,13 @@ public class JJDataImportation : ProcessComponent
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(currentContext, expressionsService, fieldsService, backgroundTaskManager,
+        : base(currentContext, expressionsService, backgroundTaskManager,
             loggerFactory.CreateLogger<ProcessComponent>(), encryptionService, stringLocalizer)
     {
         CurrentContext = currentContext;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
         FormService = formService;
+        FieldValuesService = fieldValuesService;
         ComponentFactory = componentFactory;
         DataItemService = dataItemService;
         FormElement = formElement;
@@ -177,7 +180,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (IsRunning())
                 {
-                    htmlBuilder = new Div();
+                    htmlBuilder = new HtmlBuilder(HtmlTag.Div);
                     htmlBuilder.WithId(Name);
                     htmlBuilder.Append(GetLoadingHtml());
                     htmlBuilder.AppendScript(DataImportationScripts.GetStartProgressVerificationScript());

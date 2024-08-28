@@ -20,5 +20,5 @@ public sealed class CancelAction : FormToolbarAction
         ShowAsButton = true;
         Text = "Cancel";
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

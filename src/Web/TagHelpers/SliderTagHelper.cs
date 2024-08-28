@@ -5,14 +5,13 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class SliderTagHelper(IControlFactory<JJSlider> sliderFactory) : TagHelper
 {
-    private IControlFactory<JJSlider> SliderFactory { get; set; } = sliderFactory;
 
     [HtmlAttributeName("configure")] 
     public Action<JJSlider>? Configure { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var slider = SliderFactory.Create();
+        var slider = sliderFactory.Create();
         
         Configure?.Invoke(slider);
         

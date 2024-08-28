@@ -21,7 +21,7 @@ public class JJIconPicker(
     public IconType? SelectedIcon { get; set; }
     public string? Id { get; set; }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         var id = Id ?? Name;
         var comboBox = comboBoxFactory.Create();
@@ -52,7 +52,7 @@ public class JJIconPicker(
         comboBox.Attributes["data-size"] = "false";
         comboBox.Attributes["data-sanitize"] = "false";
         comboBox.Attributes["data-none-results-text"] = stringLocalizer["No icons found."];
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClassIf(Enabled,"input-group");
         await div.AppendControlAsync(comboBox);
         div.AppendIf(Enabled,HtmlTag.Div,div =>

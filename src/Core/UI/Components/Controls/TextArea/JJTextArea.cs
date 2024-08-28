@@ -22,11 +22,11 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
         Rows = 5;
     }
 
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
 
-        return Task.FromResult<ComponentResult>(new RenderedComponentResult(html));
+        return new ValueTask<ComponentResult>(new RenderedComponentResult(html));
     }
 
     public HtmlBuilder GetHtmlBuilder()
@@ -50,7 +50,7 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
         {
             textArea.WithSingleAttribute("placeholder");
 
-            return new Div()
+            return new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass("form-floating")
                 .Append(textArea)
                 .AppendLabel(label =>

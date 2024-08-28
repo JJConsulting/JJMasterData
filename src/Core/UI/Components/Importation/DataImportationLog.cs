@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationLog
+internal sealed class DataImportationLog
 {
     internal DataImportationReporter Reporter { get; }
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -51,7 +51,7 @@ internal class DataImportationLog
 
         html.Append(HtmlTag.Span, s =>
         {
-            s.WithCssClass(BootstrapHelper.LabelSucess)
+            s.WithCssClass(BootstrapHelper.LabelSuccess)
              .WithAttribute("id", "lblInsert")
              .WithAttributeIf(Reporter.Insert == 0, "style", "display:none;")
              .AppendText(StringLocalizer["Inserted:"])
@@ -63,7 +63,7 @@ internal class DataImportationLog
         });
         html.Append(HtmlTag.Span, s =>
         {
-            s.WithCssClass(BootstrapHelper.LabelSucess)
+            s.WithCssClass(BootstrapHelper.LabelSuccess)
              .WithAttribute("id", "lblUpdate")
              .WithAttributeIf(Reporter.Update == 0, "style", "display:none;")
              .AppendText(StringLocalizer["Updated:"])

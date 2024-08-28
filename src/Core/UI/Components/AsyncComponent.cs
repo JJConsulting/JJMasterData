@@ -9,12 +9,12 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 public abstract class AsyncComponent : ComponentBase
 {
-    public async Task<ComponentResult> GetResultAsync()
+    public Task<ComponentResult> GetResultAsync()
     {
         if (Visible)
-            return await BuildResultAsync();
+            return BuildResultAsync();
 
-        return new EmptyComponentResult();
+        return Task.FromResult<ComponentResult>(EmptyComponentResult.Value);
     }
 
     protected abstract Task<ComponentResult> BuildResultAsync();

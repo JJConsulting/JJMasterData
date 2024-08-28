@@ -33,7 +33,6 @@ jobs:
           - src/WebApi
           - src/Plugins/Hangfire
           - src/Plugins/Pdf
-          - src/Plugins/NCalc
     steps:
       - uses: actions/checkout@v2
       - name: Build and publish NuGet package

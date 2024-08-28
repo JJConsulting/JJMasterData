@@ -19,6 +19,7 @@ using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -135,7 +136,7 @@ public class JJUploadView : AsyncComponent
             
             _gridView.Name = $"{Name}-grid-view";
             _gridView.UserValues = UserValues;
-            _gridView.ShowPagging = false;
+            _gridView.ShowPaging = false;
             _gridView.ShowTitle = false;
 
 
@@ -173,7 +174,7 @@ public class JJUploadView : AsyncComponent
                     } 
                 }
 
-                return Task.CompletedTask;
+                return ValueTaskHelper.CompletedTask;
             };
 
             _gridView.GridTableActions.Add(RenameAction);
@@ -321,7 +322,7 @@ public class JJUploadView : AsyncComponent
         if (!string.IsNullOrEmpty(previewVideo))
             return new ContentComponentResult(GetHtmlPreviewVideo(previewVideo));
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
         if (!string.IsNullOrEmpty(uploadAction))
@@ -387,7 +388,7 @@ public class JJUploadView : AsyncComponent
         script.AppendLine("   $('#video').css('max-height',window.innerHeight);");
         script.AppendLine("	}); ");
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.Append(HtmlTag.Center, c =>
         {
             c.Append(HtmlTag.Video, video =>
@@ -415,7 +416,7 @@ public class JJUploadView : AsyncComponent
         if (file.IsInMemory)
         {
             var base64 = Convert.ToBase64String(file.Content.Bytes.ToArray());
-            src = $"data:image/{Path.GetExtension((string)fileName).Replace(".", "")};base64,{base64}";
+            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
         }
         else
         {
@@ -433,13 +434,13 @@ public class JJUploadView : AsyncComponent
             });
         """;
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.Append(HtmlTag.Center, c =>
         {
             c.Append(HtmlTag.Img, img =>
             {
                 img.WithAttribute("id", "img")
-                    .WithAttribute("src", src).WithAttribute((string)"alt", (string)fileName)
+                    .WithAttribute("src", src).WithAttribute("alt", fileName)
                    .WithStyle( "max-height:350px;display:none;")
                    .WithCssClass("img-responsive");
             });
@@ -533,7 +534,7 @@ public class JJUploadView : AsyncComponent
         foreach (var fileInfo in files)
         {
             var file = fileInfo.Content;
-            var col = new Div();
+            var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
             await col.AppendAsync(HtmlTag.Ul, async ul =>
             {
@@ -564,7 +565,7 @@ public class JJUploadView : AsyncComponent
 
     private HtmlBuilder GetHtmlGalleryListItem(string label, string value)
     {
-        return new Li()
+        return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item")
             .Append(HtmlTag.B, b =>
             {
@@ -575,7 +576,7 @@ public class JJUploadView : AsyncComponent
 
     private HtmlBuilder GetHtmlGalleryPreview(string fileName)
     {
-        var html = new Li()
+        var html = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item");
 
         switch (Path.GetExtension(fileName))
@@ -721,7 +722,7 @@ public class JJUploadView : AsyncComponent
 
     private async Task<JJModalDialog> GetPreviewModalHtml()
     {
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         
         var label = ComponentFactory.Html.Label.Create();
         label.Text = "File name";

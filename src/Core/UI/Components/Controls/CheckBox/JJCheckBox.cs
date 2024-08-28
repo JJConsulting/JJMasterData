@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -44,13 +43,13 @@ public class JJCheckBox : ControlBase
     }
 
 
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
 
         var result = new RenderedComponentResult(html);
         
-        return Task.FromResult<ComponentResult>(result);
+        return new ValueTask<ComponentResult>(result);
         
     }
 
@@ -65,7 +64,7 @@ public class JJCheckBox : ControlBase
 
     private HtmlBuilder GetInputHtml()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
 
         div.WithCssClassIf(IsSwitch, "form-switch");
         div.WithCssClassIf(IsSwitch && SwitchSize is not null, SwitchSize?.GetCssClass());
@@ -75,9 +74,9 @@ public class JJCheckBox : ControlBase
         {
             var checkboxHelperScript = $"CheckboxHelper.check('{Name.Replace(".", "_")}');";
             
-            if (Attributes.ContainsKey("onchange"))
+            if (Attributes.TryGetValue("onchange", out string value))
             {
-                Attributes["onchange"] = checkboxHelperScript + Attributes["onchange"];
+                Attributes["onchange"] = checkboxHelperScript + value;
             }
             else
             {

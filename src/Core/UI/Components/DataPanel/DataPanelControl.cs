@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -20,7 +19,7 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Render components fields in a div
 /// </summary>
-internal class DataPanelControl
+internal sealed class DataPanelControl
 {
 
     private DataPanelScripts? _panelScripts;
@@ -51,7 +50,7 @@ internal class DataPanelControl
 
     private bool IsGridViewFilter { get; }
 
-    private FieldsService FieldsService { get; }
+    private FieldFormattingService FieldFormattingService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     internal ExpressionsService ExpressionsService { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -65,7 +64,7 @@ internal class DataPanelControl
         ComponentFactory = dataPanel.ComponentFactory;
         Errors = dataPanel.Errors;
         EncryptionService = dataPanel.EncryptionService;
-        FieldsService = dataPanel.FieldsService;
+        FieldFormattingService = dataPanel.FieldFormattingService;
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
@@ -87,7 +86,7 @@ internal class DataPanelControl
         Name = gridView.Name;
         ComponentFactory = gridView.ComponentFactory;
         ExpressionsService = gridView.ExpressionsService;
-        FieldsService = gridView.FieldsService;
+        FieldFormattingService = gridView.FieldFormattingService;
         StringLocalizer = gridView.StringLocalizer;
         FormStateData = new FormStateData(values, gridView.UserValues, PageState.Filter);
         IsGridViewFilter = true;
@@ -111,29 +110,29 @@ internal class DataPanelControl
         if (cols >= 1)
             colClass = $" col-sm-{12 / cols}";
 
-        var html = new Div();
+        var html = new HtmlBuilder(HtmlTag.Div);
         int lineGroup = int.MinValue;
         HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
         
         foreach (var field in fields)
         {
-            bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
+            var visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
             
             object? value = null;
-            if (Values != null && Values.ContainsKey(field.Name))
-                value = FieldsService.FormatValue(field, Values[field.Name]);
+            if (Values != null && Values.TryGetValue(field.Name, out value))
+                value = FieldFormattingService.FormatValue(field, value);
 
             if (lineGroup != field.LineGroup)
             {
                 lineGroup = field.LineGroup;
-                row = new Div().WithCssClass("row");
+                row = new HtmlBuilder(HtmlTag.Div).WithCssClass("row");
                 html.Append(row);
             }
 
-            var formGroup = new Div()
+            var formGroup = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
             
             row?.Append(formGroup);
@@ -205,7 +204,7 @@ internal class DataPanelControl
             //Value
             object? value = null;
             if (Values != null && Values.TryGetValue(field.Name, out var nonFormattedValue))
-                value = FieldsService.FormatValue(field, nonFormattedValue);
+                value = FieldFormattingService.FormatValue(field, nonFormattedValue);
 
             var isRange = IsRange(field, PageState);
             var label = CreateLabel(field, isRange);
@@ -311,10 +310,10 @@ internal class DataPanelControl
     }
 
 
-    private async Task<HtmlBuilder> GetStaticField(FormElementField field)
+    private async ValueTask<HtmlBuilder> GetStaticField(FormElementField field)
     {
         var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
-        var staticValue = await FieldsService.FormatGridValueAsync(fieldSelector, FormStateData);
+        var staticValue = await FieldFormattingService.FormatGridValueAsync(fieldSelector, FormStateData);
         var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
             .AppendText(staticValue);
@@ -322,7 +321,7 @@ internal class DataPanelControl
         return html;
     }
 
-    private Task<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
+    private ValueTask<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var control = ComponentFactory.Controls.Create(FormElement, field, formStateData, ParentComponentName, value);

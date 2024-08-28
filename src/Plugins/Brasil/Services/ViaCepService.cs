@@ -9,38 +9,31 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace JJMasterData.Brasil.Services;
 
-public class ViaCepService(HttpClient httpClient, IMemoryCache memoryCache) : ICepService
+public class ViaCepService(HttpClient httpClient) : ICepService
 {
     private const string ViaCepUrl = "https://viacep.com.br/ws/";
-    private HttpClient HttpClient { get; } = httpClient;
-    private IMemoryCache MemoryCache { get; } = memoryCache;
 
     public async Task<CepResult> SearchCepAsync(string cep)
     {
-         try
-         {
-             if (string.IsNullOrEmpty(cep))
-                 throw new ArgumentNullException(nameof(cep));
+        try
+        {
+            if (string.IsNullOrEmpty(cep))
+                throw new ArgumentNullException(nameof(cep));
 
-             if (MemoryCache.TryGetValue(cep, out CepResult cepResult))
-                 return cepResult;
-             
-             var url = $"{ViaCepUrl}{StringManager.ClearCpfCnpjChars(cep)}/json";
-             
-             var response = await HttpClient.GetAsync(url);
-             var content = await response.Content.ReadAsStringAsync();
-             var result =  CepResult.FromJson(content);
+            var url = $"{ViaCepUrl}{StringManager.ClearCpfCnpjChars(cep)}/json";
 
-             if (result.Erro)
-                 throw new ViaCepException("CEP inválido.");
+            var response = await httpClient.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
+            var result = CepResult.FromJson(content);
 
-             MemoryCache.Set(cep, cepResult, TimeSpan.FromMinutes(30));
-             
-             return result;
-         }
-         catch (Exception ex)
-         {
-             throw new ViaCepException(ex.Message, ex);
-         }
+            if (result.Erro)
+                throw new ViaCepException("CEP inválido.");
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw new ViaCepException(ex.Message, ex);
+        }
     }
 }

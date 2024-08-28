@@ -125,10 +125,6 @@
     <value>(Selecione)</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="(Type Ctrl+Space to AutoComplete)" xml:space="preserve">
-    <value>(Digite Ctrl + Espaço para AutoCompletar)</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="({0} characters remaining)" xml:space="preserve">
     <value>({0} caracteres restantes)</value>
     <comment>JJMasterDataCore</comment>
@@ -193,6 +189,10 @@
     <value>Um registro selecionado</value>
     <comment>JJMasterDataApi</comment>
   </data>
+  <data name="Redirects to this URL after the command is executed successfully." xml:space="preserve">
+    <value>Redireciona para esta URL após o comando ser executado com sucesso.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="About" xml:space="preserve">
     <value>Sobre</value>
     <comment>JJMasterDataWeb</comment>
@@ -204,6 +204,22 @@
   <data name="Action" xml:space="preserve">
     <value>Ação</value>
     <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Redirect Url" xml:space="preserve">
+    <value>Url de Redirecionamento</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="This field support runtime values between {}. Use {AppPath} for the base path of the application." xml:space="preserve">
+    <value>Este campo oferece suporte a valores do runtime entre {}. Use {AppPath} para o caminho da raiz da aplicação.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Is Modal?" xml:space="preserve">
+    <value>É Modal?</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Is Iframe?" xml:space="preserve">
+    <value>É Iframe?</value>
+    <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Action execution confirmation text" xml:space="preserve">
     <value>Texto de confirmação antes de executar a ação</value>
@@ -4082,7 +4098,7 @@
     <value>Padrão da Aplicação</value>
   </data>
   <data name="Operation Performed" xml:space="preserve">
-    <value>Operação Realizada!</value>
+    <value>Operação Realizada</value>
   </data>
   <data name="Show a label floating within the field. Not all fields support this option.">
     <value>Mostra uma label flutuando dentro do campo. Nem todos os campos suportam esta opção.</value>
@@ -4090,10 +4106,22 @@
   <data name="Rendering Template">
     <value>Template de Renderização</value>
   </data>
-  <data name="HTML template to render the field in the grid. Runtime values supported between curly bracets.">
-    <value>Template HTML para renderizar o campo na grid. Valores do runtime são suportados entre chaves.</value>
+  <data name="HTML template to render the field in the grid. Runtime values supported using a Liquid template.">
+    <value>Template HTML para renderizar o campo na grid. Valores do runtime são suportados usando um template Liquid.</value>
   </data>
   <data name="Edit Element" xml:space="preserve">
     <value>Editar Elemento</value>
+  </data>
+  <data name="Data Source" xml:space="preserve">
+    <value>Fonte de Dados</value>
+  </data>
+  <data name="HTML Template" xml:space="preserve">
+    <value>Template HTML</value>
+  </data>
+  <data name="(Type Ctrl+Space to autocomplete)" xml:space="preserve">
+    <value>(Utilize Ctrl+Espaço para autocompletar)</value>
+  </data>
+  <data name="Here we use a Liquid template to render the HTML. Use the DataSource property to access your tables and columns." xml:space="preserve">
+    <value>Aqui usamos um template Liquid para renderizar o HTML. Use a propriedade DataSource para acessar suas tabelas e colunas.</value>
   </data>
 </root>

@@ -12,13 +12,14 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class FormViewFactory(
+internal sealed class FormViewFactory(
     IHttpContext currentContext,
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
@@ -27,6 +28,7 @@ internal class FormViewFactory(
     FormValuesService formValuesService,
     FieldValuesService fieldValuesService,
     ExpressionsService expressionsService,
+    HtmlTemplateService htmlTemplateService,
     IEnumerable<IPluginHandler> pluginHandlers,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCoreOptions> options,
@@ -47,6 +49,7 @@ internal class FormViewFactory(
             formValuesService,
             fieldValuesService,
             expressionsService,
+            htmlTemplateService,
             pluginHandlers,
             options,
             stringLocalizer,
@@ -56,7 +59,7 @@ internal class FormViewFactory(
         return formView;
     }
 
-    public async Task<JJFormView> CreateAsync(string elementName)
+    public async ValueTask<JJFormView> CreateAsync(string elementName)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         var formView = Create(formElement);
@@ -64,7 +67,7 @@ internal class FormViewFactory(
         return formView;
     }
 
-    private Task SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
+    private ValueTask SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
     {
         var formEventHandler = formEventHandlerResolver.GetFormEventHandler(formElement.Name);
         formView.AddFormEventHandler(formEventHandler);
@@ -73,7 +76,6 @@ internal class FormViewFactory(
             return formEventHandler.OnFormElementLoadAsync(formView, new FormElementLoadEventArgs(formElement))!;
         }
 
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
-    
 }

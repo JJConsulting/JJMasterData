@@ -5,7 +5,7 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataPanelScripts(DataPanelControl dataPanelControl)
+internal sealed class DataPanelScripts(DataPanelControl dataPanelControl)
 {
     private IEncryptionService EncryptionService => dataPanelControl.EncryptionService;
 
@@ -26,7 +26,7 @@ internal class DataPanelScripts(DataPanelControl dataPanelControl)
     {
         var componentName = dataPanelControl.Name;
         var routeContext =
-            EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(dataPanelControl.FormElement,
+            EncryptionService.EncryptObject(RouteContext.FromFormElement(dataPanelControl.FormElement,
                 ComponentContext.DataPanelReload));
 
 

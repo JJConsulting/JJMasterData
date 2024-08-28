@@ -7,15 +7,14 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridSqlCommandAction(JJGridView gridView)
+internal sealed class GridSqlCommandAction(JJGridView gridView)
 {
-    public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
+    public async Task<ComponentResult> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
     {
         var messageFactory = gridView.ComponentFactory.Html.MessageBox;
         try
@@ -26,7 +25,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
                 if (selectedRows.Count == 0)
                 {
                     string msg = gridView.StringLocalizer["No lines selected."];
-                    return  messageFactory.Create(msg, MessageIcon.Warning);
+                    return new RenderedComponentResult(messageFactory.Create(msg, MessageIcon.Warning).GetHtmlBuilder());
                 }
 
                 await ExecuteOnList(sqlCommandAction, selectedRows);
@@ -41,10 +40,13 @@ internal class GridSqlCommandAction(JJGridView gridView)
         {
             gridView.Logger.LogSqlActionException(ex, sqlCommandAction.SqlCommand);
             string msg = gridView.StringLocalizer[ExceptionManager.GetMessage(ex)];
-            return messageFactory.Create(msg, MessageIcon.Error);
+            return new RenderedComponentResult(messageFactory.Create(msg, MessageIcon.Error).GetHtmlBuilder());
         }
 
-        return null;
+        if (!string.IsNullOrEmpty(sqlCommandAction.RedirectUrl))
+            return new RedirectComponentResult(sqlCommandAction.RedirectUrl);
+        
+        return EmptyComponentResult.Value;
     }
 
     private bool IsApplyOnList(ActionMap map, SqlCommandAction sqlCommandAction)
@@ -73,13 +75,13 @@ internal class GridSqlCommandAction(JJGridView gridView)
     {
         var formElement = gridView.FormElement;
         Dictionary<string, object> formValues;
-        if (map.PkFieldValues.Any())
+        if (map.PkFieldValues.Count > 0)
         {
             formValues = await gridView.EntityRepository.GetFieldsAsync(formElement, map.PkFieldValues);
         }
         else
         {
-            formValues = await gridView.FieldsService.GetDefaultValuesAsync(formElement, new FormStateData(new Dictionary<string, object>(), PageState.List));
+            formValues = await gridView.FieldValuesService.GetDefaultValuesAsync(formElement, new FormStateData(new Dictionary<string, object>(), PageState.List));
         }
 
         var formStateData = new FormStateData(formValues, gridView.UserValues, PageState.List);

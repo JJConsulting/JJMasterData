@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace JJMasterData.Commons.Util;
 
-public class XmlHelper
+public static class XmlHelper
 {
     private static string RemoveText(Match m) { return ""; }
 
@@ -32,7 +32,7 @@ public class XmlHelper
         if (value == null)
             throw new ArgumentNullException(nameof(value), "Serialize");
 
-        var stringwriter = new Utf8StringWriter();
+        using var stringwriter = new Utf8StringWriter();
         var serializer = new XmlSerializer(value.GetType());
         serializer.Serialize(stringwriter, value);
         return stringwriter.ToString();

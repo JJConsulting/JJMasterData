@@ -1,6 +1,10 @@
 ﻿@import "variables";
 
 .CodeMirror {
+  resize: vertical !important;
+}
+
+.CodeMirror {
   box-sizing: border-box;
   margin: 0;
   font: inherit;

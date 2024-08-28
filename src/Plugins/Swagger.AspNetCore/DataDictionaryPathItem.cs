@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Swagger.AspNetCore;
 
-internal class DataDictionaryPathItem
+internal sealed class DataDictionaryPathItem
 {
     internal string Key { get; }
     internal OpenApiPathItem PathItem { get; }

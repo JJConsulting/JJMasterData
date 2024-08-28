@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,7 +66,7 @@ public abstract class DataExportationWriterBase(
                 return _fields;
             if (Configuration.ExportAllFields)
             {
-                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+                _fields = FormElement.Fields.FindAll(x => x.Export);
             }
 
             else
@@ -157,7 +156,7 @@ public abstract class DataExportationWriterBase(
         }
         catch (Exception ex)
         {
-            string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
+            const string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
             throw new JJMasterDataException(message, ex);
         }
     }
@@ -169,7 +168,6 @@ public abstract class DataExportationWriterBase(
 #endif
 
     #endregion
-
 
     public async Task RunWorkerAsync(CancellationToken token)
     {
@@ -269,27 +267,35 @@ public abstract class DataExportationWriterBase(
         var exportActionFileName = FormElement.Options.GridToolbarActions.ExportAction.FileName;
 
         if (!string.IsNullOrEmpty(exportActionFileName))
+        {
             fileName = exportActionFileName;
-
+        }
         else if (!string.IsNullOrEmpty(FormElement.Title))
+        {
             fileName = ExpressionsService.GetExpressionValue(FormElement.Title, new FormStateData()
             {
                 Values = new Dictionary<string, object>(),
                 UserValues = new Dictionary<string, object>(),
                 PageState = PageState.List
             })?.ToString() ?? string.Empty;
-
+        }
         else if (!string.IsNullOrEmpty(FormElement.Name))
+        {
             fileName = FormElement.Name.Trim().ToLower();
+        }
         else
+        {
             fileName = "file";
+        }
 
         fileName = StringManager.GetStringWithoutAccents(fileName);
 
         string[] escapeChars = ["/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " "];
 
         foreach (var @char in escapeChars)
+        {
             fileName = fileName.Replace(@char, string.Empty);
+        }
 
         fileName = HttpUtility.UrlEncode(fileName, Encoding.UTF8);
         var extension = Configuration.FileExtension.ToString().ToLower();

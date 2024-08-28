@@ -3,7 +3,7 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http;
 
-internal class HttpContextWrapper(IHttpSession session, IHttpRequest request,
+internal sealed class HttpContextWrapper(IHttpSession session, IHttpRequest request,
         IClaimsPrincipalAccessor claimsPrincipalAccessor)
     : IHttpContext
 {

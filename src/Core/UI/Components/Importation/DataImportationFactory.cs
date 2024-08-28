@@ -18,12 +18,12 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationFactory(
+internal sealed class DataImportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
     IFormEventHandlerResolver formEventHandlerResolver,
     ExpressionsService expressionsService,
+    FieldValuesService fieldValuesService,
     FormService formService,
-    FieldsService fieldsService,
     IBackgroundTaskManager backgroundTaskManager,
     IHttpContext httpContext,
     IComponentFactory componentFactory,
@@ -36,13 +36,22 @@ internal class DataImportationFactory(
 {
     public JJDataImportation Create(FormElement formElement)
     {
-        return new JJDataImportation(formElement, expressionsService, formService,
-            fieldsService, backgroundTaskManager, httpContext, componentFactory,dataItemService,
-            dataImportationWorkerFactory, encryptionService, loggerFactory,
+        return new JJDataImportation(
+            formElement, 
+            expressionsService, 
+            formService, 
+            fieldValuesService,
+            backgroundTaskManager,
+            httpContext, 
+            componentFactory, 
+            dataItemService,
+            dataImportationWorkerFactory,
+            encryptionService,
+            loggerFactory,
             stringLocalizer);
     }
 
-    public async Task<JJDataImportation> CreateAsync(string elementName)
+    public async ValueTask<JJDataImportation> CreateAsync(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

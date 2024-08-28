@@ -107,25 +107,25 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
             ViewBag.Tab = tempSelectedTab?.ToString()!;
 
-        if (TempData.ContainsKey("error"))
-            ViewBag.Error = TempData["error"]!;
+        if (TempData.TryGetValue("error", out object? value))
+            ViewBag.Error = value!;
 
         ViewBag.MenuId = "Panels";
         ViewBag.ElementName = formElement.Name;
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;
-        ViewBag.AvailableFields = GetAvailableFields(formElement, panel);
+        ViewBag.AvailableFields = GetAvailableFields(formElement);
         ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
         ViewBag.SelectedFields = (panel.PanelId > 0) ?
-            formElement.Fields.ToList().FindAll(x => x.PanelId == panel.PanelId) : [];
+            formElement.Fields.FindAll(x => x.PanelId == panel.PanelId) : [];
     }
 
-    protected List<FormElementField> GetAvailableFields(FormElement formElement, FormElementPanel panel)
+    protected List<FormElementField> GetAvailableFields(FormElement formElement)
     {
         var list = new List<FormElementField>();
         if ((string?)Request.Query["enabled_fields"] == null)
         {
-            list = formElement.Fields.ToList().FindAll(x => x.PanelId == 0);
+            list = formElement.Fields.FindAll(x => x.PanelId == 0);
         }
         else
         {

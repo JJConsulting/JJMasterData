@@ -12,7 +12,7 @@ public class ConnectionString()
     }
 
     public Guid Guid { get; init; } = Guid.NewGuid();
-    public string? Name { get; init; }
+    public string Name { get; init; } = null!;
     public string Connection { get; init; } = null!;
     public string ConnectionProvider { get; init; } = null!;
 }

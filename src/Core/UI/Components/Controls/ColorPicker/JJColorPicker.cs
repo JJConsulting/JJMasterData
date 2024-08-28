@@ -11,7 +11,7 @@ public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        return new Input()
+        return new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithValue(Text)
             .WithAttribute("title", Title)
@@ -21,8 +21,8 @@ public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
             .WithCssClass("form-control form-control-color");
     }
     
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
-        return Task.FromResult<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
+        return new ValueTask<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
     }
 }

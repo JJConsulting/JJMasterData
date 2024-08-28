@@ -16,17 +16,20 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridViewFactory(IHttpContext currentContext,
+internal sealed class GridViewFactory(IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IEncryptionService encryptionService,
         DataItemService dataItemService,
         ExpressionsService expressionsService,
-        FieldsService fieldsService,
+        FieldFormattingService fieldFormattingService,
+        FieldValuesService fieldValuesService,
+        FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerResolver gridEventHandlerResolver,
         UrlRedirectService urlRedirectService,
+        HtmlTemplateService htmlTemplateService,
         ILoggerFactory loggerFactory,
         IComponentFactory componentFactory)
     : IFormElementComponentFactory<JJGridView>
@@ -40,10 +43,13 @@ internal class GridViewFactory(IHttpContext currentContext,
             encryptionService, 
             dataItemService, 
             expressionsService, 
-            fieldsService, 
             formValuesService,
+            fieldFormattingService,
+            fieldValuesService,
+            fieldValidationService,
             stringLocalizer,
             urlRedirectService,
+            htmlTemplateService,
             loggerFactory.CreateLogger<JJGridView>(),
             componentFactory);
 
@@ -75,7 +81,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         return gridView;
     }
 
-    public async Task<JJGridView> CreateAsync(string elementName)
+    public async ValueTask<JJGridView> CreateAsync(string elementName)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
@@ -102,7 +108,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         grid.EnableSorting = gridOptions.EnableSorting;
         grid.EnableMultiSelect = gridOptions.EnableMultiSelect;
         grid.MaintainValuesOnLoad = gridOptions.MaintainValuesOnLoad;
-        grid.ShowPagging = gridOptions.ShowPagging;
+        grid.ShowPaging = gridOptions.ShowPagging;
         grid.ShowToolbar = gridOptions.ShowToolBar;
         
         if (!grid.GridSettingsForm.HasFormValues() || !grid.ShowToolbar || !grid.ConfigAction.IsVisible)

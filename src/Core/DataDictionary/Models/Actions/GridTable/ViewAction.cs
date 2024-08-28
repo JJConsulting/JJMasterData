@@ -25,7 +25,7 @@ public sealed class ViewAction : GridTableAction, IModalAction
         Icon = IconType.Eye;
         Order = 1;
     }
-    public override BasicAction DeepCopy() => CopyAction();
+    public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 
 
 

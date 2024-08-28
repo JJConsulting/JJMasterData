@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-internal class SintegraCpfDto
+internal sealed class SintegraCpfDto
 {
     [JsonProperty("code")]
     public required string Code { get; set; }

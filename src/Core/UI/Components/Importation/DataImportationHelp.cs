@@ -14,7 +14,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationHelp
+internal sealed class DataImportationHelp
 {
     private JJDataImportation DataImportation { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -232,7 +232,7 @@ internal class DataImportationHelp
         text.Append(", ");
         text.Append(StringLocalizer["with the maximum size of"]);
         text.Append(" <b>");
-        text.Append(Format.FormatFileSize(upload.GetMaxRequestLength()));
+        text.Append(Format.FormatFileSize(JJUploadArea.GetMaxRequestLength()));
         text.Append("</b>");
         text.Append(", ");
         text.Append(StringLocalizer["do not include caption or description in the first line"]);
@@ -250,7 +250,7 @@ internal class DataImportationHelp
 
     private async Task<string> GetHtmlComboHelp(FormElementField field)
     {
-        var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,
+        var defaultValues = await DataImportation.FieldValuesService.GetDefaultValuesAsync(DataImportation.FormElement,
             new FormStateData(new Dictionary<string, object>(), DataImportation.UserValues, PageState.Import));
         var formStateData = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         var dataQuery = new DataQuery(formStateData, DataImportation.FormElement.ConnectionId);

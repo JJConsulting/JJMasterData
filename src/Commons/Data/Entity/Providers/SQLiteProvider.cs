@@ -18,7 +18,7 @@ public class SQLiteProvider(
     ILoggerFactory loggerFactory)
     : EntityProviderBase(options, loggerFactory)
 {
-    private const string Tab = "\t";
+    private const char Tab = '\t';
     public override string VariablePrefix => "@";
 
     public override string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
@@ -48,7 +48,7 @@ public class SQLiteProvider(
                 sSql.AppendLine(",");
 
             sSql.Append(Tab);
-            sSql.Append("[");
+            sSql.Append('[');
             sSql.Append(f.Name);
             sSql.Append("] ");
 
@@ -89,17 +89,16 @@ public class SQLiteProvider(
             }
             else
             {
-                sSql.Append(",");
+                sSql.Append(',');
             }
 
-            sSql.Append("[");
+            sSql.Append('[');
             sSql.Append(f.Name);
             sSql.Append("] ");
         }
 
         if (!isFirst)
-            sSql.Append(")");
-
+            sSql.Append(')');
 
         sSql.AppendLine("");
         sSql.AppendLine(")");
@@ -119,7 +118,7 @@ public class SQLiteProvider(
                 sSql.Append(index.IsClustered ? " CLUSTERED" : "");
                 sSql.Append(" INDEX [IX_");
                 sSql.Append(element.TableName);
-                sSql.Append("_");
+                sSql.Append('_');
                 sSql.Append(nIndex);
                 sSql.Append("] ON ");
                 sSql.AppendLine(element.TableName);
@@ -149,7 +148,7 @@ public class SQLiteProvider(
 
 
     // ReSharper disable once UnusedMember.Local
-    private string GetRelationshipsScript(Element element)
+    private static string GetRelationshipsScript(Element element)
     {
         StringBuilder sSql = new StringBuilder();
 
@@ -194,9 +193,9 @@ public class SQLiteProvider(
                     if (rc > 0)
                         sSql.Append(", ");
 
-                    sSql.Append("[");
+                    sSql.Append('[');
                     sSql.Append(r.Columns[rc].FkColumn);
-                    sSql.Append("]");
+                    sSql.Append(']');
                 }
 
                 sSql.AppendLine(")");
@@ -209,12 +208,12 @@ public class SQLiteProvider(
                     if (rc > 0)
                         sSql.Append(", ");
 
-                    sSql.Append("[");
+                    sSql.Append('[');
                     sSql.Append(r.Columns[rc].PkColumn);
-                    sSql.Append("]");
+                    sSql.Append(']');
                 }
 
-                sSql.Append(")");
+                sSql.Append(')');
 
                 if (r.UpdateOnCascade)
                 {
@@ -285,15 +284,14 @@ public class SQLiteProvider(
 
         foreach (var filter in filters)
         {
+            sqlScript.Append(Tab).Append(Tab);
             if (isFirst)
             {
-                sqlScript.Append(Tab).Append(Tab);
                 sqlScript.Append(" WHERE ");
                 isFirst = false;
             }
             else
             {
-                sqlScript.Append(Tab).Append(Tab);
                 sqlScript.Append("AND ");
             }
 
@@ -365,7 +363,7 @@ public class SQLiteProvider(
             sSql.Append(c.Name);
         }
 
-        sSql.Append(")");
+        sSql.Append(')');
         sSql.Append(" VALUES (");
         isFirst = true;
         foreach (var unused in fields)
@@ -375,10 +373,10 @@ public class SQLiteProvider(
             else
                 sSql.AppendLine(",");
 
-            sSql.Append("?");
+            sSql.Append('?');
         }
 
-        sSql.Append(")");
+        sSql.Append(')');
 
         var cmd = new DataAccessCommand()
         {
@@ -433,15 +431,14 @@ public class SQLiteProvider(
         {
             if (f.IsPk)
             {
+                sSql.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
-                    sSql.Append(Tab).Append(Tab);
                     sSql.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(Tab).Append(Tab);
                     sSql.Append("AND ");
                 }
 
@@ -490,15 +487,14 @@ public class SQLiteProvider(
         {
             if (f.IsPk)
             {
+                sqlScript.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
-                    sqlScript.Append(Tab).Append(Tab);
                     sqlScript.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sqlScript.Append(Tab).Append(Tab);
                     sqlScript.Append("AND ");
                 }
 
@@ -532,27 +528,26 @@ public class SQLiteProvider(
 
     private static object GetElementValue(ElementField f, Dictionary<string, object?> values)
     {
-        if (!values.ContainsKey(f.Name))
+        if (!values.TryGetValue(f.Name, out object? value))
             return DBNull.Value;
 
-        object? val = values[f.Name];
-        if (val == null)
+        if (value == null)
         {
             return DBNull.Value;
         }
 
         if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-            string.IsNullOrEmpty(val.ToString()))
+            string.IsNullOrEmpty(value.ToString()))
         {
             return DBNull.Value;
         }
 
-        return val;
+        return value;
     }
 
     private static DbType GetDbType(FieldType dataType)
     {
-        DbType t = DbType.String;
+        DbType t = DbType.AnsiString;
         switch (dataType)
         {
             case FieldType.Date:
@@ -576,7 +571,7 @@ public class SQLiteProvider(
     }
 
     // ReSharper disable once UnusedMember.Local
-    private DataAccessCommand GetScriptCount(Element element, Dictionary<string, object?> filters)
+    private static DataAccessCommand GetScriptCount(Element element, Dictionary<string, object?> filters)
     {
         var fields = element.Fields
             .ToList()
@@ -592,15 +587,14 @@ public class SQLiteProvider(
         {
             if (f.IsPk)
             {
+                sqlScript.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
-                    sqlScript.Append(Tab).Append(Tab);
                     sqlScript.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sqlScript.Append(Tab).Append(Tab);
                     sqlScript.Append("AND ");
                 }
 

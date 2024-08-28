@@ -32,7 +32,7 @@ public sealed class ExportAction : GridToolbarAction
 
     public override BasicAction DeepCopy()
     {
-        var newAction = (ExportAction)CopyAction();
+        var newAction = (ExportAction)MemberwiseClone();
         newAction.FileName = FileName;
         newAction.ProcessOptions = ProcessOptions.DeepCopy();
         return newAction;

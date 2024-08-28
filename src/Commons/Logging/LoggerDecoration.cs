@@ -8,38 +8,42 @@ namespace JJMasterData.Commons.Logging;
 
 internal static class LoggerDecoration
 {
-
     public static string GetMessageException(Exception exception)
     {
         var message = new StringBuilder();
-        message.Append("Message: ");
-        message.AppendLine();
-        message.AppendLine(exception.Message);
 
+        if (!string.IsNullOrEmpty(exception.Message))
+        {
+            message.AppendLine("Message:");
+            message.AppendLine(exception.Message);
+        }
+        
         if (exception.InnerException != null)
         {
-            message.AppendLine();
-            message.Append("InnerException: ");
+            message.AppendLine("Inner Exception:");
             message.AppendLine(exception.InnerException.Message);
         }
 
-        if (exception.Data?.Count > 0)
+        if (exception.Data.Count > 0)
         {
             message.Append(GetDataAccessMessage(exception));
         }
 
-        message.AppendLine();
-        message.AppendLine("StackTrace:");
-        message.AppendLine(exception.StackTrace);
+        if (!string.IsNullOrEmpty(exception.StackTrace))
+        {
+            message.AppendLine("StackTrace:");
+            message.AppendLine(exception.StackTrace);
+        }
 
-        message.AppendLine();
-        message.AppendLine("Source:");
-        message.AppendLine(exception.Source);
-
+        if (!string.IsNullOrEmpty(exception.Source))
+        {
+            message.AppendLine("Source:");
+            message.AppendLine(exception.Source);
+        }
+        
         return message.ToString();
     }
-
-
+    
     private static string GetDataAccessMessage(Exception exception)
     {
         var message = new StringBuilder();
@@ -54,12 +58,10 @@ internal static class LoggerDecoration
 
             message.AppendLine();
             message.Append(key);
-            message.AppendLine(": ");
+            message.AppendLine(":");
             message.Append(data.Value);
         }
 
         return message.ToString();
     }
-
 }
-

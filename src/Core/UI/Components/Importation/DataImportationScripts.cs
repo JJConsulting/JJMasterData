@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationScripts(
+internal sealed class DataImportationScripts(
     string name,
     FormElement formElement, 
     IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -21,10 +21,10 @@ internal class DataImportationScripts(
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IEncryptionService EncryptionService { get; } = encryptionService;
 
-    private string GetEncryptedRouteContext(ComponentContext context = ComponentContext.DataImportation)
+    private string GetEncryptedRouteContext()
     {
-        var routeContext = RouteContext.FromFormElement(FormElement, context);
-        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataImportation);
+        var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
         return encryptedRouteContext;
     }
 
@@ -35,19 +35,19 @@ internal class DataImportationScripts(
     public string GetStartProgressVerificationScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.startProgressVerification('{Name}', '{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+        return $"DataImportationHelper.startProgressVerification('{Name}', '{GetEncryptedRouteContext()}')";
     }
     
     public string GetBackScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.back('{Name}', '{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+        return $"DataImportationHelper.back('{Name}', '{GetEncryptedRouteContext()}')";
     }
     
     public string GetShowScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.show('{Name}','{StringLocalizer[ModalTitle]}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+        return $"DataImportationHelper.show('{Name}','{StringLocalizer[ModalTitle]}','{GetEncryptedRouteContext()}')";
     }
 
     
@@ -72,7 +72,7 @@ internal class DataImportationScripts(
     public string GetUploadCallbackScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.uploadCallback('{Name}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+        return $"DataImportationHelper.uploadCallback('{Name}','{GetEncryptedRouteContext()}')";
     }
 
     public static string GetCloseModalScript()

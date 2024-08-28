@@ -11,28 +11,25 @@ using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class LookupService(IFormValues formValues,
+public class LookupService(
+    IFormValues formValues,
     ExpressionsService expressionsService,
     IEncryptionService encryptionService,
     ElementMapService elementMapService,
     IMasterDataUrlHelper urlHelper)
 {
-    private IFormValues FormValues { get; } = formValues;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private ElementMapService ElementMapService { get; } = elementMapService;
-    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
-
-
     public string GetFormViewUrl(DataElementMap elementMap, FormStateData? formStateData, string componentName)
     {
-        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.IdFieldName,elementMap.DescriptionFieldName,
+        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.IdFieldName,
+            elementMap.DescriptionFieldName,
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
-            EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, formStateData));
-        
-        return UrlHelper.Action("Index", "Lookup", new { Area = "MasterData", lookupParameters = encryptedLookupParameters });
+            encryptionService.EncryptStringWithUrlEscape(
+                lookupParameters.ToQueryString(expressionsService, formStateData));
+
+        return urlHelper.Action("Index", "Lookup",
+            new { Area = "MasterData", lookupParameters = encryptedLookupParameters });
     }
 
     public async Task<string?> GetDescriptionAsync(
@@ -55,10 +52,10 @@ public class LookupService(IFormValues formValues,
         }
 
         Dictionary<string, object?> values;
-        
+
         try
         {
-            values = await ElementMapService.GetFieldsAsync(elementMap, value, formStateData);
+            values = await elementMapService.GetFieldsAsync(elementMap, value, formStateData);
         }
         catch
         {
@@ -66,17 +63,19 @@ public class LookupService(IFormValues formValues,
         }
 
 
-        if (string.IsNullOrEmpty(elementMap.DescriptionFieldName) && values.TryGetValue(elementMap.IdFieldName, out var id))
+        if (string.IsNullOrEmpty(elementMap.DescriptionFieldName) &&
+            values.TryGetValue(elementMap.IdFieldName, out var id))
             return id?.ToString();
 
-        if (elementMap.DescriptionFieldName != null && values.TryGetValue(elementMap.DescriptionFieldName, out var description))
+        if (elementMap.DescriptionFieldName != null &&
+            values.TryGetValue(elementMap.DescriptionFieldName, out var description))
             return description?.ToString();
 
         return null;
     }
-    
+
     public string? GetSelectedValue(string componentName)
     {
-        return FormValues[componentName];
+        return formValues[componentName];
     }
 }

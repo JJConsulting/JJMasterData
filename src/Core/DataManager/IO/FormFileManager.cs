@@ -18,7 +18,6 @@ public class FormFileManager(string memoryFilesSessionName,
     IStringLocalizer<MasterDataResources> stringLocalizer, 
     ILogger<FormFileManager> logger)
 {
-    private IHttpContext HttpContext { get; } = httpContext;
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
@@ -45,14 +44,10 @@ public class FormFileManager(string memoryFilesSessionName,
     /// </remarks>
     public string FolderPath { get; set; }
 
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
-    private ILogger<FormFileManager> Logger { get; } = logger;
-
     public List<FormFileInfo> MemoryFiles
     {
-        get => HttpContext.Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
-        set => HttpContext.Session.SetSessionValue(MemoryFilesSessionName, value);
+        get => httpContext.Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
+        set => httpContext.Session.SetSessionValue(MemoryFilesSessionName, value);
     }
 
     public List<FormFileInfo> GetFiles()
@@ -71,14 +66,14 @@ public class FormFileManager(string memoryFilesSessionName,
             throw new ArgumentNullException(nameof(currentName));
 
         if (string.IsNullOrWhiteSpace(newName))
-            throw new ArgumentNullException(StringLocalizer["Required file name"]);
+            throw new ArgumentNullException(stringLocalizer["Required file name"]);
 
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
-            throw new JJMasterDataException(StringLocalizer["The file extension must remain the same"]);
+            throw new JJMasterDataException(stringLocalizer["The file extension must remain the same"]);
 
         var files = GetFiles();
         if (files.Exists(x => x.Content.FileName.Equals(newName)))
-            throw new JJMasterDataException(StringLocalizer["A file with the name {0} already exists", newName]);
+            throw new JJMasterDataException(stringLocalizer["A file with the name {0} already exists", newName]);
 
         if (OnBeforeRenameFile != null)
         {
@@ -97,7 +92,7 @@ public class FormFileManager(string memoryFilesSessionName,
         {
             var file = files.Find(x => x.Content.FileName.Equals(currentName));
             if (file == null)
-                throw new JJMasterDataException(StringLocalizer["file {0} not found!", currentName]);
+                throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
 
             files.Remove(file);
             
@@ -114,7 +109,7 @@ public class FormFileManager(string memoryFilesSessionName,
     public FormFileInfo GetFile(string fileName)
     {
         var files = GetFiles();
-        var file = files.FirstOrDefault(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
+        var file = files.Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
         
         return file;
     }
@@ -140,7 +135,7 @@ public class FormFileManager(string memoryFilesSessionName,
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 var exception = new JJMasterDataException(errorMessage);
-                Logger.LogError(exception,"Error OnBeforeCreateFile");
+                logger.LogError(exception,"Error OnBeforeCreateFile");
                 throw exception;
             }
                 
@@ -185,12 +180,11 @@ public class FormFileManager(string memoryFilesSessionName,
         {
             var args = new FormDeleteFileEventArgs(fileName);
             OnBeforeDeleteFile.Invoke(this, args);
-
             
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
-                Logger.LogError(exception, "Error OnBeforeDeleteFile");
+                logger.LogError(exception, "Error OnBeforeDeleteFile");
                 throw exception;
             }
         }
@@ -304,9 +298,9 @@ public class FormFileManager(string memoryFilesSessionName,
         if (!Directory.Exists(FolderPath))
             Directory.CreateDirectory(FolderPath);
 
-        string fileFullName = Path.Combine(FolderPath, file.FileName);
-        var ms = new MemoryStream(file.Bytes);
-        var fileStream = File.Create(fileFullName);
+        var fileFullName = Path.Combine(FolderPath, file.FileName);
+        using var ms = new MemoryStream(file.Bytes);
+        using var fileStream = File.Create(fileFullName);
         ms.Seek(0, SeekOrigin.Begin);
         ms.CopyTo(fileStream);
         fileStream.Close();

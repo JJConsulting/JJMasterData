@@ -4,7 +4,6 @@ using JJMasterData.Commons.Localization;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
@@ -14,6 +13,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -30,11 +30,6 @@ public class ElementService(
         IMasterDataUrlHelper urlHelper)
     : BaseService(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
-    private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; } = dataDictionaryFormElementFactory;
-    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
-    private IEntityRepository EntityRepository { get; } =  entityRepository;
-
     #region Add Dictionary
 
     public async Task<FormElement?> CreateEntityAsync(ElementBean elementBean)
@@ -49,7 +44,7 @@ public class ElementService(
         FormElement formElement;
         if (importFields)
         {
-            var element = await EntityRepository.GetElementFromTableAsync(tableName, connectionId);
+            var element = await entityRepository.GetElementFromTableAsync(tableName, connectionId);
             element.Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName);
             formElement = new FormElement(element);
         }
@@ -84,7 +79,7 @@ public class ElementService(
 
         if (importFields & IsValid)
         {
-            var exists = await EntityRepository.TableExistsAsync(tableName, connectionId);
+            var exists = await entityRepository.TableExistsAsync(tableName, connectionId);
             if (!exists)
                 AddError("Name", StringLocalizer["Table not found"]);
         }
@@ -134,7 +129,7 @@ public class ElementService(
 
     public JJFormView GetFormView()
     {
-        var formView = FormViewFactory.Create(DataDictionaryFormElementFactory.GetFormElement());
+        var formView = formViewFactory.Create(dataDictionaryFormElementFactory.GetFormElement());
         
         formView.GridView.SetCurrentFilter(DataDictionaryStructure.Type,"F");
 
@@ -155,7 +150,7 @@ public class ElementService(
                 await DataDictionaryRepository.GetFormElementInfoListAsync(filter, args.OrderBy, args.RecordsPerPage,
                     args.CurrentPage);
 
-            var dictionaryList = result.Data.Select(info => info.ToDictionary()).ToList();
+            var dictionaryList = result.Data.ConvertAll(info => info.ToDictionary());
 
             args.DataSource = dictionaryList;
             args.TotalOfRecords = result.TotalOfRecords;
@@ -175,7 +170,7 @@ public class ElementService(
                 }
             }
 
-            return Task.CompletedTask;
+            return ValueTaskHelper.CompletedTask;
         };
 
         formView.GridView.OnRenderActionAsync += (_, args) =>
@@ -186,21 +181,21 @@ public class ElementService(
             {
                 case "render":
                     args.LinkButton.OnClientClick =
-                        $"window.open('{UrlHelper.Action("Render", "Form", new {Area="MasterData", elementName })}', '_blank').focus();";
+                        $"window.open('{urlHelper.Action("Render", "Form", new {Area="MasterData", elementName })}', '_blank').focus();";
                     break;
                 case "tools":
-                    args.LinkButton.UrlAction = UrlHelper.Action("Index", "Entity", 
+                    args.LinkButton.UrlAction = urlHelper.Action("Index", "Entity", 
                         new { Area="DataDictionary", elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
                 case "duplicate":
-                    args.LinkButton.UrlAction = UrlHelper.Action("Duplicate", "Element", 
+                    args.LinkButton.UrlAction = urlHelper.Action("Duplicate", "Element", 
                         new { Area="DataDictionary", elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
             }
 
-            return Task.CompletedTask;
+            return ValueTaskHelper.CompletedTask;
         };
         
         return formView;
@@ -260,7 +255,6 @@ public class ElementService(
         //FormElement.Validate()
 
         await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
-
 
         return IsValid;
     }

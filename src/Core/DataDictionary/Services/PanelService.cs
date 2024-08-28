@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -24,7 +23,7 @@ public class PanelService(IValidationDictionary validationDictionary,
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
-        if (selectedFields is null || !selectedFields.Any())
+        if (selectedFields is null || selectedFields.Length == 0)
         {
             AddError(nameof(selectedFields), StringLocalizer["No fields selected for this panel."]);
         }

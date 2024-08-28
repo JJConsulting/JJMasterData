@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-internal class HttpSessionWrapper(IHttpContextAccessor contextAccessor) : IHttpSession
+internal sealed class HttpSessionWrapper(IHttpContextAccessor contextAccessor) : IHttpSession
 {
     private ISession Session { get; } = contextAccessor.HttpContext.Session;
 

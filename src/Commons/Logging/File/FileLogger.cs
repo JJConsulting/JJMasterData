@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Logging.File;
 
-internal class FileLogger(
+internal sealed class FileLogger(
     string categoryName,
     LoggerBuffer buffer, 
     IOptionsMonitor<FileLoggerOptions> options) : ILogger
@@ -61,9 +61,9 @@ internal class FileLogger(
             case FileLoggerFormatting.Default:
 
                 log.Append(DateTime.Now);
-                log.Append(" ");
+                log.Append(' ');
                 log.Append($" [{categoryName}] ");
-                log.Append("(");
+                log.Append('(');
                 log.Append(logLevel.ToString());
                 log.AppendLine(")");
                 log.Append(formatterMessage);

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
 
@@ -41,16 +42,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> htmlEnumerable)
     {
-        foreach (var item in htmlEnumerable)
-            Append(item);
-
-        return this;
-    }
-    
-    public async Task<HtmlBuilder> AppendRangeAsync(IAsyncEnumerable<HtmlBuilder> htmlAsyncEnumerable)
-    {
-        await foreach (var item in htmlAsyncEnumerable)
-            Append(item);
+        _children.AddRange(htmlEnumerable);
 
         return this;
     }
@@ -68,7 +60,7 @@ public partial class HtmlBuilder
     
     public HtmlBuilder AppendBr()
     {
-        var child = new Br();
+        var child = new HtmlBuilder(HtmlTag.Br);
         Append(child);
         return this;
     }
@@ -244,7 +236,7 @@ public partial class HtmlBuilder
     public HtmlBuilder AppendComponent(HtmlComponent? component)
     {
         if (component != null)
-            Append((HtmlBuilder?)component.GetHtmlBuilder());
+            Append(component.GetHtmlBuilder());
 
         return this;
     }
@@ -257,7 +249,7 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendControlAsync(ControlBase? control)
+    public async ValueTask<HtmlBuilder> AppendControlAsync(ControlBase? control)
     {
         if (control != null)
             Append(await control.GetHtmlBuilderAsync());

@@ -111,10 +111,10 @@ public class TextWriter(
                 string value = string.Empty;
                 if (field.DataBehavior is not FieldBehavior.Virtual && field.DataBehavior is not FieldBehavior.WriteOnly)
                 {
-                    if (row.Keys.Contains(field.Name))
-                        value = row[field.Name]?.ToString();
+                    if (row.TryGetValue(field.Name, out var cellValue))
+                        value = cellValue?.ToString();
                 }
-                
+
                 if (OnRenderCellAsync != null)
                 {
                     var args = new GridCellEventArgs
@@ -123,9 +123,9 @@ public class TextWriter(
                         DataRow = row,
                         Sender = new JJText(value)
                     };
-                    
+
                     await OnRenderCellAsync(this, args);
-                    
+
                     if(args.HtmlResult != null)
                         value = args.HtmlResult.ToString();
                 }

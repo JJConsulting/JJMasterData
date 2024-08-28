@@ -8,15 +8,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridCaptionView(
+internal sealed class GridCaptionView(
     string title,
     IControlFactory<JJComboBox> comboBoxFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private IControlFactory<JJComboBox> ComboBoxFactory { get; } = comboBoxFactory;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    public bool ShowAsModal { get; init; } = false;
-
+    public bool ShowAsModal { get; init; }
     public required string Name { get; init; }
     public required FormElement FormElement { get; init; }
 
@@ -34,41 +31,41 @@ internal class GridCaptionView(
 
     private async Task<HtmlBuilder> GetCaptionHtmlBuilder(FormElementField field)
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
 
         if (field != null)
         {
-            var cbo = ComboBoxFactory.Create();
+            var cbo = comboBoxFactory.Create();
             cbo.Name = field.Name;
             
             if (field.DataItem != null)
                 cbo.DataItem = field.DataItem;
 
             var values = await cbo.GetValuesAsync();
-            
-            if (values is { Count: > 0 })
-            {
-                foreach (var item in values)
-                {
-                    div.Append(HtmlTag.Div, div =>
-                    {
-                        div.WithStyle( "height:2.5rem");
 
-                        div.AppendComponent(new JJIcon(item.Icon, item.IconColor)
-                        {
-                            CssClass = "fa-fw fa-2x"
-                        });
-                        div.AppendText("&nbsp;&nbsp;");
-                        div.AppendText(StringLocalizer[item.Description]);
-                        div.Append(HtmlTag.Br);
+            if (values is not { Count: > 0 })
+                return div;
+            
+            foreach (var item in values)
+            {
+                div.Append(HtmlTag.Div, div =>
+                {
+                    div.WithStyle( "height:2.5rem");
+
+                    div.AppendComponent(new JJIcon(item.Icon, item.IconColor)
+                    {
+                        CssClass = "fa-fw fa-2x"
                     });
-                }
+                    div.AppendText("&nbsp;&nbsp;");
+                    div.AppendText(stringLocalizer[item.Description]);
+                    div.Append(HtmlTag.Br);
+                });
             }
         }
         else
         {
             div.Append(HtmlTag.Br);
-            div.AppendText(StringLocalizer["There is no caption to be displayed"]);
+            div.AppendText(stringLocalizer["There is no caption to be displayed"]);
         }
 
         return div;
@@ -86,15 +83,15 @@ internal class GridCaptionView(
         var dialog = new JJModalDialog
         {
             Name = $"{Name}-caption-modal",
-            Title = StringLocalizer[title],
+            Title = stringLocalizer[title],
             HtmlBuilderContent = form,
             Buttons = 
             [
-                new JJLinkButton(StringLocalizer)
+                new JJLinkButton(stringLocalizer)
                 {
                     Name = $"{Name}-caption-modal-close-btn",
                     Icon = IconType.SolidXmark,
-                    Text = StringLocalizer["Close"],
+                    Text = stringLocalizer["Close"],
                     ShowAsButton = true,
                     OnClientClick = BootstrapHelper.GetCloseModalScript($"{Name}-caption-modal")
                 }

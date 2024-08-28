@@ -23,11 +23,6 @@ public class FormValuesService(
     IEncryptionService encryptionService,
     IHttpRequest httpRequest)
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private FieldValuesService FieldValuesService { get; } = fieldValuesService;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IFormValues FormValues { get; } = httpRequest.Form;
-
     private Dictionary<string, object?> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
     {
@@ -41,10 +36,10 @@ public class FormValuesService(
 
 #if NET48
             var value = field.ValidateRequest
-                ? FormValues[fieldName]
-                : FormValues.GetUnvalidated(fieldName);
+                ? httpRequest.Form[fieldName]
+                : httpRequest.Form.GetUnvalidated(fieldName);
 #else
-            var value = FormValues[fieldName];
+            var value = httpRequest.Form[fieldName];
 #endif
             HandleFieldValue(field, values, value);
         }
@@ -60,7 +55,7 @@ public class FormValuesService(
 
             if (parsedValue is not null)
                 values.Add(field.Name, parsedValue);
-            else if (value == string.Empty)
+            else if (value?.Length == 0)
                 values.Add(field.Name, null);
         }
         catch (Exception ex)
@@ -77,16 +72,20 @@ public class FormValuesService(
             case FormComponent.Hour:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-                
-                parsedValue = TimeSpan.Parse(value);
+
+                if (TimeSpan.TryParse(value, out var parsedTimeValue))
+                    parsedValue = parsedTimeValue;
+                else
+                    parsedValue = value;
                 break;
             case FormComponent.Date:
             case FormComponent.DateTime:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-                
-                parsedValue = DateTime.Parse(value);
-                
+                if (DateTime.TryParse(value, out var parsedDateTimeValue))
+                    parsedValue = parsedDateTimeValue;
+                else
+                    parsedValue = value;
                 break;
             case FormComponent.Currency:
                 if (string.IsNullOrWhiteSpace(value))
@@ -108,7 +107,7 @@ public class FormValuesService(
 
                 if (field.DataType is FieldType.Bit)
                     parsedValue = boolValue;
-                else //Legacy compatibility when FieldType.Bit didn't exists.
+                else //Legacy compatibility when FieldType.Bit didn't exist.
                     parsedValue = boolValue ? "1" : "0";
                 break;
             default:
@@ -138,12 +137,18 @@ public class FormValuesService(
             case FieldType.Float:
                 if (double.TryParse(value, NumberStyles.Any,
                         cultureInfo, out var doubleValue))
+                {
                     parsedValue = doubleValue;
+                }
+
                 break;
             case FieldType.Int:
-                if (int.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
+                if (int.TryParse(value, NumberStyles.Currency,
                         cultureInfo, out var numericValue))
+                {
                     parsedValue = numericValue;
+                }
+
                 break;
         }
 
@@ -172,7 +177,7 @@ public class FormValuesService(
         return parsedValue;
     }
 
-    public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
+    public async ValueTask<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         FormStateData formStateData,
         bool autoReloadFormFields,
@@ -181,45 +186,45 @@ public class FormValuesService(
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        if (!formStateData.Values.Any())
+        if (formStateData.Values.Count == 0)
         {
             var dbValues = await GetDbValues(formElement);
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
         }
 
-        if (FormValues.ContainsFormValues() && autoReloadFormFields)
+        if (httpRequest.Form.ContainsFormValues() && autoReloadFormFields)
         {
             var formValues = GetFormValues(formElement, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
 
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
-            !FormValues.ContainsFormValues());
+        return await fieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
+            !httpRequest.Form.ContainsFormValues());
     }
 
 
     private async Task<Dictionary<string, object?>> GetDbValues(Element element)
     {
-        string encryptedPkValues = FormValues[
+        string encryptedPkValues = httpRequest.Form[
             $"data-panel-pk-values-{element.Name}"];
 
         if (string.IsNullOrEmpty(encryptedPkValues))
         {
-            var encryptedFkValues = FormValues[
+            var encryptedFkValues = httpRequest.Form[
                 $"form-view-relation-values-{element.Name}"];
 
             if (!string.IsNullOrEmpty(encryptedFkValues))
             {
-                return EncryptionService.DecryptDictionary(encryptedFkValues)!;
+                return encryptionService.DecryptDictionary(encryptedFkValues)!;
             }
         }
 
         if (encryptedPkValues is null)
             return new Dictionary<string, object?>();
 
-        string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
+        string pkValues = encryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
-        return await EntityRepository.GetFieldsAsync(element, filters);
+        return await entityRepository.GetFieldsAsync(element, filters);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
 
@@ -31,7 +30,7 @@ public class JJModalDialog : HtmlComponent
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithId(Name)
-            .WithCssClass("modal")
+            .WithCssClass("modal fade")
             .WithCssClass(CssClass)
             .WithAttribute("role", "dialog")
             .WithAttribute("aria-hidden", "true")

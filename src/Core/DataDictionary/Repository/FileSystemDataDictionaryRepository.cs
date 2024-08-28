@@ -102,10 +102,10 @@ public class FileSystemDataDictionaryRepository
         return GetMetadata(elementName);
     }
 
-    public Task<FormElement> GetFormElementAsync(string elementName)
+    public ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
         var result = GetMetadata(elementName);
-        return Task.FromResult(result);
+        return new ValueTask<FormElement>(result);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
@@ -197,15 +197,15 @@ public class FileSystemDataDictionaryRepository
 
             if (filter != null)
             {
-                if (!string.IsNullOrEmpty(filter.Name) && !formElement.Name.ToLower().Contains(filter.Name.ToLower()))
+                if (!string.IsNullOrEmpty(filter.Name) && formElement.Name.IndexOf(filter.Name, StringComparison.OrdinalIgnoreCase) < 0)
                     continue;
 
                 if (filter.ContainsTableName != null)
                 {
-                    bool containsName = filter.ContainsTableName.Any(tableName => formElement.TableName.ToLower().Contains(tableName.ToLower()));
+                    bool containsName = filter.ContainsTableName.Any(tableName => formElement.TableName.IndexOf(tableName, StringComparison.OrdinalIgnoreCase) >= 0);
                     if (!containsName)
                         continue;
-                }   
+                }
                 
                 if (filter.LastModifiedFrom.HasValue && file.LastWriteTime < filter.LastModifiedFrom)
                     continue;

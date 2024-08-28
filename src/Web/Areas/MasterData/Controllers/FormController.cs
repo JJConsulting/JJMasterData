@@ -2,7 +2,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Web.Areas.MasterData.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -24,13 +23,10 @@ public class FormController(
         if (result is IActionResult actionResult)
             return actionResult;
 
-        var model = new FormViewModel
-        {
-            FormTitle = formView.FormElement.Name,
-            FormViewHtml = result.Content
-        };
+        ViewData["Title"] = formView.FormElement.Name;
+        ViewData["FormViewHtml"] = result.Content;
         
-        return View(model);
+        return View();
     }
     
     private void ConfigureFormView(JJFormView formView)

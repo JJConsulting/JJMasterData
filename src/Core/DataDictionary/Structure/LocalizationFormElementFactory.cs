@@ -19,10 +19,18 @@ public class LocalizationFormElementFactory(
     {
         var element = MasterDataStringLocalizerElement.GetElement(masterDataOptions.Value);
     
-        var formElement = new FormElement(element);
-        formElement.Title = stringLocalizer["Internationalization"];
-        formElement.Icon = IconType.SolidEarthAmericas;
-        formElement.Options.Grid.ShowTitle = false;
+        var formElement = new FormElement(element)
+        {
+            Title = stringLocalizer["Internationalization"],
+            Icon = IconType.SolidEarthAmericas,
+            Options =
+            {
+                Grid =
+                {
+                    ShowTitle = false
+                }
+            }
+        };
         formElement.Fields["resourceKey"].IsRequired = true;
         formElement.Fields["resourceKey"].CssClass = "col-sm-6";
         formElement.Fields["resourceOrigin"].VisibleExpression = "val:0";
@@ -58,7 +66,7 @@ public class LocalizationFormElementFactory(
         cultureField.Component = FormComponent.Search;
         cultureField.DataItem = new FormElementDataItem
         {
-            Items = new List<DataItemValue>(),
+            Items = [],
             GridBehavior = DataItemGridBehavior.Id
         };
         foreach (var cultureInfo in supportedCultures)

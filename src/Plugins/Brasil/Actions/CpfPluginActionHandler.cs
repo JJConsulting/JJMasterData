@@ -7,7 +7,6 @@ using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
@@ -20,7 +19,6 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
     private const string IgnoreDbFieldKey = "IgnoreDb";
     public override Guid Id => GuidGenerator.FromValue(nameof(CpfPluginActionHandler));
     public override string Title => "Cpf";
-    public override HtmlBuilder? AdditionalInformationHtml => null;
     protected override IEnumerable<string> CustomFieldMapKeys
     {
         get

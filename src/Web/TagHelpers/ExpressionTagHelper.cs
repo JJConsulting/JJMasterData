@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel;
-using JJMasterData.Core.DataManager.Expressions.Providers;
-using JJMasterData.Core.UI;
 using JJMasterData.Web.Configuration.Options;
 using Microsoft.Extensions.Options;
+using HtmlBuilder = JJMasterData.Core.UI.Html.HtmlBuilder;
 
 namespace JJMasterData.Web.TagHelpers;
 
@@ -77,7 +76,7 @@ public class ExpressionTagHelper(
             modelValue = Value;
         }
 
-        var isInvalid = ViewContext.ModelState[name]?.Errors.Any() ?? false;
+        var isInvalid = ViewContext.ModelState[name]?.Errors.Count > 0;
 
         var splittedExpression = modelValue?.Split(':', 2);
 
@@ -90,12 +89,12 @@ public class ExpressionTagHelper(
             selectedExpressionValue = splittedExpression[1];
         }
 
-        var fieldSet = new FieldSet();
+        var fieldSet = new HtmlBuilder(HtmlTag.FieldSet);
         fieldSet.WithAttributeIf(Disabled, "disabled");
 
         var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
 
-        var label = new Label();
+        var label = new HtmlBuilder(HtmlTag.Label);
         label.WithAttribute("for", name + "-ExpressionValue");
         label.AppendText(displayName!);
         
@@ -130,7 +129,7 @@ public class ExpressionTagHelper(
             
             if (UseFloatingLabel)
             {
-                var formFloating = new Div();
+                var formFloating = new HtmlBuilder(HtmlTag.Div);
                 formFloating.WithCssClass("form-floating");
                 formFloating.Append(editor);
                 formFloating.Append(label);
@@ -177,7 +176,7 @@ public class ExpressionTagHelper(
         string? selectedExpressionValue)
     {
         var advanced = options.Value.UseAdvancedModeAtExpressions;
-        var input = new Input();
+        var input = new HtmlBuilder(HtmlTag.Input);
         input.WithCssClass("font-monospace");
         input.WithCssClass("form-control");
         input.WithNameAndId(name + "-ExpressionValue");

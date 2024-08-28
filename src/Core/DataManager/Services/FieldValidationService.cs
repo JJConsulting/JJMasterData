@@ -12,20 +12,19 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldValidationService(ExpressionsService expressionsService, IStringLocalizer<MasterDataResources> localizer)
+public class FieldValidationService(
+    ExpressionsService expressionsService,
+    IStringLocalizer<MasterDataResources> localizer)
 {
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    private IStringLocalizer<MasterDataResources> Localizer { get; } = localizer;
-
     public Dictionary<string, string> ValidateFields(
-        FormElement formElement, 
-        Dictionary<string, object> formValues, 
-        PageState pageState, 
+        FormElement formElement,
+        Dictionary<string, object> formValues,
+        PageState pageState,
         bool enableErrorLink)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
-        
+
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
@@ -33,24 +32,25 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
         var formState = new FormStateData(formValues, pageState);
         foreach (var field in formElement.Fields)
         {
-            var isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, formState);
+            var isVisible = expressionsService.GetBoolValue(field.VisibleExpression, formState);
             if (!isVisible)
                 continue;
 
-            var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, formState);
+            var isEnabled = expressionsService.GetBoolValue(field.EnableExpression, formState);
             if (!isEnabled)
                 continue;
 
-            object value;
-            if (formValues.ContainsKey(field.Name) && formValues[field.Name] != null)
-                value = formValues[field.Name];
-            else
+
+            if (!formValues.TryGetValue(field.Name, out var value) || value == null)
+            {
                 value = "";
+            }
 
             var error = ValidateField(field, field.Name, value, enableErrorLink);
             if (!string.IsNullOrEmpty(error))
                 errors.Add(field.Name, error);
         }
+
         return errors;
     }
 
@@ -67,7 +67,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
         {
             if (field.IsRequired || field.IsPk)
             {
-                error = Localizer["{0} field is required", fieldName];
+                error = localizer["{0} field is required", fieldName];
             }
         }
         else
@@ -87,7 +87,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
         {
             case FormComponent.Email:
                 if (!Validate.ValidEmail(valueString))
-                    return Localizer["{0} field has an invalid email", fieldName];
+                    return localizer["{0} field has an invalid email", fieldName];
                 break;
             case FormComponent.Hour:
                 var hourFormat = valueString.Length == 5 ? "HH:mm" : "HH:mm:ss";
@@ -99,35 +99,35 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
                     out _);
                 if (!valid)
                 {
-                    return Localizer["{0} field has an invalid time", fieldName];
+                    return localizer["{0} field has an invalid time", fieldName];
                 }
 
                 break;
             case FormComponent.Cnpj:
                 if (!Validate.ValidCnpj(valueString))
                 {
-                    return Localizer["{0} field has an invalid value", fieldName];
+                    return localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.Cpf:
                 if (!Validate.ValidCpf(valueString))
                 {
-                    return Localizer["{0} field has an invalid value", fieldName];
+                    return localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.CnpjCpf:
                 if (!Validate.ValidCpfCnpj(valueString))
                 {
-                    return Localizer["{0} field has an invalid value", fieldName];
+                    return localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.Tel:
                 if (!Validate.ValidTel(valueString))
                 {
-                    return Localizer["{0} field has an invalid phone", fieldName];
+                    return localizer["{0} field has an invalid phone", fieldName];
                 }
 
                 break;
@@ -136,21 +136,22 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
                 if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))
                 {
                     if (double.Parse(value?.ToString()) < (double?)minValue)
-                        return Localizer["{0} field needs to be greater than {1}", fieldName, minValue];
+                        return localizer["{0} field needs to be greater than {1}", fieldName, minValue];
                 }
 
                 if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out var maxValue))
                 {
                     if (double.Parse(value?.ToString()) > (double?)maxValue)
-                        return Localizer["{0} field needs to be less or equal than {1}", fieldName, maxValue];
+                        return localizer["{0} field needs to be less or equal than {1}", fieldName, maxValue];
                 }
 
                 break;
             case FormComponent.Text:
             case FormComponent.TextArea:
-                if (field.ValidateRequest && (value?.ToString().ToLower().Contains("<script") ?? false))
+                if (field.ValidateRequest &&
+                    value.ToString()?.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    return Localizer["{0} field contains invalid or not allowed character", fieldName];
+                    return localizer["{0} field contains invalid or not allowed character", fieldName];
                 }
 
                 break;
@@ -166,45 +167,49 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
             case FieldType.Date:
             case FieldType.DateTime:
             case FieldType.DateTime2:
-                if (!DateTime.TryParse(value?.ToString(), out var date) || date.Year < 1900)
+                if (!DateTime.TryParse(value?.ToString(), out _))
                 {
-                    return Localizer["{0} field is an invalid date",
+                    return localizer["{0} field is an invalid date",
                         fieldName];
                 }
+
                 break;
             case FieldType.Time:
                 if (!TimeSpan.TryParse(value?.ToString(), out _))
                 {
-                    return Localizer["{0} field is an invalid time",
+                    return localizer["{0} field is an invalid time",
                         fieldName];
                 }
+
                 break;
             case FieldType.Int:
-                if (value is not bool && !int.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out _))
+                if (value is not bool && !int.TryParse(value?.ToString(), NumberStyles.Number,
+                        CultureInfo.CurrentCulture, out _))
                 {
-                    return Localizer["{0} field has an invalid number",
+                    return localizer["{0} field has an invalid number",
                         fieldName];
                 }
 
                 break;
             case FieldType.Float:
-                if (!double.TryParse(value?.ToString(),  out _))
+                if (!double.TryParse(value?.ToString(), out _))
                 {
-                    return Localizer["{0} field has an invalid number",
+                    return localizer["{0} field has an invalid number",
                         fieldName];
                 }
 
                 break;
             default:
-                if (field.Size > 0 && 
-                    value?.ToString()?.Length > field.Size && 
+                if (field.Size > 0 &&
+                    value?.ToString()?.Length > field.Size &&
                     value is not bool &&
-                    value is not TimeSpan && 
+                    value is not TimeSpan &&
                     value is not DateTime)
                 {
-                    return Localizer["{0} field cannot contain more than {1} characters",
+                    return localizer["{0} field cannot contain more than {1} characters",
                         fieldName, field.Size];
                 }
+
                 break;
         }
 
@@ -215,7 +220,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
     {
         var link = new HtmlBuilder(HtmlTag.A);
         link.WithAttribute("href", "#void");
-        link.WithOnClick( $"javascript:$('#{fieldName}').focus();");
+        link.WithOnClick($"javascript:$('#{fieldName}').focus();");
         link.WithCssClass("alert-link");
         link.AppendText(label ?? fieldName);
 

@@ -1,52 +1,63 @@
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridToolbarActionList : FormElementActionList
 {
-    public InsertAction InsertAction => List.FirstOrDefault(a => a is InsertAction) as InsertAction;
-    public LegendAction LegendAction => List.FirstOrDefault(a => a is LegendAction) as LegendAction;
-    public RefreshAction RefreshAction => List.FirstOrDefault(a =>  a is RefreshAction) as RefreshAction;
-    public FilterAction FilterAction => List.FirstOrDefault(a => a is FilterAction) as FilterAction;
-    public ImportAction ImportAction => List.FirstOrDefault(a=>a is ImportAction) as ImportAction;
-    public ExportAction ExportAction => List.FirstOrDefault(a =>a is ExportAction) as ExportAction;
-    public ConfigAction ConfigAction => List.FirstOrDefault(a =>a is ConfigAction) as ConfigAction;
-    public SortAction SortAction => List.FirstOrDefault(a => a is SortAction) as SortAction;
-    public AuditLogGridToolbarAction AuditLogGridToolbarAction => List.FirstOrDefault(a => a is AuditLogGridToolbarAction) as AuditLogGridToolbarAction;
+    public InsertAction InsertAction { get; }
+    public LegendAction LegendAction { get; }
+    public RefreshAction RefreshAction { get; }
+    public FilterAction FilterAction { get; }
+    public ImportAction ImportAction { get; }
+    public ExportAction ExportAction { get; }
+    public ConfigAction ConfigAction { get; }
+    public SortAction SortAction { get; }
+    public AuditLogGridToolbarAction AuditLogGridToolbarAction { get; }
 
     public GridToolbarActionList()
     {
-        List.Add(new InsertAction());
-        List.Add(new LegendAction());
-        List.Add(new RefreshAction());
-        List.Add(new FilterAction());
-        List.Add(new ImportAction());
-        List.Add(new ExportAction());
-        List.Add(new ConfigAction());
-        List.Add(new SortAction());
-        List.Add(new AuditLogGridToolbarAction());
+        InsertAction = new InsertAction();
+        LegendAction = new LegendAction();
+        RefreshAction = new RefreshAction();
+        FilterAction = new FilterAction();
+        ImportAction = new ImportAction();
+        ExportAction = new ExportAction();
+        ConfigAction = new ConfigAction();
+        SortAction = new SortAction();
+        AuditLogGridToolbarAction = new AuditLogGridToolbarAction();
+
+        List.AddRange([
+            InsertAction,
+            LegendAction,
+            RefreshAction,
+            FilterAction,
+            ImportAction,
+            ExportAction,
+            ConfigAction,
+            SortAction,
+            AuditLogGridToolbarAction
+        ]);
     }
-    
+
     [JsonConstructor]
     private GridToolbarActionList(List<BasicAction> list)
     {
         List = list;
-        
-        EnsureActionExists<InsertAction>();
-        EnsureActionExists<LegendAction>();
-        EnsureActionExists<RefreshAction>();
-        EnsureActionExists<FilterAction>();
-        EnsureActionExists<ImportAction>();
-        EnsureActionExists<ExportAction>();
-        EnsureActionExists<ConfigAction>();
-        EnsureActionExists<SortAction>();
-        EnsureActionExists<AuditLogGridToolbarAction>();
+
+        InsertAction = EnsureActionExists<InsertAction>();
+        LegendAction = EnsureActionExists<LegendAction>();
+        RefreshAction = EnsureActionExists<RefreshAction>();
+        FilterAction = EnsureActionExists<FilterAction>();
+        ImportAction = EnsureActionExists<ImportAction>();
+        ExportAction = EnsureActionExists<ExportAction>();
+        ConfigAction = EnsureActionExists<ConfigAction>();
+        SortAction = EnsureActionExists<SortAction>();
+        AuditLogGridToolbarAction = EnsureActionExists<AuditLogGridToolbarAction>();
     }
 
     public GridToolbarActionList DeepCopy()
     {
-        return new GridToolbarActionList(List.ConvertAll(a=>a.DeepCopy()));
+        return new GridToolbarActionList(List.ConvertAll(a => a.DeepCopy()));
     }
 }

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextFile(IHttpRequest request,
+public sealed class JJTextFile(IHttpRequest request,
         IComponentFactory componentFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEncryptionService encryptionService)
@@ -109,7 +109,7 @@ public class JJTextFile(IHttpRequest request,
         }
     }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         switch (RouteContext.ComponentContext)
         {
@@ -179,7 +179,7 @@ public class JJTextFile(IHttpRequest request,
 
     private HtmlBuilder GetHiddenInputHtml()
     {
-        var input = new Input();
+        var input = new HtmlBuilder(HtmlTag.Input);
         input.WithAttribute("type", "hidden")
             .WithNameAndId(Name)
             .WithAttribute("value", GetFileName());
@@ -201,7 +201,7 @@ public class JJTextFile(IHttpRequest request,
     }
     private bool HasPk()
     {
-        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var pkFields = FormElement.Fields.FindAll(x => x.IsPk);
         if (pkFields.Count == 0)
             return false;
 

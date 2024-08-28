@@ -39,12 +39,41 @@ class ActionHelper {
                 urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
                 postFormValues({
                     url: urlBuilder.build(), success: data => {
-                        TooltipHelper.dispose("#" + componentName);
-                        HTMLHelper.setOuterHTML(componentName, data);
-                        listenAllEvents("#" + componentName);
+                        if (data) {
+                            TooltipHelper.dispose("#" + componentName);
+                            HTMLHelper.setOuterHTML(componentName, data);
+                            listenAllEvents("#" + componentName);
+                        }
+                        else {
+                            SpinnerOverlay.show();
+                        }
                     }
                 });
             }
+        });
+    }
+    static executeHTMLTemplate(componentName, title, encryptedActionMap, encryptedRouteContext, confirmMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (confirmMessage) {
+                const result = yield showConfirmationMessage(confirmMessage);
+                if (!result) {
+                    return false;
+                }
+            }
+            const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
+            const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
+            if (gridViewActionInput) {
+                gridViewActionInput.value = encryptedActionMap;
+            }
+            if (formViewActionInput) {
+                formViewActionInput.value = encryptedActionMap;
+            }
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+            defaultModal.showUrl({
+                url: urlBuilder.build(),
+                requestOptions: { method: "POST", body: new FormData(getMasterDataForm()) }
+            }, title, ModalSize.Default);
         });
     }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
@@ -741,7 +770,7 @@ class DataImportationHelper {
             target.append(spinnerDiv);
         }
     }
-    static checkProgress(componentName, importationRouteContext, gridRouteContext, intervalId) {
+    static checkProgress(componentName, importationRouteContext, intervalId) {
         showSpinnerOnPost = false;
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
@@ -831,8 +860,10 @@ class DataImportationHelper {
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
+                        DataImportationModal.getInstance().modalElement.addEventListener('hidden.bs.modal', _ => {
+                            getMasterDataForm().submit();
+                        });
                         document.querySelector("#" + componentName).innerHTML = html;
-                        GridViewHelper.refreshGrid(componentName.replace("-importation", String()), gridRouteContext);
                     }
                 });
             }
@@ -841,7 +872,7 @@ class DataImportationHelper {
             console.error('Error fetching data:', error);
         });
     }
-    static show(componentName, modalTitle, routeContext, gridRouteContext) {
+    static show(componentName, modalTitle, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         const requestOptions = getRequestOptions();
@@ -849,16 +880,16 @@ class DataImportationHelper {
             url: urlBuilder.build(),
             requestOptions: requestOptions
         }, modalTitle, ModalSize.ExtraLarge).then(_ => {
-            DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+            DataImportationHelper.addPasteListener(componentName, routeContext);
             UploadAreaListener.listenFileUpload();
         });
     }
-    static back(componentName, routeContext, gridRouteContext) {
+    static back(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         postFormValues({ url: urlBuilder.build(), success: html => {
                 document.querySelector("#" + componentName).innerHTML = html;
-                DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+                DataImportationHelper.addPasteListener(componentName, routeContext);
                 UploadAreaListener.listenFileUpload();
             } });
     }
@@ -873,10 +904,10 @@ class DataImportationHelper {
             }
         });
     }
-    static startProgressVerification(componentName, routeContext, gridRouteContext) {
+    static startProgressVerification(componentName, routeContext) {
         DataImportationHelper.setSpinner();
         let intervalId = setInterval(function () {
-            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext, intervalId);
+            DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
         }, 3000);
     }
     static help(componentName, routeContext) {
@@ -903,7 +934,7 @@ class DataImportationHelper {
             }
         });
     }
-    static addPasteListener(componentName, routeContext, gridRouteContext) {
+    static addPasteListener(componentName, routeContext) {
         DataImportationHelper.pasteEventListener = function onPaste(e) {
             DataImportationHelper.removePasteListener();
             let pastedText = undefined;
@@ -923,7 +954,7 @@ class DataImportationHelper {
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector("#" + componentName).innerHTML = html;
-                        DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
+                        DataImportationHelper.startProgressVerification(componentName, routeContext);
                     }
                 });
             }
@@ -939,7 +970,7 @@ class DataImportationHelper {
             url: urlBuilder.build(),
             success: html => {
                 document.querySelector("#" + componentName).innerHTML = html;
-                DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
+                DataImportationHelper.startProgressVerification(componentName, routeContext);
             }
         });
     }
@@ -2192,6 +2223,7 @@ function postFormValues(options) {
         }
         else if (response.redirected) {
             window.location.href = response.url;
+            return null;
         }
         else if (response.status == 440 || response.status == 403 || response.status == 401) {
             getMasterDataForm().submit();
@@ -2226,7 +2258,7 @@ class SearchBoxListener {
             if (triggerLength == null)
                 triggerLength = "1";
             if (numberOfItems == null)
-                numberOfItems = "10";
+                numberOfItems = "30";
             const urlBuilder = new UrlBuilder();
             for (const pair of queryString.split("&")) {
                 const [key, value] = pair.split("=");
@@ -2805,8 +2837,16 @@ var jjutil = (function () {
         }
     };
 })();
-function requestSubmitParentWindow() {
-    window.parent.getMasterDataForm().requestSubmit();
+function printTemplateIframe() {
+    const iframe = document.getElementById('jjmasterdata-template-iframe');
+    if (iframe) {
+        iframe.contentWindow.document.title = document.title;
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+function submitParentWindow() {
+    window.parent.getMasterDataForm().submit();
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function onDOMReady(callback) {

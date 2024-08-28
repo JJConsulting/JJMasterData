@@ -1,6 +1,4 @@
 using JJMasterData.Brasil.Services;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Brasil.Test;
 
@@ -14,7 +12,7 @@ public class ViaCepServiceTest
         const string expectedLogradouro = "Alameda Professor Lucas Nogueira Garcez";
 
         var httpClient = new HttpClient();
-        var viaCepService = new ViaCepService(httpClient, new MemoryCache(Options.Create(new MemoryCacheOptions())));
+        var viaCepService = new ViaCepService(httpClient);
 
         // Act
         var cepResult = await viaCepService.SearchCepAsync(expectedCep);

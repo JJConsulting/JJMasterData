@@ -15,7 +15,7 @@ public class JJBreadcrumb : HtmlComponent
 
     internal override HtmlBuilder BuildHtml()
     {
-        var html = new Div()
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
@@ -30,7 +30,7 @@ public class JJBreadcrumb : HtmlComponent
 
     private HtmlBuilder GetHtmlOlItems()
     {
-        var ol = new Ol();
+        var ol = new HtmlBuilder(HtmlTag.Ol);
         ol.WithCssClass("breadcrumb mb-0");
 
         var totalItems = Items.Count;
@@ -46,7 +46,7 @@ public class JJBreadcrumb : HtmlComponent
 
     private static HtmlBuilder GetHtmlItem(BreadcrumbItem item, bool isLast)
     {
-        var li = new Li();
+        var li = new HtmlBuilder(HtmlTag.Li);
         li.WithCssClass("breadcrumb-item");
         li.WithCssClassIf(isLast, "active");
         

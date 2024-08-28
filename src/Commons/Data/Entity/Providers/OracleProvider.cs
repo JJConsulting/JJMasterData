@@ -21,7 +21,7 @@ public class OracleProvider(
     private const string InsertKeyword = "I";
     private const string UpdateKeyword = "A";
     private const string DeleteKeyword = "E";
-    private const string Tab = "\t";
+    private const char Tab = '\t';
     public override string VariablePrefix => "p_";
 
     public override string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
@@ -53,15 +53,14 @@ public class OracleProvider(
 
             sqlScript.Append(Tab);
             sqlScript.Append(f.Name);
-            sqlScript.Append(" ");
+            sqlScript.Append(' ');
             sqlScript.Append(GetStrType(f.DataType));
 
-            if (f.DataType == FieldType.Varchar ||
-                f.DataType == FieldType.NVarchar)
+            if (f.DataType is FieldType.Varchar or FieldType.NVarchar)
             {
                 sqlScript.Append(" (");
                 sqlScript.Append(f.Size);
-                sqlScript.Append(")");
+                sqlScript.Append(')');
             }
 
             if (f.IsRequired)
@@ -70,10 +69,10 @@ public class OracleProvider(
             if (f.IsPk)
             {
                 if (sKeys.Length > 0)
-                    sKeys.Append(",");
+                    sKeys.Append(',');
 
                 sKeys.Append(f.Name);
-                sKeys.Append(" ");
+                sKeys.Append(' ');
             }
         }
 
@@ -85,7 +84,7 @@ public class OracleProvider(
             sqlScript.Append(element.TableName);
             sqlScript.Append(" PRIMARY KEY (");
             sqlScript.Append(sKeys);
-            sqlScript.Append(")");
+            sqlScript.Append(')');
         }
 
 
@@ -106,7 +105,7 @@ public class OracleProvider(
                 sqlScript.Append(index.IsClustered ? " CLUSTERED" : "");
                 sqlScript.Append(" INDEX IX_");
                 sqlScript.Append(element.TableName);
-                sqlScript.Append("_");
+                sqlScript.Append('_');
                 sqlScript.Append(nIndex);
                 sqlScript.Append(" ON ");
                 sqlScript.AppendLine(element.TableName);
@@ -194,9 +193,9 @@ public class OracleProvider(
                     if (rc > 0)
                         sql.Append(", ");
 
-                    sql.Append("[");
+                    sql.Append('[');
                     sql.Append(r.Columns[rc].FkColumn);
-                    sql.Append("]");
+                    sql.Append(']');
                 }
                 sql.AppendLine(")");
                 sql.Append(Tab);
@@ -210,7 +209,7 @@ public class OracleProvider(
 
                     sql.Append(r.Columns[rc].PkColumn);
                 }
-                sql.Append(")");
+                sql.Append(')');
 
                 if (r.UpdateOnCascade)
                 {
@@ -298,15 +297,14 @@ public class OracleProvider(
                 if (f.IsPk)
                 {
                     sql.AppendLine("");
+                    sql.Append(Tab).Append(Tab);
                     if (isFirst)
                     {
-                        sql.Append(Tab).Append(Tab);
                         sql.Append("WHERE ");
                         isFirst = false;
                     }
                     else
                     {
-                        sql.Append(Tab).Append(Tab);
                         sql.Append("AND ");
                     }
 
@@ -376,11 +374,11 @@ public class OracleProvider(
 
         //SCRIPT UPDATE
         isFirst = true;
+        sql.Append(Tab);
+        sql.AppendLine($"ELSIF v_TYPEACTION = '{UpdateKeyword}' THEN ");
+        sql.Append(Tab).Append(Tab);
         if (hasUpd)
         {
-            sql.Append(Tab);
-            sql.AppendLine($"ELSIF v_TYPEACTION = '{UpdateKeyword}' THEN ");
-            sql.Append(Tab).Append(Tab);
             sql.Append("UPDATE ");
             sql.Append(element.TableName);
             sql.AppendLine(" SET ");
@@ -407,15 +405,14 @@ public class OracleProvider(
                 if (f.IsPk)
                 {
                     sql.AppendLine("");
+                    sql.Append(Tab).Append(Tab);
                     if (isFirst)
                     {
-                        sql.Append(Tab).Append(Tab);
                         sql.Append("WHERE ");
                         isFirst = false;
                     }
                     else
                     {
-                        sql.Append(Tab).Append(Tab);
                         sql.Append("AND ");
                     }
 
@@ -426,20 +423,15 @@ public class OracleProvider(
                 }
             }
             sql.AppendLine(";");
-            sql.Append(Tab).Append(Tab);
-            sql.Append(VariablePrefix);
-            sql.AppendLine("RET := 1; ");
         }
         else
         {
-            sql.Append(Tab);
-            sql.AppendLine($"ELSIF v_TYPEACTION = '{UpdateKeyword}' THEN ");
-            sql.Append(Tab).Append(Tab);
             sql.AppendLine("--NO UPDATABLED");
-            sql.Append(Tab).Append(Tab);
-            sql.Append(VariablePrefix);
-            sql.AppendLine("RET := 1; ");
         }
+
+        sql.Append(Tab).Append(Tab);
+        sql.Append(VariablePrefix);
+        sql.AppendLine("RET := 1; ");
 
         //SCRIPT DELETE
         sql.Append(Tab);
@@ -454,15 +446,14 @@ public class OracleProvider(
             if (f.IsPk)
             {
                 sql.AppendLine("");
+                sql.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
-                    sql.Append(Tab).Append(Tab);
                     sql.Append("WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sql.Append(Tab).Append(Tab);
                     sql.Append("AND ");
                 }
 
@@ -531,7 +522,7 @@ public class OracleProvider(
             {
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
-                sql.Append(" ");
+                sql.Append(' ');
                 sql.Append(GetStrType(f.DataType));
                 sql.AppendLine(", ");
             }
@@ -827,7 +818,7 @@ public class OracleProvider(
             Type = CommandType.StoredProcedure
         };
         cmd.Sql = Options.GetWriteProcedureName(element);
-        cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.String, 1));
+        cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.AnsiString, 1));
 
         var fields = element.Fields
             .ToList()
@@ -914,8 +905,7 @@ public class OracleProvider(
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
                 object? value = DBNull.Value;
-                if (filters != null &&
-                    filters.ContainsKey(field.Name) &&
+                if (filters?.ContainsKey(field.Name) == true &&
                     filters[field.Name] != null)
                 {
                     value = filters[field.Name];
@@ -977,7 +967,7 @@ public class OracleProvider(
 
     private static DbType GetDbType(FieldType dataType)
     {
-        var t = DbType.String;
+        var t = DbType.AnsiString;
         switch (dataType)
         {
             case FieldType.Date:

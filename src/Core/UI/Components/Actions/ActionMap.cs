@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -48,9 +47,9 @@ public class ActionMap
             if (!f.IsPk) 
                 continue;
             
-            if (row.ContainsKey(f.Name) && row[f.Name] != null)
+            if (row.TryGetValue(f.Name, out var value) && value != null)
             {
-                PkFieldValues.Add(f.Name, row[f.Name].ToString()!);
+                PkFieldValues.Add(f.Name, value.ToString()!);
             }
         }
     }
@@ -64,13 +63,13 @@ public class ActionMap
     {
         var action = ActionSource switch
         {
-            ActionSource.GridTable => formElement.Options.GridTableActions.GetOrDefault(ActionName),
-            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetOrDefault(ActionName),
-            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetOrDefault(ActionName),
-            ActionSource.Field => formElement.Fields[FieldName!].Actions.GetOrDefault(ActionName),
+            ActionSource.GridTable => formElement.Options.GridTableActions.GetOrDefault<TAction>(ActionName),
+            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetOrDefault<TAction>(ActionName),
+            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetOrDefault<TAction>(ActionName),
+            ActionSource.Field => formElement.Fields[FieldName!].Actions.GetOrDefault<TAction>(ActionName),
             _ => throw new JJMasterDataException("Invalid ActionSource")
         };
 
-        return action as TAction;
+        return action;
     }
 }

@@ -4,7 +4,7 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTable(JJGridView gridView)
+internal sealed class GridTable(JJGridView gridView)
 {
     internal GridSettings Settings { get; } = gridView.CurrentSettings;
 
@@ -12,11 +12,11 @@ internal class GridTable(JJGridView gridView)
 
     internal GridTableBody Body { get; } = new(gridView);
 
-    public async Task<HtmlBuilder> GetHtmlBuilder()
+    public async ValueTask<HtmlBuilder> GetHtmlBuilder()
     {
-        var div = new Div();
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("pt-1");
-        div.WithCssClassIf(Settings.IsResponsive && !Settings.IsHeaderFixed,  "table-responsive");
+        div.WithCssClassIf(Settings is { IsResponsive: true, IsHeaderFixed: false },  "table-responsive");
         
         var table = new HtmlBuilder(HtmlTag.Table);
         table.WithCssClass("table");

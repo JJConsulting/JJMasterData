@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Localization;
@@ -14,12 +15,15 @@ public static class StringManager
 {
     public static bool ParseBool(object? value)
     {
+        return ParseBool(value?.ToString());
+    }
+    
+    public static bool ParseBool(string? value)
+    {
         if (value == null)
             return false;
-
-        var stringValue = value.ToString()?.ToLower();
         
-        return stringValue switch
+        return value.ToLowerInvariant() switch
         {
             "true" => true,
             "1" => true,
@@ -529,7 +533,7 @@ public static class StringManager
         };
 #else
         if (!string.IsNullOrEmpty(input))
-            return input.First().ToString().ToUpper() + input[1..].ToLower();
+            return input[0].ToString().ToUpper() + input[1..].ToLower();
         return input;
 #endif
 

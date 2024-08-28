@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Commons.Logging.Db;
 
 [ProviderAlias(ProviderName)]
-internal class DbLoggerProvider(DbLoggerBuffer buffer) : ILoggerProvider
+internal sealed class DbLoggerProvider(DbLoggerBuffer buffer) : ILoggerProvider
 {
     private const string ProviderName = "Database";
 

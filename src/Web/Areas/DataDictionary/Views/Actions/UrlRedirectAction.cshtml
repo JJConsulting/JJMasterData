@@ -8,12 +8,18 @@
 }
 
 @using (Html.BeginMasterDataForm("UrlRedirectAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
+            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
 {
     <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-        <li id="navUrlAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">@StringLocalizer["Url Action"]</a></li>
-        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
+        <li id="nav-general" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li id="navUrlAction" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">@StringLocalizer["Url Redirect"]</a>
+        </li>
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
     </ul>
 
     <div class="tab-content" style="margin-top: 1.25rem;">
@@ -24,37 +30,40 @@
         <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["This field support runtime values using expressions."]">@StringLocalizer["Url Redirect"]</label>
-                    @Html.TextBoxFor(model => model.UrlRedirect, new { @class = "form-control" })
+                    <label asp-for="UrlRedirect" class="form-label"></label>
+                    <tooltip title="@StringLocalizer["This field support runtime values between {}. Use {AppPath} for the base path of the application."]"/>
+                    <input asp-for="UrlRedirect" class="form-control font-monospace"/>
                 </div>
 
-                <div class="@BootstrapHelper.FormGroup col-sm-1">
-                    <checkbox for="IsModal" switch="true" />
-                </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-8">
-                    <label class="@BootstrapHelper.Label" >@StringLocalizer["Modal Title"]</label>
-                    <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
-                    @Html.TextBoxFor(model => model.ModalTitle, new { @class = "form-control" })
-                </div>
-                
-                
-                <div class="@BootstrapHelper.FormGroup col-sm-1">
-                    <checkbox tooltip="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]" for="IsIframe" switch="true" />
-                </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label " asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
-                    <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
-                </div>
 
             </div>
+
+            <collapse-panel title="@StringLocalizer["Modal"]" icon="SolidWindowMaximize" expanded-by-default="false">
+                <div class="row">
+                    <div class="mb-3 col-sm-6">
+                        <checkbox for="IsModal" switch="true"/>
+                    </div>
+                    <div class="mb-3 col-sm-6">
+                        <checkbox tooltip="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]" for="IsIframe" switch="true"/>
+                    </div>
+                    <div class="mb-3 col-sm-6">
+                        <label class="form-label" asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
+                        <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
+                    </div>
+                    <div class="mb-3 col-sm-6">
+                        <label class="form-label" asp-for="ModalTitle"></label>
+                        <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
+                        <input asp-for="ModalTitle" class="form-control"/>
+                    </div>
+                </div>
+            </collapse-panel>
+
         </div>
 
         <div id="div-advanced" class="tab-pane fade">
-            @await Html.PartialAsync("_NavAdvanced", Model)
+            <partial name="_NavAdvanced" model="Model"/>
         </div>
     </div>
 
-    @await Html.PartialAsync("_Toolbar")
+    <partial name="_Toolbar" model="Model"/>
 }

@@ -7,7 +7,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Events.Args;
@@ -25,20 +24,7 @@ public class FormService(
     IStringLocalizer<MasterDataResources> localizer,
     ILogger<FormService> logger)
 {
-    #region Properties
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private FormFileService FormFileService { get; } = formFileService;
-
-    private FieldValidationService FieldValidationService { get; } = fieldValidationService;
-
-    private AuditLogService AuditLogService { get; } = auditLogService;
-    private IStringLocalizer<MasterDataResources> Localizer { get; } = localizer;
-    private ILogger<FormService> Logger { get; } = logger;
-    
-    #endregion
-
     #region Events
-    
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeDeleteAsync;
     public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeInsertAsync;
@@ -46,9 +32,7 @@ public class FormService(
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeUpdateAsync;
     public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
-
     #endregion
-
     #region Methods
 
     /// <summary>
@@ -60,7 +44,7 @@ public class FormService(
     public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
     {
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors =  FieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
+        var errors =  fieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdateAsync != null)
@@ -72,16 +56,16 @@ public class FormService(
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = 0;
+        var rowsAffected = 0;
 
         try
         {
-            rowsAffected = await EntityRepository.UpdateAsync(formElement, values);
+            rowsAffected = await entityRepository.UpdateAsync(formElement, values);
         }
         catch (Exception e)
         {
-            Logger.LogFormServiceError(e,  nameof(UpdateAsync));
-            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
+            logger.LogFormServiceError(e,  nameof(UpdateAsync));
+            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
         result.NumberOfRowsAffected = rowsAffected;
@@ -90,10 +74,10 @@ public class FormService(
             return result;
 
         if (dataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(formElement, values);
+            formFileService.SaveFormMemoryFiles(formElement, values);
 
         if (formElement.Options.EnableAuditLog)
-            await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
+            await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
         
         if (OnAfterUpdateAsync != null)
         {
@@ -110,7 +94,7 @@ public class FormService(
         var isForm = dataContext.Source is DataContextSource.Form;
         Dictionary<string, string> errors;
         if (validateFields)
-            errors = FieldValidationService.ValidateFields(formElement, values, PageState.Insert, isForm);
+            errors = fieldValidationService.ValidateFields(formElement, values, PageState.Insert, isForm);
         else
             errors = new Dictionary<string, string>();
 
@@ -127,22 +111,22 @@ public class FormService(
 
         try
         {
-            await EntityRepository.InsertAsync(formElement, values);
+            await entityRepository.InsertAsync(formElement, values);
         }
         catch (Exception e)
         {
-            Logger.LogFormServiceError(e,  nameof(InsertAsync));
-            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
+            logger.LogFormServiceError(e,  nameof(InsertAsync));
+            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
         if (errors.Count > 0)
             return result;
 
         if (dataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(formElement, values);
+            formFileService.SaveFormMemoryFiles(formElement, values);
 
         if (formElement.Options.EnableAuditLog)
-            await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
+            await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
         
         if (OnAfterInsertAsync != null)
         {
@@ -163,7 +147,7 @@ public class FormService(
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
     {
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors = FieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
+        var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImportAsync != null)
@@ -178,20 +162,22 @@ public class FormService(
         
         try
         {
-            result.Result = await EntityRepository.SetValuesAsync(formElement, values);
+            result.Result = await entityRepository.SetValuesAsync(formElement, values);
         }
         catch (Exception e)
         {
-            Logger.LogFormServiceError(e,  nameof(InsertOrReplaceAsync));
-            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
+            logger.LogFormServiceError(e,  nameof(InsertOrReplaceAsync));
+            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
         if (errors.Count > 0)
             return result;
 
         if (formElement.Options.EnableAuditLog)
-            await AuditLogService.LogAsync(formElement, dataContext, values, result.Result);
+            await auditLogService.LogAsync(formElement, dataContext, values, result.Result);
 
+        if (dataContext.Source == DataContextSource.Form)
+            formFileService.SaveFormMemoryFiles(formElement, values);
         
         if (result.Result == CommandOperation.Insert && OnAfterInsertAsync != null)
         {
@@ -241,23 +227,23 @@ public class FormService(
 
         try
         {
-            int rowsAffected = await EntityRepository.DeleteAsync(formElement, primaryKeys);
+            int rowsAffected = await entityRepository.DeleteAsync(formElement, primaryKeys);
             result.NumberOfRowsAffected = rowsAffected;
         }
         catch (Exception e)
         {
-            Logger.LogFormServiceError(e,  nameof(DeleteAsync));
-            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
+            logger.LogFormServiceError(e,  nameof(DeleteAsync));
+            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
         if (errors.Count > 0)
             return result;
 
         if (dataContext.Source == DataContextSource.Form)
-            FormFileService.DeleteFiles(formElement, primaryKeys);
+            formFileService.DeleteFiles(formElement, primaryKeys);
 
         if (formElement.Options.EnableAuditLog)
-            await AuditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
+            await auditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDeleteAsync != null)
         {

@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -7,9 +8,12 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public sealed class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExpressionProvider
 {
-    public string Prefix => "val";
+    public const string Prefix = "val";
+    
+    public Guid? ConnectionId { get; set; }
+    
+    string IExpressionProvider.Prefix => Prefix;
     public string Title => "Value";
-
     public object Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         if (expression.Contains(ExpressionHelper.Begin.ToString()))
@@ -18,6 +22,6 @@ public sealed class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExp
         return expression.Trim();
     }
 
-    public Task<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
-        => Task.FromResult<object?>(Evaluate(expression, parsedValues));
+    public ValueTask<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
+        => new(Evaluate(expression, parsedValues));
 }

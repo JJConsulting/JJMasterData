@@ -32,7 +32,7 @@ public class AgendamentoStatusFormEventHandler : FormEventHandlerBase
     private const string IconeFieldName = "Icone";
     public override string ElementName => "AgendamentoStatus";
     
-    public override Task OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args)
+    public override ValueTask OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args)
     {
         var formElement = args.FormElement;
         var iconField = formElement.Fields[IconeFieldName];
@@ -54,7 +54,7 @@ public class AgendamentoStatusFormEventHandler : FormEventHandlerBase
             });
         }
         
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }
 ```

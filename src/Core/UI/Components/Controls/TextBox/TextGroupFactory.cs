@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -17,14 +18,10 @@ public class TextGroupFactory(
         ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>
 {
-    private IFormValues FormValues { get; } = formValues;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IComponentFactory<JJLinkButtonGroup> LinkButtonGroupFactory { get; } = linkButtonGroupFactory;
-    private ActionButtonFactory ActionButtonFactory { get; } = actionButtonFactory;
     
     public JJTextGroup Create()
     {
-        return new JJTextGroup(LinkButtonGroupFactory,FormValues);
+        return new JJTextGroup(linkButtonGroupFactory,formValues);
     }
     
     public JJTextGroup Create(FormElementField field, object value)
@@ -33,7 +30,7 @@ public class TextGroupFactory(
 
         if (field.Component == FormComponent.Currency)
         {
-            value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
+            value = value?.ToString()?.Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
         }
         
         textGroup.Text = value?.ToString() ?? string.Empty;
@@ -76,11 +73,10 @@ public class TextGroupFactory(
                 FormElement = formElement,
                 FormStateData = controlContext.FormStateData,
                 FieldName = field.Name,
-                IsSubmit = action is ISubmittableAction { IsSubmit: true },
                 ParentComponentName = controlContext.ParentComponentName
             };
 
-            var link = ActionButtonFactory.CreateFieldButton(action,actionContext);
+            var link = actionButtonFactory.CreateFieldButton(action,actionContext);
             
             textGroup.Actions.Add(link);
         }
@@ -103,7 +99,7 @@ public class TextGroupFactory(
 
     public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup(LinkButtonGroupFactory,FormValues);
+        var textGroup = new JJTextGroup(linkButtonGroupFactory,formValues);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }
@@ -196,8 +192,10 @@ public class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 5;
                 textGroup.GroupCssClass = "flatpickr date jjform-hour";
-                // textGroup.SetAttr("data-inputmask",
-                //     $"'alias': 'datetime','inputFormat': '[{Format.TimeFormat.ToLower()}]', 'displayFormat': '[{Format.TimeFormat.ToLower()}]','placeholder':''");
+                textGroup.SetAttr("data-inputmask-alias", "datetime");
+                textGroup.SetAttr("data-inputmask-inputFormat", "HH:M");
+                textGroup.SetAttr("data-inputmask-displayFormat","HH:M");
+                textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
             case FormComponent.Date:
@@ -205,8 +203,10 @@ public class TextGroupFactory(
                 textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
-                // textGroup.SetAttr("data-inputmask",
-                //     $"'alias': 'datetime','inputFormat': '[{Format.DateFormat.ToLower()}]','displayFormat': '[{Format.DateFormat.ToLower()}]',  'placeholder':''");
+                textGroup.SetAttr("data-inputmask-alias", "datetime");
+                textGroup.SetAttr("data-inputmask-inputFormat", Format.DateFormat);
+                textGroup.SetAttr("data-inputmask-displayFormat", Format.DateFormat);
+                textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
             case FormComponent.DateTime:
@@ -214,8 +214,10 @@ public class TextGroupFactory(
                 textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
-                // textGroup.SetAttr("data-inputmask",
-                //     $"'alias': 'datetime','inputFormat': '[{Format.DateTimeFormat.ToLower()}]','displayFormat': '[{Format.DateTimeFormat.ToLower()}]', 'placeholder':''");
+                textGroup.SetAttr("data-inputmask-alias", "datetime");
+                textGroup.SetAttr("data-inputmask-inputFormat", $"{Format.DateFormat} HH:M");
+                textGroup.SetAttr("data-inputmask-displayFormat", $"{Format.DateFormat} HH:M");
+                textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
             default:
@@ -228,9 +230,9 @@ public class TextGroupFactory(
 
     private JJLinkButton GetDateAction(FormComponent component, bool isEnabled)
     {
-        var btn = ActionButtonFactory.Create();
-        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : $"fa fa-{BootstrapHelper.DateIcon}";
-        btn.Tooltip = component is FormComponent.Hour ? StringLocalizer["Clock"] : StringLocalizer["Calendar"];
+        var btn = actionButtonFactory.Create();
+        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : "fa fa-calendar";
+        btn.Tooltip = component is FormComponent.Hour ? stringLocalizer["Clock"] : stringLocalizer["Calendar"];
         btn.Enabled = isEnabled;
         btn.SetAttr("data-toggle", "date");
         btn.SetAttr("tabindex", "-1");

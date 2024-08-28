@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
@@ -37,7 +36,7 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
         }
     }
     
-    public virtual IEnumerable<PluginConfigurationField> ConfigurationFields
+    public IEnumerable<PluginConfigurationField> ConfigurationFields
     {
         get
         {
@@ -63,34 +62,31 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
         }
     }
 
-    public abstract HtmlBuilder? AdditionalInformationHtml { get; }
-
     private static void ClearFields(PluginFieldActionContext context)
     {
         foreach (var parameter in context.FieldMap)
+        {
             context.Values[parameter.Value] = null;
+            context.SecretValues[parameter.Value] = null;
+        }
     }
 
     private PluginActionResult OnResultFound(PluginFieldActionContext context, Dictionary<string,object?> result)
     {
         foreach (var parameter in context.FieldMap)
         {
-            if (context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
-            {
-                var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
+            if (!context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
+                continue;
+            
+            var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
 
-                if (!isEnabled)
-                {
-                    field.SetEnabled(true);
-                    field.SetReadOnly(true);
-                }
-            }
+            if (!isEnabled)
+                context.SecretValues[parameter.Value] = result[parameter.Key];
+
+            context.Values[parameter.Value] = result[parameter.Key];
         }
 
         result[IsResultValidKey] = true;
-        
-        foreach (var parameter in context.FieldMap)
-            context.Values[parameter.Value] = result[parameter.Key];
         
         return PluginActionResult.Success();
     }

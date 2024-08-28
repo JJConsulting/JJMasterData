@@ -1,27 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 
 public class UrlRedirectService(
+    IHttpRequest httpRequest,
     IEntityRepository entityRepository,
     FormValuesService formValuesService,
     ExpressionsService expressionsService)
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private FormValuesService FormValuesService { get; } = formValuesService;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    
     public async Task<JsonComponentResult> GetUrlRedirectResult(
         JJDataPanel dataPanel,
         ActionMap actionMap)
@@ -30,16 +27,16 @@ public class UrlRedirectService(
 
         Dictionary<string,object> dbValues;
 
-        if (actionMap.PkFieldValues.Any())
+        if (actionMap.PkFieldValues.Count > 0)
         {
-            dbValues = await EntityRepository.GetFieldsAsync(dataPanel.FormElement, actionMap.PkFieldValues);
+            dbValues = await entityRepository.GetFieldsAsync(dataPanel.FormElement, actionMap.PkFieldValues);
         }
         else
         {
             dbValues = new Dictionary<string, object>();
         }
            
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(dataPanel.FormElement,new FormStateData(dbValues,dataPanel.UserValues,dataPanel.PageState), true, dataPanel.FieldNamePrefix);
+        var values = await formValuesService.GetFormValuesWithMergedValuesAsync(dataPanel.FormElement,new FormStateData(dbValues,dataPanel.UserValues,dataPanel.PageState), true, dataPanel.FieldNamePrefix);
         
         DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
         
@@ -52,7 +49,7 @@ public class UrlRedirectService(
     {
         var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(gridView.FormElement);
 
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(gridView.FormElement,new FormStateData(new Dictionary<string, object>(),gridView.UserValues,PageState.List), true);
+        var values = await formValuesService.GetFormValuesWithMergedValuesAsync(gridView.FormElement,new FormStateData(new Dictionary<string, object>(),gridView.UserValues,PageState.List), true);
         
         DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
         
@@ -62,8 +59,8 @@ public class UrlRedirectService(
     private JsonComponentResult GetJsonResult(Dictionary<string, object> values, UrlRedirectAction action)
     {
         var formStateData = new FormStateData(values, PageState.List);
-        var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(System.Web.HttpUtility.UrlDecode(action.UrlRedirect), formStateData, action.EncryptParameters);
-        var parsedTitle =  ExpressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
+        var parsedUrl = GetParsedUrl(action, formStateData);
+        var parsedTitle =  expressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
         
         var model = new UrlRedirectModel
         {
@@ -75,5 +72,16 @@ public class UrlRedirectService(
         };
         
         return new JsonComponentResult(model);
+    }
+
+    public string GetParsedUrl(UrlRedirectAction action, FormStateData formStateData)
+    {
+        var formStateDataCopy = formStateData.DeepCopy();
+        
+        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationPath);
+        
+        var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
+        
+        return expressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateDataCopy, action.EncryptParameters);
     }
 }

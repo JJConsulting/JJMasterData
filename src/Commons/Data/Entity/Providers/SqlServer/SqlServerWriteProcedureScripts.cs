@@ -45,20 +45,19 @@ public class SqlServerWriteProcedureScripts(
         sql.AppendLine("@action varchar(1), ");
 
         var fields = element.Fields
-            .Where(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly)
-            .ToList();
+            .FindAll(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly);
 
         foreach (var field in fields)
         {
-            sql.Append("@");
+            sql.Append('@');
             sql.Append(field.Name);
-            sql.Append(" ");
+            sql.Append(' ');
             sql.Append(field.DataType);
             if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
             {
-                sql.Append("(");
+                sql.Append('(');
                 sql.Append(field.Size == -1 ? "MAX" : field.Size);
-                sql.Append(")");
+                sql.Append(')');
             }
 
             if (!field.IsRequired)
@@ -112,15 +111,14 @@ public class SqlServerWriteProcedureScripts(
 
             foreach (var f in pks)
             {
+                sql.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
-                    sql.Append(Tab).Append(Tab);
                     sql.Append("WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sql.Append(Tab).Append(Tab);
                     sql.Append("AND ");
                 }
 
@@ -173,7 +171,7 @@ public class SqlServerWriteProcedureScripts(
 
         var autonumericFields = pks.FindAll(x => x.AutoNum);
 
-        if (autonumericFields.Any())
+        if (autonumericFields.Count > 0)
         {
             sql.Append(Tab, 2);
             sql.Append("OUTPUT ");
@@ -185,7 +183,7 @@ public class SqlServerWriteProcedureScripts(
 
             if (i > 0)
             {
-                sql.Append(",");
+                sql.Append(',');
             }
 
             sql.Append("Inserted." + fieldName);
@@ -204,7 +202,7 @@ public class SqlServerWriteProcedureScripts(
                 sql.AppendLine(",");
 
             sql.Append(Tab).Append(Tab).Append(Tab);
-            sql.Append("@");
+            sql.Append('@');
             sql.Append(f.Name);
         }
 
@@ -216,13 +214,13 @@ public class SqlServerWriteProcedureScripts(
         sql.AppendLine("END ");
 
         //Update Script
+        sql.Append(Tab);
+        sql.AppendLine($"ELSE IF @TYPEACTION = '{UpdateInitial}' ");
+        sql.Append(Tab);
+        sql.AppendLine("BEGIN ");
+        sql.Append(Tab).Append(Tab);
         if (updateScript)
         {
-            sql.Append(Tab);
-            sql.AppendLine($"ELSE IF @TYPEACTION = '{UpdateInitial}' ");
-            sql.Append(Tab);
-            sql.AppendLine("BEGIN ");
-            sql.Append(Tab).Append(Tab);
             sql.Append("UPDATE [");
             sql.Append(element.TableName);
             sql.AppendLine("] SET ");
@@ -246,15 +244,14 @@ public class SqlServerWriteProcedureScripts(
             isFirst = true;
             foreach (var f in fields.Where(f => f.IsPk))
             {
+                sql.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
-                    sql.Append(Tab).Append(Tab);
                     sql.Append("WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sql.Append(Tab).Append(Tab);
                     sql.Append("AND ");
                 }
 
@@ -262,25 +259,16 @@ public class SqlServerWriteProcedureScripts(
                 sql.Append(" = @");
                 sql.AppendLine(f.Name);
             }
-
-            sql.Append(Tab).Append(Tab);
-            sql.AppendLine("SET @RET = 1; ");
-            sql.Append(Tab);
-            sql.AppendLine("END ");
         }
         else
         {
-            sql.Append(Tab);
-            sql.AppendLine($"ELSE IF @TYPEACTION = '{UpdateInitial}' ");
-            sql.Append(Tab);
-            sql.AppendLine("BEGIN ");
-            sql.Append(Tab).Append(Tab);
             sql.AppendLine("--NO UPDATABLED");
-            sql.Append(Tab).Append(Tab);
-            sql.AppendLine("SET @RET = 1; ");
-            sql.Append(Tab);
-            sql.AppendLine("END ");
         }
+
+        sql.Append(Tab).Append(Tab);
+        sql.AppendLine("SET @RET = 1; ");
+        sql.Append(Tab);
+        sql.AppendLine("END ");
 
         //Delete Script
         sql.Append(Tab);
@@ -295,15 +283,14 @@ public class SqlServerWriteProcedureScripts(
         isFirst = true;
         foreach (var field in fields.Where(f => f.IsPk && f.EnableOnDelete))
         {
+            sql.Append(Tab).Append(Tab);
             if (isFirst)
             {
-                sql.Append(Tab).Append(Tab);
                 sql.Append("WHERE ");
                 isFirst = false;
             }
             else
             {
-                sql.Append(Tab).Append(Tab);
                 sql.Append("AND ");
             }
 

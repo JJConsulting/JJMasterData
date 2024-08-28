@@ -48,7 +48,7 @@
         }
     }
 
-    private static checkProgress(componentName, importationRouteContext, gridRouteContext, intervalId: number) {
+    private static checkProgress(componentName, importationRouteContext, intervalId: number) {
         showSpinnerOnPost = false;
 
         const urlBuilder = new UrlBuilder()
@@ -147,10 +147,14 @@
 
                     postFormValues({
                         url: urlBuilder.build(), success: html => {
+                            DataImportationModal.getInstance().modalElement.addEventListener('hidden.bs.modal', _ => {
+                                getMasterDataForm().submit();
+                            });
                             document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
-                            GridViewHelper.refreshGrid(componentName.replace("-importation",String()), gridRouteContext)
                         }
                     })
+
+          
                 }
             })
             .catch(error => {
@@ -158,7 +162,7 @@
             });
     }
 
-    static show(componentName: string, modalTitle: string, routeContext: string, gridRouteContext: string) {
+    static show(componentName: string, modalTitle: string, routeContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         const requestOptions = getRequestOptions();
@@ -167,17 +171,17 @@
             url: urlBuilder.build(),
             requestOptions: requestOptions
         }, modalTitle, ModalSize.ExtraLarge).then(_ => {
-            DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+            DataImportationHelper.addPasteListener(componentName, routeContext);
             UploadAreaListener.listenFileUpload()
         })
     }
     
-    static back(componentName: string, routeContext: string, gridRouteContext: string){
+    static back(componentName: string, routeContext: string){
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         postFormValues({url:urlBuilder.build(), success: html => {
             document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
-            DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+            DataImportationHelper.addPasteListener(componentName, routeContext);
             UploadAreaListener.listenFileUpload()
         }})
     }
@@ -194,12 +198,12 @@
         })
     }
 
-    static startProgressVerification(componentName, routeContext, gridRouteContext) {
+    static startProgressVerification(componentName, routeContext) {
 
         DataImportationHelper.setSpinner();
 
         let intervalId = setInterval(function () {
-            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext, intervalId);
+            DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
         }, 3000);
 
     }
@@ -232,7 +236,7 @@
         });
     }
 
-    static addPasteListener(componentName: string, routeContext: string, gridRouteContext: string) {
+    static addPasteListener(componentName: string, routeContext: string) {
         DataImportationHelper.pasteEventListener = function onPaste(e) {
             DataImportationHelper.removePasteListener();
             let pastedText = undefined;
@@ -253,7 +257,7 @@
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
-                        DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
+                        DataImportationHelper.startProgressVerification(componentName, routeContext);
                     }
                 })
             }
@@ -272,7 +276,7 @@
             url: urlBuilder.build(),
             success: html => {
                 document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
-                DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext)
+                DataImportationHelper.startProgressVerification(componentName, routeContext)
             }
         })
     }

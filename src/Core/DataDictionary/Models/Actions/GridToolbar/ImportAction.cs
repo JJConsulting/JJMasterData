@@ -27,7 +27,7 @@ public sealed class ImportAction : GridToolbarAction
     }
     public override BasicAction DeepCopy()
     {
-        var newAction = (ImportAction)CopyAction();
+        var newAction = (ImportAction)MemberwiseClone();
         newAction.HelpText = HelpText;
         newAction.ProcessOptions = ProcessOptions.DeepCopy();
         return newAction;

@@ -16,7 +16,6 @@ using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
@@ -67,7 +66,6 @@ public class JJDataExportation : ProcessComponent
     internal JJDataExportation(
         FormElement formElement,
         ExpressionsService expressionsService,
-        FieldsService fieldsService,
         IOptionsSnapshot<MasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -76,7 +74,7 @@ public class JJDataExportation : ProcessComponent
         IHttpContext currentContext, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
+        base(currentContext, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         DataExportationWriterFactory = dataExportationWriterFactory;
         ComponentFactory = componentFactory;
@@ -119,7 +117,7 @@ public class JJDataExportation : ProcessComponent
         if (!reporter.HasError)
         {
             string url = GetDownloadUrl(reporter.FilePath);
-            var html = new Div();
+            var html = new HtmlBuilder(HtmlTag.Div);
 
             if (reporter.HasError)
             {

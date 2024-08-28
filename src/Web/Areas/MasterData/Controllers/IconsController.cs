@@ -5,7 +5,7 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class IconsController : MasterDataController
 {
-    public IActionResult Index(string inputId)
+    public PartialViewResult Index(string inputId)
     {
         return PartialView("_Icons", new IconViewModel{InputId = inputId});
     }

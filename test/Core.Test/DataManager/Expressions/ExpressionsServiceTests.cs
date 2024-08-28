@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -80,7 +79,7 @@ public class ExpressionsServiceTests
     public bool GetBoolValue_ShouldReturnBooleanValue()
     {
         // Arrange
-        var expression = "bool_example:sampleExpression";
+        const string expression = "bool_example:sampleExpression";
         var values = new Dictionary<string, object?>();
         
         var formStateData = new FormStateData(

@@ -13,7 +13,7 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Render panels with fields
 /// </summary>
-internal class DataPanelLayout(JJDataPanel dataPanel)
+internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 {
     private string Name { get; } = dataPanel.Name;
 
@@ -29,9 +29,11 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
     private ExpressionsService ExpressionsService { get; } = dataPanel.ExpressionsService;
     public async Task<List<HtmlBuilder>> GetHtmlPanelList()
     {
-        List<HtmlBuilder> panels = [];
+        List<HtmlBuilder> panels =
+        [
+            await GetTabPanelsHtml()
+        ];
 
-        panels.Add(await GetTabPanelsHtml());
         panels.AddRange(await GetNonTabPanels());
         panels.AddRange(await GetFieldsWithoutPanel());
 
@@ -66,8 +68,7 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
     private async Task<List<HtmlBuilder>> GetFieldsWithoutPanel()
     {
         List<HtmlBuilder> htmlList = [];
-        bool dontContainsVisibleFields = !FormElement.Fields.ToList()
-            .Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression, DataPanelControl.FormStateData));
+        bool dontContainsVisibleFields = !FormElement.Fields.Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression, DataPanelControl.FormStateData));
     
         if (dontContainsVisibleFields)
             return htmlList;

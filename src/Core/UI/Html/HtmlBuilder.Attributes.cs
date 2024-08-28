@@ -93,12 +93,12 @@ public partial class HtmlBuilder
     {
         if (classes == null || string.IsNullOrWhiteSpace(classes))
             return this;
-
-        if (!_attributes.ContainsKey("class"))
+        
+        if (!_attributes.TryGetValue("class", out var value))
             return WithAttribute("class", classes);
 
         var classList = new List<string>();
-        classList.AddRange(_attributes["class"].Split(' '));
+        classList.AddRange(value.Split(' '));
         
         foreach (var cssClass in classes.Split(' '))
         {

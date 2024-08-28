@@ -11,7 +11,7 @@
 @section Scripts{
     <script lang="javascript" type="text/javascript">
         function setupCodeMirror(){
-            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
+            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql",size: 320, hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
         }
         
         document.addEventListener("DOMContentLoaded",()=>{
@@ -51,8 +51,8 @@
         <li id="nav-general" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
-        <li id="navSqlCommand" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divSqlcommand">@StringLocalizer["Sql Command"]</a>
+        <li id="nav-sql-command" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-sql-command">@StringLocalizer["Sql Command"]</a>
         </li>
         <li id="nav-advanced" class="nav-item">
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
@@ -65,14 +65,14 @@
         </div>
 
 
-        <div id="divSqlcommand" class="tab-pane fade">
+        <div id="div-sql-command" class="tab-pane fade">
             <div class="row">
 
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
                     <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
-                    <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
+                    <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
                     <div class="well" style="margin-bottom: 0">
-                        @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "10" })
+                        @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "15" })
                     </div>
                 </div>
                 @if (ViewBag.ContextAction is ActionSource.GridToolbar)
@@ -86,6 +86,11 @@
                         </div>
                     </div>
                 }
+                <div class="col-sm-12">
+                    <label asp-for="RedirectUrl" class="form-label"></label>
+                    <tooltip title="Redirects to this URL after the command is executed successfully."></tooltip>
+                    <input asp-for="RedirectUrl" class="form-control font-monospace"/>
+                </div>
             </div>
         </div>
         <div id="div-advanced" class="tab-pane fade">

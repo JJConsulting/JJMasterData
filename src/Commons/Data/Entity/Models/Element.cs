@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using JJMasterData.Commons.Configuration.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -86,6 +84,6 @@ public class Element()
     
     public List<ElementField> GetPrimaryKeys()
     {
-        return Fields.Where(x => x.IsPk).ToList();
+        return Fields.FindAll(x => x.IsPk);
     }
 }

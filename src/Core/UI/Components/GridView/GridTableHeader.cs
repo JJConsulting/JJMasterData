@@ -10,25 +10,19 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTableHeader
+internal sealed class GridTableHeader(JJGridView gridView)
 {
-    private JJGridView GridView { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    public GridTableHeader(JJGridView gridView)
-    {
-        GridView = gridView;
-        StringLocalizer = GridView.StringLocalizer;
-    }
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = gridView.StringLocalizer;
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Thead);
-        if (GridView.DataSource?.Count == 0 && !GridView.ShowHeaderWhenEmpty)
+        if (gridView.DataSource?.Count == 0 && !gridView.ShowHeaderWhenEmpty)
             return html;
 
         await html.AppendAsync(HtmlTag.Tr, async tr =>
         {
-            tr.AppendIf(GridView.EnableMultiSelect, GetMultSelectThHtmlElement);
+            tr.AppendIf(gridView.EnableMultiSelect, GetMultSelectThHtmlElement);
             tr.AppendRange(await GetVisibleFieldsThList());
             tr.AppendRange(GetActionsThList());
         });
@@ -38,7 +32,7 @@ internal class GridTableHeader
 
     private IEnumerable<HtmlBuilder> GetActionsThList()
     {
-        var basicActions = GridView.GridTableActions.OrderBy(x => x.Order).ToList();
+        var basicActions = gridView.GridTableActions.OrderBy(x => x.Order).ToList();
         var actions = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var actionsWithGroupCount = basicActions.Count(x => x.IsVisible && x.IsGroup);
 
@@ -58,15 +52,15 @@ internal class GridTableHeader
     private async Task<List<HtmlBuilder>> GetVisibleFieldsThList()
     {
         List<HtmlBuilder> thList = [];
-        foreach (var field in await GridView.GetVisibleFieldsAsync())
+        foreach (var field in await gridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
-            string style = GetThStyle(field);
+            var style = GetThStyle(field);
 
             th.WithAttributeIfNotEmpty("style", style);
             th.Append(HtmlTag.Span, span =>
             {
-                if (GridView.EnableSorting && field.DataBehavior is FieldBehavior.Real)
+                if (gridView.EnableSorting && field.DataBehavior is FieldBehavior.Real)
                 {
                     SetSortAttributes(span, field);
                 }
@@ -77,11 +71,11 @@ internal class GridTableHeader
                         s.WithToolTip(field.HelpDescription);
                     }
 
-                    s.AppendText(StringLocalizer[field.LabelOrName]);
+                    s.AppendText(_stringLocalizer[field.LabelOrName]);
                 });
             });
 
-            var orderByString = GridView.CurrentOrder.ToQueryParameter();
+            var orderByString = gridView.CurrentOrder.ToQueryParameter();
             if (!string.IsNullOrEmpty(orderByString))
             {
                 foreach (var orderField in orderByString.Split(','))
@@ -98,7 +92,7 @@ internal class GridTableHeader
 
                     if (order.Equals($"{field.Name} DESC"))
                         th.Append(GetDescendingIcon());
-                    else if (order.Equals($"{field.Name} ASC") || order.Equals((string)field.Name))
+                    else if (order.Equals($"{field.Name} ASC") || order.Equals(field.Name))
                         th.Append(GetAscendingIcon());
                 }
             }
@@ -110,13 +104,13 @@ internal class GridTableHeader
                     th.Append(GetAscendingIcon());
             }
 
-            var currentFilter = await GridView.GetCurrentFilterAsync();
+            var currentFilter = await gridView.GetCurrentFilterAsync();
 
             if (IsAppliedFilter(field, currentFilter))
             {
                 th.AppendText("&nbsp;");
                 th.Append(new JJIcon("fa fa-filter").GetHtmlBuilder()
-                    .WithToolTip(StringLocalizer["Applied filter"]));
+                    .WithToolTip(_stringLocalizer["Applied filter"]));
             }
 
             thList.Add(th);
@@ -136,14 +130,14 @@ internal class GridTableHeader
     private void SetSortAttributes(HtmlBuilder span, ElementField field)
     {
         span.WithCssClass("jjenable-sorting");
-        span.WithOnClick( GridView.Scripts.GetSortingScript(field.Name));
+        span.WithOnClick( gridView.Scripts.GetSortingScript(field.Name));
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()
-        .WithToolTip(StringLocalizer["Ascending order"]);
+        .WithToolTip(_stringLocalizer["Ascending order"]);
 
     private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlBuilder()
-        .WithToolTip(StringLocalizer["Descending order"]);
+        .WithToolTip(_stringLocalizer["Descending order"]);
 
     private static string GetThStyle(FormElementField field)
     {
@@ -191,14 +185,14 @@ internal class GridTableHeader
     {
         var th = new HtmlBuilder(HtmlTag.Th);
 
-        bool hasPages = true;
-        if (!GridView.IsPagingEnabled())
+        var hasPages = true;
+        if (!gridView.IsPagingEnabled())
         {
             hasPages = false;
         }
         else
         {
-            int totalPages = (int)Math.Ceiling(GridView.TotalOfRecords / (double)GridView.CurrentSettings.RecordsPerPage);
+            var totalPages = (int)Math.Ceiling(gridView.TotalOfRecords / (double)gridView.CurrentSettings.RecordsPerPage);
             if (totalPages <= 1)
                 hasPages = false;
         }
@@ -207,9 +201,9 @@ internal class GridTableHeader
             .Append(HtmlTag.Input, input =>
             {
                 input.WithAttribute("type", "checkbox")
-                    .WithNameAndId($"{GridView.Name}-checkbox-select-all-rows")
+                    .WithNameAndId($"{gridView.Name}-checkbox-select-all-rows")
                     .WithCssClass("form-check-input")
-                    .WithToolTip(StringLocalizer["Mark|Unmark all from page"])
+                    .WithToolTip(_stringLocalizer["Mark|Unmark all from page"])
                     .WithOnClick(
                         "GridViewSelectionHelper.selectAllAtSamePage(this)");
             });
@@ -235,18 +229,18 @@ internal class GridTableHeader
                     {
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithOnClick( $"GridViewSelectionHelper.unSelectAll('{GridView.Name}')");
-                        a.AppendText(StringLocalizer["Unmark all selected records"]);
+                        a.WithOnClick( $"GridViewSelectionHelper.unSelectAll('{gridView.Name}')");
+                        a.AppendText(_stringLocalizer["Unmark all selected records"]);
                     });
                 });
-                ul.AppendIf(GridView.TotalOfRecords <= 50000, HtmlTag.Li, li =>
+                ul.AppendIf(gridView.TotalOfRecords <= 50000, HtmlTag.Li, li =>
                 {
                     li.Append(HtmlTag.A, a =>
                     {
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithOnClick( GridView.Scripts.GetSelectAllScript());
-                        a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalOfRecords]);
+                        a.WithOnClick( gridView.Scripts.GetSelectAllScript());
+                        a.AppendText(gridView.StringLocalizer["Mark all {0} records", gridView.TotalOfRecords]);
                     });
                 });
             });

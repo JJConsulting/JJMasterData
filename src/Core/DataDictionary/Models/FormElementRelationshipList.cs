@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -81,7 +82,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     private void SetId(FormElementRelationship item)
     {
-        var highestId = _formRelationships.Any() ? _formRelationships.Max(x => x.Id) : 1;
+        var highestId = _formRelationships.Count > 0 ? _formRelationships.Max(x => x.Id) : 1;
         item.Id = highestId + 1;
     }
 
@@ -165,10 +166,15 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         return _formRelationships.IndexOf(relationship);
     }
 
+    public List<FormElementRelationship> FindAll(Predicate<FormElementRelationship> predicate)
+    {
+        return _formRelationships.FindAll(predicate);
+    }
+
     public FormElementRelationshipList DeepCopy()
     {
         return new FormElementRelationshipList(
-            _baseRelationships.Select(b=>b.DeepCopy()).ToList(),
+            _baseRelationships.ConvertAll(b=>b.DeepCopy()),
             _formRelationships.ConvertAll(r=>r.DeepCopy()));
     }
 }

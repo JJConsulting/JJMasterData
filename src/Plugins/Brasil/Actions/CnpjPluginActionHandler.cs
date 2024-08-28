@@ -7,7 +7,6 @@ using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.UI.Html;
 
 
 namespace JJMasterData.Brasil.Actions;
@@ -20,7 +19,6 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
     private IReceitaFederalService ReceitaFederalService { get; } = receitaFederalService;
     public override Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
     public override string Title => "Cnpj";
-    public override HtmlBuilder? AdditionalInformationHtml => null;
     
     protected override IEnumerable<string> CustomFieldMapKeys
     {
