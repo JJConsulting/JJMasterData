@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
@@ -28,7 +27,7 @@ public class SystemWebUrlHelperWrapper(IHttpRequest httpRequest, IOptionsSnapsho
         {
             var appPath = HttpRequest.ApplicationPath;
 
-            baseUrl = appPath.IsNullOrEmpty() ? "/" : appPath;
+            baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath;
         }
         else
         {

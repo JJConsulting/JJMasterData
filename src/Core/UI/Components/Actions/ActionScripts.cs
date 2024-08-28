@@ -11,7 +11,6 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -143,7 +142,7 @@ public class ActionScripts(
             ComponentName = actionContext.ParentComponentName,
             EncryptedActionMap = encryptedActionMap,
             IsSubmit = actionContext.IsSubmit,
-            ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
+            ConfirmationMessage = string.IsNullOrEmpty(confirmationMessage) ? null : confirmationMessage
         };
         
         if (action is IModalAction { ShowAsModal: true } modalAction)
