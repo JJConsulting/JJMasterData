@@ -50,6 +50,7 @@ public sealed class MasterDataCoreOptions
         Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions
                   | ExpressionOptions.AllowNullParameter
                   | ExpressionOptions.OrdinalStringComparer
+                  | ExpressionOptions.AllowNullOrEmptyExpressions
                   | ExpressionOptions.CaseInsensitiveStringComparer,
         Functions = new Dictionary<string, ExpressionFunction>
         {
@@ -65,6 +66,7 @@ public sealed class MasterDataCoreOptions
         Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions
                   | ExpressionOptions.AllowNullParameter
                   | ExpressionOptions.OrdinalStringComparer
+                  | ExpressionOptions.AllowNullOrEmptyExpressions
                   | ExpressionOptions.CaseInsensitiveStringComparer,
         Functions = new Dictionary<string, AsyncExpressionFunction>
         {
