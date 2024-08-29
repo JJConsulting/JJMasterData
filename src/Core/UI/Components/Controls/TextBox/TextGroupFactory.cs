@@ -193,8 +193,8 @@ public class TextGroupFactory(
                 textGroup.MaxLength = 5;
                 textGroup.GroupCssClass = "flatpickr date jjform-hour";
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-inputmask-inputFormat", "HH:M");
-                textGroup.SetAttr("data-inputmask-displayFormat","HH:M");
+                textGroup.SetAttr("data-inputmask-inputFormat", "HH:MM");
+                textGroup.SetAttr("data-inputmask-displayFormat","HH:MM");
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
@@ -215,8 +215,8 @@ public class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-inputmask-inputFormat", $"{Format.DateFormat} HH:M");
-                textGroup.SetAttr("data-inputmask-displayFormat", $"{Format.DateFormat} HH:M");
+                textGroup.SetAttr("data-inputmask-inputFormat", $"{Format.DateFormat} HH:MM");
+                textGroup.SetAttr("data-inputmask-displayFormat", $"{Format.DateFormat} HH:MM");
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
