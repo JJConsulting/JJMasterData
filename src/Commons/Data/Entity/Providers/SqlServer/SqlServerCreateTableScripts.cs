@@ -124,8 +124,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 {
                     bool hasContraint = true;
 
-                    int counter = 1;
-                    while (hasContraint)
+                    for (int counter = 1; hasContraint; counter++)
                     {
                         if (!listContraint.Contains(contraintName + counter))
                         {
@@ -133,8 +132,6 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                             listContraint.Add(contraintName);
                             hasContraint = false;
                         }
-
-                        counter++;
                     }
                 }
 

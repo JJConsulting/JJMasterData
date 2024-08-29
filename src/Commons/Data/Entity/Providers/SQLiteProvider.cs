@@ -166,8 +166,7 @@ public class SQLiteProvider(
                 else
                 {
                     bool hasContraint = true;
-                    int nCount = 1;
-                    while (hasContraint)
+                    for (int nCount = 1; hasContraint; nCount++)
                     {
                         if (!listConstraint.Contains(constraintName + nCount))
                         {
@@ -175,8 +174,6 @@ public class SQLiteProvider(
                             listConstraint.Add(constraintName);
                             hasContraint = false;
                         }
-
-                        nCount++;
                     }
                 }
 

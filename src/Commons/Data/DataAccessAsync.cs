@@ -248,16 +248,13 @@ public partial class DataAccess
                 {
                     while (await dataReader.ReadAsync(cancellationToken))
                     {
-                        int count = 0;
-
-                        while (count < dataReader.FieldCount)
+                        for (var count = 0; count < dataReader.FieldCount; count++)
                         {
-                            string fieldName = dataReader.GetName(count);
+                            var fieldName = dataReader.GetName(count);
                             if (result.ContainsKey(fieldName))
-                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                                throw new DataAccessException($"[{fieldName}] field duplicated at SQL query.");
 
                             result.Add(fieldName, dataReader.GetValue(count));
-                            count++;
                         }
                     }
                 }

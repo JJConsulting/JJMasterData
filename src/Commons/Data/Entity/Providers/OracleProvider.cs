@@ -167,16 +167,14 @@ public class OracleProvider(
                 else
                 {
                     var hasContraint = true;
-                    var nCount = 1;
-                    while (hasContraint)
+                    for (var nCount = 1; hasContraint; nCount++)
                     {
                         if (!listContraint.Contains(contraintName + nCount))
                         {
-                            contraintName = contraintName + nCount;
+                            contraintName += nCount;
                             listContraint.Add(contraintName);
                             hasContraint = false;
                         }
-                        nCount++;
                     }
                 }
 
