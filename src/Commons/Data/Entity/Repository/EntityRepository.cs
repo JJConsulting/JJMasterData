@@ -164,7 +164,7 @@ public class EntityRepository(
     ///<inheritdoc cref="IEntityRepository.GetWriteProcedureScript"/>
     public string? GetWriteProcedureScript(Element element) => Provider.GetWriteProcedureScript(element);
 
-    public async Task<string> GetAlterTableScriptAsync(Element element)
+    public async Task<string?> GetAlterTableScriptAsync(Element element)
     {
         List<ElementField> addedFields = [];
 

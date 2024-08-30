@@ -65,7 +65,7 @@ public class SqlServerProvider(
         return GetWriteCommand(string.Empty, element, values);
     }
 
-    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    public override string? GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         return SqlServerScripts.GetAlterTableScript(element, fields);
     }

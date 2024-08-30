@@ -102,7 +102,7 @@ public interface IEntityRepository
     /// </summary>
     public string? GetWriteProcedureScript(Element element);
     
-    public Task<string> GetAlterTableScriptAsync(Element element);
+    public Task<string?> GetAlterTableScriptAsync(Element element);
 
     Dictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys);
 

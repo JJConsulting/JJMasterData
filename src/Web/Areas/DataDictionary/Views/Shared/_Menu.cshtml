@@ -24,17 +24,17 @@
             </button>
             <ul class="dropdown-menu">
                 <li>
+                    <button class="dropdown-item" type="button" onclick="defaultModal.showUrl('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
+                        <span class="@IconType.SolidScroll.GetCssClass()">
+                        </span>
+                        @StringLocalizer["Database Scripts"]
+                    </button>
+                </li>
+                <li>
                     <button class="dropdown-item" type="button" onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["C# Class"]',1);">
                         <span class="@IconType.Code.GetCssClass()">
                         </span>
                         @StringLocalizer["C# Class"]
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" type="button" onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
-                        <span class="@IconType.SolidScroll.GetCssClass()">
-                        </span>
-                        @StringLocalizer["Database Scripts"]
                     </button>
                 </li>
             </ul>

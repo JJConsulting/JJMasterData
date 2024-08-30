@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
@@ -39,7 +40,7 @@ public class SqlServerScripts(
         return SqlServerCreateTableScripts.GetCreateTableScript(element, relationships);
     }
 
-    public static string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    public static string? GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         return SqlServerAlterTableScripts.GetAlterTableScript(element, fields);
     }

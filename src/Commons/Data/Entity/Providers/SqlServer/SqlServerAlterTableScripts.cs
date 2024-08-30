@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
@@ -7,13 +8,14 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 public class SqlServerAlterTableScripts : SqlServerScriptsBase
 {
     
+    [CanBeNull]
     public static string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         var elementFields = fields.ToList();
     
         if (elementFields.Count == 0)
         {
-            return string.Empty;
+            return null;
         }
 
         var fieldDefinitions =

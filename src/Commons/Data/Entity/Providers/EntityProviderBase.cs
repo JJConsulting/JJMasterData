@@ -26,7 +26,7 @@ public abstract class EntityProviderBase(
     public abstract string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null);
     public abstract string? GetWriteProcedureScript(Element element);
     public abstract string? GetReadProcedureScript(Element element);
-    public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
+    public abstract string? GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     public abstract Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null);
     public abstract DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values);
     public abstract DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values);

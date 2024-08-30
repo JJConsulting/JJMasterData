@@ -113,7 +113,7 @@ public class ElementController(
         return View(new DuplicateElementViewModel{ OriginalElementName = elementName });
     }
 
-    public async ValueTask<IActionResult> ClassSourceCode(string elementName)
+    public async ValueTask<PartialViewResult> ClassSourceCode(string elementName)
     {
         ViewBag.ClassSourceCode = await classGenerationService.GetClassSourceCode(elementName);
         ViewBag.ElementName = elementName;
@@ -121,7 +121,7 @@ public class ElementController(
         return PartialView("ClassSourceCode");
     }
 
-    public async Task<IActionResult> Scripts(string elementName)
+    public async Task<PartialViewResult> Scripts(string elementName)
     {
         var formElement = await elementService.GetFormElementAsync(elementName);
         var scripts = await scriptsService.GetScriptsAsync(formElement);
@@ -134,7 +134,7 @@ public class ElementController(
             TableExists = tableExists
         };
 
-        return View(model);
+        return PartialView(model);
     }
 
     [HttpPost]
