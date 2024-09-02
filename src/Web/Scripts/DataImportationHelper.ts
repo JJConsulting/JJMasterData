@@ -147,7 +147,7 @@
 
                     postFormValues({
                         url: urlBuilder.build(), success: html => {
-                            DataImportationModal.getInstance().modalElement.addEventListener('hidden.bs.modal', _ => {
+                            $("body").on('hidden.bs.modal',"#" + DataImportationModal.getInstance().modalId, function () {
                                 getMasterDataForm().submit();
                             });
                             document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;

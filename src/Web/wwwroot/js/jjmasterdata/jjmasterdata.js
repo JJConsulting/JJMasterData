@@ -860,7 +860,7 @@ class DataImportationHelper {
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
-                        DataImportationModal.getInstance().modalElement.addEventListener('hidden.bs.modal', _ => {
+                        $("body").on('hidden.bs.modal', "#" + DataImportationModal.getInstance().modalId, function () {
                             getMasterDataForm().submit();
                         });
                         document.querySelector("#" + componentName).innerHTML = html;
