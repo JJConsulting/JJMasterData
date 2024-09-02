@@ -12,8 +12,6 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public sealed class DefaultExpressionProvider(
     IExpressionFactory expressionFactory,
-    IAsyncExpressionFactory asyncExpressionFactory,
-    IServiceProvider serviceProvider,
     IOptions<MasterDataCoreOptions> options) : ISyncExpressionProvider, IAsyncExpressionProvider
 {
     public string Prefix => "exp";
@@ -24,27 +22,12 @@ public sealed class DefaultExpressionProvider(
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
-        var ncalcExpression = expressionFactory.Create(replacedExpression, options.Value.ExpressionContext with
-        {
-            StaticParameters = new Dictionary<string, object?>
-            {
-                {"serviceProvider", serviceProvider}
-            }
-        });
+        var ncalcExpression = expressionFactory.Create(replacedExpression, options.Value.ExpressionContext);
         return ncalcExpression.Evaluate();
     }
 
     public ValueTask<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues)
     {
-        var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
-        var ncalcExpression = asyncExpressionFactory.Create(replacedExpression, options.Value.AsyncExpressionsContext with
-        {
-            StaticParameters = new Dictionary<string, object?>
-            {
-                {"serviceProvider", serviceProvider},
-                {"connectionId", ConnectionId}
-            }
-        });
-        return ncalcExpression.EvaluateAsync();
+        return new ValueTask<object?>(Evaluate(expression,parsedValues));
     }
 }
