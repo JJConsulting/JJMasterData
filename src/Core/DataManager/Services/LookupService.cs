@@ -40,10 +40,7 @@ public class LookupService(
     {
         if (string.IsNullOrEmpty(value?.ToString()))
             return null;
-
-        if (elementMap.Filters == null)
-            return null;
-
+        
         if (allowOnlyNumbers)
         {
             bool isNumeric = int.TryParse(value?.ToString(), out _);

@@ -35,7 +35,7 @@ public class ActionMap
     public ActionMap(
         ActionSource actionSource,
         FormElement formElement,
-        Dictionary<string, object> row,
+        Dictionary<string, object?> row,
         string actionName)
     {
         ElementName = formElement.Name;

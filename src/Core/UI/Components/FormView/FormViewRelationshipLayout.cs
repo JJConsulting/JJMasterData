@@ -125,16 +125,15 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
                 var title = GetExpressionValue(relationship.Panel.Title);
                 var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);
-                if (title is not null)
-                {       
-                    var htmlTitle = new JJTitle
-                    {
-                        Title = relationship.Panel.Title,
-                        Icon = relationship.Panel.Icon,
-                        Size = HeadingSize.H3
-                    };
-                    div.AppendComponent(htmlTitle);
-                }
+            {       
+                var htmlTitle = new JJTitle
+                {
+                    Title = title,
+                    Icon = relationship.Panel.Icon,
+                    Size = HeadingSize.H3
+                };
+                div.AppendComponent(htmlTitle);
+            }
                 div.Append(content);
 
                 return div;
