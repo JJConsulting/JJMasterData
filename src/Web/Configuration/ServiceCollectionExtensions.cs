@@ -91,7 +91,7 @@ public static class ServiceCollectionExtensions
         
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-        services.AddTransient<IValidationDictionary, ModelStateWrapper>();
+        services.AddScoped<IValidationDictionary, ModelStateWrapper>();
         services.AddTransient<LocalizationService>();
         services.AddScoped<SettingsService>();
 
@@ -125,7 +125,7 @@ public static class ServiceCollectionExtensions
                 options.DataAnnotationLocalizerProvider = (type, factory) =>
                 {
                     var assemblyName = type.Assembly.FullName;
-                    if(assemblyName != null && assemblyName.Contains("JJMasterData"))
+                    if(assemblyName?.Contains("JJMasterData") == true)
                         return factory.Create(typeof(MasterDataResources));
                     
                     return configuration.ConfigureDataAnnotations(type,factory);
