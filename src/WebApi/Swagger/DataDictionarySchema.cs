@@ -21,7 +21,6 @@ internal static class DataDictionarySchema
 
         foreach (var field in formElement.Fields)
         {
-
             example[field.Name] = GetFieldExample(field);
 
             if (ignoreIdentity && field is { IsPk: true, AutoNum: true })
