@@ -10,9 +10,23 @@ namespace JJMasterData.WebApi.Swagger;
 
 internal sealed class DataDictionaryOperationFactory
 {
-    private string? _primaryKeyNames;
+    private static readonly OpenApiParameter AcceptLanguageParameter = new()
+    {
+        Name = "Accept-Language",
+        Description = "Language Code",
+        In = ParameterLocation.Query,
+        Required = true,
+        Schema = new OpenApiSchema
+        {
+            Type = "string",
+            Default = new OpenApiString(CultureInfo.CurrentCulture.ToString())
+        }
+    };
+
     private FormElement FormElement { get; }
     private List<FormElementField> PrimaryKeyFields { get; }
+
+    private string? _primaryKeyNames;
 
     private string PrimaryKeysNames
     {
@@ -35,11 +49,12 @@ internal sealed class DataDictionaryOperationFactory
     }
 
     private FormElementApiOptions Options { get; }
-    private string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
+    private string ModelName { get; }
 
     internal DataDictionaryOperationFactory(FormElement formElement, FormElementApiOptions options)
     {
         FormElement = formElement;
+        ModelName = formElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
         PrimaryKeyFields = formElement.Fields.FindAll(f => f.IsPk);
         Options = options;
     }
@@ -95,7 +110,7 @@ internal sealed class DataDictionaryOperationFactory
                         Type = "string"
                     }
                 },
-                GetAcceptLanguageParameter()
+                AcceptLanguageParameter
             }
         };
 
@@ -275,7 +290,7 @@ internal sealed class DataDictionaryOperationFactory
             }
         }
 
-        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Parameters.Add(AcceptLanguageParameter);
 
         operation.Responses.AddDefaultValues();
 
@@ -556,7 +571,6 @@ internal sealed class DataDictionaryOperationFactory
         else
             description.Append("Please enter the value of the primary key as a parameter.");
 
-        string nameFields = PrimaryKeysNames;
         var operation = new OpenApiOperation
         {
             Summary = "Delete a specific record",
@@ -593,7 +607,7 @@ internal sealed class DataDictionaryOperationFactory
                 new()
                 {
                     Name = Options.GetFieldNameParsed("id"),
-                    Description = $"Primary Key Value.<br>{nameFields}",
+                    Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
                     In = ParameterLocation.Path,
                     Required = true,
                     Schema = new OpenApiSchema
@@ -601,7 +615,7 @@ internal sealed class DataDictionaryOperationFactory
                         Type = "string"
                     }
                 },
-                GetAcceptLanguageParameter()
+                AcceptLanguageParameter
             }
         };
 
@@ -614,7 +628,6 @@ internal sealed class DataDictionaryOperationFactory
 
     internal OpenApiOperation GetFile(FormElementField field)
     {
-        var nameFields = PrimaryKeysNames;
         var operation = new OpenApiOperation
         {
             Summary = $"Download specified file from the field {field.Name}",
@@ -627,7 +640,7 @@ internal sealed class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = $"Primary Key Value.<br>{nameFields}",
+            Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema
@@ -660,7 +673,7 @@ internal sealed class DataDictionaryOperationFactory
             }
         };
 
-        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Parameters.Add(AcceptLanguageParameter);
         operation.Responses.Add("200", new OpenApiResponse
         {
             Description = "Success",
@@ -677,7 +690,6 @@ internal sealed class DataDictionaryOperationFactory
 
     internal OpenApiOperation PostFile(FormElementField field)
     {
-        var nameFields = PrimaryKeysNames;
         var operation = new OpenApiOperation
         {
             Summary = $"Post a file to the field {field.Name}",
@@ -690,7 +702,7 @@ internal sealed class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = $"Primary Key Value.<br>{nameFields}",
+            Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema
@@ -747,7 +759,7 @@ internal sealed class DataDictionaryOperationFactory
             }
         };
 
-        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Parameters.Add(AcceptLanguageParameter);
         operation.Responses.Add("200", new OpenApiResponse
         {
             Description = "Success",
@@ -764,7 +776,6 @@ internal sealed class DataDictionaryOperationFactory
 
     internal OpenApiOperation DeleteFile(FormElementField field)
     {
-        var nameFields = PrimaryKeysNames;
         var operation = new OpenApiOperation
         {
             Summary = $"Deletes the specified file from the field {field.Name}",
@@ -777,7 +788,7 @@ internal sealed class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = $"Primary Key Value.<br>{nameFields}",
+            Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema
@@ -810,7 +821,7 @@ internal sealed class DataDictionaryOperationFactory
             }
         };
 
-        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Parameters.Add(AcceptLanguageParameter);
         operation.Responses.Add("200", new OpenApiResponse
         {
             Description = "Success",
@@ -827,7 +838,6 @@ internal sealed class DataDictionaryOperationFactory
 
     public OpenApiOperation RenameFile(FormElementField field)
     {
-        var nameFields = PrimaryKeysNames;
         var operation = new OpenApiOperation
         {
             Summary = $"Rename the specified file from the field {field.Name}",
@@ -840,7 +850,7 @@ internal sealed class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = $"Primary Key Value.<br>{nameFields}",
+            Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema
@@ -886,13 +896,13 @@ internal sealed class DataDictionaryOperationFactory
             }
         };
 
-        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Parameters.Add(AcceptLanguageParameter);
         operation.Responses.Add("200", new OpenApiResponse
         {
             Description = "Success",
             Content = content
         });
-        operation.Tags.Add(new()
+        operation.Tags.Add(new OpenApiTag
         {
             Name = FormElement.Name
         });
@@ -902,20 +912,4 @@ internal sealed class DataDictionaryOperationFactory
     }
 
     #endregion
-
-    private static OpenApiParameter GetAcceptLanguageParameter()
-    {
-        return new OpenApiParameter
-        {
-            Name = "Accept-Language",
-            Description = "Language Code",
-            In = ParameterLocation.Query,
-            Required = true,
-            Schema = new OpenApiSchema
-            {
-                Type = "string",
-                Default = new OpenApiString(CultureInfo.CurrentCulture.ToString())
-            }
-        };
-    }
 }
