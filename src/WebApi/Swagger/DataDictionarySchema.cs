@@ -98,8 +98,7 @@ internal static class DataDictionarySchema
                     itemSchema.MaxLength = item.Size;
                 break;
         }
-
-
+        
         if (item is { Component: FormComponent.ComboBox, DataItem.Items.Count: > 0 })
         {
             foreach (var dataItem in item.DataItem.Items)

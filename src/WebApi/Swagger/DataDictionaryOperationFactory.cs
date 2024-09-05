@@ -276,11 +276,8 @@ internal sealed class DataDictionaryOperationFactory
                         }
                     });
 
-                    description += example.ToString();
-
                     parameter.Content = content;
                 }
-
                 else
                 {
                     parameter.Schema = schema;
@@ -488,9 +485,9 @@ internal sealed class DataDictionaryOperationFactory
             "if sending a list of records the return can be 201(all right) or 207(error in some record) ");
         description.Append("in this case you can check the status of each record in the response return.");
 
-        string id = $"{ModelName}List";
+        var id = $"{ModelName}List";
 
-        OpenApiSchema items = GetDictionarySchema(FormElement, Options, id, true);
+        var items = GetDictionarySchema(FormElement, Options, id, true);
 
         OpenApiSchema listSchema = new()
         {
@@ -827,7 +824,7 @@ internal sealed class DataDictionaryOperationFactory
             Description = "Success",
             Content = content
         });
-        operation.Tags.Add(new()
+        operation.Tags.Add(new OpenApiTag
         {
             Name = FormElement.Name
         });
