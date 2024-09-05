@@ -1,8 +1,8 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace JJMasterData.Swagger.AspNetCore;
+namespace JJMasterData.WebApi.Swagger;
 
-internal static class Extensions
+internal static class SwaggerExtensions
 {
     internal static void AddDataDictionaryPath(this OpenApiPaths paths, DataDictionaryPathItem pathItem)
     {

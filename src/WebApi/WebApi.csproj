@@ -23,6 +23,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\Plugins\Swagger.AspNetCore\Swagger.AspNetCore.csproj" />
   </ItemGroup>
 </Project>

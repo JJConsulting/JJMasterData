@@ -1,12 +1,12 @@
-﻿using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
-using static JJMasterData.Swagger.AspNetCore.DataDictionarySchema;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
+using static JJMasterData.WebApi.Swagger.DataDictionarySchema;
 
-namespace JJMasterData.Swagger.AspNetCore;
+namespace JJMasterData.WebApi.Swagger;
 
 internal sealed class DataDictionaryOperationFactory
 {

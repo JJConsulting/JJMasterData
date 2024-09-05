@@ -4,6 +4,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
+using JJMasterData.WebApi.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,14 +16,14 @@ namespace JJMasterData.WebApi.Controllers;
 public class MasterApiController(MasterApiService service) : ControllerBase
 {
     [HttpGet]
-    [Produces(typeof(MasterApiListResponse))]
-    [Route("{pag?}/{regporpag:int?}/{orderby?}/{tot?}")]
+    [Produces<MasterApiListResponse>]
+    [Route("{pag:int?}/{regporpag:int?}/{orderby?}/{tot?}")]
     public async Task<ActionResult<MasterApiListResponse>> GetAll(string elementName, [FromQuery] int pag = 1,
         [FromQuery] int regporpag = 1000, [FromQuery] string? orderby = null, [FromQuery] int? tot = 0)
     {
         if (Request.Headers.Accept.ToString().Contains("text/csv"))
         {
-            string text = await service.GetListFieldAsTextAsync(elementName, pag, regporpag, orderby);
+            var text = await service.GetListFieldAsTextAsync(elementName, pag, regporpag, orderby);
 
             return Content(text, "text/csv");
         }
@@ -32,7 +33,7 @@ public class MasterApiController(MasterApiService service) : ControllerBase
     }
     
     [HttpGet]
-    [Produces(typeof(Dictionary<string, object>))]
+    [Produces<Dictionary<string,object>>]
     [Route("{id}")]
     public async Task<ActionResult<Dictionary<string, object>>> Get(string elementName, string id)
     {
@@ -64,20 +65,12 @@ public class MasterApiController(MasterApiService service) : ControllerBase
     }
     
     [HttpPost]
-    [Produces(typeof(FormValues[]))]
+    [Produces<FormValues[]>]
     [Route("trigger/{pageState?}/{objname?}")]
     public async Task<ActionResult<ResponseLetter>> PostTrigger(string elementName, [FromBody] Dictionary<string, object>? paramValues,
         PageState pageState, string objname = "")
     {
         return Ok(await service.PostTriggerAsync(elementName, paramValues, pageState, objname));
-    }
-    
-    [HttpPost]
-    [Route("action/{actionName?}/{fieldName?}")]
-    public HttpResponseMessage Action(string elementName, [FromBody] Hashtable paramValues, string actionName,
-        string fieldName = "")
-    {
-        throw new NotImplementedException();
     }
 
     private ActionResult<ResponseLetter> GetResponseMessage(IEnumerable<ResponseLetter> responseLetters)
@@ -90,16 +83,16 @@ public class MasterApiController(MasterApiService service) : ControllerBase
         if (responseLetterList.Count == 1)
             return new ObjectResult(responseLetters) { StatusCode = responseLetterList[0].Status };
 
-        int qtdTot = responseLetterList.Count;
-        int qtdInsert = responseLetterList.Count(x => x.Status == (int)HttpStatusCode.Created);
+        var qtdTot = responseLetterList.Count;
+        var qtdInsert = responseLetterList.Count(x => x.Status == (int)HttpStatusCode.Created);
         if (qtdTot == qtdInsert)
             return Created(nameof(GetResponseMessage), responseLetters);
 
-        int qtdUpdate = responseLetterList.Count(x => x.Status == (int)HttpStatusCode.OK);
+        var qtdUpdate = responseLetterList.Count(x => x.Status == (int)HttpStatusCode.OK);
         if (qtdTot == qtdUpdate)
             return Ok(responseLetters);
 
-        int qtdError = qtdTot - qtdInsert - qtdUpdate;
+        var qtdError = qtdTot - qtdInsert - qtdUpdate;
         if (qtdTot == qtdError)
             return BadRequest(responseLetters);
 

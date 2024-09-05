@@ -5,11 +5,13 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
+using JJMasterData.WebApi.Utils;
 
 namespace JJMasterData.WebApi.Controllers;
 
 [Authorize]
 [ApiController]
+[Route("api/dictionaries")]
 public class DictionariesController(DictionariesService dictionariesService,
         IDataDictionaryRepository dataDictionaryRepository)
     : ControllerBase
@@ -23,15 +25,15 @@ public class DictionariesController(DictionariesService dictionariesService,
     /// <response code="403">Token Expired</response>
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
-    [Produces(typeof(FormElement[]))]
-    [Route("api/dictionaries/")]
-    public async Task<ActionResult<FormElement[]>> GetAll()
+    [Produces<List<FormElement>>]
+    [Route("")]
+    public async Task<ActionResult<List<FormElement>>> GetAll()
     {
         var dicList = await dataDictionaryRepository.GetFormElementListAsync(true);
         if (dicList == null)
             return NotFound();
 
-        return dicList.ToArray();
+        return dicList;
     }
 
     /// <summary>
@@ -45,7 +47,7 @@ public class DictionariesController(DictionariesService dictionariesService,
     /// <response code="404">Not Found</response>
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
-    [Route("api/dictionaries/{id}")]
+    [Route("{id}")]
     public ValueTask<FormElement> Get(string id)
     {
         return dataDictionaryRepository.GetFormElementAsync(id);
@@ -62,7 +64,7 @@ public class DictionariesController(DictionariesService dictionariesService,
     /// <response code="404">Not Found</response>
     /// <response code="500">Internal Server Error</response>
     [HttpPost]
-    [Route("api/dictionaries/count")]
+    [Route("count")]
     public async Task<ActionResult<DicSyncInfo>> Count([FromBody]DicSyncParam[] param)
     {
         return await dictionariesService.GetSyncInfoAsync(param, Debugger.IsAttached);

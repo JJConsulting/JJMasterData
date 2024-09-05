@@ -8,7 +8,6 @@ namespace JJMasterData.WebApi.Controllers;
 [ApiExplorerSettings(IgnoreApi = true)]
 public class ErrorController : ControllerBase
 {
-
     [Route("/Error")]
     public IActionResult HandleError()
     {

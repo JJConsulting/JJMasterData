@@ -1,18 +1,23 @@
-﻿using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
+﻿using System.Reflection;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace JJMasterData.Swagger.AspNetCore;
+namespace JJMasterData.WebApi.Swagger;
 
 public class DataDictionaryDocumentFilter(IServiceProvider serviceProvider) : IDocumentFilter
 {
     private static string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
+        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext!;
+
+        if (httpContext.User.Identity?.IsAuthenticated is false)
+            return;
+        
         using var scope = serviceProvider.CreateScope();
+
         var dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
         
         document.Info.Version = Version;
@@ -21,7 +26,6 @@ public class DataDictionaryDocumentFilter(IServiceProvider serviceProvider) : ID
 
         foreach (var formElement in formElements)
         {
-
             var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
             var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
             var factory = new DataDictionaryOperationFactory(formElement, formElement.ApiOptions);

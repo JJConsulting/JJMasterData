@@ -3,7 +3,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
-namespace JJMasterData.Swagger.AspNetCore;
+namespace JJMasterData.WebApi.Swagger;
 
 internal static class DataDictionarySchema
 {
