@@ -105,7 +105,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         var listRet = new Dictionary<string, object>();
         foreach (var field in formElement.Fields)
         {
-            string fieldName = formElement.ApiOptions.GetFieldNameParsed(field.Name);
+            string fieldName = formElement.ApiOptions.GetJsonFieldName(field.Name);
             if (fields.TryGetValue(field.Name, out var field1))
                 listRet.Add(fieldName, field1!);
         }
@@ -468,7 +468,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             {
                 continue;
             }
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
+            string fieldName = apiOptions.GetJsonFieldName(entry.Key);
             
             if (!original.ContainsKey(entry.Key))
             {
@@ -507,7 +507,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         foreach (var entry in errors)
         {
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
+            string fieldName = apiOptions.GetJsonFieldName(entry.Key);
             letter.ValidationList.Add(fieldName, entry.Value);
         }
 

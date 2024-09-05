@@ -101,7 +101,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 new()
                 {
-                    Name = Options.GetFieldNameParsed("id"),
+                    Name = Options.GetJsonFieldName("id"),
                     Description = $"Primary Key Value.<br>{nameFields}",
                     In = ParameterLocation.Path,
                     Required = true,
@@ -156,7 +156,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 new()
                 {
-                    Name = Options.GetFieldNameParsed("pag"),
+                    Name = Options.GetJsonFieldName("pag"),
                     Description = "Current page",
                     In = ParameterLocation.Query,
                     Required = true,
@@ -169,7 +169,7 @@ internal sealed class DataDictionaryOperationFactory
                 },
                 new()
                 {
-                    Name = Options.GetFieldNameParsed("regporpag"),
+                    Name = Options.GetJsonFieldName("regporpag"),
                     Description = "Number of records per page",
                     In = ParameterLocation.Query,
                     Required = true,
@@ -182,7 +182,7 @@ internal sealed class DataDictionaryOperationFactory
                 },
                 new()
                 {
-                    Name = Options.GetFieldNameParsed("orderby"),
+                    Name = Options.GetJsonFieldName("orderby"),
                     Description = "Order of records (default is pk ASC). Attention, this field is case sensitive.",
                     In = ParameterLocation.Query,
                     Required = false,
@@ -193,7 +193,7 @@ internal sealed class DataDictionaryOperationFactory
                 },
                 new()
                 {
-                    Name = Options.GetFieldNameParsed("tot"),
+                    Name = Options.GetJsonFieldName("tot"),
                     Description =
                         "If you pass the total, the count of records will not be executed saving processing. (optional)",
                     In = ParameterLocation.Query,
@@ -211,7 +211,7 @@ internal sealed class DataDictionaryOperationFactory
 
         foreach (var field in fields)
         {
-            var fieldName = Options.GetFieldNameParsed(field.Name);
+            var fieldName = Options.GetJsonFieldName(field.Name);
             var description = $"Filter available. ({field.Filter.Type.ToString().ToLower()})";
             if (!string.IsNullOrEmpty(field.Label))
                 description += $"<br>{field.Label}";
@@ -225,7 +225,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 operation.Parameters.Add(new OpenApiParameter
                 {
-                    Name = Options.GetFieldNameParsed("_from"),
+                    Name = Options.GetJsonFieldName("_from"),
                     Description = description,
                     In = ParameterLocation.Query,
                     Required = field.IsRequired,
@@ -234,7 +234,7 @@ internal sealed class DataDictionaryOperationFactory
 
                 operation.Parameters.Add(new OpenApiParameter
                 {
-                    Name = Options.GetFieldNameParsed("_to"),
+                    Name = Options.GetJsonFieldName("_to"),
                     Description = description,
                     In = ParameterLocation.Query,
                     Required = field.IsRequired,
@@ -245,7 +245,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 var parameter = new OpenApiParameter
                 {
-                    Name = Options.GetFieldNameParsed(fieldName),
+                    Name = Options.GetJsonFieldName(fieldName),
                     Description = description,
                     In = ParameterLocation.Query,
                     Required = false
@@ -378,7 +378,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 new()
                 {
-                    Name = Options.GetFieldNameParsed("replace"),
+                    Name = Options.GetJsonFieldName("replace"),
                     Description = "If record exists updates it, otherwise insert. (default false)",
                     In = ParameterLocation.Query,
                     Required = false,
@@ -606,7 +606,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 new()
                 {
-                    Name = Options.GetFieldNameParsed("id"),
+                    Name = Options.GetJsonFieldName("id"),
                     Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
                     In = ParameterLocation.Path,
                     Required = true,
@@ -639,7 +639,7 @@ internal sealed class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Options.GetFieldNameParsed("id"),
+            Name = Options.GetJsonFieldName("id"),
             Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,
@@ -701,7 +701,7 @@ internal sealed class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Options.GetFieldNameParsed("id"),
+            Name = Options.GetJsonFieldName("id"),
             Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,
@@ -787,7 +787,7 @@ internal sealed class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Options.GetFieldNameParsed("id"),
+            Name = Options.GetJsonFieldName("id"),
             Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,
@@ -849,7 +849,7 @@ internal sealed class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Options.GetFieldNameParsed("id"),
+            Name = Options.GetJsonFieldName("id"),
             Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
             In = ParameterLocation.Path,
             Required = true,

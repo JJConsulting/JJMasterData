@@ -26,7 +26,7 @@ public class MasterApiListResponse
             var cols = new Dictionary<string, object?>();
             foreach (var field in formElement.Fields)
             {
-                var fieldName = formElement.ApiOptions.GetFieldNameParsed(field.Name);
+                var fieldName = formElement.ApiOptions.GetJsonFieldName(field.Name);
                 var val = row[field.Name];
                 if (val == DBNull.Value)
                     cols.Add(fieldName, null);

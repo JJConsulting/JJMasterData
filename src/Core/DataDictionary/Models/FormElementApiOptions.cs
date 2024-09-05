@@ -8,44 +8,41 @@ namespace JJMasterData.Core.DataDictionary.Models;
 public class FormElementApiOptions
 {
     /// <summary>
-    /// Get all records. Verb GET
+    /// Get all records. GET Verb.
     /// </summary>
     [JsonProperty("enableGetAll")]
     public bool EnableGetAll { get; set; }
 
     /// <summary>
-    /// Get a record detail. Verb GET
+    /// Get a record detail. GET Verb.
     /// </summary>
     [JsonProperty("enableGetDetail")]
     public bool EnableGetDetail { get; set; }
 
     /// <summary>
-    /// Add new records. Verb POST
+    /// Add new records. POST Verb.
     /// </summary>
     [JsonProperty("enableAdd")]
     public bool EnableAdd { get; set; }
 
     /// <summary>
-    /// Update records. Verb PUT
+    /// Update records. PUT Verb.
     /// </summary>
     [JsonProperty("enableUpdate")]
     public bool EnableUpdate { get; set; }
 
     /// <summary>
-    /// Update some especifics fields. Verb PATCH
+    /// Update some specifics fields. PATCH Verb ,
     /// </summary>
     [JsonProperty("enableUpdatePart")]
     public bool EnableUpdatePart { get; set; }
 
     /// <summary>
-    /// Delete a record. Verb DEL
+    /// Delete a record. DEL Verb.
     /// </summary>
     [JsonProperty("enableDel")]
     public bool EnableDel { get; set; }
-
-    /// <summary>
-    /// Json Format
-    /// </summary>
+    
     [JsonProperty("formatType")]
     [Display(Name = "Json Formatting")]
     public ApiJsonFormatting JsonFormatting { get; set; } = ApiJsonFormatting.Lowercase;
@@ -58,10 +55,10 @@ public class FormElementApiOptions
     public string? ApplyUserIdOn { get; set; }
 
 
-    /// <summary>
-    /// Format the field according to the dictionary parameterization
-    /// </summary>
-    public string GetFieldNameParsed(string fieldName)
+    /// <returns>
+    /// The field name according to the <see cref="JsonFormatting"/> property. 
+    /// </returns>
+    public string GetJsonFieldName(string fieldName)
     {
         return JsonFormatting == ApiJsonFormatting.Lowercase ? fieldName.ToLower() : fieldName;
     }

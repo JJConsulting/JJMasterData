@@ -26,12 +26,12 @@ internal static class DataDictionarySchema
             if (ignoreIdentity && field is { IsPk: true, AutoNum: true })
                 continue;
 
-            string fieldName = apiOptions.GetFieldNameParsed(field.Name);
+            var fieldName = apiOptions.GetJsonFieldName(field.Name);
             var itemSchema = GetFieldSchema(field);
 
             modelSchema.Properties.Add(fieldName, itemSchema);
 
-            if (field.IsRequired | field.IsPk)
+            if (field.IsRequired || field.IsPk)
                 modelSchema.Required.Add(fieldName);
         }
 
