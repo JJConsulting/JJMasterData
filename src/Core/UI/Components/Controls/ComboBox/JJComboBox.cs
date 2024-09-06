@@ -118,6 +118,12 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
                 });
         }
         
+        //Workaround for when nothing is selected at multiselect.
+        if (MultiSelect)
+        {
+            select.AppendInput(input => input.WithName(Name).WithAttribute("hidden"));
+        }
+        
         return select;
     }
 

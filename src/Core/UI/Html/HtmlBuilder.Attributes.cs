@@ -73,7 +73,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set attribute to the HTML builder.
     /// </summary>
-    public HtmlBuilder WithSingleAttribute(string nameAndValue)
+    public HtmlBuilder WithAttribute(string nameAndValue)
     {
         return WithAttribute(nameAndValue, nameAndValue);
     }

@@ -48,7 +48,7 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
 
         if (UseFloatingLabel)
         {
-            textArea.WithSingleAttribute("placeholder");
+            textArea.WithAttribute("placeholder");
 
             return new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass("form-floating")
