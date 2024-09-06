@@ -67,6 +67,13 @@ public class FormElementFieldList : IList<FormElementField>
         _baseFields.Add(item);
         _formFields.Add(item);
     }
+    
+    public void AddRange(IEnumerable<FormElementField> fields)
+    {
+        var fieldArray = fields as FormElementField[] ?? fields.ToArray();
+        _baseFields.AddRange(fieldArray);
+        _formFields.AddRange(fieldArray);
+    }
 
     public void Clear()
     {

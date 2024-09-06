@@ -242,6 +242,11 @@ public class ElementFieldList : IList<ElementField>
     {
         return _list.FindAll(predicate);
     }
+
+    public void AddRange(IEnumerable<ElementField> fields)
+    {
+        _list.AddRange(fields);
+    }
     
     public ElementFieldList DeepCopy()
     {
