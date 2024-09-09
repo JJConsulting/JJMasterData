@@ -8,10 +8,11 @@ namespace JJMasterData.Core.DataDictionary;
 
 public static class FormElementSerializer
 {
-    private static JsonSerializerSettings? _settings;
-
-    public static JsonSerializerSettings Settings =>
-        _settings ??= new JsonSerializerSettings
+    public static readonly JsonSerializerSettings Settings;
+    
+    static FormElementSerializer()
+    {
+        Settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
             Formatting = Formatting.None,
@@ -22,8 +23,8 @@ public static class FormElementSerializer
                 NamingStrategy = new CamelCaseNamingStrategy()
             }
         };
-
-
+    }
+    
     public static string Serialize(FormElement formElement, Action<JsonSerializerSettings>? configureSettings = null)
     {
         configureSettings?.Invoke(Settings);

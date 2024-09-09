@@ -67,8 +67,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
-        var element = dictionary;
-        var result = await entityRepository.GetDictionaryListResultAsync(element, new EntityParameters
+        var result = await entityRepository.GetDictionaryListResultAsync(dictionary, new EntityParameters
         {
             Filters = filters!,
             CurrentPage = pag,

@@ -32,7 +32,7 @@ public class SqlDataDictionaryRepository(
         var result = entityRepository.GetDictionaryListResult(_masterDataElement,
             parameters, false);
 
-        return ParseDictionaryList(result.Data).ToList();
+        return result.Data.ConvertAll(DeserializeDictionary);
     }
     
     public async Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null)
@@ -42,7 +42,7 @@ public class SqlDataDictionaryRepository(
         var result = await entityRepository.GetDictionaryListResultAsync(_masterDataElement,
             parameters, false);
 
-        return ParseDictionaryList(result.Data).ToList();
+        return result.Data.ConvertAll(DeserializeDictionary);
     }
 
     private static EntityParameters GetFormElementListParameters(bool? apiSync)
@@ -59,12 +59,9 @@ public class SqlDataDictionaryRepository(
         return new EntityParameters{Filters = filters, OrderBy = orderBy};
     }
 
-    private static IEnumerable<FormElement> ParseDictionaryList(List<Dictionary<string, object?>> result)
+    private static FormElement DeserializeDictionary(Dictionary<string, object?> dictionary)
     {
-        foreach (var row in result)
-        {
-            yield return FormElementSerializer.Deserialize(row[DataDictionaryStructure.Json]!.ToString()!);
-        }
+        return FormElementSerializer.Deserialize(dictionary[DataDictionaryStructure.Json]!.ToString()!);
     }
 
     public async Task<List<string>> GetNameListAsync()
@@ -203,7 +200,6 @@ public class SqlDataDictionaryRepository(
     {
         if (!await entityRepository.TableExistsAsync(_masterDataElement.Name, _masterDataElement.ConnectionId))
             await entityRepository.CreateDataModelAsync(_masterDataElement,[]);
-            
     }
 
     public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filter,

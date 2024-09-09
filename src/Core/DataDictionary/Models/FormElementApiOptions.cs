@@ -42,7 +42,7 @@ public class FormElementApiOptions
     /// </summary>
     [JsonProperty("enableDel")]
     public bool EnableDel { get; set; }
-    
+
     [JsonProperty("formatType")]
     [Display(Name = "Json Formatting")]
     public ApiJsonFormatting JsonFormatting { get; set; } = ApiJsonFormatting.Lowercase;
@@ -63,13 +63,11 @@ public class FormElementApiOptions
         return JsonFormatting == ApiJsonFormatting.Lowercase ? fieldName.ToLower() : fieldName;
     }
     
-    public bool HasSetMethod()
-    {
-        return EnableAdd ||
-               EnableUpdate ||
-               EnableUpdatePart ||
-               EnableDel;
-    }
+    public bool HasMethod() => HasGetMethod() || HasSetMethod();
+
+    public bool HasGetMethod() => EnableGetDetail || EnableGetAll;
+
+    public bool HasSetMethod() => EnableAdd || EnableUpdate || EnableUpdatePart || EnableDel;
 
     public FormElementApiOptions DeepCopy()
     {
