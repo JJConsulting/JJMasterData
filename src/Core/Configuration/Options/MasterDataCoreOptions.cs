@@ -65,6 +65,28 @@ public sealed class MasterDataCoreOptions
                     var conditional = StringManager.ParseBool(args[0].Evaluate());
                     return conditional ? args[1].Evaluate() : args[2].Evaluate();
                 }
+            },
+            {
+                "len", args =>
+                {
+                    if (args.Count() != 1)
+                    {
+                        throw new NCalcEvaluationException("len() takes exactly 1 argument.");
+                    }
+
+                    return args[0].ToString()?.Length;
+                }
+            },
+            {
+                "trim", args =>
+                {
+                    if (args.Count() != 1)
+                    {
+                        throw new NCalcEvaluationException("trim() takes exactly 1 argument.");
+                    }
+
+                    return args[0].ToString()?.Trim();
+                }
             }
         }.ToFrozenDictionary(StringComparer.InvariantCultureIgnoreCase)
     };
