@@ -162,10 +162,10 @@ public class ElementService(
             {
                 if (args.DataRow.TryGetValue("info", out var info) && !string.IsNullOrWhiteSpace(info?.ToString()))
                 {
-                    args.HtmlResult.AppendSpan(span =>
+                    args.HtmlResult?.AppendSpan(span =>
                     {
                         span.WithCssClass("fa fa-question-circle help-description");
-                        span.WithToolTip(info!.ToString());
+                        span.WithToolTip(info?.ToString());
                     });
                 }
             }

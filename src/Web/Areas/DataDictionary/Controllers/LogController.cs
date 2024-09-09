@@ -45,7 +45,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
             if (!args.Field.Name.Equals(Options.MessageColumnName))
                 return ValueTask.CompletedTask;
             
-            var message = args.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
+            var message = args.DataRow[Options.MessageColumnName]?.ToString()?.Replace("\n", "<br>");
             args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
 
             return ValueTask.CompletedTask;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
@@ -7,27 +8,27 @@ using JJMasterData.Core.UI.Html;
 namespace JJMasterData.Core.UI.Events.Args;
 
 /// <summary>
-/// Argumento utilizado para customizar o conteúdo renderizado em uma celula
+/// Event arguments used to customize the rendered content in a grid cell.
 /// </summary>
 public class GridCellEventArgs : EventArgs
 {
     /// <summary>
-    /// Campo atual que esta sendo renderizado
+    /// The current form field being rendered.
     /// </summary>
-    public FormElementField Field { get; set; }
+    public required FormElementField Field { get; set; }
 
     /// <summary>
-    /// Linha atual com o valor de todos os campos
+    /// The current row data containing values for all fields.
     /// </summary>
-    public Dictionary<string,object> DataRow { get; set; }
+    public required Dictionary<string, object?> DataRow { get; set; }
 
     /// <summary>
-    /// Objeto renderizado
+    /// The component responsible for rendering the content.
     /// </summary>
-    public ComponentBase Sender { get; set; }
+    public required ComponentBase Sender { get; set; }
 
     /// <summary>
-    /// Retorno esperado com o conteudo HTML renderizado
+    /// The expected result containing the rendered HTML content.
     /// </summary>
-    public HtmlBuilder HtmlResult { get; set; }
+    public HtmlBuilder? HtmlResult { get; set; }
 }
