@@ -1,41 +1,47 @@
 ﻿class TextAreaListener {
-    static listenKeydown(selectorPrefix){
-        $(selectorPrefix + "textarea").keydown(function () {
-            const jjTextArea = $(this);
-            let maxLength : any = jjTextArea.attr("maxlength");
-            let maximumLimitLabel : any = jjTextArea.attr("maximum-limit-of-characters-label");
-            let charactersRemainingLabel : any = jjTextArea.attr("characters-remaining-label");
-
-            if (isNaN(maxLength))
-                maxLength = jjTextArea.attr("jjmaxlength");
-
-            if (isNaN(maxLength))
-                return;
-
-            if (isNaN(maximumLimitLabel))
-                maximumLimitLabel = "Maximum limit of {0} characters!";
-
-            if (isNaN(charactersRemainingLabel))
-                charactersRemainingLabel = "({0} characters remaining)";
-
-            if (!isNaN(maxLength)) {
-                var nId = jjTextArea.attr("id");
-                var iTypedChar : number = jjTextArea.val().toString().length;
-                if (iTypedChar > maxLength) {
-                    alert(maximumLimitLabel.replace("{0}", maxLength));
-                }
-
-                charactersRemainingLabel = charactersRemainingLabel.replace("{0}", (maxLength - jjTextArea.val().toString().length));
-                charactersRemainingLabel += "&nbsp;";
-
-                if ($("#span-size-" + nId).length) {
-                    $("#span-size-" + nId).html(charactersRemainingLabel);
-                } else {
-                    $("<span id='span-size-" + nId + "' class='small' style='float: right'>" + charactersRemainingLabel + "</span>").insertBefore(jjTextArea);
-                }
-            }
+    static listenKeydown(selectorPrefix: string) {
+        $(selectorPrefix + "textarea").on("input", function () {
+            TextAreaListener.handleInputOrPaste($(this));
         });
+
+        $(selectorPrefix + "textarea").on("paste", async function () {
+            const jjTextArea = $(this);
+       
+            setTimeout(function () {
+                TextAreaListener.handleInputOrPaste(jjTextArea);
+            }, 0);
+        });
+    }
+
+    private static getTextAreaVal(jjTextArea){
+        return jjTextArea.val().replace( /\r?\n/g, "\r\n" );
+    }
+    
+    private static handleInputOrPaste(jjTextArea) {
+        const maxLength = parseInt(jjTextArea.attr("maxlength") || jjTextArea.attr("jjmaxlength") || "0", 10);
+        const maximumLimitLabel = jjTextArea.attr("maximum-limit-of-characters-label") || "Maximum limit of {0} characters!";
+        const charactersRemainingLabelTemplate = jjTextArea.attr("characters-remaining-label") || "({0} characters remaining)";
+
+        let typedChars = this.getTextAreaVal(jjTextArea).toString().length;
+        if (typedChars > maxLength) {
+            alert(maximumLimitLabel.replace("{0}", maxLength.toString()));
+            jjTextArea.val(this.getTextAreaVal(jjTextArea).toString().substring(0, maxLength));
+            typedChars = this.getTextAreaVal(jjTextArea).toString().length;
+        }
         
-        
+        const charactersRemaining = maxLength - typedChars;
+        const charactersRemainingLabel = charactersRemainingLabelTemplate.replace("{0}", charactersRemaining.toString()) + "&nbsp;";
+
+        const spanId = `#span-size-${jjTextArea.attr("id")}`;
+        if ($(spanId).length) {
+            $(spanId).html(charactersRemainingLabel);
+        } else {
+            $("<span>", {
+                id: `span-size-${jjTextArea.attr("id")}`,
+                class: "small",
+                style: "float: right",
+                html: charactersRemainingLabel
+            }).insertBefore(jjTextArea);
+        }
     }
 }
