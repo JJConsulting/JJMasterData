@@ -6,6 +6,7 @@ namespace JJMasterData.WebApi.Controllers;
 
 [Authorize]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 [Route("masterApi/{elementName}/{id}/{fieldName}/file")]
 public class FileController(FileService service) : ControllerBase
 {

@@ -9,11 +9,17 @@ namespace JJMasterData.WebApi.Swagger;
 public class DataDictionaryDocumentFilter(IServiceProvider serviceProvider) : IDocumentFilter
 {
     private static string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
+
+    protected virtual bool IsAuthenticated(HttpContext httpContext)
+    {
+        return httpContext.User.Identity?.IsAuthenticated is true;
+    }
+    
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
         var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext!;
 
-        if (httpContext.User.Identity?.IsAuthenticated is false)
+        if (!IsAuthenticated(httpContext))
             return;
         
         using var scope = serviceProvider.CreateScope();

@@ -12,6 +12,7 @@ namespace JJMasterData.WebApi.Controllers;
 
 [Authorize]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 [Route("masterApi/{elementName}")]
 public class MasterApiController(MasterApiService service) : ControllerBase
 {
