@@ -1,13 +1,17 @@
 ﻿using System.Reflection;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.Tasks;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace JJMasterData.WebApi.Swagger;
 
-public class DataDictionaryDocumentFilter(IServiceProvider serviceProvider) : IDocumentFilter
+public class DataDictionaryDocumentFilter(
+    IHttpContextAccessor httpContextAccessor, 
+    IServiceProvider serviceProvider) : IDocumentFilter
 {
+    protected IServiceProvider ServiceProvider { get; } = serviceProvider;
     private static string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
 
     protected virtual bool IsAuthenticated(HttpContext httpContext)
@@ -15,23 +19,35 @@ public class DataDictionaryDocumentFilter(IServiceProvider serviceProvider) : ID
         return httpContext.User.Identity?.IsAuthenticated is true;
     }
     
-    public void Apply(OpenApiDocument document, DocumentFilterContext context)
+    protected virtual ValueTask<bool> IsElementAllowedAsync(string elementName)
     {
-        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext!;
+        return new(true);
+    }
+    
+    //TODO: Swagger 6.8 not released
+    public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+    {
+        AsyncHelper.RunSync(()=>ApplyAsync(swaggerDoc));
+    }
 
-        if (!IsAuthenticated(httpContext))
+    private async Task ApplyAsync(OpenApiDocument document)
+    {
+        if (!IsAuthenticated(httpContextAccessor.HttpContext!))
             return;
         
-        using var scope = serviceProvider.CreateScope();
+        document.Info.Version = Version;
+        
+        using var scope = ServiceProvider.CreateScope();
 
         var dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
         
-        document.Info.Version = Version;
-
-        var formElements = dataDictionaryRepository.GetFormElementList();
+        var formElements = await dataDictionaryRepository.GetFormElementListAsync();
 
         foreach (var formElement in formElements)
         {
+            if (!await IsElementAllowedAsync(formElement.Name))
+                continue;
+            
             var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
             var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
             var factory = new DataDictionaryOperationFactory(formElement, formElement.ApiOptions);
