@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Localization;
@@ -13,17 +12,11 @@ namespace JJMasterData.Commons.Util;
 
 public static class StringManager
 {
-    public static bool ParseBool(object? value)
-    {
-        return ParseBool(value?.ToString());
-    }
-    
+    public static bool ParseBool(object? value) => ParseBool(value?.ToString());
+
     public static bool ParseBool(string? value)
     {
-        if (value == null)
-            return false;
-        
-        return value.ToLowerInvariant() switch
+        return value?.ToLowerInvariant() switch
         {
             "true" => true,
             "1" => true,

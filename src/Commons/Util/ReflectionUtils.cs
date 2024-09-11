@@ -8,7 +8,6 @@ namespace JJMasterData.Commons.Util;
 
 public static class ReflectionUtils
 {
-
     /// <summary>
     /// Try to load an assembly into the application's app domain.
     /// Loads by name first then checks for filename

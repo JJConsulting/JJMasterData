@@ -110,7 +110,6 @@ public static class FileIO
 
     public static bool IsFileLocked(FileInfo file)
     {
-
         if (!File.Exists(file.FullName))
             return false;
 

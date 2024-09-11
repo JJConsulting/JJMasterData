@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -54,9 +53,11 @@ public sealed class MasterDataCoreOptions
                   | ExpressionOptions.OrdinalStringComparer
                   | ExpressionOptions.AllowNullOrEmptyExpressions
                   | ExpressionOptions.CaseInsensitiveStringComparer,
-        Functions = new Dictionary<string, ExpressionFunction>()
+        Functions = new Dictionary<string, ExpressionFunction>(StringComparer.InvariantCultureIgnoreCase)
         {
-            { "now", _ => DateTime.Now },
+            {
+                "now", _ => DateTime.Now
+            },
             {
                 "iif", args =>
                 {
@@ -88,6 +89,6 @@ public sealed class MasterDataCoreOptions
                     return args[0].ToString()?.Trim();
                 }
             }
-        }.ToFrozenDictionary(StringComparer.InvariantCultureIgnoreCase)
+        }
     };
 }

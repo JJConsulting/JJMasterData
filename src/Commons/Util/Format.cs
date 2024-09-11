@@ -6,7 +6,6 @@ namespace JJMasterData.Commons.Util;
 
 public static class Format
 {
-    
     public static string DateFormat => DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
 
     public static string TimeFormat => DateTimeFormatInfo.CurrentInfo.ShortTimePattern;

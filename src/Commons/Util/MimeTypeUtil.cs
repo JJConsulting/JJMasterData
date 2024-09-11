@@ -1,14 +1,12 @@
 ﻿using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 
 namespace JJMasterData.Commons.Util;
 
 public static class MimeTypeUtil
 {
-
-    private static readonly Dictionary<string, string> _mappings = new Dictionary<string, string>
-        (StringComparer.InvariantCultureIgnoreCase) {
-
+    private static readonly FrozenDictionary<string, string> Mappings = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
             #region Big freaking list of mime types
             // combination of values from Windows 7 Registry and 
             // from C:\Windows\System32\inetsrv\config\applicationHost.config
@@ -574,14 +572,8 @@ public static class MimeTypeUtil
             {".z", "application/x-compress"},
             {".zip", "application/x-zip-compressed"},
             #endregion
-
-        };
-
-    public static Dictionary<string, string> GetMappings()
-    {
-        return _mappings;
-    }
-
+        }.ToFrozenDictionary(StringComparer.InvariantCultureIgnoreCase);
+    
     public static string GetMimeType(string extension)
     {
         if (extension == null)
@@ -591,18 +583,15 @@ public static class MimeTypeUtil
 
         if (extension.Contains("."))
         {
-            string[] aux = extension.Split('.');
+            var aux = extension.Split('.');
             if (aux.Length > 1)
-                extension = $".{aux[aux.Length - 1]}";
+                extension = $".{aux[^1]}";
         }
         else
         {
             extension = $".{extension}";
         }
 
-        string mime;
-
-        return _mappings.TryGetValue(extension, out mime) ? mime : "application/octet-stream";
+        return Mappings.TryGetValue(extension, out var mime) ? mime : "application/octet-stream";
     }
-
 }
