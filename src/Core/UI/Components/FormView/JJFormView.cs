@@ -1254,9 +1254,8 @@ public class JJFormView : AsyncComponent
         var formStateData = new FormStateData(values, pageState);
         var visibleRelationships = FormElement
             .Relationships
-            .FindAll(r => 
-                r.ViewType != RelationshipViewType.None || r.IsParent
-                && ExpressionsService.GetBoolValue(r.Panel.VisibleExpression, formStateData));
+            .FindAll(r => r.ViewType != RelationshipViewType.None &&
+                          ExpressionsService.GetBoolValue(r.Panel.VisibleExpression, formStateData));
         return visibleRelationships;
     }
 
