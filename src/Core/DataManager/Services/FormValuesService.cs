@@ -110,6 +110,12 @@ public class FormValuesService(
                 else //Legacy compatibility when FieldType.Bit didn't exist.
                     parsedValue = boolValue ? "1" : "0";
                 break;
+            #if NET48
+            //.NET Framework 4.8 don't handle well multiple inputs with the same name.
+            case FormComponent.ComboBox when field.DataItem?.EnableMultiSelect is true:
+                parsedValue = string.IsNullOrEmpty(value) ? null : value?.TrimEnd(',');
+                break;
+            #endif
             default:
                 parsedValue = string.IsNullOrEmpty(value) ? null : value;
                 break;
