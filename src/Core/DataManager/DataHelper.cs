@@ -14,11 +14,11 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpContext context, Dictionary<string, object>? userValues)
+    public static string? GetCurrentUserId(IHttpContext context, Dictionary<string, object?>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
-            return value.ToString();
+            return value?.ToString();
         }
 
         return context.User.GetUserId();
@@ -219,7 +219,8 @@ public static class DataHelper
         if (values == null || values.Count == 0)
             return;
 
-        var keysToRemove = new List<string>();
+        List<string> keysToRemove = [];
+        
         foreach (var pair in values)
         {
             if (pair.Value == null)
@@ -231,6 +232,4 @@ public static class DataHelper
             values.Remove(key);
         }
     }
-    
-    
 }

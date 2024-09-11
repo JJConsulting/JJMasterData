@@ -231,7 +231,7 @@ public class FieldController(FieldService fieldService)
     }
     private void RecoverCustomAttributes(ref FormElementField field)
     {
-        field.Attributes = new Dictionary<string, object>();
+        field.Attributes = new Dictionary<string, object?>();
         switch (field.Component)
         {
             case FormComponent.Text:

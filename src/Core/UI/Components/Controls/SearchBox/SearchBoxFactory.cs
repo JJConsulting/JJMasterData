@@ -34,7 +34,7 @@ internal sealed class SearchBoxFactory(
             Visible = true,
             AutoReloadFormFields = false,
             FormStateData = controlContext.FormStateData,
-            UserValues = controlContext.FormStateData.UserValues
+            UserValues = controlContext.FormStateData.UserValues!
         };
 
         if (controlContext.Value != null)
@@ -42,5 +42,4 @@ internal sealed class SearchBoxFactory(
 
         return search;
     }
-    
 }

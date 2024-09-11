@@ -37,7 +37,7 @@ public class CardTagHelper(IComponentFactory<JJCard> cardFactory)
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var card = CardFactory.Create();
-        card.Name = Name ?? Title?.ToLower().Replace(" ", "_");
+        card.Name = Name ?? Title?.ToLower().Replace(" ", "_")!;
         card.Title = Title;
         card.Color = Color;
         card.Layout = Layout ?? PanelLayout.Panel;

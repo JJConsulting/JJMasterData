@@ -51,8 +51,6 @@ public static class StringManager
         return result;
     }
     
-
-
     /// <summary>
     /// Remove os acentos e caracteres especiais
     /// </summary>

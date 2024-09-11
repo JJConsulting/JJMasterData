@@ -105,8 +105,7 @@ public class FormElementField : ElementField
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [JsonProperty("attributes")]
-    public Dictionary<string, object> Attributes { get; set; } =
-        new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, object?> Attributes { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Allows exporting the field (Default=true)
@@ -319,7 +318,7 @@ public class FormElementField : ElementField
 
         copiedField.DataItem = DataItem?.DeepCopy();
         copiedField.DataFile = DataFile?.DeepCopy();
-        copiedField.Attributes = new Dictionary<string, object>(Attributes);
+        copiedField.Attributes = new Dictionary<string, object?>(Attributes);
         copiedField.Actions = Actions.DeepCopy();
         copiedField.Filter = Filter.DeepCopy();
 

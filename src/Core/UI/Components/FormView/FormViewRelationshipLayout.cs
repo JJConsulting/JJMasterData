@@ -189,7 +189,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         childFormView.RelationshipType = RelationshipType.OneToMany;
         
         childFormView.ShowTitle = false;
-        childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
+        childFormView.UserValues = new Dictionary<string, object?>(parentFormView.UserValues);
         
         if(childFormView.CurrentAction is null)
             childFormView.PageState = PageState.List;
@@ -236,7 +236,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         }
         
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
-        childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
+        childFormView.UserValues = new Dictionary<string, object?>(parentFormView.UserValues);
         childFormView.ShowTitle = false;
 
         if (childValues is not null)

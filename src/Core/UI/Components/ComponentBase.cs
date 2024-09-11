@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 
 namespace JJMasterData.Core.UI.Components;
@@ -11,17 +12,16 @@ public abstract class ComponentBase
 {
     #region "Properties"
 
-    private Dictionary<string, object> _userValues;
-    private Dictionary<string, string> _attributes;
-
+    private Dictionary<string, object?>? _userValues;
+    private Dictionary<string, string>? _attributes;
     
     /// <summary>
     /// Values specified by the user.
     /// Used to replace values who support expression during runtime .
     /// </summary>
-    public Dictionary<string, object>UserValues
+    public Dictionary<string, object?> UserValues
     {
-        get => _userValues ??= new Dictionary<string, object>();
+        get => _userValues ??= new Dictionary<string, object?>();
         set => _userValues = value;
     }
 
@@ -31,7 +31,7 @@ public abstract class ComponentBase
     /// Represents the component unique identifier.
     /// The name will be sent to the client, do not expose table names and/or sensitive data. 
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     /// <summary>
     /// HTML attributes represented by key/value pairs
@@ -42,7 +42,7 @@ public abstract class ComponentBase
         set => _attributes = value;
     }
 
-    public string CssClass { get; set; }
+    public string? CssClass { get; set; }
 
     #endregion
 
@@ -51,19 +51,24 @@ public abstract class ComponentBase
         return Attributes.TryGetValue(key, out var attribute) ? attribute : string.Empty;
     }
 
-    public void SetAttr(string key, object value)
+    public void SetAttr(string key, object? value)
     {
-        if (value == null || string.IsNullOrEmpty(value.ToString()))
+        SetAttr(key, value?.ToString());
+    }
+    
+    public void SetAttr(string key, string? value)
+    {
+        if (value == null || string.IsNullOrEmpty(value))
         {
             Attributes.Remove(key);
         }
         else
         {
-            Attributes[key] = value.ToString();
+            Attributes[key] = value;
         }
     }
-
-    public void SetAttr(Dictionary<string, object> values)
+    
+    public void SetAttr(Dictionary<string, object?>? values)
     {
         if (values == null)
             return;
@@ -81,7 +86,7 @@ public abstract class ComponentBase
     /// </summary>
     /// <param name="field">Name of the field</param>
     /// <param name="value">Name of the field</param>
-    public void SetUserValues(string field, object value)
+    public void SetUserValues(string field, object? value)
     {
         UserValues[field] = value;
     }

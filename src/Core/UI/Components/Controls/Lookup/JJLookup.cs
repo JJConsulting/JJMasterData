@@ -122,11 +122,11 @@ public class JJLookup : ControlBase
         ComponentFactory = componentFactory;
         Enabled = true;
         AutoReloadFormFields = false;
-        Name = field?.Name;
+        Name = field?.Name!;
         ModalSize = ModalSize.Large;
         ModalTitle = "Search";
         FormStateData = controlContext?.FormStateData;
-        UserValues = controlContext?.FormStateData.UserValues;
+        UserValues = controlContext?.FormStateData.UserValues ?? new(StringComparer.InvariantCultureIgnoreCase);
         SelectedValue = controlContext?.Value?.ToString();
 
         if (field != null)

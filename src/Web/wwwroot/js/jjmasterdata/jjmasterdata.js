@@ -2486,7 +2486,9 @@ class TextAreaListener {
         return jjTextArea.val().replace(/\r?\n/g, "\r\n");
     }
     static handleInputOrPaste(jjTextArea) {
-        const maxLength = parseInt(jjTextArea.attr("maxlength") || jjTextArea.attr("jjmaxlength") || "0", 10);
+        const maxLength = parseInt(jjTextArea.attr("maxlength") || jjTextArea.attr("jjmaxlength"), 10);
+        if (!maxLength)
+            return;
         const maximumLimitLabel = jjTextArea.attr("maximum-limit-of-characters-label") || "Maximum limit of {0} characters!";
         const charactersRemainingLabelTemplate = jjTextArea.attr("characters-remaining-label") || "({0} characters remaining)";
         let typedChars = this.getTextAreaVal(jjTextArea).toString().length;

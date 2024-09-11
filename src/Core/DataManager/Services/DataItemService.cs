@@ -9,6 +9,7 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -28,18 +29,14 @@ public class DataItemService(
         DataQuery dataQuery)
     {
         var dataItemType = GetDataItemType(dataItem);
-        
-        switch (dataItemType)
+
+        return dataItemType switch
         {
-            case DataItemType.Manual:
-                return GetItemsValues(dataItem, dataQuery.SearchId, dataQuery.SearchText).ToList();
-            case DataItemType.SqlCommand:
-                return await GetSqlCommandValues(dataItem, dataQuery);
-            case DataItemType.ElementMap:
-                return await GetElementMapValues(dataItem, dataQuery);
-            default:
-                throw new JJMasterDataException("Invalid DataItemType.");
-        }
+            DataItemType.Manual => GetItemsValues(dataItem, dataQuery.SearchId, dataQuery.SearchText).ToList(),
+            DataItemType.SqlCommand => await GetSqlCommandValues(dataItem, dataQuery),
+            DataItemType.ElementMap => await GetElementMapValues(dataItem, dataQuery),
+            _ => throw new JJMasterDataException("Invalid DataItemType.")
+        };
     }
 
     private static DataItemType GetDataItemType(FormElementDataItem dataItem)
@@ -70,7 +67,7 @@ public class DataItemService(
             }
             else if (searchText is not null)
             {
-                if (item.Description?.ToLowerInvariant().Contains(searchText.ToLowerInvariant()) ?? false)
+                if (item.Description?.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) is true)
                 {
                     yield return item;
                 }
@@ -115,7 +112,7 @@ public class DataItemService(
             if (elementMap.GroupFieldName != null)
                 item.Group = value[elementMap.GroupFieldName]?.ToString();
 
-            if (searchText == null || item.Description!.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+            if (searchText == null || item.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
             {
                 result.Add(item);
             }
@@ -180,7 +177,7 @@ public class DataItemService(
                 }
             }
 
-            if (searchText == null || (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false))
+            if (searchText == null || item.Description?.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) is true)
             {
                 result.Add(item);
             }
