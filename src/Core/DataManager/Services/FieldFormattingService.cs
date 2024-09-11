@@ -4,14 +4,20 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldFormattingService(DataItemService dataItemService, LookupService lookupService)
+public class FieldFormattingService(
+    DataItemService dataItemService,
+    LookupService lookupService,
+    IStringLocalizer<MasterDataResources> stringLocalizer
+    )
 {
     public async ValueTask<string> FormatGridValueAsync(
         FormElementFieldSelector fieldSelector,
@@ -51,7 +57,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                     value.ToString(), allowOnlyNumerics);
                 break;
             case FormComponent.CheckBox:
-                stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
+                stringValue = StringManager.ParseBool(value) ? stringLocalizer["Yes"] : stringLocalizer["No"];
                 break;
             case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
