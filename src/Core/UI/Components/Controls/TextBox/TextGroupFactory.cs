@@ -5,7 +5,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -18,7 +17,6 @@ public class TextGroupFactory(
         ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>
 {
-    
     public JJTextGroup Create()
     {
         return new JJTextGroup(linkButtonGroupFactory,formValues);
@@ -204,8 +202,8 @@ public class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-inputmask-inputFormat", Format.DateFormat);
-                textGroup.SetAttr("data-inputmask-displayFormat", Format.DateFormat);
+                textGroup.SetAttr("data-inputmask-inputFormat", Format.DateFormat.ToLowerInvariant());
+                textGroup.SetAttr("data-inputmask-displayFormat", Format.DateFormat.ToLowerInvariant());
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
@@ -215,8 +213,8 @@ public class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-inputmask-inputFormat", $"{Format.DateFormat} HH:MM");
-                textGroup.SetAttr("data-inputmask-displayFormat", $"{Format.DateFormat} HH:MM");
+                textGroup.SetAttr("data-inputmask-inputFormat", $"{Format.DateFormat.ToLowerInvariant()} HH:MM");
+                textGroup.SetAttr("data-inputmask-displayFormat", $"{Format.DateFormat.ToLowerInvariant()} HH:MM");
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
