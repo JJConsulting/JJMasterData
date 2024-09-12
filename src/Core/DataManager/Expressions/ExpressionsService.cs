@@ -48,14 +48,20 @@ public class ExpressionsService(
 
     private void EncryptValues(Dictionary<string, object?> parsedValues)
     {
+        List<string> keysToUpdate = [];
+
         foreach (var kvp in parsedValues)
         {
-            var value = parsedValues[kvp.Key];
-            if (value is not null)
-                parsedValues[kvp.Key] = encryptionService.EncryptStringWithUrlEscape(value.ToString()!);
+            if (kvp.Value is not null)
+                keysToUpdate.Add(kvp.Key);
+        }
+
+        foreach (var key in keysToUpdate)
+        {
+            parsedValues[key] = encryptionService.EncryptStringWithUrlEscape(parsedValues[key]!.ToString()!);
         }
     }
-
+    
     public bool GetBoolValue(string? expression, FormStateData formStateData)
     {
         return ParseBool(GetExpressionValue(expression, formStateData));
