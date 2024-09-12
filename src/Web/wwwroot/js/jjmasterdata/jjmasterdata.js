@@ -281,7 +281,7 @@ class AuditLogViewHelper {
             auditLogIdInput.value = id;
         }
         if (form) {
-            form.requestSubmit();
+            form.submit();
         }
     }
     static loadAuditLog(componentName, logId, routeContext) {

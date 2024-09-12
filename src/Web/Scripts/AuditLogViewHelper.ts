@@ -9,7 +9,7 @@ class AuditLogViewHelper {
         }
 
         if (form) {
-            form.requestSubmit();
+            form.submit();
         }
     }
 

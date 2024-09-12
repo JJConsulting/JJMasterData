@@ -8,7 +8,19 @@
 
 
 <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
+            <div class="form-floating">
+                <input asp-for="CssClass" placeholder="" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
+                <label asp-for="CssClass"></label>
+            </div>
+        </div>
 
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
+            <div class="form-floating">
+                <input asp-for="LineGroup" type="number" placeholder="" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
+                <label asp-for="LineGroup"></label>
+            </div>
+        </div>
     <div class="@BootstrapHelper.FormGroup col-sm-4">
         <div class="form-floating">
             <input asp-for="HelpDescription" placeholder="" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
@@ -16,20 +28,7 @@
             </label>
         </div>
     </div>
-    
-    <div class="@BootstrapHelper.FormGroup col-sm-4">
-        <div class="form-floating">
-            <input asp-for="CssClass" placeholder="" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
-            <label asp-for="CssClass"></label>
-        </div>
-    </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4">
-        <div class="form-floating">
-            <input asp-for="LineGroup" type="number" placeholder="" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
-            <label asp-for="LineGroup"></label>
-        </div>
-    </div>
 </div>
 
 <collapse-panel icon="Table" expanded-by-default="true" title="@StringLocalizer["Grid View"]" visible="@ViewBag.IsForm">

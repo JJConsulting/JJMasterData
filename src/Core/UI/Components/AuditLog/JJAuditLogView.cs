@@ -103,7 +103,7 @@ public class JJAuditLogView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
+        var logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))
@@ -168,7 +168,7 @@ public class JJAuditLogView : AsyncComponent
 
     public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(Dictionary<string, object> values)
     {
-        string entryId = await GetEntryKey(values);
+        var entryId = await GetEntryKey(values);
         var html = await GetLogDetailsHtmlAsync(entryId);
         html.AppendHiddenInput($"audit-log-id-{FormElement.Name}", entryId);
         return html;
@@ -360,7 +360,7 @@ public class JJAuditLogView : AsyncComponent
             string icon = "";
             string color = "";
             string action = "";
-            string origem = "";
+            string source = "";
 
             if (row["actionType"]!.Equals((int)CommandOperation.Update))
             {
@@ -382,14 +382,14 @@ public class JJAuditLogView : AsyncComponent
             }
 
             if (row["origin"]!.Equals((int)DataContextSource.Api))
-                origem = nameof(DataContextSource.Api);
+                source = nameof(DataContextSource.Api);
             else if (row["origin"].Equals((int)DataContextSource.Form))
-                origem = nameof(DataContextSource.Form);
+                source = nameof(DataContextSource.Form);
             else if (row["origin"].Equals((int)DataContextSource.Api))
-                origem = nameof(DataContextSource.Upload);
+                source = nameof(DataContextSource.Upload);
 
             string logId = row["id"].ToString();
-            string message = $"{action} [{origem}] {row["userId"]?.ToString() ?? string.Empty}";
+            string message = StringLocalizer["{0} at {1}", action, source];
 
             html.Append(HtmlTag.A, a =>
             {
@@ -402,7 +402,8 @@ public class JJAuditLogView : AsyncComponent
                 a.WithNameAndId(logId);
                 a.WithCssClass("list-group-item ui-sortable-handle");
                 a.WithCssClassIf(logId!.Equals(viewId), "active");
-
+                a.WithStyle("text-decoration: none;");
+                
                 a.Append(HtmlTag.Div, div =>
                 {
                     div.WithStyle( "height: 4.75rem;");
@@ -412,19 +413,22 @@ public class JJAuditLogView : AsyncComponent
                         span.WithStyle( $"color:{color};");
                         span.WithToolTip(action);
                     });
-                    div.Append(HtmlTag.B, b => { b.AppendText(message); });
+                    div.Append(HtmlTag.B, b => b.AppendText(message));
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });
+                    div.Append(HtmlTag.Span, span => span.AppendText(row["modified"]!.ToString()));
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b =>
+                    div.Append(HtmlTag.Span, span =>
                     {
-                        b.AppendText($"IP: {row["ip"]}");
-                        var infoIcon = new JJIcon(IconType.InfoCircle)
+                        span.AppendText($"IP: {row["ip"]}");
+                        span.AppendComponent(new JJIcon(IconType.InfoCircle)
                         {
-                            CssClass = "help-description"
-                        };
-                        b.AppendComponent(infoIcon);
-                        b.WithToolTip(row["browser"]?.ToString());
+                            CssClass = "help-description",
+                            Attributes =
+                            {
+                                {"data-bs-html","true"}
+                            },
+                            Tooltip = $"{StringLocalizer["Browser"]}: {row["browser"]?.ToString() ?? string.Empty}<br>{StringLocalizer["User"]}: {row["userId"]?.ToString() ?? string.Empty}" 
+                        });
                     });
                 });
             });

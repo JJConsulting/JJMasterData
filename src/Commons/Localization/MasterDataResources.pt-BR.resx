@@ -189,6 +189,10 @@
     <value>Um registro selecionado</value>
     <comment>JJMasterDataApi</comment>
   </data>
+  <data name="{0} at {1}" xml:space="preserve">
+    <value>{0} no {1}</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
   <data name="Redirects to this URL after the command is executed successfully." xml:space="preserve">
     <value>Redireciona para esta URL após o comando ser executado com sucesso.</value>
     <comment>JJMasterDataWeb</comment>

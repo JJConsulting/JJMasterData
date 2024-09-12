@@ -97,9 +97,11 @@ public class AuditLogService(
         element.Fields.Add(DicIp, "IP Address", FieldType.Varchar, 45, false, FilterMode.Contain);
         element.Fields.Add(DicBrowser, "Browser", FieldType.Varchar, 100, false, FilterMode.None);
         element.Fields.Add(DicOrigin, "Origin", FieldType.Int, 1, true, FilterMode.Equal);
-        element.Fields.Add(DicKey, "Record Key", FieldType.Varchar, 100, true, FilterMode.Equal);
+        element.Fields.Add(DicKey, "Record Key", FieldType.Varchar, 100, true, FilterMode.Contain);
         element.Fields.Add(DicJson, "Object", FieldType.Text, 0, false, FilterMode.None);
         element.ConnectionId = connectionId;
+        element.UseReadProcedure = false;
+        element.UseWriteProcedure = false;
         
         return element;
     }
