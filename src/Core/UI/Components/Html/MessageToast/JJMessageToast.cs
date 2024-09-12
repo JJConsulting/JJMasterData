@@ -13,7 +13,8 @@ public class JJMessageToast : HtmlComponent
     public JJIcon? Icon { get; set; }
     public BootstrapColor TitleColor { get; set; }
     public bool ShowAsOpened { get; set; } = true;
-
+    public bool ShowCloseButton { get; set; } = true;
+    
     internal JJMessageToast()
     {
         TitleColor = BootstrapColor.Default;
@@ -25,9 +26,9 @@ public class JJMessageToast : HtmlComponent
         var htmlToast = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("position-fixed bottom-0 end-0 p-3")
             .WithAttribute("style", "z-index: 5")
-            .AppendDiv(alert =>
+            .AppendDiv(toast =>
             {
-                alert.WithId(Name)
+                toast.WithId(Name)
                     .WithCssClass("toast fade")
                     .WithAttribute("role", "alert")
                     .WithAttribute("aria-live", "assertive")
@@ -54,10 +55,19 @@ public class JJMessageToast : HtmlComponent
                                     .WithAttribute("type", "button")
                                     .WithAttribute("data-bs-dismiss", "toast")
                                     .WithAttribute("aria-label", "Close")
-                                    .AppendSpan(uil => { uil.WithCssClass("uil uil-times fs-7"); });
+                                    .AppendSpan(uil => uil.WithCssClass("uil uil-times fs-7"));
                             });
+                        if (ShowCloseButton)
+                        {
+                            header.Append(HtmlTag.Button, button =>
+                            {
+                                button.WithAttribute("type", "button");
+                                button.WithCssClass("btn-close");
+                                button.WithAttribute("data-bs-dismiss", "toast");
+                                button.WithAttribute("aria-label", "close");
+                            }); }
                     });
-                alert.AppendIf(Message != null, HtmlTag.Div, body =>
+                toast.AppendIf(Message != null, HtmlTag.Div, body =>
                 {
                     body.WithCssClass("toast-body")
                         .AppendText(Message!);
