@@ -14,6 +14,7 @@ using JJMasterData.Core.DataManager.Exceptions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -21,6 +22,7 @@ public class FormValuesService(
     IEntityRepository entityRepository,
     FieldValuesService fieldValuesService,
     IEncryptionService encryptionService,
+    ILogger<FormValuesService> logger,
     IHttpRequest httpRequest)
 {
     private Dictionary<string, object?> GetFormValues(FormElement formElement,
@@ -102,7 +104,7 @@ public class FormValuesService(
             case FormComponent.CheckBox:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-            
+
                 var boolValue = StringManager.ParseBool(value);
 
                 if (field.DataType is FieldType.Bit)
@@ -110,12 +112,12 @@ public class FormValuesService(
                 else //Legacy compatibility when FieldType.Bit didn't exist.
                     parsedValue = boolValue ? "1" : "0";
                 break;
-            #if NET48
+#if NET48
             //.NET Framework 4.8 don't handle well multiple inputs with the same name.
             case FormComponent.ComboBox when field.DataItem?.EnableMultiSelect is true:
                 parsedValue = string.IsNullOrEmpty(value) ? null : value?.TrimEnd(',');
                 break;
-            #endif
+#endif
             default:
                 parsedValue = string.IsNullOrEmpty(value) ? null : value;
                 break;
@@ -165,7 +167,7 @@ public class FormValuesService(
     {
         if (string.IsNullOrEmpty(value))
             return null;
-        
+
         object? parsedValue = value;
 
         switch (dataType)
@@ -195,6 +197,7 @@ public class FormValuesService(
         if (formStateData.Values.Count == 0)
         {
             var dbValues = await GetDbValues(formElement);
+
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
         }
 
@@ -228,9 +231,18 @@ public class FormValuesService(
         if (encryptedPkValues is null)
             return new Dictionary<string, object?>();
 
-        string pkValues = encryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
+        var pkValues = encryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
-        return await entityRepository.GetFieldsAsync(element, filters);
+        var result = await entityRepository.GetFieldsAsync(element, filters);
+
+        if (result.Count == 0)
+        {
+            logger.LogWarning(
+                "Nothing returned from the database. ElementName: {ElementName} Filters: {Filters}",
+                element.Name, filters);
+        }
+
+        return result;
     }
 }
