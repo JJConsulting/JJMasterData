@@ -20,7 +20,6 @@
     var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(elementName) as IEventHandler ?? GridEventHandlerResolver.GetGridEventHandler(elementName);
 
     var isCustomizedField = formEventHandler?.GetCustomizedFields().Contains(Model.Name) ?? false;
-    
 }
 
 <script lang="javascript" type="text/javascript">
