@@ -13,6 +13,9 @@ public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
     
+    [HtmlAttributeName("title-size")]
+    public HeadingSize TitleSize { get; set; }
+    
     [HtmlAttributeName("message")]
     public string? Message { get; set; }
     
@@ -37,6 +40,7 @@ public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
         alert.Color = Color;
         alert.CssClass = CssClass;
         alert.Title = Title;
+        alert.TitleSize = TitleSize;
         alert.ShowCloseButton = ShowCloseButton;
 
         if (Icon is not null)

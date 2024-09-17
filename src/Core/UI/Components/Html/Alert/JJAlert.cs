@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
@@ -14,10 +15,23 @@ public class JJAlert : HtmlComponent
     
     [LocalizationRequired]
     public string? Title { get; set; }
+
+    public HeadingSize TitleSize { get; set; } = HeadingSize.H5;
+    
+    private HtmlTag TitleTag => TitleSize switch
+    {
+        HeadingSize.H1 => HtmlTag.H1,
+        HeadingSize.H2 => HtmlTag.H2,
+        HeadingSize.H3 => HtmlTag.H3,
+        HeadingSize.H4 => HtmlTag.H4,
+        HeadingSize.H5 => HtmlTag.H5,
+        HeadingSize.H6 => HtmlTag.H6,
+        _ => throw new ArgumentOutOfRangeException()
+    };
     
     public List<string> Messages { get; } = [];
     public HtmlBuilder? InnerHtml { get; set; }
-    
+
     public bool ShowCloseButton { get; set; }
     
     /// <remarks>
@@ -49,15 +63,15 @@ public class JJAlert : HtmlComponent
         
         if (hasTitle)
         {
-            html.Append(HtmlTag.H5, h5 =>
+            html.Append(TitleTag, title =>
             {
-                h5.WithCssClass("alert-heading");
+                title.WithCssClass("alert-heading");
                 if (ShowIcon)
                 {
-                    AppendAlertIcon(h5);
+                    AppendAlertIcon(title);
                 }
           
-                h5.AppendText(Title);
+                title.AppendText(Title);
             });
         }
 
