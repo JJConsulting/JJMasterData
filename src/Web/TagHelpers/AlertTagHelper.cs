@@ -7,7 +7,6 @@ namespace JJMasterData.Web.TagHelpers;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-
 public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelper
 {
     [HtmlAttributeName("title")]
