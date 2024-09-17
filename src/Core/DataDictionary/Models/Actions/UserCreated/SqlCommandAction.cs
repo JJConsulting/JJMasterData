@@ -1,7 +1,6 @@
 ﻿#nullable enable
-using System.ComponentModel;
+
 using System.ComponentModel.DataAnnotations;
-using Azure.Core;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
