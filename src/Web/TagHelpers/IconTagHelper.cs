@@ -16,6 +16,10 @@ public class IconTagHelper : TagHelper
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
 
+    
+    [HtmlAttributeName("class")]
+    public string? CssClass { get; set; }
+    
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var icon = new JJIcon(Icon);
@@ -28,6 +32,11 @@ public class IconTagHelper : TagHelper
         if (Tooltip != null)
         {
             icon.Tooltip = Tooltip;
+        }
+        
+        if (CssClass != null)
+        {
+            icon.CssClass = CssClass;
         }
         
         output.TagMode = TagMode.StartTagAndEndTag;
