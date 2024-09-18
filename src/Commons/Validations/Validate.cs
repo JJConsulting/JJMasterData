@@ -109,12 +109,12 @@ public static class Validate
             int nHora = Convert.ToInt32(value.Substring(0, 2));
             int nMin = Convert.ToInt32(value.Substring(3, 2));
 
-            if (nHora > 24 | nHora < 0)
+            if (nHora is > 24 or < 0)
             {
                 bRet = false;
             }
 
-            if (nMin > 59 | nMin < 0)
+            if (nMin is > 59 or < 0)
             {
                 bRet = false;
             }

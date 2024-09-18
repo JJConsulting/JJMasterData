@@ -738,7 +738,7 @@ internal static class ValidateBrazil
 
                 intResto = intSoma % 11;
 
-                if (intResto.Equals(0) | intResto.Equals(1))
+                if (intResto.Equals(0) || intResto.Equals(1))
                 {
                     strDigito1 = "0";
                 }
@@ -757,7 +757,7 @@ internal static class ValidateBrazil
 
                 intResto = intSoma % 11;
 
-                if (intResto.Equals(0) | intResto.Equals(1))
+                if (intResto.Equals(0) || intResto.Equals(1))
                 {
                     strDigito2 = "0";
                 }

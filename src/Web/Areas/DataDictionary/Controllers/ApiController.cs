@@ -47,12 +47,15 @@ public class ApiController(ApiService apiService) : DataDictionaryController
             ApiOptions = metadata.ApiOptions,
             SynchronismMode = metadata.SynchronismMode,
             EnableSynchronism = metadata.EnableSynchronism,
-            ElementFields = new List<ElementField>(metadata.Fields.FindAll(
-                x => (x.IsPk | x.Filter.Type != FilterMode.None) &
-                     x.DataType != FieldType.DateTime &
-                     x.DataType != FieldType.DateTime2 &
-                     x.DataType != FieldType.Date
-            ))
+            ElementFields =
+            [
+                ..metadata.Fields.FindAll(
+                    x => (x.IsPk || x.Filter.Type != FilterMode.None) &&
+                         x.DataType != FieldType.DateTime &&
+                         x.DataType != FieldType.DateTime2 &&
+                         x.DataType != FieldType.Date
+                )
+            ]
         };
 
         return model;

@@ -77,7 +77,7 @@ public class ElementService(
             }
         }
 
-        if (importFields & IsValid)
+        if (importFields && IsValid)
         {
             var exists = await entityRepository.TableExistsAsync(tableName, connectionId);
             if (!exists)

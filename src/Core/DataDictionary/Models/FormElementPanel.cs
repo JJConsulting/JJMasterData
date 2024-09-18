@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
-
 public class FormElementPanel
 {
     [JsonProperty("id")]
@@ -60,7 +59,7 @@ public class FormElementPanel
 
     public bool HasTitle()
     {
-        return !string.IsNullOrEmpty(Title) | !string.IsNullOrEmpty(SubTitle);
+        return !string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(SubTitle);
     }
 
     public FormElementPanel DeepCopy()

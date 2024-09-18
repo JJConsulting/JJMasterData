@@ -119,7 +119,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             throw new ArgumentNullException(nameof(paramsList));
 
         var formElement = await GetDataDictionary(elementName);
-        if (!formElement.ApiOptions.EnableAdd | !formElement.ApiOptions.EnableUpdate)
+        if (!formElement.ApiOptions.EnableAdd || !formElement.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
         foreach (var values in paramsList)
@@ -332,7 +332,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var dictionary = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
-        if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
+        if (dictionary.ApiOptions is { EnableAdd: false, EnableUpdate: false })
             throw new UnauthorizedAccessException();
 
         var values = ParseFilter(dictionary, paramValues);

@@ -234,7 +234,7 @@ public class JJLookup : ControlBase
         button.Name = $"btn_{Name}";
         button.Enabled = Enabled;
         button.ShowAsButton = true;
-        button.OnClientClick = $"""defaultModal.showIframe('{formViewUrl}', '{StringLocalizer[ModalTitle]}', '{(int)ModalSize}')""";
+        button.OnClientClick = $"defaultModal.showIframe('{formViewUrl}', '{StringLocalizer[ModalTitle]}', '{(int)ModalSize}')";
         button.IconClass = "fa fa-search";
 
         if (BootstrapHelper.Version == 3)
@@ -268,9 +268,9 @@ public class JJLookup : ControlBase
     
     private static string? GetFeedbackIcon(string? value, string? description)
     {
-        if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
+        if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(description))
             return " jj-icon-success ";
-        if (!string.IsNullOrEmpty(value) & string.IsNullOrEmpty(description))
+        if (!string.IsNullOrEmpty(value) && string.IsNullOrEmpty(description))
             return " jj-icon-warning";
         return null;
     }

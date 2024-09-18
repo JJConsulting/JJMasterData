@@ -342,9 +342,11 @@ public class FieldService(IValidationDictionary validationDictionary,
         if (string.IsNullOrEmpty(dataFile?.AllowedTypes))
             AddError(nameof(dataFile.AllowedTypes), StringLocalizer["Required [AllowedTypes] field"]);
 
-        if (dataFile!.MultipleFile & dataFile.ExportAsLink)
+        if (dataFile!.MultipleFile && dataFile.ExportAsLink)
+        {
             AddError(nameof(dataFile.ExportAsLink),
                 StringLocalizer["The [ExportAsLink] field cannot be enabled with [MultipleFile]"]);
+        }
     }
 
     public async Task<bool> SortFieldsAsync(string elementName, IEnumerable<string> fieldsOrder)
@@ -402,7 +404,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         {
             var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
             var fieldKey = childElement.Fields[elementMap.IdFieldName];
-            if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
+            if (!fieldKey.IsPk && fieldKey.Filter.Type == FilterMode.None)
             {
                 string err = StringLocalizer["Field [{0}] invalid, as it is not PK or not configured as a filter",
                     elementMap.IdFieldName];

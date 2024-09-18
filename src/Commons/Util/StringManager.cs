@@ -228,7 +228,7 @@ public static class StringManager
             if (vlrCentena > 0)
             {
                 string montagem = string.Empty;
-                if (vlrCentena > 0 & vlrCentena < 1)
+                if (vlrCentena is > 0 and < 1)
                 {
                     vlrCentena *= 100;
                 }
@@ -269,7 +269,7 @@ public static class StringManager
                 else if (b == 8) montagem += $"{((a > 0) ? " e " : string.Empty)}oitenta";
                 else if (b == 9) montagem += $"{((a > 0) ? " e " : string.Empty)}noventa";
 
-                if (strVlrCentena.Substring(1, 1) != "1" & c != 0 & montagem != string.Empty) montagem += " e ";
+                if (strVlrCentena.Substring(1, 1) != "1" && c != 0 && montagem != string.Empty) montagem += " e ";
 
                 if (strVlrCentena.Substring(1, 1) != "1")
                     if (c == 1) montagem += isFemale ? "uma" : "um";
@@ -286,7 +286,7 @@ public static class StringManager
             }
 
 
-            if (i == 0 & valorPorExtenso != string.Empty)
+            if (i == 0 && valorPorExtenso != string.Empty)
             {
                 if (Convert.ToInt32(strValor.Substring(0, 3)) == 1)
                     valorPorExtenso +=
@@ -295,7 +295,7 @@ public static class StringManager
                     valorPorExtenso +=
                         $" trilhões{((Convert.ToDecimal(strValor.Substring(3, 12)) > 0) ? " e " : string.Empty)}";
             }
-            else if (i == 3 & valorPorExtenso != string.Empty)
+            else if (i == 3 && valorPorExtenso != string.Empty)
             {
                 if (Convert.ToInt32(strValor.Substring(3, 3)) == 1)
                     valorPorExtenso +=
@@ -304,7 +304,7 @@ public static class StringManager
                     valorPorExtenso +=
                         $" bilhões{((Convert.ToDecimal(strValor.Substring(6, 9)) > 0) ? " e " : string.Empty)}";
             }
-            else if (i == 6 & valorPorExtenso != string.Empty)
+            else if (i == 6 && valorPorExtenso != string.Empty)
             {
                 if (Convert.ToInt32(strValor.Substring(6, 3)) == 1)
                     valorPorExtenso +=
@@ -313,7 +313,7 @@ public static class StringManager
                     valorPorExtenso +=
                         $" milhões{((Convert.ToDecimal(strValor.Substring(9, 6)) > 0) ? " e " : string.Empty)}";
             }
-            else if (i == 9 & valorPorExtenso != string.Empty)
+            else if (i == 9 && valorPorExtenso != string.Empty)
                 if (Convert.ToInt32(strValor.Substring(9, 3)) > 0)
                     valorPorExtenso +=
                         $" mil{((Convert.ToDecimal(strValor.Substring(12, 3)) > 0) ? " e " : string.Empty)}";
@@ -321,10 +321,10 @@ public static class StringManager
             if (i == 12)
             {
                 if (valorPorExtenso.Length > 8)
-                    if (valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == "bilhão" | valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == "milhão")
+                    if (valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == "bilhão" || valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == "milhão")
                         valorPorExtenso += " de";
                     else
-                    if (valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == "bilhões" | valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == "milhões" | valorPorExtenso.Substring(valorPorExtenso.Length - 8, 7) == "trilhões")
+                    if (valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == "bilhões" || valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == "milhões" || valorPorExtenso.Substring(valorPorExtenso.Length - 8, 7) == "trilhões")
                         valorPorExtenso += " de";
                     else
                     if (valorPorExtenso.Substring(valorPorExtenso.Length - 8, 8) == "trilhões")

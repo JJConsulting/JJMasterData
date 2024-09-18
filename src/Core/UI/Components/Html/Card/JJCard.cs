@@ -21,7 +21,7 @@ public class JJCard : HtmlComponent
 
     public HtmlBuilder HtmlBuilderContent { get; set; }
 
-    private bool HasTitle => !string.IsNullOrEmpty(Title) | !string.IsNullOrEmpty(SubTitle);
+    private bool HasTitle => !string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(SubTitle);
     
     public IconType? Icon { get; set; }
 

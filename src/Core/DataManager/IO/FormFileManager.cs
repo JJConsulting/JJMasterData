@@ -148,7 +148,7 @@ public class FormFileManager(string memoryFilesSessionName,
             // ReSharper disable once ReplaceSubstringWithRangeIndexer
             fileName = fileName.Substring(fileName.LastIndexOf("\\", StringComparison.Ordinal) + 1);
 
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
+        if (AutoSave && !string.IsNullOrEmpty(FolderPath))
         {
             SavePhysicalFile(fileContent);
         }
@@ -189,7 +189,7 @@ public class FormFileManager(string memoryFilesSessionName,
             }
         }
 
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
+        if (AutoSave && !string.IsNullOrEmpty(FolderPath))
         {
             File.Delete(Path.Combine(FolderPath, fileName));
         }
