@@ -75,7 +75,7 @@ public sealed class MasterDataCoreOptions
                         throw new NCalcEvaluationException("len() takes exactly 1 argument.");
                     }
 
-                    return args[0].ToString()?.Length;
+                    return args[0].Evaluate()?.ToString()?.Length;
                 }
             },
             {
@@ -86,7 +86,7 @@ public sealed class MasterDataCoreOptions
                         throw new NCalcEvaluationException("trim() takes exactly 1 argument.");
                     }
 
-                    return args[0].ToString()?.Trim();
+                    return args[0].Evaluate()?.ToString()?.Trim();
                 }
             }
         }
