@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
@@ -17,10 +18,21 @@ public class JJIconPicker(
     IControlFactory<JJComboBox> comboBoxFactory,
     IFormValues formValues) : ControlBase(formValues)
 {
-    
     public IconType? SelectedIcon { get; set; }
     public string? Id { get; set; }
 
+    private static readonly List<DataItemValue> Items;
+    
+    static JJIconPicker()
+    {
+        Items = IconHelper.GetIconList().Select(icon => new DataItemValue
+        {
+            Id = ((int)icon).ToString(),
+            Description = icon.ToString(),
+            Icon = icon
+        }).ToList();
+    }
+    
     protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         var id = Id ?? Name;
@@ -35,12 +47,7 @@ public class JJIconPicker(
         comboBox.DataItem = new FormElementDataItem
         {
             DataItemType = DataItemType.Manual,
-            Items = IconHelper.GetIconList().Select(icon => new DataItemValue
-            {
-                Id = ((int)icon).ToString(),
-                Description = icon.ToString(),
-                Icon = icon
-            }).ToList(),
+            Items = Items,
             FirstOption = FirstOptionMode.Choose,
             ShowIcon = Enabled,
         };

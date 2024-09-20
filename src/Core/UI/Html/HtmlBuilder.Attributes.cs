@@ -140,11 +140,11 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder WithToolTip(string? tooltip)
     {
-        if (tooltip != null && !string.IsNullOrEmpty(tooltip))
-        {
-            _attributes["title"] = HttpUtility.HtmlAttributeEncode(tooltip);
-            _attributes[BootstrapHelper.DataToggle] = "tooltip";
-        }
+        if (tooltip == null || string.IsNullOrEmpty(tooltip)) 
+            return this;
+        
+        _attributes["title"] = HttpUtility.HtmlAttributeEncode(tooltip);
+        _attributes[BootstrapHelper.DataToggle] = "tooltip";
 
         return this;
     }
@@ -152,9 +152,9 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set custom data attribute to HTML builder.
     /// </summary>
-    public HtmlBuilder WithValue(string @value)
+    public HtmlBuilder WithValue(string value)
     {
-        return WithAttribute("value", @value);
+        return WithAttribute("value", value);
     }
 
     /// <summary>

@@ -11,9 +11,9 @@ public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
 {
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
-    
+
     [HtmlAttributeName("title-size")]
-    public HeadingSize TitleSize { get; set; }
+    public HeadingSize TitleSize { get; set; } = HeadingSize.H5;
     
     [HtmlAttributeName("message")]
     public string? Message { get; set; }
