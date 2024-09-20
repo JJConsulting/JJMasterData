@@ -113,12 +113,5 @@
 
                       value="@(Model.GetAttr(FormElementField.AutocompletePickerAttribute) is true)"/>
         </div>
-
-        <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <checkbox name="@(FormElementField.MultipleDatesAttribute)"
-                      switch="true"
-                      label="@StringLocalizer["Allow multiple dates"]"
-                      value="@(Model.GetAttr(FormElementField.MultipleDatesAttribute) is true)"/>
-        </div>
         break;
 }

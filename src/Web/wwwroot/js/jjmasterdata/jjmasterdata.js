@@ -310,7 +310,7 @@ class CalendarListener {
                 altInput: false,
                 monthSelectorType: 'static',
                 time_24hr: true,
-                mode: div.firstElementChild.getAttribute("multiple-dates") === "True" ? "multiple" : "single",
+                mode: "single",
                 dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
                 onOpen: function (selectedDates, dateStr, instance) {
                     if (instance.input.getAttribute("autocompletePicker") === "True") {
@@ -328,7 +328,7 @@ class CalendarListener {
                 allowInput: true,
                 altInput: false,
                 monthSelectorType: 'static',
-                mode: div.firstElementChild.getAttribute("multiple-dates") === "True" ? "multiple" : "single",
+                mode: "single",
                 dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
                 onOpen: function (selectedDates, dateStr, instance) {
                     if (instance.input.getAttribute("autocompletePicker") === "True") {
@@ -347,7 +347,7 @@ class CalendarListener {
                 allowInput: true,
                 altInput: false,
                 dateFormat: "H:i",
-                mode: div.firstElementChild.getAttribute("multiple-dates") === "True" ? "multiple" : "single",
+                mode: "single",
                 time_24hr: true,
                 onOpen: function (selectedDates, dateStr, instance) {
                     if (instance.input.getAttribute("autocompletePicker") === "True") {

@@ -97,7 +97,7 @@ public partial class HtmlBuilder
         if (!_attributes.TryGetValue("class", out var value))
             return WithAttribute("class", classes);
 
-        var classList = new List<string>();
+        List<string> classList = [];
         classList.AddRange(value.Split(' '));
         
         foreach (var cssClass in classes.Split(' '))

@@ -56,7 +56,7 @@ public class JJTextBox : ControlBase
 
     public virtual HtmlBuilder GetHtmlBuilder()
     {
-        string inputType = InputType.ToString().ToLower();
+        var inputType = InputType.GetInputType();
         if (NumberOfDecimalPlaces > 0)
         {
             inputType = "text";
@@ -72,18 +72,18 @@ public class JJTextBox : ControlBase
             .WithCssClass(CssClass)
             .WithToolTip(Tooltip)
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
-            .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType == InputType.Number, "onkeypress",
+            .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType is InputType.Number, "onkeypress",
                 "return jjutil.justNumber(event);")
             .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-decimal-places",
                 NumberOfDecimalPlaces.ToString())
             
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-decimal-separator",CultureInfo.NumberFormat.NumberDecimalSeparator)
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-group-separator",CultureInfo.NumberFormat.NumberGroupSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-decimal-separator",CultureInfo.NumberFormat.NumberDecimalSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-group-separator",CultureInfo.NumberFormat.NumberGroupSeparator)
             
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Currency, "jj-decimal-separator",CultureInfo.NumberFormat.CurrencyDecimalSeparator)
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Currency, "jj-group-separator",CultureInfo.NumberFormat.CurrencyGroupSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-decimal-separator",CultureInfo.NumberFormat.CurrencyDecimalSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-group-separator",CultureInfo.NumberFormat.CurrencyGroupSeparator)
             
-            .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType  is InputType.Number or InputType.Currency, "jj-numeric")
+            .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-numeric")
             .WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");
