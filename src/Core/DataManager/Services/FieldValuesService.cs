@@ -24,11 +24,11 @@ public class FieldValuesService(ExpressionsService expressionsService)
     public async ValueTask<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, FormStateData formStateData, bool replaceNullValues = true)
     {
         var formValues = formStateData.Values;
-        foreach (var f in formElement.Fields)
+        foreach (var field in formElement.Fields)
         {
-            if (formValues.TryGetValue(f.Name, out var value))
+            if (formValues.TryGetValue(field.Name, out var value))
             {
-                formValues[f.Name] = ClearSpecialChars(f, value);
+                formValues[field.Name] = ClearSpecialChars(field, value);
             }
         }
 
@@ -110,21 +110,19 @@ public class FieldValuesService(ExpressionsService expressionsService)
         }
     }
 
-    private static object? ClearSpecialChars(FormElementField f, object? value)
+    private static object? ClearSpecialChars(FormElementField field, object? value)
     {
         if (value is null)
             return value;
-        
-        value = f.Component switch
+
+        return field.Component switch
         {
-            FormComponent.Cnpj or FormComponent.Cnpj or FormComponent.CnpjCpf => StringManager.ClearCpfCnpjChars(
+            FormComponent.Cnpj or FormComponent.CnpjCpf => StringManager.ClearCpfCnpjChars(
                 value.ToString()!),
             FormComponent.Tel => StringManager.ClearTelChars(value.ToString()!),
             FormComponent.Cep => value.ToString()!.Replace("-", ""),
             _ => value
         };
-
-        return value;
     }
 
 }

@@ -9,21 +9,21 @@ namespace JJMasterData.Core.Http.AspNetCore;
 
 internal sealed class FormValuesWrapper(IHttpContextAccessor httpContextAccessor) : IFormValues
 {
+    private readonly HttpContext _httpContext = httpContextAccessor.HttpContext!;
+
     private IFormCollection? _formCollection;
 
     private IFormCollection? FormCollection
     {
         get
         {
-            if (_formCollection == null && HttpContext.Request.HasFormContentType)
-                _formCollection = HttpContext.Request.Form;
+            if (_formCollection == null && _httpContext.Request.HasFormContentType)
+                _formCollection = _httpContext.Request.Form;
             
             return _formCollection;
         }
     }
-
-    private HttpContext HttpContext { get; } = httpContextAccessor.HttpContext!;
-
+    
     public bool ContainsFormValues() => FormCollection is not null;
 
     public string? this[string key] => FormCollection?[key];

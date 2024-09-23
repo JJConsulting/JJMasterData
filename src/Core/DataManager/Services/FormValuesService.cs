@@ -194,14 +194,15 @@ public class FormValuesService(
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        if (formStateData.Values.Count == 0)
+        //This conditional was changed because formStateData.Values.Count == 0 does not consider actions.
+        if (!autoReloadFormFields)
         {
             var dbValues = await GetDbValues(formElement);
 
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
         }
 
-        if (httpRequest.Form.ContainsFormValues() && autoReloadFormFields)
+        if (autoReloadFormFields && httpRequest.Form.ContainsFormValues())
         {
             var formValues = GetFormValues(formElement, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);

@@ -859,12 +859,19 @@ public class JJFormView : AsyncComponent
             case PageState.Update or PageState.View:
             {
                 formValues ??= await GetFormValuesAsync();
-                var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
+                var reloadFields = IsReloadFields();
                 return await GetFormResult(formValues, PageState, reloadFields);
             }
             default:
                 return await GetGridViewResult();
         }
+    }
+
+    private bool IsReloadFields()
+    {
+        return CurrentContext.Request.Form.ContainsFormValues() && 
+               DataPanel.PageState is not PageState.View && 
+               CurrentAction is not PluginAction;
     }
 
     private async Task<ComponentResult> GetInsertResult()
@@ -1489,8 +1496,7 @@ public class JJFormView : AsyncComponent
                 CurrentContext.Session[sessionName] = null;
         }
     }
-
-
+    
     public async ValueTask<FormStateData> GetFormStateDataAsync()
     {
         if (_formStateData != null)
@@ -1505,8 +1511,8 @@ public class JJFormView : AsyncComponent
             DataHelper.CopyIntoDictionary(initialValues, CurrentActionMap!.PkFieldValues!);
         
         var initialFormStateData = new FormStateData(initialValues, UserValues, PageState);
-        var autoReloadFormFields = CurrentContext.Request.Form.ContainsFormValues();
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, autoReloadFormFields);
+        var reloadFormFields = IsReloadFields();
+        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, reloadFormFields);
         
         _formStateData = new FormStateData(values, UserValues, PageState);
         return _formStateData;
