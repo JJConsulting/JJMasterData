@@ -193,9 +193,8 @@ public class FormValuesService(
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
-
-        //This conditional was changed because formStateData.Values.Count == 0 does not consider actions.
-        if (!autoReloadFormFields)
+        
+        if (!autoReloadFormFields || formStateData.Values.Count == 0 )
         {
             var dbValues = await GetDbValues(formElement);
 
@@ -211,11 +210,10 @@ public class FormValuesService(
         return await fieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
             !httpRequest.Form.ContainsFormValues());
     }
-
-
+    
     private async Task<Dictionary<string, object?>> GetDbValues(Element element)
     {
-        string encryptedPkValues = httpRequest.Form[
+        var encryptedPkValues = httpRequest.Form[
             $"data-panel-pk-values-{element.Name}"];
 
         if (string.IsNullOrEmpty(encryptedPkValues))
