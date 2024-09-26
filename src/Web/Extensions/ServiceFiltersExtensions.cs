@@ -8,7 +8,7 @@ public static class ServiceFiltersExtensions
     public static IServiceCollection AddActionFilters(this IServiceCollection services)
     {
         services.AddScoped<LookupParametersDecryptionFilter>();
-        services.AddScoped<FormElementDecryptionFilter>();
+
         return services;
     }
 }

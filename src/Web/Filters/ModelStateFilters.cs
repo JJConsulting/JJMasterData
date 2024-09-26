@@ -9,7 +9,7 @@ public abstract class ModelStateTransfer : ActionFilterAttribute
     protected const string Key = nameof(ModelStateTransfer);
 }
 
-public class ExportModelStateAttribute : ModelStateTransfer
+public sealed class ExportModelStateAttribute : ModelStateTransfer
 {
     public override void OnActionExecuted(ActionExecutedContext filterContext)
     {
@@ -17,7 +17,7 @@ public class ExportModelStateAttribute : ModelStateTransfer
         {
             if (filterContext.Result is RedirectResult or RedirectToRouteResult or RedirectToActionResult)
             {
-                if (filterContext is { Controller: Controller controller, ModelState: not null })
+                if (filterContext is { Controller: Controller controller })
                 {
                     var modelState = ModelStateHelpers.SerialiseModelState(filterContext.ModelState);
                     controller.TempData[Key] = modelState;
@@ -29,7 +29,7 @@ public class ExportModelStateAttribute : ModelStateTransfer
     }
 }
 
-public class ImportModelStateAttribute : ModelStateTransfer
+public sealed class ImportModelStateAttribute : ModelStateTransfer
 {
     public override void OnActionExecuted(ActionExecutedContext filterContext)
     {

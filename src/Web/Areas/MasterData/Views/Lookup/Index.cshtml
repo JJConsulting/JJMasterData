@@ -1,5 +1,3 @@
-@model JJMasterData.Web.Areas.MasterData.Models.LookupViewModel
-
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
@@ -8,8 +6,8 @@
 
 
 <form asp-action="Index">
-    <input name="lookupParameters" value="@Model.EncryptedLookupParameters" hidden/>
-    @Html.Raw(Model.LookupFormViewHtml)
+    <input name="lookupParameters" value="@ViewData["EncryptedLookupParameters"]" hidden/>
+    @Html.Raw(ViewData["LookupFormViewHtml"])
 </form>
 
 

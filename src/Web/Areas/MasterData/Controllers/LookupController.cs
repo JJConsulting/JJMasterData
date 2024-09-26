@@ -17,14 +17,16 @@ public class LookupController(
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : MasterDataController
 {
-    private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
+    [ViewData]
+    public string? LookupFormViewHtml { get; set; } 
+    
+    [ViewData]
+    public string? EncryptedLookupParameters { get; set; }
+    
     [ServiceFilter<LookupParametersDecryptionFilter>]
     public async Task<IActionResult> Index(LookupParameters lookupParameters)
     {
-        var formView = await FormViewFactory.CreateAsync(lookupParameters.ElementName);
+        var formView = await formViewFactory.CreateAsync(lookupParameters.ElementName);
 
         ConfigureLookupForm(formView, lookupParameters);
         
@@ -32,16 +34,11 @@ public class LookupController(
 
         if (result is IActionResult actionResult)
             return actionResult;
-
-        ViewBag.FormViewHtml = result.Content;
-
-        var model = new LookupViewModel()
-        {
-            LookupFormViewHtml = result.Content,
-            EncryptedLookupParameters = EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString())
-        };
         
-        return View(model);
+        LookupFormViewHtml = result.Content;
+        EncryptedLookupParameters = encryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString());
+        
+        return View();
     }
 
     private void ConfigureLookupForm(JJFormView form, LookupParameters lookupParameters)
@@ -71,7 +68,7 @@ public class LookupController(
         {
             Name = "jjselLookup",
             Icon = IconType.ChevronRight,
-            Tooltip = StringLocalizer["Select"],
+            Tooltip = stringLocalizer["Select"],
             OnClientClick = script,
             IsDefaultOption = true,
             Order = 100
