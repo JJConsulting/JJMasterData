@@ -54,36 +54,24 @@ public class AesEncryptionAlgorithm(IMemoryCache? memoryCache = null) : IEncrypt
     
     private Aes CreateAes(string secretKey)
     {
-        Aes? aes = null;
-        try
+        if (memoryCache != null && memoryCache.TryGetValue(secretKey, out AesEntry? aesEntry))
         {
-            if (memoryCache != null && memoryCache.TryGetValue(secretKey, out AesEntry? aesEntry))
-            {
-                aes = CreateAes(aesEntry!);
-                return aes;
-            }
-            
-            var keyBytes = Encoding.UTF8.GetBytes(secretKey);
-
-            using var sha256 = SHA256.Create();
-            var aesKey = sha256.ComputeHash(keyBytes);
-
-            using var md5 = MD5.Create();
-            var aesIv = md5.ComputeHash(keyBytes);
-
-            aesEntry = new AesEntry(aesKey, aesIv);
-            
-            memoryCache?.Set(secretKey, aesEntry);
-            
-            aes = CreateAes(aesEntry);
-
-            return aes;
+            return CreateAes(aesEntry!);
         }
-        catch
-        {
-            aes?.Dispose();
-            throw;
-        }
+        
+        var keyBytes = Encoding.UTF8.GetBytes(secretKey);
+
+        using var sha256 = SHA256.Create();
+        var aesKey = sha256.ComputeHash(keyBytes);
+
+        using var md5 = MD5.Create();
+        var aesIv = md5.ComputeHash(keyBytes);
+
+        aesEntry = new AesEntry(aesKey, aesIv);
+        
+        memoryCache?.Set(secretKey, aesEntry);
+
+        return CreateAes(aesEntry);
     }
 
     private static Aes CreateAes(AesEntry aesEntry)
