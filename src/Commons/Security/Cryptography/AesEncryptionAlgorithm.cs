@@ -1,26 +1,27 @@
 #nullable enable
 
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace JJMasterData.Commons.Security.Cryptography;
 
 /// <summary>
 /// AES is more secure than the DES cipher and is the de facto world standard. DES can be broken easily as it has known vulnerabilities.
 /// </summary>
-public class AesEncryptionAlgorithm(IMemoryCache? memoryCache = null) : IEncryptionAlgorithm
+public class AesEncryptionAlgorithm : IEncryptionAlgorithm
 {
-    private record AesEntry(byte[] Key, byte[] IV);
-    
+    private readonly ConcurrentDictionary<string, (byte[] Key, byte[] IV)> _aesCache = new();
+
     public string EncryptString(string plainText, string secretKey)
     {
         using var aes = CreateAes(secretKey);
 
-        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+        using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
         using var memoryStream = new MemoryStream();
         using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
@@ -38,10 +39,10 @@ public class AesEncryptionAlgorithm(IMemoryCache? memoryCache = null) : IEncrypt
         {
             using var aes = CreateAes(secretKey);
             var buffer = Convert.FromBase64String(cipherText);
-            var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
+            using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
             using var memoryStream = new MemoryStream(buffer);
-            using var cryptoStream = new CryptoStream(memoryStream, decrypt, CryptoStreamMode.Read);
+            using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
             using var streamReader = new StreamReader(cryptoStream);
 
             return streamReader.ReadToEnd();
@@ -52,11 +53,12 @@ public class AesEncryptionAlgorithm(IMemoryCache? memoryCache = null) : IEncrypt
         }
     }
     
+    [MustDisposeResource]
     private Aes CreateAes(string secretKey)
     {
-        if (memoryCache != null && memoryCache.TryGetValue(secretKey, out AesEntry? aesEntry))
+        if (_aesCache.TryGetValue(secretKey, out var aesEntry))
         {
-            return CreateAes(aesEntry!);
+            return CreateAes(aesEntry.Key, aesEntry.IV);
         }
         
         var keyBytes = Encoding.UTF8.GetBytes(secretKey);
@@ -67,18 +69,19 @@ public class AesEncryptionAlgorithm(IMemoryCache? memoryCache = null) : IEncrypt
         using var md5 = MD5.Create();
         var aesIv = md5.ComputeHash(keyBytes);
 
-        aesEntry = new AesEntry(aesKey, aesIv);
+        aesEntry = new(aesKey, aesIv);
         
-        memoryCache?.Set(secretKey, aesEntry);
+        _aesCache.TryAdd(secretKey, aesEntry);
 
-        return CreateAes(aesEntry);
+        return CreateAes(aesEntry.Key, aesEntry.IV);
     }
 
-    private static Aes CreateAes(AesEntry aesEntry)
+    [MustDisposeResource]
+    private static Aes CreateAes(byte[] key, byte[] iv)
     {
         var aes = Aes.Create();
-        aes.Key = aesEntry.Key;
-        aes.IV = aesEntry.IV;
+        aes.Key = key;
+        aes.IV = iv;
         return aes;
     }
 }

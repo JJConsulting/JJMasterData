@@ -8,92 +8,91 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class GridScripts(JJGridView gridView)
+public class GridScripts
 {
-    private readonly IEncryptionService _encryptionService = gridView.EncryptionService;
-    
+    private readonly IEncryptionService _encryptionService;
+    private readonly JJGridView _gridView;
+    private readonly string _defaultEncryptedRouteContext;
+
+    public GridScripts(JJGridView gridView)
+    {
+        _gridView = gridView;
+        _encryptionService = gridView.EncryptionService;
+        
+        var defaultRouteContext = RouteContext.FromFormElement(_gridView.FormElement, ComponentContext.GridViewReload);
+        
+        _defaultEncryptedRouteContext = _encryptionService.EncryptObject(defaultRouteContext);
+    }
+
     public string GetSortingScript(string fieldName)
     {
-        var encryptedRouteContext = GetEncryptedRouteContext();
         // language=JavaScript
-        return $"GridViewHelper.sortGridValues('{gridView.Name}','{encryptedRouteContext}','{fieldName}')";
+        return $"GridViewHelper.sortGridValues('{_gridView.Name}','{_defaultEncryptedRouteContext}','{fieldName}')";
     }
     
     public string GetSortMultItemsScript()
     {
-        var encryptedRouteContext = GetEncryptedRouteContext();
         // language=JavaScript
-        return $"GridViewHelper.sortMultItems('{gridView.Name}','{encryptedRouteContext}')";
+        return $"GridViewHelper.sortMultItems('{_gridView.Name}','{_defaultEncryptedRouteContext}')";
     }
     
     public string GetPaginationScript(int page)
     {
-        var encryptedRouteContext = GetEncryptedRouteContext();
         // language=JavaScript
-        return $"GridViewHelper.paginate('{gridView.Name}', '{encryptedRouteContext}', {page})";
+        return $"GridViewHelper.paginate('{_gridView.Name}', '{_defaultEncryptedRouteContext}', {page})";
     }
 
     public string GetJumpToPageScript()
     {
-        var encryptedRouteContext = GetEncryptedRouteContext();
         // language=JavaScript
-        return $"GridViewHelper.jumpToPage('{gridView.Name}','{encryptedRouteContext}')";
-    }
-    
-    private string GetEncryptedRouteContext(ComponentContext componentContext = ComponentContext.GridViewReload)
-    {
-        var routeContext = RouteContext.FromFormElement(gridView.FormElement, componentContext);
-        var encryptedRouteContext = _encryptionService.EncryptObject(routeContext);
-        return encryptedRouteContext;
+        return $"GridViewHelper.jumpToPage('{_gridView.Name}','{_defaultEncryptedRouteContext}')";
     }
 
     public string GetFilterScript()
     {
-        var encryptedRouteContext = GetEncryptedRouteContext();
         // language=JavaScript
-        return $"GridViewFilterHelper.filter('{gridView.Name}','{encryptedRouteContext}')";
+        return $"GridViewFilterHelper.filter('{_gridView.Name}','{_defaultEncryptedRouteContext}')";
     }
     
     public string GetClearFilterScript()
     {
-        var encryptedRouteContext = GetEncryptedRouteContext();
         // language=JavaScript
-        return $"GridViewFilterHelper.clearFilter('{gridView.Name}','{encryptedRouteContext}')";
+        return $"GridViewFilterHelper.clearFilter('{_gridView.Name}','{_defaultEncryptedRouteContext}')";
     }
 
     public string GetSelectAllScript()
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.GridViewSelectAllRows);
         // language=JavaScript
-        return $"GridViewSelectionHelper.selectAll('{gridView.Name}','{encryptedRouteContext}')";
+        return $"GridViewSelectionHelper.selectAll('{_gridView.Name}','{encryptedRouteContext}')";
     }
     
     public string GetGridSettingsScript(ConfigAction action, Dictionary<string, object> formValues)
     {
-        var actionMap = new ActionMap(ActionSource.GridToolbar, gridView.FormElement, formValues, action.Name);
+        var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
         string encryptedActionMap = _encryptionService.EncryptObject(actionMap);
-        var encryptedRouteContext = GetEncryptedRouteContext();
+
         // language=JavaScript
-        return $"GridViewHelper.setGridSettings('{gridView.Name}','{encryptedRouteContext}','{encryptedActionMap}');";
+        return $"GridViewHelper.setGridSettings('{_gridView.Name}','{_defaultEncryptedRouteContext}','{encryptedActionMap}');";
     }
 
     public string GetCloseConfigUIScript()
     {
         // language=JavaScript
-        return $"GridViewHelper.closeSettingsModal('{gridView.Name}');";
+        return $"GridViewHelper.closeSettingsModal('{_gridView.Name}');";
     }
 
 
     public string GetRefreshScript()
     {
         // language=JavaScript
-        return $"GridViewHelper.refresh('{gridView.Name}','{GetEncryptedRouteContext()}');";
+        return $"GridViewHelper.refresh('{_gridView.Name}','{_defaultEncryptedRouteContext}');";
     }
 
     public object GetReloadFilterScript()
     {
         // language=JavaScript
-        return $"setTimeout(()=>GridViewFilterHelper.reload('{gridView.Name}','{gridView.Filter.Name}','{GetEncryptedRouteContext(ComponentContext.GridViewFilterReload)}'),200)";
+        return $"setTimeout(()=>GridViewFilterHelper.reload('{_gridView.Name}','{_gridView.Filter.Name}','{GetEncryptedRouteContext(ComponentContext.GridViewFilterReload)}'),200)";
     }
 
     
@@ -111,17 +110,21 @@ public class GridScripts(JJGridView gridView)
         script.Append(reloadPanelScript);
         script.Append("}, 200);");   
         return script.ToString();
-
     }
     
-
     private string GetReloadRowScript(string fieldName, int gridViewRowIndex)
     {
-        var componentName = gridView.Name;
-        
-        var routeContext = _encryptionService.EncryptObject(RouteContext.FromFormElement(gridView.FormElement,ComponentContext.GridViewRow));
+        var componentName = _gridView.Name;
+
+        var routeContext = GetEncryptedRouteContext(ComponentContext.GridViewRow);
         
         //language=Javascript
         return $"GridViewHelper.reloadGridRow('{componentName}','{fieldName}',{gridViewRowIndex},'{routeContext}');";
+    }
+    
+    private string GetEncryptedRouteContext(ComponentContext componentContext)
+    {
+        var routeContext = RouteContext.FromFormElement(_gridView.FormElement, componentContext);
+        return _encryptionService.EncryptObject(routeContext);
     }
 }
