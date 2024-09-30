@@ -165,11 +165,15 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
     {
         var label = IsManualValues() && EnableLocalization ? StringLocalizer[value.Description!] : value.Description;
 
-        var isSelected = !MultiSelect && SelectedValue != null && SelectedValue.Equals(value.Id);
+        bool isSelected;
 
         if (MultiSelect && SelectedValue != null)
         {
-            isSelected = SelectedValue.Split(',').Contains(value.Id);
+            isSelected = SelectedValue.Split(',').Contains(value.Id, StringComparer.InvariantCultureIgnoreCase);
+        }
+        else
+        {
+            isSelected = SelectedValue?.Equals(value.Id) is true;
         }
 
         var content = new HtmlBuilder();
@@ -284,7 +288,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
             SearchId = searchId
         };
         var values = await DataItemService.GetValuesAsync(DataItem, dataQuery);
-        return values.Find(v => v.Id == searchId);
+        return values.Find(v => string.Equals(v.Id, searchId, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private bool IsManualValues()
