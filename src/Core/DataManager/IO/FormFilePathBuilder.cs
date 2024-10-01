@@ -8,15 +8,13 @@ namespace JJMasterData.Core.DataManager.IO;
 
 public class FormFilePathBuilder(FormElement formElement)
 {
-    private FormElement FormElement { get; } = formElement;
-
     public string GetFolderPath(FormElementField field, Dictionary<string, object> formValues)
     {
         if (field.DataFile == null)
             throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);
 
         //Pks concat with  underline
-        string pkval = DataHelper.ParsePkValues(FormElement, formValues, '_');
+        string pkval = DataHelper.ParsePkValues(formElement, formValues, '_');
 
         //Path configured in the dictionary
         string path = field.DataFile.FolderPath;

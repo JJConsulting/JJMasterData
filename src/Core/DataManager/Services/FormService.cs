@@ -148,7 +148,7 @@ public class FormService(
     {
         var isForm = dataContext.Source is DataContextSource.Form;
         var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
-        var result = new FormLetter<CommandOperation>(errors);
+        var letter = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImportAsync != null)
         {
@@ -158,11 +158,11 @@ public class FormService(
         }
 
         if (errors.Count > 0)
-            return result;
+            return letter;
         
         try
         {
-            result.Result = await entityRepository.SetValuesAsync(formElement, values);
+            letter.Result = await entityRepository.SetValuesAsync(formElement, values);
         }
         catch (Exception e)
         {
@@ -171,37 +171,41 @@ public class FormService(
         }
 
         if (errors.Count > 0)
-            return result;
+            return letter;
 
         if (formElement.Options.EnableAuditLog)
-            await auditLogService.LogAsync(formElement, dataContext, values, result.Result);
+            await auditLogService.LogAsync(formElement, dataContext, values, letter.Result);
 
         if (dataContext.Source == DataContextSource.Form)
             formFileService.SaveFormMemoryFiles(formElement, values);
         
-        if (result.Result == CommandOperation.Insert && OnAfterInsertAsync != null)
+        switch (letter.Result)
         {
-            var afterEventArgs = new FormAfterActionEventArgs(values);
-            await OnAfterInsertAsync.Invoke(dataContext, afterEventArgs);
-            result.UrlRedirect = afterEventArgs.UrlRedirect;
-        }
-        
-        
-        if (result.Result == CommandOperation.Update && OnAfterUpdateAsync != null)
-        {
-            var afterEventArgs = new FormAfterActionEventArgs(values);
-            await OnAfterUpdateAsync.Invoke(dataContext, afterEventArgs);
-            result.UrlRedirect = afterEventArgs.UrlRedirect;
-        }
-        
-        if (result.Result == CommandOperation.Delete && OnAfterDeleteAsync != null)
-        {
-            var afterEventArgs = new FormAfterActionEventArgs(values);
-            await OnAfterDeleteAsync.Invoke(dataContext, afterEventArgs);
-            result.UrlRedirect = afterEventArgs.UrlRedirect;
+            case CommandOperation.Insert when OnAfterInsertAsync != null:
+            {
+                var afterEventArgs = new FormAfterActionEventArgs(values);
+                await OnAfterInsertAsync.Invoke(dataContext, afterEventArgs);
+                letter.UrlRedirect = afterEventArgs.UrlRedirect;
+                break;
+            }
+            case CommandOperation.Update when OnAfterUpdateAsync != null:
+            {
+                var afterEventArgs = new FormAfterActionEventArgs(values);
+                await OnAfterUpdateAsync.Invoke(dataContext, afterEventArgs);
+                letter.UrlRedirect = afterEventArgs.UrlRedirect;
+                break;
+            }
+            case CommandOperation.Delete when OnAfterDeleteAsync != null:
+            {
+                var afterEventArgs = new FormAfterActionEventArgs(values);
+                await OnAfterDeleteAsync.Invoke(dataContext, afterEventArgs);
+                letter.UrlRedirect = afterEventArgs.UrlRedirect;
+                break;
+            }
         }
 
-        return result;
+
+        return letter;
     }
 
     /// <summary>
