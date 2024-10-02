@@ -502,6 +502,8 @@ public class JJFormView : AsyncComponent
             
             var result = await GetPluginActionResult(pluginAction, formStateData, fieldName);
 
+            DataPanel.AutoReloadFormFields = false;
+            
             if (result.JsCallback is not null)
                 scripts.AppendScript(result.JsCallback);
         }
@@ -725,13 +727,14 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetPluginActionResult()
     {
-        var formStateData = await GetFormStateDataAsync();
+        var currentAction = (PluginAction)CurrentAction!;
+        var formStateData = await GetFormStateDataAsync(currentAction is PluginFieldAction);
         
         PluginActionResult result;
         
         try
         {
-            result = await GetPluginActionResult((PluginAction)CurrentAction!,formStateData, CurrentActionMap!.FieldName);
+            result = await GetPluginActionResult(currentAction,formStateData, CurrentActionMap!.FieldName);
         }
         catch (Exception exception)
         {
@@ -1516,6 +1519,23 @@ public class JJFormView : AsyncComponent
         
         _formStateData = new FormStateData(values, UserValues, PageState);
         return _formStateData;
+    }
+    
+    public async ValueTask<FormStateData> GetFormStateDataAsync(bool reloadFormFields)
+    {
+        var initialValues = new Dictionary<string, object?>();
+        
+        if(_dataPanel is not null)
+            DataHelper.CopyIntoDictionary(initialValues, DataPanel.Values);
+        
+        if(_currentActionMap is not null)
+            DataHelper.CopyIntoDictionary(initialValues, CurrentActionMap!.PkFieldValues!);
+        
+        var initialFormStateData = new FormStateData(initialValues, UserValues, PageState);
+        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, reloadFormFields);
+        
+        var formStateData = new FormStateData(values, UserValues, PageState);
+        return formStateData;
     }
 
     public Dictionary<string, object> GetRelationValuesFromForm()
