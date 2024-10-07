@@ -28,15 +28,21 @@
 @switch (Model.Component)
 {
     case FormComponent.CheckBox:
-
+    {
+        var isSwitch = Model.GetAttr(FormElementField.IsSwitchAttribute)?.ToString()?.ToLowerInvariant();
+        var isButton = Model.GetAttr(FormElementField.IsButtonAttribute)?.ToString()?.ToLowerInvariant();
         <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <checkbox
-                name="@FormElementField.IsSwitchAttribute"
-                switch="true"
-                label="@StringLocalizer["Show as Switch"]"
-                value="@(Model.GetAttr(FormElementField.IsSwitchAttribute) is true)"/>
+            <div class="form-floating">
+                <select id="checkbox-layout" name="checkbox-layout" class="form-select">
+                    <option value="checkbox" selected="@(isSwitch != "true" && isButton != "true")">Checkbox</option>
+                    <option value="switch" selected="@(isSwitch == "true")">Switch</option>
+                    <option value="button" selected="@(isButton== "true")">@StringLocalizer["Button"]</option>
+                </select>
+                <label for="checkbox-layout">@StringLocalizer["Layout"]</label>
+            </div>
         </div>
         break;
+    }
     case FormComponent.Currency:
         <div class="col-sm-4">
             <div class="form-floating">
@@ -109,7 +115,7 @@
     case FormComponent.Hour:
         <div class="@BootstrapHelper.FormGroup col-sm-4">
             <checkbox tooltip="@StringLocalizer["When opening the picker, fill the input with today's date."]" label="@StringLocalizer["Autocomplete"]" name="@(FormElementField.AutocompletePickerAttribute)"
-                      switch="true"
+                      layout="Switch"
 
                       value="@(Model.GetAttr(FormElementField.AutocompletePickerAttribute) is true)"/>
         </div>

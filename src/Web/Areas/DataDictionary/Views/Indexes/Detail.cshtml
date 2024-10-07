@@ -33,10 +33,10 @@
                     @Html.TextBox("indexName", (string)ViewBag.IndexName, new { @class = "form-control", @readonly = "readonly" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                     <checkbox for="IsUnique" switch="true"/>
+                     <checkbox for="IsUnique" layout="Switch"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <checkbox for="IsClustered" switch="true"/>
+                    <checkbox for="IsClustered" layout="Switch"/>
                 </div>
 
                 <div class="col-sm-12">

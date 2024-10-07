@@ -25,11 +25,8 @@ public class CheckboxTagHelper(
     [HtmlAttributeName("value")] 
     public bool IsChecked { get; set; }
     
-    [HtmlAttributeName("switch")] 
-    public bool IsSwitch { get; set; }
-    
-    [HtmlAttributeName("switch-size")] 
-    public CheckBoxSwitchSize? SwitchSize { get; set; }
+    [HtmlAttributeName("layout")] 
+    public CheckboxLayout Layout { get; set; }
     
     [HtmlAttributeName("label")] 
     public string? Label { get; set; }
@@ -67,8 +64,7 @@ public class CheckboxTagHelper(
         if (OnChange is not null)
             checkBox.Attributes["onchange"] = OnChange;
         
-        checkBox.IsSwitch = IsSwitch;
-        checkBox.SwitchSize = SwitchSize;
+        checkBox.Layout = Layout;
         
         if (ShowLabel)
             checkBox.Text = stringLocalizer[displayName ?? string.Empty];

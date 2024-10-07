@@ -91,14 +91,23 @@ public class ControlFactory(IServiceProvider serviceProvider,
             case FormComponent.CheckBox:
                 control = Create<JJCheckBox>(formElement, field, context);
 
-                if (formStateData.PageState != PageState.List)
-                    ((JJCheckBox)control).Text = field.LabelOrName;
-
-                if (field.Attributes.TryGetValue(FormElementField.IsSwitchAttribute, out var isSwitch))
-                {
-                    ((JJCheckBox)control).IsSwitch = isSwitch is true;
-                }
+                var checkbox = (JJCheckBox)control;
                 
+                if (formStateData.PageState != PageState.List)
+                    checkbox.Text = field.LabelOrName;
+
+                if (field.Attributes.TryGetValue(FormElementField.IsSwitchAttribute, out var isSwitch) && isSwitch is true)
+                {
+                    checkbox.Layout = CheckboxLayout.Switch;
+                }
+                else if (field.Attributes.TryGetValue(FormElementField.IsButtonAttribute, out var isButton) && isButton is true)
+                {
+                    checkbox.Layout = CheckboxLayout.Button;
+                }
+                else
+                {                   
+                    checkbox.Layout = CheckboxLayout.Checkbox;
+                }
                 break;
             case FormComponent.RadioButtonGroup:
                 control = Create<JJRadioButtonGroup>(formElement, field, context);
@@ -124,7 +133,6 @@ public class ControlFactory(IServiceProvider serviceProvider,
                 {
                     control = Create<JJTextFile>(formElement, field, context);
                 }
-
                 break;
             default:
                 control = Create<JJTextGroup>(formElement, field, context);

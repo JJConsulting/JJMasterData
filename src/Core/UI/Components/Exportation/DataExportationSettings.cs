@@ -245,8 +245,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         var exportFirstLineCheckbox = DataExportation.ComponentFactory.Controls.CheckBox.Create();
         exportFirstLineCheckbox.Name = $"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}";
         exportFirstLineCheckbox.IsChecked = DataExportation.ExportOptions.ExportFirstLine;
-        exportFirstLineCheckbox.IsSwitch = true;
-        exportFirstLineCheckbox.SwitchSize = CheckBoxSwitchSize.Default;
+        exportFirstLineCheckbox.Layout = CheckboxLayout.Switch;
         exportFirstLineCheckbox.Text = StringLocalizer["Export first line as title"];
         div.Append(exportFirstLineCheckbox.GetHtmlBuilder());
         

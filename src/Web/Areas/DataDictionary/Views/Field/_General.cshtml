@@ -70,37 +70,37 @@
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <checkbox for="IsRequired" switch="true"/>
+        <checkbox for="IsRequired" layout="Switch"/>
     </div>
     
     @if (ViewBag.IsForm)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <checkbox for="IsPk" switch="true"/>
+            <checkbox for="IsPk" layout="Switch"/>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <checkbox for="AutoNum" switch="true"/>
+            <checkbox for="AutoNum" layout="Switch"/>
         </div>
     
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <checkbox for="Export" switch="true"/>
+            <checkbox for="Export" layout="Switch"/>
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" switch="true"/>
+        <checkbox tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]" for="AutoPostBack" layout="Switch"/>
     </div>
     
     @if (ViewBag.IsForm)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <checkbox tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]" for="EncodeHtml" switch="true"/>
+            <checkbox tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]" for="EncodeHtml" layout="Switch"/>
         </div>
     }
     
     @if (Options.Value.SupportNetFramework)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <checkbox tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]" for="ValidateRequest" switch="true"/>
+            <checkbox tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]" for="ValidateRequest" layout="Switch"/>
         </div>
     }
 </div>

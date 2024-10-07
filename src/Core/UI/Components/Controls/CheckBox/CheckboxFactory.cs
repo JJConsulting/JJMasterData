@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class CheckBoxFactory(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
+internal sealed class CheckboxFactory(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJCheckBox>
 {
     public JJCheckBox Create() => new(formValues,stringLocalizer);

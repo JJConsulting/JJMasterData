@@ -182,8 +182,7 @@ internal sealed class GridSettingsForm(
             Name = name,
             IsChecked = isChecked,
             Text = label,
-            IsSwitch = true,
-            SwitchSize = CheckBoxSwitchSize.Default
+            Layout = CheckboxLayout.Switch
         };
 
         return checkbox.GetHtmlBuilder();

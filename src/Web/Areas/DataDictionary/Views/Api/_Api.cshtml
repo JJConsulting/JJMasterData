@@ -133,7 +133,7 @@ function checkAllToggle(checkAllCheckbox) {
             </div>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-            <checkbox for="EnableSynchronism" switch="true" onchange="setModeVisibility(this)"/>
+            <checkbox for="EnableSynchronism" layout="Switch" onchange="setModeVisibility(this)"/>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.EnableSynchronism ? "visible" : "hidden")">
             <div class="form-floating">

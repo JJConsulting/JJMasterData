@@ -61,11 +61,11 @@
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <checkbox tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]" for="DataItem!.EnableMultiSelect" switch="true"/>
+            <checkbox tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]" for="DataItem!.EnableMultiSelect" layout="Switch"/>
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <checkbox for="DataItem!.ShowIcon" switch="true" onchange="this.form.requestSubmit();"/>
+        <checkbox for="DataItem!.ShowIcon" layout="Switch" onchange="this.form.requestSubmit();"/>
     </div>
 
 

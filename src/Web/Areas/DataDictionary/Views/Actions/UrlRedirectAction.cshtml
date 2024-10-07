@@ -41,10 +41,10 @@
             <collapse-panel title="@StringLocalizer["Modal"]" icon="SolidWindowMaximize" expanded-by-default="false">
                 <div class="row">
                     <div class="mb-3 col-sm-6">
-                        <checkbox for="IsModal" switch="true"/>
+                        <checkbox for="IsModal" layout="Switch"/>
                     </div>
                     <div class="mb-3 col-sm-6">
-                        <checkbox tooltip="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]" for="IsIframe" switch="true"/>
+                        <checkbox tooltip="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]" for="IsIframe" layout="Switch"/>
                     </div>
                     <div class="mb-3 col-sm-6">
                         <label class="form-label" asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>

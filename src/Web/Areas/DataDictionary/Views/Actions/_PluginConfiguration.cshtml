@@ -55,7 +55,7 @@
                     @switch (pluginField.Type)
                     {
                         case PluginConfigurationFieldType.Boolean:
-                            <checkbox name="@pluginField.Name" value="@(value is true)" switch="true"/>
+                            <checkbox name="@pluginField.Name" value="@(value is true)" layout="Switch"/>
                             break;
                         case PluginConfigurationFieldType.FormElementField:
                             <combobox name="@pluginField.Name" form-element-data-item="@dataItem" value="@value"/>

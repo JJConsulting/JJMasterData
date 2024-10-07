@@ -85,7 +85,7 @@ public static class FactoriesServiceExtensions
         services.AddScoped<IControlFactory<JJTextRange>, TextRangeFactory>();
         services.AddScoped<IControlFactory<JJTextFile>, TextFileFactory>();
         services.AddScoped<IControlFactory<JJTextBox>, TextBoxFactory>();
-        services.AddScoped<IControlFactory<JJCheckBox>, CheckBoxFactory>();
+        services.AddScoped<IControlFactory<JJCheckBox>, CheckboxFactory>();
         services.AddScoped<IControlFactory<JJColorPicker>, ColorPickerFactory>();
         services.AddScoped<IControlFactory<JJRadioButtonGroup>, RadioButtonGroupFactory>();
         services.AddScoped<IControlFactory<JJIconPicker>, IconPickerFactory>();

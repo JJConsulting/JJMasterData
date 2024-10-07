@@ -18,7 +18,7 @@ public class FieldController(FieldService fieldService)
     {
         var formElement = await fieldService.GetFormElementAsync(elementName);
         FormElementField? field;
-     
+
         if (string.IsNullOrEmpty(fieldName))
         {
             if (TempData.ContainsKey("field"))
@@ -36,7 +36,7 @@ public class FieldController(FieldService fieldService)
         await PopulateViewBag(formElement, field);
         return View(nameof(Index), field);
     }
-    
+
     public async Task<IActionResult> Detail(string elementName, string fieldName)
     {
         var formElement = await fieldService.GetFormElementAsync(elementName);
@@ -52,14 +52,14 @@ public class FieldController(FieldService fieldService)
         await PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
-    
+
     public async Task<IActionResult> Delete(string elementName, string fieldName)
     {
         await fieldService.DeleteField(elementName, fieldName);
         var nextField = await fieldService.GetNextFieldNameAsync(elementName, fieldName);
         return RedirectToAction("Index", new { elementName, fieldName = nextField });
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Index(string elementName, string? fieldName, FormElementField? field)
     {
@@ -73,7 +73,7 @@ public class FieldController(FieldService fieldService)
     public async Task<IActionResult> Save(string elementName, FormElementField field, string? originalName)
     {
         RecoverCustomAttributes(ref field);
-        
+
         await fieldService.SaveFieldAsync(elementName, field, originalName);
         if (ModelState.IsValid)
         {
@@ -95,7 +95,7 @@ public class FieldController(FieldService fieldService)
     [HttpPost]
     public async Task<IActionResult> Copy(string elementName, FormElementField? field)
     {
-        var dictionary = await  fieldService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await fieldService.DataDictionaryRepository.GetFormElementAsync(elementName);
         await fieldService.CopyFieldAsync(dictionary, field);
         if (!ModelState.IsValid)
             ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
@@ -120,6 +120,7 @@ public class FieldController(FieldService fieldService)
             };
             field.DataItem.Items.Add(item);
         }
+
         return RedirectToIndex(elementName, field);
     }
 
@@ -138,9 +139,9 @@ public class FieldController(FieldService fieldService)
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field, DataElementMapFilter elementMapFilter)
+    public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field,
+        DataElementMapFilter elementMapFilter)
     {
-
         bool isValid = await fieldService.AddElementMapFilterAsync(field, elementMapFilter);
         if (!isValid)
         {
@@ -177,27 +178,27 @@ public class FieldController(FieldService fieldService)
         field.DataItem ??= new FormElementDataItem();
         field.DataFile ??= new FormElementDataFile
         {
-            MaxFileSize = 2 
+            MaxFileSize = 2
         };
-        
+
         //Refresh action
         if (formElement.Fields.Contains(field.Name))
             field.Actions = formElement.Fields[field.Name].Actions;
 
-        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
+        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab))
             ViewBag.Tab = selectedTab;
 
-        else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
+        else if (TempData.TryGetValue("selected-tab", out var tempSelectedTab))
             ViewBag.Tab = tempSelectedTab?.ToString()!;
-        
+
         if (TempData.TryGetValue("error", out var value))
             ViewBag.Error = value!;
 
         if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
             ViewBag.OriginalName = originalName;
-        else if (TempData.TryGetValue("originalName",  out var tempOriginalName))
+        else if (TempData.TryGetValue("originalName", out var tempOriginalName))
             ViewBag.OriginalName = tempOriginalName?.ToString()!;
-        
+
         if (TempData["originalName"] != null)
             ViewBag.OriginalName = TempData["originalName"]!;
         else
@@ -208,27 +209,29 @@ public class FieldController(FieldService fieldService)
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
         ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
-        
+
         // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
         // Under normal circumstances, there is no need to increase the size of the HTTP request.
         ViewBag.MaxRequestLength = 30720000;
-        
+
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
 
-        if (field.Component is not FormComponent.Lookup && 
-            field.Component is not FormComponent.Search && 
-            field.Component is not FormComponent.ComboBox && 
+        if (field.Component is not FormComponent.Lookup &&
+            field.Component is not FormComponent.Search &&
+            field.Component is not FormComponent.ComboBox &&
             field.Component is not FormComponent.RadioButtonGroup)
         {
             return;
         }
 
         field.DataItem.ElementMap ??= new DataElementMap();
-        
-        ViewBag.ElementNameList = (await fieldService.GetElementsDictionaryAsync()).OrderBy(e=>e.Key);
-        ViewBag.ElementFieldList = (await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap)).OrderBy(e=>e.Key);
+
+        ViewBag.ElementNameList = (await fieldService.GetElementsDictionaryAsync()).OrderBy(e => e.Key);
+        ViewBag.ElementFieldList =
+            (await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap)).OrderBy(e => e.Key);
     }
+
     private void RecoverCustomAttributes(ref FormElementField field)
     {
         field.Attributes = new Dictionary<string, object?>();
@@ -251,10 +254,12 @@ public class FieldController(FieldService fieldService)
                     {
                         field.SetAttr(FormElementField.StepAttribute, step);
                     }
+
                     if (double.TryParse(Request.Form["minValue"], out var minValue))
                     {
                         field.SetAttr(FormElementField.MinValueAttribute, minValue);
                     }
+
                     if (double.TryParse(Request.Form["maxValue"], out var maxValue))
                     {
                         field.SetAttr(FormElementField.MaxValueAttribute, maxValue);
@@ -272,15 +277,31 @@ public class FieldController(FieldService fieldService)
                 field.SetAttr(FormElementField.PopUpTitleAttribute, Request.Form["txtLkPopUpTitle"].ToString());
                 break;
             case FormComponent.CheckBox:
-                field.SetAttr(FormElementField.IsSwitchAttribute, Request.Form[FormElementField.IsSwitchAttribute] == "true");
+                switch (Request.Form["checkbox-layout"])
+                {
+                    case "checkbox":
+                        field.SetAttr(FormElementField.IsSwitchAttribute, false);
+                        field.SetAttr(FormElementField.IsButtonAttribute, false);
+                        break;
+                    case "switch":
+                        field.SetAttr(FormElementField.IsSwitchAttribute, true);
+                        field.SetAttr(FormElementField.IsButtonAttribute, false);
+                        break;
+                    case "button":
+                        field.SetAttr(FormElementField.IsSwitchAttribute, false);
+                        field.SetAttr(FormElementField.IsButtonAttribute, true);
+                        break;
+                }
                 break;
             case FormComponent.Date
                 or FormComponent.DateTime
                 or FormComponent.Hour:
-                field.SetAttr(FormElementField.AutocompletePickerAttribute, Request.Form[FormElementField.AutocompletePickerAttribute] == "true");
+                field.SetAttr(FormElementField.AutocompletePickerAttribute,
+                    Request.Form[FormElementField.AutocompletePickerAttribute] == "true");
                 break;
             case FormComponent.Currency:
-                field.SetAttr(FormElementField.CultureInfoAttribute, Request.Form[FormElementField.CultureInfoAttribute].ToString());
+                field.SetAttr(FormElementField.CultureInfoAttribute,
+                    Request.Form[FormElementField.CultureInfoAttribute].ToString());
                 break;
         }
     }
