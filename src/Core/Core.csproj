@@ -33,9 +33,9 @@
     
     <ItemGroup>
         <PackageReference Include="Fluid.Core" Version="2.11.1" />
-        <PackageReference Include="NCalcSync" Version="5.2.9" />
-        <PackageReference Include="NCalc.MemoryCache" Version="5.2.9" />
-        <PackageReference Include="NCalc.DependencyInjection" Version="5.2.9" />
+        <PackageReference Include="NCalcSync" Version="5.2.10" />
+        <PackageReference Include="NCalc.MemoryCache" Version="5.2.10" />
+        <PackageReference Include="NCalc.DependencyInjection" Version="5.2.10" />
     </ItemGroup>
     
     <!--Compile time dependencies-->
