@@ -519,8 +519,8 @@ public class JJUploadView : AsyncComponent
 
     private async Task<HtmlBuilder> GetGalleryHtml()
     {
-        var files = GetFiles().FindAll(x => !x.Deleted);;
-        if (files.Count <= 0) 
+        var files = GetFiles().FindAll(x => !x.Deleted);
+        if (files.Count == 0) 
             return new JJAlert{Title = StringLocalizer["There is no files to display."]}.GetHtmlBuilder();
 
         foreach (var ac in GridView.GridTableActions)

@@ -45,7 +45,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     {
         var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
 
-        if (tabs.Count <= 0)
+        if (tabs.Count == 0)
             return null;
         
         var navTab = await GetTabNav(tabs);

@@ -21,7 +21,7 @@ public class DictionaryListResult : ListResult<Dictionary<string, object?>>
     {
         var dataTable = new DataTable();
         
-        if (Data.Count <= 0) 
+        if (Data.Count == 0) 
             return dataTable;
         
         foreach (var key in Data[0].Keys)
