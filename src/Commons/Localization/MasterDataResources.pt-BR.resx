@@ -4128,4 +4128,10 @@
   <data name="Here we use a Liquid template to render the HTML. Use the DataSource property to access your tables and columns." xml:space="preserve">
     <value>Aqui usamos um template Liquid para renderizar o HTML. Use a propriedade DataSource para acessar suas tabelas e colunas.</value>
   </data>
+  <data name="Button" xml:space="preserve">
+    <value>Botão</value>
+  </data>
+  <data name="Buttons" xml:space="preserve">
+    <value>Botões</value>
+  </data>
 </root>
