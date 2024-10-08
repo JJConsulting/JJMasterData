@@ -66,13 +66,4 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-    
-	<ItemGroup>
-	  <UpToDateCheckInput Remove="Areas\DataDictionary\Views\Settings\Index.cshtml" />
-	  <UpToDateCheckInput Remove="Areas\DataDictionary\Views\Settings\_Commons.cshtml" />
-	  <UpToDateCheckInput Remove="Areas\DataDictionary\Views\Settings\_ConnectionString.cshtml" />
-	  <UpToDateCheckInput Remove="Areas\DataDictionary\Views\Settings\_ConnectionStringModel.cshtml" />
-	  <UpToDateCheckInput Remove="Areas\DataDictionary\Views\Settings\_Core.cshtml" />
-	  <UpToDateCheckInput Remove="Areas\DataDictionary\Views\Settings\_Web.cshtml" />
-	</ItemGroup>
 </Project>
