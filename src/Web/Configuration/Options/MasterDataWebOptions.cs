@@ -52,7 +52,4 @@ public sealed class MasterDataWebOptions
     /// </summary>
     [BindNever]
     public List<string> CustomStylesheetsPaths { get; } = [];
-    
-    [BindNever]
-    public Action<MasterDataCoreOptions>? ConfigureCoreOptions { get; set; }
 }

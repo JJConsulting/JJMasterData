@@ -200,19 +200,6 @@ public class DataDictionaryFormElementFactory(
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             },
-            
-            new UrlRedirectAction
-            {
-                Name = "btnAppSettings",
-                Text = stringLocalizer["Application Settings"],
-                Icon = IconType.SolidToolbox,
-                ShowAsButton = true,
-                IsGroup = true,
-                UrlRedirect = urlHelper.Action("Index", "Settings", new {Area="DataDictionary"}),
-                Order = 12,
-                CssClass = BootstrapHelper.PullRight
-            },
-
             new UrlRedirectAction
             {
                 Name = "btnI18n",

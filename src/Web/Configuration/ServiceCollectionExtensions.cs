@@ -1,5 +1,4 @@
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
@@ -82,7 +81,6 @@ public static class ServiceCollectionExtensions
         IServiceCollection services, 
         MasterDataWebOptionsConfiguration? configuration = null)
     {
-        
         services.Configure<CookieTempDataProviderOptions>(options => {
             options.Cookie.IsEssential = true;
         }); 
@@ -93,12 +91,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();
         services.AddTransient<LocalizationService>();
-        services.AddScoped<SettingsService>();
 
-        services.ConfigureWritableOptions<MasterDataCommonsOptions>("JJMasterData");
-        services.ConfigureWritableOptions<MasterDataCoreOptions>("JJMasterData");
-        services.ConfigureWritableOptions<MasterDataWebOptions>("JJMasterData");
-        
         services.AddMasterDataWebOptimizer();
 
         services.AddHttpContextAccessor();

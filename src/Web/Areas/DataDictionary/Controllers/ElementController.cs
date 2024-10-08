@@ -19,34 +19,28 @@ public class ElementController(
     ScriptsService scriptsService,
     IEntityRepository entityRepository,
     IComponentFactory<JJUploadArea> uploadAreaFactory,
-    IOptionsSnapshot<MasterDataCommonsOptions> masterDataOptions,
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : DataDictionaryController
 {
     public async Task<IActionResult> Index()
     {
-        if (string.IsNullOrEmpty(masterDataOptions.Value.ConnectionString))
-            return RedirectToAction("Index", "Settings");
-            
-        await elementService.CreateStructureIfNotExistsAsync();
-        
         var formView = elementService.GetFormView();
         var result = await formView.GetResultAsync();
         
         if (result is IActionResult actionResult)
             return actionResult;
 
-        ViewBag.FormViewHtml = result.Content!;
+        ViewData["FormViewHtml"] = result.Content;
         
         return View();
     }
 
-    public IActionResult Add()
+    public ViewResult Add()
     {
         return View();
     }
 
-    public async Task<IActionResult> Export()
+    public async Task<FileResult> Export()
     {
         var formView = elementService.GetFormView();
         var selectedRows = formView.GridView.GetSelectedGridValues();
@@ -108,7 +102,7 @@ public class ElementController(
         }
     }
 
-    public IActionResult Duplicate(string? elementName = null)
+    public ViewResult Duplicate(string? elementName = null)
     {
         return View(new DuplicateElementViewModel{ OriginalElementName = elementName });
     }
