@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace JJMasterData.Core.UI.Html;
+﻿namespace JJMasterData.Core.UI.Html;
 
 public enum HtmlTag
 {

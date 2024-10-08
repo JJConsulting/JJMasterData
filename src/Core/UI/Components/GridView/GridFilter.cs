@@ -92,8 +92,7 @@ internal sealed class GridFilter(JJGridView gridView)
             DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
             return _currentFilter;
         }
-
-
+        
         await ApplyCurrentFilter(null);
 
         return _currentFilter ?? new Dictionary<string, object>();

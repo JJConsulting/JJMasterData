@@ -13,9 +13,6 @@ public class SqlServerReadProcedureScripts(
     SqlServerInfo sqlServerInfo)
     : SqlServerScriptsBase
 {
-    private MasterDataCommonsOptions Options { get; } = options.Value;
-    private SqlServerInfo SqlServerInfo { get; } = sqlServerInfo;
-
     public string GetReadProcedureScript(Element element)
     {
         if (element == null)
@@ -25,13 +22,12 @@ public class SqlServerReadProcedureScripts(
             throw new ArgumentNullException(nameof(Element.Fields));
 
         var fields = element.Fields
-            .ToList()
             .FindAll(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.ViewOnly);
 
         var sql = new StringBuilder();
-        string procedureFinalName = Options.GetReadProcedureName(element);
+        string procedureFinalName = options.Value.GetReadProcedureName(element);
 
-        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
+        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
             sql.Append("CREATE OR ALTER PROCEDURE [");
         }
@@ -334,7 +330,7 @@ public class SqlServerReadProcedureScripts(
     private string GetMultValuesEquals(Element element, ElementField field)
     {
         var sql = new StringBuilder();
-        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) < 130)
+        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) < 130)
         {
             sql.AppendLine("");
             sql.Append(Tab);
@@ -511,7 +507,7 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine("BEGIN");
         
 
-        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
+        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
             sql.Append(Tab, 2);
             sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");

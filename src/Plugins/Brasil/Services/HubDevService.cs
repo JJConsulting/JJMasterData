@@ -43,7 +43,7 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
             var message = await httpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
             
-            var apiResult = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings()
+            var apiResult = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings
             {
                 DateFormatString = "dd/MM/yyyy"
             });

@@ -29,7 +29,7 @@ internal record ActionData
 
     public string ToJson()
     {
-        return JsonConvert.SerializeObject(this, new JsonSerializerSettings()
+        return JsonConvert.SerializeObject(this, new JsonSerializerSettings
         {
             Formatting = Formatting.None,
             NullValueHandling = NullValueHandling.Ignore

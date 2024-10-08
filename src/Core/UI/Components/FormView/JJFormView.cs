@@ -82,8 +82,17 @@ public class JJFormView : AsyncComponent
     private bool _isCustomCurrentActionMap;
     private RelationshipType? _relationshipType;
 
+    private readonly FormValuesService _formValuesService;
+    private readonly FieldValuesService _fieldValuesService;
+    private readonly HtmlTemplateService _htmlTemplateService;
+    private readonly IEnumerable<IPluginHandler> _pluginHandlers;
+    private readonly MasterDataCoreOptions _options;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
+    private readonly ILogger<JJFormView> _logger;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
+    private readonly FormService _formService;
     #endregion
-
+    
     #region "Properties"
 
     private JJAuditLogView AuditLogView
@@ -292,8 +301,7 @@ public class JJFormView : AsyncComponent
             return _currentAction;
         }
     }
-
-
+    
     public RouteContext RouteContext
     {
         get
@@ -341,22 +349,11 @@ public class JJFormView : AsyncComponent
     internal IEntityRepository EntityRepository { get; }
     internal ExpressionsService ExpressionsService { get; }
     
-    private IQueryString QueryString => CurrentContext.Request.QueryString;
-    private FormValuesService FormValuesService { get; }
-    private FieldValuesService FieldValuesService { get; }
-    private HtmlTemplateService HtmlTemplateService { get; }
-    private IEnumerable<IPluginHandler> PluginHandlers { get; }
-    private IOptionsSnapshot<MasterDataCoreOptions> Options { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private ILogger<JJFormView> Logger { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private FormService FormService { get; }
-    
     #endregion
 
     #region "Constructors"
     
-    internal JJFormView(
+    public JJFormView(
         FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
@@ -373,23 +370,25 @@ public class JJFormView : AsyncComponent
         ILogger<JJFormView> logger,
         IComponentFactory componentFactory)
     {
-        FormElement = formElement;
         Name = formElement.Name.ToLowerInvariant();
+        FormElement = formElement;
+        ShowTitle = formElement.Options.Grid.ShowTitle;
+        
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
-        ShowTitle = formElement.Options.Grid.ShowTitle;
-        FormService = formService;
         EncryptionService = encryptionService;
-        FormValuesService = formValuesService;
-        FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
-        HtmlTemplateService = htmlTemplateService;
-        PluginHandlers = pluginHandlers;
-        Options = options;
-        StringLocalizer = stringLocalizer;
-        Logger = logger;
-        DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
+        
+        _formService = formService;
+        _formValuesService = formValuesService;
+        _fieldValuesService = fieldValuesService;
+        _htmlTemplateService = htmlTemplateService;
+        _pluginHandlers = pluginHandlers;
+        _options = options.Value;
+        _stringLocalizer = stringLocalizer;
+        _logger = logger;
+        _dataDictionaryRepository = dataDictionaryRepository;
     }
 
     #endregion
@@ -402,7 +401,7 @@ public class JJFormView : AsyncComponent
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
             return await GetFormResultAsync();
 
-        if (RouteContext.ElementName == Options.Value.AuditLogTableName)
+        if (RouteContext.ElementName == _options.AuditLogTableName)
             return await AuditLogView.GetResultAsync();
 
         var childFormView = await GetChildFormView();
@@ -482,7 +481,7 @@ public class JJFormView : AsyncComponent
         else
             values = await GetFormValuesAsync();
 
-        var fieldName = QueryString["fieldName"];
+        var fieldName = CurrentContext.Request.QueryString["fieldName"];
 
         var field = FormElement.Fields[fieldName];
 
@@ -595,7 +594,7 @@ public class JJFormView : AsyncComponent
         {
             Name = $"insert-alert-{Name}",
             Color = BootstrapColor.Success,
-            Title = StringLocalizer[GridView.InsertAction.SuccessMessage],
+            Title = _stringLocalizer[GridView.InsertAction.SuccessMessage],
             ShowIcon = true,
             Icon = IconType.CheckCircleO
         };
@@ -683,7 +682,7 @@ public class JJFormView : AsyncComponent
     {
         var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
 
-        var html = await HtmlTemplateService.RenderTemplate(htmlTemplateAction, CurrentActionMap!.PkFieldValues);
+        var html = await _htmlTemplateService.RenderTemplate(htmlTemplateAction, CurrentActionMap!.PkFieldValues);
         
         return new ContentComponentResult(html);
     }
@@ -706,8 +705,8 @@ public class JJFormView : AsyncComponent
         }
         catch (Exception ex)
         {
-            Logger.LogSqlActionException(ex, sqlCommand.Sql);
-            var message = StringLocalizer[ExceptionManager.GetMessage(ex)];
+            _logger.LogSqlActionException(ex, sqlCommand.Sql);
+            var message = _stringLocalizer[ExceptionManager.GetMessage(ex)];
             messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
         }
         
@@ -738,8 +737,8 @@ public class JJFormView : AsyncComponent
         }
         catch (Exception exception)
         {
-            Logger.LogError(exception,"Error while executing Plugin Action.");
-            result = PluginActionResult.Error(StringLocalizer["Error"], exception.Message);
+            _logger.LogError(exception,"Error while executing Plugin Action.");
+            result = PluginActionResult.Error(_stringLocalizer["Error"], exception.Message);
         }
         
         var formResult = await GetDefaultResult(formStateData.Values);
@@ -755,7 +754,7 @@ public class JJFormView : AsyncComponent
     private async Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
         FormStateData formStateData, string? fieldName)
     {
-        var pluginHandler = PluginHandlers.First(p => p.Id == pluginAction.PluginId);
+        var pluginHandler = _pluginHandlers.First(p => p.Id == pluginAction.PluginId);
         
         switch (pluginHandler)
         {
@@ -804,13 +803,13 @@ public class JJFormView : AsyncComponent
 
     private void SetFormServiceEvents()
     {
-        FormService.OnBeforeInsertAsync += OnBeforeInsertAsync;
-        FormService.OnBeforeDeleteAsync += OnBeforeDeleteAsync;
-        FormService.OnBeforeUpdateAsync += OnBeforeUpdateAsync;
+        _formService.OnBeforeInsertAsync += OnBeforeInsertAsync;
+        _formService.OnBeforeDeleteAsync += OnBeforeDeleteAsync;
+        _formService.OnBeforeUpdateAsync += OnBeforeUpdateAsync;
 
-        FormService.OnAfterInsertAsync += OnAfterInsertAsync;
-        FormService.OnAfterUpdateAsync += OnAfterUpdateAsync;
-        FormService.OnAfterDeleteAsync += OnAfterDeleteAsync;
+        _formService.OnAfterInsertAsync += OnAfterInsertAsync;
+        _formService.OnAfterUpdateAsync += OnAfterUpdateAsync;
+        _formService.OnAfterDeleteAsync += OnAfterDeleteAsync;
     }
 
     private Task<ComponentResult> GetGridViewResult()
@@ -885,7 +884,7 @@ public class JJFormView : AsyncComponent
         
         bool isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
         if (!isVisible)
-            throw new UnauthorizedAccessException(StringLocalizer["Insert action is not enabled"]);
+            throw new UnauthorizedAccessException(_stringLocalizer["Insert action is not enabled"]);
         
         if (isInsertSelection)
         {
@@ -958,7 +957,7 @@ public class JJFormView : AsyncComponent
         {
             Name = "back-action",
             Icon = IconType.ArrowLeft,
-            Text = StringLocalizer["Back"],
+            Text = _stringLocalizer["Back"],
             ShowAsButton = true,
             OnClientClick = Scripts.GetSetPageStateScript(PageState.List),
             IsDefaultOption = true
@@ -971,14 +970,14 @@ public class JJFormView : AsyncComponent
         var html = new HtmlBuilder(HtmlTag.Div);
         
         var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
-        var childElement = await DataDictionaryRepository.GetFormElementAsync(childElementName);
+        var childElement = await _dataDictionaryRepository.GetFormElementAsync(childElementName);
         
         var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
         
         var mappedFkValues = DataHelper.GetRelationValues(FormElement, selectionValues, true);
 
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert));
+            await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert));
         
         var errors = await InsertFormValuesAsync(values, false);
         
@@ -1089,7 +1088,7 @@ public class JJFormView : AsyncComponent
             Name = "go-back-action",
             Icon = IconType.Backward,
             ShowAsButton = true,
-            Text = StringLocalizer["Back"],
+            Text = _stringLocalizer["Back"],
             OnClientClick = script.ToString()
         };
 
@@ -1118,7 +1117,7 @@ public class JJFormView : AsyncComponent
         var formStateData = await GridView.GetFormStateDataAsync();
         bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formStateData);
         if (!isVisible)
-            throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
+            throw new UnauthorizedAccessException(_stringLocalizer["Import action not enabled"]);
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -1402,7 +1401,7 @@ public class JJFormView : AsyncComponent
         if (actions.Any(a => a.IsGroup))
         {
             var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
-            btnGroup.CaretText = StringLocalizer["More"];
+            btnGroup.CaretText = _stringLocalizer["More"];
 
             foreach (var groupedAction in actions.Where(a => a.IsGroup))
             {
@@ -1426,7 +1425,7 @@ public class JJFormView : AsyncComponent
         if (args.ActionName is not InsertSelectionAction.ActionName)
             return ValueTaskHelper.CompletedTask;
         
-        args.LinkButton.Tooltip = StringLocalizer["Select"];
+        args.LinkButton.Tooltip = _stringLocalizer["Select"];
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
 
         return ValueTaskHelper.CompletedTask;
@@ -1442,7 +1441,7 @@ public class JJFormView : AsyncComponent
         bool validateFields = true)
     {
         var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Form, UserId);
-        var result = await FormService.InsertAsync(FormElement, values, dataContext, validateFields);
+        var result = await _formService.InsertAsync(FormElement, values, dataContext, validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1453,7 +1452,7 @@ public class JJFormView : AsyncComponent
     /// <returns>The list of errors.</returns>
     public async Task<Dictionary<string, string>> UpdateFormValuesAsync(Dictionary<string, object?> values)
     {
-        var result = await FormService.UpdateAsync(FormElement, values,
+        var result = await _formService.UpdateAsync(FormElement, values,
             new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -1462,8 +1461,8 @@ public class JJFormView : AsyncComponent
     public async Task<Dictionary<string, string>> DeleteFormValuesAsync(Dictionary<string, object?>? filter)
     {
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,  new FormStateData(filter!, UserValues, PageState.Delete));
-        var result = await FormService.DeleteAsync(FormElement, values,
+            await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement,  new FormStateData(filter!, UserValues, PageState.Delete));
+        var result = await _formService.DeleteAsync(FormElement, values,
             new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -1515,7 +1514,7 @@ public class JJFormView : AsyncComponent
         
         var initialFormStateData = new FormStateData(initialValues, UserValues, PageState);
         var reloadFormFields = IsReloadFields();
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, reloadFormFields);
+        var values = await _formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, reloadFormFields);
         
         _formStateData = new FormStateData(values, UserValues, PageState);
         return _formStateData;
@@ -1532,7 +1531,7 @@ public class JJFormView : AsyncComponent
             DataHelper.CopyIntoDictionary(initialValues, CurrentActionMap!.PkFieldValues!);
         
         var initialFormStateData = new FormStateData(initialValues, UserValues, PageState);
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, reloadFormFields);
+        var values = await _formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, reloadFormFields);
         
         var formStateData = new FormStateData(values, UserValues, PageState);
         return formStateData;

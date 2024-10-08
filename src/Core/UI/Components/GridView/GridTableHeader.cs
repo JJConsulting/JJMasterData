@@ -158,7 +158,9 @@ internal sealed class GridTableHeader(JJGridView gridView)
                         ShowIcon: true,
                         GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription 
                     })
+                {
                     return "text-align:center";
+                }
 
                 break;
             }

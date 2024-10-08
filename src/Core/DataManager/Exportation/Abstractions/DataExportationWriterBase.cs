@@ -272,7 +272,7 @@ public abstract class DataExportationWriterBase(
         }
         else if (!string.IsNullOrEmpty(FormElement.Title))
         {
-            fileName = ExpressionsService.GetExpressionValue(FormElement.Title, new FormStateData()
+            fileName = ExpressionsService.GetExpressionValue(FormElement.Title, new FormStateData
             {
                 Values = new Dictionary<string, object>(),
                 UserValues = new Dictionary<string, object>(),

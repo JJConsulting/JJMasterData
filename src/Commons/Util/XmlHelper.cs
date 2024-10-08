@@ -15,8 +15,8 @@ public static class XmlHelper
         if (xml == null)
             throw new ArgumentNullException(nameof(xml), "Xml to Deserialize");
 
-        object oRet = null;
-        string cleanXml = Regex.Replace(xml, @"<[a-zA-Z].[^(><.)]+/>", RemoveText);
+        object oRet;
+        string cleanXml = Regex.Replace(xml, "<[a-zA-Z].[^(><.)]+/>", RemoveText);
         XmlSerializer serializer = new XmlSerializer(typeof(T));
         using (StringReader reader = new StringReader(cleanXml))
         {

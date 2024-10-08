@@ -76,7 +76,7 @@ internal sealed class DataImportationHelp
             {
                 table.WithCssClass("table table-hover")
                     .Append(GetHeaderColumns())
-                    .Append(await GetBodyColums(list));
+                    .Append(await GetBodyColumns(list));
             });
         });
 
@@ -93,7 +93,7 @@ internal sealed class DataImportationHelp
                     th.WithStyle( "width:60px")
                         .AppendText(StringLocalizer["Order"]);
                 });
-                tr.Append(HtmlTag.Th, th => { th.AppendText(StringLocalizer["Name"]); });
+                tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Name"]));
                 tr.Append(HtmlTag.Th, th =>
                 {
                     th.WithStyle( "width:120px")
@@ -104,21 +104,21 @@ internal sealed class DataImportationHelp
                     th.WithStyle( "width:90px")
                         .AppendText(StringLocalizer["Required"]);
                 });
-                tr.Append(HtmlTag.Th, th => { th.AppendText(StringLocalizer["Details"]); });
+                tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Details"]));
             });
 
         return head;
     }
 
-    private async Task<HtmlBuilder> GetBodyColums(List<FormElementField> list)
+    private async Task<HtmlBuilder> GetBodyColumns(List<FormElementField> list)
     {
         var body = new HtmlBuilder(HtmlTag.Tbody);
-        int orderField = 1;
+        var orderField = 1;
         foreach (var field in list)
         {
             var tr = new HtmlBuilder(HtmlTag.Tr);
             var currentOrderField = orderField;
-            tr.Append(HtmlTag.Td, td => { td.AppendText(currentOrderField.ToString()); });
+            tr.Append(HtmlTag.Td, td => td.AppendText(currentOrderField.ToString()));
             tr.Append(HtmlTag.Td, td =>
             {
                 td.AppendText(field.LabelOrName);
@@ -274,7 +274,7 @@ internal sealed class DataImportationHelp
                 else
                     span.AppendText(", ");
 
-                span.Append(HtmlTag.B, b => { b.AppendText(item.Id); });
+                span.Append(HtmlTag.B, b => b.AppendText(item.Id));
 
                 span.AppendText("=");
                 span.AppendText(item.Description?.Trim() ?? string.Empty);

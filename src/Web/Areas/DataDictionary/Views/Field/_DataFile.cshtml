@@ -7,7 +7,7 @@
     {
         slider.MinValue = 0;
         slider.MaxValue = 28;
-        slider.Name = @Html.NameFor(m => m.DataFile!.MaxFileSize);
+        slider.Name = Html.NameFor(m => m.DataFile!.MaxFileSize);
         slider.Value = Model.DataFile!.MaxFileSize;
         slider.Enabled = true;
         slider.CssClass = "row";

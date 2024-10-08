@@ -17,7 +17,6 @@ public class HtmlComponentFactory(
     IHttpContext currentContext,
     IServiceProvider serviceProvider)
 {
-
     public AlertFactory Alert => new();
 
     public BreadcrumbFactory Breadcrumb => new();

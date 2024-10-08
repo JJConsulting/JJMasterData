@@ -16,7 +16,7 @@ public class ExpressionParserTests
         var parser = new ExpressionParser(MockHttpContext(), MockLogger());
 
         // Act
-        var result = parser.ParseExpression(null, new FormStateData()
+        var result = parser.ParseExpression(null, new FormStateData
         {
             Values = new Dictionary<string, object?>(),
             UserValues = new Dictionary<string, object?>(),
@@ -52,7 +52,7 @@ public class ExpressionParserTests
         var parser = new ExpressionParser(MockHttpContext(), MockLogger());
 
         // Act
-        var result = parser.ParseExpression("{UnknownField}", new FormStateData()
+        var result = parser.ParseExpression("{UnknownField}", new FormStateData
         {
             Values = new Dictionary<string, object?>(),
             UserValues = new Dictionary<string, object?>(),

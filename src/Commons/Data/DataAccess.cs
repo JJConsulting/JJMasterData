@@ -709,7 +709,7 @@ public partial class DataAccess
         var command = new DataAccessCommand
         {
             Sql =
-                @"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
+                "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
         };
 
         command.AddParameter("@TableName", tableName, DbType.AnsiString);

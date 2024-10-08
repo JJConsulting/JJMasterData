@@ -44,15 +44,15 @@ public class FormElementTest
                     DataBehavior = FieldBehavior.Real,
                     IsPk = true,
                     ValidateRequest = true,
-                    DataItem = new FormElementDataItem()
+                    DataItem = new FormElementDataItem
                     {
-                        Command = new DataAccessCommand()
+                        Command = new DataAccessCommand
                         {
                             Sql = "select",
                             Type = CommandType.Text,
                             Parameters =
                             {
-                                new DataAccessParameter()
+                                new DataAccessParameter
                                 {
                                     Name = "Test",
                                     Size = 1,
@@ -89,7 +89,7 @@ public class FormElementTest
                     },
                     Actions =
                     [
-                        new ExportAction()
+                        new ExportAction
                         {
                             ProcessOptions =
                             {
@@ -97,14 +97,14 @@ public class FormElementTest
                                 CommandAfterProcess = "select",
                             }
                         },
-                        new ImportAction()
+                        new ImportAction
                         {
                             ProcessOptions =
                             {
                                 Scope = ProcessScope.Global
                             }
                         },
-                        new SqlCommandAction()
+                        new SqlCommandAction
                         {
                             SqlCommand = "select",
                             
@@ -123,11 +123,11 @@ public class FormElementTest
                     },
                     Actions =
                     [
-                        new UrlRedirectAction()
+                        new UrlRedirectAction
                         {
                           Name = "url",
                         },
-                        new SqlCommandAction()
+                        new SqlCommandAction
                         {
                             SqlCommand = "select",
                             
@@ -194,7 +194,7 @@ public class FormElementTest
             ],
             Relationships =
             {
-                new FormElementRelationship()
+                new FormElementRelationship
                 {
                     Panel = new()
                     {
@@ -204,7 +204,7 @@ public class FormElementTest
                     {
                         Columns =
                         {
-                            new ElementRelationshipColumn()
+                            new ElementRelationshipColumn
                             {
                                 FkColumn = "A",
                                 PkColumn = "B"
@@ -214,11 +214,11 @@ public class FormElementTest
                     }
                 }
             },
-            ApiOptions = new FormElementApiOptions()
+            ApiOptions = new FormElementApiOptions
             {
                 EnableAdd = true
             },
-            Panels = [new FormElementPanel()
+            Panels = [new FormElementPanel
             {
                 Title = "Test",
                 Layout = PanelLayout.Panel

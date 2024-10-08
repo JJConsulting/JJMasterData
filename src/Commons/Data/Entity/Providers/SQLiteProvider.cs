@@ -78,7 +78,7 @@ public class SQLiteProvider(
         }
 
         isFirst = true;
-        foreach (var f in fields.ToList().FindAll(x => x.IsPk && !x.AutoNum))
+        foreach (var f in fields.FindAll(x => x.IsPk && !x.AutoNum))
         {
             if (isFirst)
             {
@@ -375,7 +375,7 @@ public class SQLiteProvider(
 
         sSql.Append(')');
 
-        var cmd = new DataAccessCommand()
+        var cmd = new DataAccessCommand
         {
             Type = CommandType.Text,
             Sql = sSql.ToString()

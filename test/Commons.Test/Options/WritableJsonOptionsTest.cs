@@ -55,7 +55,7 @@ public class WritableJsonOptionsTests
 
         var applyChanges = new Action<LoggingOptions>(foo =>
         {
-            foo.Console.LogLevel = new Dictionary<string, LogLevel>()
+            foo.Console.LogLevel = new Dictionary<string, LogLevel>
             {
                 { "Bar", LogLevel.Critical }
             };

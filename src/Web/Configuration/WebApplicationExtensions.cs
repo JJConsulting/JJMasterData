@@ -47,7 +47,7 @@ public static class WebApplicationExtensions
                 var segments = context.Request.Path.Value?.Split(new[] { '/' },
                     StringSplitOptions.RemoveEmptyEntries);
                 
-                var culturePattern = new Regex(@"^[a-z]{2}(-[a-z]{2,4})?$",
+                var culturePattern = new Regex("^[a-z]{2}(-[a-z]{2,4})?$",
                     RegexOptions.IgnoreCase);
             
                 if (segments?.Length > 0 && culturePattern.IsMatch(segments[0]))

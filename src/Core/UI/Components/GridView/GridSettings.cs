@@ -1,5 +1,4 @@
 ﻿
-
 namespace JJMasterData.Core.UI.Components;
 
 /// <summary>

@@ -152,7 +152,7 @@ public class JJAuditLogView : AsyncComponent
         orderBy.AddOrReplace(AuditLogService.DicModified, OrderByDirection.Desc);
 
         var entryId = string.Empty;
-        var result = await EntityRepository.GetDictionaryListResultAsync(GridView.FormElement, new EntityParameters()
+        var result = await EntityRepository.GetDictionaryListResultAsync(GridView.FormElement, new EntityParameters
         {
             Filters = filter,
             OrderBy = orderBy,

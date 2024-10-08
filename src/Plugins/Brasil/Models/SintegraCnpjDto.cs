@@ -138,7 +138,7 @@ internal sealed class SintegraCnpjDto
             Situacao = Situacao,
             CapitalSocial = CapitalSocial,
             Abertura = Abertura,
-            AtividadePrincipal = new CnaeResult()
+            AtividadePrincipal = new CnaeResult
             {
                 Text = AtividadePrincipal[0].Text,
                 Code = AtividadePrincipal[0].Code

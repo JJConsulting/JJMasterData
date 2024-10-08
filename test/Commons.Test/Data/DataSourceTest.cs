@@ -33,10 +33,10 @@ public class DataSourceTest
     public void Constructor_ListData_ValidData()
     {
         // Arrange
-        var listData = new List<Dictionary<string, dynamic?>>()
+        var listData = new List<Dictionary<string, dynamic?>>
         {
-            new Dictionary<string, dynamic?>() { { "Id", 1 }, { "Name", "John" } },
-            new Dictionary<string, dynamic?>() { { "Id", 2 }, { "Name", "Jane" } }
+            new() { { "Id", 1 }, { "Name", "John" } },
+            new() { { "Id", 2 }, { "Name", "Jane" } }
         };
 
         // Act
@@ -55,15 +55,15 @@ public class DataSourceTest
     public void DataSourceToDataTable_ValidData()
     {
         // Arrange
-        var data = new List<Dictionary<string, dynamic?>>()
+        var data = new List<Dictionary<string, dynamic?>>
         {
-            new Dictionary<string, dynamic?>()
+            new Dictionary<string, dynamic?>
             {
                 {"Id", 1},
                 {"Name", "John"},
                 {"Age", null}
             },
-            new Dictionary<string, dynamic?>()
+            new Dictionary<string, dynamic?>
             {
                 {"Id", 2},
                 {"Name", "Jane"},

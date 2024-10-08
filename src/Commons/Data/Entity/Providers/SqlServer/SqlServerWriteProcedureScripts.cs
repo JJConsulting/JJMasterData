@@ -16,8 +16,6 @@ public class SqlServerWriteProcedureScripts(
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
-    private MasterDataCommonsOptions Options { get; } = options.Value;
-    private SqlServerInfo SqlServerInfo { get; } = sqlServerInfo;
 
     public string GetWriteProcedureScript(Element element)
     {
@@ -28,9 +26,9 @@ public class SqlServerWriteProcedureScripts(
             throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
-        string procedureFinalName = Options.GetWriteProcedureName(element);
+        string procedureFinalName = options.Value.GetWriteProcedureName(element);
 
-        if (SqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
+        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
             sql.Append("CREATE OR ALTER PROCEDURE [");
         }
@@ -81,7 +79,7 @@ public class SqlServerWriteProcedureScripts(
     internal static string GetWriteScript(Element element, IReadOnlyCollection<ElementField> fields)
     {
         var sql = new StringBuilder();
-        var pks = element.Fields.ToList().FindAll(x => x.IsPk);
+        var pks = element.Fields.FindAll(x => x.IsPk);
         bool updateScript = HasUpdateFields(element);
         sql.Append(Tab);
         sql.AppendLine("DECLARE @TYPEACTION VARCHAR(1) ");

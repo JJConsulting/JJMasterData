@@ -72,7 +72,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
                 th.WithStyle("width:50px");
                 th.AppendText("#");
             });
-            tr.Append(HtmlTag.Th, th => { th.AppendText(gridView.StringLocalizer["Column"]); });
+            tr.Append(HtmlTag.Th, th => th.AppendText(gridView.StringLocalizer["Column"]));
             tr.Append(HtmlTag.Th, th =>
             {
                 th.WithStyle("width:220px");

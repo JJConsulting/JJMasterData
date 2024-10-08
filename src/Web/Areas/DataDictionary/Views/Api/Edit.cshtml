@@ -12,7 +12,7 @@
 <partial name="_Menu" model="Model"/>
 
 @{
-    string cancelLocation = @Url.Action("Index", new { elementName = Model.ElementName })!;
+    var cancelLocation = Url.Action("Index", new { elementName = Model.ElementName })!;
 }
 
 @using (Html.BeginMasterDataForm("Edit", "Api"))

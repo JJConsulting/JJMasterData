@@ -27,7 +27,7 @@ public static class MasterDataServiceBuilderExtensions
     
     public static MasterDataServiceBuilder WithSintegra(this MasterDataServiceBuilder builder, Action<SintegraSettings>? configure = null)
     {
-        builder.Services.AddOptions<SintegraSettings>().BindConfiguration("Sintegra");;
+        builder.Services.AddOptions<SintegraSettings>().BindConfiguration("Sintegra");
 
         if (configure is not null)
             builder.Services.PostConfigure(configure);

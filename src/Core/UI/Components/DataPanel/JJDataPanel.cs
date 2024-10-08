@@ -29,7 +29,18 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Render panels with fields
 /// </summary>
-public class JJDataPanel : AsyncComponent
+public class JJDataPanel(
+    IEntityRepository entityRepository,
+    IHttpContext currentContext,
+    IEncryptionService encryptionService,
+    FieldFormattingService fieldFormattingService,
+    FieldValidationService fieldValidationService,
+    FormValuesService formValuesService,
+    ExpressionsService expressionsService,
+    UrlRedirectService urlRedirectService,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    IComponentFactory componentFactory)
+    : AsyncComponent
 {
     #region "Fields"
     private RouteContext _routeContext;
@@ -83,13 +94,13 @@ public class JJDataPanel : AsyncComponent
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public Dictionary<string, string> Errors { get; set; }
+    public Dictionary<string, string> Errors { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Field Values.
     /// Key=Field Name, Value=Field Value
     /// </summary>
-    public Dictionary<string, object> Values { get; set; }
+    public Dictionary<string, object> Values { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
 
     /// <summary>
@@ -111,8 +122,8 @@ public class JJDataPanel : AsyncComponent
     /// When reloading the panel, keep the values entered in the form
     /// (Default=True)
     /// </summary>
-    public bool AutoReloadFormFields { get; set; }
-    
+    public bool AutoReloadFormFields { get; set; } = true;
+
     [CanBeNull] 
     public string ParentComponentName { get; set; }
 
@@ -152,49 +163,17 @@ public class JJDataPanel : AsyncComponent
         }
         set => _isAtModal = value;
     }
-
-    public IEntityRepository EntityRepository { get; }
-    internal IHttpContext CurrentContext { get; }
-    internal IEncryptionService EncryptionService { get; }
-    internal FieldValidationService FieldValidationService { get; }
-    internal FieldFormattingService FieldFormattingService { get; }
-    internal FormValuesService FormValuesService { get; }
-    internal ExpressionsService ExpressionsService { get; }
-    private UrlRedirectService UrlRedirectService { get; }
-    internal IComponentFactory ComponentFactory { get; }
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    
+    internal IHttpContext CurrentContext { get; } = currentContext;
+    internal IEncryptionService EncryptionService { get; } = encryptionService;
+    internal FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
+    internal ExpressionsService ExpressionsService { get; } = expressionsService;
+    internal IComponentFactory ComponentFactory { get; } = componentFactory;
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     #endregion
 
     #region "Constructors"
-
-    public JJDataPanel(
-        IEntityRepository entityRepository,
-        IHttpContext currentContext,
-        IEncryptionService encryptionService,
-        FieldFormattingService fieldFormattingService,
-        FieldValidationService fieldValidationService,
-        FormValuesService formValuesService,
-        ExpressionsService expressionsService,
-        UrlRedirectService urlRedirectService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IComponentFactory componentFactory
-    ) 
-    {
-        EntityRepository = entityRepository;
-        CurrentContext = currentContext;
-        EncryptionService = encryptionService;
-        FieldFormattingService = fieldFormattingService;
-        FieldValidationService = fieldValidationService;
-        FormValuesService = formValuesService;
-        ExpressionsService = expressionsService;
-        UrlRedirectService = urlRedirectService;
-        StringLocalizer = stringLocalizer;
-        ComponentFactory = componentFactory;
-        Values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-        Errors = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        AutoReloadFormFields = true;
-    }
 
     public JJDataPanel(
         FormElement formElement,
@@ -208,7 +187,17 @@ public class JJDataPanel : AsyncComponent
         UrlRedirectService urlRedirectService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory
-    ) : this(entityRepository,  currentContext, encryptionService, fieldFormattingService, fieldValidationService, formValuesService, expressionsService, urlRedirectService,stringLocalizer,componentFactory)
+    ) : this(
+        entityRepository, 
+        currentContext, 
+        encryptionService, 
+        fieldFormattingService, 
+        fieldValidationService,
+        formValuesService, 
+        expressionsService, 
+        urlRedirectService,
+        stringLocalizer,
+        componentFactory)
     {
         Name = $"{formElement.Name.ToLowerInvariant()}-data-panel";
         FormElement = formElement;
@@ -341,7 +330,7 @@ public class JJDataPanel : AsyncComponent
     public async Task<Dictionary<string, object>> GetFormValuesAsync()
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
-        var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
+        var mergedValues = await formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
 
         if (SecretValues?.Count > 0)
         {
@@ -358,12 +347,12 @@ public class JJDataPanel : AsyncComponent
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
     public void LoadValuesFromPK(Dictionary<string, object> pks)
     {
-        Values = AsyncHelper.RunSync(()=>EntityRepository.GetFieldsAsync(FormElement, pks));
+        Values = AsyncHelper.RunSync(()=>entityRepository.GetFieldsAsync(FormElement, pks));
     }
 #endif
     public async Task LoadValuesFromPkAsync(Dictionary<string, object> pks)
     {
-        Values = await EntityRepository.GetFieldsAsync(FormElement, pks);
+        Values = await entityRepository.GetFieldsAsync(FormElement, pks);
     }
 
     public Task LoadValuesFromPkAsync(params object[] pks)
@@ -401,11 +390,11 @@ public class JJDataPanel : AsyncComponent
     /// </returns>
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
     {
-        return FieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
+        return fieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
     
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
-        return UrlRedirectService.GetUrlRedirectResult(this, actionMap);
+        return urlRedirectService.GetUrlRedirectResult(this, actionMap);
     }
 }

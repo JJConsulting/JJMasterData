@@ -132,8 +132,7 @@ public class JJCard : HtmlComponent
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
-
-
+        
         html.WithCssClass(BootstrapHelper.Version == 3 ? "well" : "card card-body");
         
         if (HasTitle)

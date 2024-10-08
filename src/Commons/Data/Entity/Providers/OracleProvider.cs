@@ -40,9 +40,7 @@ public class OracleProvider(
         sqlScript.Append(element.TableName);
         sqlScript.AppendLine(" (");
         var isFirst = true;
-        var fields = element.Fields
-            .ToList()
-            .FindAll(x => x.DataBehavior == FieldBehavior.Real);
+        var fields = element.Fields.FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
         foreach (var f in fields)
         {
@@ -130,7 +128,7 @@ public class OracleProvider(
         sqlScript.AppendLine("");
 
         //Criando sequencias (IDENTITY)
-        var listSeq = element.Fields.ToList().FindAll(x => x.AutoNum);
+        var listSeq = element.Fields.FindAll(x => x.AutoNum);
         for (var i = 0; i < listSeq.Count; i++)
         {
             sqlScript.Append("CREATE SEQUENCE ");
@@ -811,7 +809,7 @@ public class OracleProvider(
 
     private DataAccessCommand GetCommandWrite(string action, Element element, Dictionary<string,object?> values)
     {
-        var cmd = new DataAccessCommand()
+        var cmd = new DataAccessCommand
         {
             Type = CommandType.StoredProcedure
         };

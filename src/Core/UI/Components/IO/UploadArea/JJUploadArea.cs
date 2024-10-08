@@ -61,17 +61,14 @@ public class JJUploadArea : AsyncComponent
     {
         if (CustomUploadAreaLabel != null)
             return CustomUploadAreaLabel;
-        
-        if (EnableDragDrop && !EnableCopyPaste)
-            return "Click here to upload or drag & drop files";
 
-        if (!EnableDragDrop && !EnableCopyPaste)
-            return "Click here to upload files";
-        
-        if (!EnableDragDrop && EnableCopyPaste)
-            return "Click here to upload or paste files";
-
-        return "Click here, paste or drag & drop files";
+        return EnableDragDrop switch
+        {
+            true when !EnableCopyPaste => "Click here to upload or drag & drop files",
+            false when !EnableCopyPaste => "Click here to upload files",
+            false when EnableCopyPaste => "Click here to upload or paste files",
+            _ => "Click here, paste or drag & drop files"
+        };
     }
 
     public bool EnableDragDrop { get; set; } = true;

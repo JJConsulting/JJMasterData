@@ -59,6 +59,7 @@ internal sealed class GridSqlCommandAction(JJGridView gridView)
     private async Task ExecuteOnList(SqlCommandAction sqlCommandAction, List<Dictionary<string, object>> selectedRows)
     {
         var commandList = new List<DataAccessCommand>();
+
         foreach (var row in selectedRows)
         {
             var formData = new FormStateData(row, gridView.UserValues, PageState.List);

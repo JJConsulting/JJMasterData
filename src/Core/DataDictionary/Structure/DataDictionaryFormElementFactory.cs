@@ -136,7 +136,7 @@ public class DataDictionaryFormElementFactory(
                 FormAction = urlHelper.Action("Delete", "Element", new {Area="DataDictionary"}),
             },
 
-            new ScriptAction()
+            new ScriptAction
             {
                 Name = "btnAbout",
                 Text = stringLocalizer["About"],

@@ -43,7 +43,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var filters = GetDefaultFilter(formElement, true);
         var showLogInfo = Debugger.IsAttached;
-        string text = await entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
+        string text = await entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters
         {
             Filters = filters!,
             CurrentPage = pag,
@@ -271,7 +271,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         try
         {
             if (values == null || values.Count == 0)
-                throw new ArgumentException(@"Invalid parameter or not found", nameof(values));
+                throw new ArgumentException("Invalid parameter or not found", nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
@@ -469,13 +469,12 @@ public class MasterApiService(ExpressionsService expressionsService,
             }
             string fieldName = apiOptions.GetJsonFieldName(entry.Key);
             
-            if (!original.ContainsKey(entry.Key))
+            if (!original.TryGetValue(entry.Key, out var originalEntry))
             {
                 newValues.Add(fieldName, entryVal);
                 continue;
             }
 
-            var originalEntry = original[entry.Key];
             if (originalEntry == null)
             {
                 newValues.Add(fieldName, entry.Value);

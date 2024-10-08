@@ -97,7 +97,10 @@ public class JJGridView : AsyncComponent
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
     private GridToolbar? _toolbar;
-
+    
+    private readonly FieldValidationService _fieldValidationService;
+    private readonly UrlRedirectService _urlRedirectService;
+    
     internal JJDataImportation DataImportation
     {
         get
@@ -545,9 +548,8 @@ public class JJGridView : AsyncComponent
     internal ExpressionsService ExpressionsService { get; }
     internal FormValuesService FormValuesService { get; }
     internal FieldValuesService FieldValuesService { get; }
-    internal FieldValidationService FieldValidationService { get; }
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private UrlRedirectService UrlRedirectService { get; }
+
     internal HtmlTemplateService HtmlTemplateService { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
@@ -601,7 +603,6 @@ public class JJGridView : AsyncComponent
         ShowTitle =  formElement.Options.Grid.ShowTitle;
         EnableFilter = true;
         EnableSorting = formElement.Options.Grid.EnableSorting;
-        FieldFormattingService = fieldFormattingService;
         ShowHeaderWhenEmpty = formElement.Options.Grid.ShowHeaderWhenEmpty;
         ShowPaging = formElement.Options.Grid.ShowPagging;
         ShowToolbar = formElement.Options.Grid.ShowToolBar;
@@ -613,7 +614,7 @@ public class JJGridView : AsyncComponent
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
-        UrlRedirectService = urlRedirectService;
+        _urlRedirectService = urlRedirectService;
         HtmlTemplateService = htmlTemplateService;
         Logger = logger;
         ComponentFactory = componentFactory;
@@ -622,7 +623,8 @@ public class JJGridView : AsyncComponent
         DataItemService = dataItemService;
         FormValuesService = formValuesService;
         FieldValuesService = fieldValuesService;
-        FieldValidationService = fieldValidationService;
+        _fieldValidationService = fieldValidationService;
+        FieldFormattingService = fieldFormattingService;
     }
 
     #endregion
@@ -678,7 +680,7 @@ public class JJGridView : AsyncComponent
 
         if (ComponentContext is ComponentContext.UrlRedirect)
         {
-            return await UrlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
+            return await _urlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
         }
 
         HtmlBuilder? sqlActionError = null;
@@ -1272,7 +1274,7 @@ public class JJGridView : AsyncComponent
 
     internal async Task<string> GetEncryptedSelectedRowsAsync()
     {
-        var result = await GetDataSourceAsync(new EntityParameters()
+        var result = await GetDataSourceAsync(new EntityParameters
         {
             RecordsPerPage = int.MaxValue,
             CurrentPage = 1,
@@ -1324,7 +1326,7 @@ public class JJGridView : AsyncComponent
                         val = row[field.Name]?.ToString();
 
                     string objname = GetFieldName(field.Name, row);
-                    string err = FieldValidationService.ValidateField(field, objname, val);
+                    string err = _fieldValidationService.ValidateField(field, objname, val);
                     if (!string.IsNullOrEmpty(err))
                     {
                         string errMsg = $"{StringLocalizer["Line"]} {line}: {err}";

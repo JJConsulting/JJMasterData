@@ -31,10 +31,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
 
             div.AppendText(" ");
             
-            div.Append(HtmlTag.Span, span =>
-            {
-                span.WithAttribute("id", "start-date-label");
-            });
+            div.Append(HtmlTag.Span, span => span.WithAttribute("id", "start-date-label"));
             
             div.Append(HtmlTag.Br);
             div.WithCssClass("mb-1");
@@ -72,7 +69,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             {
                 div.WithAttribute("id", "divStatus");
                 div.WithCssClass("text-center");
-                div.Append(HtmlTag.Span, span => { span.WithAttribute("id", "process-message"); });
+                div.Append(HtmlTag.Span, span => span.WithAttribute("id", "process-message"));
             })
             .Append(HtmlTag.Div, div =>
             {

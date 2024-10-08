@@ -286,8 +286,7 @@ public class JJDataImportation : ProcessComponent
                 area.WithNameAndId("pasteValue");
                 area.WithStyle( "display:none");
             });
-
-
+        
         var collapsePanel = new JJCollapsePanel(CurrentContext.Request.Form)
         {
             TitleIcon = new JJIcon(IconType.Upload),

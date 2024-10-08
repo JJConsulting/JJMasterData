@@ -14,7 +14,7 @@ internal static class DataExportationHelper
     public static string GetFolderPath(FormElement formElement, string path, string userId)
     {
         var processOptions = formElement.Options.GridToolbarActions.ExportAction.ProcessOptions;
-        string folderPath = Path.Combine(path, (string)formElement.Name);
+        string folderPath = Path.Combine(path, formElement.Name);
 
         if (processOptions.Scope == ProcessScope.User)
         {
