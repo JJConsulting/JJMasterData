@@ -41,15 +41,15 @@ public static class IconHelper
     internal static IconType GetIconTypeFromField(ElementField field, object value)
     {
         if (value is int intValue)
-        {
             return (IconType)intValue;
-        }
 
-        if (int.TryParse(value.ToString(), out var parsedInt))
-        {
+        return GetIconTypeFromField(field, value.ToString());
+    }
+    
+    public static IconType GetIconTypeFromField(ElementField field, string? value)
+    {
+        if (int.TryParse(value, out var parsedInt))
             return (IconType)parsedInt;
-        }
-
         throw new JJMasterDataException($"Invalid IconType id at {field.LabelOrName}.");
     }
 }

@@ -12,5 +12,4 @@ public static class ConfigurationExtensions
     {
         return configuration.GetJJMasterData().GetSection(key)?.Value;
     }
-
 }
