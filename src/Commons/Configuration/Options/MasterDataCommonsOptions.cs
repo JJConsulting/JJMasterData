@@ -75,7 +75,7 @@ public sealed class MasterDataCommonsOptions
     public string GetReadProcedureName(Element element)
     {
         if (!string.IsNullOrEmpty(element.ReadProcedureName))
-            return element.ReadProcedureName;
+            return element.ReadProcedureName!;
 
         var tableName = element.TableName;
 
@@ -85,7 +85,7 @@ public sealed class MasterDataCommonsOptions
     public string GetWriteProcedureName(Element element)
     {
         if (!string.IsNullOrEmpty(element.WriteProcedureName))
-            return element.WriteProcedureName;
+            return element.WriteProcedureName!;
 
         var tableName = element.TableName;
 

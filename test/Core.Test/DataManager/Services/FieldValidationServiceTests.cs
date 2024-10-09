@@ -36,7 +36,11 @@ public class FieldValidationServiceTests
         var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);
 
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
         var formValues = new Dictionary<string, object>();
         const PageState pageState = new();
 

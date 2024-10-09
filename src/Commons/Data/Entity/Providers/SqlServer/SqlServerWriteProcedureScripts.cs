@@ -26,20 +26,20 @@ public class SqlServerWriteProcedureScripts(
             throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
-        string procedureFinalName = options.Value.GetWriteProcedureName(element);
+        var procedureName = options.Value.GetWriteProcedureName(element);
+        var procedureFinalName = FormatWithSchema(procedureName, element.Schema);
 
         if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
-            sql.Append("CREATE OR ALTER PROCEDURE [");
+            sql.Append("CREATE OR ALTER PROCEDURE ");
         }
         else
         {
             sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
-            sql.Append("CREATE PROCEDURE [");
+            sql.Append("CREATE PROCEDURE ");
         }
 
-        sql.Append(procedureFinalName);
-        sql.AppendLine("] ");
+        sql.AppendLine(procedureFinalName);
         sql.AppendLine("@action varchar(1), ");
 
         var fields = element.Fields
@@ -104,7 +104,7 @@ public class SqlServerWriteProcedureScripts(
             sql.AppendLine("SELECT @NCOUNT = COUNT(*) ");
             sql.Append(Tab).Append(Tab);
             sql.Append("FROM ");
-            sql.Append(element.TableName);
+            sql.Append(GetTableName(element));
             sql.AppendLine(" WITH (NOLOCK) ");
 
             foreach (var f in pks)
@@ -147,9 +147,9 @@ public class SqlServerWriteProcedureScripts(
         sql.Append(Tab);
         sql.AppendLine("BEGIN ");
         sql.Append(Tab).Append(Tab);
-        sql.Append("INSERT INTO [");
-        sql.Append(element.TableName);
-        sql.AppendLine("] (");
+        sql.Append("INSERT INTO ");
+        sql.Append(GetTableName(element));
+        sql.AppendLine(" (");
 
         isFirst = true;
 
@@ -219,9 +219,9 @@ public class SqlServerWriteProcedureScripts(
         sql.Append(Tab).Append(Tab);
         if (updateScript)
         {
-            sql.Append("UPDATE [");
-            sql.Append(element.TableName);
-            sql.AppendLine("] SET ");
+            sql.Append("UPDATE ");
+            sql.Append(GetTableName(element));
+            sql.AppendLine(" SET ");
 
             isFirst = true;
             foreach (var field in fields.Where(f => !f.IsPk))
@@ -274,9 +274,9 @@ public class SqlServerWriteProcedureScripts(
         sql.Append(Tab);
         sql.AppendLine("BEGIN ");
         sql.Append(Tab).Append(Tab);
-        sql.Append("DELETE FROM [");
-        sql.Append(element.TableName);
-        sql.AppendLine("] ");
+        sql.Append("DELETE FROM ");
+        sql.Append(GetTableName(element));
+        sql.AppendLine(" ");
 
         isFirst = true;
         foreach (var field in fields.Where(f => f.IsPk && f.EnableOnDelete))

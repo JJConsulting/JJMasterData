@@ -29,7 +29,7 @@ public class FormElementTest
                     Filter = new()
                     {
                         Type = FilterMode.Contain,
-                        IsRequired = true   
+                        IsRequired = true
                     },
                     NumberOfDecimalPlaces = 2,
                     EnableOnDelete = true,
@@ -37,7 +37,9 @@ public class FormElementTest
                     PanelId = 1,
                     Attributes =
                     {
-                        {"example","example"}
+                        {
+                            "example", "example"
+                        }
                     },
                     IsRequired = true,
                     AutoPostBack = true,
@@ -107,7 +109,7 @@ public class FormElementTest
                         new SqlCommandAction
                         {
                             SqlCommand = "select",
-                            
+
                         }
                     ],
                     Component = FormComponent.Search
@@ -119,18 +121,18 @@ public class FormElementTest
                     Size = 1,
                     DataFile = new()
                     {
-                      ShowAsUploadView  = true
+                        ShowAsUploadView = true
                     },
                     Actions =
                     [
                         new UrlRedirectAction
                         {
-                          Name = "url",
+                            Name = "url",
                         },
                         new SqlCommandAction
                         {
                             SqlCommand = "select",
-                            
+
                         }
                     ],
                     Component = FormComponent.Search
@@ -164,13 +166,13 @@ public class FormElementTest
                         Tooltip = "b",
                         IsDefaultOption = true,
                         IsGroup = true,
-                        DividerLine =  true,
-                        Icon =IconType.CircleONotch,
+                        DividerLine = true,
+                        Icon = IconType.CircleONotch,
                         ShowTitle = true,
                         ConfirmationMessage = "a",
                         EnableExpression = "val:1",
                         VisibleExpression = "val:1",
-                        Order =1,
+                        Order = 1,
                         ShowAsButton = true,
                         CssClass = "css"
                     }
@@ -218,11 +220,15 @@ public class FormElementTest
             {
                 EnableAdd = true
             },
-            Panels = [new FormElementPanel
-            {
-                Title = "Test",
-                Layout = PanelLayout.Panel
-            }]
+            Panels =
+            [
+                new FormElementPanel
+                {
+                    Title = "Test",
+                    Layout = PanelLayout.Panel
+                }
+            ],
+            TableName = "tableName"
         };
 
         var newReference = formElement.DeepCopy();

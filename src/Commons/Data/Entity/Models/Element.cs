@@ -1,7 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -15,12 +18,16 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 [DebuggerDisplay("Name = {Name}")]
 public class Element()
 {
+    [JsonProperty("schema")]
+    [Display(Name = "Schema")]
+    public string? Schema { get; set; } 
+    
     [JsonProperty("name")]
     [Display(Name = "Element Name")]
-    public string Name { get; set; }
+    public required string Name { get; set; }
     
     [JsonProperty("info")]
-    public string Info { get; set; }
+    public string? Info { get; set; }
     
     [JsonProperty("fields")]
     public ElementFieldList Fields { get; set; } = [];
@@ -33,7 +40,7 @@ public class Element()
 
     [JsonProperty("tableName")]
     [Display(Name = "Table Name")]
-    public string TableName { get; set; }
+    public required string TableName { get; set; }
 
     [JsonProperty("useReadProcedure")] 
     [Display(Name = "Use Read Procedure")]
@@ -41,7 +48,7 @@ public class Element()
     
     [JsonProperty("customprocnameget")]
     [Display(Name = "Read Procedure")]
-    public string ReadProcedureName { get; set; } 
+    public string? ReadProcedureName { get; set; } 
     
     [JsonProperty("useWriteProcedure")] 
     [Display(Name = "Use Write Procedure")]
@@ -49,7 +56,7 @@ public class Element()
     
     [JsonProperty("customprocnameset")]
     [Display(Name = "Write Procedure")]
-    public string WriteProcedureName { get; set; }
+    public string? WriteProcedureName { get; set; }
     
     [JsonProperty("sync")]
     public bool EnableSynchronism { get; set; } = false;
@@ -71,12 +78,14 @@ public class Element()
     [JsonProperty("connectionId")]
     public Guid? ConnectionId { get; set; }
     
+    [SetsRequiredMembers]
     public Element(string name) : this()
     {
         Name = name;
         TableName = name;
     }
 
+    [SetsRequiredMembers]
     public Element(string name, string description) : this(name)
     {
         Info = description;

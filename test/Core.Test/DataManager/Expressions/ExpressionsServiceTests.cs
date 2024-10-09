@@ -51,6 +51,7 @@ public class ExpressionsServiceTests
         var field = new FormElementFieldSelector(new FormElement
         {
             Name = "field",
+            TableName = "tableName",
             Fields =
             {
                 new FormElementField { TriggerExpression = "example:sampleExpression" }
@@ -109,8 +110,12 @@ public class ExpressionsServiceTests
             Name = "field",
             Fields =
             {
-                new FormElementField { TriggerExpression = "example:sampleExpression" }
-            }
+                new FormElementField
+                {
+                    TriggerExpression = "example:sampleExpression"
+                }
+            },
+            TableName = "field"
         }, "field");
         var values = new Dictionary<string, object?>();
         var formStateData = new FormStateData(

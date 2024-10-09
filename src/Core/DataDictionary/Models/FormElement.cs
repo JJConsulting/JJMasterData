@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
@@ -79,6 +80,7 @@ public class FormElement : Element
         ApiOptions = new FormElementApiOptions();
     }
 
+    [SetsRequiredMembers]
     public FormElement(Element element)
     {
         Name = element.Name;
@@ -99,6 +101,7 @@ public class FormElement : Element
         Options = new FormElementOptions();
     }
 
+    [SetsRequiredMembers]
     public FormElement(DataTable schema) : this()
     {
         if (schema == null)

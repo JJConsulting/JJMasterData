@@ -1,22 +1,31 @@
 ﻿
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptionsSnapshot<MasterDataCommonsOptions> OptionsSnapshot
+@inject EntityProviderBase Provider
 @using JJMasterData.Commons.Configuration.Options
+@using JJMasterData.Commons.Data.Entity.Providers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model EntityViewModel
 
 @{
     bool hasConnections = OptionsSnapshot.Value.AdditionalConnectionStrings.Count > 0;
     var options = OptionsSnapshot.Value;
+    var isSqlServer = Provider is SqlServerProvider;
 }
 
 <div class="row mb-3">
     <div class="col-sm-6 required">
-        <label asp-for="Entity.Name" class="form-label" ></label>
-        <input asp-for="Entity.Name" placeholder="" class="form-control"  disabled="@Model.Disabled" data-bs-toggle="tooltip" title="@StringLocalizer["Unique identifier of the element."]"/>
+        <label asp-for="Entity.Name" class="form-label"></label>
+        <input asp-for="Entity.Name" placeholder="" class="form-control" disabled="@Model.Disabled" data-bs-toggle="tooltip" title="@StringLocalizer["Unique identifier of the element."]"/>
     </div>
-    <div class="col-sm-6 required">
+    <div class="col-sm-2">
+        <label asp-for="Entity.Schema" class="form-label"></label>
+        <input asp-for="Entity.Schema" class="form-control" placeholder="@(isSqlServer ? "dbo" : "")" disabled="@Model.Disabled"/>
+    </div>
+
+    <div class="col-sm-4 required">
         <label asp-for="Entity.TableName" class="form-label"></label>
-        <input asp-for="Entity.TableName" placeholder="" class="form-control"  disabled="@Model.Disabled"  data-bs-toggle="tooltip" title="@StringLocalizer["Table where the element data is stored."]"/>
+        <input asp-for="Entity.TableName" placeholder="" class="form-control" disabled="@Model.Disabled" data-bs-toggle="tooltip" title="@StringLocalizer["Table where the element data is stored."]"/>
     </div>
 </div>
 <div class="row mb-3">
@@ -41,17 +50,17 @@
         <label asp-for="Entity.WriteProcedureName" class="form-label"></label>
         <div class="input-group">
             <div class="input-group-text">
-                <input asp-for="Entity.UseWriteProcedure" 
+                <input asp-for="Entity.UseWriteProcedure"
                        data-bs-placement="right"
                        disabled="@Model.Disabled"
-                       data-bs-toggle="tooltip" 
+                       data-bs-toggle="tooltip"
                        title="@StringLocalizer["Enable Write Procedure"]"
-                       class="form-check-input mt-0" 
-                       type="checkbox" 
+                       class="form-check-input mt-0"
+                       type="checkbox"
                        aria-label="Enable Write Procedure">
             </div>
 
-                <input asp-for="Entity.WriteProcedureName" placeholder="@options.GetWriteProcedureName(Model.Entity.TableName)" class="form-control"  disabled="@Model.Disabled" />
+            <input asp-for="Entity.WriteProcedureName" placeholder="@options.GetWriteProcedureName(Model.Entity.TableName)" class="form-control" disabled="@Model.Disabled"/>
         </div>
     </div>
 </div>
@@ -72,7 +81,7 @@
     }
     <div class="col-sm-@(hasConnections ? "6" : "12")">
         <label asp-for="Entity.Info" class="form-label"></label>
-        <input asp-for="Entity.Info"  data-bs-toggle="title" title="@StringLocalizer["Developer only information about the element."]" class="form-control" id="infoInput" disabled="@Model.Disabled"/>
+        <input asp-for="Entity.Info" data-bs-toggle="title" title="@StringLocalizer["Developer only information about the element."]" class="form-control" id="infoInput" disabled="@Model.Disabled"/>
     </div>
 </div>
 
