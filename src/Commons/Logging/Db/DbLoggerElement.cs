@@ -8,7 +8,6 @@ public static class DbLoggerElement
     
     public static Element GetInstance(DbLoggerOptions options)
     {
-
         if (_element != null)
             return _element;
 

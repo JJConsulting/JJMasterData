@@ -20,7 +20,11 @@ public class FormServiceTests
     public async Task UpdateAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         // Arrange
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "name"
+        };
         var values = new Dictionary<string, object>();
         var formService = GetFormService(formElement,values);
 
@@ -62,7 +66,11 @@ public class FormServiceTests
     public async Task UpdateAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
         // Arrange
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
         var values = new Dictionary<string, object>();
         var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
@@ -79,7 +87,11 @@ public class FormServiceTests
     public async Task InsertAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         // Arrange
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
         var values = new Dictionary<string, object>();
         var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
@@ -96,7 +108,11 @@ public class FormServiceTests
     public async Task InsertAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
         // Arrange
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
         var values = new Dictionary<string, object>();
         var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
@@ -113,7 +129,11 @@ public class FormServiceTests
     public async Task InsertOrReplaceAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         // Arrange
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
         var values = new Dictionary<string, object>();
         var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
@@ -130,7 +150,11 @@ public class FormServiceTests
     public async Task InsertOrReplaceAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
         // Arrange
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
         var values = new Dictionary<string, object>();
         var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
@@ -161,7 +185,11 @@ public class FormServiceTests
             stringLocalizerMock.Object,
             loggerMock.Object);
 
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
         var primaryKeys = new Dictionary<string, object>();
         var dataContext = new DataContext();
 
@@ -199,7 +227,11 @@ public class FormServiceTests
             stringLocalizerMock.Object,
             loggerMock.Object);
 
-        var formElement = new FormElement();
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "name"
+        };
         var primaryKeys = new Dictionary<string, object>();
         var dataContext = new DataContext();
 

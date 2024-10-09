@@ -24,7 +24,7 @@ public class SqlServerAlterTableScripts : SqlServerScriptsBase
             let dataType = GetFieldDefinition(field)
             select $"{dataType}";
 
-        var tableName = element.TableName;
+        var tableName = GetTableName(element);
         
         var fieldDefinitionsString = string.Join(",\n", fieldDefinitions);
         var alterTableScript = $"ALTER TABLE {tableName}\nADD {fieldDefinitionsString};";

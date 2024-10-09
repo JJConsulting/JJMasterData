@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
@@ -7,6 +8,9 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public sealed class Entity
 {
+    [Display(Name = "Schema")]
+    public required string? Schema { get; set; }
+    
     [Display(Name = "Name")]
     public required string Name { get; set; }
     
@@ -20,24 +24,24 @@ public sealed class Entity
     public required bool UseWriteProcedure { get; set; }
     
     [Display(Name = "Read Procedure")]
-    public required string ReadProcedureName { get; set; }
+    public required string? ReadProcedureName { get; set; }
     
     [Display(Name = "Write Procedure")]
-    public required string WriteProcedureName { get; set; }
+    public required string? WriteProcedureName { get; set; }
     
     [Display(Name = "Title")]
     [SyncExpression]
-    public required string Title { get; set; }
+    public required string? Title { get; set; }
     
     [Display(Name = "Size")]
     public required HeadingSize TitleSize { get; set; }
     
     [Display(Name = "SubTitle")]
     [SyncExpression]
-    public required string SubTitle { get; set; }
+    public required string? SubTitle { get; set; }
     
     [Display(Name = "Additional Info")]
-    public required string Info { get; set; }
+    public required string? Info { get; set; }
     
     [Display(Name = "Icon")]
     public required IconType? Icon { get; set; }
@@ -51,6 +55,7 @@ public sealed class Entity
         {
             Name = formElement.Name,
             TableName = formElement.TableName,
+            Schema = formElement.Schema,
             UseReadProcedure = formElement.UseReadProcedure,
             UseWriteProcedure = formElement.UseWriteProcedure,
             ReadProcedureName = formElement.ReadProcedureName,
@@ -68,6 +73,7 @@ public sealed class Entity
     {
         formElement.Name = Name;
         formElement.TableName = TableName;
+        formElement.Schema = Schema;
         formElement.UseReadProcedure = UseReadProcedure;
         formElement.UseWriteProcedure = UseWriteProcedure;
         formElement.ReadProcedureName = ReadProcedureName;

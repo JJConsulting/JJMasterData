@@ -25,20 +25,21 @@ public class SqlServerReadProcedureScripts(
             .FindAll(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.ViewOnly);
 
         var sql = new StringBuilder();
-        string procedureFinalName = options.Value.GetReadProcedureName(element);
+
+        var procedureName = options.Value.GetReadProcedureName(element);
+        var procedureFinalName = FormatWithSchema(procedureName, element.Schema);
 
         if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
-            sql.Append("CREATE OR ALTER PROCEDURE [");
+            sql.Append("CREATE OR ALTER PROCEDURE ");
         }
         else
         {
             sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
-            sql.Append("CREATE PROCEDURE [");
+            sql.Append("CREATE PROCEDURE ");
         }
 
-        sql.Append(procedureFinalName);
-        sql.AppendLine("] ");
+        sql.AppendLine(procedureFinalName);
         sql.AppendLine("@orderby VARCHAR(MAX), ");
         sql.AppendLine(GetParameters(fields, addMasterDataParameters: true));
         sql.AppendLine("AS ");
@@ -111,7 +112,7 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine("--TABLES");
         sql.Append(Tab);
         sql.Append("SET @sqlTable = 'FROM ");
-        sql.Append(element.TableName);
+        sql.Append(GetTableName(element));
         sql.AppendLine(" WITH (NOLOCK)'");
         sql.AppendLine("");
 

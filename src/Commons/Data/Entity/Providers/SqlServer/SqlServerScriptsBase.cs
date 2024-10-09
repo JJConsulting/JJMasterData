@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿#nullable enable
+
+using System.Text;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
@@ -6,8 +8,27 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 public abstract class SqlServerScriptsBase
 {
     protected const char Tab = '\t';
+    
+    protected static string GetTableName(Element element)
+    {
+        return FormatWithSchema(element.Name, element.Schema);
+    }
+    
+    protected static string FormatWithSchema(string name, string? schema)
+    {
+        var sql = new StringBuilder();
 
-    public static string GetFieldDataTypeScript(ElementField field)
+        if (!string.IsNullOrEmpty(schema))
+        {
+            sql.AppendFormat("[{0}]", schema);
+            sql.Append('.');
+        }
+        sql.AppendFormat("[{0}]", name);
+
+        return sql.ToString();
+    }
+
+    private static string GetFieldDataTypeScript(ElementField field)
     {
         var sql = new StringBuilder();
         sql.Append(field.DataType.ToString());

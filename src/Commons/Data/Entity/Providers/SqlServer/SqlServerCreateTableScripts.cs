@@ -20,9 +20,9 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         var sql = new StringBuilder();
         var keys = new StringBuilder();
 
-        sql.Append("CREATE TABLE [");
-        sql.Append(element.TableName);
-        sql.AppendLine("] (");
+        sql.Append("CREATE TABLE ");
+        sql.Append(GetTableName(element));
+        sql.AppendLine(" (");
 
         var fields = element.Fields
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);

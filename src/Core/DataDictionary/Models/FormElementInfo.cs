@@ -14,7 +14,7 @@ public class FormElementInfo
     
     public required string TableName { get; init; }
     
-    public required string Info { get; init; }
+    public required string? Info { get; init; }
     
     public required bool EnableApi { get; init; }
     
