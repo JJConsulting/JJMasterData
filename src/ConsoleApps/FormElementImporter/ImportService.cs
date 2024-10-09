@@ -18,7 +18,6 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
         Console.WriteLine("Starting Process...");
 
         var start = DateTime.Now;
-        
         var databaseDictionaries = DataDictionaryRepository.GetFormElementListAsync(false).GetAwaiter().GetResult();
         var folderDictionaries = new List<FormElement>();
 
@@ -30,14 +29,10 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
 
                 var formElement = FormElementSerializer.Deserialize(json);
 
-                if (formElement != null)
-                {
-                    DataDictionaryRepository.InsertOrReplace(formElement);
-                    
-                    Console.WriteLine($@"Saving FormElement: {formElement.Name}");
+                DataDictionaryRepository.InsertOrReplace(formElement);
+                Console.WriteLine($"Saving FormElement: {formElement.Name}");
 
-                    folderDictionaries.Add(formElement);
-                }
+                folderDictionaries.Add(formElement);
             }
         }
 
@@ -45,9 +40,8 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
         {
             if (!folderDictionaries.Exists(dic => dic.Name.Equals(formElement.Name)))
             {
-                Console.WriteLine($@"Deleting FormElement: {formElement.Name}");
+                Console.WriteLine($"Deleting FormElement: {formElement.Name}");
                 DataDictionaryRepository.DeleteAsync(formElement.Name).GetAwaiter().GetResult();
-
             }
         }
 

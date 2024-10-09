@@ -49,93 +49,89 @@ public class GridToolbarActions
 
     public void Set(BasicAction action)
     {
-        if (action is InsertAction insertAction)
+        switch (action)
         {
-            InsertAction = insertAction;
-        }
-        else if (action is LegendAction legendAction)
-        {
-            LegendAction = legendAction;
-        }
-        else if (action is RefreshAction refreshAction)
-        {
-            RefreshAction = refreshAction;
-        }
-        else if (action is FilterAction filterAction)
-        {
-            FilterAction = filterAction;
-        }
-        else if (action is ImportAction importAction)
-        {
-            ImportAction = importAction;
-        }
-        else if (action is ExportAction exportAction)
-        {
-            ExportAction = exportAction;
-        }
-        else if (action is ConfigAction configAction)
-        {
-            ConfigAction = configAction;
-        }
-        else if (action is SortAction sortAction)
-        {
-            SortAction = sortAction;
-        }
-        else if (action is AuditLogGridToolbarAction logAction)
-        {
-            AuditLogGridToolbarAction = logAction;
-        }
-        else if (action is SqlCommandAction cmdAction)
-        {
-            for (int i = 0; i < CommandActions.Count; i++)
+            case InsertAction insertAction:
+                InsertAction = insertAction;
+                break;
+            case LegendAction legendAction:
+                LegendAction = legendAction;
+                break;
+            case RefreshAction refreshAction:
+                RefreshAction = refreshAction;
+                break;
+            case FilterAction filterAction:
+                FilterAction = filterAction;
+                break;
+            case ImportAction importAction:
+                ImportAction = importAction;
+                break;
+            case ExportAction exportAction:
+                ExportAction = exportAction;
+                break;
+            case ConfigAction configAction:
+                ConfigAction = configAction;
+                break;
+            case SortAction sortAction:
+                SortAction = sortAction;
+                break;
+            case AuditLogGridToolbarAction logAction:
+                AuditLogGridToolbarAction = logAction;
+                break;
+            case SqlCommandAction cmdAction:
             {
-                if (CommandActions[i].Name.Equals(action.Name))
+                for (int i = 0; i < CommandActions.Count; i++)
                 {
-                    CommandActions[i] = cmdAction;
-                    return;
+                    if (CommandActions[i].Name.Equals(action.Name))
+                    {
+                        CommandActions[i] = cmdAction;
+                        return;
+                    }
                 }
+                CommandActions.Add(cmdAction);
+                break;
             }
-            CommandActions.Add(cmdAction);
-        }
-        else if (action is UrlRedirectAction urlAction)
-        {
-            for (int i = 0; i < UrlRedirectActions.Count; i++)
+            case UrlRedirectAction urlAction:
             {
-                if (UrlRedirectActions[i].Name.Equals(action.Name))
+                for (int i = 0; i < UrlRedirectActions.Count; i++)
                 {
-                    UrlRedirectActions[i] = urlAction;
-                    return;
+                    if (UrlRedirectActions[i].Name.Equals(action.Name))
+                    {
+                        UrlRedirectActions[i] = urlAction;
+                        return;
+                    }
                 }
+                UrlRedirectActions.Add(urlAction);
+                break;
             }
-            UrlRedirectActions.Add(urlAction);
-        }
-        else if (action is InternalAction internalAction)
-        {
-            for (int i = 0; i < InternalActions.Count; i++)
+            case InternalAction internalAction:
             {
-                if (InternalActions[i].Name.Equals(action.Name))
+                for (int i = 0; i < InternalActions.Count; i++)
                 {
-                    InternalActions[i] = internalAction;
-                    return;
+                    if (InternalActions[i].Name.Equals(action.Name))
+                    {
+                        InternalActions[i] = internalAction;
+                        return;
+                    }
                 }
+                InternalActions.Add(internalAction);
+                break;
             }
-            InternalActions.Add(internalAction);
-        }
-        else if (action is ScriptAction scriptAction)
-        {
-            for (int i = 0; i < JsActions.Count; i++)
+            case ScriptAction scriptAction:
             {
-                if (JsActions[i].Name.Equals(action.Name))
+                for (int i = 0; i < JsActions.Count; i++)
                 {
-                    JsActions[i] = scriptAction;
-                    return;
+                    if (JsActions[i].Name.Equals(action.Name))
+                    {
+                        JsActions[i] = scriptAction;
+                        return;
+                    }
                 }
+                JsActions.Add(scriptAction);
+                break;
             }
-            JsActions.Add(scriptAction);
-        }
-        else
-        {
-            throw new ArgumentException("Invalid Action");
+            default:
+                throw new ArgumentException("Invalid Action");
         }
     }
 
@@ -251,95 +247,51 @@ public class GridToolbarActions
 
         if (InsertAction is not null)
         {
-            actionList.Add(InsertAction);
         }
         else
         {
             InsertAction = new InsertAction();
-            actionList.Add(InsertAction);
         }
+
+        actionList.Add(InsertAction);
 
         if (LegendAction is not null)
         {
-            actionList.Add(LegendAction);
         }
         else
         {
             LegendAction = new LegendAction();
-            actionList.Add(LegendAction);
         }
 
-        if (RefreshAction is not null)
-        {
-            actionList.Add(RefreshAction);
-        }
-        else
-        {
-            RefreshAction = new RefreshAction();
-            actionList.Add(RefreshAction);
-        }
+        actionList.Add(LegendAction);
 
-        if (FilterAction is not null)
-        {
-            actionList.Add(FilterAction);
-        }
-        else
-        {
-            FilterAction = new FilterAction();
-            actionList.Add(FilterAction);
-        }
+        RefreshAction ??= new RefreshAction();
 
-        if (ImportAction is not null)
-        {
-            actionList.Add(ImportAction);
-        }
-        else
-        {
-            ImportAction = new ImportAction();
-            actionList.Add(ImportAction);
-        }
+        actionList.Add(RefreshAction);
 
-        if (ExportAction is not null)
-        {
-            actionList.Add(ExportAction);
-        }
-        else
-        {
-            ExportAction = new ExportAction();
-            actionList.Add(ExportAction);
-        }
+        FilterAction ??= new FilterAction();
 
-        if (ConfigAction is not null)
-        {
-            actionList.Add(ConfigAction);
-        }
-        else
-        {
-            ConfigAction = new ConfigAction();
-            actionList.Add(ConfigAction);
-        }
+        actionList.Add(FilterAction);
 
-        if (SortAction is not null)
-        {
-            actionList.Add(SortAction);
-        }
-        else
-        {
-            SortAction = new SortAction();
-            actionList.Add(SortAction);
-        }
+        ImportAction ??= new ImportAction();
 
-        if (AuditLogGridToolbarAction is not null)
-        {
-            actionList.Add(AuditLogGridToolbarAction);
-        }
-        else
-        {
-            AuditLogGridToolbarAction = new AuditLogGridToolbarAction();
-            actionList.Add(AuditLogGridToolbarAction);
-        }
+        actionList.Add(ImportAction);
 
+        ExportAction ??= new ExportAction();
 
+        actionList.Add(ExportAction);
+
+        ConfigAction ??= new ConfigAction();
+
+        actionList.Add(ConfigAction);
+
+        SortAction ??= new SortAction();
+
+        actionList.Add(SortAction);
+
+        AuditLogGridToolbarAction ??= new AuditLogGridToolbarAction();
+
+        actionList.Add(AuditLogGridToolbarAction);
         if (CommandActions is { Count: > 0 })
             actionList.AddRange(CommandActions.ToArray());
 
@@ -351,7 +303,6 @@ public class GridToolbarActions
 
         if (JsActions is { Count: > 0 })
             actionList.AddRange(JsActions.ToArray());
-        
         return actionList.OrderBy(x => x.Order).ToList();
     }
 }

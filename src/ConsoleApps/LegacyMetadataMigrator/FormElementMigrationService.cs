@@ -101,7 +101,7 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
                                 WHERE [json] LIKE '%{search_text}%';
                                 """);
         
-        Console.WriteLine(@"✅ Replaced {{search_text}} to {{SearchText}} in all elements");
+        Console.WriteLine("✅ Replaced {{search_text}} to {{SearchText}} in all elements");
         
         DataAccess.SetCommand($$"""
                                 UPDATE {{TableName}}
@@ -111,10 +111,10 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
                                 WHERE [json] LIKE '%{objname}%';
                                 """);
         
-        Console.WriteLine(@"✅ Replaced {{objname}} to {{FieldName}} in all elements");
+        Console.WriteLine("✅ Replaced {{objname}} to {{FieldName}} in all elements");
         
-        Console.WriteLine($@"Process started: {start}");
-        Console.WriteLine($@"Process finished: {DateTime.Now}");
+        Console.WriteLine($"Process started: {start}");
+        Console.WriteLine($"Process finished: {DateTime.Now}");
         
         ExpressionsMigrationService.Migrate();
     }

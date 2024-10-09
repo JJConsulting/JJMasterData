@@ -75,7 +75,7 @@ public class MetadataRepository(IEntityRepository entityRepository, IOptions<Mas
                     currentParser!.Table = JsonConvert.DeserializeObject<Element>(json);
                     break;
                 case "F":
-                    currentParser!.Form = JsonConvert.DeserializeObject<MetadataForm>(json, new JsonSerializerSettings()
+                    currentParser!.Form = JsonConvert.DeserializeObject<MetadataForm>(json, new JsonSerializerSettings
                     {
                         Error = (sender, args) =>
                         {
