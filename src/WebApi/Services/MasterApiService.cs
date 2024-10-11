@@ -460,16 +460,15 @@ public class MasterApiService(ExpressionsService expressionsService,
         FormElementApiOptions apiOptions)
     {
         var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-        foreach (var entry in result)
+        foreach (var (key, entryVal) in result)
         {
-            var entryVal = entry.Value;
             if (entryVal == null)
             {
                 continue;
             }
-            string fieldName = apiOptions.GetJsonFieldName(entry.Key);
+            var fieldName = apiOptions.GetJsonFieldName(key);
             
-            if (!original.TryGetValue(entry.Key, out var originalEntry))
+            if (!original.TryGetValue(key, out var originalEntry))
             {
                 newValues.Add(fieldName, entryVal);
                 continue;
@@ -477,13 +476,13 @@ public class MasterApiService(ExpressionsService expressionsService,
 
             if (originalEntry == null)
             {
-                newValues.Add(fieldName, entry.Value);
+                newValues.Add(fieldName, entryVal);
                 continue;
             }
 
-            if (!((string)originalEntry).Equals(entryVal.ToString()))
+            if (originalEntry.ToString() != entryVal.ToString())
             {
-                newValues.Add(fieldName, entry.Value);
+                newValues.Add(fieldName, entryVal);
             }
         }
 

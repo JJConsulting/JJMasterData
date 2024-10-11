@@ -21,8 +21,9 @@ internal sealed class TextFileFactory(
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var (formStateData, _, value) = context;
-
+        var formStateData = context.FormStateData;
+        var value = context.Value;
+        
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
