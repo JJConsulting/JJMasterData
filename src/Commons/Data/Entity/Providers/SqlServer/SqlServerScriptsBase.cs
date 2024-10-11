@@ -11,7 +11,7 @@ public abstract class SqlServerScriptsBase
     
     protected static string GetTableName(Element element)
     {
-        return FormatWithSchema(element.Name, element.Schema);
+        return FormatWithSchema(element.TableName, element.Schema);
     }
     
     protected static string FormatWithSchema(string name, string? schema)
