@@ -34,9 +34,6 @@ public sealed class MasterDataWebOptions
     
     public bool SupportNetFramework { get; set; }
     
-    [Display(Name = "Enable Bundle and Minification")]
-    public bool EnableBundleAndMinification { get; set; }
-    
     [Display(Name = "Use Advanced Mode At Expressions")]
     public bool UseAdvancedModeAtExpressions { get; set; }
     

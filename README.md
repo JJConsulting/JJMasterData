@@ -74,7 +74,10 @@ var app = builder.Build();
 
 ///...
 
-app.UseJJMasterDataWeb();
+//Required middlewares
+app.UseStaticFiles();
+app.UseSession();
+
 app.MapJJMasterData();
 
 app.Run();

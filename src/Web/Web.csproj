@@ -22,17 +22,12 @@
             $(ResolveCurrentProjectStaticWebAssetsInputs)
         </ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
     </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    </PropertyGroup>
     
     <ItemGroup>
         <PackageReference Include="AspNetCore.SassCompiler" Version="1.72.0" ReferenceOutputAssembly="false"/>
         <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.396" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
         <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.3">
@@ -47,12 +42,6 @@
     
     <ItemGroup>
         <ProjectReference Include="..\Core\Core.csproj" />
-    </ItemGroup>
-    
-    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.0" />
-        <EmbeddedResource Include="Scripts\**\*.ts" />
-        <EmbeddedResource Include="Styles\**\*.scss" />
     </ItemGroup>
     
 	<ItemGroup>

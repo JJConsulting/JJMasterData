@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WebOptimizer;
+
 
 namespace JJMasterData.Web.Configuration;
 
@@ -92,8 +92,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();
         services.AddTransient<LocalizationService>();
 
-        services.AddMasterDataWebOptimizer();
-
         services.AddHttpContextAccessor();
         services.AddSession(o =>
         {
@@ -124,15 +122,5 @@ public static class ServiceCollectionExtensions
                     return configuration.ConfigureDataAnnotations(type,factory);
                 };
             });
-    }
-
-    internal static void AddMasterDataWebOptimizer(this IServiceCollection services,
-        Action<IAssetPipeline>? configure = null)
-    {
-        services.AddWebOptimizer(options =>
-        {
-            options.AddBundles();
-            configure?.Invoke(options);
-        });
     }
 }

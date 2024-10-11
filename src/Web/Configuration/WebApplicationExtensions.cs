@@ -1,27 +1,17 @@
 using System.Globalization;
-using System.Reflection;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using JJMasterData.Web.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.FileProviders;
 
 namespace JJMasterData.Web.Configuration;
 
 public static class WebApplicationExtensions
 {
-    public static WebApplication UseJJMasterDataWeb(this WebApplication app, Action<RequestLocalizationOptions> configureLocalization)
+    [PublicAPI]
+    public static WebApplication UseUrlRequestLocalization(this WebApplication app, Action<MasterDataLocalizationOptions>? configureLocalization = null)
     {
-        app.UseRequiredMiddlewares();
-        app.UseRequestLocalization(configureLocalization);
-        return app;
-    }
-    
-    public static WebApplication UseJJMasterDataWeb(this WebApplication app, Action<MasterDataLocalizationOptions>? configureLocalization = null)
-    {
-        app.UseRequiredMiddlewares();
-
         app.UseRequestLocalization(options =>
         {
             var routingOptions = new MasterDataLocalizationOptions();
@@ -66,25 +56,6 @@ public static class WebApplicationExtensions
         });
 
         return app;
-    }
-
-    private static void UseRequiredMiddlewares(this WebApplication app)
-    {
-        app.UseSession();
-
-        //Debug for typescript        
-#if DEBUG
-        app.UseFileServer(new FileServerOptions
-        {
-            FileProvider = new ManifestEmbeddedFileProvider(Assembly.GetExecutingAssembly(), "Scripts"),
-            RequestPath = new PathString("/Scripts"),
-        });
-#endif
-        app.UseStaticFiles();
-
-        app.UseWebOptimizer();
-        
-        app.UseDefaultFiles();
     }
 
     /// <summary>
