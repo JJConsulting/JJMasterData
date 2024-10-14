@@ -31,7 +31,7 @@ public sealed class MasterDataStringLocalizer<TResourceSource>(IStringLocalizerF
 		_localizer.GetAllStrings(includeParentCultures);
 }
 
-public class MasterDataStringLocalizer(
+public sealed class MasterDataStringLocalizer(
 	string resourceName,
 	ResourceManagerStringLocalizer resourcesStringLocalizer,
 	IEntityRepository entityRepository,
@@ -66,8 +66,7 @@ public class MasterDataStringLocalizer(
 			return new LocalizedString(name, string.Format(this[name], arguments));
 		}
 	}
-
-
+	
 	private string GetString(string key)
 	{
 		if (string.IsNullOrEmpty(key))

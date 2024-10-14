@@ -36,25 +36,24 @@ public static class ServiceCollectionExtensions
 
         builder.Services.Configure<MasterDataCommonsOptions>(configuration.GetJJMasterData());
 
-        services.AddMasterDataCommonsServices(configuration);
+        services.AddMasterDataCommonsServices();
 
         return builder;
     }
 
     public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services,
-        Action<MasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
+        Action<MasterDataCommonsOptions> configure)
     {
         var builder = new MasterDataServiceBuilder(services);
 
-        services.AddMasterDataCommonsServices(loggingConfiguration);
+        services.AddMasterDataCommonsServices();
         if (configure != null) 
             services.PostConfigure(configure);
 
         return builder;
     }
 
-    private static IServiceCollection AddMasterDataCommonsServices(this IServiceCollection services,
-        IConfiguration configuration = null)
+    private static void AddMasterDataCommonsServices(this IServiceCollection services)
     {
         services.AddOptions<MasterDataCommonsOptions>().BindConfiguration("JJMasterData");
         services.AddOptions<DbLoggerOptions>().BindConfiguration("Logging:Database");
@@ -64,8 +63,7 @@ public static class ServiceCollectionExtensions
         services.AddMemoryCache();
         services.AddSingleton<ResourceManagerStringLocalizerFactory>();
         services.AddSingleton<IStringLocalizerFactory, MasterDataStringLocalizerFactory>();
-        services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>), typeof(MasterDataStringLocalizer<>),
-            ServiceLifetime.Transient));
+        services.AddTransient(typeof(IStringLocalizer<>), typeof(MasterDataStringLocalizer<>));
         services.AddLogging(builder =>
         {
             //We can't have control when Db and File are enabled/disabled dynamically
@@ -88,7 +86,5 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEncryptionService, EncryptionService>();
 
         services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
-
-        return services;
     }
 }

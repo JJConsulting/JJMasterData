@@ -10,10 +10,10 @@ namespace JJMasterData.Commons.Localization;
 
 public sealed class MasterDataStringLocalizerFactory : IStringLocalizerFactory
 {
-    private ResourceManagerStringLocalizerFactory ResourceManagerStringLocalizerFactory { get; }
-    private IEntityRepository EntityRepository { get; }
-    private IMemoryCache Cache { get; }
-    private IOptionsMonitor<MasterDataCommonsOptions> Options { get; }
+    private readonly ResourceManagerStringLocalizerFactory _resourceManagerStringLocalizerFactory;
+    private readonly IEntityRepository _entityRepository;
+    private readonly IMemoryCache _cache;
+    private readonly IOptionsMonitor<MasterDataCommonsOptions> _options;
 
     public MasterDataStringLocalizerFactory(
         ResourceManagerStringLocalizerFactory resourceManagerStringLocalizerFactory,
@@ -22,21 +22,21 @@ public sealed class MasterDataStringLocalizerFactory : IStringLocalizerFactory
         IOptionsMonitor<MasterDataCommonsOptions> options)
     {
         using var scope = serviceProvider.CreateScope();
-        ResourceManagerStringLocalizerFactory = resourceManagerStringLocalizerFactory;
-        EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
-        Cache = cache;
-        Options = options;
+        _resourceManagerStringLocalizerFactory = resourceManagerStringLocalizerFactory;
+        _entityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
+        _cache = cache;
+        _options = options;
     }
 
     public IStringLocalizer Create(Type resourceSource)
     {
-        var resourceLocalizer = (ResourceManagerStringLocalizer)ResourceManagerStringLocalizerFactory.Create(resourceSource);
-        return new MasterDataStringLocalizer(resourceSource.ToString(), resourceLocalizer, EntityRepository, Cache, Options);
+        var resourceLocalizer = (ResourceManagerStringLocalizer)_resourceManagerStringLocalizerFactory.Create(resourceSource);
+        return new MasterDataStringLocalizer(resourceSource.ToString(), resourceLocalizer, _entityRepository, _cache, _options);
     }
 
     public IStringLocalizer Create(string baseName, string location)
     {
-        var resourceLocalizer = (ResourceManagerStringLocalizer)ResourceManagerStringLocalizerFactory.Create(baseName,location);
-        return new MasterDataStringLocalizer($"{baseName}_{location}", resourceLocalizer, EntityRepository, Cache, Options);
+        var resourceLocalizer = (ResourceManagerStringLocalizer)_resourceManagerStringLocalizerFactory.Create(baseName, location);
+        return new MasterDataStringLocalizer($"{baseName}_{location}", resourceLocalizer, _entityRepository, _cache, _options);
     }
 }
