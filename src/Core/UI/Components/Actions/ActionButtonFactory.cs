@@ -17,7 +17,6 @@ public class ActionButtonFactory(
     IEncryptionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    
     public JJLinkButton Create() => linkButtonFactory.Create();
 
     public JJLinkButton Create(BasicAction action, bool visible, bool enabled)
@@ -52,18 +51,12 @@ public class ActionButtonFactory(
         var actionContext = gridView.GetActionContext(action, formStateData);
         var button = Create(action, actionContext.FormStateData);
 
-        switch (action)
+        button.OnClientClick = action switch
         {
-            case UserCreatedAction:
-                button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
-                break;
-            case GridTableAction:
-                button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
-                break;
-            default:
-                throw new JJMasterDataException("Action is not user created or a GridTableAction.");
-        }
-
+            UserCreatedAction => actionScripts.GetUserActionScript(actionContext, ActionSource.GridTable),
+            GridTableAction => actionScripts.GetFormActionScript(actionContext, ActionSource.GridTable),
+            _ => throw new JJMasterDataException("Action is not user created or a GridTableAction.")
+        };
 
         return button;
     }
@@ -218,5 +211,4 @@ public class ActionButtonFactory(
 
         return button;
     }
-    
 }

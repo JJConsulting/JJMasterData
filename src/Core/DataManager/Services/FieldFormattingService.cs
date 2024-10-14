@@ -163,10 +163,7 @@ public class FieldFormattingService(
 
     public static string FormatValue(FormElementField field, object value)
     {
-        if (value == null)
-            return string.Empty;
-
-        var stringValue = value.ToString()!;
+        var stringValue = value?.ToString();
         if (string.IsNullOrEmpty(stringValue))
             return string.Empty;
 

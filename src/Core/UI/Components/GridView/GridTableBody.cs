@@ -8,7 +8,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
@@ -206,7 +205,6 @@ internal sealed class GridTableBody(JJGridView gridView)
         await OnRenderCellAsync(this, args);
 
         return args.HtmlResult ?? cell;
-
     }
     
     private async Task<HtmlBuilder> GetDataItemIconCell(FormElementDataItem dataItem, FormStateData formStateData, string stringValue)
@@ -302,7 +300,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return div;
     }
 
-    public async Task<List<HtmlBuilder>> GetActionsHtmlListAsync(FormStateData formStateData)
+    public async ValueTask<List<HtmlBuilder>> GetActionsHtmlListAsync(FormStateData formStateData)
     {
         List<HtmlBuilder> result = [];
         var basicActions = gridView.GridTableActions.OrderBy(x => x.Order).ToList();
@@ -318,8 +316,7 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         return result;
     }
-
-
+    
     private async ValueTask<HtmlBuilder> GetActionsGroupHtmlAsync(List<BasicAction> actions,
         FormStateData formStateData)
     {
@@ -347,8 +344,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         td.AppendComponent(btnGroup);
         return td;
     }
-
-
+    
     private async ValueTask<List<HtmlBuilder>> GetActionsWithoutGroupHtmlAsync(
         List<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
