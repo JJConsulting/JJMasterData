@@ -276,7 +276,7 @@ public partial class DataAccess
 
     public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
-        var dictionaryList = new List<Dictionary<string, object?>>();
+        var dictionaryList = new List<Dictionary<string, object?>>(); 
 
         try
         {
@@ -296,9 +296,10 @@ public partial class DataAccess
                         var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
                         foreach (var columnName in columnNames)
                         {
-                            var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
+                            var ordinal = dataReader.GetOrdinal(columnName);
+                            var value = dataReader.IsDBNull(ordinal)
                                 ? null
-                                : dataReader.GetValue(dataReader.GetOrdinal(columnName));
+                                : dataReader.GetValue(ordinal);
                             dictionary[columnName] = value;
                         }
 
@@ -320,7 +321,7 @@ public partial class DataAccess
 
         return dictionaryList;
     }
-
+    
     /// <inheritdoc cref="TableExists"/>
     public async Task<bool> TableExistsAsync(string tableName, CancellationToken cancellationToken = default)
     {

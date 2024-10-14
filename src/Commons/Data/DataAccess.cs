@@ -557,7 +557,7 @@ public partial class DataAccess
         {
             var error = new StringBuilder();
             error.AppendLine(ex.Message);
-            if (ex.InnerException is { Message: { } })
+            if (ex.InnerException is { Message: not null })
                 error.Append(ex.InnerException.Message);
 
             errorMessage = error.ToString();
@@ -739,9 +739,10 @@ public partial class DataAccess
                         var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
                         foreach (var columnName in columnNames)
                         {
-                            var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
+                            var ordinal = dataReader.GetOrdinal(columnName);
+                            var value = dataReader.IsDBNull(ordinal)
                                 ? null
-                                : dataReader.GetValue(dataReader.GetOrdinal(columnName));
+                                : dataReader.GetValue(ordinal);
                             dictionary[columnName] = value;
                         }
 
