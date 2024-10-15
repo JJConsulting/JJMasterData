@@ -4,12 +4,18 @@ class GridViewFilterHelper {
         document.querySelector<HTMLInputElement>("#grid-view-action-map-" + gridViewName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-page-" + gridViewName).value = "1";
         
-        GridViewHelper.clearCurrentFormAction(gridViewName)
+        GridViewHelper.clearCurrentFormAction(gridViewName);
         GridViewHelper.refreshGrid(gridViewName, routeContext);
 
-        document.getElementById(gridViewName + "-filter-icon").classList.remove("d-none");
+        this.showFilterIcon(gridViewName);
     }
 
+    static showFilterIcon(gridViewName: string){
+        const filterIcon = document.getElementById(gridViewName + "-filter-icon");
+        new bootstrap.Tooltip(filterIcon);
+        filterIcon.classList.remove("d-none");
+    }
+    
     static reload(gridViewName, filterPanelName, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);

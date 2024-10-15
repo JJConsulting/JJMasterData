@@ -321,9 +321,13 @@
     <value>e lá dentro é armazenado os uploads realizados pelos usuários.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Applied filter" xml:space="preserve">
-    <value>Filtro Aplicado</value>
+  <data name="Applied Filters" xml:space="preserve">
+    <value>Filtros Aplicados</value>
     <comment>JJMasterDataCore</comment>
+  </data>  
+  <data name="Applied Filter" xml:space="preserve">
+    <value>Filtro Aplicado</value>
+  <comment>JJMasterDataCore</comment>
   </data>
   <data name="Apply only on selected lines" xml:space="preserve">
     <value>Aplicar somenter as linhas selecionadas</value>

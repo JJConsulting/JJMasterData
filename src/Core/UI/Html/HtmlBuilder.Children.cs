@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.UI.Html;
@@ -209,7 +210,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a script tag with a raw JavaScript script.
     /// </summary>
-    public HtmlBuilder AppendScript(string rawScript)
+    public HtmlBuilder AppendScript([LanguageInjection("javascript")]string rawScript)
     {
         var child = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")
@@ -221,7 +222,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a script tag with a rawScript
     /// </summary>
-    public HtmlBuilder AppendScriptIf(bool condition, string rawScript)
+    public HtmlBuilder AppendScriptIf(bool condition, [LanguageInjection("javascript")]string rawScript)
     {
         var child = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")

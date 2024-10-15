@@ -916,7 +916,8 @@ public class JJGridView : AsyncComponent
 
         var hasFilter = await Filter.HasFilter();
 
-        if (!hasFilter) return alert.GetHtmlBuilder();
+        if (!hasFilter)
+            return alert.GetHtmlBuilder();
 
         alert.Messages.Add(StringLocalizer["There are filters applied for this query."]);
         alert.Icon = IconType.Filter;

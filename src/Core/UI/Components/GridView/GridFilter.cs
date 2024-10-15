@@ -188,7 +188,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
         var btnDoFilter = gridView.ComponentFactory.Html.LinkButton.Create();
         btnDoFilter.Enabled = gridView.EnableFilter;
-        btnDoFilter.Text = gridView.StringLocalizer["Filter"];
+        btnDoFilter.Text = _stringLocalizer["Filter"];
         btnDoFilter.IconClass = "fa fa-search";
         btnDoFilter.ShowAsButton = true;
         btnDoFilter.Type = LinkButtonType.Submit;
@@ -196,7 +196,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
         var btnCancel = gridView.ComponentFactory.Html.LinkButton.Create();
         btnCancel.Enabled = gridView.EnableFilter;
-        btnCancel.Text = gridView.StringLocalizer["Clear Filter"];
+        btnCancel.Text = _stringLocalizer["Clear Filter"];
         btnCancel.IconClass = "fa fa-trash";
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = $"{gridView.Scripts.GetClearFilterScript()};return false;";
@@ -207,7 +207,11 @@ internal sealed class GridFilter(JJGridView gridView)
             var filterIcon = new JJIcon(IconType.Filter)
             {
                 CssClass = "text-info",
-                Name = gridView.Name + "-filter-icon"
+                Name = gridView.Name + "-filter-icon",
+                Attributes =
+                {
+                    {"title",_stringLocalizer["Applied Filters"]}
+                }
             };
 
             if (!hasFilter)
@@ -220,13 +224,17 @@ internal sealed class GridFilter(JJGridView gridView)
                 Name = $"grid-view-filter-collapse-{gridView.Name}",
                 HtmlBuilderContent = html,
                 TitleIcon = filterIcon,
-                Title = gridView.StringLocalizer[action.Text]
+                Title = _stringLocalizer[action.Text]
             };
+            
             panel.Buttons.Add(btnDoFilter);
             panel.Buttons.Add(btnCancel);
+            
             panel.ExpandedByDefault = action.ExpandedByDefault;
 
             html = panel.GetHtmlBuilder();
+            
+            html.AppendScriptIf(hasFilter, $"GridViewFilterHelper.showFilterIcon('{gridView.Name}')");
         }
         else
         {
@@ -238,7 +246,7 @@ internal sealed class GridFilter(JJGridView gridView)
             btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
 
             modal.HtmlBuilderContent = html;
-            modal.Title = gridView.StringLocalizer["Detailed Filters"];
+            modal.Title = _stringLocalizer["Detailed Filters"];
             modal.Buttons.Add(btnDoFilter);
             modal.Buttons.Add(btnCancel);
 
@@ -451,11 +459,8 @@ internal sealed class GridFilter(JJGridView gridView)
         return values;
     }
 
-    public async Task<bool> HasFilter()
+    public async ValueTask<bool> HasFilter()
     {
-        if (gridView.FormElement == null)
-            throw new NullReferenceException(nameof(gridView.FormElement));
-
         foreach (var item in await GetCurrentFilterAsync())
         {
             if (string.IsNullOrEmpty(item.Value.ToString()))

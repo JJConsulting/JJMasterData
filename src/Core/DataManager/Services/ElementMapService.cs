@@ -33,8 +33,8 @@ public class ElementMapService(
     }
     
     private Dictionary<string, object> GetFilters(
-        DataElementMap elementMap, 
-        object? value, 
+        DataElementMap elementMap,
+        object? value,
         FormStateData? formStateData)
     {
         var filters = new Dictionary<string, object>

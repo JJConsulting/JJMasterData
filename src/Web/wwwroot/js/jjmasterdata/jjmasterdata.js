@@ -1124,7 +1124,12 @@ class GridViewFilterHelper {
         document.querySelector("#grid-view-page-" + gridViewName).value = "1";
         GridViewHelper.clearCurrentFormAction(gridViewName);
         GridViewHelper.refreshGrid(gridViewName, routeContext);
-        document.getElementById(gridViewName + "-filter-icon").classList.remove("d-none");
+        this.showFilterIcon(gridViewName);
+    }
+    static showFilterIcon(gridViewName) {
+        const filterIcon = document.getElementById(gridViewName + "-filter-icon");
+        new bootstrap.Tooltip(filterIcon);
+        filterIcon.classList.remove("d-none");
     }
     static reload(gridViewName, filterPanelName, routeContext) {
         const urlBuilder = new UrlBuilder();
