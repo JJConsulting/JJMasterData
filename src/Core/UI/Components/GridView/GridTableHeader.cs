@@ -52,6 +52,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
     private async Task<List<HtmlBuilder>> GetVisibleFieldsThList()
     {
         List<HtmlBuilder> thList = [];
+        bool hasIcon = false;
         foreach (var field in await gridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
@@ -91,28 +92,46 @@ internal sealed class GridTableHeader(JJGridView gridView)
                     }
 
                     if (order.Equals($"{field.Name} DESC"))
+                    {
                         th.Append(GetDescendingIcon());
+                        hasIcon = true;
+                    }
                     else if (order.Equals($"{field.Name} ASC") || order.Equals(field.Name))
+                    {
                         th.Append(GetAscendingIcon());
+                        hasIcon = true;
+                    }
                 }
             }
             else
             {
                 if (field.Name.EndsWith("::DESC"))
+                {
                     th.Append(GetDescendingIcon());
+                    hasIcon = true;
+                }
                 else if (field.Name.EndsWith("::ASC"))
+                {
                     th.Append(GetAscendingIcon());
+                    hasIcon = true;
+                }
             }
 
             var currentFilter = await gridView.GetCurrentFilterAsync();
 
             if (IsAppliedFilter(field, currentFilter))
             {
+                hasIcon = true;
                 th.AppendText("&nbsp;");
-                th.Append(new JJIcon("fa fa-filter").GetHtmlBuilder()
+                th.Append(new JJIcon("fa fa-filter text-info").GetHtmlBuilder()
                     .WithToolTip(_stringLocalizer["Applied filter"]));
             }
 
+            if (hasIcon)
+            {
+                th.WithCssClass("text-nowrap");
+            }
+            
             thList.Add(th);
         }
 
@@ -133,10 +152,10 @@ internal sealed class GridTableHeader(JJGridView gridView)
         span.WithOnClick( gridView.Scripts.GetSortingScript(field.Name));
     }
 
-    private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()
+    private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc text-info").GetHtmlBuilder()
         .WithToolTip(_stringLocalizer["Ascending order"]);
 
-    private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlBuilder()
+    private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc text-info").GetHtmlBuilder()
         .WithToolTip(_stringLocalizer["Descending order"]);
 
     private static string GetThStyle(FormElementField field)

@@ -22,10 +22,6 @@ public sealed class FilterAction : GridToolbarAction
     [JsonProperty("showAsCollapse")]
     [Display(Name = "Show as Collapse")]
     public bool ShowAsCollapse { get; set; }
-
-    [JsonProperty("showIconAtCollapse")]
-    [Display(Name = "Show Icon At Collapse")]
-    public bool ShowIconAtCollapse { get; set; }
     
     /// <summary>
     /// Exibir o collapse painel aberto por padrão.

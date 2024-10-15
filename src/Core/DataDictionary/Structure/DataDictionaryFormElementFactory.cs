@@ -69,7 +69,6 @@ public class DataDictionaryFormElementFactory(
         formElement.Options.GridToolbarActions.ExportAction.SetVisible(false);
         
         formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
-        formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
         
         formElement.Options.GridTableActions.Clear();
         

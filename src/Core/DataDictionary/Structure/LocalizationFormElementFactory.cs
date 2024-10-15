@@ -44,7 +44,6 @@ public class LocalizationFormElementFactory(
         options.GridToolbarActions.FilterAction.ExpandedByDefault = true;
     
         formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
-        formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
         formElement.Options.GridToolbarActions.Add(new UrlRedirectAction
         {
             Name = "download-resources",

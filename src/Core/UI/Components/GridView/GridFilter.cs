@@ -5,6 +5,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
@@ -202,11 +203,23 @@ internal sealed class GridFilter(JJGridView gridView)
 
         if (action.ShowAsCollapse)
         {
+            var hasFilter = await HasFilter();
+            var filterIcon = new JJIcon(IconType.Filter)
+            {
+                CssClass = "text-info",
+                Name = gridView.Name + "-filter-icon"
+            };
+
+            if (!hasFilter)
+            {
+                filterIcon.CssClass += " d-none";
+            }
+            
             var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
             {
                 Name = $"grid-view-filter-collapse-{gridView.Name}",
                 HtmlBuilderContent = html,
-                TitleIcon = action.ShowIconAtCollapse ? new JJIcon(action.Icon) : null,
+                TitleIcon = filterIcon,
                 Title = gridView.StringLocalizer[action.Text]
             };
             panel.Buttons.Add(btnDoFilter);

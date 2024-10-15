@@ -3,8 +3,11 @@ class GridViewFilterHelper {
         document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + gridViewName).value = "filter";
         document.querySelector<HTMLInputElement>("#grid-view-action-map-" + gridViewName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-page-" + gridViewName).value = "1";
+        
         GridViewHelper.clearCurrentFormAction(gridViewName)
         GridViewHelper.refreshGrid(gridViewName, routeContext);
+
+        document.getElementById(gridViewName + "-filter-icon").classList.remove("d-none");
     }
 
     static reload(gridViewName, filterPanelName, routeContext) {
@@ -75,6 +78,8 @@ class GridViewFilterHelper {
         this.clearFilterInputs(componentName);
 
         GridViewHelper.refreshGrid(componentName, routeContext);
+
+        document.getElementById(componentName + "-filter-icon").classList.add("d-none");
     }
 
     static searchOnDOM(componentName, oDom) {
