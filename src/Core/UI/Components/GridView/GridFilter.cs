@@ -466,10 +466,9 @@ internal sealed class GridFilter(JJGridView gridView)
             if (string.IsNullOrEmpty(item.Value.ToString()))
                 continue;
 
-            if (!gridView.FormElement.Fields.Contains(item.Key))
+            if (!gridView.FormElement.Fields.TryGetField(item.Key, out var field))
                 continue;
 
-            var field = gridView.FormElement.Fields[item.Key];
             if (field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"))
                 return true;
         }
