@@ -236,16 +236,16 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     #endregion
 
-    protected override async ValueTask<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var fieldName = Request.QueryString["fieldName"];
         
         if (ComponentContext is ComponentContext.SearchBox or ComponentContext.SearchBoxFilter && FieldName == fieldName)
         {
-            return await GetItemsResult();
+            return new(GetItemsResult());
         }
 
-        return await GetRenderedComponentResult();
+        return new(GetRenderedComponentResult());
     }
 
     internal async Task<ComponentResult> GetRenderedComponentResult()
