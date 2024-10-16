@@ -1128,7 +1128,9 @@ class GridViewFilterHelper {
     }
     static showFilterIcon(gridViewName) {
         const filterIcon = document.getElementById(gridViewName + "-filter-icon");
-        new bootstrap.Tooltip(filterIcon, { trigger: 'hover' });
+        if (bootstrapVersion !== 3) {
+            new bootstrap.Tooltip(filterIcon, { trigger: 'hover' });
+        }
         filterIcon.classList.remove("d-none");
     }
     static reload(gridViewName, filterPanelName, routeContext) {
