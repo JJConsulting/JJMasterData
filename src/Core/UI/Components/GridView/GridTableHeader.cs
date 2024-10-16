@@ -122,9 +122,8 @@ internal sealed class GridTableHeader(JJGridView gridView)
             if (IsAppliedFilter(field, currentFilter))
             {
                 hasIcon = true;
-                th.AppendText("&nbsp;");
-                th.Append(new JJIcon("fa fa-filter text-info").GetHtmlBuilder()
-                    .WithToolTip(_stringLocalizer["Applied Filter"]));
+                th.AppendComponent(new JJIcon("fa fa-filter text-info"))
+                    .WithToolTip(_stringLocalizer["Applied Filter"]);
             }
 
             if (hasIcon)
@@ -140,10 +139,12 @@ internal sealed class GridTableHeader(JJGridView gridView)
 
     private static bool IsAppliedFilter(ElementField field, Dictionary<string, object> currentFilter)
     {
-        var hasFilterType = field.Filter.Type is not FilterMode.None;
+        if (field.Filter.Type is FilterMode.None)
+            return false;
+        
         var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");
 
-        return hasFilterType && hasFieldOrFromKey;
+        return hasFieldOrFromKey;
     }
 
     private void SetSortAttributes(HtmlBuilder span, ElementField field)
