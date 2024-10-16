@@ -498,16 +498,13 @@ public partial class DataAccess
                     if (dr.Read())
                     {
                         retCollection = new Dictionary<string, object?>();
-                        int nQtd = 0;
-
-                        while (nQtd < dr.FieldCount)
+                        for (int nQtd = 0; nQtd < dr.FieldCount; nQtd++)
                         {
                             string fieldName = dr.GetName(nQtd);
                             if (retCollection.ContainsKey(fieldName))
                                 throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
 
                             retCollection.Add(fieldName, dr.GetValue(nQtd));
-                            nQtd += 1;
                         }
                     }
                 }
