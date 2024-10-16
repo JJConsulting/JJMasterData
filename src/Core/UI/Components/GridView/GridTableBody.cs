@@ -493,8 +493,14 @@ internal sealed class GridTableBody(JJGridView gridView)
         if (!gridView.EnableEditMode)
             return row;
 
+        var autoReloadFormFields = gridView is
+                                   {
+                                       AutoReloadFormFields: true, EnableEditMode: false
+                                   } ||
+                                   gridView.ComponentContext is ComponentContext.GridViewRow;
+        
         var prefixName = gridView.GetFieldName(string.Empty, row);
         return await gridView.FormValuesService.GetFormValuesWithMergedValuesAsync(gridView.FormElement,
-            new FormStateData(row, gridView.UserValues, PageState.List), gridView.AutoReloadFormFields, prefixName);
+            new FormStateData(row, gridView.UserValues, PageState.List), autoReloadFormFields, prefixName);
     }
 }

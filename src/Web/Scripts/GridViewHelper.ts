@@ -207,7 +207,7 @@ class GridViewHelper {
             success: data => {
                 $("#" + componentName + " #row" + gridViewRowIndex).html(data);
                 listenAllEvents("#" + componentName);
-                jjutil.gotoNextFocus(fieldName);
+                jjutil.gotoNextFocus((gridViewRowIndex+1) + fieldName);
             }
         })
     }
