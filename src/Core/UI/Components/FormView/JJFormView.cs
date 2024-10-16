@@ -682,7 +682,10 @@ public class JJFormView : AsyncComponent
     {
         var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
 
-        var html = await _htmlTemplateService.RenderTemplate(htmlTemplateAction, CurrentActionMap!.PkFieldValues);
+        var html = await _htmlTemplateService.RenderTemplate(
+            htmlTemplateAction, 
+            FormElement.ConnectionId, 
+            CurrentActionMap!.PkFieldValues);
         
         return new ContentComponentResult(html);
     }

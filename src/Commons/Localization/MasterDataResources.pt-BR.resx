@@ -209,6 +209,10 @@
     <value>Ação</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Error rendering template." xml:space="preserve">
+    <value>Erro renderizando template.</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
   <data name="Redirect Url" xml:space="preserve">
     <value>Url de Redirecionamento</value>
     <comment>JJMasterDataWeb</comment>

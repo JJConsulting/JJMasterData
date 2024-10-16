@@ -5,6 +5,10 @@
     href: getting_started.md
   - name: Configurations
     href: configurations.md
+  - name: Actions
+    items:
+    - name: HTML Template
+      href: actions/html_template_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
