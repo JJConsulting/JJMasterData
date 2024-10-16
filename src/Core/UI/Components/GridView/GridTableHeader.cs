@@ -122,8 +122,10 @@ internal sealed class GridTableHeader(JJGridView gridView)
             if (IsAppliedFilter(field, currentFilter))
             {
                 hasIcon = true;
-                th.AppendComponent(new JJIcon("fa fa-filter text-info"))
-                    .WithToolTip(_stringLocalizer["Applied Filter"]);
+                th.AppendComponent(new JJIcon("fa fa-filter text-info")
+                {
+                    Tooltip = _stringLocalizer["Applied Filter"]
+                });
             }
 
             if (hasIcon)
