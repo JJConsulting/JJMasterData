@@ -124,7 +124,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 hasIcon = true;
                 th.AppendText("&nbsp;");
                 th.Append(new JJIcon("fa fa-filter text-info").GetHtmlBuilder()
-                    .WithToolTip(_stringLocalizer["Applied filter"]));
+                    .WithToolTip(_stringLocalizer["Applied Filter"]));
             }
 
             if (hasIcon)
