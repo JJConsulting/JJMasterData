@@ -9,6 +9,8 @@
     items:
     - name: HTML Template
       href: actions/html_template_action.md
+    - name: Url Redirect
+      href: actions/url_redirect_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
