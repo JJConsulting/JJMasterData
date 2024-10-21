@@ -93,17 +93,20 @@ public class JJCollapsePanel : HtmlComponent
     {
         var h2 = new HtmlBuilder(HtmlTag.H2)
         .WithCssClass("accordion-header ")
-        .WithAttribute("id", $"heading-{Name.ToLower()}")
+        .WithAttribute("id", $"{Name}-header")
         .Append(HtmlTag.Button, button =>
         {
             button.WithCssClass($"accordion-button {(!IsCollapseOpen ? "collapsed" : "")}");
             button.WithAttribute("type", "button");
-            button.WithAttribute("id", $"heading-{Name.ToLower()}");
             button.WithDataAttribute("toggle", "collapse");
-            button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
-            button.AppendComponentIf(TitleIcon != null, ()=>TitleIcon);
-            button.AppendTextIf(TitleIcon != null, "&nbsp;");
-            button.AppendText(Title);
+            button.WithDataAttribute("target", $"#{Name}-collapse");
+            button.AppendDiv(div =>
+            {
+                div.WithId($"{Name}-title");
+                div.AppendComponentIf(TitleIcon != null, ()=>TitleIcon);
+                div.AppendTextIf(TitleIcon != null, "&nbsp;");
+                div.AppendText(Title);
+            });
         });
 
         return h2;
@@ -111,10 +114,10 @@ public class JJCollapsePanel : HtmlComponent
     private HtmlBuilder GetAccordionBody()
     {
         var body = new HtmlBuilder(HtmlTag.Div)
-            .WithAttribute("id", $"collapse-{Name.ToLower()}")
+            .WithAttribute("id", $"{Name}-collapse")
             .WithCssClass("accordion-collapse collapse")
             .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
-            .WithAttribute("aria-labelledby", $"heading-{Name.ToLower()}")
+            .WithAttribute("aria-labelledby", $"{Name}-header")
             .WithDataAttribute("parent", $"#{Name}")
             .Append(GetBody());
         return body;

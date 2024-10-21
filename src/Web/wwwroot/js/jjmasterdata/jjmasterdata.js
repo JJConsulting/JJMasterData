@@ -1128,10 +1128,10 @@ class GridViewFilterHelper {
     }
     static showFilterIcon(gridViewName) {
         const filterIcon = document.getElementById(gridViewName + "-filter-icon");
-        if (bootstrapVersion !== 3) {
-            new bootstrap.Tooltip(filterIcon, { trigger: 'hover' });
-        }
         filterIcon.classList.remove("d-none");
+        if (bootstrapVersion !== 3) {
+            bootstrap.Tooltip.getOrCreateInstance(filterIcon, { trigger: "click hover focus" });
+        }
     }
     static reload(gridViewName, filterPanelName, routeContext) {
         const urlBuilder = new UrlBuilder();

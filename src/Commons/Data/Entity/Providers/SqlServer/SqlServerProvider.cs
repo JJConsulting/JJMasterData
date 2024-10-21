@@ -23,8 +23,7 @@ public class SqlServerProvider(
     : EntityProviderBase(options, loggerFactory)
 {
     private readonly TimeSpan _cacheExpiration = new (4, 0, 0);
-    private SqlServerScripts SqlServerScripts { get; } = sqlServerScripts;
-    private IMemoryCache MemoryCache { get; } = memoryCache;
+
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
@@ -37,12 +36,12 @@ public class SqlServerProvider(
     
     public override string GetWriteProcedureScript(Element element)
     {
-        return SqlServerScripts.GetWriteProcedureScript(element);
+        return sqlServerScripts.GetWriteProcedureScript(element);
     }
 
     public override string GetReadProcedureScript(Element element)
     {
-        return SqlServerScripts.GetReadProcedureScript(element);
+        return sqlServerScripts.GetReadProcedureScript(element);
     }
     
     public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
@@ -81,14 +80,14 @@ public class SqlServerProvider(
         else
         {
             var cacheKey = $"{element.Name}_ReadScript";
-            if (MemoryCache.TryGetValue(cacheKey, out string? readScript))
+            if (memoryCache.TryGetValue(cacheKey, out string? readScript))
             {
                 sql = readScript!;
             }
             else
             {
-                sql = SqlServerScripts.GetReadScript(element);
-                MemoryCache.Set(cacheKey, sql, _cacheExpiration);
+                sql = sqlServerScripts.GetReadScript(element);
+                memoryCache.Set(cacheKey, sql, _cacheExpiration);
             }
         }
         
@@ -176,14 +175,14 @@ public class SqlServerProvider(
         else
         {
             var cacheKey = $"{element.Name}_WriteScript";
-            if (MemoryCache.TryGetValue(cacheKey, out string? writeScript))
+            if (memoryCache.TryGetValue(cacheKey, out string? writeScript))
             {
                 sql = writeScript!;
             }
             else
             {
                 sql = SqlServerScripts.GetWriteScript(element);
-                MemoryCache.Set(cacheKey, sql, _cacheExpiration);
+                memoryCache.Set(cacheKey, sql, _cacheExpiration);
             }
         }
         var writeCommand = new DataAccessCommand
@@ -354,5 +353,4 @@ public class SqlServerProvider(
 
         return element;
     }
-    
 }

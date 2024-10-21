@@ -17,7 +17,7 @@ public static class FileIO
         int lastIndex = filename.LastIndexOf('.');
         if (lastIndex > 0)
         {
-            extension = filename.Substring(lastIndex).ToLower();
+            extension = filename[lastIndex..].ToLowerInvariant();
         }
         return extension;
     }

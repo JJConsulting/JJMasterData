@@ -132,7 +132,7 @@ public class HtmlTemplateService(
         // If length is not provided, use the length of the remaining string from the start index
         var substring = args.Count > 2
             ? str.Substring(startIndex, length)
-            : str.Substring(startIndex);
+            : str[startIndex..];
 
         return new StringValue(substring);
     }

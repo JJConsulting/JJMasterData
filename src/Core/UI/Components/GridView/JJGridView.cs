@@ -1113,7 +1113,7 @@ public class JJGridView : AsyncComponent
         DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder);
     }
     
-    public async Task<IList<Dictionary<string,object?>>?> GetDictionaryListAsync()
+    public async Task<List<Dictionary<string,object?>>?> GetDictionaryListAsync()
     {
         await SetDataSource();
 
@@ -1213,7 +1213,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public async Task<List<Dictionary<string, object?>>?> GetGridValuesAsync(IList<Dictionary<string,object?>>? loadedData = null)
+    public async Task<List<Dictionary<string, object?>>?> GetGridValuesAsync(List<Dictionary<string,object?>>? loadedData = null)
     {
         if (loadedData == null)
         {

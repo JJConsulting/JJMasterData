@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -15,19 +14,12 @@ namespace JJMasterData.Commons.Configuration.Options;
 
 /// <summary>
 /// JJMasterData key/value configurations.
-/// They're populated from JJMasterData section on <see cref="IConfiguration"/>, following it's implementations.
+/// They're populated from JJMasterData section on <see cref="IConfiguration"/>, following its implementations.
 /// On .NET Framework, add a IConfiguration builder to your application.
-/// <example>
-/// <code lang="cs">
-/// <![CDATA[
-/// builder.Services.AddOptions<JJMasterDataOptions>();
-/// ]]>
-/// </code>
-/// </example>
 /// </summary>
 public sealed class MasterDataCommonsOptions
 {
-    public string? ConnectionString { get; set; }
+    public required string ConnectionString { get; set; }
     public DataAccessProvider ConnectionProvider { get; set; }
 
     public List<ConnectionString> AdditionalConnectionStrings { get; set; } = [];
@@ -57,7 +49,7 @@ public sealed class MasterDataCommonsOptions
     public string? SecretKey { get; set; }
 
     [JsonIgnore]
-    public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
+    public static bool IsNetFramework { get; } = RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 
     public ConnectionString GetConnectionString(Guid? guid)
     {

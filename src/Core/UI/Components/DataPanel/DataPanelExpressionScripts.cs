@@ -32,7 +32,7 @@ internal sealed class DataPanelExpressionScripts(JJDataPanel dataPanel)
                 .Replace("=", " == ")
                 .Replace("<>", " != ");
 
-            var list = StringManager.FindValuesByInterval(expressionBuilder.ToString(), '{', '}');
+            var list = StringManager.FindValuesByInterval(expressionBuilder.ToString(), '{', '}').ToList();
             if (list.Count == 0)
                 continue;
 

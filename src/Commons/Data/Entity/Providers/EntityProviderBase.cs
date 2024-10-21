@@ -19,8 +19,7 @@ public abstract class EntityProviderBase(
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
 {
-    protected MasterDataCommonsOptions Options { get; } = options.Value;
-    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
+    protected internal MasterDataCommonsOptions Options { get; } = options.Value;
 
     public abstract string VariablePrefix { get; }
     public abstract string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null);
@@ -225,7 +224,7 @@ public abstract class EntityProviderBase(
         if (!ValidateOrderByClause(element, entityParameters.OrderBy.ToQueryParameter()))
             throw new ArgumentException("[order by] clause is not valid");
 
-        var plainTextWriter = new PlainTextReader(this,LoggerFactory.CreateLogger<PlainTextReader>())
+        var plainTextWriter = new PlainTextReader(this, loggerFactory.CreateLogger<PlainTextReader>())
         {
             ShowLogInfo = showLogInfo,
             Delimiter = delimiter

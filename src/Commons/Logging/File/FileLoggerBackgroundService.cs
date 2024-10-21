@@ -17,8 +17,7 @@ public class FileLoggerBackgroundService(
         var path = FileIO.ResolveFilePath(options.FileName);
         var directory = Path.GetDirectoryName(path);
 
-        if (!Directory.Exists(directory))
-            Directory.CreateDirectory(directory!);
+        Directory.CreateDirectory(directory!);
 
 #if NET
         await using var writer = new StreamWriter(path, true);
@@ -27,7 +26,4 @@ public class FileLoggerBackgroundService(
 #endif
         await writer.WriteAsync(logMessage.Message);
     }
-
-
-
 }
