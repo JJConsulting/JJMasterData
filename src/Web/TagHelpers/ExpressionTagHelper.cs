@@ -14,13 +14,8 @@ using HtmlBuilder = JJMasterData.Core.UI.Html.HtmlBuilder;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class ExpressionTagHelper(
-    IEnumerable<IExpressionProvider> expressionProviders,
-    IOptionsSnapshot<MasterDataWebOptions> options,
-    IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
+public class ExpressionTagHelper : TagHelper
 {
-    private bool? _isSyncExpression;
-
     [HtmlAttributeName("for")] 
     public ModelExpression? For { get; set; }
 
@@ -46,21 +41,8 @@ public class ExpressionTagHelper(
     [HtmlAttributeName("use-floating-label")] 
     public bool UseFloatingLabel { get; set; } = true;
 
-    private bool IsSyncExpression
-    {
-        get
-        {
-            _isSyncExpression ??= For
-                ?.Metadata
-                ?.ContainerType
-                ?.GetProperty(For.Metadata.PropertyName!)
-                ?.IsDefined(typeof(SyncExpressionAttribute), inherit: true) is true;
-
-            return _isSyncExpression.Value;
-        }
-    }
-
-    [HtmlAttributeName("icon")] public IconType? Icon { get; set; }
+    [HtmlAttributeName("icon")]
+    public IconType? Icon { get; set; }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -77,18 +59,7 @@ public class ExpressionTagHelper(
         }
 
         var isInvalid = ViewContext.ModelState[name]?.Errors.Count > 0;
-
-        var splittedExpression = modelValue?.Split(':', 2);
-
-        string? selectedExpressionType = null;
-        string? selectedExpressionValue = modelValue;
-
-        if (splittedExpression?.Length == 2)
-        {
-            selectedExpressionType = splittedExpression[0];
-            selectedExpressionValue = splittedExpression[1];
-        }
-
+        
         var fieldSet = new HtmlBuilder(HtmlTag.FieldSet);
         fieldSet.WithAttributeIf(Disabled, "disabled");
 
@@ -108,24 +79,12 @@ public class ExpressionTagHelper(
         {
 
             div.WithCssClass("mb-3");
-            
-            var isAdvanced = options.Value.UseAdvancedModeAtExpressions;
 
-            if (!isAdvanced)
-            {
-                div.WithCssClass("input-group");
-                div.Append(GetTypeSelect(name, selectedExpressionType)
-                    .WithCssClassIf(isInvalid, "form-select is-invalid")
-                    .WithAttribute("id", name + "-ExpressionValue"));
-            }
-
-
-            var editor = GetEditorHtml(name, selectedExpressionType, selectedExpressionValue);
+            var editor = GetEditorHtml(name, modelValue);
             
             editor.WithAttributeIf(UseFloatingLabel,"placeholder", displayName!);
             editor.WithCssClassIf(isInvalid, "form-control is-invalid");
             editor.WithAttribute("id", name + "-ExpressionValue");
-            editor.WithAttributeIf(!isAdvanced && !UseFloatingLabel, "style", "width:80%");
             
             if (UseFloatingLabel)
             {
@@ -133,7 +92,6 @@ public class ExpressionTagHelper(
                 formFloating.WithCssClass("form-floating");
                 formFloating.Append(editor);
                 formFloating.Append(label);
-                formFloating.WithAttributeIf(!isAdvanced, "style", "width:75%");
                 div.Append(formFloating);
             }
             else
@@ -147,48 +105,18 @@ public class ExpressionTagHelper(
         output.Content.SetHtmlContent(fieldSet.ToString());
     }
 
-    private HtmlBuilder GetTypeSelect(string name, string? selectedExpressionType)
+    private HtmlBuilder GetEditorHtml(string name, string? value)
     {
-        var select = new HtmlBuilder(HtmlTag.Select);
-        select.WithNameAndId(name + "-ExpressionType");
-        select.WithCssClass("form-select");
-
-        foreach (var provider in expressionProviders)
-        {
-            if (IsSyncExpression && provider is not ISyncExpressionProvider)
-                continue;
-
-            select.Append(HtmlTag.Option, option =>
-            {
-                if (selectedExpressionType == provider.Prefix)
-                    option.WithAttribute("selected", "selected");
-
-                option.WithValue(provider.Prefix);
-                option.AppendText(stringLocalizer[provider.Title]);
-            });
-        }
-
-        return select;
-    }
-
-    private HtmlBuilder GetEditorHtml(string name,
-        string? selectedExpressionType,
-        string? selectedExpressionValue)
-    {
-        var advanced = options.Value.UseAdvancedModeAtExpressions;
         var input = new HtmlBuilder(HtmlTag.Input);
         input.WithCssClass("font-monospace");
         input.WithCssClass("form-control");
-        input.WithNameAndId(name + "-ExpressionValue");
+        input.WithNameAndId(name);
         input.WithAttribute("placeholder", string.Empty);
-        if (selectedExpressionType is null)
+        
+        if (value is null)
             return input;
-
-        var value = advanced
-            ? selectedExpressionType + ":" + selectedExpressionValue
-            : selectedExpressionValue;
-
-        input.WithValue(value ?? string.Empty);
+        
+        input.WithValue(value);
 
         if (!string.IsNullOrEmpty(Tooltip))
             input.WithToolTip(Tooltip);

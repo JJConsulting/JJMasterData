@@ -34,9 +34,6 @@ public sealed class MasterDataWebOptions
     
     public bool SupportNetFramework { get; set; }
     
-    [Display(Name = "Use Advanced Mode At Expressions")]
-    public bool UseAdvancedModeAtExpressions { get; set; }
-    
     /// <summary>
     /// Custom scripts to be added at _MasterDataScripts. The paths are relative.
     /// </summary>
