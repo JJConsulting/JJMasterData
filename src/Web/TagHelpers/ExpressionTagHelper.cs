@@ -67,7 +67,7 @@ public class ExpressionTagHelper : TagHelper
 
         var label = new HtmlBuilder(HtmlTag.Label);
         label.WithAttribute("for", name + "-ExpressionValue");
-        label.AppendText(displayName!);
+        label.AppendText(displayName);
         
         if (!UseFloatingLabel)
         {
@@ -77,7 +77,6 @@ public class ExpressionTagHelper : TagHelper
         
         fieldSet.Append(HtmlTag.Div, div =>
         {
-
             div.WithCssClass("mb-3");
 
             var editor = GetEditorHtml(name, modelValue);
