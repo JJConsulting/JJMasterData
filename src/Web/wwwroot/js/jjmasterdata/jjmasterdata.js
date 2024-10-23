@@ -1642,6 +1642,8 @@ class LookupListener {
             const lookupIdInput = document.querySelector(lookupIdSelector);
             const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
             lookupInput.addEventListener("blur", function () {
+                if (!lookupInput.value)
+                    return;
                 FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 postFormValues({
                     url: lookupDescriptionUrl,
@@ -1660,7 +1662,9 @@ class LookupListener {
                     },
                     error: (_) => {
                         FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
-                        lookupDescriptionInput.value = String();
+                        if (lookupDescriptionInput) {
+                            lookupDescriptionInput.value = String();
+                        }
                     }
                 });
             });

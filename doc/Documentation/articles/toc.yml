@@ -9,6 +9,14 @@
     items:
     - name: HTML Template
       href: actions/html_template_action.md
+    - name: Url Redirect
+      href: actions/url_redirect_action.md
+    - name: Internal Redirect
+      href: actions/internal_redirect_action.md
+    - name: Sql Command
+      href: actions/sql_command_action.md
+    - name: JavaScript Script
+      href: actions/javascript_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules

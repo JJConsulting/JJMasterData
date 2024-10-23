@@ -15,6 +15,9 @@ class LookupListener {
             const lookupIdInput = document.querySelector<HTMLInputElement>(lookupIdSelector);
             const lookupDescriptionInput = document.querySelector<HTMLInputElement>(lookupDescriptionSelector);
             lookupInput.addEventListener("blur", function () {
+                if(!lookupInput.value)
+                    return;
+                
                 FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 
                 postFormValues({
@@ -35,7 +38,9 @@ class LookupListener {
                     },
                     error: (_) => {
                         FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
-                        lookupDescriptionInput.value = String();
+                        if(lookupDescriptionInput){
+                            lookupDescriptionInput.value = String();
+                        }
                     }
                 });
             });
