@@ -10,10 +10,15 @@ class DataPanelHelper {
     }
 
     private static reloadInternal(panelName, elementFieldName, fieldNameWithPrefix, routeContext) {
-        const urlBuilder = new UrlBuilder()
-        urlBuilder.addQueryParameter("panelName", panelName)
-        urlBuilder.addQueryParameter("fieldName", elementFieldName)
-        urlBuilder.addQueryParameter("routeContext", routeContext)
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("panelName", panelName);
+        urlBuilder.addQueryParameter("fieldName", elementFieldName);
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        
+        const originalElement = document.getElementById(fieldNameWithPrefix) as HTMLInputElement;
+
+        const selectionStart = originalElement ? originalElement.selectionStart : 0;
+        const selectionEnd = originalElement ? originalElement.selectionEnd : 0;
 
         postFormValues({
             url: urlBuilder.build(),
@@ -26,7 +31,16 @@ class DataPanelHelper {
                         eval(data.jsCallback);
                     }
                 }
-                jjutil.gotoNextFocus(fieldNameWithPrefix);
+
+                const fieldElement = document.getElementById(fieldNameWithPrefix) as HTMLInputElement;
+
+                if (fieldElement.onchange) {
+                    jjutil.gotoNextFocus(fieldNameWithPrefix);
+                } else {
+                    fieldElement.focus();
+                    fieldElement.selectionStart = selectionStart;
+                    fieldElement.selectionEnd = selectionEnd;
+                }
             }
         });
     }

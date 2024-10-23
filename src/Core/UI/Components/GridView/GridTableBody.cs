@@ -272,7 +272,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         control.Attributes.Add("gridViewRowIndex", index.ToString());
         
         if(field.AutoPostBack)
-            control.Attributes.Add("onchange",gridView.Scripts.GetReloadRowScript(field,index));
+            control.Attributes.Add(field.TriggerType.GetEvent(), gridView.Scripts.GetReloadRowScript(field,index));
         
         control.CssClass = field.Name;
 
