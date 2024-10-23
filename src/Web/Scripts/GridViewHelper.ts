@@ -196,13 +196,13 @@ class GridViewHelper {
         });
     }
     
-    static reloadGridRow(componentName, fieldName ,gridViewRowIndex, routeContext){
+    static reloadGridRow(componentName, fieldName , gridViewRowIndex, routeContext){
         const urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex)
         urlBuilder.addQueryParameter("routeContext",routeContext)
-
-        const fieldId = (gridViewRowIndex+1) + fieldName;
+        
+        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
         
         const originalElement = document.getElementById(fieldId) as HTMLInputElement;
         

@@ -1396,7 +1396,7 @@ class GridViewHelper {
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        const fieldId = (gridViewRowIndex + 1) + fieldName;
+        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
         const originalElement = document.getElementById(fieldId);
         const selectionStart = originalElement.selectionStart;
         const selectionEnd = originalElement.selectionEnd;
