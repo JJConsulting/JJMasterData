@@ -17,6 +17,12 @@
       href: actions/sql_command_action.md
     - name: JavaScript Script
       href: actions/javascript_action.md
+    - name: View Action
+      href: actions/view_action.md      
+    - name: Edit Action
+      href: actions/edit_action.md      
+    - name: Delete Action
+      href: actions/edit_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
