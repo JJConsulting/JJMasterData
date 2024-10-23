@@ -27,6 +27,8 @@
     href: localization.md
   - name: Logging
     href: logging.md
+  - name: HTML Templates
+    href: html_templates.md
   - name: Authorization
     href: authorization.md
   - name: Expressions

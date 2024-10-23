@@ -34,3 +34,5 @@ The first index represents the query, the second index represents the row, and t
   {% endfor %}
 </ul>
 ```
+
+You can read more about the Liquid syntax [in this link](../html_templates.md).

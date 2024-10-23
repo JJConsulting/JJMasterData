@@ -509,6 +509,10 @@
     <value>Comando Sql</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Read more about HTML templates " xml:space="preserve">
+    <value>Leia mais sobre templates HTML </value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Component" xml:space="preserve">
     <value>Componente</value>
     <comment>JJMasterDataWeb</comment>
@@ -4078,9 +4082,6 @@
   </data>
   <data name="Rendering Template">
     <value>Template de Renderização</value>
-  </data>
-  <data name="HTML template to render the field in the grid. Runtime values supported using a Liquid template.">
-    <value>Template HTML para renderizar o campo na grid. Valores do runtime são suportados usando um template Liquid.</value>
   </data>
   <data name="Edit Element" xml:space="preserve">
     <value>Editar Elemento</value>
