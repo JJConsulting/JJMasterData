@@ -1010,8 +1010,7 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("panelName", panelName);
         urlBuilder.addQueryParameter("fieldName", elementFieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        const fieldId = fieldNameWithPrefix;
-        const originalElement = document.getElementById(fieldId);
+        const originalElement = document.getElementById(fieldNameWithPrefix);
         const selectionStart = originalElement ? originalElement.selectionStart : 0;
         const selectionEnd = originalElement ? originalElement.selectionEnd : 0;
         postFormValues({
@@ -1026,9 +1025,9 @@ class DataPanelHelper {
                         eval(data.jsCallback);
                     }
                 }
-                const fieldElement = document.getElementById(fieldId);
+                const fieldElement = document.getElementById(fieldNameWithPrefix);
                 if (fieldElement.onchange) {
-                    jjutil.gotoNextFocus(fieldId);
+                    jjutil.gotoNextFocus(fieldNameWithPrefix);
                 }
                 else {
                     fieldElement.focus();

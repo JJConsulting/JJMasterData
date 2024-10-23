@@ -14,9 +14,8 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("panelName", panelName);
         urlBuilder.addQueryParameter("fieldName", elementFieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
-
-        const fieldId = fieldNameWithPrefix; // Use the provided field name prefix
-        const originalElement = document.getElementById(fieldId) as HTMLInputElement;
+        
+        const originalElement = document.getElementById(fieldNameWithPrefix) as HTMLInputElement;
 
         const selectionStart = originalElement ? originalElement.selectionStart : 0;
         const selectionEnd = originalElement ? originalElement.selectionEnd : 0;
@@ -33,10 +32,10 @@ class DataPanelHelper {
                     }
                 }
 
-                const fieldElement = document.getElementById(fieldId) as HTMLInputElement;
+                const fieldElement = document.getElementById(fieldNameWithPrefix) as HTMLInputElement;
 
                 if (fieldElement.onchange) {
-                    jjutil.gotoNextFocus(fieldId);
+                    jjutil.gotoNextFocus(fieldNameWithPrefix);
                 } else {
                     fieldElement.focus();
                     fieldElement.selectionStart = selectionStart;

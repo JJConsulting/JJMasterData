@@ -38,9 +38,6 @@ public class FormController(
 
         if (userId == null) 
             return;
-
-        formView.GridView.EnableEditMode = true;
-        formView.FormElement.Fields["Nome"].TriggerType = FormElementFieldTrigger.OnKeyUp;
         
         if (HttpContext.User.HasClaim(c => c.Type is "DataDictionary"))
         {

@@ -26,7 +26,7 @@ public class DataAccessParameter
     public object Value { get; set; }
 
     /// <summary>
-    /// Specifies the data type of a field, a property, or a Parameter object of a .NET
+    /// Specifies the data type of field, a property, or a Parameter object of a .NET
     /// </summary>
     [JsonProperty("type")]
     public DbType Type { get; set; }
@@ -39,7 +39,8 @@ public class DataAccessParameter
 
     public bool IsNullable { get; set; } = true;
     
-    [JsonProperty("direction")] public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
+    [JsonProperty("direction")]
+    public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
 
     public DataAccessParameter()
     {
