@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,9 @@ public class FormController(
 
         if (userId == null) 
             return;
+
+        formView.GridView.EnableEditMode = true;
+        formView.FormElement.Fields["Nome"].TriggerType = FormElementFieldTrigger.OnKeyUp;
         
         if (HttpContext.User.HasClaim(c => c.Type is "DataDictionary"))
         {

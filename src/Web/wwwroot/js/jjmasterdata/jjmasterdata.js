@@ -1010,6 +1010,10 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("panelName", panelName);
         urlBuilder.addQueryParameter("fieldName", elementFieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
+        const fieldId = fieldNameWithPrefix;
+        const originalElement = document.getElementById(fieldId);
+        const selectionStart = originalElement ? originalElement.selectionStart : 0;
+        const selectionEnd = originalElement ? originalElement.selectionEnd : 0;
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
@@ -1022,7 +1026,15 @@ class DataPanelHelper {
                         eval(data.jsCallback);
                     }
                 }
-                jjutil.gotoNextFocus(fieldNameWithPrefix);
+                const fieldElement = document.getElementById(fieldId);
+                if (fieldElement.onchange) {
+                    jjutil.gotoNextFocus(fieldId);
+                }
+                else {
+                    fieldElement.focus();
+                    fieldElement.selectionStart = selectionStart;
+                    fieldElement.selectionEnd = selectionEnd;
+                }
             }
         });
     }
@@ -1385,12 +1397,23 @@ class GridViewHelper {
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
         urlBuilder.addQueryParameter("routeContext", routeContext);
+        const fieldId = (gridViewRowIndex + 1) + fieldName;
+        const originalElement = document.getElementById(fieldId);
+        const selectionStart = originalElement.selectionStart;
+        const selectionEnd = originalElement.selectionEnd;
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
                 $("#" + componentName + " #row" + gridViewRowIndex).html(data);
                 listenAllEvents("#" + componentName);
-                jjutil.gotoNextFocus((gridViewRowIndex + 1) + fieldName);
+                const fieldElement = document.getElementById(fieldId);
+                if (fieldElement.onchange)
+                    jjutil.gotoNextFocus(fieldId);
+                else {
+                    fieldElement.focus();
+                    fieldElement.selectionStart = selectionStart;
+                    fieldElement.selectionEnd = selectionEnd;
+                }
             }
         });
     }

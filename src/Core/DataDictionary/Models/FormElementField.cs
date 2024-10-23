@@ -192,10 +192,16 @@ public class FormElementField : ElementField
     public bool EncodeHtml { get; set; } = true;
 
     /// <summary>
-    /// The field will be disabled but the value send to the server
+    /// The field will be disabled but the value send to the server.
     /// </summary>
     [JsonIgnore]
     public string? ReadOnlyExpression { get; set; }
+
+    /// <summary>
+    /// Event to be used at trigger expressions.
+    /// </summary>
+    [JsonIgnore]
+    public FormElementFieldTrigger TriggerType { get; set; } = FormElementFieldTrigger.OnChange;
     
     public FormElementField()
     {
