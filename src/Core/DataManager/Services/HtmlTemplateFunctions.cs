@@ -25,10 +25,10 @@ public static class HtmlTemplateFunctions
     
     public static FunctionValue FormatDate { get; } = new((args, _) =>
     {
-        var obj = args.At(0).ToObjectValue();
+        var obj = args.At(0).ToStringValue();
         var format = args.At(1).ToStringValue();
-        
-        return StringValue.Create(obj is DateTime dt ? dt.ToString(format) : obj.ToString());
+    
+        return StringValue.Create(DateTime.TryParse(obj, out var dt) ? dt.ToString(format) : obj);
     });
     
     public static FunctionValue IsNullOrEmpty{ get; } = new((args, _) =>
