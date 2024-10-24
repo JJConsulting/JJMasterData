@@ -17,14 +17,16 @@
       href: actions/sql_command_action.md
     - name: JavaScript Script
       href: actions/javascript_action.md
-    - name: View Action
+    - name: View
       href: actions/view_action.md      
-    - name: Edit Action
+    - name: Edit
       href: actions/edit_action.md      
-    - name: Delete Action
+    - name: Delete
       href: actions/edit_action.md      
-    - name: New Action
-      href: actions/new_action.md
+    - name: New
+      href: actions/new_action.md      
+    - name: Options
+      href: actions/options_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
