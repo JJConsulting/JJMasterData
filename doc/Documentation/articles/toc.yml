@@ -26,7 +26,9 @@
     - name: New
       href: actions/new_action.md      
     - name: Options
-      href: actions/options_action.md
+      href: actions/options_action.md      
+    - name: Export
+      href: actions/export_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
