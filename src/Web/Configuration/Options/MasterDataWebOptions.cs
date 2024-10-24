@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using JJMasterData.Core.Configuration.Options;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace JJMasterData.Web.Configuration.Options;

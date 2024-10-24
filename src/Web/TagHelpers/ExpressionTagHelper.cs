@@ -1,15 +1,9 @@
-using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Localization;
+using System.ComponentModel;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Localization;
-using System.ComponentModel;
-using JJMasterData.Web.Configuration.Options;
-using Microsoft.Extensions.Options;
 using HtmlBuilder = JJMasterData.Core.UI.Html.HtmlBuilder;
 
 namespace JJMasterData.Web.TagHelpers;

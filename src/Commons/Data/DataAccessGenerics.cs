@@ -1,10 +1,10 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Data.Extensions;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Extensions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;

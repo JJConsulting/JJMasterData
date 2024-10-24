@@ -6,9 +6,9 @@ using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using Moq;
-using System.Collections.Generic;
 using Xunit;
 
 public class FieldValidationServiceTests

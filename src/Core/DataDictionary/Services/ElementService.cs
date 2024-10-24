@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Localization;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;

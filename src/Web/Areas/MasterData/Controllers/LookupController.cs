@@ -4,7 +4,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
