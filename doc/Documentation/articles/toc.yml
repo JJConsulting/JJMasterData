@@ -22,7 +22,9 @@
     - name: Edit Action
       href: actions/edit_action.md      
     - name: Delete Action
-      href: actions/edit_action.md
+      href: actions/edit_action.md      
+    - name: New Action
+      href: actions/new_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
