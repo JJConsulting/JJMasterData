@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using System.Linq;
 using System.Security.Claims;
 
 namespace JJMasterData.Core.Extensions;
@@ -8,6 +7,19 @@ public static class ClaimsPrincipalExtensions
 {
     public static string? GetUserId(this ClaimsPrincipal claimsPrincipal)
     {
-        return claimsPrincipal.Claims.FirstOrDefault(c=>c.Type == ClaimTypes.NameIdentifier)?.Value;
+        string? userId = null;
+        foreach (var claim in claimsPrincipal.Claims)
+        {
+            if (claim.Type == ClaimTypes.NameIdentifier)
+            {
+                userId = claim.Value;
+                break;
+            }
+        }
+        
+        if(string.IsNullOrEmpty(userId))
+            return claimsPrincipal.Identity?.Name;
+
+        return userId;
     }
 }
