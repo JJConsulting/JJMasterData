@@ -161,7 +161,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
             if (field.AutoPostBack)
             {
-                field.Attributes[field.TriggerType.GetEvent()] = gridView.Scripts.GetReloadFilterScript();
+                field.Attributes["onchange"] = gridView.Scripts.GetReloadFilterScript();
             }
         }
 

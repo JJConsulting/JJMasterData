@@ -196,12 +196,6 @@ public class FormElementField : ElementField
     /// </summary>
     [JsonIgnore]
     public string? ReadOnlyExpression { get; set; }
-
-    /// <summary>
-    /// Event to be used at trigger expressions.
-    /// </summary>
-    [JsonIgnore]
-    public FormElementFieldTrigger TriggerType { get; set; } = FormElementFieldTrigger.OnChange;
     
     public FormElementField()
     {

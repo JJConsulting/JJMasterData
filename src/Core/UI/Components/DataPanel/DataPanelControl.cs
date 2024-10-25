@@ -336,7 +336,7 @@ internal sealed class DataPanelControl
         if (field.AutoPostBack && !IsGridViewFilter &&
             PageState is PageState.Insert or PageState.Update or PageState.Filter)
         {
-            control.SetAttr(field.TriggerType.GetEvent(), GetScriptReload(field));
+            control.SetAttr("onchange", GetScriptReload(field));
         }
         
         if(control is JJTextGroup textGroup && PageState is PageState.View)

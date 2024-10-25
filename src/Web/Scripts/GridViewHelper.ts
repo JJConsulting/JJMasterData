@@ -204,26 +204,13 @@ class GridViewHelper {
         
         const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
         
-        const originalElement = document.getElementById(fieldId) as HTMLInputElement;
-        
-        const selectionStart = originalElement.selectionStart;
-        const selectionEnd = originalElement.selectionEnd;
-        
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
                 $("#" + componentName + " #row" + gridViewRowIndex).html(data);
                 listenAllEvents("#" + componentName);
                 
-                const fieldElement = document.getElementById(fieldId) as HTMLInputElement;
-                
-                if(fieldElement.onchange)
-                    jjutil.gotoNextFocus(fieldId);
-                else {
-                    fieldElement.focus()
-                    fieldElement.selectionStart = selectionStart;
-                    fieldElement.selectionEnd = selectionEnd;
-                }
+                jjutil.gotoNextFocus(fieldId);
             }
         });
     }

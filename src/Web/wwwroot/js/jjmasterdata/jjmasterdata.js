@@ -1010,9 +1010,6 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("panelName", panelName);
         urlBuilder.addQueryParameter("fieldName", elementFieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        const originalElement = document.getElementById(fieldNameWithPrefix);
-        const selectionStart = originalElement ? originalElement.selectionStart : 0;
-        const selectionEnd = originalElement ? originalElement.selectionEnd : 0;
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
@@ -1025,15 +1022,7 @@ class DataPanelHelper {
                         eval(data.jsCallback);
                     }
                 }
-                const fieldElement = document.getElementById(fieldNameWithPrefix);
-                if (fieldElement.onchange) {
-                    jjutil.gotoNextFocus(fieldNameWithPrefix);
-                }
-                else {
-                    fieldElement.focus();
-                    fieldElement.selectionStart = selectionStart;
-                    fieldElement.selectionEnd = selectionEnd;
-                }
+                jjutil.gotoNextFocus(fieldNameWithPrefix);
             }
         });
     }
@@ -1397,22 +1386,12 @@ class GridViewHelper {
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
         urlBuilder.addQueryParameter("routeContext", routeContext);
         const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
-        const originalElement = document.getElementById(fieldId);
-        const selectionStart = originalElement.selectionStart;
-        const selectionEnd = originalElement.selectionEnd;
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
                 $("#" + componentName + " #row" + gridViewRowIndex).html(data);
                 listenAllEvents("#" + componentName);
-                const fieldElement = document.getElementById(fieldId);
-                if (fieldElement.onchange)
-                    jjutil.gotoNextFocus(fieldId);
-                else {
-                    fieldElement.focus();
-                    fieldElement.selectionStart = selectionStart;
-                    fieldElement.selectionEnd = selectionEnd;
-                }
+                jjutil.gotoNextFocus(fieldId);
             }
         });
     }

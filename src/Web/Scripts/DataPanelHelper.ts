@@ -15,11 +15,6 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("fieldName", elementFieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
         
-        const originalElement = document.getElementById(fieldNameWithPrefix) as HTMLInputElement;
-
-        const selectionStart = originalElement ? originalElement.selectionStart : 0;
-        const selectionEnd = originalElement ? originalElement.selectionEnd : 0;
-
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
@@ -31,16 +26,7 @@ class DataPanelHelper {
                         eval(data.jsCallback);
                     }
                 }
-
-                const fieldElement = document.getElementById(fieldNameWithPrefix) as HTMLInputElement;
-
-                if (fieldElement.onchange) {
-                    jjutil.gotoNextFocus(fieldNameWithPrefix);
-                } else {
-                    fieldElement.focus();
-                    fieldElement.selectionStart = selectionStart;
-                    fieldElement.selectionEnd = selectionEnd;
-                }
+                jjutil.gotoNextFocus(fieldNameWithPrefix);
             }
         });
     }
