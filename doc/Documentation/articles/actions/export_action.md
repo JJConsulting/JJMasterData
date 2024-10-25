@@ -8,7 +8,7 @@ The *Export* action can be found in Actions - Grid Toolbar.
 
 - Global Scope: Only one process from this element can be run at a time, and all users will be able to view the latest log and execution of an ongoing process. 
 
-- Global User: Several users can run this process simultaneously, but only see the log and one run of your process.
+- User Scope: Several users can run this process simultaneously, but only see the log and one run of your process.
 
 - Download file name: Name of the file that will be downloaded by the user.
 

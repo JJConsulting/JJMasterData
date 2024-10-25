@@ -22,13 +22,15 @@
     - name: Edit
       href: actions/edit_action.md      
     - name: Delete
-      href: actions/edit_action.md      
+      href: actions/delete_action.md      
     - name: New
       href: actions/new_action.md      
     - name: Options
       href: actions/options_action.md      
     - name: Export
-      href: actions/export_action.md
+      href: actions/export_action.md      
+    - name: Import
+      href: actions/import_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
