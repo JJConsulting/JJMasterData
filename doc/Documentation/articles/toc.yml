@@ -30,7 +30,9 @@
     - name: Export
       href: actions/export_action.md      
     - name: Import
-      href: actions/import_action.md
+      href: actions/import_action.md      
+    - name: Refresh
+      href: actions/refresh_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
