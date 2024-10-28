@@ -23,6 +23,10 @@ public class TitleTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
     [HtmlAttributeName("actions")]
     public List<TitleAction>? Actions {get; set; }
     
+    [HtmlAttributeName("css-class")]
+    public string? CssClass {get; set; }
+
+    
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var title = htmlComponentFactory.Title.Create(Title ?? string.Empty, SubTitle ?? string.Empty, Icon);
@@ -33,7 +37,9 @@ public class TitleTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
         {
             title.Size = Size.Value;
         }
-
+        
+        title.CssClass = CssClass;
+        
         output.SuppressOutput();
         output.Content.SetHtmlContent(title.GetHtml());
     }
