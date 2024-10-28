@@ -24,57 +24,14 @@ namespace JJMasterData.Commons.Data;
 /// </example>
 public partial class DataAccess
 {
-    private DbProviderFactory? _factory;
-
-    public DbProviderFactory Factory
-    {
-        get
-        {
-            if (_factory != null)
-                return _factory;
-
-            if (ConnectionString == null)
-            {
-                var error = new StringBuilder();
-                error.AppendLine("Connection string not found in configuration file.");
-                error.AppendLine("Default connection name is [ConnectionString].");
-                error.AppendLine("Please check the docs for more information.");
-                error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/connection_string.html");
-                throw new DataAccessException(error.ToString());
-            }
-
-            try
-            {
-                _factory = DataAccessProviderFactory.GetDbProviderFactory(ConnectionProvider);
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException(ex);
-            }
-
-            return _factory;
-        }
-    }
-
-    ///<summary>
-    ///Database connection string; 
-    ///Default value configured in app.config as "ConnectionString";
-    ///</summary>
-    ///<returns>Connection string</returns>
-    ///<remarks>
-    ///Author: Lucio Pelinson 14-04-2012
-    ///</remarks>
-    public string ConnectionString { get; set; }
-
-    ///<summary>
-    ///Database Connection Provider; 
-    ///</summary>
-    ///<returns>Provider Name</returns>
-    ///<remarks>
-    ///Author: Lucio Pelinson 14-04-2012
-    ///</remarks>
-    public DataAccessProvider ConnectionProvider { get; set; }
-
+    private readonly string _connectionString;
+    private readonly DataAccessProvider _connectionProvider;
+    
+    /// <summary>
+    /// Represents the ADO.NET bridge to any db vendor.
+    /// </summary>
+    private readonly DbProviderFactory _dbProviderFactory;
+    
     /// <summary>
     /// Waiting time to execute a command on the database (seconds - default 240s)
     /// </summary>
@@ -88,39 +45,35 @@ public partial class DataAccess
     /// <param name="connectionProviderType">Provider name. For avaliable providers see <see cref="DataAccessProvider"/></param>
     public DataAccess(string connectionString, string connectionProviderType)
     {
-        ConnectionString = connectionString;
-        ConnectionProvider = DataAccessProviderHelper.GetDataAccessProviderFromString(connectionProviderType);
+        _connectionString = connectionString;
+        _connectionProvider = DataAccessProviderHelper.GetDataAccessProviderFromString(connectionProviderType);
+        _dbProviderFactory = DataAccessProviderFactory.GetDbProviderFactory(_connectionProvider);
     }
 
     public DataAccess(string connectionString, DataAccessProvider dataAccessProvider)
     {
-        ConnectionString = connectionString;
-        ConnectionProvider = dataAccessProvider;
+        _connectionString = connectionString;
+        _connectionProvider = dataAccessProvider;
+        _dbProviderFactory = DataAccessProviderFactory.GetDbProviderFactory(_connectionProvider);
     }
 
     [ActivatorUtilitiesConstructor]
     public DataAccess(IOptionsSnapshot<MasterDataCommonsOptions> options)
     {
         var optionsValue = options.Value;
-        ConnectionString = optionsValue.ConnectionString ?? throw new ArgumentNullException(nameof(optionsValue.ConnectionString));
-        ConnectionProvider = optionsValue.ConnectionProvider;
+        _connectionString = optionsValue.ConnectionString ?? throw new ArgumentNullException(nameof(optionsValue.ConnectionString));
+        _connectionProvider = optionsValue.ConnectionProvider;
+        _dbProviderFactory = DataAccessProviderFactory.GetDbProviderFactory(_connectionProvider);
     }
 
     [MustDisposeResource]
-    public DbConnection GetConnection()
+    private DbConnection CreateConnection()
     {
-        var connection = Factory.CreateConnection();
-
-        try
-        {
-            connection!.ConnectionString = ConnectionString;
-            connection.Open();
-        }
-        catch (Exception ex)
-        {
-            throw new DataAccessException(ex);
-        }
-
+        var connection = _dbProviderFactory.CreateConnection();
+        
+        connection!.ConnectionString = _connectionString;
+        connection.Open();
+        
         return connection;
     }
 
@@ -141,8 +94,7 @@ public partial class DataAccess
         ExecuteDataCommand(cmd, dataAdapter => dataAdapter.Fill(dataTable));
         return dataTable;
     }
-
-
+    
     /// <summary>
     /// Returns a DataSet object populated by a SQL string. Use a <see cref="DataAccessCommand"/> if you need parameters.
     /// </summary>
@@ -166,11 +118,11 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = GetConnection();
+            dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
             {
-                using var dataAdapter = Factory.CreateDataAdapter();
+                using var dataAdapter = _dbProviderFactory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
                 fillAction(dataAdapter);
 
@@ -197,13 +149,13 @@ public partial class DataAccess
         var dt = new DataTable();
         try
         {
-            using var dbCommand = Factory.CreateCommand();
+            using var dbCommand = _dbProviderFactory.CreateCommand();
             dbCommand!.CommandType = CommandType.Text;
             dbCommand.Connection = sqlConn;
             dbCommand.CommandText = sql;
             dbCommand.CommandTimeout = TimeOut;
 
-            using var dataAdapter = Factory.CreateDataAdapter();
+            using var dataAdapter = _dbProviderFactory.CreateDataAdapter();
             dataAdapter!.SelectCommand = dbCommand;
             dataAdapter.Fill(dt);
         }
@@ -237,7 +189,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = GetConnection();
+            dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
             {
@@ -299,7 +251,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = GetConnection();
+            dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
             {
@@ -328,7 +280,7 @@ public partial class DataAccess
         int numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
 
-        var connection = GetConnection();
+        var connection = CreateConnection();
 
         using (connection)
         {
@@ -436,7 +388,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = GetConnection();
+            dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
             {
@@ -489,7 +441,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = GetConnection();
+            dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
             {
@@ -545,8 +497,8 @@ public partial class DataAccess
         errorMessage = null;
         try
         {
-            connection = Factory.CreateConnection();
-            connection!.ConnectionString = ConnectionString;
+            connection = _dbProviderFactory.CreateConnection();
+            connection!.ConnectionString = _connectionString;
             connection.Open();
             result = true;
         }
@@ -582,7 +534,7 @@ public partial class DataAccess
     public bool ExecuteBatch(string script)
     {
         string markpar = "GO";
-        if (ConnectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
+        if (_connectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
         {
             markpar = "/";
         }
@@ -646,7 +598,7 @@ public partial class DataAccess
     {
         ex.Data.Add("DataAccess Query", sql);
 
-        if (!(parameters?.Count > 0)) 
+        if (parameters == null || parameters.Count is 0) 
             return ex;
         
         var error = new StringBuilder();
@@ -663,15 +615,15 @@ public partial class DataAccess
         ex.Data.Add("DataAccess Parameters", error.ToString());
 
         return ex;
-
     }
 
     [MustDisposeResource]
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
-        var dbCommand = Factory.CreateCommand();
+        var dbCommand = _dbProviderFactory.CreateCommand();
         if (dbCommand == null)
-            throw new ArgumentNullException(nameof(dbCommand));
+            throw new ArgumentException(nameof(dbCommand));
+        
         if (string.IsNullOrEmpty(command.Sql))
             throw new DataAccessException("Sql Command cannot be null or empty.");
         dbCommand.CommandType = command.Type;
@@ -688,7 +640,7 @@ public partial class DataAccess
 
     private DbParameter CreateDbParameter(DataAccessParameter parameter)
     {
-        var dbParameter = Factory.CreateParameter();
+        var dbParameter = _dbProviderFactory.CreateParameter();
         dbParameter!.DbType = parameter.Type;
         dbParameter.Value = parameter.Value ?? DBNull.Value;
         dbParameter.ParameterName = parameter.Name;
@@ -722,7 +674,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = GetConnection();
+            dbCommand.Connection = CreateConnection();
             using (dbCommand.Connection)
             {
                 using (var dataReader =  dbCommand.ExecuteReader())

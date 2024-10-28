@@ -1128,10 +1128,10 @@ class GridViewFilterHelper {
     }
     static showFilterIcon(gridViewName) {
         const filterIcon = document.getElementById(gridViewName + "-filter-icon");
-        if (bootstrapVersion !== 3) {
-            new bootstrap.Tooltip(filterIcon, { trigger: 'hover' });
-        }
         filterIcon.classList.remove("d-none");
+        if (bootstrapVersion !== 3) {
+            bootstrap.Tooltip.getOrCreateInstance(filterIcon, { trigger: "click hover focus" });
+        }
     }
     static reload(gridViewName, filterPanelName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -1385,12 +1385,13 @@ class GridViewHelper {
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
         urlBuilder.addQueryParameter("routeContext", routeContext);
+        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
                 $("#" + componentName + " #row" + gridViewRowIndex).html(data);
                 listenAllEvents("#" + componentName);
-                jjutil.gotoNextFocus((gridViewRowIndex + 1) + fieldName);
+                jjutil.gotoNextFocus(fieldId);
             }
         });
     }
@@ -1596,9 +1597,11 @@ class LookupHelper {
     static setLookupValues(fieldName, id, description) {
         const idInput = window.parent.document.querySelector("#" + fieldName);
         idInput.value = id;
+        idInput.dispatchEvent(new Event('change'));
         const descriptionInput = window.parent.document.querySelector("#" + fieldName + "-description");
         if (descriptionInput) {
             descriptionInput.value = description;
+            descriptionInput.dispatchEvent(new Event('change'));
         }
         FeedbackIcon.setIcon("#" + fieldName, FeedbackIcon.successClass);
         window.parent.defaultModal.hide();
@@ -1618,6 +1621,8 @@ class LookupListener {
             const lookupIdInput = document.querySelector(lookupIdSelector);
             const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
             lookupInput.addEventListener("blur", function () {
+                if (!lookupInput.value)
+                    return;
                 FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 postFormValues({
                     url: lookupDescriptionUrl,
@@ -1636,7 +1641,9 @@ class LookupListener {
                     },
                     error: (_) => {
                         FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
-                        lookupDescriptionInput.value = String();
+                        if (lookupDescriptionInput) {
+                            lookupDescriptionInput.value = String();
+                        }
                     }
                 });
             });

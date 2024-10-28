@@ -5,21 +5,17 @@ using JJMasterData.Commons.Data.Entity.Models;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerScripts(
-    SqlServerReadProcedureScripts sqlServerReadProcedureScripts,
+    SqlServerReadProcedureScripts readProcedureScripts,
     SqlServerWriteProcedureScripts writeProcedureScripts)
 {
-    private SqlServerReadProcedureScripts ReadProcedureScripts { get; } = sqlServerReadProcedureScripts;
-
-    private SqlServerWriteProcedureScripts WriteProcedureScripts { get; } = writeProcedureScripts;
-
     public string GetReadProcedureScript(Element element)
     {
-        return ReadProcedureScripts.GetReadProcedureScript(element);
+        return readProcedureScripts.GetReadProcedureScript(element);
     }
 
     public string GetWriteProcedureScript(Element element)
     {
-        return WriteProcedureScripts.GetWriteProcedureScript(element);
+        return writeProcedureScripts.GetWriteProcedureScript(element);
     }
     
     public static string GetWriteScript(Element element)
@@ -32,7 +28,7 @@ public class SqlServerScripts(
     {
         var fields = element.Fields.FindAll(f => f.DataBehavior is FieldBehavior.Real);
         
-        return ReadProcedureScripts.GetReadScript(element, fields);
+        return readProcedureScripts.GetReadScript(element, fields);
     }
     
     public static string GetCreateTableScript(Element element, List<RelationshipReference> relationships)

@@ -14,7 +14,6 @@ public class FormStateData
 
     public FormStateData()
     {
-
     }
 
     [SetsRequiredMembers]

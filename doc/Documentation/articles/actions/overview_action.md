@@ -12,7 +12,6 @@ The action button will be applied once for the grid. It will be visible in the t
 
 ![](../../media/Action_UrlRedirect_GridToolbar.png)
 
-
 #### Form Toolbar
 
 The action button will be applied within the form. For example, when trying to add an item to your table, the button will be visible in the top-left corner of the form.

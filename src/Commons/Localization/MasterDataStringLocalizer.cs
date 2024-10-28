@@ -33,7 +33,7 @@ public sealed class MasterDataStringLocalizer<TResourceSource>(IStringLocalizerF
 
 public sealed class MasterDataStringLocalizer(
 	string resourceName,
-	ResourceManagerStringLocalizer resourcesStringLocalizer,
+	IStringLocalizer resourcesStringLocalizer,
 	IEntityRepository entityRepository,
 	IMemoryCache cache,
 	IOptionsMonitor<MasterDataCommonsOptions> options)
@@ -121,7 +121,7 @@ public sealed class MasterDataStringLocalizer(
 	{
 		try
 		{
-			var values = new Dictionary<string, string>(StringComparer.Ordinal);
+			var values = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 			var localizedStrings = resourcesStringLocalizer.GetAllStrings();
 
 			foreach (var localizedString in localizedStrings)
@@ -141,7 +141,10 @@ public sealed class MasterDataStringLocalizer(
 	private Dictionary<string, object?> GetDatabaseValues(Element element, string culture)
 	{
 		var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-		var filter = new Dictionary<string, object?> { { "cultureCode", culture } };
+		var filter = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase)
+		{
+			{ "cultureCode", culture }
+		};
 		var result =
 			entityRepository.GetDictionaryListResult(element, new EntityParameters { Filters = filter }, false);
 		foreach (var row in result.Data)

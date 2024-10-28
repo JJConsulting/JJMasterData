@@ -130,7 +130,7 @@ internal sealed class GridTableBody(JJGridView gridView)
             td.WithAttributeIfNotEmpty("style", style);
             td.WithAttributeIfNotEmpty("onclick", onClickScript);
 
-            if (gridView.EnableEditMode && field.DataBehavior != FieldBehavior.ViewOnly)
+            if (gridView.EnableEditMode && field.DataBehavior is not FieldBehavior.ViewOnly)
             {
                 td.Append(await GetEditModeFieldHtml(field, formStateData, row, index, formattedValue));
             }
@@ -272,7 +272,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         control.Attributes.Add("gridViewRowIndex", index.ToString());
         
         if(field.AutoPostBack)
-            control.Attributes.Add("onchange",gridView.Scripts.GetReloadRowScript(field,index));
+            control.Attributes.Add("onchange", gridView.Scripts.GetReloadRowScript(field,index));
         
         control.CssClass = field.Name;
 

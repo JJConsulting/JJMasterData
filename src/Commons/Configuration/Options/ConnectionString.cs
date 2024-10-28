@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace JJMasterData.Commons.Configuration.Options;
 
@@ -12,7 +13,13 @@ public class ConnectionString()
     }
 
     public Guid Guid { get; init; } = Guid.NewGuid();
+    
+    [Display(Name = "Name")]
     public string Name { get; init; } = null!;
+    
+    [Display(Name = "Connection")]
     public string Connection { get; init; } = null!;
-    public string ConnectionProvider { get; init; } = null!;
+    
+    [Display(Name = "Connection Provider")]
+    public string ConnectionProvider { get; set; } = null!;
 }

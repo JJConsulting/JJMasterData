@@ -168,8 +168,5 @@ public sealed partial class HtmlBuilder
         return attributes;
     }
     
-    public string GetAttribute(string key)
-    {
-        return _attributes[key];
-    }
+    public string GetAttribute(string key) => _attributes[key];
 }

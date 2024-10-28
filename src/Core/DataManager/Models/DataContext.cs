@@ -10,9 +10,9 @@ public class DataContext
 
     public string? UserId { get; }
 
-    public string? IpAddress { get; internal set; }
+    public string? IpAddress { get; }
 
-    public string? BrowserInfo { get; internal set; }
+    public string? BrowserInfo { get; }
 
     public DataContext()
     {

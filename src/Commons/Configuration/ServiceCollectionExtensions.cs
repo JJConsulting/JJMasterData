@@ -55,7 +55,12 @@ public static class ServiceCollectionExtensions
 
     private static void AddMasterDataCommonsServices(this IServiceCollection services)
     {
-        services.AddOptions<MasterDataCommonsOptions>().BindConfiguration("JJMasterData");
+        services.AddOptions<MasterDataCommonsOptions>()
+            .BindConfiguration("JJMasterData")
+            .Validate(o => !string.IsNullOrEmpty(o.ConnectionString),
+                "Connection string is required at JJMasterData:ConnectionString.")
+            .ValidateOnStart();
+        
         services.AddOptions<DbLoggerOptions>().BindConfiguration("Logging:Database");
         services.AddOptions<LoggerFilterOptions>().BindConfiguration("Logging");
 

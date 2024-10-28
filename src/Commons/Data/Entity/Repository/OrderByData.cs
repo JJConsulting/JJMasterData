@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 

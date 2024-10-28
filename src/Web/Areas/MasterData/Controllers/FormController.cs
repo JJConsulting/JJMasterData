@@ -26,6 +26,8 @@ public class FormController(
         ViewData["Title"] = formView.FormElement.Name;
         ViewData["FormViewHtml"] = result.Content;
         
+        HttpContext.Items["ElementName"] = elementName;
+        
         return View();
     }
     

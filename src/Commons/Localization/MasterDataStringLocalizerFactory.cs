@@ -30,13 +30,13 @@ public sealed class MasterDataStringLocalizerFactory : IStringLocalizerFactory
 
     public IStringLocalizer Create(Type resourceSource)
     {
-        var resourceLocalizer = (ResourceManagerStringLocalizer)_resourceManagerStringLocalizerFactory.Create(resourceSource);
+        var resourceLocalizer = _resourceManagerStringLocalizerFactory.Create(resourceSource);
         return new MasterDataStringLocalizer(resourceSource.ToString(), resourceLocalizer, _entityRepository, _cache, _options);
     }
 
     public IStringLocalizer Create(string baseName, string location)
     {
-        var resourceLocalizer = (ResourceManagerStringLocalizer)_resourceManagerStringLocalizerFactory.Create(baseName, location);
+        var resourceLocalizer = _resourceManagerStringLocalizerFactory.Create(baseName, location);
         return new MasterDataStringLocalizer($"{baseName}_{location}", resourceLocalizer, _entityRepository, _cache, _options);
     }
 }

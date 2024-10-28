@@ -221,7 +221,7 @@ internal sealed class GridFilter(JJGridView gridView)
             
             var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
             {
-                Name = $"grid-view-filter-collapse-{gridView.Name}",
+                Name = $"filter-collapse-{gridView.Name}",
                 HtmlBuilderContent = html,
                 TitleIcon = filterIcon,
                 Title = _stringLocalizer[action.Text]
@@ -266,7 +266,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
         var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
         {
-            Name = $"filter_collapse_{gridView.Name}",
+            Name = $"filter-collapse-{gridView.Name}",
             HtmlBuilderContent = body,
             Title = "Filter",
             ExpandedByDefault = gridView.FilterAction.ExpandedByDefault

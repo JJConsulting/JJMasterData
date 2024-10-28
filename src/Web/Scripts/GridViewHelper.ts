@@ -196,19 +196,22 @@ class GridViewHelper {
         });
     }
     
-    static reloadGridRow(componentName, fieldName ,gridViewRowIndex, routeContext){
+    static reloadGridRow(componentName, fieldName , gridViewRowIndex, routeContext){
         const urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex)
         urlBuilder.addQueryParameter("routeContext",routeContext)
-
+        
+        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
+        
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
                 $("#" + componentName + " #row" + gridViewRowIndex).html(data);
                 listenAllEvents("#" + componentName);
-                jjutil.gotoNextFocus((gridViewRowIndex+1) + fieldName);
+                
+                jjutil.gotoNextFocus(fieldId);
             }
-        })
+        });
     }
 }

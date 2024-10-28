@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -16,7 +15,6 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReader> logger)
 {
-    private ILogger<PlainTextReader> Logger { get; } = logger;
     public bool ShowLogInfo { get; init; }
     public string Delimiter { get; init; } = "|";
     
@@ -41,7 +39,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
             if (conn == null)
                 throw new JJMasterDataException("Error on create connection object");
 
-            conn.ConnectionString = dataAccess.ConnectionString;
+            conn.ConnectionString = provider.Options.GetConnectionString(element.ConnectionId).Connection;
             await conn.OpenAsync();
 
 #if NET
@@ -176,7 +174,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                 logMessage.AppendLine(currentPage.ToString());
 
                 logMessage.AppendLine($"{qtd.ToString()} records sync. Time {ts.TotalMilliseconds:N3}ms");
-                Logger.LogInformation("Log message {LogMessage}", logMessage.ToString());
+                logger.LogInformation("Log message {LogMessage}", logMessage.ToString());
             }
         }
         catch (Exception ex)
