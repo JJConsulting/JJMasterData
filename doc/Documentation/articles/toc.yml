@@ -38,7 +38,9 @@
     - name: Sort
       href: actions/sort_action.md
     - name: Detailed Filters
-      href: actions/detailed_filters_action.md
+      href: actions/detailed_filters_action.md      
+    - name: Audit Log
+      href: actions/audit_log_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
