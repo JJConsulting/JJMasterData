@@ -37,6 +37,8 @@
       href: actions/caption_action.md
     - name: Sort
       href: actions/sort_action.md
+    - name: Detailed Filters
+      href: actions/detailed_filters_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
