@@ -1,6 +1,6 @@
 ## Audit Log Action
 
-The *Audit Log* action can be found in Actions - Grid Toolbar.
+The *Audit Log* action can be found in Actions - Grid Toolbar and Form Toolbar.
 
 The *Log* Action will be used to store changes made to the table data. If any information is added, edited, or deleted, these actions will be shown along with the user responsible for the action in the log.
 
