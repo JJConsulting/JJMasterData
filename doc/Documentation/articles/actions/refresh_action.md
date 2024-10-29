@@ -6,6 +6,12 @@ The *Refresh* action can be found in Actions - Grid Toolbar.
 
 ![](../../media/Action_refresh_example_1.png)
 
-General and advanced settings:
+#### About Grid Toolbar
+
+The *Refresh* action can only be applied to the *Grid Toolbar*.
+
+[!include[expressions](grid_toolbar_overview_action.md)]
+
+#### About General and Advanced settings
 
 [!include[expressions](overview_action.md)]
