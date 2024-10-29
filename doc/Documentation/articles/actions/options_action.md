@@ -1,5 +1,10 @@
 ## Options Action
 
+<<<<<<< HEAD
+=======
+The *Options* action can be found in Actions - Grid Toolbar.
+
+>>>>>>> main
 #### Possible changes
 
 The *Options* action allows changes to the display details of the table.
@@ -18,6 +23,7 @@ The image below will show how the possible changes will be displayed in your tab
 
 ![](../../media/Action_options_example.png)
 
+<<<<<<< HEAD
 #### About Grid Toolbar
 
 The *Options* action can only be applied to the *Grid Toolbar*.
@@ -25,5 +31,8 @@ The *Options* action can only be applied to the *Grid Toolbar*.
 [!include[expressions](grid_toolbar_overview_action.md)]
 
 #### About General and Advanced settings
+=======
+General and advanced settings:
+>>>>>>> main
 
 [!include[expressions](overview_action.md)]
