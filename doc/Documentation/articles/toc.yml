@@ -17,6 +17,30 @@
       href: actions/sql_command_action.md
     - name: JavaScript Script
       href: actions/javascript_action.md
+    - name: View
+      href: actions/view_action.md      
+    - name: Edit
+      href: actions/edit_action.md      
+    - name: Delete
+      href: actions/delete_action.md      
+    - name: New
+      href: actions/new_action.md      
+    - name: Options
+      href: actions/options_action.md      
+    - name: Export
+      href: actions/export_action.md      
+    - name: Import
+      href: actions/import_action.md      
+    - name: Refresh
+      href: actions/refresh_action.md      
+    - name: Caption
+      href: actions/caption_action.md
+    - name: Sort
+      href: actions/sort_action.md
+    - name: Detailed Filters
+      href: actions/detailed_filters_action.md      
+    - name: Audit Log
+      href: actions/audit_log_action.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules

@@ -26,3 +26,4 @@ The *Field* will be related to the first table selected, and the *Value* will be
 
 The *Field* must be related to the *Value*. The information registered in these fields will be displayed within the *Internal Redirect* action.
 
+[!include[expressions](overview_action.md)]
