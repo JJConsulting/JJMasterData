@@ -12,10 +12,4 @@ alert("Alert displayed")
 
 ![](../../media/Action_JavaScript_GridToolbar.png)
 
-<<<<<<< HEAD
 [!include[expressions](overview_action.md)]
-=======
-[!include[expressions](overview_action.md)]
-
-![](../../media/Action_JavaScript_GridToolbar.png)
->>>>>>> main

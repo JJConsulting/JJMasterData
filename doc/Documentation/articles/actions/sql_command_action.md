@@ -18,11 +18,7 @@ The value *STATUS = 1* is applied after the *SQL Command* button action is trigg
 
 After the action is executed, it redirects to the URL entered in the field.
 
-<<<<<<< HEAD
 [!include[expressions](overview_action.md)]
 
 
 
-=======
-[!include[expressions](overview_action.md)]
->>>>>>> main

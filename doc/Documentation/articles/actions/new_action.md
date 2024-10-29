@@ -1,16 +1,9 @@
 ## New Action
 
-<<<<<<< HEAD
 #### Grid Toolbar
 
 The *New* action will only be displayed in the Grid Toolbar and will be used to add information to your Grid Table, for example, to add a new record.
-=======
-The *New* action can be found in Actions - Grid Toolbar.
 
-#### Grid Toolbar
-
-A ação *New* será exibida somente na Grid Toolbar, e será utilizada para adicionar uma informação a sua Grid Table, por exemplo, adicionar um novo registro.
->>>>>>> main
 
 ![](../../media/Action_new_example_gridToolbar_1.png)
 
@@ -38,7 +31,6 @@ There will be also a tutorial about *Element Name to select*.
 
 ![](../../media/Action_new_ElementNameToSelect.png)
 
-<<<<<<< HEAD
 #### About Grid Toolbar
 
 The *New* action can only be applied to the *Grid Toolbar*.
@@ -46,11 +38,7 @@ The *New* action can only be applied to the *Grid Toolbar*.
 [!include[expressions](grid_toolbar_overview_action.md)]
 
 #### About General and Advanced settings
-=======
-General and advanced settings:
->>>>>>> main
 
-[!include[expressions](overview_action.md)]
 
 
 

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## Field
 
 The action can be applied to a form field, and the action will appear next to the field. The action can be configured in: Fields - Component - Actions.
@@ -9,32 +8,6 @@ It is possible to change the display of actions through their settings, accessib
 
 The information below will provide a detailed overview of each setting.
 
-=======
-## Possible applications
-
-#### Grid Table
-
-The action button will be applied to the grid row, displayed next to the row's information. The button will be shown on all rows registered in the table.
-
-![](../../media/Action_UrlRedirect_GridTable.png)
-
-#### Grid Toolbar
-
-The action button will be applied once for the grid. It will be visible in the top-left corner.
-
-![](../../media/Action_UrlRedirect_GridToolbar.png)
-
-#### Form Toolbar
-
-The action button will be applied within the form. For example, when trying to add an item to your table, the button will be visible in the top-left corner of the form.
-
-![](../../media/Action_UrlRedirect_Form.png)
-
-#### Field
-
-The action can be applied to a form field, and the action will appear next to the field. The action can be configured in: Fields - Component - Actions.
-
->>>>>>> main
 ## General
 
 ##### Name
