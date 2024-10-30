@@ -6,15 +6,26 @@ using System.Threading.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using Microsoft.Extensions.Options;
+using NCalc;
 using NCalc.Factories;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-public sealed class DefaultExpressionProvider(
-    IExpressionFactory expressionFactory,
-    IServiceProvider serviceProvider,
-    IOptions<MasterDataCoreOptions> options) : ISyncExpressionProvider, IAsyncExpressionProvider
+public sealed class DefaultExpressionProvider : ISyncExpressionProvider, IAsyncExpressionProvider
 {
+    private readonly IExpressionFactory _expressionFactory;
+    private readonly ExpressionContext _expressionContext;
+
+    public DefaultExpressionProvider(
+        IExpressionFactory expressionFactory,
+        IServiceProvider serviceProvider,
+        IOptions<MasterDataCoreOptions> options)
+    {
+        _expressionFactory = expressionFactory;
+        _expressionContext = options.Value.ExpressionContext;
+        _expressionContext.StaticParameters["ServiceProvider"] = serviceProvider;
+    }
+
     public string Prefix => "exp";
     public string Title => "Expression";
 
@@ -23,10 +34,8 @@ public sealed class DefaultExpressionProvider(
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
-
-        options.Value.ExpressionContext.StaticParameters["ServiceProvider"] = serviceProvider;
         
-        var ncalcExpression = expressionFactory.Create(replacedExpression, options.Value.ExpressionContext);
+        var ncalcExpression = _expressionFactory.Create(replacedExpression, _expressionContext);
         return ncalcExpression.Evaluate();
     }
 
