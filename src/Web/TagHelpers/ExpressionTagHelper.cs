@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Web;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -109,7 +110,7 @@ public class ExpressionTagHelper : TagHelper
         if (value is null)
             return input;
         
-        input.WithValue(value);
+        input.WithValue(HttpUtility.HtmlEncode(value));
 
         if (!string.IsNullOrEmpty(Tooltip))
             input.WithToolTip(Tooltip);
