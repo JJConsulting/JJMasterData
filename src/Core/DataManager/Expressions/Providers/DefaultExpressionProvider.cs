@@ -12,6 +12,7 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public sealed class DefaultExpressionProvider(
     IExpressionFactory expressionFactory,
+    IServiceProvider serviceProvider,
     IOptions<MasterDataCoreOptions> options) : ISyncExpressionProvider, IAsyncExpressionProvider
 {
     public string Prefix => "exp";
@@ -22,6 +23,9 @@ public sealed class DefaultExpressionProvider(
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
+
+        options.Value.ExpressionContext.StaticParameters["ServiceProvider"] = serviceProvider;
+        
         var ncalcExpression = expressionFactory.Create(replacedExpression, options.Value.ExpressionContext);
         return ncalcExpression.Evaluate();
     }
