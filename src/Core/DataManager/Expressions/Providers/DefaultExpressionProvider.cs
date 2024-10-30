@@ -11,20 +11,19 @@ using NCalc.Factories;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-public sealed class DefaultExpressionProvider : ISyncExpressionProvider, IAsyncExpressionProvider
+public sealed class DefaultExpressionProvider(
+    IExpressionFactory expressionFactory,
+    IServiceProvider serviceProvider,
+    IOptions<MasterDataCoreOptions> options)
+    : ISyncExpressionProvider, IAsyncExpressionProvider
 {
-    private readonly IExpressionFactory _expressionFactory;
-    private readonly ExpressionContext _expressionContext;
-
-    public DefaultExpressionProvider(
-        IExpressionFactory expressionFactory,
-        IServiceProvider serviceProvider,
-        IOptions<MasterDataCoreOptions> options)
+    private readonly ExpressionContext _expressionContext = options.Value.ExpressionContext with
     {
-        _expressionFactory = expressionFactory;
-        _expressionContext = options.Value.ExpressionContext;
-        _expressionContext.StaticParameters["ServiceProvider"] = serviceProvider;
-    }
+        StaticParameters = new Dictionary<string, object?>(options.Value.ExpressionContext.StaticParameters)
+        {
+            ["ServiceProvider"] = serviceProvider
+        }
+    };
 
     public string Prefix => "exp";
     public string Title => "Expression";
@@ -35,12 +34,12 @@ public sealed class DefaultExpressionProvider : ISyncExpressionProvider, IAsyncE
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
         
-        var ncalcExpression = _expressionFactory.Create(replacedExpression, _expressionContext);
+        var ncalcExpression = expressionFactory.Create(replacedExpression, _expressionContext);
         return ncalcExpression.Evaluate();
     }
 
     public ValueTask<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues)
     {
-        return new ValueTask<object?>(Evaluate(expression,parsedValues));
+        return new ValueTask<object?>(Evaluate(expression, parsedValues));
     }
 }
