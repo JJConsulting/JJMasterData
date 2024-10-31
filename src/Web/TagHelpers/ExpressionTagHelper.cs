@@ -1,5 +1,5 @@
-using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Localization;
+using System.ComponentModel;
+using System.Web;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -182,13 +182,8 @@ public class ExpressionTagHelper(
         input.WithNameAndId(name + "-ExpressionValue");
         input.WithAttribute("placeholder", string.Empty);
         if (selectedExpressionType is null)
-            return input;
-
-        var value = advanced
-            ? selectedExpressionType + ":" + selectedExpressionValue
-            : selectedExpressionValue;
-
-        input.WithValue(value ?? string.Empty);
+            return input;        
+        input.WithValue(HttpUtility.HtmlEncode(value));
 
         if (!string.IsNullOrEmpty(Tooltip))
             input.WithToolTip(Tooltip);
