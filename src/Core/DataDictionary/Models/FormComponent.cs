@@ -52,6 +52,7 @@ public enum FormComponent
     [Display(Name = "Color",GroupName = "8. Especial")]
     Color = 24,
     [Display(Name = "Icon",GroupName = "8. Especial")]
-    Icon = 25
+    Icon = 25,
+    [Display(Name = "Percentage", GroupName = "2. Numeric")]
+    Percentage = 26,
 }
-

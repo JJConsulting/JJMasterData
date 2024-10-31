@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
+    @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider or FormComponent.Percentage)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-4">
             <div class="form-floating">
