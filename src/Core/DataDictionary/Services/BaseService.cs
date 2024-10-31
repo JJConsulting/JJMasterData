@@ -49,6 +49,12 @@ public abstract class BaseService(IValidationDictionary validationDictionary,
             return false;
         }
 
+        if (char.IsDigit(name[0]))
+        {
+            AddError(nameof(name), StringLocalizer["[Name] field cannot start with a number"]);
+            return false;
+        }
+
         if (Validate.IsMasterDataKeyword(name))
             AddError(nameof(name), StringLocalizer["The [Name] field contains a reserved word used in the api"]);
 
