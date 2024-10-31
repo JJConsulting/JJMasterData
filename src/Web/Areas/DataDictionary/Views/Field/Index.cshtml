@@ -102,7 +102,7 @@
 
                             <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
-                               id="field-@fieldName">
+                               id="@fieldName">
                                 <div style="height: 33px;">
                                     <div class="@BootstrapHelper.PullLeft">
                                         <b>@fieldName</b>
@@ -303,7 +303,7 @@
             document.querySelector("#sortable-grid .active")?.classList?.remove("active");
     
             if (fieldName !== "")
-                document.querySelector("#field-" + fieldName).classList.add("active");
+                document.querySelector("#" + fieldName).classList.add("active");
             
             SpinnerOverlay.show()
             
