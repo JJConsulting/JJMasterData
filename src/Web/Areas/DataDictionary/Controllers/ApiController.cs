@@ -10,7 +10,7 @@ public class ApiController(ApiService apiService) : DataDictionaryController
 {
     public async Task<ActionResult> Index(string elementName)
     {
-        var dic = await apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dic = await apiService.GetFormElementAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -18,7 +18,7 @@ public class ApiController(ApiService apiService) : DataDictionaryController
 
     public async Task<ActionResult> Edit(string elementName)
     {
-        var dic = await apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dic = await apiService.GetFormElementAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -27,7 +27,7 @@ public class ApiController(ApiService apiService) : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Edit(ApiViewModel apiViewModel)
     {
-        var formElement = await apiService.DataDictionaryRepository.GetFormElementAsync( apiViewModel.ElementName);
+        var formElement = await apiService.GetFormElementAsync( apiViewModel.ElementName);
         formElement.ApiOptions = apiViewModel.ApiOptions;
         formElement.EnableSynchronism = apiViewModel.EnableSynchronism;
         formElement.SynchronismMode = apiViewModel.SynchronismMode;

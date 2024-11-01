@@ -11,11 +11,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public abstract class BaseService(IValidationDictionary validationDictionary, 
+public abstract class DataDictionaryServiceBase(
+    IValidationDictionary validationDictionary, 
     IDataDictionaryRepository dataDictionaryRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    public IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    protected IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
     protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     protected void AddError(string field, string message)
@@ -39,6 +40,11 @@ public abstract class BaseService(IValidationDictionary validationDictionary,
     public ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
         return DataDictionaryRepository.GetFormElementAsync(elementName);
+    }
+    
+    public Task<List<string>> GetNameListAsync()
+    {
+        return DataDictionaryRepository.GetNameListAsync();
     }
 
     public bool ValidateName(string name)

@@ -148,7 +148,7 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
         }
         else
         {
-            var formElement = await relationshipsService.DataDictionaryRepository.GetFormElementAsync(childElementName);
+            var formElement = await relationshipsService.GetFormElementAsync(childElementName);
             selectList.AddRange(formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
@@ -157,7 +157,7 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
 
     private async Task<List<SelectListItem>> GetElementsSelectList(string childElementName)
     {
-        var list = await relationshipsService.DataDictionaryRepository.GetNameListAsync();
+        var list = await relationshipsService.GetNameListAsync();
 
         var selectList = list.Select(name => new SelectListItem(name, name)).OrderBy(n=>n.Text).ToList();
 
@@ -202,11 +202,11 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
         string elementName,
         int id)
     {
-        var formElement = await relationshipsService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await relationshipsService.GetFormElementAsync(elementName);
 
         var relationship = formElement.Relationships.GetById(id);
         
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(DataDictionaryServiceBase.GetAutocompleteHintsList(formElement));
         
         return new RelationshipsLayoutDetailsViewModel(elementName, "Relationships")
         {

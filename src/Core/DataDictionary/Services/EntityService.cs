@@ -10,7 +10,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class EntityService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     private async Task<bool> ValidateEntity(Entity entity, string originName)
     {

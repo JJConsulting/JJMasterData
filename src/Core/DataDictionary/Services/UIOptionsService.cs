@@ -9,7 +9,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class UIOptionsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<MasterDataResources> stringLocalizer)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     private async Task<bool> ValidateOptions(FormElementOptions options, string elementName)
     {

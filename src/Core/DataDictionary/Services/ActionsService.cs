@@ -18,7 +18,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IEnumerable<IExpressionProvider> expressionProviders,
         IEnumerable<IPluginHandler> pluginHandlers)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string fieldName = null)
     {

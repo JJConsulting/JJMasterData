@@ -32,7 +32,7 @@ public class UIOptionsController(UIOptionsService optionsService) : DataDictiona
 
     private async Task<FormElementOptions> Populate(string elementName)
     {
-        var dicParser = await optionsService!.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dicParser = await optionsService.GetFormElementAsync(elementName);
         var uIOptions = dicParser.Options;
         ViewBag.MenuId = "Options";
         ViewBag.ElementName = elementName;

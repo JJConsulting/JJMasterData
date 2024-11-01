@@ -9,7 +9,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ApiService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     public async Task<bool> SetFormElementWithApiValidation(FormElement formElement)
     {

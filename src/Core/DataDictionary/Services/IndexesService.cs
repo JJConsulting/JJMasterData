@@ -9,7 +9,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class IndexesService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     public async Task<bool> SaveAsync(string id, string index, ElementIndex elementIndex)
     {

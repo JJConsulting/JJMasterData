@@ -15,7 +15,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IEnumerable<IExpressionProvider> expressionProviders,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string originalName)
     {

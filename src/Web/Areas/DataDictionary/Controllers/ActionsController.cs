@@ -16,7 +16,7 @@ public class ActionsController(ActionsService actionsService,
 {
     public async Task<ActionResult> Index(string elementName)
     {
-        var formElement = await actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await actionsService.GetFormElementAsync(elementName);
         var model = new ActionsListViewModel(elementName, "Actions")
         {
             GridTableActions = formElement.Options.GridTableActions.GetAllSorted(),
@@ -36,7 +36,7 @@ public class ActionsController(ActionsService actionsService,
             throw new ArgumentNullException(nameof(elementName));
 
 
-        var formElement = await actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await actionsService.GetFormElementAsync(elementName);
 
         var action = context switch
         {
@@ -414,7 +414,7 @@ public class ActionsController(ActionsService actionsService,
         ViewBag.FieldName = fieldName!;
         var formElement = await actionsService.GetFormElementAsync(elementName);
         ViewBag.FormElement = formElement;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(DataDictionaryServiceBase.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
 
         if (basicAction is InternalAction internalAction)
         {
