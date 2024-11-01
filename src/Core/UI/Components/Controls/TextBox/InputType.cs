@@ -21,8 +21,8 @@ public static class InputTypeExtensions
             InputType.Password => "password",
             InputType.Number => "number",
             InputType.Tel => "tel",
-            InputType.Currency => "currency",
-            InputType.Percentage => "percentage",
+            InputType.Currency => "number",
+            InputType.Percentage => "number",
             _ => "text"
         };
     }
