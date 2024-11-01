@@ -1,5 +1,3 @@
-using JJMasterData.Core.UI.Components;
-
 namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public class DataDictionaryViewModel
@@ -7,8 +5,6 @@ public class DataDictionaryViewModel
     public string MenuId { get; set; }
 
     public string ElementName { get; set; }
-    
-    public JJValidationSummary? ValidationSummary { get; set; }
 
 #pragma warning disable CS8618
     // ReSharper disable once UnusedMember.Global

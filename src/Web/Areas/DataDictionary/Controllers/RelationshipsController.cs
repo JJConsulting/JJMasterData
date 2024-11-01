@@ -81,10 +81,6 @@ public class RelationshipsController(RelationshipsService relationshipsService,
             model.Relationship.Columns.Add(new ElementRelationshipColumn(model.AddPrimaryKeyName!,
                 model.AddForeignKeyName!));
         }
-        else
-        {
-            model.ValidationSummary = relationshipsService.GetValidationSummary();
-        }
 
         await PopulateSelectLists(model);
 
