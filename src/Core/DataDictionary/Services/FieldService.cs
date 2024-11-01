@@ -7,7 +7,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Extensions;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -15,7 +14,6 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class FieldService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IEnumerable<IExpressionProvider> expressionProviders,
-        IMemoryCache memoryCache,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
@@ -55,19 +53,10 @@ public class FieldService(IValidationDictionary validationDictionary,
         if (IsValid)
         {
             await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-            ClearScriptsCache(formElement);
         }
             
 
         return IsValid;
-    }
-
-    private void ClearScriptsCache(FormElement formElement)
-    {
-        if (!formElement.UseReadProcedure)
-            memoryCache.Remove(formElement.Name + "_ReadScript");
-        if (!formElement.UseWriteProcedure)
-            memoryCache.Remove(formElement.Name + "_WriteScript");
     }
 
     private static void RemoveUnusedProperties(FormElementField field)
@@ -429,7 +418,6 @@ public class FieldService(IValidationDictionary validationDictionary,
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-        ClearScriptsCache(formElement);
         return IsValid;
     }
 

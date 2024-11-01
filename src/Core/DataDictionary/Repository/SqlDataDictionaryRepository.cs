@@ -129,7 +129,7 @@ public class SqlDataDictionaryRepository(
         await entityRepository.SetValuesAsync(_masterDataElement, values);
 
         if(_enableDataDictionaryCaching)
-            memoryCache.Remove(formElement.Name);
+            ClearCache(formElement);
     }
 
     public void InsertOrReplace(FormElement formElement)
@@ -139,7 +139,7 @@ public class SqlDataDictionaryRepository(
         entityRepository.SetValues(_masterDataElement, values);
         
         if(_enableDataDictionaryCaching)
-            memoryCache.Remove(formElement.Name);
+            ClearCache(formElement);
     }
 
     private static Dictionary<string, object?> GetFormElementDictionary(FormElement formElement)
@@ -216,5 +216,15 @@ public class SqlDataDictionaryRepository(
         var formElementInfoList = result.Data.ConvertAll(FormElementInfo.FromDictionary);
 
         return new ListResult<FormElementInfo>(formElementInfoList, result.TotalOfRecords);
+    }
+
+    private void ClearCache(FormElement formElement)
+    {
+        if (!formElement.UseReadProcedure)
+            memoryCache.Remove(formElement.Name + "_ReadScript");
+        if (!formElement.UseWriteProcedure)
+            memoryCache.Remove(formElement.Name + "_WriteScript");
+
+        memoryCache.Remove(formElement.Name);
     }
 }
