@@ -10,12 +10,9 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class RelationshipsController(RelationshipsService relationshipsService,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
+public class RelationshipsController(RelationshipsService relationshipsService, IStringLocalizer<MasterDataResources> stringLocalizer)
     : DataDictionaryController
 {
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
     #region Index
 
     public async Task<ActionResult> Index(string elementName)
@@ -147,7 +144,7 @@ public class RelationshipsController(RelationshipsService relationshipsService,
 
         if (string.IsNullOrEmpty(childElementName))
         {
-            selectList.Add(new SelectListItem(StringLocalizer["(Select)"], string.Empty));
+            selectList.Add(new SelectListItem(stringLocalizer["(Select)"], string.Empty));
         }
         else
         {
@@ -166,7 +163,7 @@ public class RelationshipsController(RelationshipsService relationshipsService,
 
         if (string.IsNullOrEmpty(childElementName))
         {
-            selectList.Insert(0, new SelectListItem(StringLocalizer["(Select)"], string.Empty));
+            selectList.Insert(0, new SelectListItem(stringLocalizer["(Select)"], string.Empty));
         }
 
         return selectList;

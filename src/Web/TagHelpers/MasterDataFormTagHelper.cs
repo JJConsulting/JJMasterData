@@ -23,6 +23,14 @@ public class MasterDataFormTagHelper(IHtmlGenerator generator) : FormTagHelper(g
         get => Controller;
         set => Controller = value;
     }
+    
+    [HtmlAttributeName("asp-area")]
+    [AspMvcArea]
+    public string AspMvcArea
+    {
+        get => Area;
+        set => Area = value;
+    }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
