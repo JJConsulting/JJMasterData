@@ -218,6 +218,13 @@ public sealed class TextGroupFactory(
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
+            case FormComponent.Percentage:
+                listClass.Add(BootstrapHelper.TextRight);
+                textGroup.MaxLength = 18;
+                textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.PercentSymbol);
+                textGroup.InputType = InputType.Percentage;
+                textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
+                break;
             default:
                 textGroup.InputType = InputType.Text;
                 break;
