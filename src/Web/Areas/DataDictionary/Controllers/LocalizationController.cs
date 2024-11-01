@@ -7,11 +7,9 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class LocalizationController(LocalizationService localizationService) : DataDictionaryController
 {
-    private LocalizationService LocalizationService { get; } = localizationService;
-
     public async Task<IActionResult> Index([FromQuery] bool isModal)
     {
-        var formView = LocalizationService.GetFormView();
+        var formView = localizationService.GetFormView();
         formView.ShowTitle = !isModal;
         
         var result = await formView.GetResultAsync();
@@ -28,8 +26,7 @@ public class LocalizationController(LocalizationService localizationService) : D
 
     public async Task<FileContentResult> DownloadStrings()
     {
-        var fileBytes = await LocalizationService.GetAllStringsFile();
+        var fileBytes = await localizationService.GetAllStringsFile();
         return File(fileBytes,"application/octet-stream",$"LocalizationStrings-{CultureInfo.CurrentUICulture.Name}.csv");
     }
-    
 }

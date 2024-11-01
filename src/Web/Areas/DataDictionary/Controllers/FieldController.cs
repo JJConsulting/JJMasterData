@@ -108,7 +108,7 @@ public class FieldController(FieldService fieldService)
     public IActionResult AddDataItem(string elementName, FormElementField field, int qtdRowsToAdd)
     {
         field.DataItem ??= new FormElementDataItem();
-        field.DataItem.Items ??= new List<DataItemValue>();
+        field.DataItem.Items ??= [];
         for (int i = 0; i < qtdRowsToAdd; i++)
         {
             var item = new DataItemValue

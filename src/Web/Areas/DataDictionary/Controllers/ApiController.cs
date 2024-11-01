@@ -36,7 +36,7 @@ public class ApiController(ApiService apiService) : DataDictionaryController
             return RedirectToAction("Index", new { elementName =  apiViewModel.ElementName });
         
         var model = PopulateViewModel(formElement);
-        model.ValidationSummary = apiService.GetValidationSummary();
+
         return View(model);
 
     }

@@ -17,35 +17,30 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
         IOptionsSnapshot<DbLoggerOptions> options)
     : DataDictionaryController
 {
-    private DbLoggerOptions Options { get; } = options.Value;
-
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
-    private LoggerFormElementFactory LoggerFormElementFactory { get; } = loggerFormElementFactory;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-
+    private readonly DbLoggerOptions _options = options.Value;
     public async Task<IActionResult> Index(bool isModal)
     {
-        var formElement = LoggerFormElementFactory.GetFormElement(isModal);
+        var formElement = loggerFormElementFactory.GetFormElement(isModal);
 
-        if (!await EntityRepository.TableExistsAsync(Options.TableName))
+        if (!await entityRepository.TableExistsAsync(_options.TableName))
         {
-            await EntityRepository.CreateDataModelAsync(formElement,[]);
+            await entityRepository.CreateDataModelAsync(formElement,[]);
         }
 
-        var formView = FormViewFactory.Create(formElement);
+        var formView = formViewFactory.Create(formElement);
         formView.ShowTitle = !isModal;
         
         if (!formView.GridView.CurrentOrder.Any())
         {
-            formView.GridView.CurrentOrder.AddOrReplace(Options.CreatedColumnName, OrderByDirection.Desc);
+            formView.GridView.CurrentOrder.AddOrReplace(_options.CreatedColumnName, OrderByDirection.Desc);
         }
 
         formView.GridView.OnRenderCellAsync += (_, args) =>
         {
-            if (!args.Field.Name.Equals(Options.MessageColumnName))
+            if (!args.Field.Name.Equals(_options.MessageColumnName))
                 return ValueTask.CompletedTask;
             
-            var message = args.DataRow[Options.MessageColumnName]?.ToString()?.Replace("\n", "<br>");
+            var message = args.DataRow[_options.MessageColumnName]?.ToString()?.Replace("\n", "<br>");
             args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
 
             return ValueTask.CompletedTask;
@@ -66,9 +61,9 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     [HttpGet]
     public async Task<IActionResult> ClearAll(bool isModal)
     {
-        var sql = $"TRUNCATE TABLE {Options.TableName}";
+        var sql = $"TRUNCATE TABLE {_options.TableName}";
 
-        await EntityRepository.SetCommandAsync(new DataAccessCommand(sql));
+        await entityRepository.SetCommandAsync(new DataAccessCommand(sql));
 
         return RedirectToAction("Index", new {isModal});
     }

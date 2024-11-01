@@ -32,7 +32,6 @@ public class EntityController(
         }
 
         model.MenuId = "Entity";
-        model.ValidationSummary = entityService.GetValidationSummary();
             
         return View(model);
 
@@ -55,7 +54,6 @@ public class EntityController(
         }
 
         model.MenuId = "Entity";
-        model.ValidationSummary = entityService.GetValidationSummary();
             
         return View(model);
 

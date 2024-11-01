@@ -20,24 +20,18 @@ public class InternalRedirectController(
     IHttpRequest request,
     IEncryptionService encryptionService) : MasterDataController
 {
-    private string? _elementName;
-    private RelationshipViewType _relationshipType;
-    private Dictionary<string, object> RelationValues { get; } = new();
-
     public async Task<IActionResult> Index(string parameters)
     {
-        LoadParameters(parameters);
+        var state = GetInternalRedirectState(parameters);
         var userId = HttpContext.User.GetUserId();
-
         InternalRedirectViewModel model;
 
-        switch (_relationshipType)
+        switch (state.RelationshipType)
         {
             case RelationshipViewType.List:
             {
-                var formView = await componentFactory.FormView.CreateAsync(_elementName);
-
-                formView.RelationValues = RelationValues;
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                formView.RelationValues = state.RelationValues;
 
                 if (userId != null)
                 {
@@ -46,124 +40,113 @@ public class InternalRedirectController(
                 }
                 
                 var result = await formView.GetResultAsync();
-
                 if (result is IActionResult actionResult)
                     return actionResult;
 
-                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(RelationValues!, PageState.List))?.ToString();
-                model = new(title ?? formView.Name,result.Content!, false);
+                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.List))?.ToString();
+                model = new(title ?? formView.Name, result.Content!, false);
                 break;
             }
             case RelationshipViewType.View:
             {
-                var panel = await componentFactory.DataPanel.CreateAsync(_elementName);
+                var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
                 panel.PageState = PageState.View;
+                
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
 
-                await panel.LoadValuesFromPkAsync(RelationValues);
+                await panel.LoadValuesFromPkAsync(state.RelationValues);
                 
                 var result = await panel.GetResultAsync();
-
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(RelationValues!, PageState.View))?.ToString();
-
-                model = new(title ?? panel.Name,result.Content!, false);
-                
+                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.View))?.ToString();
+                model = new(title ?? panel.Name, result.Content!, false);
                 break;
             }
             case RelationshipViewType.Update:
             {
-                var panel = await componentFactory.DataPanel.CreateAsync(_elementName);
+                var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
                 panel.PageState = PageState.Update;
 
-                await panel.LoadValuesFromPkAsync(RelationValues);
-                
-                var result = await panel.GetResultAsync();
-
+                await panel.LoadValuesFromPkAsync(state.RelationValues);
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
                 
+                var result = await panel.GetResultAsync();
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(RelationValues!, PageState.Update))?.ToString();
-
-                model = new(title ?? panel.Name,result.Content, true);
+                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.Update))?.ToString();
+                model = new(title ?? panel.Name, result.Content, true);
                 break;
             }
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidOperationException();
         }
 
         return View(model);
     }
-
+    
     [HttpPost]
     public async Task<IActionResult> Save(string parameters)
     {
-        LoadParameters(parameters);
-
+        var state = GetInternalRedirectState(parameters);
         var userId = HttpContext.User.GetUserId();
-
-        var panel = await componentFactory.DataPanel.CreateAsync(_elementName);
+        var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
         panel.PageState = PageState.Update;
 
-        await panel.LoadValuesFromPkAsync(RelationValues);
+        await panel.LoadValuesFromPkAsync(state.RelationValues);
         if (userId != null)
             panel.SetUserValues("USERID", userId);
 
         var values = await panel.GetFormValuesAsync();
+        var letter = await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request, DataContextSource.Form, userId));
 
-        var letter =await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request,DataContextSource.Form,userId));
-
+        ViewBag.Success = letter.Errors.Count == 0;
         if (letter.Errors.Count > 0)
-        {
             ViewBag.Error = componentFactory.Html.ValidationSummary.Create(letter.Errors).GetHtml();
-            ViewBag.Success = false;
-        }
-        else
-        {
-            ViewBag.Success = true;
-        }
 
         var result = await panel.GetResultAsync();
-                        
         if (result is IActionResult actionResult)
             return actionResult;
-                
-        var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(RelationValues!, PageState.Update))?.ToString();
 
-        var model = new InternalRedirectViewModel(title ?? panel.Name,result.Content, true);
+        var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.Update))?.ToString();
+        var model = new InternalRedirectViewModel(title ?? panel.Name, result.Content, true);
 
         return View("Index", model);
     }
-
-    private void LoadParameters(string parameters)
+    
+    private InternalRedirectState GetInternalRedirectState(string parameters)
     {
         if (string.IsNullOrEmpty(parameters))
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(nameof(parameters));
 
-        _elementName = null;
-        _relationshipType = RelationshipViewType.List;
+        var state = new InternalRedirectState
+        {
+            RelationshipType = RelationshipViewType.List
+        };
+
         var @params = HttpUtility.ParseQueryString(encryptionService.DecryptStringWithUrlUnescape(parameters));
-        _elementName = @params.Get("formname");
+        state.ElementName = @params.Get("formname");
+
         foreach (string key in @params)
         {
             switch (key.ToLower())
             {
                 case "formname":
-                    _elementName = @params.Get(key);
+                    state.ElementName = @params.Get(key);
                     break;
                 case "viewtype":
-                    _relationshipType = (RelationshipViewType)int.Parse(@params.Get(key) ?? string.Empty);
+                    state.RelationshipType = (RelationshipViewType)int.Parse(@params.Get(key) ?? string.Empty);
                     break;
                 default:
-                    RelationValues.Add(key, @params.Get(key)!);
+                    state.RelationValues.Add(key, @params.Get(key)!);
                     break;
             }
         }
+
+        return state;
     }
 }
