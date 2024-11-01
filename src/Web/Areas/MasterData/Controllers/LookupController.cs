@@ -46,7 +46,7 @@ public class LookupController(
 
         if (!lookupParameters.EnableElementActions)
         {
-            foreach (var action in form.GridView.ToolbarActions.Where(IsLookupAction()))
+            foreach (var action in form.GridView.ToolbarActions.Where(IsLookupAction))
             {
                 action.SetVisible(false);
             }
@@ -80,9 +80,9 @@ public class LookupController(
         }
     }
 
-    private static Func<BasicAction, bool> IsLookupAction()
+    private static bool IsLookupAction(BasicAction action)
     {
-        return action => action is not LegendAction
+        return action is not LegendAction
                          && action is not RefreshAction
                          && action is not FilterAction
                          && action is not ConfigAction
