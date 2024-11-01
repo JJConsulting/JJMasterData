@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -57,6 +58,8 @@ public class InternalRedirectController(
 
                 await panel.LoadValuesFromPkAsync(state.RelationValues);
                 
+                DataHelper.CopyIntoDictionary(panel.Values, state.RelationValues!);
+                
                 var result = await panel.GetResultAsync();
                 if (result is IActionResult actionResult)
                     return actionResult;
@@ -69,8 +72,11 @@ public class InternalRedirectController(
             {
                 var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
                 panel.PageState = PageState.Update;
-
+            
                 await panel.LoadValuesFromPkAsync(state.RelationValues);
+                
+                DataHelper.CopyIntoDictionary(panel.Values, state.RelationValues!);
+                
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
                 
