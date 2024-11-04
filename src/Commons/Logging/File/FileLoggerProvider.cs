@@ -13,8 +13,7 @@ internal sealed class FileLoggerProvider(FileLoggerBuffer buffer, IOptionsMonito
 
     private readonly ConcurrentDictionary<string, FileLogger> _loggers =
         new(StringComparer.OrdinalIgnoreCase);
-
-
+    
     public ILogger CreateLogger(string categoryName) =>
         _loggers.GetOrAdd(categoryName, name => new FileLogger(name, buffer,options));
 

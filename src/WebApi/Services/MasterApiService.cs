@@ -112,7 +112,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return listRet;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async Task<List<ResponseLetter>> SetFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
@@ -122,15 +122,18 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (!formElement.ApiOptions.EnableAdd || !formElement.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
+        var results = new List<ResponseLetter>();
         foreach (var values in paramsList)
         {
-            yield return replace
+            var result = replace
                 ? await InsertOrReplace(formElement, values, formElement.ApiOptions)
                 : await Insert(formElement, values, formElement.ApiOptions);
+            results.Add(result);
         }
+        return results;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async Task<List<ResponseLetter>> UpdateFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -140,13 +143,16 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (!dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
+        var results = new List<ResponseLetter>();
         foreach (var values in paramsList)
         {
-            yield return await Update(dictionary, values);
+            var result = await Update(dictionary, values);
+            results.Add(result);
         }
+        return results;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async Task<List<ResponseLetter>> UpdatePartAsync(IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -156,14 +162,13 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
-        if (paramsList == null)
-            throw new JJMasterDataException("Invalid parameter or not a list");
-
-
+        var results = new List<ResponseLetter>();
         foreach (var values in paramsList)
         {
-            yield return await Patch(formElement, values);
+            var result = await Patch(formElement, values);
+            results.Add(result);
         }
+        return results;
     }
 
     private async Task<ResponseLetter> Insert(FormElement formElement, Dictionary<string, object?> apiValues,
