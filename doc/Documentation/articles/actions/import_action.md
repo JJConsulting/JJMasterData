@@ -2,9 +2,7 @@
 
 The Import action will allow the table to be populated through the import of an external file.
 
-The *Import* action can be found in Actions - Grid Toolbar.
-
-#### Import Action
+#### Tab Import Action
 
 - SQL Command before and after starting the process: SQL command can be configured to change the value of a table column, for example, setting a TRUE value for a column if the data has already been imported.
 
@@ -28,6 +26,12 @@ The field with the information registered in your *Help Text* will also be displ
 
 ![](../../media/Action_import_example_3.png)
 
-General and advanced settings:
+#### About Grid Toolbar
+
+The *Import* action can only be applied to the *Grid Toolbar*.
+
+[!include[expressions](grid_toolbar_overview_action.md)]
+
+#### About General and Advanced settings
 
 [!include[expressions](overview_action.md)]
