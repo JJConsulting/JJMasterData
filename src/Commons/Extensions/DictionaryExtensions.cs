@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !NET
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace JJMasterData.Commons.Extensions;
@@ -11,3 +12,4 @@ internal static class DictionaryExtensions
         return dictionary.TryGetValue(key, out var value) ? value : defaultValue;
     }
 }
+#endif

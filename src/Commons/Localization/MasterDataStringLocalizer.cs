@@ -76,7 +76,7 @@ public sealed class MasterDataStringLocalizer(
 
 		if (cache.TryGetValue<FrozenDictionary<string, string>>(cacheKey, out var cachedDictionary))
 		{
-			return cachedDictionary.GetValueOrDefault(key, key);
+			return cachedDictionary!.GetValueOrDefault(key, key);
 		}
 
 		var localizedStrings = GetAllStringsAsDictionary();
