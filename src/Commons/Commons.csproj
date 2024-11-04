@@ -23,9 +23,6 @@
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-
-		<PackageReference Include="System.Diagnostics.EventLog" Version="8.0.1" />
-
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
