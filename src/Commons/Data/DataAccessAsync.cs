@@ -281,9 +281,12 @@ public partial class DataAccess
             using var connection = dbCommand.Connection;
             using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
-                var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                    .Select(i => dataReader.GetName(i))
-                    .ToList();
+                List<string> columnNames = [];
+                
+                for (var i = 0; i < dataReader.FieldCount; i++)
+                {
+                    columnNames.Add(dataReader.GetName(i));
+                }
 
                 while (await dataReader.ReadAsync(cancellationToken))
                 {

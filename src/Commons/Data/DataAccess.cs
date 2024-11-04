@@ -679,9 +679,11 @@ public partial class DataAccess
             {
                 using (var dataReader =  dbCommand.ExecuteReader())
                 {
-                    var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                        .Select(i => dataReader.GetName(i))
-                        .ToList();
+                    List<string> columnNames = [];
+                    for (var i = 0; i < dataReader.FieldCount; i++)
+                    {
+                        columnNames.Add(dataReader.GetName(i));
+                    }
 
                     while ( dataReader.Read())
                     {
