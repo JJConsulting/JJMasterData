@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Util;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Configuration;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
+using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 

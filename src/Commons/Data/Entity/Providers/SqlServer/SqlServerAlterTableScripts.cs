@@ -7,7 +7,6 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerAlterTableScripts : SqlServerScriptsBase
 {
-    
     [CanBeNull]
     public static string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {

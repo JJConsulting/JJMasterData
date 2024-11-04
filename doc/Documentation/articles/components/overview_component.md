@@ -2,7 +2,7 @@
 
 The *Component* field will be used to configure the formatting of information shown in the column.
 
-You can access the *Component* field through the tab Fields - Component - Component.
+You can access the *Component* field through the tab Fields - Component - Component box.
 
 Information can be individually configured for each column in the table.
 

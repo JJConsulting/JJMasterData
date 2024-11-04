@@ -14,51 +14,55 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-public class EntityRepository(
+internal sealed class EntityRepository(
     IOptionsSnapshot<MasterDataCommonsOptions> commonsOptions,
     EntityProviderBase provider)
     : IEntityRepository
 {
-    private MasterDataCommonsOptions Options { get; } = commonsOptions.Value;
-    
-    private EntityProviderBase Provider { get; } = provider;
-
     public int Update(Element element, Dictionary<string, object?> values)
     {
-        return Provider.Update(element, values);
+        return provider.Update(element, values);
     }
 
-    public Task<int> DeleteAsync(Element element, Dictionary<string, object> filters) =>
-        Provider.DeleteAsync(element, filters);
+    public Task<int> DeleteAsync(Element element, Dictionary<string, object> filters)
+    {
+        return provider.DeleteAsync(element, filters);
+    }
 
     public int Delete(Element element, Dictionary<string, object> primaryKeys)
     {
-        return Provider.Delete(element, primaryKeys);
+        return provider.Delete(element, primaryKeys);
     }
 
     public void Insert(Element element, Dictionary<string, object?> values)
     {
-        Provider.Insert(element, values);
+        provider.Insert(element, values);
     }
 
-    public Task InsertAsync(Element element, Dictionary<string, object?> values) =>
-        Provider.InsertAsync(element, values);
+    public Task InsertAsync(Element element, Dictionary<string, object?> values)
+    {
+        return provider.InsertAsync(element, values);
+    }
 
-    public Task<int> UpdateAsync(Element element, Dictionary<string, object?> values) =>
-        Provider.UpdateAsync(element, values);
+    public Task<int> UpdateAsync(Element element, Dictionary<string, object?> values)
+    {
+        return provider.UpdateAsync(element, values);
+    }
 
     public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string, object?> values,
-        bool ignoreResults = false) =>
-        Provider.SetValuesAsync(element, values, ignoreResults);
+        bool ignoreResults = false)
+    {
+        return provider.SetValuesAsync(element, values, ignoreResults);
+    }
 
     public CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults = false)
     {
-        return Provider.SetValues(element, values, ignoreResults);
+        return provider.SetValues(element, values, ignoreResults);
     }
 
     public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
-        return Provider.GetElementFromTableAsync(tableName, connectionId);
+        return provider.GetElementFromTableAsync(tableName, connectionId);
     }
 
     public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId = null)
@@ -111,7 +115,7 @@ public class EntityRepository(
 
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = Provider.GetReadCommand(element, new EntityParameters
+        var cmd = provider.GetReadCommand(element, new EntityParameters
         {
             Filters = primaryKeys!
         }, totalOfRecords);
@@ -139,7 +143,7 @@ public class EntityRepository(
 
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = Provider.GetReadCommand(element, new EntityParameters
+        var cmd = provider.GetReadCommand(element, new EntityParameters
         {
             Filters = primaryKeys!
         }, totalOfRecords);
@@ -149,20 +153,27 @@ public class EntityRepository(
         return dataAccess.GetDictionaryAsync(cmd);
     }
 
-    public Task CreateDataModelAsync(Element element, List<RelationshipReference>? relationships = null) =>
-        Provider.CreateDataModelAsync(element, relationships);
+    public Task CreateDataModelAsync(Element element, List<RelationshipReference>? relationships = null)
+    {
+        return provider.CreateDataModelAsync(element, relationships);
+    }
 
     public void CreateDataModel(Element element, List<RelationshipReference>? relationships = null)
     {
-        Provider.CreateDataModel(element, relationships);
+        provider.CreateDataModel(element, relationships);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetCreateTableScript"/>
-    public string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null) =>
-        Provider.GetCreateTableScript(element, relationships);
+    public string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
+    {
+        return provider.GetCreateTableScript(element, relationships);
+    }
 
     ///<inheritdoc cref="IEntityRepository.GetWriteProcedureScript"/>
-    public string? GetWriteProcedureScript(Element element) => Provider.GetWriteProcedureScript(element);
+    public string? GetWriteProcedureScript(Element element)
+    {
+        return provider.GetWriteProcedureScript(element);
+    }
 
     public async Task<string?> GetAlterTableScriptAsync(Element element)
     {
@@ -173,7 +184,7 @@ public class EntityRepository(
             addedFields.Add(field);
         }
         
-        return Provider.GetAlterTableScript(element, addedFields);
+        return provider.GetAlterTableScript(element, addedFields);
     }
 
     private async IAsyncEnumerable<ElementField> GetAddedFieldsAsync(Element element)
@@ -190,19 +201,22 @@ public class EntityRepository(
         }
     }
 
-    public string? GetReadProcedureScript(Element element) => Provider.GetReadProcedureScript(element);
+    public string? GetReadProcedureScript(Element element)
+    {
+        return provider.GetReadProcedureScript(element);
+    }
 
 
     public Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null,
         bool showLogInfo = false,
         string delimiter = "|")
     {
-        return Provider.GetFieldsListAsTextAsync(element, parameters ?? new EntityParameters(), showLogInfo, delimiter);
+        return provider.GetFieldsListAsTextAsync(element, parameters ?? new EntityParameters(), showLogInfo, delimiter);
     }
 
     public List<Dictionary<string, object?>> GetDictionaryList(Element element, EntityParameters? parameters = null)
     {
-        var result = Provider.GetDictionaryList(element, parameters ?? new EntityParameters(), false);
+        var result = provider.GetDictionaryList(element, parameters ?? new EntityParameters(), false);
 
         return result.Data;
     }
@@ -212,7 +226,7 @@ public class EntityRepository(
         EntityParameters? parameters = null
     )
     {
-        var result = await Provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), false);
+        var result = await provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), false);
 
         return result.Data;
     }
@@ -234,7 +248,7 @@ public class EntityRepository(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var command = Provider.GetReadCommand(element, parameters ?? new EntityParameters(), totalOfRecords);
+        var command = provider.GetReadCommand(element, parameters ?? new EntityParameters(), totalOfRecords);
 
         return dataAccess.GetDataTableAsync(command);
     }
@@ -272,7 +286,7 @@ public class EntityRepository(
     )
     {
         var result =
-            await Provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), recoverTotalOfRecords);
+            await provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), recoverTotalOfRecords);
 
         return new DictionaryListResult(result.Data, result.TotalOfRecords);
     }
@@ -283,7 +297,7 @@ public class EntityRepository(
         bool recoverTotalOfRecords = true
     )
     {
-        var result = Provider.GetDictionaryList(element, parameters ?? new EntityParameters(), recoverTotalOfRecords);
+        var result = provider.GetDictionaryList(element, parameters ?? new EntityParameters(), recoverTotalOfRecords);
 
         return new DictionaryListResult(result.Data, result.TotalOfRecords);
     }
@@ -294,7 +308,6 @@ public class EntityRepository(
         return dataAccess.GetDataSet(command);
     }
     
-        
     public Task<DataSet> GetDataSetAsync(DataAccessCommand command, Guid? connectionId = null, CancellationToken cancellationToken = default)
     {
         var dataAccess = GetDataAccess(connectionId);
@@ -303,7 +316,7 @@ public class EntityRepository(
     
     private DataAccess GetDataAccess(Guid? connectionId)
     {
-        var connection = Options.GetConnectionString(connectionId);
+        var connection = commonsOptions.Value.GetConnectionString(connectionId);
         return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
 }

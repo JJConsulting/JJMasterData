@@ -7,9 +7,9 @@ using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Newtonsoft.Json;
 using JJMasterData.Core.DataDictionary.Structure;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 

@@ -14,12 +14,10 @@ public sealed class SqlExpressionProvider(IEntityRepository entityRepository) : 
     public string Title => "SQL";
     public Guid? ConnectionId { get; set; }
 
-    public async ValueTask<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
+    public ValueTask<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
     {
         var command = ExpressionDataAccessCommandFactory.Create(expression, parsedValues);
-
-        var result = await entityRepository.GetResultAsync(command,ConnectionId);
-
-        return result;
+        
+        return new(entityRepository.GetResultAsync(command,ConnectionId));
     }
 }

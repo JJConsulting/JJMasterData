@@ -1,6 +1,5 @@
-using JJMasterData.Commons.Exceptions;
-
 using System;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 

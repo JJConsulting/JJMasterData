@@ -1,6 +1,5 @@
 #nullable enable
 
-using System.Linq;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;

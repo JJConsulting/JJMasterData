@@ -1,8 +1,8 @@
 #nullable enable
 
-using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.Db;
 

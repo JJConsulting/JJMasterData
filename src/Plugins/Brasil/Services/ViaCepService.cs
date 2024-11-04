@@ -5,7 +5,6 @@ using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Commons.Util;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace JJMasterData.Brasil.Services;
 

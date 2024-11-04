@@ -16,19 +16,12 @@ namespace JJMasterData.Commons.Data;
 public partial class DataAccess
 {
     [MustDisposeResource]
-    public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
+    private async Task<DbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
     {
-        var connection = Factory.CreateConnection();
-
-        try
-        {
-            connection!.ConnectionString = ConnectionString;
-            await connection.OpenAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            throw new DataAccessException(ex);
-        }
+        var connection = _dbProviderFactory.CreateConnection();
+     
+        connection!.ConnectionString = _connectionString;
+        await connection.OpenAsync(cancellationToken);
 
         return connection;
     }
@@ -45,7 +38,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
             using (dbCommand.Connection)
             {
@@ -82,7 +75,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
             using (dbCommand.Connection)
             {
@@ -129,7 +122,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
             using (dbCommand.Connection)
             {
                 scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
@@ -156,7 +149,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
             using (dbCommand.Connection)
             {
                 rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
@@ -182,7 +175,7 @@ public partial class DataAccess
         int numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
 
-        var connection = await GetConnectionAsync(cancellationToken);
+        var connection = await CreateConnectionAsync(cancellationToken);
 
         using (connection)
         {
@@ -229,8 +222,10 @@ public partial class DataAccess
     }
 
     /// <inheritdoc cref="GetHashtable(string)"/>
-    public Task<Dictionary<string,object?>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default) =>
-        GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
+    public Task<Dictionary<string,object?>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default)
+    {
+        return GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
+    }
 
     /// <inheritdoc cref="GetHashtable"/>
     public async Task<Dictionary<string,object?>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
@@ -239,7 +234,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
             using (dbCommand.Connection)
             {
@@ -281,37 +276,35 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
-            using (dbCommand.Connection)
+            using var connection = dbCommand.Connection;
+            using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
-                using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
-                {
-                    var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                        .Select(i => dataReader.GetName(i))
-                        .ToList();
+                var columnNames = Enumerable.Range(0, dataReader.FieldCount)
+                    .Select(i => dataReader.GetName(i))
+                    .ToList();
 
-                    while (await dataReader.ReadAsync(cancellationToken))
+                while (await dataReader.ReadAsync(cancellationToken))
+                {
+                    var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+                    foreach (var columnName in columnNames)
                     {
-                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-                        foreach (var columnName in columnNames)
-                        {
-                            var ordinal = dataReader.GetOrdinal(columnName);
-                            var value = dataReader.IsDBNull(ordinal)
-                                ? null
-                                : dataReader.GetValue(ordinal);
-                            dictionary[columnName] = value;
-                        }
-
-                        dictionaryList.Add(dictionary);
+                        var ordinal = dataReader.GetOrdinal(columnName);
+                        var value = dataReader.IsDBNull(ordinal)
+                            ? null
+                            : dataReader.GetValue(ordinal);
+                        dictionary[columnName] = value;
                     }
-                }
 
-                foreach (var param in cmd.Parameters.Where(param =>
-                             param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
-                {
-                    param.Value = dbCommand.Parameters[param.Name].Value;
+                    dictionaryList.Add(dictionary);
                 }
+            }
+
+            foreach (var param in cmd.Parameters.Where(param =>
+                         param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
+            {
+                param.Value = dbCommand.Parameters[param.Name].Value;
             }
         }
         catch (Exception ex)
@@ -338,8 +331,8 @@ public partial class DataAccess
         string? errorMessage = null;
         try
         {
-            connection = Factory.CreateConnection();
-            connection!.ConnectionString = ConnectionString;
+            connection = _dbProviderFactory.CreateConnection();
+            connection!.ConnectionString = _connectionString;
             await connection.OpenAsync(cancellationToken);
             result = true;
         }
@@ -373,7 +366,7 @@ public partial class DataAccess
     public async Task<bool> ExecuteBatchAsync(string script, CancellationToken cancellationToken = default)
     {
         string markpar = "GO";
-        if (ConnectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
+        if (_connectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
         {
             markpar = "/";
         }
@@ -412,7 +405,7 @@ public partial class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
             using (dbCommand.Connection)
             {
                 using (var reader =

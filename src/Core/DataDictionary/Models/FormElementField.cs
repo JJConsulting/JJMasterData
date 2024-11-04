@@ -38,6 +38,7 @@ public class FormElementField : ElementField
     [JsonProperty("visibleExpression")]
     [Display(Name = "Visible Expression")]
     [SyncExpression]
+    [Required]
     public string VisibleExpression { get; set; }
 
     /// <remarks>
@@ -46,6 +47,7 @@ public class FormElementField : ElementField
     [JsonProperty("enableExpression")]
     [Display(Name = "Enable Expression")]
     [SyncExpression]
+    [Required]
     public string EnableExpression { get; set; }
 
     /// <summary>
@@ -190,7 +192,7 @@ public class FormElementField : ElementField
     public bool EncodeHtml { get; set; } = true;
 
     /// <summary>
-    /// The field will be disabled but the value send to the server
+    /// The field will be disabled but the value send to the server.
     /// </summary>
     [JsonIgnore]
     public string? ReadOnlyExpression { get; set; }

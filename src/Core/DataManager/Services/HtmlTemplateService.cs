@@ -1,21 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Fluid;
-using Fluid.Values;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+
+using static JJMasterData.Core.DataManager.Services.HtmlTemplateFunctions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -68,72 +67,21 @@ public class HtmlTemplateService(
         return html;
     }
 
-    public async ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
+    public ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
     {
         if (!fluidParser.TryParse(templateString, out var template, out var error))
         {
-            return error;
+            return new(error);
         }
 
         var context = new TemplateContext(values);
+        
+        context.SetValue("isNullOrWhiteSpace", IsNullOrWhiteSpace);
+        context.SetValue("isNullOrEmpty",IsNullOrEmpty);
+        context.SetValue("substring", Substring);
+        context.SetValue("formatDate", FormatDate);
+        context.SetValue("localize", GetLocalizerFunction(stringLocalizer));
 
-        var localize = new FunctionValue((args, _) =>
-        {
-            var firstArg = args.At(0).ToStringValue();
-            var localizerArgs = args.Values.Skip(1).Select(v => v.ToStringValue()).ToArray();
-
-            var localizedString = stringLocalizer[firstArg, localizerArgs.ToArray()];
-
-            return new ValueTask<FluidValue>(new StringValue(localizedString));
-        });
-
-        context.SetValue("isNullOrWhiteSpace", new FunctionValue(IsNullOrWhiteSpace));
-        context.SetValue("isNullOrEmpty", new FunctionValue(IsNullOrEmpty));
-        context.SetValue("substring", new FunctionValue(Substring));
-        context.SetValue("localize", localize);
-
-        return await template.RenderAsync(context);
-    }
-
-    private static BooleanValue IsNullOrEmpty(FunctionArguments args, TemplateContext _)
-    {
-        var str = args.At(0).ToStringValue();
-
-        return BooleanValue.Create(string.IsNullOrEmpty(str));
-    }
-    
-    private static BooleanValue IsNullOrWhiteSpace(FunctionArguments args, TemplateContext _)
-    {
-        var str = args.At(0).ToStringValue();
-
-        return BooleanValue.Create(string.IsNullOrWhiteSpace(str));
-    }
-    
-    private static StringValue Substring(FunctionArguments args, TemplateContext _)
-    {
-        if (args.Count < 2)
-        {
-            return new StringValue("Error: Not enough arguments");
-        }
-
-        var str = args.At(0).ToObjectValue().ToString()!;
-        if (!int.TryParse(args.At(1).ToStringValue(), out var startIndex))
-        {
-            return new StringValue("Error: Invalid start index");
-        }
-
-        int length = 0;
-
-        if (args.Count > 2 && !int.TryParse(args.At(2).ToStringValue(), out length))
-        {
-            return new StringValue("Error: Invalid length");
-        }
-
-        // If length is not provided, use the length of the remaining string from the start index
-        var substring = args.Count > 2
-            ? str.Substring(startIndex, length)
-            : str.Substring(startIndex);
-
-        return new StringValue(substring);
+        return template.RenderAsync(context);
     }
 }

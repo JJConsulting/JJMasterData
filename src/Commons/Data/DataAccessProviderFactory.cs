@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using System.Data.Common;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
@@ -9,26 +8,6 @@ namespace JJMasterData.Commons.Data;
 
 public static class DataAccessProviderFactory
 {
-    private static DataAccessProvider GetDataAccessProviderFromString(string description)
-    {
-        foreach(var field in typeof(DataAccessProvider).GetFields())
-        {
-            if (Attribute.GetCustomAttribute(field,
-                    typeof(DescriptionAttribute)) is DescriptionAttribute attribute)
-            {
-                if (attribute.Description == description)
-                    return (DataAccessProvider)field.GetValue(null);
-            }
-            else
-            {
-                if (field.Name == description)
-                    return (DataAccessProvider)field.GetValue(null);
-            }
-        }
-        
-        return default;
-    }
-
     private static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
     {
         var instance = ReflectionUtils.GetStaticProperty(dbProviderFactoryTypename, "Instance");
@@ -65,11 +44,4 @@ public static class DataAccessProviderFactory
                 throw new NotSupportedException($"Not supported {type}");
         }
     }
-    
-    public static DbProviderFactory GetDbProviderFactory(string providerName)
-    {
-        var type = GetDataAccessProviderFromString(providerName);
-        return GetDbProviderFactory(type);
-    }
-
 }

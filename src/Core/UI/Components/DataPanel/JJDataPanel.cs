@@ -282,7 +282,9 @@ public class JJDataPanel(
 
     private void AppendHiddenInputs(HtmlBuilder html)
     {
-        if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
+        var containsPkErrors = FormElement.Fields.Any(field => Errors.ContainsKey(field.Name));
+        
+        if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues && !containsPkErrors)
             html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
         
         html.AppendHiddenInput($"data-panel-state-{Name}", ((int)PageState).ToString());
@@ -291,7 +293,7 @@ public class JJDataPanel(
         if (SecretValues?.Count > 0)
             html.AppendHiddenInput($"data-panel-secret-values-{Name}", EncryptionService.EncryptObject(SecretValues));
     }
-
+    
     private string GetPkHiddenInput()
     {
         var pkValues = DataHelper.ParsePkValues(FormElement, Values, '|');

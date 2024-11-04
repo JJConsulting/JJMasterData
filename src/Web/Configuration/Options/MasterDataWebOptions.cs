@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using JJMasterData.Core.Configuration.Options;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace JJMasterData.Web.Configuration.Options;
@@ -33,9 +32,6 @@ public sealed class MasterDataWebOptions
     public string? CustomBootstrapPath { get; set; }
     
     public bool SupportNetFramework { get; set; }
-    
-    [Display(Name = "Use Advanced Mode At Expressions")]
-    public bool UseAdvancedModeAtExpressions { get; set; }
     
     /// <summary>
     /// Custom scripts to be added at _MasterDataScripts. The paths are relative.

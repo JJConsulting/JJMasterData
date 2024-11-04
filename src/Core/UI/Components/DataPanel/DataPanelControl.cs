@@ -266,7 +266,6 @@ internal sealed class DataPanelControl
                 col.WithCssClass(fieldClass);
                 col.Append(IsViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value));
             })!;
-            
         }
 
         return html;
@@ -334,9 +333,12 @@ internal sealed class DataPanelControl
         if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
             control.CssClass = "is-invalid";
 
-        if (field.AutoPostBack && !IsGridViewFilter && PageState is PageState.Insert or PageState.Update or PageState.Filter)
+        if (field.AutoPostBack && !IsGridViewFilter &&
+            PageState is PageState.Insert or PageState.Update or PageState.Filter)
+        {
             control.SetAttr("onchange", GetScriptReload(field));
-
+        }
+        
         if(control is JJTextGroup textGroup && PageState is PageState.View)
             foreach (var textGroupAction in textGroup.Actions)
                 textGroupAction.Enabled = false;

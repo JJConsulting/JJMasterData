@@ -1,10 +1,10 @@
-﻿using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity.Models;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Data.Entity.Models;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 

@@ -14,7 +14,7 @@ internal sealed class DbLoggerBackgroundService(
     IServiceProvider serviceProvider)
     : LoggerBackgroundService<DbLoggerBuffer>(loggerBuffer)
 {
-    private bool TableExists { get; set; }
+    private bool _tableExists;
 
     protected override async Task LogAsync(LogMessage entry, CancellationToken cancellationToken)
     {
@@ -24,14 +24,14 @@ internal sealed class DbLoggerBackgroundService(
 
         using var scope = serviceProvider.CreateScope();
         var entityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
-        if (!TableExists)
+        if (!_tableExists)
         {
             if (!await entityRepository.TableExistsAsync(options.TableName, options.ConnectionStringId))
             {
                 await entityRepository.CreateDataModelAsync(element,[]);
             }
 
-            TableExists = true;
+            _tableExists = true;
         }
     
         await entityRepository.InsertAsync(element, dbValues);
@@ -47,5 +47,4 @@ internal sealed class DbLoggerBackgroundService(
             [options.MessageColumnName] = entry.Message,
         };
     }
-
 }
