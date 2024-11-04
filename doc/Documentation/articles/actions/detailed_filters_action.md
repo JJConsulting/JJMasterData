@@ -2,8 +2,6 @@
 
 The *Detailed Filters* action will be used to search for information registered in the data table.
 
-The *Detailed Filters* action can be found in Actions - Grid Toolbar.
-
 #### Filter Action
 
 - Show as Collapse: Allows the filter to be displayed as a collapse, making it possible to expand and minimize the page filters.
@@ -18,6 +16,12 @@ Other fields can be added to the filter. It is necessary to edit the *Filter Mod
 
 ![](../../media/Action_detailedFilters_example_2.png)
 
-General and advanced settings:
+#### About Grid Toolbar
+
+The *Detailed Filter* action can only be applied to the *Grid Toolbar*.
+
+[!include[expressions](grid_toolbar_overview_action.md)]
+
+#### About General and Advanced settings
 
 [!include[expressions](overview_action.md)]

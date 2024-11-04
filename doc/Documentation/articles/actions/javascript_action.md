@@ -13,5 +13,3 @@ alert("Alert displayed")
 ![](../../media/Action_JavaScript_GridToolbar.png)
 
 [!include[expressions](overview_action.md)]
-
-![](../../media/Action_JavaScript_GridToolbar.png)

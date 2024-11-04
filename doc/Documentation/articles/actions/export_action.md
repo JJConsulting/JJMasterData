@@ -1,8 +1,6 @@
 ## Export Action
 
-The *Export* action can be found in Actions - Grid Toolbar.
-
-#### Export Action
+#### Tab Export Action
 
 - Sql Command before and after starting the process: SQL command can be configured to change the value of a table column, for example, setting a TRUE value for a column if the data has already been exported.
 
@@ -22,7 +20,13 @@ The *Export* action can be found in Actions - Grid Toolbar.
 
 - Export first line as title: This option allows you to modify the export file, making it possible to export the title of each column along with the information, or just the information without the titles.
 
-General and advanced settings:
+#### About Grid Toolbar
+
+The *Export* action can only be applied to the *Grid Toolbar*.
+
+[!include[expressions](grid_toolbar_overview_action.md)]
+
+#### About General and Advanced settings
 
 [!include[expressions](overview_action.md)]
 
