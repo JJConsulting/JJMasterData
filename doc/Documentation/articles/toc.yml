@@ -40,7 +40,6 @@
     - name: Detailed Filters
       href: actions/detailed_filters_action.md      
     - name: Audit Log
-<<<<<<< HEAD
       href: actions/audit_log_action.md      
     - name: Save
       href: actions/save_action.md      
@@ -48,9 +47,12 @@
       href: actions/cancel_action.md      
     - name: Back
       href: actions/back_action.md
-=======
-      href: actions/audit_log_action.md
->>>>>>> main
+  - name: Components
+    items:
+    - name: Components Overview
+      href: components/overview_components.md
+    - name: Text Components
+      href: components/text_components.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
