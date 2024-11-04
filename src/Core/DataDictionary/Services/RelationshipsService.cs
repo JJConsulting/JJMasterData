@@ -14,7 +14,7 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         PanelService panelService)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     public async Task SaveElementRelationship(ElementRelationship elementRelationship, int? id, string elementName)
     {

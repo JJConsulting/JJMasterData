@@ -28,7 +28,7 @@ public class ElementService(
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
         IMasterDataUrlHelper urlHelper)
-    : BaseService(validationDictionary, dataDictionaryRepository, stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
     #region Add Dictionary
 
@@ -262,5 +262,10 @@ public class ElementService(
     public Task CreateStructureIfNotExistsAsync()
     {
         return DataDictionaryRepository.CreateStructureIfNotExistsAsync();
+    }
+
+    public Task DeleteAsync(string? elementName)
+    {
+        return DataDictionaryRepository.DeleteAsync(elementName);
     }
 }

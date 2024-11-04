@@ -7,7 +7,8 @@ public enum InputType
     Password = 1,
     Number = 2,
     Tel = 3,
-    Currency = 4
+    Currency = 4,
+    Percentage = 5
 }
 
 public static class InputTypeExtensions
@@ -20,7 +21,8 @@ public static class InputTypeExtensions
             InputType.Password => "password",
             InputType.Number => "number",
             InputType.Tel => "tel",
-            InputType.Currency => "currency",
+            InputType.Currency => "number",
+            InputType.Percentage => "number",
             _ => "text"
         };
     }

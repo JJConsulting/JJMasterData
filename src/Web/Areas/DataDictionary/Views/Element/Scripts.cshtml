@@ -187,7 +187,7 @@
     }
     
     function copyContent(obj) {
-        const objName = document.querySelector(".tab-content .active").getAttribute("id");
+        const objName = obj.closest(".tab-content").querySelector(".active").getAttribute("id");
         let textVal = document.querySelector("#" + objName + " pre").textContent.trim();
         copyText(textVal);
         displayAsCopied(obj);

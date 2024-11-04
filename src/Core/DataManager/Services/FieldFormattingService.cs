@@ -34,6 +34,14 @@ public class FieldFormattingService(
         string stringValue;
         switch (field.Component)
         {
+            case FormComponent.Percentage:
+                stringValue = GetNumericValueAsString(field, value);
+                if (!string.IsNullOrEmpty(stringValue))
+                {
+                    stringValue += "%";
+                }
+                
+                break;
             case FormComponent.Number:
             case FormComponent.Slider:
                 stringValue = GetNumericValueAsString(field, value);

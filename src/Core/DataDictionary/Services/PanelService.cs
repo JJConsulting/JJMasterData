@@ -15,7 +15,7 @@ public class PanelService(IValidationDictionary validationDictionary,
         IEnumerable<IExpressionProvider> expressionProviders,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
     private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
 

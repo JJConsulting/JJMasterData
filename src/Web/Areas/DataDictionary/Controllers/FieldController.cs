@@ -95,7 +95,7 @@ public class FieldController(FieldService fieldService)
     [HttpPost]
     public async Task<IActionResult> Copy(string elementName, FormElementField? field)
     {
-        var dictionary = await fieldService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await fieldService.GetFormElementAsync(elementName);
         await fieldService.CopyFieldAsync(dictionary, field);
         if (!ModelState.IsValid)
             ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
@@ -108,7 +108,7 @@ public class FieldController(FieldService fieldService)
     public IActionResult AddDataItem(string elementName, FormElementField field, int qtdRowsToAdd)
     {
         field.DataItem ??= new FormElementDataItem();
-        field.DataItem.Items ??= new List<DataItemValue>();
+        field.DataItem.Items ??= [];
         for (int i = 0; i < qtdRowsToAdd; i++)
         {
             var item = new DataItemValue
@@ -208,7 +208,7 @@ public class FieldController(FieldService fieldService)
         ViewBag.MenuId = "Fields";
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(DataDictionaryServiceBase.GetAutocompleteHintsList(formElement));
 
         // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
         // Under normal circumstances, there is no need to increase the size of the HTTP request.

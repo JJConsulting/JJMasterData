@@ -39,6 +39,8 @@ public sealed class MasterDataStringLocalizer(
 	IOptionsMonitor<MasterDataCommonsOptions> options)
 	: IStringLocalizer
 {
+	private static readonly LocalizedString Empty = new(string.Empty, string.Empty, resourceNotFound:true);
+	
 	public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
 	{
 		return GetAllStringsAsDictionary().Select(e => new LocalizedString(e.Key, e.Value));
@@ -48,11 +50,11 @@ public sealed class MasterDataStringLocalizer(
 	{
 		get
 		{
-			if (name == null)
-				return new LocalizedString(string.Empty, string.Empty, true);
+			if (string.IsNullOrEmpty(name))
+				return Empty;
 
-			var value = GetString(name);
-			return new LocalizedString(name, value, false);
+			var value = GetString(name!);
+			return new LocalizedString(name!, value, false);
 		}
 	}
 
@@ -60,18 +62,15 @@ public sealed class MasterDataStringLocalizer(
 	{
 		get
 		{
-			if (name == null)
-				return new LocalizedString(string.Empty, string.Empty);
+			if (string.IsNullOrEmpty(name))
+				return Empty;
 
-			return new LocalizedString(name, string.Format(this[name], arguments));
+			return new LocalizedString(name!, string.Format(this[name], arguments));
 		}
 	}
 	
 	private string GetString(string key)
 	{
-		if (string.IsNullOrEmpty(key))
-			return key;
-
 		var culture = Thread.CurrentThread.CurrentCulture.Name;
 		var cacheKey = $"{resourceName}_localization_strings_{culture}";
 
@@ -111,12 +110,10 @@ public sealed class MasterDataStringLocalizer(
 				stringLocalizerValues[dbValue.Key] = dbValue.Value?.ToString() ?? string.Empty;
 			}
 		}
-
-
+		
 		return stringLocalizerValues.ToFrozenDictionary();
 	}
-
-
+	
 	private Dictionary<string, string> GetStringLocalizerValues()
 	{
 		try
