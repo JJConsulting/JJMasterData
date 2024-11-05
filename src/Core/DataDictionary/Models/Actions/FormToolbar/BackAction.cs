@@ -10,7 +10,7 @@ public sealed class BackAction : FormToolbarAction, ISubmittableAction
 {
     public const string ActionName = "back";
 
-    public bool IsSubmit { get; set; } = true;
+    public bool IsSubmit { get; set; }
     
     public BackAction()
     {
