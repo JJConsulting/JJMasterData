@@ -268,7 +268,7 @@ public partial class DataAccess
 
         return result;
     }
-
+    
     public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         var dictionaryList = new List<Dictionary<string, object?>>(); 

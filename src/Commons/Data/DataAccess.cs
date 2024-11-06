@@ -22,6 +22,7 @@ namespace JJMasterData.Commons.Data;
 /// <example>
 /// [!include[Example](../../../doc/Documentation/articles/usages/dataaccess.md)]
 /// </example>
+[PublicAPI]
 public partial class DataAccess
 {
     private readonly string _connectionString;
@@ -84,7 +85,7 @@ public partial class DataAccess
     {
         return GetDataTable(new DataAccessCommand(sql));
     }
-
+    
     /// <summary>
     ///  Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// </summary>
@@ -666,8 +667,8 @@ public partial class DataAccess
 
         return command;
     }
-
-  public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
+    
+    public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
     {
         var dictionaryList = new List<Dictionary<string, object?>>();
 
