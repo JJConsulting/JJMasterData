@@ -1385,7 +1385,7 @@ class GridViewHelper {
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
+        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}, select[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
