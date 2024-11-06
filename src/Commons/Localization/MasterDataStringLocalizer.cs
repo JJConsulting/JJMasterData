@@ -142,9 +142,8 @@ public sealed class MasterDataStringLocalizer(
 		{
 			{ "cultureCode", culture }
 		};
-		var result =
-			entityRepository.GetDictionaryListResult(element, new EntityParameters { Filters = filter }, false);
-		foreach (var row in result.Data)
+		var result = entityRepository.GetDictionaryList(element, new EntityParameters { Filters = filter });
+		foreach (var row in result)
 		{
 			values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());
 		}

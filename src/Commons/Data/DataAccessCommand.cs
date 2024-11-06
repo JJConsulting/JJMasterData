@@ -56,14 +56,20 @@ public class DataAccessCommand
     public static DataAccessCommand FromFormattableString(FormattableString formattableString)
     {
         var parameters = new List<DataAccessParameter>();
-        var arguments = new object[formattableString.ArgumentCount];
-        for (var i = 0; i < formattableString.ArgumentCount; i++)
+        
+        var argCount = formattableString.ArgumentCount;
+        
+        var arguments = new object[argCount];
+        
+        for (var i = 0; i < argCount; i++)
         {
             var paramName = $"@p{i}";
             arguments[i] = paramName;
             parameters.Add(new DataAccessParameter(paramName, formattableString.GetArgument(i), DbType.Object));
         }
+        
         var sql = string.Format(formattableString.Format, arguments);
+        
         return new DataAccessCommand(sql, parameters);
     }
     
