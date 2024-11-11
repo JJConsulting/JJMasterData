@@ -52,7 +52,9 @@
     - name: Components Overview
       href: components/overview_components.md
     - name: Text Components
-      href: components/text_components.md
+      href: components/text_components.md      
+    - name: Numeric Components
+      href: components/numeric_components.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
