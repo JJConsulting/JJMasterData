@@ -1,10 +1,7 @@
 ## Options Action
 
-<<<<<<< HEAD
-=======
 The *Options* action can be found in Actions - Grid Toolbar.
 
->>>>>>> main
 #### Possible changes
 
 The *Options* action allows changes to the display details of the table.
