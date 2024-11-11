@@ -54,7 +54,10 @@
     - name: Text Components
       href: components/text_components.md      
     - name: Numeric Components
-      href: components/numeric_components.md
+      href: components/numeric_components.md      
+    - name: Calendar Components
+      href: components/calendar_components.md
+
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
