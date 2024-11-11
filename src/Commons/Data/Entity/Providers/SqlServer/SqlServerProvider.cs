@@ -234,8 +234,8 @@ public class SqlServerProvider(
                 string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
             FieldType.UniqueIdentifier => TryGetGuid(value),
             FieldType.Bit => StringManager.ParseBool(values[field.Name]),
-            FieldType.Varchar or FieldType.NVarchar => value.ToString(),
-            _ => value
+            FieldType.Varchar or FieldType.NVarchar => value.ToString()!,
+            _ => value!
         };
     }
 
