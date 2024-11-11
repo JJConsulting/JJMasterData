@@ -5,21 +5,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;
 
+[PublicAPI]
 [DebuggerDisplay("Sql = {Sql}, Type = {Type}")]
 public class DataAccessCommand
 {
-    [Obsolete("Please use Type property")]
-    [JsonIgnore]
-    public CommandType CmdType
-    {
-        get => Type;
-        set => Type = value;
-    }
-    
     [JsonProperty("cmdType")]
     public CommandType Type { get; set; }
 
@@ -59,10 +53,35 @@ public class DataAccessCommand
         Parameters.Add(new DataAccessParameter(name, value, dbType));
     }
 
+    public static DataAccessCommand FromFormattableString(FormattableString formattableString)
+    {
+        var parameters = new List<DataAccessParameter>();
+        
+        var argCount = formattableString.ArgumentCount;
+        
+        var arguments = new object[argCount];
+        
+        for (var i = 0; i < argCount; i++)
+        {
+            var paramName = $"@p{i}";
+            arguments[i] = paramName;
+            parameters.Add(new DataAccessParameter(paramName, formattableString.GetArgument(i), DbType.Object));
+        }
+        
+        var sql = string.Format(formattableString.Format, arguments);
+        
+        return new DataAccessCommand(sql, parameters);
+    }
+    
     public DataAccessCommand DeepCopy()
     {
         var copy = (DataAccessCommand)MemberwiseClone();
         copy.Parameters = Parameters.ConvertAll(p => p.DeepCopy());
         return copy;
+    }
+    
+    public static explicit operator DataAccessCommand(FormattableString query)
+    {
+        return FromFormattableString(query);
     }
 }

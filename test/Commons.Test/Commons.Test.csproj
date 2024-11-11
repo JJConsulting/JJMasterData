@@ -7,7 +7,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
 
     <RootNamespace>JJMasterData.Commons.Test</RootNamespace>
     <AssemblyName>JJMasterData.Commons.Test</AssemblyName>
