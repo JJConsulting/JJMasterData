@@ -397,7 +397,7 @@ public partial class DataAccess
                 {
                     while (dr.Read())
                     {
-                        retCollection = new Hashtable();
+                        retCollection = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
                         int nQtd = 0;
 
                         while (nQtd < dr.FieldCount)
