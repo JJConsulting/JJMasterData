@@ -50,9 +50,13 @@
   - name: Components
     items:
     - name: Components Overview
-      href: components/overview_components.md
+      href: components/overview_component.md
     - name: Text Components
-      href: components/text_components.md
+      href: components/text_component.md      
+    - name: Numeric Components
+      href: components/numeric_component.md      
+    - name: Calendar Components
+      href: components/calendar_component.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
