@@ -268,7 +268,7 @@ public partial class DataAccess
 
         return result;
     }
-
+    
     public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         var dictionaryList = new List<Dictionary<string, object?>>(); 
@@ -281,9 +281,12 @@ public partial class DataAccess
             using var connection = dbCommand.Connection;
             using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
-                var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                    .Select(i => dataReader.GetName(i))
-                    .ToList();
+                List<string> columnNames = [];
+                
+                for (var i = 0; i < dataReader.FieldCount; i++)
+                {
+                    columnNames.Add(dataReader.GetName(i));
+                }
 
                 while (await dataReader.ReadAsync(cancellationToken))
                 {
