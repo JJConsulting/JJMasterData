@@ -56,7 +56,9 @@
     - name: Numeric Components
       href: components/numeric_component.md      
     - name: Calendar Components
-      href: components/calendar_component.md
+      href: components/calendar_component.md      
+    - name: Boolean Components
+      href: components/boolean_component.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
