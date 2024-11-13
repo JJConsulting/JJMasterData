@@ -14,4 +14,4 @@ The Check Box allows the user to check or uncheck an option, indicating a true (
 
 #### Additional Settings
 
-- Layout: Allows changing the appearance of the button created for *CheckBox*, *Switch*, and *Button*.
+- **Layout**: Allows changing the appearance of the button created for *CheckBox*, *Switch*, and *Button*.
