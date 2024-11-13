@@ -1385,7 +1385,7 @@ class GridViewHelper {
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
+        const fieldId = document.querySelector(`input[gridviewrowindex="${gridViewRowIndex}"].${fieldName}, select[gridviewrowindex="${gridViewRowIndex}"].${fieldName}`).id;
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
@@ -1711,12 +1711,12 @@ class MessageBox {
     static reset() {
         MessageBox.hide();
     }
-    static loadHtml(hasTitle, iconType, iconSize) {
+    static loadHtml(hasTitle, iconType, iconSize, allowClose) {
         if ($(MessageBox.jQueryModalId).length) {
             $(MessageBox.jQueryModalId).remove();
         }
         let html = "";
-        html += "<div id=\"site-modal\" tabindex=\"-1\" data-bs-backdrop='static' data-bs-keyboard='false' class=\"modal fade\" role=\"dialog\">\r\n";
+        html += `<div id=\"site-modal\" tabindex=\"-1\" ${allowClose ? "data-bs-backdrop='static' data-bs-keyboard='false'" : ""} class=\"modal fade\" role=\"dialog\">\r\n`;
         html += "  <div class=\"modal-dialog";
         if (iconSize == TMessageSize.LARGE)
             html += " modal-lg";
@@ -1777,10 +1777,6 @@ class MessageBox {
             html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
         }
-        else if (bootstrapVersion == 4) {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
-        }
         else {
             html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
@@ -1793,7 +1789,7 @@ class MessageBox {
     }
     static show(title, description, iconType, sizeType, btn1Label, btn1Callback, btn2Label, btn2Callback) {
         MessageBox.reset();
-        MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT);
+        MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT, btn2Label != null || btn2Callback != null);
         MessageBox.setTitle(title);
         MessageBox.setContent(description);
         if (btn1Label === undefined) {

@@ -15,7 +15,7 @@
     Layout = !ViewBag.IsForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
-@{
+@functions{
     string GetFieldDataTypeText(FormElementField field)
     {
         var sql = new StringBuilder();
