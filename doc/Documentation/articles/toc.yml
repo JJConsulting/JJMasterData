@@ -47,24 +47,6 @@
       href: actions/cancel_action.md      
     - name: Back
       href: actions/back_action.md
-  - name: Components
-    items:
-    - name: Components Overview
-      href: components/overview_component.md
-    - name: Text Components
-      href: components/text_component.md      
-    - name: Numeric Components
-      href: components/numeric_component.md      
-    - name: Calendar Components
-      href: components/calendar_component.md      
-    - name: Boolean Components
-      href: components/boolean_component.md
-    - name: Data Item Components
-      href: components/dataitem_component.md
-    - name: Mask Component
-      href: components/mask_component.md
-  - name: Component Factories
-    href: component_factories.md
   - name: Custom Rules
     href: custom_rules.md
   - name: TagHelpers
@@ -101,7 +83,27 @@
     href: tutorials/search_id.md
 - name: Components
   href: components/intro.md
+  - name: Data Dictionary
+    items:
+    - name: Components Overview
+      href: components/data_dictionary/overview_component.md
+    - name: Text Components
+      href: components/data_dictionary/text_component.md      
+    - name: Numeric Components
+      href: components/data_dictionary/numeric_component.md      
+    - name: Calendar Components
+      href: components/data_dictionary/calendar_component.md      
+    - name: Boolean Components
+      href: components/data_dictionary/boolean_component.md
+    - name: Data Item Components
+      href: components/data_dictionary/dataitem_component.md
+    - name: Mask Component
+      href: components/data_dictionary/mask_component.md
+    - name: File Component
+      href: components/data_dictionary/file_component.md
   items:
+  - name: Factories Component
+    href: components/component_factories.md
   - name: Alert
     href: components/alert.md
   - name: LinkButton
