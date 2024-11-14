@@ -2,31 +2,31 @@
 
 This option will be used for values in general. There will be an explanation for every option inside *Numeric Component*.
 
-To learn how to access the *Components* field : [Overview Component ](../components/overview_component.md)
+To learn how to access the *Components* field : [Overview Component ](../../components/data_dictionary/overview_component.md)
 
 #### Currency
 
 The *Currency* option applies a currency format to the value entered in the field.
 
-![](../../media/Component_numeric_currency_example.png)
+![](../../../media/Component_numeric_currency_example.png)
 
 #### Number
 
 The *Number* option displays the value in its standard numeric format.
 
-![](../../media/Component_numeric_number_example.png)
+![](../../../media/Component_numeric_number_example.png)
 
 #### Percentage
 
 The *Percentage* option sets a percentage format for the field's value.
 
-![](../../media/Component_numeric_percentage_example.png)
+![](../../../media/Component_numeric_percentage_example.png)
 
 #### Slider
 
 The *Slider* option allows for the selection of a numeric value using a slider bar. The value displayed in the column will match the value in the field beside the *Slider Component*.
 
-![](../../media/Component_numeric_slider_example.png)
+![](../../../media/Component_numeric_slider_example.png)
 
 #### Additional Settings
 

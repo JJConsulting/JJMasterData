@@ -2,7 +2,7 @@
 
 This option will be used for values in general. There will be an explanation for every option inside *Mask Component*.
 
-To learn how to access the *Components* field : [Overview Component ](../components/overview_component.md)
+To learn how to access the *Components* field : [Overview Component ](../../components/data_dictionary/overview_component.md)
 
 #### Masks Available
 

@@ -2,7 +2,7 @@
 
 This option will be used for values in general. There will be an explanation for every option inside *File Component*.
 
-To learn how to access the *Components* field : [Overview Component ](../components/overview_component.md)
+To learn how to access the *Components* field : [Overview Component ](../../components/data_dictionary/overview_component.md)
 
 #### Uploading the File
 
@@ -10,11 +10,11 @@ This component will be used to configure file uploads.
 
 The image below shows how the file upload option will look once configured.
 
-![](../../media/component_file_example_1.png)
+![](../../../media/component_file_example_1.png)
 
 Clicking on "Manage File" will open a new tab, allowing you to attach the desired file.
 
-![](../../media/component_file_example_2.png)
+![](../../../media/component_file_example_2.png)
 
 
 #### Additional Settings - Data File

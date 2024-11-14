@@ -6,4 +6,4 @@ You can access the *Component* field through the tab Fields - Component - Compon
 
 Information can be individually configured for each column in the table.
 
-![](../../media/component_overview_example_1.png)
+![](../../../media/component_overview_example_1.png)
