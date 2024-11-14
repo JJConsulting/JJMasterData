@@ -22,6 +22,7 @@ namespace JJMasterData.Commons.Data;
 /// <example>
 /// [!include[Example](../../../doc/Documentation/articles/usages/dataaccess.md)]
 /// </example>
+[PublicAPI]
 public partial class DataAccess
 {
     private readonly string _connectionString;
@@ -84,7 +85,7 @@ public partial class DataAccess
     {
         return GetDataTable(new DataAccessCommand(sql));
     }
-
+    
     /// <summary>
     ///  Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// </summary>
@@ -396,7 +397,7 @@ public partial class DataAccess
                 {
                     while (dr.Read())
                     {
-                        retCollection = new Hashtable();
+                        retCollection = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
                         int nQtd = 0;
 
                         while (nQtd < dr.FieldCount)
@@ -666,8 +667,8 @@ public partial class DataAccess
 
         return command;
     }
-
-  public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
+    
+    public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
     {
         var dictionaryList = new List<Dictionary<string, object?>>();
 
@@ -679,9 +680,11 @@ public partial class DataAccess
             {
                 using (var dataReader =  dbCommand.ExecuteReader())
                 {
-                    var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                        .Select(i => dataReader.GetName(i))
-                        .ToList();
+                    List<string> columnNames = [];
+                    for (var i = 0; i < dataReader.FieldCount; i++)
+                    {
+                        columnNames.Add(dataReader.GetName(i));
+                    }
 
                     while ( dataReader.Read())
                     {

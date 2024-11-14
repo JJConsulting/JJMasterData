@@ -6,16 +6,14 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryFilter
 {
-    public string? Name { get;private set; }
-    public IList<string>? ContainsTableName { get;private set; }
-    public DateTime? LastModifiedFrom { get;private set; }
-    public DateTime? LastModifiedTo { get;private  set; }
-    public string? Json { get; private set; }
+    public string? Name { get; set; }
+    public IList<string>? ContainsTableName { get; set; }
+    public DateTime? LastModifiedFrom { get; set; }
+    public DateTime? LastModifiedTo { get; set; }
+    public string? Json { get; set; }
     
-    
-    private DataDictionaryFilter()
+    public DataDictionaryFilter()
     {
-        
     }
     
     public static DataDictionaryFilter FromDictionary(Dictionary<string, object?>filter)
