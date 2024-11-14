@@ -61,6 +61,8 @@
       href: components/boolean_component.md
     - name: Data Item Components
       href: components/dataitem_component.md
+    - name: Mask Component
+      href: components/mask_component.md
   - name: Component Factories
     href: component_factories.md
   - name: Custom Rules
