@@ -3,7 +3,7 @@
 public sealed class SortAction : GridToolbarAction
 {
     public const string ActionName = "sort";
-    public override bool IsUserCreated => false;
+    public override bool IsCustomAction => false;
     public SortAction()
     {
         Name = ActionName;

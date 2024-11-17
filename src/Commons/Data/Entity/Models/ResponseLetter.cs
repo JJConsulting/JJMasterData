@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
 public class ResponseLetter
 {
-    [JsonProperty("status")]
+    [JsonPropertyName("status")]
     public int? Status { get; set; }
 
-    [JsonProperty("message")]
+    [JsonPropertyName("message")]
     public string Message { get; set; }
 
-    [JsonProperty("validationList")]
+    [JsonPropertyName("validationList")]
     public Dictionary<string, string> ValidationList { get; set; }
 
-    [JsonProperty("data")]
+    [JsonPropertyName("data")]
     public Dictionary<string, object>  Data { get; set; }
 
     public ResponseLetter() { }

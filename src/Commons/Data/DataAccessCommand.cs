@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Commons.Data;
 
@@ -14,14 +15,14 @@ namespace JJMasterData.Commons.Data;
 [DebuggerDisplay("Sql = {Sql}, Type = {Type}")]
 public class DataAccessCommand
 {
-    [JsonProperty("cmdType")]
+    [JsonPropertyName("cmdType")]
     public CommandType Type { get; set; }
 
-    [JsonProperty("sql")]
+    [JsonPropertyName("sql")]
     [Display(Name = "Sql Command")]
     public string Sql { get; set; }
 
-    [JsonProperty("parameters")]
+    [JsonPropertyName("parameters")]
     public List<DataAccessParameter> Parameters { get; private set; }
     
     public DataAccessCommand()

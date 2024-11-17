@@ -181,9 +181,9 @@ public class ActionScripts(
     {
         var formStateData = actionContext.FormStateData;
 
-        var userCreatedAction = actionContext.Action as UserCreatedAction;
+        var action = actionContext.Action;
 
-        return userCreatedAction switch
+        return action switch
         {
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetSqlCommandScript(actionContext, actionSource),

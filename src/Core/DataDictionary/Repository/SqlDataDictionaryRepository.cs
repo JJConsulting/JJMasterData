@@ -82,7 +82,7 @@ public class SqlDataDictionaryRepository(
 
         var values =  entityRepository.GetFields(_masterDataElement, filter);
 
-        var model = values.ToModel<DataDictionaryModel>();
+        var model = DataDictionaryModel.FromDictionary(values);
 
         if (model != null)
         {
@@ -106,7 +106,7 @@ public class SqlDataDictionaryRepository(
 
         var values = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
 
-        var model = values.ToModel<DataDictionaryModel>();
+        var model = DataDictionaryModel.FromDictionary(values);
         
         if (model != null)
         {

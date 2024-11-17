@@ -1,8 +1,10 @@
 using System;
 using System.Text;
+using System.Text.Json;
+using System.Xml;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+
 
 
 namespace JJMasterData.Commons.Logging.File;
@@ -93,7 +95,7 @@ internal sealed class FileLogger(
                 }
             case FileLoggerFormatting.Json:
                 log.Append(
-                    JsonConvert.SerializeObject(new
+                    JsonSerializer.Serialize(new
                     {
                         Date = DateTime.Now,
                         Event = eventId.Name,
@@ -101,10 +103,6 @@ internal sealed class FileLogger(
                         Message = formatterMessage,
                         Category = categoryName,
                         exception
-                    }, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        Formatting = Formatting.Indented
                     }));
                 log.AppendLine(",");
                 break;

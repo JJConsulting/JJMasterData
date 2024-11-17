@@ -1,8 +1,9 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -12,7 +13,7 @@ namespace JJMasterData.Core.DataDictionary.Models;
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class FormElementDataItem
 {
-    [JsonProperty("dataItemType")] 
+    [JsonPropertyName("dataItemType")] 
     public DataItemType DataItemType { get; set; }
 
     /// <summary>
@@ -20,38 +21,38 @@ public class FormElementDataItem
     /// 1) Id;
     /// 2) Description.
     /// </summary>
-    [JsonProperty("command")]
+    [JsonPropertyName("command")]
     public DataAccessCommand? Command { get; set; }
 
-    [JsonProperty("itens")] 
+    [JsonPropertyName("itens")] 
     public List<DataItemValue>? Items { get; set; }
 
     /// <summary>
     /// Relationship with another Element to recover values
     /// </summary>
-    [JsonProperty("elementMap")]
+    [JsonPropertyName("elementMap")]
     public DataElementMap? ElementMap { get; set; }
 
     /// <summary>
     /// Exibir texto (Todos) como primeira opção (Default = NONE)
     /// </summary>
-    [JsonProperty("firstoption")]
+    [JsonPropertyName("firstoption")]
     [Display(Name = "First Option")]
     public FirstOptionMode FirstOption { get; set; } = FirstOptionMode.None;
 
-    [JsonProperty("radioLayout")]
+    [JsonPropertyName("radioLayout")]
     [Display(Name = "Layout")]
     public DataItemRadioLayout? RadioLayout { get; set; }
     
     /// <remarks>
     /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
     /// </remarks>
-    [JsonProperty("enableMultiSelect")]
+    [JsonPropertyName("enableMultiSelect")]
     [Display(Name = "Enable Multi Select")]
     public bool EnableMultiSelect { get; set; }
 
     [Display(Name = "Grid Behavior")]
-    [JsonProperty("gridBehavior")]
+    [JsonPropertyName("gridBehavior")]
     public DataItemGridBehavior GridBehavior { get; set; }
 
     /// <summary>
@@ -62,7 +63,7 @@ public class FormElementDataItem
     /// Para exibir apenas a imagem de status na grid certifique-se a 
     /// propriedade ReplaceTextOnGrid esta configurada para falso.
     /// </remarks>
-    [JsonProperty("showimagelegend")]
+    [JsonPropertyName("showimagelegend")]
     [Display(Name = "Show Icon")]
     public bool ShowIcon { get; set; }
 

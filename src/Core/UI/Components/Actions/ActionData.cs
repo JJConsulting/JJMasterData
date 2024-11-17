@@ -1,38 +1,37 @@
 #nullable enable
 
-using Newtonsoft.Json;
+
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Xml;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal record ActionData
 {
-    [JsonProperty("componentName")]
+    [JsonPropertyName("componentName")]
     public required string ComponentName { get; set; }
     
-    [JsonProperty("actionMap")]
+    [JsonPropertyName("actionMap")]
     public required string EncryptedActionMap { get; set; }
     
-    [JsonProperty("modalTitle")]
+    [JsonPropertyName("modalTitle")]
     public string? ModalTitle { get; set; }
     
-    [JsonProperty("gridViewRouteContext")]
+    [JsonPropertyName("gridViewRouteContext")]
     public string? EncryptedGridViewRouteContext { get; set; }
     
-    [JsonProperty("confirmationMessage")]
+    [JsonPropertyName("confirmationMessage")]
     public string? ConfirmationMessage { get; set; }
 
-    [JsonProperty("isSubmit")]
+    [JsonPropertyName("isSubmit")]
     public bool IsSubmit { get; set; }
 
-    [JsonProperty("isModal")]
+    [JsonPropertyName("isModal")]
     public bool IsModal { get; set; }
 
     public string ToJson()
     {
-        return JsonConvert.SerializeObject(this, new JsonSerializerSettings
-        {
-            Formatting = Formatting.None,
-            NullValueHandling = NullValueHandling.Ignore
-        });
+        return JsonSerializer.Serialize(this);
     }
 }

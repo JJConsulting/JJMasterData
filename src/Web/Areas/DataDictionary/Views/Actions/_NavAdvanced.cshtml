@@ -1,11 +1,13 @@
 ﻿@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model JJMasterData.Core.DataDictionary.Models.Actions.BasicAction
 
 
-@if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserCreated) || Model is AuditLogFormToolbarAction)
+@if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsCustomAction) || Model is AuditLogFormToolbarAction)
 {
     <div class="row">
         <div class="mb-3 col-sm-12 required">

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -10,13 +11,13 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class ElementIndex
 {
-    [JsonProperty("columns")] 
+    [JsonPropertyName("columns")] 
     public List<string> Columns { get; set; }
 
-    [JsonProperty("isunique")] 
+    [JsonPropertyName("isunique")] 
     public bool IsUnique { get; set; }
 
-    [JsonProperty("isclustered")] 
+    [JsonPropertyName("isclustered")] 
     public bool IsClustered { get; set; }
 
     public ElementIndex()

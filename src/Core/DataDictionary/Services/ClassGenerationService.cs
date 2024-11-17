@@ -23,7 +23,7 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
             var propertyType = GetPropertyType(item.DataType, item.IsRequired);
             var property = propertyTemplate.Replace("@PropertyName", propertyName).Replace("@PropertyType", propertyType);
 
-            properties.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
+            properties.AppendLine($"\t[JsonPropertyName( \"{item.Name}\")] ");
             properties.AppendLine($"\t{property}");
             properties.AppendLine("");
 

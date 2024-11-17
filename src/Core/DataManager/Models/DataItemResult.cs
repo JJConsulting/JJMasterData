@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
-using Newtonsoft.Json;
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataManager.Models;
 
@@ -9,15 +10,15 @@ namespace JJMasterData.Core.DataManager.Models;
 /// </summary>
 public class DataItemResult
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public required string Id { get; init; } 
 
-    [JsonProperty("description")]
+    [JsonPropertyName("description")]
     public required string? Description { get; init; } 
     
-    [JsonProperty("icon")] 
+    [JsonPropertyName("icon")] 
     public required string? IconCssClass { get; init; } 
     
-    [JsonProperty("iconColor")] 
+    [JsonPropertyName("iconColor")] 
     public required string? IconColor { get; init; } 
 }

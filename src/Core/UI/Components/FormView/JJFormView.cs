@@ -419,7 +419,7 @@ public class JJFormView : AsyncComponent
         childFormView.RelationValues = childFormView.GetRelationValuesFromForm();
         
         var isInsertSelection = PageState is PageState.Insert &&
-                                GridView.ToolbarActions.InsertAction.ElementNameToSelect ==
+                                GridView.ToolbarActionList.InsertAction.ElementNameToSelect ==
                                 childFormView.FormElement.Name;
 
         childFormView.ShowTitle = isInsertSelection;
@@ -432,8 +432,8 @@ public class JJFormView : AsyncComponent
         if (!isInsertSelection)
             return childFormView;
 
-        childFormView.GridView.GridTableActions.Add(new InsertSelectionAction());
-        childFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
+        childFormView.GridView.GridTableActionList.Add(new InsertSelectionAction());
+        childFormView.GridView.ToolbarActionList.Add(GetInsertSelectionBackAction());
         childFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
 
         return childFormView;
@@ -522,7 +522,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetSaveActionResult()
     {
-        var insertAction = GridView.ToolbarActions.InsertAction;
+        var insertAction = GridView.ToolbarActionList.InsertAction;
         var values = await GetFormValuesAsync();
         
         Dictionary<string, string> errors;
@@ -847,7 +847,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetDefaultResult(Dictionary<string, object?>? formValues = null)
     {
         var containsGridAction = false;
-        if (GridView.GridTableActions.Any(a=> a is InsertSelectionAction))
+        if (GridView.GridTableActionList.Any(a=> a is InsertSelectionAction))
         {
             containsGridAction = !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);
         }
@@ -881,7 +881,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertResult()
     {
-        var insertAction = GridView.ToolbarActions.InsertAction;
+        var insertAction = GridView.ToolbarActionList.InsertAction;
         var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
         var isInsertSelection = !string.IsNullOrEmpty(insertAction.ElementNameToSelect);
         
@@ -948,8 +948,8 @@ public class JJFormView : AsyncComponent
         _insertSelectionFormView.FormElement.ParentName = FormElement.Name;
         _insertSelectionFormView.UserValues = UserValues;
         _insertSelectionFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
-        _insertSelectionFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
-        _insertSelectionFormView.GridView.GridTableActions.Add(new InsertSelectionAction());
+        _insertSelectionFormView.GridView.ToolbarActionList.Add(GetInsertSelectionBackAction());
+        _insertSelectionFormView.GridView.GridTableActionList.Add(new InsertSelectionAction());
         
         return _insertSelectionFormView;
     }
@@ -972,7 +972,7 @@ public class JJFormView : AsyncComponent
         var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
         var html = new HtmlBuilder(HtmlTag.Div);
         
-        var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
+        var childElementName = GridView.ToolbarActionList.InsertAction.ElementNameToSelect;
         var childElement = await _dataDictionaryRepository.GetFormElementAsync(childElementName);
         
         var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
@@ -1132,7 +1132,7 @@ public class JJFormView : AsyncComponent
         DataImportation.UserValues = UserValues;
         DataImportation.ProcessOptions = action.ProcessOptions;
         DataImportation.EnableAuditLog =ExpressionsService.GetBoolValue(
-                GridView.ToolbarActions.AuditLogGridToolbarAction.VisibleExpression, formStateData);
+                GridView.ToolbarActionList.AuditLogGridToolbarAction.VisibleExpression, formStateData);
 
         var result = await DataImportation.GetResultAsync();
 
@@ -1611,10 +1611,10 @@ public class JJFormView : AsyncComponent
     #region "Legacy inherited GridView compatibility"
 
     [Obsolete("Please use GridView.GridActions")]
-    public GridTableActionList GridActions => GridView.GridTableActions;
+    public GridTableActionList GridActionList => GridView.GridTableActionList;
 
     [Obsolete("Please use GridView.ToolBarActions")]
-    public GridToolbarActionList ToolBarActions => GridView.ToolbarActions;
+    public GridToolbarActionList ToolBarActionList => GridView.ToolbarActionList;
 
     [Obsolete("Please use GridView.SetCurrentFilter")]
     public void SetCurrentFilter(string filterKey, object filterValue)

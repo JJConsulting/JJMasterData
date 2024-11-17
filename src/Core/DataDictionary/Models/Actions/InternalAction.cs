@@ -1,16 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public sealed class InternalAction : UserCreatedAction
+public sealed class InternalAction : BasicAction
 {
-    [JsonProperty("elementRedirect")]
+    [JsonPropertyName("elementRedirect")]
     public FormActionRedirect ElementRedirect { get; set; }
     public InternalAction()
     {
         Icon = IconType.ExternalLinkSquare;
         ElementRedirect = new FormActionRedirect();
     }
+
+    public override bool IsCustomAction => true;
 
     public override BasicAction DeepCopy()
     { 

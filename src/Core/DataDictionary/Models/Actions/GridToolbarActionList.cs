@@ -1,63 +1,69 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
+
 public sealed class GridToolbarActionList : FormElementActionList
 {
-    public InsertAction InsertAction { get; }
-    public LegendAction LegendAction { get; }
-    public RefreshAction RefreshAction { get; }
-    public FilterAction FilterAction { get; }
-    public ImportAction ImportAction { get; }
-    public ExportAction ExportAction { get; }
-    public ConfigAction ConfigAction { get; }
-    public SortAction SortAction { get; }
-    public AuditLogGridToolbarAction AuditLogGridToolbarAction { get; }
+    [JsonPropertyName("insertAction")]
+    public InsertAction InsertAction { get; set; } = new();
 
-    public GridToolbarActionList()
-    {
-        InsertAction = new InsertAction();
-        LegendAction = new LegendAction();
-        RefreshAction = new RefreshAction();
-        FilterAction = new FilterAction();
-        ImportAction = new ImportAction();
-        ExportAction = new ExportAction();
-        ConfigAction = new ConfigAction();
-        SortAction = new SortAction();
-        AuditLogGridToolbarAction = new AuditLogGridToolbarAction();
+    [JsonPropertyName("legendAction")]
+    public LegendAction LegendAction { get; set; } = new();
 
-        List.AddRange([
-            InsertAction,
-            LegendAction,
-            RefreshAction,
-            FilterAction,
-            ImportAction,
-            ExportAction,
-            ConfigAction,
-            SortAction,
-            AuditLogGridToolbarAction
-        ]);
-    }
+    [JsonPropertyName("refreshAction")] 
+    public RefreshAction RefreshAction { get; set; } = new();
 
-    [JsonConstructor]
-    private GridToolbarActionList(List<BasicAction> list)
-    {
-        List = list;
+    [JsonPropertyName("filterAction")]
+    public FilterAction FilterAction { get; set; } = new();
 
-        InsertAction = EnsureActionExists<InsertAction>();
-        LegendAction = EnsureActionExists<LegendAction>();
-        RefreshAction = EnsureActionExists<RefreshAction>();
-        FilterAction = EnsureActionExists<FilterAction>();
-        ImportAction = EnsureActionExists<ImportAction>();
-        ExportAction = EnsureActionExists<ExportAction>();
-        ConfigAction = EnsureActionExists<ConfigAction>();
-        SortAction = EnsureActionExists<SortAction>();
-        AuditLogGridToolbarAction = EnsureActionExists<AuditLogGridToolbarAction>();
-    }
+    [JsonPropertyName("importAction")]
+    public ImportAction ImportAction { get; set; } = new();
+
+    [JsonPropertyName("exportAction")]
+    public ExportAction ExportAction { get; set; } = new();
+
+    [JsonPropertyName("configAction")]
+    public ConfigAction ConfigAction { get; set; } = new();
+
+    [JsonPropertyName("sortAction")]
+    public SortAction SortAction { get; set; } = new();
+
+    [JsonPropertyName("auditLogGridToolbarAction")]
+    public AuditLogGridToolbarAction AuditLogGridToolbarAction { get; set; } = new();
 
     public GridToolbarActionList DeepCopy()
     {
-        return new GridToolbarActionList(List.ConvertAll(a => a.DeepCopy()));
+        return new GridToolbarActionList
+        {
+            InsertAction = (InsertAction)InsertAction.DeepCopy(),
+            LegendAction = (LegendAction)LegendAction.DeepCopy(),
+            RefreshAction = (RefreshAction)RefreshAction.DeepCopy(),
+            FilterAction = (FilterAction)FilterAction.DeepCopy(),
+            ImportAction = (ImportAction)ImportAction.DeepCopy(),
+            ExportAction = (ExportAction)ExportAction.DeepCopy(),
+            ConfigAction = (ConfigAction)ConfigAction.DeepCopy(),
+            SortAction = (SortAction)SortAction.DeepCopy(),
+            AuditLogGridToolbarAction = (AuditLogGridToolbarAction)AuditLogGridToolbarAction.DeepCopy(),
+            SqlActions = SqlActions.ConvertAll(action => (SqlCommandAction)action.DeepCopy()),
+            UrlActions = UrlActions.ConvertAll(action => (UrlRedirectAction)action.DeepCopy()),
+            HtmlTemplateActions = HtmlTemplateActions.ConvertAll(action => (HtmlTemplateAction)action.DeepCopy()),
+            JsActions = JsActions.ConvertAll(action => (ScriptAction)action.DeepCopy()),
+            PluginActions = PluginActions.ConvertAll(action => (PluginAction)action.DeepCopy())
+        };
+    }
+
+    protected override IEnumerable<BasicAction> GetActions()
+    {
+        yield return InsertAction;
+        yield return LegendAction;
+        yield return RefreshAction;
+        yield return FilterAction;
+        yield return ImportAction;
+        yield return ExportAction;
+        yield return ConfigAction;
+        yield return SortAction;
+        yield return AuditLogGridToolbarAction;
     }
 }

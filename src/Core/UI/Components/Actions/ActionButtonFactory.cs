@@ -51,12 +51,12 @@ public class ActionButtonFactory(
         var actionContext = gridView.GetActionContext(action, formStateData);
         var button = Create(action, actionContext.FormStateData);
 
-        button.OnClientClick = action switch
-        {
-            UserCreatedAction => actionScripts.GetUserActionScript(actionContext, ActionSource.GridTable),
-            GridTableAction => actionScripts.GetFormActionScript(actionContext, ActionSource.GridTable),
-            _ => throw new JJMasterDataException("Action is not user created or a GridTableAction.")
-        };
+        if (action.IsCustomAction)
+            button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
+        else if (action is GridTableAction)
+            button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
+        else
+            throw new JJMasterDataException("Action is not user created or a GridTableAction.");
 
         return button;
     }
@@ -66,7 +66,7 @@ public class ActionButtonFactory(
         var actionContext = gridView.GetActionContext(action, formStateData);
         var button = Create(action, formStateData);
 
-        if (action is UserCreatedAction)
+        if (action.IsCustomAction)
         {
             button.OnClientClick =  actionScripts.GetUserActionScript(actionContext, ActionSource.GridToolbar);
             return button;
@@ -130,7 +130,7 @@ public class ActionButtonFactory(
         var actionContext = formView.GetActionContext(action,formStateData);
         var button = Create(action, actionContext.FormStateData);
     
-        if (action is UserCreatedAction)
+        if (action.IsCustomAction)
         {
             button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
         }
@@ -202,7 +202,7 @@ public class ActionButtonFactory(
     {
         var button = Create(action, actionContext.FormStateData);
 
-        if (action is UserCreatedAction)
+        if (action.IsCustomAction)
         {
             button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.Field);
         }

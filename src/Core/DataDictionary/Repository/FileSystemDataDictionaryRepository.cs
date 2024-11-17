@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
@@ -9,7 +10,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -94,7 +95,7 @@ public class FileSystemDataDictionaryRepository
     {
         string fileFullName = GetFullFileName(elementName);
         string json = File.ReadAllText(fileFullName);
-        return JsonConvert.DeserializeObject<FormElement>(json);
+        return JsonSerializer.Deserialize<FormElement>(json);
     }
 
     public FormElement GetFormElement(string elementName)
@@ -118,7 +119,7 @@ public class FileSystemDataDictionaryRepository
         if (string.IsNullOrEmpty(formElement.Name))
             throw new ArgumentNullException(nameof(formElement.Name));
 
-        string json = JsonConvert.SerializeObject(formElement);
+        string json = JsonSerializer.Serialize(formElement);
         string fileFullName = GetFullFileName(formElement.Name);
         File.WriteAllText(fileFullName, json);
     }
@@ -190,7 +191,7 @@ public class FileSystemDataDictionaryRepository
         {
             string fileFullName = GetFullFileName(file.Name);
             string json = File.ReadAllText(fileFullName);
-            var formElement =  JsonConvert.DeserializeObject<FormElement>(json);
+            var formElement =  JsonSerializer.Deserialize<FormElement>(json);
 
             if (formElement == null)
                 continue;

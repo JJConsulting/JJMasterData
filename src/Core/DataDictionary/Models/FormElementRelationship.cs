@@ -1,31 +1,32 @@
 ﻿#nullable enable
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElementRelationship
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public int Id { get; set; }
     
-    [JsonProperty("isParent")]
+    [JsonPropertyName("isParent")]
     public bool IsParent { get; set; }
     
-    [JsonProperty("editModeOpenByDefault")]
+    [JsonPropertyName("editModeOpenByDefault")]
     [Display(Name = "Edit Mode Open By Default")]
     public bool EditModeOpenByDefault { get; set; }
 
-    [JsonProperty("elementRelationship")]
+    [JsonPropertyName("elementRelationship")]
     public ElementRelationship? ElementRelationship { get; set; }
     
-    [JsonProperty("viewType")]
+    [JsonPropertyName("viewType")]
     [Display(Name = "View Type")]
     public RelationshipViewType ViewType { get; set; }
 
-    [JsonProperty("panel")]
+    [JsonPropertyName("panel")]
     public FormElementPanel Panel { get; set; } = null!;
     
     [JsonConstructor]

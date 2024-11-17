@@ -1,46 +1,49 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
+
 public sealed class FormToolbarActionList : FormElementActionList
 {
-    public SaveAction SaveAction { get; }
-    public BackAction BackAction { get; }
-    public CancelAction CancelAction { get; }
-    public FormEditAction FormEditAction { get; }
-    public AuditLogFormToolbarAction AuditLogFormToolbarAction { get; }
+    [JsonPropertyName("saveAction")]
+    public SaveAction SaveAction { get; set; } = new();
+    
+    [JsonPropertyName("backAction")]
+    public BackAction BackAction { get; set; } = new();
+    
+    [JsonPropertyName("cancelAction")]
+    public CancelAction CancelAction { get; set; } = new();
+    
+    [JsonPropertyName("formEditAction")]
+    public FormEditAction FormEditAction { get; set; } = new();
+    
+    [JsonPropertyName("auditLogFormToolbarAction")]
+    public AuditLogFormToolbarAction AuditLogFormToolbarAction { get; set; } = new();
 
-    public FormToolbarActionList()
-    {
-        SaveAction = new SaveAction();
-        CancelAction = new CancelAction();
-        BackAction = new BackAction();
-        FormEditAction = new FormEditAction();
-        AuditLogFormToolbarAction = new AuditLogFormToolbarAction();
-
-        List.AddRange([
-            SaveAction,
-            CancelAction,
-            BackAction,
-            FormEditAction,
-            AuditLogFormToolbarAction
-        ]);
-    }
-
-    [JsonConstructor]
-    private FormToolbarActionList(List<BasicAction> list)
-    {
-        List = list;
-
-        SaveAction = EnsureActionExists<SaveAction>();
-        CancelAction = EnsureActionExists<CancelAction>();
-        BackAction = EnsureActionExists<BackAction>();
-        FormEditAction = EnsureActionExists<FormEditAction>();
-        AuditLogFormToolbarAction = EnsureActionExists<AuditLogFormToolbarAction>();
-    }
     public FormToolbarActionList DeepCopy()
     {
-        return new FormToolbarActionList(List.ConvertAll(a=>a.DeepCopy()));
+        return new FormToolbarActionList
+        {
+            SaveAction = (SaveAction)SaveAction.DeepCopy(),
+            BackAction = (BackAction)BackAction.DeepCopy(),
+            CancelAction = (CancelAction)CancelAction.DeepCopy(),
+            FormEditAction = (FormEditAction)FormEditAction.DeepCopy(),
+            AuditLogFormToolbarAction = (AuditLogFormToolbarAction)AuditLogFormToolbarAction.DeepCopy(),
+            SqlActions = SqlActions.ConvertAll(action => (SqlCommandAction)action.DeepCopy()),
+            UrlActions = UrlActions.ConvertAll(action => (UrlRedirectAction)action.DeepCopy()),
+            HtmlTemplateActions = HtmlTemplateActions.ConvertAll(action => (HtmlTemplateAction)action.DeepCopy()),
+            JsActions = JsActions.ConvertAll(action => (ScriptAction)action.DeepCopy()),
+            PluginActions = PluginActions.ConvertAll(action => (PluginAction)action.DeepCopy())        };
+    }
+
+    protected override IEnumerable<BasicAction> GetActions()
+    {
+        yield return SaveAction;
+        yield return BackAction;
+        yield return CancelAction;
+        yield return FormEditAction;
+        yield return AuditLogFormToolbarAction;
     }
 }

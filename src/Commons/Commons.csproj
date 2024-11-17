@@ -22,13 +22,13 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.1" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
 		<PackageReference Include="System.Threading.Channels" Version="8.0.0" />
 		<PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
 		<PackageReference Include="PolySharp" Version="1.14.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -41,9 +41,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Data\DataAccessAsync.cs">
-	    <DependentUpon>DataAccess.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Data\DataAccessGenerics.cs">
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
 	  <Compile Remove="Tasks\BackgroundTaskScheduler.cs" />

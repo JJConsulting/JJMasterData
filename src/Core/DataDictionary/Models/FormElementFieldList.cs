@@ -3,8 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 

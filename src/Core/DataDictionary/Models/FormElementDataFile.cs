@@ -1,7 +1,8 @@
 ﻿#nullable enable
 
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -14,12 +15,12 @@ public class FormElementDataFile
     [Display(Name = "Folder Path")]
     public string FolderPath { get; set; } = null!;
     
-    [JsonProperty("maxFileSize")]
+    [JsonPropertyName("maxFileSize")]
     [Display(Name = "Max File Size (MB)")]
     public int MaxFileSize { get; set; }
     
     
-    [JsonProperty("dragDrop")]
+    [JsonPropertyName("dragDrop")]
     [Display(Name = "Drag and Drop")]
     public bool DragDrop { get; set; }
 
@@ -38,14 +39,14 @@ public class FormElementDataFile
     /// Permite upload simultaneo de arquivos.
     /// Default: True
     /// </summary>
-    [JsonProperty("multipleFile")]
+    [JsonPropertyName("multipleFile")]
     [Display(Name = "Allow Multiple Files")]
     public bool MultipleFile { get; set; }
 
     /// <summary>
     /// Export file name with download link
     /// </summary>
-    [JsonProperty("exportAsLink")]
+    [JsonPropertyName("exportAsLink")]
     [Display(Name = "Export as Link")]
     public bool ExportAsLink { get; set; }
 
@@ -53,15 +54,15 @@ public class FormElementDataFile
     /// <summary>
     /// Preview images in gallery format
     /// </summary>
-    [JsonProperty("viewGallery")]
+    [JsonPropertyName("viewGallery")]
     [Display(Name = "Show Files in Gallery")]
     public bool ViewGallery { get; set; }
 
-    [JsonProperty("allowPasting")]
+    [JsonPropertyName("allowPasting")]
     [Display(Name = "Allow pasting files")]
     public bool AllowPasting { get; set; } = true;
     
-    [JsonProperty("showAsUploadView")]
+    [JsonPropertyName("showAsUploadView")]
     [Display(Name = "Show Upload Outside Modal")]
     public bool ShowAsUploadView { get; set; }
 

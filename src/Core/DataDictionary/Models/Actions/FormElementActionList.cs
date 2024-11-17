@@ -4,23 +4,58 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public abstract class FormElementActionList : IList<BasicAction>
 {
-    protected List<BasicAction> List { get; init; }
-    protected FormElementActionList()
+    private List<BasicAction>? _list;
+    [JsonIgnore]
+    protected List<BasicAction> List => _list ??= InitializeList();
+    
+    
+    [JsonPropertyName("sqlActions")]
+    [JsonInclude] 
+    protected internal List<SqlCommandAction> SqlActions { get; set; } = [];
+
+    [JsonPropertyName("urlActions")]
+    [JsonInclude] 
+    protected internal List<UrlRedirectAction> UrlActions { get; set; } = [];
+
+    [JsonPropertyName("htmlTemplateActions")]
+    [JsonInclude] 
+    protected internal List<HtmlTemplateAction> HtmlTemplateActions { get; set; } = [];
+
+    [JsonPropertyName("jsActions")]
+    [JsonInclude] 
+    protected internal List<ScriptAction> JsActions { get; set; } = [];
+
+    [JsonPropertyName("pluginActions")]
+    [JsonInclude] 
+    protected internal List<PluginAction> PluginActions { get; set; } = [];
+
+    [JsonPropertyName("internalRedirectActions")]
+    [JsonInclude] 
+    protected internal List<InternalAction> InternalActions { get; set; } = [];
+    
+
+    private List<BasicAction> InitializeList()
     {
-        List = [];
+        var list = new List<BasicAction>();
+        
+        list.AddRange(SqlActions);
+        list.AddRange(UrlActions);
+        list.AddRange(InternalActions);
+        list.AddRange(HtmlTemplateActions);
+        list.AddRange(JsActions);
+        list.AddRange(PluginActions);
+        
+        list.AddRange(GetActions());
+        return list;
     }
 
-    [JsonConstructor]
-    protected FormElementActionList(List<BasicAction> list)
-    {
-        List = list.ToList();
-    }
+    protected abstract IEnumerable<BasicAction> GetActions();
 
     public IEnumerator<BasicAction> GetEnumerator()
     {
@@ -36,7 +71,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         return List.First(a => a.Name == actionName);
     }
-    
+
     public TAction? GetOrDefault<TAction>(string actionName) where TAction : BasicAction
     {
         return List.OfType<TAction>().FirstOrDefault(a => a.Name == actionName);
@@ -51,7 +86,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         foreach (var action in List)
         {
-            action.IsDefaultOption = action.Name.Equals(actionName);
+            action.IsDefaultOption = action.Name.Equals(actionName, StringComparison.Ordinal);
         }
     }
 
@@ -59,12 +94,11 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         List.Add(item);
     }
-    
+
     public void AddRange(IEnumerable<BasicAction> items)
     {
         List.AddRange(items);
     }
-
 
     public void Set(BasicAction item)
     {
@@ -101,7 +135,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     }
 
     public int Count => List.Count;
-    public bool IsReadOnly => (List as IList).IsReadOnly;
+    public bool IsReadOnly => false;
 
     public int IndexOf(BasicAction item)
     {
@@ -117,7 +151,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         List.RemoveAt(index);
     }
-    
+
     public void RemoveAll(Predicate<BasicAction> match)
     {
         List.RemoveAll(match);
@@ -127,23 +161,10 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         return List.FindAll(match);
     }
-    
+
     public BasicAction this[int index]
     {
         get => List[index];
         set => List[index] = value;
-    }
-    
-    protected T EnsureActionExists<T>() where T : BasicAction, new()
-    {
-        var action = List.OfType<T>().FirstOrDefault();
-        
-        if (action != null) 
-            return action;
-        
-        action = new T();
-        List.Add(action);
-        
-        return action;
     }
 }

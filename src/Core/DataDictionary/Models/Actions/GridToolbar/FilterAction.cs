@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -19,7 +20,7 @@ public sealed class FilterAction : GridToolbarAction
     /// and a panel with filters will be displayed above the grid.
     /// The filter's behavior remains the same.
     /// </remarks>
-    [JsonProperty("showAsCollapse")]
+    [JsonPropertyName("showAsCollapse")]
     [Display(Name = "Show as Collapse")]
     public bool ShowAsCollapse { get; set; }
     
@@ -28,7 +29,7 @@ public sealed class FilterAction : GridToolbarAction
     /// Aplícavél somente se a propriedade ShowAsCollapse estiver habilitada
     /// <para></para>(Default = false)
     /// </summary>
-    [JsonProperty("expandedByDefault")]
+    [JsonPropertyName("expandedByDefault")]
     [Display(Name = "Expanded By Default")]
     public bool ExpandedByDefault { get; set; }
 
@@ -44,7 +45,7 @@ public sealed class FilterAction : GridToolbarAction
     /// Se a propriedade ShowAsCollapse estiver desabilitada o campo de texto será exibido 
     /// na Toolbar junto com os botões de acão respeitando a ordem configurada.
     /// </remarks>
-    [JsonProperty("enableScreenSearch")]
+    [JsonPropertyName("enableScreenSearch")]
     [Display(Name = "Enable Client-Side Search")]
     public bool EnableScreenSearch { get; set; }
 

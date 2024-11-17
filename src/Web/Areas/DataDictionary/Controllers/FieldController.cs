@@ -1,12 +1,14 @@
 ﻿#nullable enable
 
+using System.Text.Json;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+
+
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -208,7 +210,7 @@ public class FieldController(FieldService fieldService)
         ViewBag.MenuId = "Fields";
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(DataDictionaryServiceBase.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonSerializer.Serialize(DataDictionaryServiceBase.GetAutocompleteHints(formElement));
 
         // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
         // Under normal circumstances, there is no need to increase the size of the HTTP request.

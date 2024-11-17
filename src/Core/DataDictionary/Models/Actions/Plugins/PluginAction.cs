@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class PluginAction : UserCreatedAction
+public class PluginAction : BasicAction
 {
     public required Guid PluginId { get; init; }
     
@@ -17,6 +17,8 @@ public class PluginAction : UserCreatedAction
         Text = "Plugin";
         Icon = IconType.Plug;
     }
+
+    public override bool IsCustomAction => true;
 
     public override BasicAction DeepCopy()
     {

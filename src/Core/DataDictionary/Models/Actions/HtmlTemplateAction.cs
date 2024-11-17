@@ -1,15 +1,16 @@
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public sealed class HtmlTemplateAction : UserCreatedAction
+public sealed class HtmlTemplateAction : BasicAction
 {
-    [JsonProperty("sqlCommand")]
+    [JsonPropertyName("sqlCommand")]
     [Display(Name = "SQL Command")]
     public string SqlCommand { get; set; }
 
-    [JsonProperty("htmlTemplate")]
+    [JsonPropertyName("htmlTemplate")]
     [Display(Name = "HTML Template")]
     public string HtmlTemplate { get; set; }
 
@@ -20,6 +21,10 @@ public sealed class HtmlTemplateAction : UserCreatedAction
         Text = "Template";
         ShowAsButton = false;
     }
+
+    
+    [JsonIgnore]
+    public override bool IsCustomAction => true;
     
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

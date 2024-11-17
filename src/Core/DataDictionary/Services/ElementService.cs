@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -16,7 +17,7 @@ using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -209,10 +210,7 @@ public class ElementService(
         var elementName = row["name"].ToString();
         var metadata = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
-        var json = FormElementSerializer.Serialize(metadata, settings =>
-        {
-            settings.Formatting = Formatting.Indented;
-        });
+        var json = FormElementSerializer.Serialize(metadata);
 
         return Encoding.Default.GetBytes(json);
     }
@@ -227,10 +225,7 @@ public class ElementService(
                 var elementName = element["name"].ToString();
                 var metadata = await DataDictionaryRepository.GetFormElementAsync(elementName);
                 
-                var json = FormElementSerializer.Serialize(metadata,settings =>
-                {
-                    settings.Formatting = Formatting.Indented;
-                });
+                var json = FormElementSerializer.Serialize(metadata);
 
                 var jsonFile = archive.CreateEntry($"{elementName}.json");
 #if NET

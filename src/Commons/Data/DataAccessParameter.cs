@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Data;
 using System.Diagnostics;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Commons.Data;
 
@@ -14,7 +15,7 @@ public class DataAccessParameter
     /// MSSQL: @Foo
     /// ORACLE: p_foo
     /// </summary>
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
 
 
@@ -22,24 +23,24 @@ public class DataAccessParameter
     /// Value of the parameter.
     /// To send null, use DBNull.Value
     /// </summary>
-    [JsonProperty("value")]
+    [JsonPropertyName("value")]
     public object Value { get; set; }
 
     /// <summary>
     /// Specifies the data type of field, a property, or a Parameter object of a .NET
     /// </summary>
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
     public DbType Type { get; set; }
 
     /// <summary>
     /// Field size. For numbers is optional.
     /// </summary>
-    [JsonProperty("size")]
+    [JsonPropertyName("size")]
     public int? Size { get; set; }
 
     public bool IsNullable { get; set; } = true;
     
-    [JsonProperty("direction")]
+    [JsonPropertyName("direction")]
     public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
 
     public DataAccessParameter()

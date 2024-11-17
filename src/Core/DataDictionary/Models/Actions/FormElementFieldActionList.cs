@@ -1,23 +1,26 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class FormElementFieldActionList : FormElementActionList
 {
-    public FormElementFieldActionList()
-    {
-  
-    }
+    internal List<PluginFieldAction> PluginFieldActions { get; init; } = [];
     
-    [JsonConstructor]
-    private FormElementFieldActionList(List<BasicAction> list)
-    {
-        List = list;
-    }
-
     public FormElementFieldActionList DeepCopy()
     {
-        return new FormElementFieldActionList(List.ConvertAll(a=>a.DeepCopy()));
+        return new FormElementFieldActionList
+        {
+            PluginFieldActions = PluginFieldActions.ConvertAll(action => (PluginFieldAction)action.DeepCopy()),
+            SqlActions = SqlActions.ConvertAll(action => (SqlCommandAction)action.DeepCopy()),
+            UrlActions = UrlActions.ConvertAll(action => (UrlRedirectAction)action.DeepCopy()),
+            HtmlTemplateActions = HtmlTemplateActions.ConvertAll(action => (HtmlTemplateAction)action.DeepCopy()),
+            JsActions = JsActions.ConvertAll(action => (ScriptAction)action.DeepCopy()),
+            PluginActions = PluginActions.ConvertAll(action => (PluginAction)action.DeepCopy())
+        };
+    }
+
+    protected override IEnumerable<BasicAction> GetActions()
+    {
+        return PluginFieldActions;
     }
 }

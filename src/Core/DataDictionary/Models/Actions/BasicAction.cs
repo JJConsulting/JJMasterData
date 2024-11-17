@@ -1,7 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -22,7 +23,7 @@ public abstract class BasicAction
     /// <p>Don't try to create a action with a repeated name. This can cause unforessen consequences.</p>
     /// </div>
     ///  </remarks>
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string Name
     {
         get => _name;
@@ -32,20 +33,20 @@ public abstract class BasicAction
     /// <summary>
     /// Action description
     /// </summary>
-    [JsonProperty("text")]
+    [JsonPropertyName("text")]
     public string Text { get; set; }
 
     /// <summary>
     /// Control mouse tooltip
     /// </summary>
-    [JsonProperty("tooltip")]
+    [JsonPropertyName("tooltip")]
     public string Tooltip { get; set; }
 
     /// <summary>
     /// Execute this action as default
     /// This action will be triggered in any line location
     /// </summary>
-    [JsonProperty("isDefaultOption")]
+    [JsonPropertyName("isDefaultOption")]
     [Display(Name = "Is Default")] 
     public bool IsDefaultOption { get; set; }
 
@@ -53,7 +54,7 @@ public abstract class BasicAction
     /// Display this action in a group menu
     /// Default = false
     /// </summary>
-    [JsonProperty("isGroup")]
+    [JsonPropertyName("isGroup")]
     [Display(Name = "Is Group")] 
     public bool IsGroup { get; set; }
 
@@ -64,20 +65,20 @@ public abstract class BasicAction
     /// <remarks>
     /// Only valid if IsGroup is true.
     /// </remarks>
-    [JsonProperty("dividerLine")]
+    [JsonPropertyName("dividerLine")]
     [Display(Name = "Divider Line")] 
     public bool DividerLine { get; set; }
 
     /// <summary>
     /// Link/Button FontAwesome icon.
     /// </summary>
-    [JsonProperty("icon")]
+    [JsonPropertyName("icon")]
     public IconType Icon { get; set; }
 
     /// <summary>
     /// Display grid title
     /// </summary>
-    [JsonProperty("showTitle")]
+    [JsonPropertyName("showTitle")]
     [Display(Name = "Show Title")]
     public bool ShowTitle { get; set; }
 
@@ -86,7 +87,7 @@ public abstract class BasicAction
     /// No = Cancels the action
     /// Sim = Action will be executed
     /// </summary>
-    [JsonProperty("confirmationMessage")]
+    [JsonPropertyName("confirmationMessage")]
     [Display(Name = "Confirmation Message")]
     public string ConfirmationMessage { get; set; }
 
@@ -99,7 +100,7 @@ public abstract class BasicAction
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("enableExpression")]
+    [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
     [SyncExpression]
     public string EnableExpression { get; set; }
@@ -113,7 +114,7 @@ public abstract class BasicAction
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("visibleExpression")]
+    [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
     [SyncExpression]
     public string VisibleExpression { get; set; }
@@ -121,27 +122,27 @@ public abstract class BasicAction
     /// <summary>
     /// Order of the action (0, 1, 2...)
     /// </summary>
-    [JsonProperty("order")]
+    [JsonPropertyName("order")]
     public int Order { get; set; }
 
-    [JsonProperty("showAsButton")] 
+    [JsonPropertyName("showAsButton")] 
     [Display(Name = "Show as Button")]
     public bool ShowAsButton { get; set; }
 
-    [JsonProperty("color")]
+    [JsonPropertyName("color")]
     [Display(Name ="Color" )]
     public BootstrapColor Color { get; set; }
     
     /// <summary>
     /// CSS3 Stylesheet Class
     /// </summary>
-    [JsonProperty("cssClass")]
+    [JsonPropertyName("cssClass")]
     public string CssClass { get; set; }
 
-    [JsonProperty("isCustomAction")] 
-    public abstract bool IsUserCreated { get; }
+    [JsonIgnore]
+    public abstract bool IsCustomAction { get; }
 
-    [JsonProperty(PropertyName = "formToolbarActionLocation")]
+    [JsonPropertyName("formToolbarActionLocation")]
     public FormToolbarActionLocation? Location { get; set; }
     
     public BasicAction()
