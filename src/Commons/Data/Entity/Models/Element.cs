@@ -41,7 +41,7 @@ public class Element()
 
     [JsonPropertyName("tableName")]
     [Display(Name = "Table Name")]
-    public required string TableName { get; set; }
+    public string TableName { get; set; } = null!;
 
     [JsonPropertyName("useReadProcedure")] 
     [Display(Name = "Use Read Procedure")]
