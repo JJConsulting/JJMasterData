@@ -13,6 +13,8 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ElementController(
     ElementService elementService,
+    ElementImportService elementImportService,
+    ElementExportService elementExportService,
     ClassGenerationService classGenerationService,
     ScriptsService scriptsService,
     IEntityRepository entityRepository,
@@ -45,19 +47,19 @@ public class ElementController(
 
         if (selectedRows.Count == 1)
         {
-            var jsonBytes = await elementService.ExportSingleRowAsync(selectedRows[0]);
+            var jsonStream = await elementExportService.ExportSingleRowAsync(selectedRows[0]);
             var jsonFileName = $"{selectedRows[0]["name"]}.json";
 
-            Response.Headers["Content-Disposition"] =  $"attachment; filename=\"{jsonFileName}\"";
+            Response.Headers.ContentDisposition =  $"attachment; filename=\"{jsonFileName}\"";
             
-            return File(jsonBytes, "application/octet-stream");
+            return File(jsonStream, "application/octet-stream");
         }
 
-        var zipBytes = await elementService.ExportMultipleRowsAsync(selectedRows);
+        var zipBytes = await elementExportService.ExportMultipleRowsAsync(selectedRows);
         var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
         var zipFileName = $"DataDictionaryExportation_{timestamp}.zip";
 
-        Response.Headers["Content-Disposition"] = $"attachment; filename=\"{zipFileName}\"";
+        Response.Headers.ContentDisposition  = $"attachment; filename=\"{zipFileName}\"";
         
         return File(zipBytes, "application/octet-stream");
     }
@@ -87,7 +89,7 @@ public class ElementController(
     private async ValueTask FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
         await using var ms = new MemoryStream(e.File.Bytes);
-        await elementService.Import(ms);
+        await elementImportService.Import(ms);
         if (ModelState.IsValid)
         {
             e.SuccessMessage = stringLocalizer["Dictionary imported successfully!"];

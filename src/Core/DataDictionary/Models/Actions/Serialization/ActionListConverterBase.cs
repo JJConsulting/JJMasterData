@@ -20,24 +20,12 @@ internal abstract class ActionListConverterBase<TActionList> : JsonConverter<TAc
 
         var actionList = ReadActions(rootElement, options);
 
-        actionList.SqlActions =
-            JsonSerializer.Deserialize<List<SqlCommandAction>>(rootElement.GetProperty("sqlActions").GetRawText(),
-                options);
-        actionList.UrlActions =
-            JsonSerializer.Deserialize<List<UrlRedirectAction>>(rootElement.GetProperty("urlActions").GetRawText(),
-                options);
-        actionList.HtmlTemplateActions =
-            JsonSerializer.Deserialize<List<HtmlTemplateAction>>(
-                rootElement.GetProperty("htmlTemplateActions").GetRawText(), options);
-        actionList.JsActions =
-            JsonSerializer.Deserialize<List<ScriptAction>>(rootElement.GetProperty("jsActions").GetRawText(), options);
-        actionList.PluginActions =
-            JsonSerializer.Deserialize<List<PluginAction>>(rootElement.GetProperty("pluginActions").GetRawText(),
-                options);
-        actionList.InternalActions =
-            JsonSerializer.Deserialize<List<InternalAction>>(
-                rootElement.GetProperty("internalRedirectActions").GetRawText(), options);
-
+        actionList.AddRange(rootElement.GetProperty("sqlActions").Deserialize<List<SqlCommandAction>>(options));
+        actionList.AddRange(rootElement.GetProperty("urlActions").Deserialize<List<UrlRedirectAction>>(options));
+        actionList.AddRange(rootElement.GetProperty("htmlTemplateActions").Deserialize<List<HtmlTemplateAction>>(options));
+        actionList.AddRange(rootElement.GetProperty("jsActions").Deserialize<List<ScriptAction>>(options));
+        actionList.AddRange(rootElement.GetProperty("internalRedirectActions").Deserialize<List<InternalAction>>(options));
+        actionList.AddRange(rootElement.GetProperty("pluginActions").Deserialize<List<PluginAction>>(options));
         return actionList;
     }
 
@@ -56,7 +44,7 @@ internal abstract class ActionListConverterBase<TActionList> : JsonConverter<TAc
 
         writer.WriteEndObject();
     }
-    
+
     private static void WriteActionList<TAction>(Utf8JsonWriter writer, string propertyName,
         List<TAction> actionListToWrite, JsonSerializerOptions options)
     {
@@ -69,12 +57,13 @@ internal abstract class ActionListConverterBase<TActionList> : JsonConverter<TAc
         writer.WriteEndArray();
     }
 
-    protected static void WriteProperty<T>(Utf8JsonWriter writer, string propertyName, T value, JsonSerializerOptions options)
+    protected static void WriteProperty<T>(Utf8JsonWriter writer, string propertyName, T value,
+        JsonSerializerOptions options)
     {
         writer.WritePropertyName(propertyName);
         JsonSerializer.Serialize(writer, value, options);
     }
-    
+
     protected abstract TActionList ReadActionsFromLegacyFormat(JsonElement actionElement);
     protected abstract TActionList ReadActions(JsonElement rootElement, JsonSerializerOptions options);
     protected abstract void WriteActions(Utf8JsonWriter writer, TActionList actionListToWrite,

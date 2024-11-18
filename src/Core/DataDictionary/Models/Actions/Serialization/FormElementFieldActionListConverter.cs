@@ -1,6 +1,6 @@
-namespace JJMasterData.Core.DataDictionary.Models.Actions;
-
 using System.Text.Json;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 internal sealed class FormElementFieldActionListConverter : ActionListConverterBase<FormElementFieldActionList>
 {
@@ -13,7 +13,7 @@ internal sealed class FormElementFieldActionListConverter : ActionListConverterB
             switch (type)
             {
                 case "JJMasterData.Core.DataDictionary.Models.Actions.PluginFieldAction, JJMasterData.Core":
-                    fieldActionList.PluginFieldActions.Add(JsonSerializer.Deserialize<PluginFieldAction>(actionElement.GetRawText()));
+                    fieldActionList.PluginFieldActions.Add(actionElement.Deserialize<PluginFieldAction>());
                     break;
             }
         }
@@ -27,7 +27,7 @@ internal sealed class FormElementFieldActionListConverter : ActionListConverterB
         var pluginFieldActionsElement = rootElement.GetProperty("pluginFieldActions");
         foreach (var actionElement in pluginFieldActionsElement.EnumerateArray())
         {
-            fieldActionList.PluginFieldActions.Add(JsonSerializer.Deserialize<PluginFieldAction>(actionElement.GetRawText(), options));
+            fieldActionList.PluginFieldActions.Add(actionElement.Deserialize<PluginFieldAction>(options));
         }
         return fieldActionList;
     }

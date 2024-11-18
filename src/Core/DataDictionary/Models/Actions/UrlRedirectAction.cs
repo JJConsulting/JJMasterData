@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class UrlRedirectAction : BasicAction
@@ -36,7 +35,7 @@ public sealed class UrlRedirectAction : BasicAction
     {
         Icon = IconType.ExternalLink;
     }
-
+    [JsonIgnore]
     public override bool IsCustomAction => true;
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

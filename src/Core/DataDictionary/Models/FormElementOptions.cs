@@ -17,15 +17,15 @@ public class FormElementOptions
 
     [JsonPropertyName("toolBarActions")]
     [JsonConverter(typeof(GridToolbarActionListConverter))]
-    public GridToolbarActionList GridToolbarActions { get; init;  } = new();
+    public GridToolbarActionList GridToolbarActions { get; init;  } = [];
 
     [JsonPropertyName("formToolbarActions")]
     [JsonConverter(typeof(FormToolbarActionListConverter))]
-    public FormToolbarActionList FormToolbarActions { get; init; } = new();
+    public FormToolbarActionList FormToolbarActions { get; init; } = [];
 
     [JsonPropertyName("gridActions")] 
     [JsonConverter(typeof(GridTableActionListConverter))]
-    public GridTableActionList GridTableActions { get; init; } = new();
+    public GridTableActionList GridTableActions { get; init; } = [];
 
     [JsonPropertyName("enableAuditLog")]
     [Display(Name = "Enable Audit Log")]

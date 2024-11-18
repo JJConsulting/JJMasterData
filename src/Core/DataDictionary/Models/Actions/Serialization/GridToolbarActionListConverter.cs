@@ -1,6 +1,6 @@
-namespace JJMasterData.Core.DataDictionary.Models.Actions;
-
 using System.Text.Json;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 internal sealed class GridToolbarActionListConverter : ActionListConverterBase<GridToolbarActionList>
 {
@@ -14,60 +14,46 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
             switch (type)
             {
                 case "JJMasterData.Core.DataDictionary.Models.Actions.InsertAction, JJMasterData.Core":
-                    gridToolbarActionList.InsertAction =
-                        JsonSerializer.Deserialize<InsertAction>(actionElement.GetRawText());
+                    gridToolbarActionList.InsertAction = actionElement.Deserialize<InsertAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.LegendAction, JJMasterData.Core":
-                    gridToolbarActionList.LegendAction =
-                        JsonSerializer.Deserialize<LegendAction>(actionElement.GetRawText());
+                    gridToolbarActionList.LegendAction = actionElement.Deserialize<LegendAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.RefreshAction, JJMasterData.Core":
-                    gridToolbarActionList.RefreshAction =
-                        JsonSerializer.Deserialize<RefreshAction>(actionElement.GetRawText());
+                    gridToolbarActionList.RefreshAction = actionElement.Deserialize<RefreshAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.FilterAction, JJMasterData.Core":
-                    gridToolbarActionList.FilterAction =
-                        JsonSerializer.Deserialize<FilterAction>(actionElement.GetRawText());
+                    gridToolbarActionList.FilterAction = actionElement.Deserialize<FilterAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ImportAction, JJMasterData.Core":
-                    gridToolbarActionList.ImportAction =
-                        JsonSerializer.Deserialize<ImportAction>(actionElement.GetRawText());
+                    gridToolbarActionList.ImportAction = actionElement.Deserialize<ImportAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ExportAction, JJMasterData.Core":
-                    gridToolbarActionList.ExportAction =
-                        JsonSerializer.Deserialize<ExportAction>(actionElement.GetRawText());
+                    gridToolbarActionList.ExportAction = actionElement.Deserialize<ExportAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ConfigAction, JJMasterData.Core":
-                    gridToolbarActionList.ConfigAction =
-                        JsonSerializer.Deserialize<ConfigAction>(actionElement.GetRawText());
+                    gridToolbarActionList.ConfigAction = actionElement.Deserialize<ConfigAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.SortAction, JJMasterData.Core":
-                    gridToolbarActionList.SortAction =
-                        JsonSerializer.Deserialize<SortAction>(actionElement.GetRawText());
+                    gridToolbarActionList.SortAction = actionElement.Deserialize<SortAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.AuditLogGridToolbarAction, JJMasterData.Core":
-                    gridToolbarActionList.AuditLogGridToolbarAction =
-                        JsonSerializer.Deserialize<AuditLogGridToolbarAction>(actionElement.GetRawText());
+                    gridToolbarActionList.AuditLogGridToolbarAction = actionElement.Deserialize<AuditLogGridToolbarAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
-                    gridToolbarActionList.HtmlTemplateActions.Add(
-                        JsonSerializer.Deserialize<HtmlTemplateAction>(actionElement.GetRawText()));
+                    gridToolbarActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.InternalAction, JJMasterData.Core":
-                    gridToolbarActionList.InternalActions.Add(
-                        JsonSerializer.Deserialize<InternalAction>(actionElement.GetRawText()));
+                    gridToolbarActionList.InternalActions.Add(actionElement.Deserialize<InternalAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction, JJMasterData.Core":
-                    gridToolbarActionList.JsActions.Add(
-                        JsonSerializer.Deserialize<ScriptAction>(actionElement.GetRawText()));
+                    gridToolbarActionList.JsActions.Add(actionElement.Deserialize<ScriptAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction, JJMasterData.Core":
-                    gridToolbarActionList.SqlActions.Add(
-                        JsonSerializer.Deserialize<SqlCommandAction>(actionElement.GetRawText()));
+                    gridToolbarActionList.SqlActions.Add(actionElement.Deserialize<SqlCommandAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction, JJMasterData.Core":
-                    gridToolbarActionList.UrlActions.Add(
-                        JsonSerializer.Deserialize<UrlRedirectAction>(actionElement.GetRawText()));
+                    gridToolbarActionList.UrlActions.Add(actionElement.Deserialize<UrlRedirectAction>());
                     break;
             }
         }
@@ -79,26 +65,15 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
     {
         var gridToolbarActionList = new GridToolbarActionList
         {
-            InsertAction =
-                JsonSerializer.Deserialize<InsertAction>(rootElement.GetProperty("insertAction").GetRawText(), options),
-            LegendAction =
-                JsonSerializer.Deserialize<LegendAction>(rootElement.GetProperty("legendAction").GetRawText(), options),
-            RefreshAction =
-                JsonSerializer.Deserialize<RefreshAction>(rootElement.GetProperty("refreshAction").GetRawText(),
-                    options),
-            FilterAction =
-                JsonSerializer.Deserialize<FilterAction>(rootElement.GetProperty("filterAction").GetRawText(), options),
-            ImportAction =
-                JsonSerializer.Deserialize<ImportAction>(rootElement.GetProperty("importAction").GetRawText(), options),
-            ExportAction =
-                JsonSerializer.Deserialize<ExportAction>(rootElement.GetProperty("exportAction").GetRawText(), options),
-            ConfigAction =
-                JsonSerializer.Deserialize<ConfigAction>(rootElement.GetProperty("configAction").GetRawText(), options),
-            SortAction =
-                JsonSerializer.Deserialize<SortAction>(rootElement.GetProperty("sortAction").GetRawText(), options),
-            AuditLogGridToolbarAction =
-                JsonSerializer.Deserialize<AuditLogGridToolbarAction>(
-                    rootElement.GetProperty("auditLogGridToolbarAction").GetRawText(), options)
+            InsertAction = rootElement.GetProperty("insertAction").Deserialize<InsertAction>(options),
+            LegendAction = rootElement.GetProperty("legendAction").Deserialize<LegendAction>(options),
+            RefreshAction = rootElement.GetProperty("refreshAction").Deserialize<RefreshAction>(options),
+            FilterAction = rootElement.GetProperty("filterAction").Deserialize<FilterAction>(options),
+            ImportAction = rootElement.GetProperty("importAction").Deserialize<ImportAction>(options),
+            ExportAction = rootElement.GetProperty("exportAction").Deserialize<ExportAction>(options),
+            ConfigAction = rootElement.GetProperty("configAction").Deserialize<ConfigAction>(options),
+            SortAction = rootElement.GetProperty("sortAction").Deserialize<SortAction>(options),
+            AuditLogGridToolbarAction = rootElement.GetProperty("auditLogGridToolbarAction").Deserialize<AuditLogGridToolbarAction>(options)
         };
         return gridToolbarActionList;
     }

@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class PluginFieldAction : PluginAction
+public sealed class PluginFieldAction : PluginAction
 {
     [DisplayName("Trigger On Change")]
     public bool TriggerOnChange { get; set; }

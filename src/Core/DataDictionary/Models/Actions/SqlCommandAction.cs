@@ -3,7 +3,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class SqlCommandAction : BasicAction, ISubmittableAction
@@ -40,7 +39,7 @@ public sealed class SqlCommandAction : BasicAction, ISubmittableAction
     {
         Icon = IconType.Play;
     }
-
+    [JsonIgnore]
     public override bool IsCustomAction => true;
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

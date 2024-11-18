@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
 
-
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
@@ -145,7 +144,7 @@ public abstract class BasicAction
     [JsonPropertyName("formToolbarActionLocation")]
     public FormToolbarActionLocation? Location { get; set; }
     
-    public BasicAction()
+    protected BasicAction()
     {
         SetVisible(true);
         SetEnabled(true);
@@ -171,6 +170,7 @@ public abstract class BasicAction
     /// <summary>
     /// Verify if the action is static toggled to be hidden.
     /// </summary>
+    [JsonIgnore]
     public bool IsVisible => !"val:0".Equals(VisibleExpression);
 
     /// <summary>
@@ -192,5 +192,6 @@ public abstract class BasicAction
         ShowAsButton = action.ShowAsButton;
         CssClass = action.CssClass;
     }
+
     public abstract BasicAction DeepCopy();
 }

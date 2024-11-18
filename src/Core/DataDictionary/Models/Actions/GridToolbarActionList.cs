@@ -3,67 +3,127 @@ using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-
 public sealed class GridToolbarActionList : FormElementActionList
 {
+    private InsertAction _insertAction = new();
+    private LegendAction _legendAction = new();
+    private RefreshAction _refreshAction = new();
+    private FilterAction _filterAction = new();
+    private ImportAction _importAction = new();
+    private ExportAction _exportAction = new();
+    private ConfigAction _configAction = new();
+    private SortAction _sortAction = new();
+    private AuditLogGridToolbarAction _auditLogGridToolbarAction = new();
+
     [JsonPropertyName("insertAction")]
-    public InsertAction InsertAction { get; set; } = new();
+    public InsertAction InsertAction
+    {
+        get => (InsertAction)List.Find(a => a is InsertAction) ?? _insertAction;
+        set
+        {
+            _insertAction = value;
+            Set(value);
+        }
+    }
 
     [JsonPropertyName("legendAction")]
-    public LegendAction LegendAction { get; set; } = new();
+    public LegendAction LegendAction
+    {
+        get => (LegendAction)List.Find(a => a is LegendAction) ?? _legendAction;
+        set
+        {
+            _legendAction = value;
+            Set(value);
+        }
+    }
 
-    [JsonPropertyName("refreshAction")] 
-    public RefreshAction RefreshAction { get; set; } = new();
+    [JsonPropertyName("refreshAction")]
+    public RefreshAction RefreshAction
+    {
+        get => (RefreshAction)List.Find(a => a is RefreshAction) ?? _refreshAction;
+        set
+        {
+            _refreshAction = value;
+            Set(value);
+        }
+    }
 
     [JsonPropertyName("filterAction")]
-    public FilterAction FilterAction { get; set; } = new();
+    public FilterAction FilterAction
+    {
+        get => (FilterAction)List.Find(a => a is FilterAction) ?? _filterAction;
+        set
+        {
+            _filterAction = value;
+            Set(value);
+        }
+    }
 
     [JsonPropertyName("importAction")]
-    public ImportAction ImportAction { get; set; } = new();
+    public ImportAction ImportAction
+    {
+        get => (ImportAction)List.Find(a => a is ImportAction) ?? _importAction;
+        set
+        {
+            _importAction = value;
+            Set(value);
+        }
+    }
 
     [JsonPropertyName("exportAction")]
-    public ExportAction ExportAction { get; set; } = new();
+    public ExportAction ExportAction
+    {
+        get => (ExportAction)List.Find(a => a is ExportAction) ?? _exportAction;
+        set
+        {
+            _exportAction = value;
+            Set(value);
+        }
+    }
 
     [JsonPropertyName("configAction")]
-    public ConfigAction ConfigAction { get; set; } = new();
+    public ConfigAction ConfigAction
+    {
+        get => (ConfigAction)List.Find(a => a is ConfigAction) ?? _configAction;
+        set
+        {
+            _configAction = value;
+            Set(value);
+        }
+    }
 
     [JsonPropertyName("sortAction")]
-    public SortAction SortAction { get; set; } = new();
+    public SortAction SortAction
+    {
+        get => (SortAction)List.Find(a => a is SortAction) ?? _sortAction;
+        set
+        {
+            _sortAction = value;
+            Set(value);
+        }
+    }
 
     [JsonPropertyName("auditLogGridToolbarAction")]
-    public AuditLogGridToolbarAction AuditLogGridToolbarAction { get; set; } = new();
+    public AuditLogGridToolbarAction AuditLogGridToolbarAction
+    {
+        get => (AuditLogGridToolbarAction)List.Find(a => a is AuditLogGridToolbarAction) ?? _auditLogGridToolbarAction;
+        set
+        {
+            _auditLogGridToolbarAction = value;
+            Set(value);
+        }
+    }
+
+    public GridToolbarActionList()
+    {
+    }
+
+    public GridToolbarActionList(List<BasicAction> list) : base(list)
+    {
+    }
 
     public GridToolbarActionList DeepCopy()
     {
-        return new GridToolbarActionList
-        {
-            InsertAction = (InsertAction)InsertAction.DeepCopy(),
-            LegendAction = (LegendAction)LegendAction.DeepCopy(),
-            RefreshAction = (RefreshAction)RefreshAction.DeepCopy(),
-            FilterAction = (FilterAction)FilterAction.DeepCopy(),
-            ImportAction = (ImportAction)ImportAction.DeepCopy(),
-            ExportAction = (ExportAction)ExportAction.DeepCopy(),
-            ConfigAction = (ConfigAction)ConfigAction.DeepCopy(),
-            SortAction = (SortAction)SortAction.DeepCopy(),
-            AuditLogGridToolbarAction = (AuditLogGridToolbarAction)AuditLogGridToolbarAction.DeepCopy(),
-            SqlActions = SqlActions.ConvertAll(action => (SqlCommandAction)action.DeepCopy()),
-            UrlActions = UrlActions.ConvertAll(action => (UrlRedirectAction)action.DeepCopy()),
-            HtmlTemplateActions = HtmlTemplateActions.ConvertAll(action => (HtmlTemplateAction)action.DeepCopy()),
-            JsActions = JsActions.ConvertAll(action => (ScriptAction)action.DeepCopy()),
-            PluginActions = PluginActions.ConvertAll(action => (PluginAction)action.DeepCopy())
-        };
-    }
-
-    protected override IEnumerable<BasicAction> GetActions()
-    {
-        yield return InsertAction;
-        yield return LegendAction;
-        yield return RefreshAction;
-        yield return FilterAction;
-        yield return ImportAction;
-        yield return ExportAction;
-        yield return ConfigAction;
-        yield return SortAction;
-        yield return AuditLogGridToolbarAction;
+        return new GridToolbarActionList(List.ConvertAll(a => a.DeepCopy()));
     }
 }

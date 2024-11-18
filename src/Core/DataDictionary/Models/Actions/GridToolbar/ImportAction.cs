@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class ImportAction : GridToolbarAction

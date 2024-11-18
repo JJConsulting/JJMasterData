@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text.Json;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary;
@@ -236,9 +237,9 @@ public class FormElementTest
 
         Assert.True(formElement != newReference);
 
-        var oldJson = FormElementSerializer.Serialize(formElement);
+        var oldJson = JsonSerializer.Serialize(formElement);
 
-        var newJson = FormElementSerializer.Serialize(formElement);
+        var newJson = JsonSerializer.Serialize(formElement);
 
         Assert.Equal(oldJson, newJson);
     }

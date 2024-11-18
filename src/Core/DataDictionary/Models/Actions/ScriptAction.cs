@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
-
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class ScriptAction : BasicAction
@@ -15,6 +14,8 @@ public sealed class ScriptAction : BasicAction
     [LanguageInjection("Javascript")]
     // ReSharper disable once InconsistentNaming
     public string OnClientClick { get; set; }
+    
+    [JsonIgnore]
     public override bool IsCustomAction => true;
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

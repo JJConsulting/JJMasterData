@@ -14,6 +14,7 @@ public sealed class InternalAction : BasicAction
         ElementRedirect = new FormActionRedirect();
     }
 
+    [JsonIgnore]
     public override bool IsCustomAction => true;
 
     public override BasicAction DeepCopy()

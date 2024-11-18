@@ -1,40 +1,58 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridTableActionList : FormElementActionList
 {
-    [JsonPropertyName("deleteAction")]
-    public DeleteAction DeleteAction { get; set; } = new();
-    
-    [JsonPropertyName("editAction")]
-    public EditAction EditAction { get; set; } = new();
-    
-    [JsonPropertyName("viewAction")]
-    public ViewAction ViewAction { get; set; } = new();
+    private DeleteAction _deleteAction = new();
+    private EditAction _editAction = new();
+    private ViewAction _viewAction = new();
 
-    
-    public GridTableActionList DeepCopy()
+    [JsonPropertyName("deleteAction")]
+    public DeleteAction DeleteAction
     {
-        return new GridTableActionList
+        get => (DeleteAction)List.Find(a => a is DeleteAction) ?? _deleteAction;
+        set
         {
-            DeleteAction = (DeleteAction)DeleteAction.DeepCopy(),
-            EditAction = (EditAction)EditAction.DeepCopy(),
-            ViewAction = (ViewAction)ViewAction.DeepCopy(),
-            SqlActions = SqlActions.ConvertAll(action => (SqlCommandAction)action.DeepCopy()),
-            UrlActions = UrlActions.ConvertAll(action => (UrlRedirectAction)action.DeepCopy()),
-            HtmlTemplateActions = HtmlTemplateActions.ConvertAll(action => (HtmlTemplateAction)action.DeepCopy()),
-            JsActions = JsActions.ConvertAll(action => (ScriptAction)action.DeepCopy()),
-            PluginActions = PluginActions.ConvertAll(action => (PluginAction)action.DeepCopy())
-        };
+            _deleteAction = value;
+            Set(value);
+        }
     }
 
-    protected override IEnumerable<BasicAction> GetActions()
+    [JsonPropertyName("editAction")]
+    public EditAction EditAction
     {
-        yield return DeleteAction;
-        yield return EditAction;
-        yield return ViewAction;
+        get => (EditAction)List.Find(a => a is EditAction) ?? _editAction;
+        set
+        {
+            _editAction = value;
+            Set(value);
+        }
+    }
+
+    [JsonPropertyName("viewAction")]
+    public ViewAction ViewAction
+    {
+        get => (ViewAction)List.Find(a => a is ViewAction) ?? _viewAction;
+        set
+        {
+            _viewAction = value;
+            Set(value);
+        }
+    }
+
+    public GridTableActionList()
+    {
+        
+    }
+
+    private GridTableActionList(List<BasicAction> list) : base(list)
+    {
+    }
+
+    public GridTableActionList DeepCopy()
+    {
+        return new GridTableActionList(List.ConvertAll(a => a.DeepCopy()));
     }
 }

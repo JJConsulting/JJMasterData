@@ -13,36 +13,28 @@ internal sealed class GridTableActionListConverter : ActionListConverterBase<Gri
             switch (type)
             {
                 case "JJMasterData.Core.DataDictionary.Models.Actions.DeleteAction, JJMasterData.Core":
-                    gridTableActionList.DeleteAction =
-                        JsonSerializer.Deserialize<DeleteAction>(actionElement.GetRawText());
+                    gridTableActionList.DeleteAction = actionElement.Deserialize<DeleteAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.EditAction, JJMasterData.Core":
-                    gridTableActionList.EditAction =
-                        JsonSerializer.Deserialize<EditAction>(actionElement.GetRawText());
+                    gridTableActionList.EditAction = actionElement.Deserialize<EditAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ViewAction, JJMasterData.Core":
-                    gridTableActionList.ViewAction =
-                        JsonSerializer.Deserialize<ViewAction>(actionElement.GetRawText());
+                    gridTableActionList.ViewAction = actionElement.Deserialize<ViewAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
-                    gridTableActionList.HtmlTemplateActions.Add(
-                        JsonSerializer.Deserialize<HtmlTemplateAction>(actionElement.GetRawText()));
+                    gridTableActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.InternalAction, JJMasterData.Core":
-                    gridTableActionList.InternalActions.Add(
-                        JsonSerializer.Deserialize<InternalAction>(actionElement.GetRawText()));
+                    gridTableActionList.InternalActions.Add(actionElement.Deserialize<InternalAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction, JJMasterData.Core":
-                    gridTableActionList.JsActions.Add(
-                        JsonSerializer.Deserialize<ScriptAction>(actionElement.GetRawText()));
+                    gridTableActionList.JsActions.Add(actionElement.Deserialize<ScriptAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction, JJMasterData.Core":
-                    gridTableActionList.SqlActions.Add(
-                        JsonSerializer.Deserialize<SqlCommandAction>(actionElement.GetRawText()));
+                    gridTableActionList.SqlActions.Add(actionElement.Deserialize<SqlCommandAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction, JJMasterData.Core":
-                    gridTableActionList.UrlActions.Add(
-                        JsonSerializer.Deserialize<UrlRedirectAction>(actionElement.GetRawText()));
+                    gridTableActionList.UrlActions.Add(actionElement.Deserialize<UrlRedirectAction>());
                     break;
             }
         }
@@ -54,9 +46,9 @@ internal sealed class GridTableActionListConverter : ActionListConverterBase<Gri
     {
         var gridTableActionList = new GridTableActionList
         {
-            DeleteAction = JsonSerializer.Deserialize<DeleteAction>(rootElement.GetProperty("deleteAction").GetRawText(), options),
-            EditAction = JsonSerializer.Deserialize<EditAction>(rootElement.GetProperty("editAction").GetRawText(), options),
-            ViewAction = JsonSerializer.Deserialize<ViewAction>(rootElement.GetProperty("viewAction").GetRawText(), options)
+            DeleteAction = rootElement.GetProperty("deleteAction").Deserialize<DeleteAction>(options),
+            EditAction = rootElement.GetProperty("editAction").Deserialize<EditAction>(options),
+            ViewAction = rootElement.GetProperty("viewAction").Deserialize<ViewAction>(options)
         };
         return gridTableActionList;
     }
