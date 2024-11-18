@@ -30,20 +30,19 @@ public class ElementExportService(IDataDictionaryRepository dataDictionaryReposi
     public async Task<MemoryStream> ExportMultipleRowsAsync(List<Dictionary<string, object>> selectedRows)
     {
         var memoryStream = new MemoryStream();
-        using var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true);
+        var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true);
         foreach (var element in selectedRows)
         {
             var elementName = element["name"].ToString();
-            var metadata = await dataDictionaryRepository.GetFormElementAsync(elementName);
+            var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
             var jsonFile = archive.CreateEntry($"{elementName}.json");
-#if NET
-            await
-#endif
-                using var jsonFileStream = jsonFile.Open();
-            await JsonSerializer.SerializeAsync(jsonFileStream, metadata);
+            using var jsonFileStream = jsonFile.Open();
+            await JsonSerializer.SerializeAsync(jsonFileStream, formElement);
         }
 
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        
         return memoryStream;
     }
 }

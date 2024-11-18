@@ -55,13 +55,13 @@ public class ElementController(
             return File(jsonStream, "application/octet-stream");
         }
 
-        var zipBytes = await elementExportService.ExportMultipleRowsAsync(selectedRows);
+        var exportStream = await elementExportService.ExportMultipleRowsAsync(selectedRows);
         var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
         var zipFileName = $"DataDictionaryExportation_{timestamp}.zip";
 
         Response.Headers.ContentDisposition  = $"attachment; filename=\"{zipFileName}\"";
         
-        return File(zipBytes, "application/octet-stream");
+        return File(exportStream, "application/octet-stream");
     }
 
     public async Task<IActionResult> Import()
