@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -14,7 +15,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -67,7 +68,7 @@ public class AuditLogService(
             .Where(item => item.Value is not DBNull)
             .ToDictionary(item => item.Key, item => item.Value);
 
-        return JsonConvert.SerializeObject(valuesAux);
+        return JsonSerializer.Serialize(valuesAux);
     }
 
     public static string GetKey(Element element, Dictionary<string, object>values)

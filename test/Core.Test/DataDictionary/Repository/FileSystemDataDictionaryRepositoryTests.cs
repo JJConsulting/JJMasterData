@@ -28,7 +28,7 @@ public class FileSystemDataDictionaryRepositoryTests //: IDisposable
     //         if (!Directory.Exists(FolderPath))
     //             Directory.CreateDirectory(FolderPath);
     //         
-    //         File.WriteAllText(DictionaryFilePath, JsonConvert.SerializeObject(metadata));
+    //         File.WriteAllText(DictionaryFilePath, JsonSerializer.Serialize(metadata));
     //     }
     // }
     //

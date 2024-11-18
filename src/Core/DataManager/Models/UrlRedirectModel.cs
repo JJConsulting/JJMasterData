@@ -1,24 +1,25 @@
 #nullable enable
 
+using System.Text.Json.Serialization;
 using JJMasterData.Core.DataDictionary.Models;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataManager.Models;
 
 public record UrlRedirectModel
 {
-    [JsonProperty("urlAsModal")] 
+    [JsonPropertyName("urlAsModal")] 
     public required bool UrlAsModal { get; init; }
     
-    [JsonProperty("isIframe")]
+    [JsonPropertyName("isIframe")]
     public required bool IsIframe { get; init; }
     
-    [JsonProperty("modalTitle")] 
+    [JsonPropertyName("modalTitle")] 
     public required string ModalTitle { get; init; }
     
-    [JsonProperty("urlRedirect")] 
+    [JsonPropertyName("urlRedirect")] 
     public required string UrlRedirect { get; init; }
     
-    [JsonProperty("modalSize")] 
+    [JsonPropertyName("modalSize")] 
     public required ModalSize ModalSize { get; set; }
 }

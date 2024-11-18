@@ -1,8 +1,10 @@
-﻿using JJMasterData.Core.DataDictionary.Models;
+﻿using System.Text.Json;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+
+
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -115,7 +117,7 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;
         ViewBag.AvailableFields = GetAvailableFields(formElement);
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(DataDictionaryServiceBase.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonSerializer.Serialize(DataDictionaryServiceBase.GetAutocompleteHints(formElement));
         ViewBag.SelectedFields = (panel.PanelId > 0) ?
             formElement.Fields.FindAll(x => x.PanelId == panel.PanelId) : [];
     }

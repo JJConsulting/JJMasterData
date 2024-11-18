@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Structure;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -8,10 +10,10 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class ElementRelationshipColumn
 {
-    [JsonProperty("pkcolumn")]
+    [JsonPropertyName("pkcolumn")]
     public string PkColumn { get; set; }
 
-    [JsonProperty("fkcolumn")]
+    [JsonPropertyName("fkcolumn")]
     public string FkColumn { get; set; }
 
 

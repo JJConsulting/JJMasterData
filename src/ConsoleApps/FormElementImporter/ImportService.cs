@@ -1,35 +1,34 @@
+using System.Text.Json;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.FormElementImportator;
 
 public class ImportService(IDataDictionaryRepository dataDictionaryRepository, IConfiguration configuration)
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private string? DictionariesPath { get; } = configuration.GetJJMasterData().GetValue<string?>("DataDictionaryPath");
+    private readonly string? _dictionariesPath= configuration.GetJJMasterData().GetValue<string?>("DataDictionaryPath");
 
-    public void Import()
+    public async Task Import()
     {
         Console.WriteLine(AppContext.BaseDirectory);
         Console.WriteLine("Starting Process...");
 
         var start = DateTime.Now;
-        var databaseDictionaries = DataDictionaryRepository.GetFormElementListAsync(false).GetAwaiter().GetResult();
+        var databaseDictionaries = await dataDictionaryRepository.GetFormElementListAsync(false);
         var folderDictionaries = new List<FormElement>();
 
-        if (DictionariesPath != null)
+        if (_dictionariesPath != null)
         {
-            foreach (string file in Directory.EnumerateFiles(DictionariesPath, "*.json"))
+            foreach (var file in Directory.EnumerateFiles(_dictionariesPath, "*.json"))
             {
-                var json = new StreamReader(file).ReadToEnd();
+                await using var jsonStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                var formElement = FormElementSerializer.Deserialize(json);
+                var formElement = JsonSerializer.Deserialize<FormElement>(jsonStream);
 
-                DataDictionaryRepository.InsertOrReplace(formElement);
+                await dataDictionaryRepository.InsertOrReplaceAsync(formElement);
+                
                 Console.WriteLine($"Saving FormElement: {formElement.Name}");
 
                 folderDictionaries.Add(formElement);
@@ -41,7 +40,7 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
             if (!folderDictionaries.Exists(dic => dic.Name.Equals(formElement.Name)))
             {
                 Console.WriteLine($"Deleting FormElement: {formElement.Name}");
-                DataDictionaryRepository.DeleteAsync(formElement.Name).GetAwaiter().GetResult();
+                await dataDictionaryRepository.DeleteAsync(formElement.Name);
             }
         }
 

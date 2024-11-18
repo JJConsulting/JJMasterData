@@ -1,6 +1,9 @@
+using System.Text.Json.Serialization;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public abstract class GridToolbarAction : BasicAction
 {
-    public override bool IsUserCreated => false;
+    [JsonIgnore]
+    public override bool IsCustomAction => false;
 }

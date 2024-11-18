@@ -2,13 +2,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class PluginAction : UserCreatedAction
+public class PluginAction : BasicAction
 {
+    [JsonPropertyName("pluginId")]
     public required Guid PluginId { get; init; }
     
+    [JsonPropertyName("configurationMap")]
     public Dictionary<string, object?> ConfigurationMap { get; protected set; } = new();
     
     public PluginAction()
@@ -17,6 +20,8 @@ public class PluginAction : UserCreatedAction
         Text = "Plugin";
         Icon = IconType.Plug;
     }
+
+    public override bool IsCustomAction => true;
 
     public override BasicAction DeepCopy()
     {

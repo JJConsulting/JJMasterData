@@ -1,11 +1,13 @@
 #nullable enable
-using Newtonsoft.Json;
+
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.UI.Components;
 
 public record LookupResultDto(string Id,string Description)
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public string Id { get; } = Id;
-    [JsonProperty("description")] public string? Description { get; } = Description;
+    [JsonPropertyName("description")] public string? Description { get; } = Description;
 }

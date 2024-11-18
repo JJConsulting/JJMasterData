@@ -2,7 +2,8 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -16,7 +17,7 @@ public class ElementField
     /// <summary>
     /// Internal field id
     /// </summary>
-    [JsonProperty("fieldid")]
+    [JsonPropertyName("fieldid")]
     public int FieldId { get; set; }
 
     /// <summary>
@@ -26,14 +27,14 @@ public class ElementField
     /// When in JJGridView, the "::ASC" OR "::DESC" tags can be used
     /// in the column name to indicate the data order.
     /// </remarks>
-    [JsonProperty("fieldname")]
+    [JsonPropertyName("fieldname")]
     [Display(Name = "Name")]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Description on the form
     /// </summary>
-    [JsonProperty("label")]
+    [JsonPropertyName("label")]
     [Display(Name = "Label")]
     public string? Label { get; set; }
 
@@ -44,20 +45,20 @@ public class ElementField
     /// Data Type
     /// Default NVARCHAR
     /// </summary>
-    [JsonProperty("datatype")]
+    [JsonPropertyName("datatype")]
     [Display(Name = "Data Type")]
     public FieldType DataType { get; set; } = FieldType.Varchar;
 
     /// <summary>
     /// Filter Parameters
     /// </summary>
-    [JsonProperty("filter")]
+    [JsonPropertyName("filter")]
     public ElementFilter Filter { get; set; } = new();
 
     /// <summary>
     /// Filed Size
     /// </summary>
-    [JsonProperty("size")]
+    [JsonPropertyName("size")]
     [Display(Name = "Size")]
     public int Size { get; set; }
 
@@ -72,7 +73,7 @@ public class ElementField
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("defaultvalue")]
+    [JsonPropertyName("defaultvalue")]
     [AsyncExpression]
     [Display(Name = "Default Value Expression")]
     public string? DefaultValue { get; set; }
@@ -80,21 +81,21 @@ public class ElementField
     /// <summary>
     /// Required field (Default=false)
     /// </summary>
-    [JsonProperty("isrequired")]
+    [JsonPropertyName("isrequired")]
     [Display(Name="Required")]
     public bool IsRequired { get; set; }
 
     /// <summary>
     /// Primary Key (Default=false)
     /// </summary>
-    [JsonProperty("ispk")]
+    [JsonPropertyName("ispk")]
     [Display(Name="Primary Key")]
     public bool IsPk { get; set; }
 
     /// <summary>
     /// Auto Numerical (Identity) (Default=false)
     /// </summary>
-    [JsonProperty("autonum")]
+    [JsonPropertyName("autonum")]
     [Display(Name = "Identity")]
     public bool AutoNum { get; set; }
 
@@ -108,7 +109,7 @@ public class ElementField
     /// <para/>WriteOnly = Used to only in the Set operation
     /// <para/>Virtual = Ignored in database operations
     /// </remarks>
-    [JsonProperty("databehavior")]
+    [JsonPropertyName("databehavior")]
     [Display(Name = "Behavior")]
     public FieldBehavior DataBehavior { get; set; } = FieldBehavior.Real;
 

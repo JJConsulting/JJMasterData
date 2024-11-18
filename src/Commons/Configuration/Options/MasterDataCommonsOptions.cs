@@ -4,11 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Commons.Configuration.Options;
 

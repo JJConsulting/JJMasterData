@@ -303,7 +303,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     public async ValueTask<List<HtmlBuilder>> GetActionsHtmlListAsync(FormStateData formStateData)
     {
         List<HtmlBuilder> result = [];
-        var basicActions = gridView.GridTableActions.OrderBy(x => x.Order).ToList();
+        var basicActions = gridView.GridTableActionList.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: false });
         var groupedActions = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: true });
         

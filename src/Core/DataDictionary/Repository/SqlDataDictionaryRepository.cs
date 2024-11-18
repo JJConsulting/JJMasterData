@@ -1,11 +1,11 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Data.Extensions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -60,7 +60,7 @@ public class SqlDataDictionaryRepository(
 
     private static FormElement DeserializeDictionary(Dictionary<string, object?> dictionary)
     {
-        return FormElementSerializer.Deserialize(dictionary[DataDictionaryStructure.Json]!.ToString()!);
+        return JsonSerializer.Deserialize<FormElement>(dictionary[DataDictionaryStructure.Json]!.ToString()!)!;
     }
 
     public async Task<List<string>> GetNameListAsync()
@@ -82,16 +82,16 @@ public class SqlDataDictionaryRepository(
 
         var values =  entityRepository.GetFields(_masterDataElement, filter);
 
-        var model = values.ToModel<DataDictionaryModel>();
+        var model = DataDictionaryModel.FromDictionary(values);
 
         if (model != null)
         {
-            formElement = FormElementSerializer.Deserialize(model.Json);
+            formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
             
             if(_enableDataDictionaryCaching)
                 memoryCache.Set(elementName, formElement);
             
-            return formElement.DeepCopy();
+            return formElement!.DeepCopy();
         }
 
         return null;
@@ -106,16 +106,16 @@ public class SqlDataDictionaryRepository(
 
         var values = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
 
-        var model = values.ToModel<DataDictionaryModel>();
+        var model = DataDictionaryModel.FromDictionary(values);
         
         if (model != null)
         {
-            formElement = FormElementSerializer.Deserialize(model.Json);
+            formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
             
             if(_enableDataDictionaryCaching)
                 memoryCache.Set(elementName, formElement);
             
-            return formElement.DeepCopy();
+            return formElement!.DeepCopy();
         }
 
         return null;
@@ -157,7 +157,7 @@ public class SqlDataDictionaryRepository(
 
         var dNow = DateTime.Now;
 
-        var jsonForm = FormElementSerializer.Serialize(formElement);
+        var jsonForm = JsonSerializer.Serialize(formElement);
 
         var values = new Dictionary<string, object?>
         {

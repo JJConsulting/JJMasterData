@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Brasil.Models;
 
@@ -13,12 +15,12 @@ public class CepResult
     public required string Uf { get; set; }
     public string? Unidade { get; set; }
     
-    [JsonProperty("erro")]
+    [JsonPropertyName("erro")]
     internal bool Erro { get; set; }
     
     public static CepResult FromJson(string json)
     {
-        return JsonConvert.DeserializeObject<CepResult>(json)!;
+        return JsonSerializer.Deserialize<CepResult>(json)!;
     }
     
     public Dictionary<string, object?> ToDictionary()

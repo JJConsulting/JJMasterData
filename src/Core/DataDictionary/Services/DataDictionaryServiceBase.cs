@@ -100,7 +100,7 @@ public abstract class DataDictionaryServiceBase(
         return true;
     }
 
-    public static IEnumerable<string> GetAutocompleteHintsList(FormElement formElement, bool includeAdditionalHints = true)
+    public static IEnumerable<string> GetAutocompleteHints(FormElement formElement, bool includeAdditionalHints = true)
     {
         if (includeAdditionalHints)
         {

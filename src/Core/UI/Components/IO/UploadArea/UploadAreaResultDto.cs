@@ -1,13 +1,15 @@
 #nullable enable
-using Newtonsoft.Json;
+
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.UI.Components;
 
 public record UploadAreaResultDto
 {
-    [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("message")]
     public string? SuccessMessage { get; set; }
 
-    [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("error")]
     public string? ErrorMessage { get; set; }
 }

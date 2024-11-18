@@ -1,5 +1,6 @@
-﻿using JetBrains.Annotations;
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using JetBrains.Annotations;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -9,14 +10,14 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public class DataItemValue
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; }
 
-    [JsonProperty("description")]
+    [JsonPropertyName("description")]
     [CanBeNull] 
     public string Description { get; set; }
     
-    [JsonProperty("icon")]
+    [JsonPropertyName("icon")]
     public IconType Icon { get; set; }
 
     /// <summary>
@@ -25,10 +26,10 @@ public class DataItemValue
     /// <example>
     /// #FF112F1
     /// </example>
-    [JsonProperty("imagecolor")]
+    [JsonPropertyName("imagecolor")]
     public string IconColor { get; set; }
 
-    [JsonProperty("group")] 
+    [JsonPropertyName("group")] 
     [CanBeNull]
     public string Group { get; set; }
 

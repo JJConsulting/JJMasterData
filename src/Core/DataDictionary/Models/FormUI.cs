@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -14,12 +15,12 @@ public class FormUI
     /// <remarks>
     /// Only multiple of twelve are supported
     /// </remarks>
-    [JsonProperty("formCols")]
+    [JsonPropertyName("formCols")]
     [Display(Name = "Form Columns")]
     public int FormCols { get; set; } = 1;
     
     
-    [JsonProperty("isVerticalLayout")]
+    [JsonPropertyName("isVerticalLayout")]
     [Display(Name = "Use Vertical Layout")]
     public bool IsVerticalLayout { get; set; } = true;
 
@@ -30,7 +31,7 @@ public class FormUI
     /// <remarks>
     /// Valor padrão falso
     /// </remarks>
-    [JsonProperty("showViewModeAsStatic")]
+    [JsonPropertyName("showViewModeAsStatic")]
     [Display(Name = "Show View Mode as Static")]
     public bool ShowViewModeAsStatic { get; set; }
 
@@ -38,7 +39,7 @@ public class FormUI
     /// Comportamento da Tecla enter no formulário 
     /// Default = DISABLED
     /// </summary>
-    [JsonProperty("enterKey")]
+    [JsonPropertyName("enterKey")]
     [Display(Name = "Enter Key Behavior")]
     public FormEnterKey EnterKey { get; set; } = FormEnterKey.Disabled;
 

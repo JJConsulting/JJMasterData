@@ -3,10 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -28,14 +29,14 @@ public class FormElementField : ElementField
     public const string IsButtonAttribute = "is-button";
     public const string CultureInfoAttribute = "culture-info";
 
-    [JsonProperty("component")]
+    [JsonPropertyName("component")]
     [Display(Name = "Component")]
     public FormComponent Component { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("visibleExpression")]
+    [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
     [SyncExpression]
     [Required]
@@ -44,7 +45,7 @@ public class FormElementField : ElementField
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("enableExpression")]
+    [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
     [SyncExpression]
     [Required]
@@ -73,46 +74,46 @@ public class FormElementField : ElementField
     ///     f3.CssClass = "col-sm-6";
     /// </code>
     /// </remarks>
-    [JsonProperty("lineGroup")]
+    [JsonPropertyName("lineGroup")]
     [Display(Name = "Line Group")]
     public int LineGroup { get; set; }
 
     /// <summary>
     /// Class name (CSS) to be appended in object group rendering
     /// </summary>
-    [JsonProperty("cssClass")]
+    [JsonPropertyName("cssClass")]
     [Display(Name = "CSS Class")]
     public string? CssClass { get; set; }
 
     /// <summary>
     /// Help text will be displayed next to the label
     /// </summary>
-    [JsonProperty("helpDescription")]
+    [JsonPropertyName("helpDescription")]
     [Display(Name = "Tooltip")]
     public string? HelpDescription { get; set; }
 
     /// <summary>
     /// Relationship specific settings
     /// </summary>
-    [JsonProperty("dataItem")]
+    [JsonPropertyName("dataItem")]
     public FormElementDataItem? DataItem { get; set; }
 
     /// <summary>
     /// File-specific settings
     /// </summary>
-    [JsonProperty("dataFile")]
+    [JsonPropertyName("dataFile")]
     public FormElementDataFile? DataFile { get; set; }
 
     /// <summary>
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
-    [JsonProperty("attributes")]
+    [JsonPropertyName("attributes")]
     public Dictionary<string, object?> Attributes { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Allows exporting the field (Default=true)
     /// </summary>
-    [JsonProperty("export")]
+    [JsonPropertyName("export")]
     [Display(Name = "Enable Exportation")]
     public bool Export { get; set; }
 
@@ -123,7 +124,7 @@ public class FormElementField : ElementField
     /// Important for lower versions of .NET Framework to enable the parameter: 
     /// httpRuntime requestValidationMode="4.5" ... 
     /// </remarks>
-    [JsonProperty("validateRequest")]
+    [JsonPropertyName("validateRequest")]
     [Display(Name = "Validate Request")]
     public bool ValidateRequest { get; set; }
 
@@ -137,7 +138,7 @@ public class FormElementField : ElementField
     /// <para/>Exemplo:
     /// "SELECT ID, DESCR FROM TB_FOO WHERE TPVEND = {campo_tpvend}"
     /// </remarks>
-    [JsonProperty("autoPostBack")]
+    [JsonPropertyName("autoPostBack")]
     [Display(Name = "Auto Reload")]
     public bool AutoPostBack { get; set; }
 
@@ -145,7 +146,7 @@ public class FormElementField : ElementField
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("triggerExpression")]
+    [JsonPropertyName("triggerExpression")]
     [Display(Name = "Trigger Expression")]
     [AsyncExpression]
     public string? TriggerExpression { get; set; }
@@ -156,26 +157,27 @@ public class FormElementField : ElementField
     /// <remarks>
     /// Property valid only for numeric types
     /// </remarks>
-    [JsonProperty("numberOfDecimalPlaces")]
+    [JsonPropertyName("numberOfDecimalPlaces")]
     [Display(Name = "Number of Decimal Places")]
     public int NumberOfDecimalPlaces { get; set; }
 
     /// <summary>
     /// This id references a FormElementPanel
     /// </summary>
-    [JsonProperty("panelId")]
+    [JsonPropertyName("panelId")]
     public int PanelId { get; set; }
 
-    [JsonProperty("actions")] 
+    [JsonPropertyName("actions")]
+    [JsonConverter(typeof(FormElementFieldActionListConverter))]
     public FormElementFieldActionList Actions { get; set; }
 
     /// <summary>
     /// Internal developer notes
     /// </summary>
-    [JsonProperty("internalNotes")]
+    [JsonPropertyName("internalNotes")]
     public string? InternalNotes { get; set; }
 
-    [JsonProperty("gridAlignment")]
+    [JsonPropertyName("gridAlignment")]
     [Display(Name = "Alignment At Grid")]
     public GridAlignment GridAlignment { get; set; }
     
@@ -183,11 +185,11 @@ public class FormElementField : ElementField
     /// Template used to render the field at the Grid.
     /// </summary>
     [LanguageInjection("html")]
-    [JsonProperty("gridRenderingTemplate")]
+    [JsonPropertyName("gridRenderingTemplate")]
     [Display(Name = "Rendering Template")]
     public string? GridRenderingTemplate { get; set; }
     
-    [JsonProperty("encodeHtml")]
+    [JsonPropertyName("encodeHtml")]
     [Display(Name = "Encode HTML")]
     public bool EncodeHtml { get; set; } = true;
 
@@ -204,7 +206,7 @@ public class FormElementField : ElementField
         ValidateRequest = true;
         VisibleExpression = "val:1";
         EnableExpression = "val:1";
-        Actions = [];
+        Actions = new();
     }
 
     public FormElementField(ElementField elementField)
@@ -254,7 +256,7 @@ public class FormElementField : ElementField
 
         Export = true;
         ValidateRequest = true;
-        Actions = [];
+        Actions = new();
     }
 
 

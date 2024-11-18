@@ -1,5 +1,7 @@
-﻿using JJMasterData.Core.DataManager.Expressions;
-using Newtonsoft.Json;
+﻿using System.Text.Json;
+using JJMasterData.Core.DataManager.Expressions;
+
+
 
 namespace JJMasterData.Core.Test.DataManager.Expressions;
 
@@ -11,7 +13,7 @@ public class ExpressionHelperTests
     [InlineData("exp: {PRICE} - {RANGE}", "{\"PRICE\": null, \"RANGE\": 0.01}","exp:  - 0.01")]
     public void Expression_Replace_Test(string expression, string parsedValuesJson, string expected)
     {
-        var parsedValues = JsonConvert.DeserializeObject<Dictionary<string, object?>>(parsedValuesJson)!;
+        var parsedValues = JsonSerializer.Deserialize<Dictionary<string, object?>>(parsedValuesJson)!;
 
         var parsedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
      

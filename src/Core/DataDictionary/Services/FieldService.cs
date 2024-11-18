@@ -255,7 +255,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         return Task.CompletedTask;
     }
 
-    private void ValidateManualItens(IList<DataItemValue> itens)
+    private void ValidateManualItens(List<DataItemValue> itens)
     {
         if (itens == null || itens.Count == 0)
         {

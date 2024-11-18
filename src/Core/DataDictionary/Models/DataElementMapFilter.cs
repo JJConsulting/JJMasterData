@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
 
 public class DataElementMapFilter
 {
-    [JsonProperty("fieldName")]
+    [JsonPropertyName("fieldName")]
     public string FieldName { get; set; }
 
-    [JsonProperty("expressionValue")]
+    [JsonPropertyName("expressionValue")]
     [SyncExpression]
     [Display(Name = "Expression")]
     public string ExpressionValue { get; set; }

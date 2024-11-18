@@ -1,49 +1,51 @@
-﻿namespace JJMasterData.Brasil.Models;
+﻿using System.Text.Json.Serialization;
 
-using Newtonsoft.Json;
+namespace JJMasterData.Brasil.Models;
+
+
 
 internal sealed class SintegraCpfDto
 {
-    [JsonProperty("code")]
+    [JsonPropertyName("code")]
     public required string Code { get; set; }
 
-    [JsonProperty("status")]
+    [JsonPropertyName("status")]
     public required string Status { get; set; }
 
-    [JsonProperty("message")]
+    [JsonPropertyName("message")]
     public required string Message { get; set; }
 
-    [JsonProperty("cpf")]
+    [JsonPropertyName("cpf")]
     public required string Cpf { get; set; }
 
-    [JsonProperty("nome")]
+    [JsonPropertyName("nome")]
     public required string Nome { get; set; }
 
-    [JsonProperty("data_nascimento")]
+    [JsonPropertyName("data_nascimento")]
     public required string DataNascimento { get; set; }
 
-    [JsonProperty("situacao_cadastral")]
+    [JsonPropertyName("situacao_cadastral")]
     public required string SituacaoCadastral { get; set; }
 
-    [JsonProperty("data_inscricao")]
+    [JsonPropertyName("data_inscricao")]
     public required string DataInscricao { get; set; }
 
-    [JsonProperty("genero")]
+    [JsonPropertyName("genero")]
     public required string Genero { get; set; }
 
-    [JsonProperty("uf")]
+    [JsonPropertyName("uf")]
     public required string[] UF { get; set; }
 
-    [JsonProperty("digito_verificador")]
+    [JsonPropertyName("digito_verificador")]
     public required string DigitoVerificador { get; set; }
 
-    [JsonProperty("comprovante")]
+    [JsonPropertyName("comprovante")]
     public required string Comprovante { get; set; }
 
-    [JsonProperty("html")]
+    [JsonPropertyName("html")]
     public required string Html { get; set; }
 
-    [JsonProperty("version")]
+    [JsonPropertyName("version")]
     public required string Version { get; set; }
 
     public CpfResult ToCpfResult()

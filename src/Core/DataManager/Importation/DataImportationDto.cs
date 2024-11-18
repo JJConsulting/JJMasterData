@@ -1,34 +1,36 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataManager.Importation;
 
 internal record DataImportationDto
 {
-    [JsonProperty("StartDate")]
+    [JsonPropertyName("StartDate")]
     public string StartDate { get; set; }
 
-    [JsonProperty("Insert")]
+    [JsonPropertyName("Insert")]
     public int Insert { get; set; }
 
-    [JsonProperty("Update")]
+    [JsonPropertyName("Update")]
     public int Update { get; set; }
 
-    [JsonProperty("Delete")]
+    [JsonPropertyName("Delete")]
     public int Delete { get; set; }
 
-    [JsonProperty("Error")]
+    [JsonPropertyName("Error")]
     public int Error { get; set; }
 
-    [JsonProperty("Ignore")]
+    [JsonPropertyName("Ignore")]
     public int Ignore { get; set; }
 
-    [JsonProperty("IsProcessing")]
+    [JsonPropertyName("IsProcessing")]
     public bool IsProcessing { get; set; }
 
-    [JsonProperty("PercentProcess")]
+    [JsonPropertyName("PercentProcess")]
     public int PercentProcess { get; set; }
 
-    [JsonProperty("Message")]
+    [JsonPropertyName("Message")]
     public string Message { get; set; }
 
    

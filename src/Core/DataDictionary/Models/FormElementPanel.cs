@@ -1,46 +1,47 @@
 ﻿#nullable enable
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElementPanel
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public int PanelId { get; set; }
 
-    [JsonProperty("title")]
+    [JsonPropertyName("title")]
     [Display(Name = "Title")]
     [SyncExpression]
     public string? Title { get; set; }
 
-    [JsonProperty("subtitle")]
+    [JsonPropertyName("subtitle")]
     [Display(Name = "SubTitle")]
     [SyncExpression]
     public string? SubTitle { get; set; }
 
-    [JsonProperty("layout")]
+    [JsonPropertyName("layout")]
     [Display(Name = "Layout")]
     public PanelLayout Layout { get; set; } = PanelLayout.Well;
 
-    [JsonProperty("color")]
+    [JsonPropertyName("color")]
     [Display(Name = "Color")]
     public BootstrapColor Color { get; set; } = BootstrapColor.Default;
 
-    [JsonProperty("icon")]
+    [JsonPropertyName("icon")]
     [Display(Name = "Icon")]
     public IconType? Icon { get; set; }
     
-    [JsonProperty("expandedByDefault")]
+    [JsonPropertyName("expandedByDefault")]
     [Display(Name = "Expanded By Default")]
     public bool ExpandedByDefault { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("visibleExpression")]
+    [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
     [SyncExpression]
     public string VisibleExpression { get; set; } = "val:1";
@@ -48,12 +49,12 @@ public class FormElementPanel
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [JsonProperty("enableExpression")]
+    [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
     [SyncExpression]
     public string EnableExpression { get; set; } = "val:1";
 
-    [JsonProperty("cssClass")]
+    [JsonPropertyName("cssClass")]
     [Display(Name = "CSS Class")]
     public string? CssClass { get; set; }
 

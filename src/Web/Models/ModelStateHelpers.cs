@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+
 
 namespace JJMasterData.Web.Models;
 
@@ -16,12 +18,12 @@ public static class ModelStateHelpers
                 ErrorMessages = kvp.Value?.Errors.Select(err => err.ErrorMessage).ToList() ?? [],
             });
 
-        return JsonConvert.SerializeObject(errorList);
+        return JsonSerializer.Serialize(errorList);
     }
 
     public static ModelStateDictionary DeserialiseModelState(string serialisedErrorList)
     {
-        var errorList = JsonConvert.DeserializeObject<List<ModelStateTransferValue>>(serialisedErrorList);
+        var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
         var modelState = new ModelStateDictionary();
 
         if (errorList != null)

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -12,14 +13,14 @@ public class ElementFilter(FilterMode type)
     /// <summary>
     /// Filter type
     /// </summary>
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
     [Display(Name = "Filter Mode")]
     public FilterMode Type { get; set; } = type;
 
     /// <summary>
     /// Required filter
     /// </summary>
-    [JsonProperty("isrequired")]
+    [JsonPropertyName("isrequired")]
     [Display(Name = "Required")]
     public bool IsRequired { get; set; }
 

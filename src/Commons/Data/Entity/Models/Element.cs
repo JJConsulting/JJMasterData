@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -18,47 +19,47 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 [DebuggerDisplay("Name = {Name}")]
 public class Element()
 {
-    [JsonProperty("schema")]
+    [JsonPropertyName("schema")]
     [Display(Name = "Schema")]
     public string? Schema { get; set; } 
     
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     [Display(Name = "Element Name")]
     public required string Name { get; set; }
     
-    [JsonProperty("info")]
+    [JsonPropertyName("info")]
     public string? Info { get; set; }
     
-    [JsonProperty("fields")]
+    [JsonPropertyName("fields")]
     public ElementFieldList Fields { get; set; } = [];
 
-    [JsonProperty("indexes")]
+    [JsonPropertyName("indexes")]
     public List<ElementIndex> Indexes { get; set; } = [];
 
-    [JsonProperty("relations")]
+    [JsonPropertyName("relations")]
     public List<ElementRelationship> Relationships { get; set; } = [];
 
-    [JsonProperty("tableName")]
+    [JsonPropertyName("tableName")]
     [Display(Name = "Table Name")]
     public required string TableName { get; set; }
 
-    [JsonProperty("useReadProcedure")] 
+    [JsonPropertyName("useReadProcedure")] 
     [Display(Name = "Use Read Procedure")]
     public bool UseReadProcedure { get; set; }
     
-    [JsonProperty("customprocnameget")]
+    [JsonPropertyName("customprocnameget")]
     [Display(Name = "Read Procedure")]
     public string? ReadProcedureName { get; set; } 
     
-    [JsonProperty("useWriteProcedure")] 
+    [JsonPropertyName("useWriteProcedure")] 
     [Display(Name = "Use Write Procedure")]
     public bool UseWriteProcedure { get; set; }
     
-    [JsonProperty("customprocnameset")]
+    [JsonPropertyName("customprocnameset")]
     [Display(Name = "Write Procedure")]
     public string? WriteProcedureName { get; set; }
     
-    [JsonProperty("sync")]
+    [JsonPropertyName("sync")]
     public bool EnableSynchronism { get; set; } = false;
 
     /// <summary>
@@ -68,14 +69,14 @@ public class Element()
     /// Behavior whether data will be synchronized online or offline
     /// <para>Default = SyncMode.Online</para>
     /// </remarks>
-    [JsonProperty("mode")]
+    [JsonPropertyName("mode")]
     public SynchronismMode SynchronismMode { get; set; } = SynchronismMode.Online;
 
     /// <summary>
     /// Custom connection string. If null, will use the default JJMasterData:ConnectionString from IConfiguration.
     /// </summary>
     [Display(Name = "Connection String")]
-    [JsonProperty("connectionId")]
+    [JsonPropertyName("connectionId")]
     public Guid? ConnectionId { get; set; }
     
     [SetsRequiredMembers]

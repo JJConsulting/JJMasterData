@@ -1,10 +1,12 @@
 ﻿using System.Data;
+using System.Text.Json;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using Newtonsoft.Json;
+
+
 
 namespace JJMasterData.Core.Test.DataDictionary;
 
@@ -234,10 +236,10 @@ public class FormElementTest
         var newReference = formElement.DeepCopy();
 
         Assert.True(formElement != newReference);
-        Action<JsonSerializerSettings>? configureSettings = options => { options.Formatting = Formatting.Indented; };
-        var oldJson = FormElementSerializer.Serialize(formElement, configureSettings);
 
-        var newJson = FormElementSerializer.Serialize(formElement, configureSettings);
+        var oldJson = JsonSerializer.Serialize(formElement);
+
+        var newJson = JsonSerializer.Serialize(formElement);
 
         Assert.Equal(oldJson, newJson);
     }
