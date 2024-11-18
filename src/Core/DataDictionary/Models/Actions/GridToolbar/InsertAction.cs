@@ -35,9 +35,11 @@ public sealed class InsertAction : GridToolbarAction, IModalAction
     public bool ShowAsModal { get; set; }
     
     [Display(Name = "Modal Title")]
+    [JsonPropertyName("modalTitle")]
     public string ModalTitle { get; set; }
     
     [Display(Name = "Success Message")]
+    [JsonPropertyName("successMessage")]
     public string SuccessMessage { get; set; }
 
     public InsertAction()

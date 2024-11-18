@@ -1,6 +1,8 @@
 #nullable enable
 
 
+using System.Text.Json.Serialization;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
@@ -10,6 +12,7 @@ public sealed class BackAction : FormToolbarAction, ISubmittableAction
 {
     public const string ActionName = "back";
 
+    [JsonPropertyName("isSubmit")]
     public bool IsSubmit { get; set; }
     
     public BackAction()

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -8,6 +9,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 public sealed class DeleteAction : GridTableAction, ISubmittableAction
 {
     [Display(Name = "Is Submit")] 
+    [JsonPropertyName("isSubmit")]
     public bool IsSubmit { get; set; }
 
     /// <summary>
