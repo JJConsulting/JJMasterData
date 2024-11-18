@@ -1,12 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormActionRelationField
 {
-    [JsonProperty("internalField")] public string InternalField { get; set; }
+    [JsonPropertyName("internalField")] public string InternalField { get; set; }
 
-    [JsonProperty("redirectField")] public string RedirectField { get; set; }
+    [JsonPropertyName("redirectField")] public string RedirectField { get; set; }
 
     public FormActionRelationField DeepCopy() => (FormActionRelationField)MemberwiseClone();
 }

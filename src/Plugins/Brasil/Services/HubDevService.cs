@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Configuration;
 using JJMasterData.Brasil.Exceptions;
+using JJMasterData.Brasil.Helpers;
 using JJMasterData.Brasil.Models;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Brasil.Services;
 
@@ -42,12 +43,17 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
             var message = await httpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
             
-            var apiResult = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings
+            var options = new JsonSerializerOptions
             {
-                DateFormatString = "dd/MM/yyyy"
-            });
-            
-            var result = apiResult!["result"]!.ToObject<T>()!;
+                Converters =
+                {
+                    new CustomDateConverter("dd/MM/yyyy")
+                }
+            };
+
+            var apiResult = JsonSerializer.Deserialize<JsonObject>(content, options);
+
+            var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), options)!;
             
             return result;
         }

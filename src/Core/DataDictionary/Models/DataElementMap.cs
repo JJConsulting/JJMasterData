@@ -1,32 +1,33 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
 public class DataElementMap
 {
-    [JsonProperty("elementName")]
+    [JsonPropertyName("elementName")]
     [Required]
     public string ElementName { get; set; } = null!;
 
-    [JsonProperty("fieldKey")] 
+    [JsonPropertyName("fieldKey")] 
     public string IdFieldName { get; set; } = null!;
 
-    [JsonProperty("fieldDescription")]
+    [JsonPropertyName("fieldDescription")]
     public string? DescriptionFieldName { get; set; } = null!;
 
-    [JsonProperty("iconId")]
+    [JsonPropertyName("iconId")]
     public string? IconIdFieldName { get; set; }
 
-    [JsonProperty("iconColor")] 
+    [JsonPropertyName("iconColor")] 
     public string? IconColorFieldName { get; set; }
 
-    [JsonProperty("group")]
+    [JsonPropertyName("group")]
     public string? GroupFieldName { get; set; }
 
-    [JsonProperty("popUpSize")] 
+    [JsonPropertyName("popUpSize")] 
     public ModalSize ModalSize { get; set; }
 
     [JsonIgnore]
@@ -57,11 +58,11 @@ public class DataElementMap
         }
     }
 
-    [JsonProperty("mapFilters")]
+    [JsonPropertyName("mapFilters")]
     public List<DataElementMapFilter> MapFilters { get; set; } = [];
 
 
-    [JsonProperty("enableElementActions")]
+    [JsonPropertyName("enableElementActions")]
     [Display(Name = "Enable Element Actions")]
     public bool EnableElementActions { get; set; }
 

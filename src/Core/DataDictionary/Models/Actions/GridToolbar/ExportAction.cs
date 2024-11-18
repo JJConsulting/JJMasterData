@@ -1,7 +1,7 @@
 ﻿
 #nullable enable
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -12,10 +12,10 @@ public sealed class ExportAction : GridToolbarAction
 {
     public const string ActionName = "export";
 
-    [JsonProperty("processOptions")] 
+    [JsonPropertyName("processOptions")] 
     public ProcessOptions ProcessOptions { get; set; }
 
-    [JsonProperty("fileName")]
+    [JsonPropertyName("fileName")]
     [Display(Name="Download File Name")]
     public string? FileName { get; set; }
     

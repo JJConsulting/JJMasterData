@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -16,7 +17,7 @@ public class GridUI
     /// <remarks>
     /// Se o RecordsPerPage for zero a paginação não será exibida
     /// </remarks>
-    [JsonProperty("totalPerPage")]
+    [JsonPropertyName("totalPerPage")]
     [Display(Name = "Total Of Records per page")]
     public int RecordsPerPage { get; set; } = 5;
 
@@ -24,7 +25,7 @@ public class GridUI
     /// Total de botões na paginação 
     /// (Default = 5)
     /// </summary>
-    [JsonProperty("totalPaggingButton")]
+    [JsonPropertyName("totalPaggingButton")]
     [Display(Name = "Total Pagination Buttons")]
     public int TotalPaggingButton { get; set; } = 5;
 
@@ -32,7 +33,7 @@ public class GridUI
     /// Exibi borda na grid 
     /// (Default = false)
     /// </summary>
-    [JsonProperty("showBorder")]
+    [JsonPropertyName("showBorder")]
     [Display(Name = "Show Border")]
     public bool ShowBorder { get; set; }
 
@@ -40,7 +41,7 @@ public class GridUI
     /// Exibir colunas zebradas 
     /// (Default = true)
     /// </summary>*
-    [JsonProperty("showRowStriped")]
+    [JsonPropertyName("showRowStriped")]
     [Display(Name = "Show Rows striped")]
     public bool ShowRowStriped { get; set; } = true;
 
@@ -48,28 +49,28 @@ public class GridUI
     /// Alterar a cor da linha ao passar o mouse 
     /// (Default = true)
     /// </summary>
-    [JsonProperty("showRowHover")]
+    [JsonPropertyName("showRowHover")]
     [Display(Name = "Show Row Hover")]
     public bool ShowRowHover { get; set; } = true;
 
     /// <summary>
     /// Quantidade total de registros existentes no banco
     /// </summary>
-    [JsonProperty("totalReg")]
+    [JsonPropertyName("totalReg")]
     [Display(Name = "Total Of Records")]
     public int TotalOfRecords { get; set; }
 
     /// <summary>
     /// Exibir título no cabeçalho da página
     /// </summary>
-    [JsonProperty("showTitle")]
+    [JsonPropertyName("showTitle")]
     [Display(Name = "Show Title")]
     public bool ShowTitle { get; set; } = true;
 
     /// <summary>
     /// Exibir toolbar (Default = true) 
     /// </summary>
-    [JsonProperty("showToolbar")]
+    [JsonPropertyName("showToolbar")]
     [Display(Name = "Show Toolbar")]
     public bool ShowToolBar { get; set; } = true;
 
@@ -80,7 +81,7 @@ public class GridUI
     /// Habilita ou não o link nos titulos permitindo a ordenação.
     /// Mesmo quando configurado como falso, a grid respeita a propriedade CurrentOrder
     /// </remarks>
-    [JsonProperty("enableSorting")]
+    [JsonPropertyName("enableSorting")]
     [Display(Name = "Enable Sorting")]
     public bool EnableSorting { get; set; } = true;
 
@@ -88,7 +89,7 @@ public class GridUI
     /// Permite selecionar multiplas linhas na Grid 
     /// habilitando um checkbox na primeira coluna. (Defaut = false)
     /// </summary>
-    [JsonProperty("enableMultSelect")]
+    [JsonPropertyName("enableMultSelect")]
     [Display(Name = "Enable Multiselect")]
     public bool EnableMultiSelect { get; set; }
 
@@ -100,7 +101,7 @@ public class GridUI
     /// When using this property, we recommend changing the object's [Name] parameter.
     /// The [Name] property is used to compose the name of the session variable.
     /// </remarks>
-    [JsonProperty("maintainValuesOnLoad")]
+    [JsonPropertyName("maintainValuesOnLoad")]
     [Display(Name = "Save User Preferences")]
     public bool MaintainValuesOnLoad { get; set; }
 
@@ -112,7 +113,7 @@ public class GridUI
     /// <para/>
     /// To change the empty data message, refer to the EmptyDataText property
     /// </remarks>
-    [JsonProperty("showHeaderWhenEmpty")]
+    [JsonPropertyName("showHeaderWhenEmpty")]
     [Display(Name = "Show Header When Empty")]
     public bool ShowHeaderWhenEmpty { get; set; } = true;
 
@@ -123,7 +124,7 @@ public class GridUI
     /// Default value = (There is no record to be displayed).
     /// <para/>
     /// </remarks>
-    [JsonProperty("emptyDataText")]
+    [JsonPropertyName("emptyDataText")]
     [Display(Name = "Empty Data Text")]
     public string EmptyDataText { get; set; } = "There is no record to display.";
 
@@ -141,19 +142,19 @@ public class GridUI
     /// <para/>
     /// If the TotalRecords property is equal to zero, pagination will not be displayed.
     /// </remarks>
-    [JsonProperty("showPagging")]
+    [JsonPropertyName("showPagging")]
     [Display(Name = "Enable Pagination")]
     public bool ShowPagging { get; set; } = true;
     
-    [JsonProperty("headerFixed")]
+    [JsonPropertyName("headerFixed")]
     [Display(Name = "Header Fixed At Scroll")]
     public bool HeaderFixed { get; set; }
 
-    [JsonProperty("useVerticalLayoutAtFilter")]
+    [JsonPropertyName("useVerticalLayoutAtFilter")]
     [Display(Name = "Use Vertical Layout At Filter")]
     public bool UseVerticalLayoutAtFilter { get; set; } 
     
-    [JsonProperty("isCompact")]
+    [JsonPropertyName("isCompact")]
     [Display(Name = "Compact mode")]
     public bool IsCompact { get; set; }
 

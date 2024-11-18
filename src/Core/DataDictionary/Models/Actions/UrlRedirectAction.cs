@@ -1,33 +1,33 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public sealed class UrlRedirectAction : UserCreatedAction
+public sealed class UrlRedirectAction : BasicAction
 {
-    [JsonProperty("urlRedirect")]
+    [JsonPropertyName("urlRedirect")]
     [Display(Name = "Url")]
     public string UrlRedirect { get; set; }
     
-    [JsonProperty("urlAsPopUp")]
+    [JsonPropertyName("urlAsPopUp")]
     [Display(Name = "Is Modal?")]
     public bool IsModal { get; set; }
     
     /// <summary>
     /// If the action is inside a modal, render as iFrame. If this is false, it will only add the resulting HTML inside the modal (recommended).
     /// </summary>
-    [JsonProperty("isIframe")]
+    [JsonPropertyName("isIframe")]
     [Display(Name = "Is Iframe?")]
     public bool IsIframe { get; set; } = true;
     
-    [JsonProperty("popupSize")]
+    [JsonPropertyName("popupSize")]
     public ModalSize ModalSize { get; set; } = ModalSize.Default;
 
-    [JsonProperty("ModalTitle")]
+    [JsonPropertyName("ModalTitle")]
     [Display(Name = "Modal Title")]
     public string ModalTitle { get; set; } = "Title";
 
-    [JsonProperty("encryptParameters")]
+    [JsonPropertyName("encryptParameters")]
     [Display(Name="Encrypt Parameters")]
     public bool EncryptParameters { get; set; }
     
@@ -35,5 +35,7 @@ public sealed class UrlRedirectAction : UserCreatedAction
     {
         Icon = IconType.ExternalLink;
     }
+    [JsonIgnore]
+    public override bool IsCustomAction => true;
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

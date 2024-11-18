@@ -10,6 +10,8 @@ public static class DataDictionaryServiceExtensions
         services.AddTransient<ActionsService>();
         services.AddTransient<ApiService>();
         services.AddTransient<ElementService>();
+        services.AddTransient<ElementImportService>();
+        services.AddTransient<ElementExportService>();
         services.AddTransient<EntityService>();
         services.AddTransient<FieldService>();
         services.AddTransient<IndexesService>();

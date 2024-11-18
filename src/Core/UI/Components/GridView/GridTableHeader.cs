@@ -32,7 +32,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
 
     private IEnumerable<HtmlBuilder> GetActionsThList()
     {
-        var basicActions = gridView.GridTableActions.OrderBy(x => x.Order).ToList();
+        var basicActions = gridView.GridTableActionList.OrderBy(x => x.Order).ToList();
         var actions = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var actionsWithGroupCount = basicActions.Count(x => x.IsVisible && x.IsGroup);
 

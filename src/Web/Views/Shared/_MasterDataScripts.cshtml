@@ -1,4 +1,5 @@
-﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
     var areaName = ViewContext.RouteData.Values["area"] as string;

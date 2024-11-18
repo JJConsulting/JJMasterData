@@ -6,9 +6,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -19,28 +20,28 @@ public class FormElement : Element
 
     [JsonIgnore] internal string? ParentName { get; set; }
 
-    [JsonProperty]
+    [JsonPropertyName("title")]
     [Display(Name = "Title")]
     [SyncExpression]
     public string? Title { get; set; }
 
-    [JsonProperty]
+    [JsonPropertyName("titleSize")]
     [Display(Name = "Title Size")]
     public HeadingSize TitleSize { get; set; } = HeadingSize.H3;
 
-    [JsonProperty]
+    [JsonPropertyName("subTitle")]
     [Display(Name = "SubTitle")]
     [SyncExpression]
     public string? SubTitle { get; set; }
     
-    [JsonProperty("icon")]
+    [JsonPropertyName("icon")]
     public IconType? Icon { get; set; }
 
-    [JsonProperty("typeIdentifier")]
+    [JsonPropertyName("typeIdentifier")]
     public char TypeIdentifier { get; init; } = 'F';
     
     [Required]
-    [JsonProperty("fields")]
+    [JsonPropertyName("fields")]
     public new FormElementFieldList Fields
     {
         get => _fields ?? [];
@@ -51,10 +52,10 @@ public class FormElement : Element
         }
     }
 
-    [Required] [JsonProperty("panels")] public List<FormElementPanel> Panels { get; set; }
+    [Required] [JsonPropertyName("panels")] public List<FormElementPanel> Panels { get; set; }
 
     [Required]
-    [JsonProperty("relations")]
+    [JsonPropertyName("relations")]
     public new FormElementRelationshipList Relationships
     {
         get => _relationships ?? [];
@@ -65,10 +66,10 @@ public class FormElement : Element
         }
     }
 
-    [Required] [JsonProperty("options")] public FormElementOptions Options { get; set; }
+    [Required] [JsonPropertyName("options")] public FormElementOptions Options { get; set; }
 
     [Required]
-    [JsonProperty("apiOptions")]
+    [JsonPropertyName("apiOptions")]
     public FormElementApiOptions ApiOptions { get; set; }
 
     public FormElement()

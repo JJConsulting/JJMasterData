@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -13,31 +13,33 @@ public sealed class InsertAction : GridToolbarAction, IModalAction
         InsertActionLocation is not InsertActionLocation.ButtonAtGrid;
 
     [Display(Name = "Location")]
-    [JsonProperty("insertActionLocation")]
+    [JsonPropertyName("insertActionLocation")]
     public InsertActionLocation InsertActionLocation { get; set; } = InsertActionLocation.ButtonAtGrid;
     
     /// <summary>
     /// Redirects the insert to another element.
     /// </summary>
-    [JsonProperty("elementNameToSelect")]
+    [JsonPropertyName("elementNameToSelect")]
     [Display(Name = "Element Name To Select")]
     public string ElementNameToSelect { get; set; }
 
     /// <summary>
     /// Re-opens the insert after saving.
     /// </summary>
-    [JsonProperty("reopenForm")]
+    [JsonPropertyName("reopenForm")]
     [Display(Name = "Reopen Form")]
     public bool ReopenForm { get; set; }
 
-    [JsonProperty("showAsModal")]
+    [JsonPropertyName("showAsModal")]
     [Display(Name = "Show as Modal")]
     public bool ShowAsModal { get; set; }
     
     [Display(Name = "Modal Title")]
+    [JsonPropertyName("modalTitle")]
     public string ModalTitle { get; set; }
     
     [Display(Name = "Success Message")]
+    [JsonPropertyName("successMessage")]
     public string SuccessMessage { get; set; }
 
     public InsertAction()

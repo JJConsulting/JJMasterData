@@ -1,5 +1,6 @@
-﻿using JJMasterData.Core.DataDictionary.Models;
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using JJMasterData.Core.DataDictionary.Models;
+
 
 namespace JJMasterData.WebApi.Models;
 
@@ -8,13 +9,13 @@ public class MasterApiListResponse
     /// <summary>
     /// Quantidade total de registros no banco
     /// </summary>
-    [JsonProperty("tot")]
+    [JsonPropertyName("tot")]
     public int TotalOfRecords { get; set; }
 
     /// <summary>
     /// Tabela com os dados da pesquisa
     /// </summary>
-    [JsonProperty("fields")]
+    [JsonPropertyName("fields")]
     public Dictionary<string, object?>[]? Fields { get; set; }
 
 

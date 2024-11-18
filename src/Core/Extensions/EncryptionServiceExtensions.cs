@@ -1,14 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Routing;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Extensions;
 
 public static class EncryptionServiceExtensions
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters =
+        {
+            new DictionaryStringObjectJsonConverter() 
+        }
+    };
+    
     /// <summary>
     /// Encrypts the string with URL escape to prevent errors in parsing, algorithms like AES generate characters like '/'
     /// </summary>
@@ -33,12 +43,12 @@ public static class EncryptionServiceExtensions
     
     public static string EncryptObject<T>(this IEncryptionService service, T @object)
     {
-        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(@object));
+        return service.EncryptStringWithUrlEscape(JsonSerializer.Serialize(@object, SerializerOptions));
     }
     
     public static T DecryptObject<T>(this IEncryptionService service, string encryptedObject)
     {
-        return JsonConvert.DeserializeObject<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!);
+        return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, SerializerOptions);
     }
     
     public static Dictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)

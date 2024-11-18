@@ -14,4 +14,4 @@ var serviceProvider = services.BuildServiceProvider();
 
 var importService = serviceProvider.GetRequiredService<ImportService>();
 
-importService.Import();
+await importService.Import();

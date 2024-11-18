@@ -1,29 +1,32 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.UI.Components;
 
 public class ActionMap
 {
 
-    [JsonProperty("elementName")]
+    [JsonPropertyName("elementName")]
     public required string ElementName { get; set; }
 
-    [JsonProperty("actionName")] 
+    [JsonPropertyName("actionName")] 
     public required string ActionName { get; set; }
 
-    [JsonProperty("fieldName")] 
+    [JsonPropertyName("fieldName")] 
     public string? FieldName { get; set; }
 
-    [JsonProperty("pkFieldValues")] 
+    [JsonPropertyName("pkFieldValues")] 
+    [JsonConverter(typeof(DictionaryStringObjectJsonConverter))]
     public Dictionary<string, object> PkFieldValues { get; set; }
     
-    [JsonProperty("contextAction")] 
+    [JsonPropertyName("contextAction")] 
     public required ActionSource ActionSource { get; set; }
 
     public ActionMap()

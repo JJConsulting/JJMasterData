@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
@@ -15,7 +16,7 @@ using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -348,7 +349,7 @@ internal sealed class GridFilter(JJGridView gridView)
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = gridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            values = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson)!;
+            values = JsonSerializer.Deserialize<Dictionary<string, object>>(filterJson)!;
         }
 
         var fieldsFilter = gridView.FormElement.Fields.FindAll(x => x.Filter.Type != FilterMode.None);

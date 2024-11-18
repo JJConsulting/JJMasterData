@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Configuration;
@@ -7,7 +8,7 @@ using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Brasil.Services;
 
@@ -34,7 +35,7 @@ public class SintegraService(HttpClient httpClient, ICepService cepService, IOpt
             
             var message = await HttpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
-            var sintegraDto = JsonConvert.DeserializeObject<SintegraCnpjDto>(content)!;
+            var sintegraDto = JsonSerializer.Deserialize<SintegraCnpjDto>(content)!;
             return sintegraDto.ToCnpjResult();
         }
         catch (Exception ex)
@@ -58,7 +59,7 @@ public class SintegraService(HttpClient httpClient, ICepService cepService, IOpt
             var message = await HttpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
 
-            var dto = JsonConvert.DeserializeObject<SintegraCpfDto>(content)!;
+            var dto = JsonSerializer.Deserialize<SintegraCpfDto>(content)!;
             return dto.ToCpfResult();
         }
         catch (Exception ex)

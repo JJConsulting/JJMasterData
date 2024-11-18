@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.WebApi.Models;
 
@@ -8,18 +10,18 @@ public class DicSyncInfoElement
     /// <summary>
     /// Dicionary Name
     /// </summary>
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string? Name { get; set; }
 
     /// <summary>
     /// Count command return
     /// </summary>
-    [JsonProperty("recordSize")]
+    [JsonPropertyName("recordSize")]
     public int RecordSize { get; set; }
 
     /// <summary>
     /// Executing time in milliseconds
     /// </summary>
-    [JsonProperty("processMilliseconds")]
+    [JsonPropertyName("processMilliseconds")]
     public double ProcessMilliseconds { get; set; }
 }

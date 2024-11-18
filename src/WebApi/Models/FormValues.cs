@@ -1,20 +1,20 @@
-﻿using JJMasterData.Core.DataDictionary.Models;
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using JJMasterData.Core.DataDictionary.Models;
+
 
 namespace JJMasterData.WebApi.Models;
 
-[JsonObject("formValues")]
 public class FormValues
 {
-    [JsonProperty("value")]
+    [JsonPropertyName("value")]
     public object? Value { get; set; }
 
-    [JsonProperty("enable")]
+    [JsonPropertyName("enable")]
     public bool Enable { get; set; }
 
-    [JsonProperty("visible")]
+    [JsonPropertyName("visible")]
     public bool Visible { get; set; }
 
-    [JsonProperty("dataItems")]
+    [JsonPropertyName("dataItems")]
     public IList<DataItemValue>? DataItems { get; set; }
 }

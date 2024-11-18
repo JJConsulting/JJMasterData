@@ -46,18 +46,18 @@ public class LookupController(
 
         if (!lookupParameters.EnableElementActions)
         {
-            foreach (var action in form.GridView.ToolbarActions.Where(IsLookupAction))
+            foreach (var action in form.GridView.ToolbarActionList.Where(IsLookupAction))
             {
                 action.SetVisible(false);
             }
 
-            foreach (var action in form.GridView.GridTableActions)
+            foreach (var action in form.GridView.GridTableActionList)
             {
                 action.SetVisible(false);
             }
         }
 
-        foreach (var action in form.GridView.GridTableActions)
+        foreach (var action in form.GridView.GridTableActionList)
         {
             action.IsDefaultOption = false;
         }
@@ -72,7 +72,7 @@ public class LookupController(
             IsDefaultOption = true,
             Order = 100
         };
-        form.GridView.GridTableActions.Add(selAction);
+        form.GridView.GridTableActionList.Add(selAction);
 
         foreach (var filter in lookupParameters.Filters)
         {

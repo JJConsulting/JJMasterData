@@ -1,39 +1,58 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridTableActionList : FormElementActionList
 {
-    public DeleteAction DeleteAction { get; }
-    public EditAction EditAction { get; }
-    public ViewAction ViewAction { get; }
+    private DeleteAction _deleteAction = new();
+    private EditAction _editAction = new();
+    private ViewAction _viewAction = new();
+
+    [JsonPropertyName("deleteAction")]
+    public DeleteAction DeleteAction
+    {
+        get => (DeleteAction)List.Find(a => a is DeleteAction) ?? _deleteAction;
+        set
+        {
+            _deleteAction = value;
+            Set(value);
+        }
+    }
+
+    [JsonPropertyName("editAction")]
+    public EditAction EditAction
+    {
+        get => (EditAction)List.Find(a => a is EditAction) ?? _editAction;
+        set
+        {
+            _editAction = value;
+            Set(value);
+        }
+    }
+
+    [JsonPropertyName("viewAction")]
+    public ViewAction ViewAction
+    {
+        get => (ViewAction)List.Find(a => a is ViewAction) ?? _viewAction;
+        set
+        {
+            _viewAction = value;
+            Set(value);
+        }
+    }
 
     public GridTableActionList()
     {
-        DeleteAction = new DeleteAction();
-        EditAction = new EditAction();
-        ViewAction = new ViewAction();
-
-        List.AddRange([
-            DeleteAction,
-            EditAction,
-            ViewAction
-        ]);
+        
     }
 
-    [JsonConstructor]
-    private GridTableActionList(List<BasicAction> list)
+    private GridTableActionList(List<BasicAction> list) : base(list)
     {
-        List = list;
-
-        DeleteAction = EnsureActionExists<DeleteAction>();
-        EditAction = EnsureActionExists<EditAction>();
-        ViewAction = EnsureActionExists<ViewAction>();
     }
 
     public GridTableActionList DeepCopy()
     {
-        return new GridTableActionList(List.ConvertAll(a=>a.DeepCopy()));
+        return new GridTableActionList(List.ConvertAll(a => a.DeepCopy()));
     }
 }

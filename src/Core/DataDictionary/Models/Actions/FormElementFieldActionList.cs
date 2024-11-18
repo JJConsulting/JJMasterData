@@ -1,23 +1,33 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
+using JetBrains.Annotations;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class FormElementFieldActionList : FormElementActionList
 {
-    public FormElementFieldActionList()
+    public FormElementFieldActionList() 
     {
-  
+        
     }
     
-    [JsonConstructor]
-    private FormElementFieldActionList(List<BasicAction> list)
+    private FormElementFieldActionList(List<BasicAction> actions) : base(actions)
     {
-        List = list;
+     
+    }
+
+    internal List<PluginFieldAction> PluginFieldActions
+    {
+        get => List.OfType<PluginFieldAction>().ToList();
+        init
+        {
+            List.RemoveAll(a => a is PluginFieldAction);
+            List.AddRange(value);
+        }
     }
 
     public FormElementFieldActionList DeepCopy()
     {
-        return new FormElementFieldActionList(List.ConvertAll(a=>a.DeepCopy()));
+        return new FormElementFieldActionList(List.ConvertAll(a => a.DeepCopy()));
     }
 }

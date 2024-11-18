@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -10,18 +11,18 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class ElementRelationship
 {
-    [JsonProperty("childElement")]
+    [JsonPropertyName("childElement")]
     [Display(Name = "Child Element")]
     public string ChildElement { get; set; }
         
-    [JsonProperty("columns")]
+    [JsonPropertyName("columns")]
     public List<ElementRelationshipColumn> Columns { get; set; }
 
-    [JsonProperty("updateOnCascade")]
+    [JsonPropertyName("updateOnCascade")]
     [Display(Name = "Update On Cascade")]
     public bool UpdateOnCascade { get; set; }
 
-    [JsonProperty("deleteOnCascade")]
+    [JsonPropertyName("deleteOnCascade")]
     [Display(Name = "Delete On Cascade")]
     public bool DeleteOnCascade { get; set; }
 

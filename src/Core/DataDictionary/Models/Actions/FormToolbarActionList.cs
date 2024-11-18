@@ -1,44 +1,82 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class FormToolbarActionList : FormElementActionList
 {
-    public SaveAction SaveAction { get; }
-    public BackAction BackAction { get; }
-    public CancelAction CancelAction { get; }
-    public FormEditAction FormEditAction { get; }
-    public AuditLogFormToolbarAction AuditLogFormToolbarAction { get; }
+    private SaveAction _saveAction = new();
+    private BackAction _backAction = new();
+    private CancelAction _cancelAction = new();
+    private FormEditAction _formEditAction = new();
+    private AuditLogFormToolbarAction _auditLogFormToolbarAction = new();
 
-    public FormToolbarActionList()
+    [JsonPropertyName("saveAction")]
+    public SaveAction SaveAction
     {
-        SaveAction = new SaveAction();
-        CancelAction = new CancelAction();
-        BackAction = new BackAction();
-        FormEditAction = new FormEditAction();
-        AuditLogFormToolbarAction = new AuditLogFormToolbarAction();
-
-        List.AddRange([
-            SaveAction,
-            CancelAction,
-            BackAction,
-            FormEditAction,
-            AuditLogFormToolbarAction
-        ]);
+        get => (SaveAction)List.Find(a => a is SaveAction) ?? _saveAction;
+        set
+        {
+            _saveAction = value;
+            Set(value);
+        }
     }
 
-    [JsonConstructor]
-    private FormToolbarActionList(List<BasicAction> list)
+    [JsonPropertyName("backAction")]
+    public BackAction BackAction
     {
-        List = list;
-
-        SaveAction = EnsureActionExists<SaveAction>();
-        CancelAction = EnsureActionExists<CancelAction>();
-        BackAction = EnsureActionExists<BackAction>();
-        FormEditAction = EnsureActionExists<FormEditAction>();
-        AuditLogFormToolbarAction = EnsureActionExists<AuditLogFormToolbarAction>();
+        get => (BackAction)List.Find(a => a is BackAction) ?? _backAction;
+        set
+        {
+            _backAction = value;
+            Set(value);
+        }
     }
+
+    [JsonPropertyName("cancelAction")]
+    public CancelAction CancelAction
+    {
+        get => (CancelAction)List.Find(a => a is CancelAction) ?? _cancelAction;
+        set
+        {
+            _cancelAction = value;
+            Set(value);
+        }
+    }
+
+    [JsonPropertyName("formEditAction")]
+    public FormEditAction FormEditAction
+    {
+        get => (FormEditAction)List.Find(a => a is FormEditAction) ?? _formEditAction;
+        set
+        {
+            _formEditAction = value;
+            Set(value);
+        }
+    }
+
+    [JsonPropertyName("auditLogFormToolbarAction")]
+    public AuditLogFormToolbarAction AuditLogFormToolbarAction
+    {
+        get => (AuditLogFormToolbarAction)List.Find(a => a is AuditLogFormToolbarAction) ?? _auditLogFormToolbarAction;
+        set
+        {
+            _auditLogFormToolbarAction = value;
+            Set(value);
+        }
+    }
+
+    
+    public FormToolbarActionList() 
+    {
+        
+    }
+    
+    private FormToolbarActionList(List<BasicAction> actions) : base(actions)
+    {
+     
+    }
+    
     public FormToolbarActionList DeepCopy()
     {
         return new FormToolbarActionList(List.ConvertAll(a=>a.DeepCopy()));

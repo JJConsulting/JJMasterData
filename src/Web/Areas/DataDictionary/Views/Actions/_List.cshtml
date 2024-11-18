@@ -109,7 +109,7 @@
                             <span class="@action.Icon.GetCssClass() fa-fw"></span>&nbsp;
                             @{
                                 var actionName = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
-                                if (action.IsUserCreated)
+                                if (action.IsCustomAction)
                                 {
                                     <span title="@action.GetType().Name" data-bs-toggle="tooltip">@actionName</span>
                                 }
@@ -123,7 +123,7 @@
                             <button class="@BootstrapHelper.BtnDefault btn-small" type="button" onclick="@GetEditScript(action)">
                                 <span class="fa fa-pencil"></span>
                             </button>
-                            @if (action.IsUserCreated)
+                            @if (action.IsCustomAction)
                             {
                                 <button class="@BootstrapHelper.BtnDefault btn-small" style="margin-left:10px;" type="button"
                                         onclick="@GetDeleteScript(action)">

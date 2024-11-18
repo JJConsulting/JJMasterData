@@ -1,7 +1,7 @@
 #nullable enable
 
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -12,9 +12,10 @@ public sealed class SaveAction : FormToolbarAction, ISubmittableAction
 {
     public const string ActionName = "save";
 
+    [JsonPropertyName("enterKeyBehavior")]
     public FormEnterKey EnterKeyBehavior { get; set; }
     
-    [JsonProperty("isSubmit")]
+    [JsonPropertyName("isSubmit")]
     [Display(Name = "Is Submit")]
     public bool IsSubmit { get; set; }
     

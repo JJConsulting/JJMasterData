@@ -1,9 +1,5 @@
 ﻿#nullable enable
 
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -16,7 +12,7 @@ using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -203,62 +199,7 @@ public class ElementService(
     
 
     #endregion
-
-    public async Task<byte[]> ExportSingleRowAsync(Dictionary<string, object> row)
-    {
-        var elementName = row["name"].ToString();
-        var metadata = await DataDictionaryRepository.GetFormElementAsync(elementName);
-
-        var json = FormElementSerializer.Serialize(metadata, settings =>
-        {
-            settings.Formatting = Formatting.Indented;
-        });
-
-        return Encoding.Default.GetBytes(json);
-    }
-
-    public async Task<byte[]> ExportMultipleRowsAsync(List<Dictionary<string, object>> selectedRows)
-    {
-        using var memoryStream = new MemoryStream();
-        using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-        {
-            foreach (var element in selectedRows)
-            {
-                var elementName = element["name"].ToString();
-                var metadata = await DataDictionaryRepository.GetFormElementAsync(elementName);
-                
-                var json = FormElementSerializer.Serialize(metadata,settings =>
-                {
-                    settings.Formatting = Formatting.Indented;
-                });
-
-                var jsonFile = archive.CreateEntry($"{elementName}.json");
-#if NET
-                await 
-#endif
-                using var streamWriter = new StreamWriter(jsonFile.Open());
-                await streamWriter.WriteAsync(json);
-
-            }
-        }
-
-        return memoryStream.ToArray();
-    }
-
-    public async Task<bool> Import(Stream file)
-    {
-        file.Seek(0, SeekOrigin.Begin);
-        using var reader = new StreamReader(file);
-        var dicParser = FormElementSerializer.Deserialize(await reader.ReadToEndAsync());
-
-        //TODO: Validation
-        //FormElement.Validate()
-
-        await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
-
-        return IsValid;
-    }
-
+    
     public Task CreateStructureIfNotExistsAsync()
     {
         return DataDictionaryRepository.CreateStructureIfNotExistsAsync();

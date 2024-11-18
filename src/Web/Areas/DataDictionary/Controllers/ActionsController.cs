@@ -1,12 +1,14 @@
 ﻿#nullable enable
 
+using System.Text.Json;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+
+
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -414,7 +416,7 @@ public class ActionsController(ActionsService actionsService,
         ViewBag.FieldName = fieldName!;
         var formElement = await actionsService.GetFormElementAsync(elementName);
         ViewBag.FormElement = formElement;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(DataDictionaryServiceBase.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
+        ViewBag.CodeMirrorHintList = JsonSerializer.Serialize(DataDictionaryServiceBase.GetAutocompleteHints(formElement, includeAdditionalHints:false).ToList());
 
         if (basicAction is InternalAction internalAction)
         {

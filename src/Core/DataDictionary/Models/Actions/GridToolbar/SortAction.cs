@@ -1,9 +1,13 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
+﻿using System.Text.Json.Serialization;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class SortAction : GridToolbarAction
 {
     public const string ActionName = "sort";
-    public override bool IsUserCreated => false;
+    
+    [JsonIgnore]
+    public override bool IsCustomAction => false;
     public SortAction()
     {
         Name = ActionName;

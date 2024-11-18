@@ -1,13 +1,17 @@
 #nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class PluginFieldAction : PluginAction
+public sealed class PluginFieldAction : PluginAction
 {
     [DisplayName("Trigger On Change")]
+    [JsonPropertyName("triggerOnChange")]
     public bool TriggerOnChange { get; set; }
+    
+    [JsonPropertyName("fieldMap")]
     public Dictionary<string, string> FieldMap { get; private set; } = new();
     
     public override BasicAction DeepCopy()
