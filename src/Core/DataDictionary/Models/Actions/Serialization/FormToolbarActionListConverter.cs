@@ -27,6 +27,9 @@ internal sealed class FormToolbarActionListConverter : ActionListConverterBase<F
                 case "JJMasterData.Core.DataDictionary.Models.Actions.AuditLogFormToolbarAction, JJMasterData.Core":
                     formToolbarActionList.AuditLogFormToolbarAction = actionElement.Deserialize<AuditLogFormToolbarAction>();
                     break;
+                case "JJMasterData.Core.DataDictionary.Models.Actions.PluginAction, JJMasterData.Core":
+                    formToolbarActionList.PluginActions.Add(actionElement.Deserialize<PluginAction>());
+                    break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
                     formToolbarActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
                     break;

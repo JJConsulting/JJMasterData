@@ -40,6 +40,9 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
                 case "JJMasterData.Core.DataDictionary.Models.Actions.AuditLogGridToolbarAction, JJMasterData.Core":
                     gridToolbarActionList.AuditLogGridToolbarAction = actionElement.Deserialize<AuditLogGridToolbarAction>();
                     break;
+                case "JJMasterData.Core.DataDictionary.Models.Actions.PluginAction, JJMasterData.Core":
+                    gridToolbarActionList.PluginActions.Add(actionElement.Deserialize<PluginAction>());
+                    break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
                     gridToolbarActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
                     break;

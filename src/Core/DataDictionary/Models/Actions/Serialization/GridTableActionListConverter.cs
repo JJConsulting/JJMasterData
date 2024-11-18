@@ -21,6 +21,9 @@ internal sealed class GridTableActionListConverter : ActionListConverterBase<Gri
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ViewAction, JJMasterData.Core":
                     gridTableActionList.ViewAction = actionElement.Deserialize<ViewAction>();
                     break;
+                case "JJMasterData.Core.DataDictionary.Models.Actions.PluginAction, JJMasterData.Core":
+                    gridTableActionList.PluginActions.Add(actionElement.Deserialize<PluginAction>());
+                    break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
                     gridTableActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
                     break;
