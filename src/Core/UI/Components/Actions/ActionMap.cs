@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -22,6 +23,7 @@ public class ActionMap
     public string? FieldName { get; set; }
 
     [JsonPropertyName("pkFieldValues")] 
+    [JsonConverter(typeof(DictionaryStringObjectJsonConverter))]
     public Dictionary<string, object> PkFieldValues { get; set; }
     
     [JsonPropertyName("contextAction")] 

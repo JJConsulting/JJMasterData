@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 
 
@@ -108,6 +109,7 @@ public class FormElementField : ElementField
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [JsonPropertyName("attributes")]
+    [JsonConverter(typeof(DictionaryStringObjectJsonConverter))]
     public Dictionary<string, object?> Attributes { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>

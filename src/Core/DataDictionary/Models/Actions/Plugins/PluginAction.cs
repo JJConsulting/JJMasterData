@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using JJMasterData.Commons.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -12,6 +13,7 @@ public class PluginAction : BasicAction
     public required Guid PluginId { get; init; }
     
     [JsonPropertyName("configurationMap")]
+    [JsonConverter(typeof(DictionaryStringObjectJsonConverter))]
     public Dictionary<string, object?> ConfigurationMap { get; protected set; } = new();
     
     public PluginAction()
