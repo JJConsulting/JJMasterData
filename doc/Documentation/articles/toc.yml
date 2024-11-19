@@ -100,7 +100,9 @@
     - name: Mask Component
       href: components/data_dictionary/mask_component.md
     - name: File Component
-      href: components/data_dictionary/file_component.md
+      href: components/data_dictionary/file_component.md      
+    - name: Especial Component
+      href: components/data_dictionary/especial_component.md
   items:
   - name: Factories Component
     href: components/component_factories.md
