@@ -23,7 +23,7 @@ public class ElementService(
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
-        IMasterDataUrlHelper urlHelper)
+        IUrlHelper urlHelper)
     : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
     #region Add Dictionary

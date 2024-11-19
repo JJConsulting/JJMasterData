@@ -29,6 +29,7 @@
     <!--Runtime dependencies-->
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <Using Include="Microsoft.AspNetCore.Mvc"/>
     </ItemGroup>
     
     <ItemGroup>

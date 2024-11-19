@@ -14,7 +14,7 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 public class DataDictionaryFormElementFactory(
     IOptionsSnapshot<MasterDataCoreOptions> options,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IMasterDataUrlHelper urlHelper)
+    IUrlHelper urlHelper)
 {
     private readonly MasterDataCoreOptions _options = options.Value;
 

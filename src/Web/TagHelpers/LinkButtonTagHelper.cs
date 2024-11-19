@@ -2,13 +2,13 @@ using System.ComponentModel;
 using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory, IMasterDataUrlHelper urlHelper) : TagHelper
+public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory, IUrlHelper urlHelper) : TagHelper
 {
     [AspMvcController]
     [HtmlAttributeName("asp-controller")]
@@ -57,7 +57,7 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory, IMas
         var link = htmlComponentFactory.LinkButton.Create();
         
         if (!string.IsNullOrEmpty(Action))
-            link.UrlAction =  urlHelper.Action(Action, Controller, RouteValues);
+            link.UrlAction = urlHelper.Action(Action, Controller, RouteValues);
         
         link.Type = Type ?? LinkButtonType.Link;
         link.Text = Text;

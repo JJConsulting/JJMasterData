@@ -17,7 +17,7 @@ namespace JJMasterData.Core.UI.Components;
 public class ActionScripts(
     ExpressionsService expressionsService,
     UrlRedirectService urlRedirectService,
-    IMasterDataUrlHelper urlHelper,
+    IUrlHelper urlHelper,
     IEncryptionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {

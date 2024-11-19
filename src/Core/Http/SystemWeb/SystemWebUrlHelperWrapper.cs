@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.Http.SystemWeb;
 
 public class SystemWebUrlHelperWrapper(IHttpRequest httpRequest, IOptionsSnapshot<MasterDataCoreOptions> options)
-    : IMasterDataUrlHelper
+    : IUrlHelper
 {
     private IHttpRequest HttpRequest { get; } = httpRequest;
     private string? MasterDataUrl { get; } = options.Value.MasterDataUrl;

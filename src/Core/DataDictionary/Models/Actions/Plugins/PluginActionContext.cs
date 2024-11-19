@@ -1,6 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
-using JJMasterData.Core.UI.Components;
+using ActionContext = JJMasterData.Core.UI.Components.ActionContext;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 

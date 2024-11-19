@@ -14,7 +14,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJIconPicker(
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IMasterDataUrlHelper urlHelper,
+    IUrlHelper urlHelper,
     IControlFactory<JJComboBox> comboBoxFactory,
     IFormValues formValues) : ControlBase(formValues)
 {

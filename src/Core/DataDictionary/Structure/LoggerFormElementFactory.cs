@@ -11,7 +11,7 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class LoggerFormElementFactory(
     IOptionsSnapshot<DbLoggerOptions> options,
-    IMasterDataUrlHelper urlHelper,
+    IUrlHelper urlHelper,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private readonly DbLoggerOptions _options = options.Value;

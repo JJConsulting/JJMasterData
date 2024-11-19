@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class LocalizationFormElementFactory(
-    IMasterDataUrlHelper urlHelper,
+    IUrlHelper urlHelper,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCommonsOptions> masterDataOptions)
 {
