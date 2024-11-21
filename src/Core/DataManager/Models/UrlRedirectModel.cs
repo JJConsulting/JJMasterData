@@ -3,10 +3,9 @@
 using System.Text.Json.Serialization;
 using JJMasterData.Core.DataDictionary.Models;
 
-
 namespace JJMasterData.Core.DataManager.Models;
 
-public record UrlRedirectModel
+public class UrlRedirectModel
 {
     [JsonPropertyName("urlAsModal")] 
     public required bool UrlAsModal { get; init; }

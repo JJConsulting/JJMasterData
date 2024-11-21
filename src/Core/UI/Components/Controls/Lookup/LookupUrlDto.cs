@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public record LookupUrlDto(string Url)
+public class LookupUrlDto(string Url)
 {
     [JsonPropertyName("url")]
     public string Url { get; } = Url;

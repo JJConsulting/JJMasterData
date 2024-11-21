@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal record ActionData
+internal class ActionData
 {
     [JsonPropertyName("componentName")]
     public required string ComponentName { get; set; }

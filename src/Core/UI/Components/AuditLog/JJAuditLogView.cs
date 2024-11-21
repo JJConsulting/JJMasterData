@@ -15,6 +15,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Serialization;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -200,7 +201,7 @@ public class JJAuditLogView : AsyncComponent
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(FormElement.ConnectionId), filter);
         var json = values[AuditLogService.DicJson]?.ToString();
         var recordsKey = values[AuditLogService.DicKey]?.ToString();
-        var auditLogValues = JsonSerializer.Deserialize<Dictionary<string, object>>(json ?? string.Empty);
+        var auditLogValues = JsonSerializer.Deserialize<Dictionary<string, object>>(json ?? string.Empty, SerializerOptions.Default);
         
         DataPanel.PageState = PageState.View;
         DataPanel.Values = auditLogValues;
@@ -267,7 +268,7 @@ public class JJAuditLogView : AsyncComponent
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(FormElement.ConnectionId), filter);
         string json = values[AuditLogService.DicJson].ToString();
 
-        var fields = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        var fields = JsonSerializer.Deserialize<Dictionary<string, object>>(json!, SerializerOptions.Default);
 
         var panel = DataPanel;
         panel.PageState = PageState.View;

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
-internal record DataExportationProgressDto
+internal class DataExportationProgressDto
 {
     [JsonPropertyName(nameof(StartDate))]
     public string StartDate { get; set; }

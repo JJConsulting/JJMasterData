@@ -80,7 +80,9 @@ public sealed class DictionaryStringObjectJsonConverter : JsonConverter<Dictiona
             case JsonTokenType.Null:
                 return null;
             case JsonTokenType.Number:
-                return reader.TryGetInt64(out var result) ? result : reader.GetDecimal();
+            {
+                return reader.TryGetInt32(out var result) ? result : reader.GetDouble();
+            }
             case JsonTokenType.StartObject:
                 return Read(ref reader, null!, options);
             case JsonTokenType.StartArray:
