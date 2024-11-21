@@ -12,6 +12,7 @@ public class FormElementDataFile
     /// Physical path where the file will be saved
     /// </summary>
     [Required]
+    [JsonPropertyName("folderPath")]
     [Display(Name = "Folder Path")]
     public string FolderPath { get; set; } = null!;
     
@@ -32,6 +33,7 @@ public class FormElementDataFile
     /// Example: txt,csv,log
     /// </remarks>
     [Required]
+    [JsonPropertyName("allowedTypes")]
     [Display(Name = "Allowed Extensions")]
     public string AllowedTypes { get; set; } = "*";
 
