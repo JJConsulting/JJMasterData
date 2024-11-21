@@ -13,25 +13,25 @@ internal sealed class FormElementFieldActionListConverter : ActionListConverterB
             switch (type)
             {
                 case "JJMasterData.Core.DataDictionary.Models.Actions.PluginFieldAction, JJMasterData.Core":
-                    fieldActionList.PluginFieldActions.Add(actionElement.Deserialize<PluginFieldAction>());
+                    fieldActionList.Set(actionElement.Deserialize<PluginFieldAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.PluginAction, JJMasterData.Core":
-                    fieldActionList.PluginActions.Add(actionElement.Deserialize<PluginAction>());
+                    fieldActionList.Set(actionElement.Deserialize<PluginAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
-                    fieldActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
+                    fieldActionList.Set(actionElement.Deserialize<HtmlTemplateAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.InternalAction, JJMasterData.Core":
-                    fieldActionList.InternalActions.Add(actionElement.Deserialize<InternalAction>());
+                    fieldActionList.Set(actionElement.Deserialize<InternalAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction, JJMasterData.Core":
-                    fieldActionList.JsActions.Add(actionElement.Deserialize<ScriptAction>());
+                    fieldActionList.Set(actionElement.Deserialize<ScriptAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction, JJMasterData.Core":
-                    fieldActionList.SqlActions.Add(actionElement.Deserialize<SqlCommandAction>());
+                    fieldActionList.Set(actionElement.Deserialize<SqlCommandAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction, JJMasterData.Core":
-                    fieldActionList.UrlActions.Add(actionElement.Deserialize<UrlRedirectAction>());
+                    fieldActionList.Set(actionElement.Deserialize<UrlRedirectAction>());
                     break;
             }
         }

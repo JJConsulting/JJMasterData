@@ -22,22 +22,22 @@ internal sealed class GridTableActionListConverter : ActionListConverterBase<Gri
                     gridTableActionList.ViewAction = actionElement.Deserialize<ViewAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.PluginAction, JJMasterData.Core":
-                    gridTableActionList.PluginActions.Add(actionElement.Deserialize<PluginAction>());
+                    gridTableActionList.Set(actionElement.Deserialize<PluginAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
-                    gridTableActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
+                    gridTableActionList.Set(actionElement.Deserialize<HtmlTemplateAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.InternalAction, JJMasterData.Core":
-                    gridTableActionList.InternalActions.Add(actionElement.Deserialize<InternalAction>());
+                    gridTableActionList.Set(actionElement.Deserialize<InternalAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction, JJMasterData.Core":
-                    gridTableActionList.JsActions.Add(actionElement.Deserialize<ScriptAction>());
+                    gridTableActionList.Set(actionElement.Deserialize<ScriptAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction, JJMasterData.Core":
-                    gridTableActionList.SqlActions.Add(actionElement.Deserialize<SqlCommandAction>());
+                    gridTableActionList.Set(actionElement.Deserialize<SqlCommandAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction, JJMasterData.Core":
-                    gridTableActionList.UrlActions.Add(actionElement.Deserialize<UrlRedirectAction>());
+                    gridTableActionList.Set(actionElement.Deserialize<UrlRedirectAction>());
                     break;
             }
         }

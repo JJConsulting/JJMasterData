@@ -28,22 +28,22 @@ internal sealed class FormToolbarActionListConverter : ActionListConverterBase<F
                     formToolbarActionList.AuditLogFormToolbarAction = actionElement.Deserialize<AuditLogFormToolbarAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.PluginAction, JJMasterData.Core":
-                    formToolbarActionList.PluginActions.Add(actionElement.Deserialize<PluginAction>());
+                    formToolbarActionList.Set(actionElement.Deserialize<PluginAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
-                    formToolbarActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
+                    formToolbarActionList.Set(actionElement.Deserialize<HtmlTemplateAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.InternalAction, JJMasterData.Core":
-                    formToolbarActionList.InternalActions.Add(actionElement.Deserialize<InternalAction>());
+                    formToolbarActionList.Set(actionElement.Deserialize<InternalAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction, JJMasterData.Core":
-                    formToolbarActionList.JsActions.Add(actionElement.Deserialize<ScriptAction>());
+                    formToolbarActionList.Set(actionElement.Deserialize<ScriptAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction, JJMasterData.Core":
-                    formToolbarActionList.SqlActions.Add(actionElement.Deserialize<SqlCommandAction>());
+                    formToolbarActionList.Set(actionElement.Deserialize<SqlCommandAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction, JJMasterData.Core":
-                    formToolbarActionList.UrlActions.Add(actionElement.Deserialize<UrlRedirectAction>());
+                    formToolbarActionList.Set(actionElement.Deserialize<UrlRedirectAction>());
                     break;
             }
         }

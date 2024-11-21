@@ -44,19 +44,19 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
                     gridToolbarActionList.PluginActions.Add(actionElement.Deserialize<PluginAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction, JJMasterData.Core":
-                    gridToolbarActionList.HtmlTemplateActions.Add(actionElement.Deserialize<HtmlTemplateAction>());
+                    gridToolbarActionList.Set(actionElement.Deserialize<HtmlTemplateAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.InternalAction, JJMasterData.Core":
-                    gridToolbarActionList.InternalActions.Add(actionElement.Deserialize<InternalAction>());
+                    gridToolbarActionList.Set(actionElement.Deserialize<InternalAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction, JJMasterData.Core":
-                    gridToolbarActionList.JsActions.Add(actionElement.Deserialize<ScriptAction>());
+                    gridToolbarActionList.Set(actionElement.Deserialize<ScriptAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction, JJMasterData.Core":
-                    gridToolbarActionList.SqlActions.Add(actionElement.Deserialize<SqlCommandAction>());
+                    gridToolbarActionList.Set(actionElement.Deserialize<SqlCommandAction>());
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction, JJMasterData.Core":
-                    gridToolbarActionList.UrlActions.Add(actionElement.Deserialize<UrlRedirectAction>());
+                    gridToolbarActionList.Set(actionElement.Deserialize<UrlRedirectAction>());
                     break;
             }
         }
