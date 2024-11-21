@@ -95,4 +95,18 @@ public abstract class FormElementActionList : IList<BasicAction>
         get => List[index];
         set => List[index] = value;
     }
+    
+    protected T GetOrAdd<T>() where T : BasicAction, new()
+    {
+        var existingItem = List.OfType<T>().FirstOrDefault();
+        
+        if (existingItem != null) 
+            return existingItem;
+        
+        var item = new T();
+        
+        List.Add(item);
+        
+        return item;
+    }
 }

@@ -70,8 +70,6 @@ public class DataDictionaryFormElementFactory(
         
         formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
         
-        formElement.Options.GridTableActions.Clear();
-        
         AddGridTableActions(formElement);
 
         AddGridToolbarActions(formElement);
@@ -215,5 +213,7 @@ public class DataDictionaryFormElementFactory(
             }
         ];
         formElement.Options.GridToolbarActions.AddRange(actions);
+        formElement.Options.GridToolbarActions.RefreshAction.SetVisible(true);
+        formElement.Options.GridToolbarActions.ConfigAction.SetVisible(true);
     }
 }

@@ -5,41 +5,25 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridTableActionList : FormElementActionList
 {
-    private DeleteAction _deleteAction = new();
-    private EditAction _editAction = new();
-    private ViewAction _viewAction = new();
-
     [JsonPropertyName("deleteAction")]
     public DeleteAction DeleteAction
     {
-        get => (DeleteAction)List.Find(a => a is DeleteAction) ?? _deleteAction;
-        set
-        {
-            _deleteAction = value;
-            Set(value);
-        }
+        get => GetOrAdd<DeleteAction>();
+        set => Set(value);
     }
 
     [JsonPropertyName("editAction")]
     public EditAction EditAction
     {
-        get => (EditAction)List.Find(a => a is EditAction) ?? _editAction;
-        set
-        {
-            _editAction = value;
-            Set(value);
-        }
+        get => GetOrAdd<EditAction>();
+        set => Set(value);
     }
 
     [JsonPropertyName("viewAction")]
     public ViewAction ViewAction
     {
-        get => (ViewAction)List.Find(a => a is ViewAction) ?? _viewAction;
-        set
-        {
-            _viewAction = value;
-            Set(value);
-        }
+        get => GetOrAdd<ViewAction>();
+        set => Set(value);
     }
 
     public GridTableActionList()
