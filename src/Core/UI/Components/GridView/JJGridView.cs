@@ -487,21 +487,21 @@ public class JJGridView : AsyncComponent
 
     public int TotalOfRecords { get; set; }
 
-    public LegendAction LegendAction => ToolbarActionList.LegendAction;
-    public RefreshAction RefreshAction => ToolbarActionList.RefreshAction;
-    public FilterAction FilterAction => ToolbarActionList.FilterAction;
-    public ImportAction ImportAction => ToolbarActionList.ImportAction;
-    public ExportAction ExportAction => ToolbarActionList.ExportAction;
-    public ConfigAction ConfigAction => ToolbarActionList.ConfigAction;
-    public SortAction SortAction => ToolbarActionList.SortAction;
-    public InsertAction InsertAction => ToolbarActionList.InsertAction;
+    public LegendAction LegendAction => ToolbarActions.LegendAction;
+    public RefreshAction RefreshAction => ToolbarActions.RefreshAction;
+    public FilterAction FilterAction => ToolbarActions.FilterAction;
+    public ImportAction ImportAction => ToolbarActions.ImportAction;
+    public ExportAction ExportAction => ToolbarActions.ExportAction;
+    public ConfigAction ConfigAction => ToolbarActions.ConfigAction;
+    public SortAction SortAction => ToolbarActions.SortAction;
+    public InsertAction InsertAction => ToolbarActions.InsertAction;
     
-    public ViewAction ViewAction => GridTableActionList.ViewAction;
-    public EditAction EditAction => GridTableActionList.EditAction;
-    public DeleteAction DeleteAction => GridTableActionList.DeleteAction;
+    public ViewAction ViewAction => TableActions.ViewAction;
+    public EditAction EditAction => TableActions.EditAction;
+    public DeleteAction DeleteAction => TableActions.DeleteAction;
     
-    public GridToolbarActionList ToolbarActionList => FormElement.Options.GridToolbarActions;
-    public GridTableActionList GridTableActionList => FormElement.Options.GridTableActions;
+    public GridToolbarActionList ToolbarActions => FormElement.Options.GridToolbarActions;
+    public GridTableActionList TableActions => FormElement.Options.GridTableActions;
     
     private ActionMap? CurrentActionMap
     {
@@ -1352,31 +1352,31 @@ public class JJGridView : AsyncComponent
     public void AddToolbarAction(SqlCommandAction action)
     {
         ValidateAction(action);
-        ToolbarActionList.Add(action);
+        ToolbarActions.Add(action);
     }
 
     public void AddToolbarAction(UrlRedirectAction action)
     {
         ValidateAction(action);
-        ToolbarActionList.Add(action);
+        ToolbarActions.Add(action);
     }
 
     public void AddToolbarAction(InternalAction action)
     {
         ValidateAction(action);
-        ToolbarActionList.Add(action);
+        ToolbarActions.Add(action);
     }
 
     public void AddToolbarAction(SubmitAction action)
     {
         ValidateAction(action);
-        ToolbarActionList.Add(action);
+        ToolbarActions.Add(action);
     }
 
     public void AddToolbarAction(ScriptAction action)
     {
         ValidateAction(action);
-        ToolbarActionList.Add(action);
+        ToolbarActions.Add(action);
     }
 
     /// <summary>
@@ -1390,14 +1390,14 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(actionName))
             throw new ArgumentNullException(nameof(actionName));
 
-        var action = ToolbarActionList.First(x => x.Name.Equals(actionName));
+        var action = ToolbarActions.First(x => x.Name.Equals(actionName));
 
         switch (action)
         {
             case null:
                 throw new ArgumentException(StringLocalizer["Action {0} not found", actionName]);
             case ScriptAction or UrlRedirectAction or InternalAction:
-                ToolbarActionList.Remove(action);
+                ToolbarActions.Remove(action);
                 break;
             default:
                 throw new ArgumentException("This action can not be removed");
@@ -1407,25 +1407,25 @@ public class JJGridView : AsyncComponent
     public void AddGridAction(SqlCommandAction action)
     {
         ValidateAction(action);
-        GridTableActionList.Add(action);
+        TableActions.Add(action);
     }
 
     public void AddGridAction(UrlRedirectAction action)
     {
         ValidateAction(action);
-        GridTableActionList.Add(action);
+        TableActions.Add(action);
     }
 
     public void AddGridAction(InternalAction action)
     {
         ValidateAction(action);
-        GridTableActionList.Add(action);
+        TableActions.Add(action);
     }
 
     public void AddGridAction(ScriptAction action)
     {
         ValidateAction(action);
-        GridTableActionList.Add(action);
+        TableActions.Add(action);
     }
 
     /// <summary>
@@ -1440,13 +1440,13 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(actionName))
             throw new ArgumentNullException(nameof(actionName));
 
-        var action = GridTableActionList.First(x => x.Name.Equals(actionName));
+        var action = TableActions.First(x => x.Name.Equals(actionName));
         switch (action)
         {
             case null:
                 throw new ArgumentException(StringLocalizer["Action {0} not found", actionName]);
             case ScriptAction or UrlRedirectAction or InternalAction:
-                GridTableActionList.Remove(action);
+                TableActions.Remove(action);
                 break;
             default:
                 throw new ArgumentException("This action can not be removed");
@@ -1455,12 +1455,12 @@ public class JJGridView : AsyncComponent
 
     public BasicAction GetToolBarAction(string actionName)
     {
-        return ToolbarActionList.First(x => x.Name.Equals(actionName));
+        return ToolbarActions.First(x => x.Name.Equals(actionName));
     }
 
     public BasicAction GetGridAction(string actionName)
     {
-        return GridTableActionList.First(x => x.Name.Equals(actionName));
+        return TableActions.First(x => x.Name.Equals(actionName));
     }
 
     /// <summary>

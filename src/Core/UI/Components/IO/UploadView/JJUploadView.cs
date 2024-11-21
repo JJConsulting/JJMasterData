@@ -151,7 +151,7 @@ public class JJUploadView : AsyncComponent
             _gridView.RefreshAction.SetVisible(false);
             _gridView.ConfigAction.SetVisible(false);
             
-            _gridView.GridTableActionList.Add(DownloadAction);
+            _gridView.TableActions.Add(DownloadAction);
             
             _gridView.OnRenderActionAsync += (_, args) =>
             {
@@ -177,8 +177,8 @@ public class JJUploadView : AsyncComponent
                 return ValueTaskHelper.CompletedTask;
             };
 
-            _gridView.GridTableActionList.Add(RenameAction);
-            _gridView.GridTableActionList.Add(DeleteAction);
+            _gridView.TableActions.Add(RenameAction);
+            _gridView.TableActions.Add(DeleteAction);
         
             
             _gridView.FormElement.Options.Grid.RecordsPerPage = int.MaxValue;
@@ -523,7 +523,7 @@ public class JJUploadView : AsyncComponent
         if (files.Count == 0) 
             return new JJAlert{Title = StringLocalizer["There is no files to display."]}.GetHtmlBuilder();
 
-        foreach (var ac in GridView.GridTableActionList)
+        foreach (var ac in GridView.TableActions)
         {
             ac.IsGroup = false;
         }
@@ -896,7 +896,7 @@ public class JJUploadView : AsyncComponent
     public void Disable()
     {
         ShowAddFiles = false;
-        foreach (var action in GridView.GridTableActionList)
+        foreach (var action in GridView.TableActions)
         {
             action.SetVisible(false);
         }

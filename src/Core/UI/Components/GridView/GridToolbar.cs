@@ -22,7 +22,7 @@ internal sealed class GridToolbar(JJGridView gridView)
 
     private async ValueTask AddActionsToToolbar(JJToolbar toolbar)
     {
-        var actions = gridView.ToolbarActionList
+        var actions = gridView.ToolbarActions
             .OrderBy(a => a.Order);
         
         var actionButtonFactory = gridView.ComponentFactory.ActionButton;
