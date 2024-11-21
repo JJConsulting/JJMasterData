@@ -14,6 +14,7 @@ public class PluginAction : BasicAction
     
     [JsonPropertyName("configurationMap")]
     [JsonConverter(typeof(DictionaryStringObjectJsonConverter))]
+    [JsonInclude]
     public Dictionary<string, object?> ConfigurationMap { get; protected set; } = new();
     
     public PluginAction()
