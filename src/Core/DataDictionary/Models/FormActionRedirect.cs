@@ -12,6 +12,7 @@ public class FormActionRedirect
     public string ElementNameRedirect { get; set; }
 
     [JsonPropertyName("entityReferences")]
+    [JsonInclude]
     public List<FormActionRelationField> RelationFields { get; private set; } = [];
 
     [JsonPropertyName("viewType")]

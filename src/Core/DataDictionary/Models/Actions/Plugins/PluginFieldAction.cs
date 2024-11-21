@@ -12,6 +12,7 @@ public sealed class PluginFieldAction : PluginAction
     public bool TriggerOnChange { get; set; }
     
     [JsonPropertyName("fieldMap")]
+    [JsonInclude]
     public Dictionary<string, string> FieldMap { get; private set; } = new();
     
     public override BasicAction DeepCopy()

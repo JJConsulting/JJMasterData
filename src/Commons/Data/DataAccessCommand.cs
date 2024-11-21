@@ -23,6 +23,7 @@ public class DataAccessCommand
     public string Sql { get; set; }
 
     [JsonPropertyName("parameters")]
+    [JsonInclude]
     public List<DataAccessParameter> Parameters { get; private set; }
     
     public DataAccessCommand()
