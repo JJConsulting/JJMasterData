@@ -45,6 +45,7 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
             
             var options = new JsonSerializerOptions
             {
+                PropertyNameCaseInsensitive = true,
                 Converters =
                 {
                     new CustomDateConverter("dd/MM/yyyy")

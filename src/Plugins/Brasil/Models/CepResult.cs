@@ -20,7 +20,7 @@ public class CepResult
     
     public static CepResult FromJson(string json)
     {
-        return JsonSerializer.Deserialize<CepResult>(json)!;
+        return JsonSerializer.Deserialize<CepResult>(json, JsonSerializerOptions.Default)!;
     }
     
     public Dictionary<string, object?> ToDictionary()

@@ -30,7 +30,9 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     [JsonPropertyName("pluginActions")]
     [JsonInclude]
-    protected internal List<PluginAction> PluginActions => List.OfType<PluginAction>().ToList();
+    protected internal List<PluginAction> PluginActions => List
+        .Where(item => item.GetType() == typeof(PluginAction))
+        .Cast<PluginAction>().ToList(); //This prevents PluginFieldActions when writing to the JSON.
 
     [JsonPropertyName("internalRedirectActions")]
     [JsonInclude]

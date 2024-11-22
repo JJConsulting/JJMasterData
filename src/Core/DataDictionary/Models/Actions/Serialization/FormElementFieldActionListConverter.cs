@@ -47,7 +47,7 @@ internal sealed class FormElementFieldActionListConverter : ActionListConverterB
             return fieldActionList;
         
         foreach (var actionElement in pluginFieldActionsElement.EnumerateArray())
-            fieldActionList.PluginFieldActions.Add(actionElement.Deserialize<PluginFieldAction>(options));
+            fieldActionList.Set(actionElement.Deserialize<PluginFieldAction>(options));
         
         return fieldActionList;
     }
