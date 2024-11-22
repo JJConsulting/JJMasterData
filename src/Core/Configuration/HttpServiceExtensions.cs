@@ -1,6 +1,10 @@
 using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+#if NET
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+#endif
 
 namespace JJMasterData.Core.Configuration;
 
@@ -16,6 +20,13 @@ public static class HttpServiceExtensions
         services.AddScoped<IQueryString, Http.AspNetCore.QueryStringWrapper>();  
         services.AddScoped<IFormValues, Http.AspNetCore.FormValuesWrapper>();  
         services.AddScoped<IClaimsPrincipalAccessor, Http.AspNetCore.ClaimsPrincipalWrapper>();  
+        
+        services.AddScoped(serviceProvider =>
+        {
+            var actionContextAccessor = serviceProvider.GetRequiredService<IActionContextAccessor>();
+            var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
+            return urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+        });
 #endif
    
 
