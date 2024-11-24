@@ -7,15 +7,15 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
     
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
         
       - name: Setup NodeJS
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v4
 
       - name: Restore NuGet packages
         run: |
@@ -34,7 +34,7 @@ jobs:
           - src/Plugins/Hangfire
           - src/Plugins/Pdf
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build and publish NuGet package
         run: |
           npm install --prefix src/Web
