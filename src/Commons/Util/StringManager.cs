@@ -443,28 +443,38 @@ public static class StringManager
     /// Example:
     /// StringManager.FindValuesByInterval("test[a]foo [b] test" ,'[',']') returns ['a','b'].
     /// </summary>
-    public static IEnumerable<string> FindValuesByInterval(string text, char begin, char end)
+    public static List<string> FindValuesByInterval(string text, char begin, char end)
     {
-        var valueBuilder = new StringBuilder();
-        var isReading = false;
-
-        foreach (var c in text)
+        List<string> list = [];
+        char[] arr = text.ToCharArray();
+        string value = "";
+        bool isReading = false;
+        foreach(char c in arr)
         {
-            if (c == begin)
+            if (isReading)
             {
-                valueBuilder.Clear();
-                isReading = true;
+                if (c.Equals(end))
+                {
+                    list.Add(value);
+                    value = "";
+                    isReading = false;
+                }
+                else
+                {
+                    value += c.ToString();
+                }
             }
-            else if (c == end)
+            else
             {
-                yield return valueBuilder.ToString();
-                isReading = false;
-            }
-            else if (isReading)
-            {
-                valueBuilder.Append(c);
-            }
+                if (c.Equals(begin))
+                {
+                    isReading = true;
+                    value = "";
+                }
+            } 
         }
+            
+        return list;
     }
 
     public static string Soma1(string baseVal)
