@@ -4,32 +4,35 @@ namespace JJMasterData.Commons.Test.Util;
 
 public class StringManagerTest
 {
-    [Fact]
-    public void FindValuesByInterval_ReturnsCorrectValues()
+    [Theory]
+    [InlineData("{apple} [banana] {cherry} [grape]", '{', '}', new[] { "apple", "cherry" })]
+    [InlineData("|apple| [banana] |cherry| [grape]", '|', '|', new[] { "apple", "cherry" })]
+    [InlineData("|apple| [banana] |cherry| [grape]", '{', '}', new string[] { })]
+    [InlineData("{IsInsert} || {IsUpdate}", '{', '}', new[] { "IsInsert", "IsUpdate"})]
+    [InlineData("'{PageState}' == 'Insert'", '{', '}', new[] { "PageState"})]
+    public void FindValuesByInterval_ReturnsCorrectValues(string text, char begin, char end, string[] expected)
     {
-        // Arrange
-        const string text = "{apple} [banana] {cherry} [date]";
-        const char begin = '{';
-        const char end = '}';
-
         // Act
         var result = StringManager.FindValuesByInterval(text, begin, end);
 
         // Assert
-        Assert.Equal(new List<string> { "apple", "cherry" }, result);
+        Assert.Equal(expected, result);
     }
-    [Fact]
-    public void FindValuesByInterval_NoBeginEndChars()
+    
+    [Theory]
+    [InlineData("true", true)]
+    [InlineData("True", true)]
+    [InlineData("TRUE", true)]
+    [InlineData("false", false)]
+    [InlineData("1", true)]
+    [InlineData("0", false)]
+    [InlineData("randomString", false)]
+    [InlineData("", false)]
+    [InlineData("10", false)]
+    [InlineData(null, false)]
+    public void ParseBool_ReturnsExpectedResult(string input, bool expected)
     {
-        // Arrange
-        const string text = "apple banana cherry date";
-        const char begin = '{';
-        const char end = '}';
-
-        // Act
-        var result = StringManager.FindValuesByInterval(text, begin, end);
-
-        // Assert
-        Assert.Empty(result);
+        var result = StringManager.ParseBool(input);
+        Assert.Equal(expected, result);
     }
 }

@@ -16,14 +16,9 @@ public static class StringManager
 
     public static bool ParseBool(string? value)
     {
-        return value?.ToLowerInvariant() switch
-        {
-            "true" => true,
-            "1" => true,
-            _ => false,
-        };
+        return value?.Equals("true", StringComparison.OrdinalIgnoreCase) is true || value is ['1'];
     }
-    
+
     /// <summary>
     /// Clear the text, preventing SQL injection
     /// </summary>
@@ -422,7 +417,7 @@ public static class StringManager
         foreach (char c in chars)
         {
             if (c.Equals('0') ||
-                c.Equals('1') || 
+                c.Equals('1') ||
                 c.Equals('2') || 
                 c.Equals('3') || 
                 c.Equals('4') || 
@@ -445,25 +440,23 @@ public static class StringManager
     /// </summary>
     public static IEnumerable<string> FindValuesByInterval(string text, char begin, char end)
     {
-        var valueBuilder = new StringBuilder();
-        var isReading = false;
+        var currentIndex = 0;
 
-        foreach (var c in text)
+        while (currentIndex < text.Length)
         {
-            if (c == begin)
-            {
-                valueBuilder.Clear();
-                isReading = true;
-            }
-            else if (c == end)
-            {
-                yield return valueBuilder.ToString();
-                isReading = false;
-            }
-            else if (isReading)
-            {
-                valueBuilder.Append(c);
-            }
+            var openIndex = text.IndexOf(begin, currentIndex);
+            if (openIndex == -1)
+                break;
+
+            openIndex++;
+
+            var closeIndex = text.IndexOf(end, openIndex);
+            if (closeIndex == -1)
+                break;
+
+            yield return text.AsSpan(openIndex, closeIndex - openIndex).ToString();
+
+            currentIndex = closeIndex + 1;
         }
     }
 
@@ -526,7 +519,7 @@ public static class StringManager
 #endif
 
     }
-    
+
     public static string ToParamCase(string input)
     {
         if (string.IsNullOrEmpty(input))
