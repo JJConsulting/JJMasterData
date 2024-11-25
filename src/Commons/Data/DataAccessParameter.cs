@@ -79,6 +79,14 @@ public class DataAccessParameter
         Direction = ParameterDirection.Input;
     }
 
+    public DataAccessParameter(string name, object value)
+    {
+        Name = name;
+        Value = value;
+        Type = GetDbTypeFromObject(value);
+        Direction = ParameterDirection.Input;
+    }
+    
     public DataAccessParameter(string name, object value, DbType type)
     {
         Name = name;
@@ -113,6 +121,22 @@ public class DataAccessParameter
         Direction = direction;
     }
 
+    private static DbType GetDbTypeFromObject(object value)
+    {
+        return value switch
+        {
+            int => DbType.Int32,
+            double => DbType.Double,
+            decimal => DbType.Decimal,
+            float => DbType.Double,
+            string => DbType.AnsiString,
+            Guid => DbType.Guid,
+            DateTime => DbType.DateTime,
+            bool => DbType.Boolean,
+            _ => DbType.AnsiString
+        };
+    }
+    
     public DataAccessParameter DeepCopy()
     {
         return (DataAccessParameter)MemberwiseClone();

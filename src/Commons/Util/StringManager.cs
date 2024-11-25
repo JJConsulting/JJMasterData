@@ -20,12 +20,11 @@ public static class StringManager
     }
 
     /// <summary>
-    /// Clear the text, preventing SQL injection
+    /// Clear the text, <b>This don't prevent SQL injection.</b>
     /// </summary>
     /// <remarks>
     /// Author: Lucio Pelinson 21-05-2012
     /// </remarks>
-    [Obsolete("This don't prevent SQL injection.")]
     public static string ClearText(string? input)
     {
         if (input == null)

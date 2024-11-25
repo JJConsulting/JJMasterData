@@ -67,7 +67,7 @@ public class DataAccessCommand
         {
             var paramName = $"@p{i}";
             arguments[i] = paramName;
-            parameters.Add(new DataAccessParameter(paramName, formattableString.GetArgument(i), DbType.Object));
+            parameters.Add(new DataAccessParameter(paramName, formattableString.GetArgument(i)));
         }
         
         var sql = string.Format(formattableString.Format, arguments);
