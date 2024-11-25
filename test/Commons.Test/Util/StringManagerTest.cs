@@ -30,7 +30,7 @@ public class StringManagerTest
     [InlineData("", false)]
     [InlineData("10", false)]
     [InlineData(null, false)]
-    public void ParseBool_ReturnsExpectedResult(string input, bool expected)
+    public void ParseBool_ReturnsExpectedResult(string? input, bool expected)
     {
         var result = StringManager.ParseBool(input);
         Assert.Equal(expected, result);

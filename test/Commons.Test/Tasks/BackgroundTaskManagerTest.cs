@@ -65,7 +65,7 @@ public class BackgroundTaskManagerTest
            
         
     [Fact]
-    public async void AbortTest()
+    public async Task AbortTest()
     {
         const string key = "TaskToBeAborted";
         BackgroundTaskManager.Run(key, Worker);

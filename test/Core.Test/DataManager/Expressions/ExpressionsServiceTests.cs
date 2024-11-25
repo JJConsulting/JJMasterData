@@ -77,7 +77,7 @@ public class ExpressionsServiceTests
     }
 
     [Fact]
-    public bool GetBoolValue_ShouldReturnBooleanValue()
+    public void GetBoolValue_ShouldReturnBooleanValue()
     {
         // Arrange
         const string expression = "bool_example:sampleExpression";
@@ -97,8 +97,6 @@ public class ExpressionsServiceTests
 
         // Assert
         Assert.True(result);
-
-        return result;
     }
 
     [Fact]
