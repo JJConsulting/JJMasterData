@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class OrderByData
 {
-    private Dictionary<string,OrderByDirection> Fields { get; } = new();
+    private Dictionary<string, OrderByDirection> Fields { get; } = new();
 
     public bool Any() => Fields.Count > 0;
     
@@ -41,6 +42,20 @@ public class OrderByData
             orderByData.Set(orderByString);
 
         return orderByData;
+    }
+
+    public bool Validate(ElementFieldList elementFields)
+    {
+        if (Fields.Count == 0)
+            return true;
+
+        foreach (var field in Fields)
+        {
+            if (!elementFields.ContainsKey(field.Key))
+                return false;
+        }
+
+        return true;
     }
 
     public void Set(string? orderBy)

@@ -39,9 +39,12 @@ public abstract class EntityProviderBase(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var newFields = await dataAccess.GetDictionaryAsync(command);
 
-        foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
+        foreach (var entry in newFields)
         {
-            values[entry.Key] = entry.Value;
+            if (element.Fields.ContainsKey(entry.Key))
+            {
+                values[entry.Key] = entry.Value;
+            }
         }
     }
     
@@ -51,9 +54,12 @@ public abstract class EntityProviderBase(
         var command = GetInsertCommand(element, values);
         var newFields =  dataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
 
-        foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
+        foreach (var entry in newFields)
         {
-            values[entry.Key] = entry.Value;
+            if (element.Fields.ContainsKey(entry.Key))
+            {
+                values[entry.Key] = entry.Value;
+            }
         }
     }
     
@@ -161,7 +167,7 @@ public abstract class EntityProviderBase(
         if (element == null)
             throw new ArgumentNullException(nameof(element));
 
-        if (!ValidateOrderByClause(element, entityParameters.OrderBy.ToQueryParameter()))
+        if (!entityParameters.OrderBy.Validate(element.Fields))
             throw new ArgumentException("[order by] clause is not valid");
 
         var totalParameter = new DataAccessParameter($"{VariablePrefix}qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
@@ -221,7 +227,7 @@ public abstract class EntityProviderBase(
         if (element == null)
             throw new ArgumentNullException(nameof(element));
 
-        if (!ValidateOrderByClause(element, entityParameters.OrderBy.ToQueryParameter()))
+        if (!entityParameters.OrderBy.Validate(element.Fields))
             throw new ArgumentException("[order by] clause is not valid");
 
         var plainTextWriter = new PlainTextReader(this, loggerFactory.CreateLogger<PlainTextReader>())
@@ -231,28 +237,6 @@ public abstract class EntityProviderBase(
         };
 
         return plainTextWriter.GetFieldsListAsTextAsync(element, entityParameters);
-    }
-
-    private static bool ValidateOrderByClause(Element element, string? orderBy)
-    {
-        if (orderBy == null || string.IsNullOrWhiteSpace(orderBy))
-            return true;
-
-        var clauses = orderBy.Split(',');
-        foreach (var clause in clauses)
-        {
-            if (!string.IsNullOrEmpty(clause))
-            {
-                string temp = clause.ToLower();
-                temp = temp.Replace(" desc", "");
-                temp = temp.Replace(" asc", "");
-                temp = temp.Replace(" ", "");
-
-                if (!element.Fields.ContainsKey(temp))
-                    return false;
-            }
-        }
-        return true;
     }
     
     private async Task<CommandOperation> SetValuesNoResultAsync(Element element, Dictionary<string,object?> values)
@@ -292,7 +276,7 @@ public abstract class EntityProviderBase(
         if (element == null)
             throw new ArgumentNullException(nameof(element));
 
-        if (!ValidateOrderByClause(element, entityParameters.OrderBy.ToQueryParameter()))
+        if (!entityParameters.OrderBy.Validate(element.Fields))
             throw new ArgumentException("[order by] clause is not valid");
 
         var totalParameter = new DataAccessParameter($"{VariablePrefix}qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
