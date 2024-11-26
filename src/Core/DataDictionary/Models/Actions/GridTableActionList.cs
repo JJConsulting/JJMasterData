@@ -28,7 +28,9 @@ public sealed class GridTableActionList : FormElementActionList
 
     public GridTableActionList()
     {
-        
+        Set(new ViewAction());
+        Set(new EditAction());
+        Set(new DeleteAction());
     }
 
     private GridTableActionList(List<BasicAction> list) : base(list)

@@ -40,9 +40,13 @@ public sealed class FormToolbarActionList : FormElementActionList
         set => Set(value);
     }
     
-    public FormToolbarActionList() 
+    public FormToolbarActionList()
     {
-        
+        Set(new SaveAction());
+        Set(new BackAction());
+        Set(new CancelAction());
+        Set(new FormEditAction());
+        Set(new AuditLogFormToolbarAction());
     }
     
     private FormToolbarActionList(List<BasicAction> actions) : base(actions)

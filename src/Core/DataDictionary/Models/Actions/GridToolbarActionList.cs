@@ -70,6 +70,15 @@ public sealed class GridToolbarActionList : FormElementActionList
 
     public GridToolbarActionList()
     {
+        Set(new InsertAction());
+        Set(new LegendAction());
+        Set(new RefreshAction());
+        Set(new FilterAction());
+        Set(new ImportAction());
+        Set(new ExportAction());
+        Set(new ConfigAction());
+        Set(new SortAction());
+        Set(new AuditLogGridToolbarAction());
     }
 
     public GridToolbarActionList(List<BasicAction> list) : base(list)
