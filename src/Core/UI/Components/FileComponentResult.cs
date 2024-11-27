@@ -17,16 +17,16 @@ public sealed class FileComponentResult(string filePath) : ComponentResult
     public override string Content => FilePath;
 
 #if NET
-    public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
+    public Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {
         var fileName = Path.GetFileName(FilePath);
-        var fileBytes = await File.ReadAllBytesAsync(FilePath);
-        var fileContentResult = new FileContentResult(fileBytes,  MimeTypeUtil.GetMimeType(fileName))
+
+        var fileContentResult = new PhysicalFileResult(FilePath,  MimeTypeUtil.GetMimeType(fileName))
         {
             FileDownloadName = fileName
         };
 
-        await fileContentResult.ExecuteResultAsync(context);
+        return fileContentResult.ExecuteResultAsync(context);
     }
 #endif
 }
