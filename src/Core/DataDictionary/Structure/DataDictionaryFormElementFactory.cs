@@ -65,6 +65,10 @@ public class DataDictionaryFormElementFactory(
 
     private void ConfigureActions(FormElement formElement)
     {
+        formElement.Options.GridTableActions.ViewAction.SetVisible(false);
+        formElement.Options.GridTableActions.EditAction.SetVisible(false);
+        formElement.Options.GridTableActions.DeleteAction.SetVisible(false);
+        
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         formElement.Options.GridToolbarActions.ExportAction.SetVisible(false);
         
