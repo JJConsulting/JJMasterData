@@ -35,9 +35,7 @@
             </div>
         </div>
     }
-
-    @await Html.PartialAsync("_Attributes", Model)
-
+    <partial name="_Attributes" model="@Model"/>
 </div>
 
 @if (Model.Component is FormComponent.Text
@@ -62,24 +60,25 @@
     }
     else
     {
-        @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new ActionsListDetailsViewModel
-        {
-            Source = ActionSource.Field,
-            ElementName = ViewBag.ElementName,
-            Actions = Model.Actions.GetAllSorted(),
-            FieldName = ViewBag.OriginalName
-        })
+        <partial name="~/Areas/DataDictionary/Views/Actions/_List.cshtml" model="new ActionsListDetailsViewModel
+                 {
+                     Source = ActionSource.Field,
+                     ElementName = ViewBag.ElementName,
+                     Actions = Model.Actions.GetAllSorted(),
+                     FieldName = ViewBag.OriginalName
+                 }"/>
+
     }
 }
 else if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup)
 {
-    @await Html.PartialAsync("_DataItem", Model)
+    <partial name="_DataItem" model="Model" />
 }
 else if (Model.Component is FormComponent.Lookup)
 {
-    @await Html.PartialAsync("_Lookup", Model)
+    <partial name="_Lookup" model="Model" />
 }
 else if (Model.Component is FormComponent.File)
 {
-    @await Html.PartialAsync("_DataFile", Model)
+    <partial name="_DataFile" model="Model" />
 }

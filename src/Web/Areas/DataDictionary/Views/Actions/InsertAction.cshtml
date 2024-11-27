@@ -52,7 +52,7 @@
 
     <div class="tab-content" style="margin-top: 1.25rem;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            @await Html.PartialAsync("_NavGeneral", Model)
+            <partial name="_NavGeneral" Model="@Model"/>
         </div>
 
         <div id="div-insert-action" class="tab-pane fade">
@@ -100,11 +100,11 @@
         </div>
 
         <div id="div-advanced" class="tab-pane fade">
-            @await Html.PartialAsync("_NavAdvanced", Model)
+            <partial name="_NavAdvanced" Model="@Model"/>
         </div>
     </div>
 
-    @await Html.PartialAsync("_Toolbar")
+    <partial name="_Toolbar"/>
 
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {

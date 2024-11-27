@@ -52,8 +52,8 @@ internal sealed class GridTableBody(JJGridView gridView)
     private async ValueTask<HtmlBuilder> GetRowHtml(Dictionary<string, object?> row, int index)
     {
         var tr = new HtmlBuilder(HtmlTag.Tr);
-        var basicActions = gridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
-        var defaultAction = basicActions.Find(x => x is { IsVisible: true, IsDefaultOption: true });
+        var basicActions = gridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order);
+        var defaultAction = basicActions.FirstOrDefault(x => x is { IsVisible: true, IsDefaultOption: true });
 
         tr.WithAttribute("id", $"row{index}");
         var enableGridAction = !gridView.EnableEditMode && (defaultAction != null || gridView.EnableMultiSelect);

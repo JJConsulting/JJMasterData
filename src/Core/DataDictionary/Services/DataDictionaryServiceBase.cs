@@ -32,7 +32,7 @@ public abstract class DataDictionaryServiceBase(
     public JJValidationSummary GetValidationSummary()
     {
         var factory = new ValidationSummaryFactory(StringLocalizer);
-        return factory.Create(validationDictionary.Errors.ToList());
+        return factory.Create(validationDictionary.Errors);
     }
 
     public bool IsValid => validationDictionary.IsValid;

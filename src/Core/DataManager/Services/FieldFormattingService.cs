@@ -82,11 +82,11 @@ public class FieldFormattingService(
 
                 if (field.DataItem.EnableMultiSelect)
                 {
-                    var searchIds = searchId.Split(',').Select(id => id.Trim()).ToList();
+                    var searchIds = searchId.Split(',').Select(id => id.Trim());
                     var rowValues = searchBoxValues
                         .Where(v => searchIds.Contains(v.Id.Trim(), StringComparer.InvariantCultureIgnoreCase))
-                        .Select(v => v.Description ?? v.Id)
-                        .ToList();
+                        .Select(v => v.Description ?? v.Id);
+                    
                     return string.Join(", ", rowValues);
                 }
 

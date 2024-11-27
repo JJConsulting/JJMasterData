@@ -338,21 +338,21 @@ public class FieldService(IValidationDictionary validationDictionary,
         }
     }
 
-    public async Task<bool> SortFieldsAsync(string elementName, IEnumerable<string> fieldsOrder)
+    public async Task<bool> SortFieldsAsync(string elementName, string[] fieldsOrder)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         
-        SortFields(fieldsOrder, formElement);
+        SortFields(formElement, fieldsOrder);
 
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
         return true;
     }
 
-    private static void SortFields(IEnumerable<string> fieldsOrder, FormElement formElement)
+    private static void SortFields(FormElement formElement, string[] fieldsOrder)
     {
         var newList = fieldsOrder.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
-        for (int i = 0; i < formElement.Fields.Count; i++)
+        for (var i = 0; i < formElement.Fields.Count; i++)
         {
             formElement.Fields[i] = newList[i];
         }
