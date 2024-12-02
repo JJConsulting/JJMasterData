@@ -34,14 +34,11 @@ internal static partial class LogMessages
     
     [LoggerMessage(
         EventId = 3,
-        Message = "Error retrieving expression at {Provider} provider. Expression: {Expression}",
+        Message = "Error executing expression. Expression: {Expression}.",
         Level = LogLevel.Error)]
     internal static partial void LogExpressionError(
         this ILogger logger,
-        Exception exception,
-        string provider,
         string? expression);
-
     
     [LoggerMessage(
         EventId = 4,
@@ -51,14 +48,12 @@ internal static partial class LogMessages
     
     [LoggerMessage(
         EventId = 6,
-        Message = "Error retrieving expression at {Provider} provider. Expression: {Expression}. Field: {FieldName}.",
+        Message = "Error executing expression. Expression: {Expression}. Field: {Field}",
         Level = LogLevel.Error)]
     internal static partial void LogExpressionErrorWithField(
         this ILogger logger,
-        Exception exception,
-        string provider,
         string? expression,
-        string? fieldName);
+        string? field);
     
     [LoggerMessage(
         EventId = 7,

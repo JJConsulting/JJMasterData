@@ -90,8 +90,8 @@ public class ExpressionsService(
         catch (Exception ex)
         {
             var exception = new ExpressionException("Unhandled exception at a expression provider.", ex);
-
-            logger.LogExpressionError(exception, provider.Prefix, expression);
+            
+            logger.LogExpressionError(expression);
 
             throw exception;
         }
@@ -152,7 +152,7 @@ public class ExpressionsService(
             var exception =
                 new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex);
 
-            logger.LogExpressionErrorWithField(exception, provider.Prefix, expression, field.Name);
+            logger.LogExpressionErrorWithField(expression, field.Name);
 
             throw exception;
         }
