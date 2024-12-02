@@ -859,7 +859,7 @@ public class JJFormView : AsyncComponent
         {
             case PageState.Insert:
             {
-                return await GetInsertResult();
+                return await GetInsertResult(formValues);
             }
             case PageState.Update or PageState.View:
             {
@@ -879,13 +879,14 @@ public class JJFormView : AsyncComponent
                CurrentAction is not PluginAction;
     }
 
-    private async Task<ComponentResult> GetInsertResult()
+    private async Task<ComponentResult> GetInsertResult(Dictionary<string, object?>? formValues = null)
     {
         var insertAction = GridView.ToolbarActions.InsertAction;
         var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
         var isInsertSelection = !string.IsNullOrEmpty(insertAction.ElementNameToSelect);
         
-        bool isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
+        var isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
+        
         if (!isVisible)
             throw new UnauthorizedAccessException(_stringLocalizer["Insert action is not enabled"]);
         
@@ -898,7 +899,7 @@ public class JJFormView : AsyncComponent
             }
         }
         
-        var formValues = await GetFormValuesAsync();
+        formValues ??= await GetFormValuesAsync();
 
         var reloadFields = DataPanel.PageState is not PageState.View && CurrentAction is not PluginAction;
         

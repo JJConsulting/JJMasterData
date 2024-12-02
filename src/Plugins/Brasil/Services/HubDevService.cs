@@ -19,6 +19,15 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
 {
     private readonly HubDevSettings _settings = options.Value;
     
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters =
+        {
+            new CustomDateConverter("dd/MM/yyyy")
+        }
+    };
+    
     public bool IsHttps { get; set; } = true;
     
     public bool IgnoreDb { get; set; }
@@ -42,19 +51,10 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
             
             var message = await httpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
-            
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                Converters =
-                {
-                    new CustomDateConverter("dd/MM/yyyy")
-                }
-            };
 
-            var apiResult = JsonSerializer.Deserialize<JsonObject>(content, options);
+            var apiResult = JsonSerializer.Deserialize<JsonObject>(content, JsonSerializerOptions);
 
-            var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), options)!;
+            var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), JsonSerializerOptions)!;
             
             return result;
         }
