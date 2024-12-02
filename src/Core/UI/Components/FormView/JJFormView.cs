@@ -1405,7 +1405,8 @@ public class JJFormView : AsyncComponent
         {
             var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
             btnGroup.CaretText = _stringLocalizer["More"];
-
+            btnGroup.CssClass += "float-end";
+            
             foreach (var groupedAction in actions.Where(a => a.IsGroup))
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
