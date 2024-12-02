@@ -10,11 +10,9 @@ using JJMasterData.Core.DataManager.Expressions;
 
 namespace JJMasterData.Brasil.Actions;
 
-public class CepPluginActionHandler(ICepService cepService,
-        ExpressionsService expressionService)
+public class CepPluginActionHandler(ICepService cepService, ExpressionsService expressionService)
     : BrasilPluginActionHandler(expressionService)
 {
-    private ICepService CepService { get; } = cepService;
     public override Guid Id => GuidGenerator.FromValue(nameof(CepPluginActionHandler));
     public override string Title => "Cep";
 
@@ -37,7 +35,7 @@ public class CepPluginActionHandler(ICepService cepService,
         
         var cep = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
         
-        var cepResult = await CepService.SearchCepAsync(cep);
+        var cepResult = await cepService.SearchCepAsync(cep);
         
         return cepResult.ToDictionary();
     }

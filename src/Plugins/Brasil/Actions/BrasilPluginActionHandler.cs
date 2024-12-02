@@ -9,8 +9,6 @@ namespace JJMasterData.Brasil.Actions;
 
 public abstract class BrasilPluginActionHandler(ExpressionsService expressionsService) : IPluginFieldActionHandler
 {
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-
     private const string AllowEditingOnErrorKey  = "AllowEditingOnError";
     private const string ShowErrorMessageKey = "ShowErrorMessage";
     private const string IsResultValidKey = "IsResultValid";
@@ -78,7 +76,7 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
             if (!context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
                 continue;
             
-            var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
+            var isEnabled = expressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
 
             if (!isEnabled)
                 context.SecretValues[parameter.Value] = result[parameter.Key];

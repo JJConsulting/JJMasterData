@@ -11,12 +11,10 @@ using JJMasterData.Core.DataManager.Expressions;
 
 namespace JJMasterData.Brasil.Actions;
 
-public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalService,
-        ExpressionsService expressionsService)
+public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService)
     : BrasilPluginActionHandler(expressionsService)
 {
     private const string IgnoreDbFieldKey = "IgnoreDb";
-    private IReceitaFederalService ReceitaFederalService { get; } = receitaFederalService;
     public override Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
     public override string Title => "Cnpj";
     
@@ -63,9 +61,9 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
         
         var cnpj = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
         
-        ReceitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
+        receitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
         
-        var cnpjResult = await ReceitaFederalService.SearchCnpjAsync(cnpj);
+        var cnpjResult = await receitaFederalService.SearchCnpjAsync(cnpj);
 
         return cnpjResult.ToDictionary();
     }

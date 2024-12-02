@@ -13,8 +13,6 @@ namespace JJMasterData.Brasil.Actions;
 public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService)
     : BrasilPluginActionHandler(expressionsService)
 {
-    private IReceitaFederalService ReceitaFederalService { get; } = receitaFederalService;
-
     private const string BirthDateFieldKey = "BirthDate";
     private const string IgnoreDbFieldKey = "IgnoreDb";
     public override Guid Id => GuidGenerator.FromValue(nameof(CpfPluginActionHandler));
@@ -65,9 +63,9 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
         if (birthDate is not DateTime birthDateTime)
             throw new ArgumentNullException(nameof(birthDate));
 
-        ReceitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
+        receitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
         
-        var cpfResult = await ReceitaFederalService.SearchCpfAsync(cpf, birthDateTime);
+        var cpfResult = await receitaFederalService.SearchCpfAsync(cpf, birthDateTime);
 
         return cpfResult.ToDictionary();
     }
