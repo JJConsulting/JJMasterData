@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -801,6 +802,23 @@ public class OracleProvider(
     {
         return GetCommandWrite(string.Empty, element, values);
     }
+
+    public override bool TableExists(string tableName, Guid? connectionId = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
 
     public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {

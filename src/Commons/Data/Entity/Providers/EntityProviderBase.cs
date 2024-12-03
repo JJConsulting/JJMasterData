@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -300,4 +301,13 @@ public abstract class EntityProviderBase(
         var connection = Options.GetConnectionString(connectionId);
         return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
+    
+    public abstract bool TableExists(string tableName, Guid? connectionId = null);
+    public abstract Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default);
+
+    public abstract Task<bool> ColumnExistsAsync(
+        string tableName, 
+        string columnName,
+        Guid? connectionId = null,
+        CancellationToken cancellationToken = default);
 }

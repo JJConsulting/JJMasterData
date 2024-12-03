@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -267,6 +268,22 @@ public class SQLiteProvider(
     protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
     {
         return GetScriptInsert(element, values, true);
+    }
+
+    public override bool TableExists(string tableName, Guid? connectionId = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 
     public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters,

@@ -73,14 +73,12 @@ internal sealed class EntityRepository(
 
     public Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
-        return dataAccess.TableExistsAsync(tableName);
+        return provider.TableExistsAsync(tableName);
     }
 
     public bool TableExists(string tableName, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
-        return dataAccess.TableExists(tableName);
+        return provider.TableExists(tableName, connectionId);
     }
 
     public async Task SetCommandAsync(DataAccessCommand command, Guid? connectionId = null)
@@ -97,8 +95,7 @@ internal sealed class EntityRepository(
 
     private Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
-        return dataAccess.ColumnExistsAsync(tableName, columnName);
+        return provider.ColumnExistsAsync(tableName, columnName, connectionId);
     }
 
     public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId = null)

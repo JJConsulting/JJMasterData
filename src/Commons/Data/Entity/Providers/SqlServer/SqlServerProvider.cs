@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -301,7 +302,7 @@ public class SqlServerProvider(
         if (string.IsNullOrEmpty(tableName))
             throw new ArgumentNullException(nameof(tableName));
 
-        if (!await dataAccess.TableExistsAsync(tableName))
+        if (!await TableExistsAsync(tableName))
             throw new JJMasterDataException($"Table {tableName} not found");
 
         var element = new Element
@@ -352,5 +353,64 @@ public class SqlServerProvider(
         }
 
         return element;
+    }
+    
+    /// <summary>
+    /// Check if table exists in the database
+    /// </summary>
+    public override bool TableExists(string tableName, Guid? connectionId = null)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+        var result = dataAccess.GetResult(GetTableExistsCommand(tableName));
+        return result as int? == 1;
+    }
+    
+    /// <inheritdoc cref="TableExists"/>
+    public override async Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+        var command = GetTableExistsCommand(tableName);
+        var result = await dataAccess.GetResultAsync(command, cancellationToken);
+        return result as int? == 1;
+    }
+    
+    public override async Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+        var command = GetColumnExistsCommand(tableName, columnName);
+        var result = await dataAccess.GetResultAsync(command, cancellationToken);
+        return result as int? == 1;
+    }
+    
+    private static DataAccessCommand GetTableExistsCommand(string table)
+    {
+        const string sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
+        var command = new DataAccessCommand
+        {
+            Sql = sql,
+            Parameters =
+            {
+                new DataAccessParameter
+                {
+                    Name = "@Table",
+                    Value = table
+                }
+            }
+        };
+
+        return command;
+    }
+    
+    private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)
+    {
+        var command = new DataAccessCommand
+        {
+            Sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
+        };
+
+        command.AddParameter("@TableName", tableName, DbType.AnsiString);
+        command.AddParameter("@ColumnName", columnName, DbType.AnsiString);
+
+        return command;
     }
 }

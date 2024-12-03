@@ -89,10 +89,10 @@ public partial class DataAccess
     /// <summary>
     ///  Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// </summary>
-    public DataTable GetDataTable(DataAccessCommand cmd)
+    public DataTable GetDataTable(DataAccessCommand command)
     {
         var dataTable = new DataTable();
-        ExecuteDataCommand(cmd, dataAdapter => dataAdapter.Fill(dataTable));
+        ExecuteDataCommand(command, dataAdapter => dataAdapter.Fill(dataTable));
         return dataTable;
     }
     
@@ -107,18 +107,18 @@ public partial class DataAccess
     /// <summary>
     ///  Returns a DataSet object populated by a <see cref="DataAccessCommand"/>.
     /// </summary>
-    public DataSet GetDataSet(DataAccessCommand cmd)
+    public DataSet GetDataSet(DataAccessCommand command)
     {
         var dataSet = new DataSet();
-        ExecuteDataCommand(cmd, dataAdapter => dataAdapter.Fill(dataSet));
+        ExecuteDataCommand(command, dataAdapter => dataAdapter.Fill(dataSet));
         return dataSet;
     }
 
-    private void ExecuteDataCommand(DataAccessCommand cmd, Action<DbDataAdapter> fillAction)
+    private void ExecuteDataCommand(DataAccessCommand command, Action<DbDataAdapter> fillAction)
     {
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
@@ -127,16 +127,12 @@ public partial class DataAccess
                 dataAdapter!.SelectCommand = dbCommand;
                 fillAction(dataAdapter);
 
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
+                SetOutputParameters(command, dbCommand);
             }
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
     }
 
@@ -184,28 +180,24 @@ public partial class DataAccess
     /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
     /// All other columns and rows are ignored.
     /// </summary>
-    public object? GetResult(DataAccessCommand cmd)
+    public object? GetResult(DataAccessCommand command)
     {
         object? scalarResult;
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
             {
                 scalarResult = dbCommand.ExecuteScalar();
 
-                foreach (var param in cmd.Parameters)
-                {
-                    if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        param.Value = dbCommand.Parameters[param.Name].Value;
-                }
+                SetOutputParameters(command, dbCommand);
             }
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
 
         return scalarResult;
@@ -215,18 +207,18 @@ public partial class DataAccess
     /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
     /// All other columns and rows are ignored.
     /// </summary>
-    /// <param name="cmd">Command</param>
+    /// <param name="command">Command</param>
     /// <param name="sqlConn">Open Connection</param>
     /// <param name="trans">Transactions with Connection</param>
     /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// This method uses a <see cref="DbConnection"/> by ref.
     /// </returns>
-    public object? GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
+    public object? GetResult(DataAccessCommand command, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         object? scalarResult;
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
 
@@ -237,7 +229,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
 
         return scalarResult;
@@ -246,28 +238,24 @@ public partial class DataAccess
     /// <summary>
     /// ExecuteNonQuery command in the database and return the number of affected records.
     /// </summary>
-    public int SetCommand(DataAccessCommand cmd)
+    public int SetCommand(DataAccessCommand command)
     {
         int rowsAffected = 0;
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
             {
                 rowsAffected += dbCommand.ExecuteNonQuery();
 
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
+                SetOutputParameters(command,dbCommand);
             }
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
 
         return rowsAffected;
@@ -278,7 +266,7 @@ public partial class DataAccess
     /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
     public int SetCommand(IEnumerable<DataAccessCommand> commands)
     {
-        int numberOfRowsAffected = 0;
+        var numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
 
         var connection = CreateConnection();
@@ -324,28 +312,29 @@ public partial class DataAccess
     /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
     public int SetCommand(IEnumerable<string> sqlList)
     {
-        var commandList = from string sql in sqlList select new DataAccessCommand(sql);
+        var commandList = sqlList.Select(sql => new DataAccessCommand(sql));
 
-        int numberOfRowsAffected = SetCommand(commandList);
+        var numberOfRowsAffected = SetCommand(commandList);
+        
         return numberOfRowsAffected;
     }
 
     /// <summary>
     /// Execute the command in the database and return the number of affected records.
     /// </summary>
-    /// <param name="cmd">Command</param>
+    /// <param name="command">Command</param>
     /// <param name="sqlConn">Open Connection</param>
     /// <param name="trans">Transactions with Connection</param>
     /// <returns>
     /// Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// This method uses a <see cref="DbConnection"/> and a <see cref="DbTransaction"/> by ref.
     /// </returns>
-    public int SetCommand(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
+    public int SetCommand(DataAccessCommand command, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         int numberOfRowsAffected = 0;
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
             using (dbCommand.Connection)
@@ -355,7 +344,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
 
         return numberOfRowsAffected;
@@ -378,17 +367,17 @@ public partial class DataAccess
     /// Retrieves the first record of the sql statement in a Hashtable object.
     /// [key(database field), value(value stored in database)]
     /// </summary>
-    /// <param name="cmd">Command</param>
+    /// <param name="command">Command</param>
     /// <returns>
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Hashtable? GetHashtable(DataAccessCommand cmd)
+    public Hashtable? GetHashtable(DataAccessCommand command)
     {
         Hashtable? retCollection = null;
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
@@ -398,30 +387,23 @@ public partial class DataAccess
                     while (dr.Read())
                     {
                         retCollection = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-                        int nQtd = 0;
-
-                        while (nQtd < dr.FieldCount)
+                        for (var nQtd = 0; nQtd < dr.FieldCount; nQtd++)
                         {
                             string fieldName = dr.GetName(nQtd);
                             if (retCollection.ContainsKey(fieldName))
                                 throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
 
                             retCollection.Add(fieldName, dr.GetValue(nQtd));
-                            nQtd += 1;
                         }
                     }
                 }
 
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
+                SetOutputParameters(command, dbCommand);
             }
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
 
         return retCollection;
@@ -431,17 +413,17 @@ public partial class DataAccess
     /// Retrieves the records of the sql statement in a Dictionary object.
     /// [key(database field), value(value stored in database)]
     /// </summary>
-    /// <param name="cmd">Command</param>
+    /// <param name="command">Command</param>
     /// <returns>
     /// Return a Dictionary Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Dictionary<string, object?>? GetDictionary(DataAccessCommand cmd)
+    public Dictionary<string, object?>? GetDictionary(DataAccessCommand command)
     {
         Dictionary<string, object?>? retCollection = null;
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = CreateConnection();
 
             using (dbCommand.Connection)
@@ -462,30 +444,15 @@ public partial class DataAccess
                     }
                 }
 
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
+                SetOutputParameters(command, dbCommand);
             }
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
 
         return retCollection;
-    }
-
-    /// <summary>
-    /// Check if table exists in the database
-    /// </summary>
-    public bool TableExists(string tableName)
-    {
-        var ret = GetResult(GetTableExistsCommand(tableName));
-        var result = ret as int? == 1;
-
-        return result;
     }
 
     /// <summary>Verify the database connection</summary>
@@ -568,25 +535,52 @@ public partial class DataAccess
 
         return true;
     }
-
-    private static DataAccessCommand GetTableExistsCommand(string table)
+    
+    public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand command)
     {
-        const string sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
-        var command = new DataAccessCommand
-        {
-            Sql = sql,
-            Parameters =
-            {
-                new DataAccessParameter
-                {
-                    Name = "@Table",
-                    Value = table
-                }
-            }
-        };
+        var dictionaryList = new List<Dictionary<string, object?>>();
 
-        return command;
+        try
+        {
+            using var dbCommand = CreateDbCommand(command);
+            dbCommand.Connection = CreateConnection();
+            using (dbCommand.Connection)
+            {
+                using (var dataReader =  dbCommand.ExecuteReader())
+                {
+                    List<string> columnNames = [];
+                    for (var i = 0; i < dataReader.FieldCount; i++)
+                    {
+                        columnNames.Add(dataReader.GetName(i));
+                    }
+
+                    while ( dataReader.Read())
+                    {
+                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+                        foreach (var columnName in columnNames)
+                        {
+                            var ordinal = dataReader.GetOrdinal(columnName);
+                            var value = dataReader.IsDBNull(ordinal)
+                                ? null
+                                : dataReader.GetValue(ordinal);
+                            dictionary[columnName] = value;
+                        }
+
+                        dictionaryList.Add(dictionary);
+                    }
+                }
+
+                SetOutputParameters(command, dbCommand);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw GetDataAccessException(ex, command);
+        }
+
+        return dictionaryList;
     }
+    
     private static Exception GetDataAccessException(Exception ex, DataAccessCommand? cmd)
     {
         return GetDataAccessException(ex, cmd?.Sql ?? string.Empty, cmd?.Parameters);
@@ -622,14 +616,17 @@ public partial class DataAccess
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = _dbProviderFactory.CreateCommand();
+        
         if (dbCommand == null)
             throw new ArgumentException(nameof(dbCommand));
         
         if (string.IsNullOrEmpty(command.Sql))
             throw new DataAccessException("Sql Command cannot be null or empty.");
+        
         dbCommand.CommandType = command.Type;
         dbCommand.CommandText = command.Sql;
         dbCommand.CommandTimeout = TimeOut;
+        
         foreach (var parameter in command.Parameters)
         {
             var dbParameter = CreateDbParameter(parameter);
@@ -653,67 +650,13 @@ public partial class DataAccess
 
         return dbParameter;
     }
-
-    private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)
-    {
-        var command = new DataAccessCommand
-        {
-            Sql =
-                "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
-        };
-
-        command.AddParameter("@TableName", tableName, DbType.AnsiString);
-        command.AddParameter("@ColumnName", columnName, DbType.AnsiString);
-
-        return command;
-    }
     
-    public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
+    private static void SetOutputParameters(DataAccessCommand dataAccessCommand, DbCommand dbCommand)
     {
-        var dictionaryList = new List<Dictionary<string, object?>>();
-
-        try
+        foreach (var parameter in dataAccessCommand.Parameters)
         {
-            using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = CreateConnection();
-            using (dbCommand.Connection)
-            {
-                using (var dataReader =  dbCommand.ExecuteReader())
-                {
-                    List<string> columnNames = [];
-                    for (var i = 0; i < dataReader.FieldCount; i++)
-                    {
-                        columnNames.Add(dataReader.GetName(i));
-                    }
-
-                    while ( dataReader.Read())
-                    {
-                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-                        foreach (var columnName in columnNames)
-                        {
-                            var ordinal = dataReader.GetOrdinal(columnName);
-                            var value = dataReader.IsDBNull(ordinal)
-                                ? null
-                                : dataReader.GetValue(ordinal);
-                            dictionary[columnName] = value;
-                        }
-
-                        dictionaryList.Add(dictionary);
-                    }
-                }
-
-                foreach (var param in cmd.Parameters.Where(param =>
-                             param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
-                {
-                    param.Value = dbCommand.Parameters[param.Name].Value;
-                }
-            }
+            if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                parameter.Value = dbCommand.Parameters[parameter.Name].Value;
         }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, cmd);
-        }
-
-        return dictionaryList;
     }
 }
