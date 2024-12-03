@@ -387,7 +387,7 @@ public class SqlServerReadProcedureScripts(
 
     private static string GetFilterParametersScript(IEnumerable<ElementField> fields, int tabCount = 1)
     {
-        StringBuilder sql = new();
+        var sql = new StringBuilder();
         foreach (var field in fields.Where(IsFilter))
         {
             if (field.Filter.Type is FilterMode.Range)

@@ -176,26 +176,27 @@ internal sealed class EntityRepository(
     {
         List<ElementField> addedFields = [];
 
-        await foreach (var field in GetAddedFieldsAsync(element))
-        {
-            addedFields.Add(field);
-        }
+        addedFields.AddRange(await GetAddedFieldsAsync(element));
         
         return provider.GetAlterTableScript(element, addedFields);
     }
 
-    private async IAsyncEnumerable<ElementField> GetAddedFieldsAsync(Element element)
+    private async Task<List<ElementField>> GetAddedFieldsAsync(Element element)
     {
+        List<ElementField> addedFields = [];
+
         if (!await TableExistsAsync(element.TableName, element.ConnectionId))
-            yield break;
+            return addedFields;
 
         foreach (var field in element.Fields.Where(f => f.DataBehavior == FieldBehavior.Real))
         {
-            if (!await ColumnExistsAsync(element.TableName, field.Name,  element.ConnectionId))
+            if (!await ColumnExistsAsync(element.TableName, field.Name, element.ConnectionId))
             {
-                yield return field;
+                addedFields.Add(field);
             }
         }
+
+        return addedFields;
     }
 
     public string? GetReadProcedureScript(Element element)
