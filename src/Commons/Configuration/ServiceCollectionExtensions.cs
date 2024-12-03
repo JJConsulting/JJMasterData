@@ -5,16 +5,12 @@ using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Security.Cryptography;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
 
 namespace JJMasterData.Commons.Configuration;
 
@@ -61,21 +57,11 @@ public static class ServiceCollectionExtensions
                 "Connection string is required at JJMasterData:ConnectionString.")
             .ValidateOnStart();
         
-        services.AddOptions<DbLoggerOptions>().BindConfiguration("Logging:Database");
-        services.AddOptions<LoggerFilterOptions>().BindConfiguration("Logging");
-
         services.AddLocalization();
         services.AddMemoryCache();
         services.AddSingleton<ResourceManagerStringLocalizerFactory>();
         services.AddSingleton<IStringLocalizerFactory, MasterDataStringLocalizerFactory>();
         services.AddTransient(typeof(IStringLocalizer<>), typeof(MasterDataStringLocalizer<>));
-        services.AddLogging(builder =>
-        {
-            //We can't have control when Db and File are enabled/disabled dynamically
-            builder.AddDbLoggerProvider();
-            builder.AddFileLoggerProvider();
-            builder.AddConfiguration();
-        });
 
         services.AddScoped<DataAccess>();
         services.AddScoped<SqlServerInfo>();

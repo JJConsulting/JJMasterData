@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Commons.Logging.Db;
 
-public class DbLoggerOptions
+public class DbLoggerOptions : BatchingLoggerOptions
 {
     public Guid? ConnectionStringId { get; set; } 
     public string TableName { get; set; } = "tb_masterdata_log";

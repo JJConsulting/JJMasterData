@@ -140,7 +140,7 @@ public class DataItemService(
         }
         catch (Exception ex)
         {
-            logger.LogDataAccessCommandException(ex, command);
+            logger.LogError(ex, "Error recovering SQL DataItem.");
             throw;
         }
         

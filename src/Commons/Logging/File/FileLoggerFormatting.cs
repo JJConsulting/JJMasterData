@@ -9,9 +9,5 @@ public enum FileLoggerFormatting
     /// <summary>
     /// A more compact logging format inspired by structured logging.
     /// </summary>
-    Compact,
-    /// <summary>
-    /// Store the logs at JSON objects.
-    /// </summary>
-    Json
+    Compact
 }

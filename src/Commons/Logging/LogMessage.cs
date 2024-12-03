@@ -1,12 +1,12 @@
-#nullable enable
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
 
 public class LogMessage
 {
-    public required DateTime Created { get; init; }
-    public required int LogLevel { get; init; }
+    public required DateTimeOffset Timestamp { get; init; }
+    public required LogLevel LogLevel { get; init; }
     public required string Category { get; init; }
     public required string Event { get; init; }
     public required string Message { get; init; }
