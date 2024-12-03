@@ -156,7 +156,7 @@ class MessageBox {
         btn2Callback?: (() => void) | null
     ): void {
         MessageBox.reset();
-        MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT, btn2Label != null || btn2Callback != null);
+        MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT, btn1Callback != null || btn2Callback != null);
         MessageBox.setTitle(title)
         MessageBox.setContent(description);
 
