@@ -225,6 +225,9 @@
     <value>É Modal?</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Icon components can only be of type Int" xml:space="preserve">
+    <value>Os componentes Ícone só podem ser do tipo Int</value>
+  </data>
   <data name="Is Iframe?" xml:space="preserve">
     <value>É Iframe?</value>
     <comment>JJMasterDataWeb</comment>

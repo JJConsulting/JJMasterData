@@ -7,6 +7,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Tasks;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -93,7 +94,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         }
     }
 
-    private async Task<bool> ValidateFieldAsync(FormElement formElement, FormElementField field, string originalName)
+    private async ValueTask<bool> ValidateFieldAsync(FormElement formElement, FormElementField field, string originalName)
     {
         ValidateName(field.Name);
 
@@ -116,18 +117,20 @@ public class FieldService(IValidationDictionary validationDictionary,
                             field.DataType is not FieldType.UniqueIdentifier;
         
         if (isNotIdentity)
+        {
             AddError(nameof(field.AutoNum),
                 StringLocalizer[
                     "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"]);
+        }
 
         if (field.DataType is FieldType.DateTime2 && field.Size is < 0 or > 7)
         {
             AddError(nameof(field.DataType), StringLocalizer["Field size must be between 0 and 7 for DateTime2"]);
         }
         
-        if (field.DataType != FieldType.Varchar && 
-            field.DataType != FieldType.NVarchar && 
-            field.DataType != FieldType.Text && 
+        if (field.DataType != FieldType.Varchar &&
+            field.DataType != FieldType.NVarchar &&
+            field.DataType != FieldType.Text &&
             field.DataType != FieldType.NText)
         {
             if (field.Filter.Type is FilterMode.Contain)
@@ -135,6 +138,11 @@ public class FieldService(IValidationDictionary validationDictionary,
                 AddError(nameof(field.Filter.Type),
                     StringLocalizer["Only fields of type VarChar or Text can be of type Contains."]);
             }
+        }
+
+        if (field.DataType is not FieldType.Int && field.Component is FormComponent.Icon)
+        {
+            AddError(nameof(field.DataType), StringLocalizer["Icon components can only be of type Int"]);
         }
 
         if (field.DataType is FieldType.Bit && field.Component != FormComponent.CheckBox)
@@ -161,8 +169,10 @@ public class FieldService(IValidationDictionary validationDictionary,
                 }
 
                 if (field.IsPk)
+                {
                     AddError(nameof(field.DataType),
                         StringLocalizer["The primary key field must not contain [NumberOfDecimalPlaces]"]);
+                }
             }
             else
             {
@@ -215,13 +225,13 @@ public class FieldService(IValidationDictionary validationDictionary,
         }
     }
 
-    private Task ValidateDataItemAsync(FormElementField field)
+    private ValueTask ValidateDataItemAsync(FormElementField field)
     {
         var dataItem = field.DataItem;
         if (dataItem == null)
         {
             AddError("DataItem", StringLocalizer["DataItem cannot be empty."]);
-            return Task.CompletedTask;
+            return ValueTaskHelper.CompletedTask;
         }
 
         if (dataItem.DataItemType == DataItemType.SqlCommand)
@@ -229,7 +239,7 @@ public class FieldService(IValidationDictionary validationDictionary,
             if (dataItem.Command == null)
             {
                 AddError("Command", StringLocalizer["[Command] required"]);
-                return Task.CompletedTask;
+                return ValueTaskHelper.CompletedTask;
             }
                
             if (string.IsNullOrEmpty(dataItem.Command.Sql))
@@ -245,27 +255,27 @@ public class FieldService(IValidationDictionary validationDictionary,
         else if (dataItem.DataItemType == DataItemType.Manual)
         {
             RemoveError("DataItem.Command.Sql");
-            ValidateManualItens(dataItem.Items);
+            ValidateManualItems(dataItem.Items);
         }
         else if (dataItem.DataItemType == DataItemType.ElementMap)
         {
             return ValidateDataElementMapAsync(field);
         }
 
-        return Task.CompletedTask;
+        return ValueTaskHelper.CompletedTask;
     }
 
-    private void ValidateManualItens(List<DataItemValue> itens)
+    private void ValidateManualItems(List<DataItemValue> items)
     {
-        if (itens == null || itens.Count == 0)
+        if (items == null || items.Count == 0)
         {
             AddError("DataItem", StringLocalizer["Item list not defined"]);
         }
 
-        if (itens != null)
-            for (int i = 0; i < itens.Count; i++)
+        if (items != null)
+            for (int i = 0; i < items.Count; i++)
             {
-                var it = itens[i];
+                var it = items[i];
                 if (string.IsNullOrEmpty(it.Id))
                     AddError("DataItem", StringLocalizer["Item id {0} required", i]);
 
@@ -274,7 +284,7 @@ public class FieldService(IValidationDictionary validationDictionary,
             }
     }
 
-    private async Task ValidateDataElementMapAsync(FormElementField field)
+    private async ValueTask ValidateDataElementMapAsync(FormElementField field)
     {
         var dataItem = field.DataItem;
         
