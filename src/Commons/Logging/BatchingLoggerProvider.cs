@@ -92,8 +92,6 @@ public abstract class BatchingLoggerProvider : ILoggerProvider, ISupportExternal
                 _currentBatch.Add(message);
                 limit--;
             }
-
-            Interlocked.Exchange(ref _messagesDropped, 0);
             
             if (_currentBatch.Count > 0)
             {
