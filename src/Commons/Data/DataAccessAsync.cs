@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JJMasterData.Commons.Data.Extensions;
 using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data;
@@ -19,7 +20,7 @@ public partial class DataAccess
     private async Task<DbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
     {
         var connection = _dbProviderFactory.CreateConnection();
-     
+
         connection!.ConnectionString = _connectionString;
         await connection.OpenAsync(cancellationToken);
 
@@ -33,7 +34,33 @@ public partial class DataAccess
     }
 
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
-    public async Task<DataTable> GetDataTableAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<DataTable> GetDataTableAsync(DataAccessCommand command,
+        CancellationToken cancellationToken = default)
+
+    {
+        var dataTable = new DataTable();
+        await ExecuteDataCommandAsync(command,
+            dataReader => dataReader.FillAsync(dataTable, cancellationToken: cancellationToken), cancellationToken);
+        return dataTable;
+    }
+
+    ///<inheritdoc cref="GetDataSet(string)"/>
+    public Task<DataSet> GetDataSetAsync(string sql, CancellationToken cancellationToken = default)
+    {
+        return GetDataSetAsync(new DataAccessCommand(sql), cancellationToken);
+    }
+
+    ///<inheritdoc cref="GetDataSet(DataAccessCommand)"/>
+    public async Task<DataSet> GetDataSetAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        var dataSet = new DataSet();
+        await ExecuteDataCommandAsync(command,
+            dataAdapter => dataAdapter.FillAsync(dataSet, cancellationToken: cancellationToken), cancellationToken);
+        return dataSet;
+    }
+
+    public async Task ExecuteDataCommandAsync(DataAccessCommand command, Func<DbDataReader, Task> readerAction,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -44,54 +71,9 @@ public partial class DataAccess
             {
                 using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
-                    var dataTable = new DataTable();
-                    dataTable.Load(reader);
+                    await readerAction(reader);
 
                     SetOutputParameters(command, dbCommand);
-
-                    return dataTable;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, command);
-        }
-    }
-
-    ///<inheritdoc cref="GetDataSet(string)"/>
-    public Task<DataSet> GetDataSetAsync(string sql)
-    {
-        return GetDataSetAsync(new DataAccessCommand(sql));
-    }
-
-    ///<inheritdoc cref="GetDataSet(DataAccessCommand)"/>
-    public async Task<DataSet> GetDataSetAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
-
-            using (dbCommand.Connection)
-            {
-                using (var reader = await dbCommand.ExecuteReaderAsync( cancellationToken))
-                {
-                    var dataSet = new DataSet();
-
-                    var index = 1;
-                    do
-                    {
-                        var dataTable = new DataTable();
-                        dataTable.TableName = $"Result {index}";
-                        dataTable.Load(reader);
-                        dataSet.Tables.Add(dataTable);
-                        index++;
-                    } while(!reader.IsClosed);
-
-                    SetOutputParameters(command, dbCommand);
-
-                    return dataSet;
                 }
             }
         }
@@ -154,7 +136,8 @@ public partial class DataAccess
     }
 
     /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
-    public async Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
+    public async Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commands,
+        CancellationToken cancellationToken = default)
     {
         int numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
@@ -206,13 +189,15 @@ public partial class DataAccess
     }
 
     /// <inheritdoc cref="GetHashtable(string)"/>
-    public Task<Dictionary<string,object?>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default)
+    public Task<Dictionary<string, object?>> GetDictionaryAsync(string sql,
+        CancellationToken cancellationToken = default)
     {
         return GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
     /// <inheritdoc cref="GetHashtable"/>
-    public async Task<Dictionary<string,object?>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command,
+        CancellationToken cancellationToken = default)
     {
         var result = new Dictionary<string, object?>();
         try
@@ -248,11 +233,12 @@ public partial class DataAccess
 
         return result;
     }
-    
 
-    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+
+    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command,
+        CancellationToken cancellationToken = default)
     {
-        var dictionaryList = new List<Dictionary<string, object?>>(); 
+        var dictionaryList = new List<Dictionary<string, object?>>();
 
         try
         {
@@ -263,7 +249,7 @@ public partial class DataAccess
             using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
                 List<string> columnNames = [];
-                
+
                 for (var i = 0; i < dataReader.FieldCount; i++)
                 {
                     columnNames.Add(dataReader.GetName(i));
