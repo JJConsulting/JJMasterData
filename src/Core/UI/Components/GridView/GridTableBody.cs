@@ -77,8 +77,8 @@ internal sealed class GridTableBody(JJGridView gridView)
     {
         var values = await GetValues(row);
         var formStateData = new FormStateData(values, gridView.UserValues, PageState.List);
-        var basicActions = gridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
-        var defaultAction = basicActions.Find(x => x is { IsVisible: true, IsDefaultOption: true });
+        var basicActions = gridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order);
+        var defaultAction = basicActions.FirstOrDefault(x => x is { IsVisible: true, IsDefaultOption: true });
         var onClickScript = await GetOnClickScript(formStateData, defaultAction);
 
         var tdList = new List<HtmlBuilder>();

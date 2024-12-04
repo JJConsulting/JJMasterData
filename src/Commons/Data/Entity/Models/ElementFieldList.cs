@@ -12,7 +12,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class ElementFieldList : IList<ElementField>
 {
-    private readonly List<ElementField> _list = new();
+    private readonly List<ElementField> _list = [];
 
     public ElementFieldList()
     {

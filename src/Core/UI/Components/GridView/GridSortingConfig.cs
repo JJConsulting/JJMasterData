@@ -101,41 +101,42 @@ internal sealed class GridSortingConfig(JJGridView gridView)
 
         var formStateData = await gridView.GetFormStateDataAsync();
 
-        foreach (var field in fieldsList.Where(
-                     f =>
-                         f.DataBehavior is FieldBehavior.Real &&
-                         _expressionsService.GetBoolValue(f.VisibleExpression, formStateData)))
+        foreach (var field in fieldsList)
         {
-            var comboBox = _componentFactory.Controls.ComboBox.Create();
-            comboBox.Name = $"{field.Name}_order";
-            comboBox.SelectedValue = "N";
-            comboBox.DataItem.ShowIcon = true;
-            comboBox.DataItem.Items =
-            [
-                new("A", _stringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
-                new("D", _stringLocalizer["Descendant"], IconType.SortAmountDesc, null),
-                new("N", _stringLocalizer["No Order"], IconType.Genderless, null)
-            ];
-
-            var sort = sortList.Find(x => x.FieldName.Equals(field.Name));
-            if (sort != null)
+            if (field.DataBehavior is FieldBehavior.Real &&
+                _expressionsService.GetBoolValue(field.VisibleExpression, formStateData))
             {
-                comboBox.SelectedValue = sort.IsAsc ? "A" : "D";
-            }
+                var comboBox = _componentFactory.Controls.ComboBox.Create();
+                comboBox.Name = $"{field.Name}_order";
+                comboBox.SelectedValue = "N";
+                comboBox.DataItem.ShowIcon = true;
+                comboBox.DataItem.Items =
+                [
+                    new("A", _stringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
+                    new("D", _stringLocalizer["Descendant"], IconType.SortAmountDesc, null),
+                    new("N", _stringLocalizer["No Order"], IconType.Genderless, null)
+                ];
 
-            await tbody.AppendAsync(HtmlTag.Tr, async tr =>
-            {
-                tr.WithAttribute("id", field.Name);
-                tr.WithCssClass("ui-sortable-handle");
-                tr.Append(HtmlTag.Td, td => td.AppendComponent(new JJIcon("fa fa-arrows")));
-                tr.Append(HtmlTag.Td, td => td.AppendText(_stringLocalizer[field.LabelOrName]));
-                await tr.AppendAsync(HtmlTag.Td, async td =>
+                var sort = sortList.Find(x => x.FieldName.Equals(field.Name));
+                if (sort != null)
                 {
-                    var comboHtml = await comboBox.GetHtmlBuilderAsync();
+                    comboBox.SelectedValue = sort.IsAsc ? "A" : "D";
+                }
 
-                    td.Append(comboHtml);
+                await tbody.AppendAsync(HtmlTag.Tr, async tr =>
+                {
+                    tr.WithAttribute("id", field.Name);
+                    tr.WithCssClass("ui-sortable-handle");
+                    tr.Append(HtmlTag.Td, td => td.AppendComponent(new JJIcon("fa fa-arrows")));
+                    tr.Append(HtmlTag.Td, td => td.AppendText(_stringLocalizer[field.LabelOrName]));
+                    await tr.AppendAsync(HtmlTag.Td, async td =>
+                    {
+                        var comboHtml = await comboBox.GetHtmlBuilderAsync();
+
+                        td.Append(comboHtml);
+                    });
                 });
-            });
+            }
         }
 
         return tbody;
@@ -149,7 +150,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
             return sortList;
 
         var orders = currentOrder.Split(',');
-        foreach (string order in orders)
+        foreach (var order in orders)
         {
             var parValue = order.Split(' ');
             var isDesc = parValue.Length > 1 &&
@@ -164,5 +165,9 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         return sortList;
     }
 
-    private record SortItem(string FieldName, bool IsAsc);
+    private class SortItem(string fieldName, bool isAsc)
+    {
+        public string FieldName { get; } = fieldName;
+        public bool IsAsc { get; } = isAsc;
+    }
 }

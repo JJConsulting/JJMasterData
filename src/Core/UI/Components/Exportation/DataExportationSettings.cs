@@ -14,14 +14,13 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 {
-    private JJDataExportation DataExportation { get; } = dataExportation;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = dataExportation.StringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = dataExportation.StringLocalizer;
     
     internal HtmlBuilder GetHtmlBuilder()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         
-        var folderPath = DataExportationHelper.GetFolderPath(DataExportation);
+        var folderPath = DataExportationHelper.GetFolderPath(dataExportation);
         
         html.WithCssClass("container-fluid");
         html.Append(GetFormHtmlElement(folderPath));
@@ -31,11 +30,11 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             div.WithCssClass("row");
             div.AppendDiv(div =>
             {
-                var linkFactory = DataExportation.ComponentFactory.Html.LinkButton;
-                string onClientClick = DataExportation.Scripts.GetStartExportationScript();
+                var linkFactory = dataExportation.ComponentFactory.Html.LinkButton;
+                string onClientClick = dataExportation.Scripts.GetStartExportationScript();
                 
                 var btnOk = linkFactory.Create();
-                btnOk.Text = StringLocalizer["Export"];
+                btnOk.Text = _stringLocalizer["Export"];
                 btnOk.IconClass = "fa fa-check";
                 btnOk.ShowAsButton = true;
                 btnOk.OnClientClick = onClientClick;
@@ -86,11 +85,11 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                     IconClass = "text-info fa fa-info-circle"
                 });
                 label.AppendText(
-                    $"&nbsp;{StringLocalizer["Filters performed in the previous screen will be considered in the export"]}");
+                    $"&nbsp;{_stringLocalizer["Filters performed in the previous screen will be considered in the export"]}");
             });
         });
 
-        div.AppendComponent(GetTooManyRecordsAlert(DataExportation.Name));
+        div.AppendComponent(GetTooManyRecordsAlert(dataExportation.Name));
 
         return div;
     }
@@ -102,14 +101,14 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             .WithCssClass(BootstrapHelper.FormGroup)
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.FileName}");
-                label.AppendText(StringLocalizer["Export to"]);
+                label.WithAttribute("for", $"{dataExportation.Name}{ExportOptions.FileName}");
+                label.AppendText(_stringLocalizer["Export to"]);
                 label.WithCssClass(BootstrapHelper.Label);
             })
             .Append(HtmlTag.Select, select =>
             {
-                select.WithNameAndId($"{DataExportation.Name}{ExportOptions.FileName}");
-                select.WithOnChange($"DataExportationHelper.showOptions('{DataExportation.Name}',this.value);");
+                select.WithNameAndId($"{dataExportation.Name}{ExportOptions.FileName}");
+                select.WithOnChange($"DataExportationHelper.showOptions('{dataExportation.Name}',this.value);");
                 select.WithCssClass("form-control form-select");
                 select.Append(HtmlTag.Option, option =>
                 {
@@ -144,18 +143,18 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("col-sm-4")
-            .WithAttribute("id", $"{DataExportation.Name}-div-export-orientation")
+            .WithAttribute("id", $"{dataExportation.Name}-div-export-orientation")
             .WithStyle( "display:none")
             .WithCssClass(BootstrapHelper.FormGroup)
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.TableOrientation}");
+                label.WithAttribute("for", $"{dataExportation.Name}{ExportOptions.TableOrientation}");
                 label.WithCssClass(BootstrapHelper.Label);
-                label.AppendText(StringLocalizer["Orientation"]);
+                label.AppendText(_stringLocalizer["Orientation"]);
             })
         .Append(HtmlTag.Select, select =>
         {
-            select.WithNameAndId($"{DataExportation.Name}{ExportOptions.TableOrientation}");
+            select.WithNameAndId($"{dataExportation.Name}{ExportOptions.TableOrientation}");
             select.WithCssClass("form-control form-select");
             select.Append(HtmlTag.Option, option =>
             {
@@ -174,29 +173,29 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     private HtmlBuilder GetExportAllField()
     {
         return new HtmlBuilder(HtmlTag.Div)
-            .WithAttribute("id", $"{DataExportation.Name}-div-export-all")
+            .WithAttribute("id", $"{dataExportation.Name}-div-export-all")
             .WithCssClass("col-sm-4")
             .WithCssClass(BootstrapHelper.FormGroup)
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportAll}");
+                label.WithAttribute("for", $"{dataExportation.Name}{ExportOptions.ExportAll}");
                 label.WithCssClass(BootstrapHelper.Label);
-                label.AppendText(StringLocalizer["Fields"]);
+                label.AppendText(_stringLocalizer["Fields"]);
             })
             .Append(HtmlTag.Select, select =>
             {
-                select.WithNameAndId($"{DataExportation.Name}{ExportOptions.ExportAll}");
+                select.WithNameAndId($"{dataExportation.Name}{ExportOptions.ExportAll}");
                 select.WithCssClass("form-control form-select");
                 select.Append(HtmlTag.Option, option =>
                 {
                     option.WithValue("1");
                     option.WithAttribute("selected", "selected");
-                    option.AppendText(StringLocalizer["All"]);
+                    option.AppendText(_stringLocalizer["All"]);
                 });
                 select.Append(HtmlTag.Option, option =>
                 {
                     option.WithValue("2");
-                    option.AppendText(StringLocalizer["Only the fields visible on the screen"]);
+                    option.AppendText(_stringLocalizer["Only the fields visible on the screen"]);
                 });
             });
     }
@@ -207,32 +206,32 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             .WithStyle( "display:none;")
             .WithCssClass("col-sm-4")
             .WithCssClass(BootstrapHelper.FormGroup)
-            .WithAttribute("id", $"{DataExportation.Name}-div-export-delimiter")
+            .WithAttribute("id", $"{dataExportation.Name}-div-export-delimiter")
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportDelimiter}");
+                label.WithAttribute("for", $"{dataExportation.Name}{ExportOptions.ExportDelimiter}");
                 label.WithCssClass(BootstrapHelper.Label);
-                label.AppendText(StringLocalizer["Delimiter"]);
+                label.AppendText(_stringLocalizer["Delimiter"]);
             })
             .Append(HtmlTag.Select, select =>
             {
-                select.WithNameAndId($"{DataExportation.Name}{ExportOptions.ExportDelimiter}");
+                select.WithNameAndId($"{dataExportation.Name}{ExportOptions.ExportDelimiter}");
                 select.WithCssClass("form-control form-select");
                 select.Append(HtmlTag.Option, option =>
                 {
                     option.WithValue(";");
                     option.WithAttribute("selected", "selected");
-                    option.AppendText(StringLocalizer["Semicolon (;)"]);
+                    option.AppendText(_stringLocalizer["Semicolon (;)"]);
                 });
                 select.Append(HtmlTag.Option, option =>
                 {
                     option.WithValue(",");
-                    option.AppendText(StringLocalizer["Comma (,)"]);
+                    option.AppendText(_stringLocalizer["Comma (,)"]);
                 });
                 select.Append(HtmlTag.Option, option =>
                 {
                     option.WithValue("|");
-                    option.AppendText(StringLocalizer["Pipe (|)"]);
+                    option.AppendText(_stringLocalizer["Pipe (|)"]);
                 });
             });
     }
@@ -242,11 +241,11 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("col-sm-12");
         div.WithCssClass(BootstrapHelper.FormGroup);
-        var exportFirstLineCheckbox = DataExportation.ComponentFactory.Controls.CheckBox.Create();
-        exportFirstLineCheckbox.Name = $"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}";
-        exportFirstLineCheckbox.IsChecked = DataExportation.ExportOptions.ExportFirstLine;
+        var exportFirstLineCheckbox = dataExportation.ComponentFactory.Controls.CheckBox.Create();
+        exportFirstLineCheckbox.Name = $"{dataExportation.Name}{ExportOptions.ExportTableFirstLine}";
+        exportFirstLineCheckbox.IsChecked = dataExportation.ExportOptions.ExportFirstLine;
         exportFirstLineCheckbox.Layout = CheckboxLayout.Switch;
-        exportFirstLineCheckbox.Text = StringLocalizer["Export first line as title"];
+        exportFirstLineCheckbox.Text = _stringLocalizer["Export first line as title"];
         div.Append(exportFirstLineCheckbox.GetHtmlBuilder());
         
         return div;
@@ -264,9 +263,9 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             Color = BootstrapColor.Warning,
             Messages =
             {
-                StringLocalizer[
+                _stringLocalizer[
                     "You are trying to export more than 50,000 records, this can cause system overhead and slowdowns."],
-                StringLocalizer[
+                _stringLocalizer[
                     "Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."]
             }
         };
@@ -278,13 +277,13 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     {
         var files = GetGeneratedFiles(exportationFolderPath);
         var filesCount = files.Count;
-        var panel = new JJCollapsePanel(DataExportation.CurrentContext.Request.Form)
+        var panel = new JJCollapsePanel(dataExportation.CurrentContext.Request.Form)
         {
             Name = "exportCollapse",
             ExpandedByDefault = false,
             TitleIcon = new JJIcon(IconType.FolderOpenO),
             Visible = filesCount  > 0,
-            Title = $"{StringLocalizer["Recently generated files"]} ({filesCount})",
+            Title = $"{_stringLocalizer["Recently generated files"]} ({filesCount})",
             HtmlBuilderContent = GetLastFilesHtml(files)
         };
 
@@ -294,7 +293,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     private HtmlBuilder GetLastFilesHtml(List<FileInfo> files)
     {
         if (files == null || files.Count == 0)
-            return new HtmlBuilder(StringLocalizer["No recently generated files."]);
+            return new HtmlBuilder(_stringLocalizer["No recently generated files."]);
 
         var html = new HtmlBuilder(HtmlTag.Div);
         foreach (var file in files)
@@ -303,7 +302,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                 continue;
 
             var icon = JJDataExportation.GetFileIcon(file.Extension);
-            string url = DataExportation.GetDownloadUrl(file.FullName);
+            string url = dataExportation.GetDownloadUrl(file.FullName);
 
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");
@@ -334,5 +333,5 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return list.OrderByDescending(f => f.CreationTime).ToList();
     }
 
-    private bool PdfWriterExists() => DataExportation.DataExportationWriterFactory.PdfWriterExists();
+    private bool PdfWriterExists() => dataExportation.DataExportationWriterFactory.PdfWriterExists();
 }
