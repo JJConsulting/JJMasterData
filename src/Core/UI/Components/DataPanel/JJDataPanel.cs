@@ -346,7 +346,7 @@ public class JJDataPanel(
         return Values;
     }
 #if NETFRAMEWORK
-    [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
+    [Obsolete("Please use LoadValuesFromPkAsync")]
     public void LoadValuesFromPK(Dictionary<string, object> pks)
     {
         Values = AsyncHelper.RunSync(()=>entityRepository.GetFieldsAsync(FormElement, pks));

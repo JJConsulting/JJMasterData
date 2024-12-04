@@ -142,33 +142,40 @@ public partial class DataAccess
         int numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
 
-        var connection = await CreateConnectionAsync(cancellationToken);
-
-        using (connection)
+        using var connection = await CreateConnectionAsync(cancellationToken);
+        
+#if NETSTANDARD
+        using var transaction = connection.BeginTransaction();
+#else
+        using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+#endif
+        try
         {
-            using var transaction = connection.BeginTransaction();
-
-            try
+            foreach (var command in commands)
             {
-                foreach (var command in commands)
-                {
-                    currentCommand = command;
-                    using var dbCommand = CreateDbCommand(command);
-                    dbCommand.Connection = connection;
-                    dbCommand.Transaction = transaction;
+                currentCommand = command;
+                using var dbCommand = CreateDbCommand(command);
+                dbCommand.Connection = connection;
+                dbCommand.Transaction = transaction;
 
-                    numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
-                }
-
-                transaction.Commit();
+                numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
             }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-
-                throw GetDataAccessException(ex, currentCommand);
-            }
+#if NETSTANDARD
+            transaction.Commit();
+#else
+            await transaction.CommitAsync(cancellationToken);
+#endif
         }
+        catch (Exception ex)
+        {
+#if NETSTANDARD
+            transaction.Rollback();
+#else
+            await transaction.RollbackAsync(cancellationToken);
+#endif
+            throw GetDataAccessException(ex, currentCommand);
+        }
+
 
         return numberOfRowsAffected;
     }

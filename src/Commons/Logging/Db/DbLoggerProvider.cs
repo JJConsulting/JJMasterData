@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -14,42 +15,36 @@ public class DbLoggerProvider(IServiceProvider serviceProvider, IOptionsMonitor<
 {
     private bool _tableExists;
     private const string ProviderAlias = "Database";
-    private async Task LogAsync(LogMessage entry, CancellationToken cancellationToken)
+
+    private static IEnumerable<Dictionary<string, object>> GetValues(List<LogMessage> entries, DbLoggerOptions options)
     {
-        var currentOptions = options.CurrentValue;
-        var dbValues = GetDictionary(entry, currentOptions);
-        var element = DbLoggerElement.GetInstance(currentOptions);
-
-        using var scope = serviceProvider.CreateScope();
-        var entityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
-        if (!_tableExists)
-        {
-            if (!await entityRepository.TableExistsAsync(currentOptions.TableName, currentOptions.ConnectionStringId))
-            {
-                await entityRepository.CreateDataModelAsync(element,[]);
-            }
-
-            _tableExists = true;
-        }
-    
-        await entityRepository.InsertAsync(element, dbValues);
-    }
-
-    private static Dictionary<string, object> GetDictionary(LogMessage entry, DbLoggerOptions options)
-    {
-        return new Dictionary<string, object>
+        return entries.Select(entry => new Dictionary<string, object>
         {
             [options.CreatedColumnName] = entry.Timestamp.DateTime,
             [options.LevelColumnName] = entry.LogLevel,
             [options.CategoryColumnName] = entry.Category,
             [options.MessageColumnName] = entry.Message,
-        };
+        });
     }
+
     protected override async Task WriteMessagesAsync(List<LogMessage> messages, CancellationToken token)
     {
-        foreach (var message in messages)
+        using var scope = serviceProvider.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
+        var currentOptions = options.CurrentValue;
+        var element = DbLoggerElement.GetInstance(currentOptions);
+        var values = GetValues(messages, currentOptions);
+
+        if (!_tableExists)
         {
-            await LogAsync(message, token);
+            if (!await repository.TableExistsAsync(currentOptions.TableName, currentOptions.ConnectionStringId))
+            {
+                await repository.CreateDataModelAsync(element);
+            }
+
+            _tableExists = true;
         }
+        
+        await repository.BulkInsertAsync(element, values, currentOptions.ConnectionStringId);
     }
 }

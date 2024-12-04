@@ -62,6 +62,12 @@ public interface IEntityRepository
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
     public Task InsertAsync(Element element, Dictionary<string,object?> values);
+
+    public int BulkInsert(Element element, IEnumerable<Dictionary<string, object?>> values,
+        Guid? connectionId = null);
+    
+    public Task<int> BulkInsertAsync(Element element, IEnumerable<Dictionary<string, object?>> values,
+        Guid? connectionId = null);
     
     /// <summary>
     /// Set a record in the database.

@@ -4,717 +4,709 @@ namespace JJMasterData.Commons.Util;
 
 internal static class ReservedWords
 {
-
-    public static List<string> GetReservedMasterDataKeywords()
+    public static IEnumerable<string> GetReservedMasterDataKeywords()
     {
-        return
-        [
-            "PAG",
-            "REGPORPAG",
-            "ORDERBY",
-            "TOT",
-            "PAGESTATE"
-        ];
+        yield return "PAG";
+        yield return "REGPORPAG";
+        yield return "ORDERBY";
+        yield return "TOT";
+        yield return "PAGESTATE";
     }
 
-    public static List<string> GetReservedDatabaseKeywords()
+    public static IEnumerable<string> GetReservedDatabaseKeywords()
     {
-        return
-        [
-            "ADD",
-            "EXTERNAL",
-            "PROCEDURE",
-            "ALL",
-            "FETCH",
-            "PUBLIC",
-            "ALTER",
-            "FILE",
-            "RAISERROR",
-            "AND",
-            "FILLFACTOR",
-            "READ",
-            "ANY",
-            "FOR",
-            "READTEXT",
-            "AS",
-            "FOREIGN",
-            "RECONFIGURE",
-            "ASC",
-            "FREETEXT",
-            "REFERENCES",
-            "AUTHORIZATION",
-            "FREETEXTTABLE",
-            "REPLICATION",
-            "BACKUP",
-            "FROM",
-            "RESTORE",
-            "BEGIN",
-            "FULL",
-            "RESTRICT",
-            "BETWEEN",
-            "FUNCTION",
-            "RETURN",
-            "BREAK",
-            "GOTO",
-            "REVERT",
-            "BROWSE",
-            "GRANT",
-            "REVOKE",
-            "BULK",
-            "GROUP",
-            "RIGHT",
-            "BY",
-            "HAVING",
-            "ROLLBACK",
-            "CASCADE",
-            "HOLDLOCK",
-            "ROWCOUNT",
-            "CASE",
-            "IDENTITY",
-            "ROWGUIDCOL",
-            "CHECK",
-            "IDENTITY_INSERT",
-            "RULE",
-            "CHECKPOINT",
-            "IDENTITYCOL",
-            "SAVE",
-            "CLOSE",
-            "IF",
-            "SCHEMA",
-            "CLUSTERED",
-            "IN",
-            "SECURITYAUDIT",
-            "COALESCE",
-            "INDEX",
-            "SELECT",
-            "COLLATE",
-            "INNER",
-            "SEMANTICKEYPHRASETABLE",
-            "COLUMN",
-            "INSERT",
-            "SEMANTICSIMILARITYDETAILSTABLE",
-            "COMMIT",
-            "INTERSECT",
-            "SEMANTICSIMILARITYTABLE",
-            "COMPUTE",
-            "INTO",
-            "SESSION_USER",
-            "CONSTRAINT",
-            "IS",
-            "SET",
-            "CONTAINS",
-            "JOIN",
-            "SETUSER",
-            "CONTAINSTABLE",
-            "KEY",
-            "SHUTDOWN",
-            "CONTINUE",
-            "KILL",
-            "SOME",
-            "CONVERT",
-            "LEFT",
-            "STATISTICS",
-            "CREATE",
-            "LIKE",
-            "SYSTEM_USER",
-            "CROSS",
-            "LINENO",
-            "TABLE",
-            "CURRENT",
-            "LOAD",
-            "TABLESAMPLE",
-            "CURRENT_DATE",
-            "MERGE",
-            "TEXTSIZE",
-            "CURRENT_TIME",
-            "NATIONAL",
-            "THEN",
-            "CURRENT_TIMESTAMP",
-            "NOCHECK",
-            "TO",
-            "CURRENT_USER",
-            "NONCLUSTERED",
-            "TOP",
-            "CURSOR",
-            "NOT",
-            "TRAN",
-            "DATABASE",
-            "NULL",
-            "TRANSACTION",
-            "DBCC",
-            "NULLIF",
-            "TRIGGER",
-            "DEALLOCATE",
-            "OF",
-            "TRUNCATE",
-            "DECLARE",
-            "OFF",
-            "TRY_CONVERT",
-            "DEFAULT",
-            "OFFSETS",
-            "TSEQUAL",
-            "DELETE",
-            "ON",
-            "UNION",
-            "DENY",
-            "OPEN",
-            "UNIQUE",
-            "DESC",
-            "OPENDATASOURCE",
-            "UNPIVOT",
-            "DISK",
-            "OPENQUERY",
-            "UPDATE",
-            "DISTINCT",
-            "OPENROWSET",
-            "UPDATETEXT",
-            "DISTRIBUTED",
-            "OPENXML",
-            "USE",
-            "DOUBLE",
-            "OPTION",
-            "USER",
-            "DROP",
-            "OR",
-            "VALUES",
-            "DUMP",
-            "ORDER",
-            "VARYING",
-            "ELSE",
-            "OUTER",
-            "VIEW",
-            "END",
-            "OVER",
-            "WAITFOR",
-            "ERRLVL",
-            "PERCENT",
-            "WHEN",
-            "ESCAPE",
-            "PIVOT",
-            "WHERE",
-            "EXCEPT",
-            "PLAN",
-            "WHILE",
-            "EXEC",
-            "PRECISION",
-            "WITH",
-            "EXECUTE",
-            "PRIMARY",
-            "WITHIN GROUP",
-            "EXISTS",
-            "PRINT",
-            "WRITETEXT",
-            "EXIT",
-            "PROC",
-            "ABSOLUTE",
-            "EXEC",
-            "OVERLAPS",
-            "ACTION",
-            "EXECUTE",
-            "PAD",
-            "ADA",
-            "EXISTS",
-            "PARTIAL",
-            "ADD",
-            "EXTERNAL",
-            "PASCAL",
-            "ALL",
-            "EXTRACT",
-            "POSITION",
-            "ALLOCATE",
-            "FALSE",
-            "PRECISION",
-            "ALTER",
-            "FETCH",
-            "PREPARE",
-            "AND",
-            "FIRST",
-            "PRESERVE",
-            "ANY",
-            "FLOAT",
-            "PRIMARY",
-            "ARE",
-            "FOR",
-            "PRIOR",
-            "AS",
-            "FOREIGN",
-            "PRIVILEGES",
-            "ASC",
-            "FORTRAN",
-            "PROCEDURE",
-            "ASSERTION",
-            "FOUND",
-            "PUBLIC",
-            "AT",
-            "FROM",
-            "READ",
-            "AUTHORIZATION",
-            "FULL",
-            "REAL",
-            "AVG",
-            "GET",
-            "REFERENCES",
-            "BEGIN",
-            "GLOBAL",
-            "RELATIVE",
-            "BETWEEN",
-            "GO",
-            "RESTRICT",
-            "BIT",
-            "GOTO",
-            "REVOKE",
-            "BIT_LENGTH",
-            "GRANT",
-            "RIGHT",
-            "BOTH",
-            "GROUP",
-            "ROLLBACK",
-            "BY",
-            "HAVING",
-            "ROWS",
-            "CASCADE",
-            "HOUR",
-            "SCHEMA",
-            "CASCADED",
-            "IDENTITY",
-            "SCROLL",
-            "CASE",
-            "IMMEDIATE",
-            "SECOND",
-            "CAST",
-            "IN",
-            "SECTION",
-            "CATALOG",
-            "INCLUDE",
-            "SELECT",
-            "CHAR",
-            "INDEX",
-            "SESSION",
-            "CHAR_LENGTH",
-            "INDICATOR",
-            "SESSION_USER",
-            "CHARACTER",
-            "INITIALLY",
-            "SET",
-            "CHARACTER_LENGTH",
-            "INNER",
-            "SIZE",
-            "CHECK",
-            "INPUT",
-            "SMALLINT",
-            "CLOSE",
-            "INSENSITIVE",
-            "SOME",
-            "COALESCE",
-            "INSERT",
-            "SPACE",
-            "COLLATE",
-            "INT",
-            "SQL",
-            "COLLATION",
-            "INTEGER",
-            "SQLCA",
-            "COLUMN",
-            "INTERSECT",
-            "SQLCODE",
-            "COMMIT",
-            "INTERVAL",
-            "SQLERROR",
-            "CONNECT",
-            "INTO",
-            "SQLSTATE",
-            "CONNECTION",
-            "IS",
-            "SQLWARNING",
-            "CONSTRAINT",
-            "ISOLATION",
-            "SUBSTRING",
-            "CONSTRAINTS",
-            "JOIN",
-            "SUM",
-            "CONTINUE",
-            "KEY",
-            "SYSTEM_USER",
-            "CONVERT",
-            "LANGUAGE",
-            "TABLE",
-            "CORRESPONDING",
-            "LAST",
-            "TEMPORARY",
-            "COUNT",
-            "LEADING",
-            "THEN",
-            "CREATE",
-            "LEFT",
-            "TIME",
-            "CROSS",
-            "LEVEL",
-            "TIMESTAMP",
-            "CURRENT",
-            "LIKE",
-            "TIMEZONE_HOUR",
-            "CURRENT_DATE",
-            "LOCAL",
-            "TIMEZONE_MINUTE",
-            "CURRENT_TIME",
-            "LOWER",
-            "TO",
-            "CURRENT_TIMESTAMP",
-            "MATCH",
-            "TRAILING",
-            "CURRENT_USER",
-            "MAX",
-            "TRANSACTION",
-            "CURSOR",
-            "MIN",
-            "TRANSLATE",
-            "DATE",
-            "MINUTE",
-            "TRANSLATION",
-            "DAY",
-            "MODULE",
-            "TRIM",
-            "DEALLOCATE",
-            "MONTH",
-            "TRUE",
-            "DEC",
-            "NAMES",
-            "UNION",
-            "DECIMAL",
-            "NATIONAL",
-            "UNIQUE",
-            "DECLARE",
-            "NATURAL",
-            "UNKNOWN",
-            "DEFAULT",
-            "NCHAR",
-            "UPDATE",
-            "DEFERRABLE",
-            "NEXT",
-            "UPPER",
-            "DEFERRED",
-            "NO",
-            "USAGE",
-            "DELETE",
-            "NONE",
-            "USER",
-            "DESC",
-            "NOT",
-            "USING",
-            "DESCRIBE",
-            "NULL",
-            "VALUE",
-            "DESCRIPTOR",
-            "NULLIF",
-            "VALUES",
-            "DIAGNOSTICS",
-            "NUMERIC",
-            "VARCHAR",
-            "DISCONNECT",
-            "OCTET_LENGTH",
-            "VARYING",
-            "DISTINCT",
-            "OF",
-            "VIEW",
-            "DOMAIN",
-            "ON",
-            "WHEN",
-            "DOUBLE",
-            "ONLY",
-            "WHENEVER",
-            "DROP",
-            "OPEN",
-            "WHERE",
-            "ELSE",
-            "OPTION",
-            "WITH",
-            "END",
-            "OR",
-            "WORK",
-            "END-EXEC",
-            "ORDER",
-            "WRITE",
-            "ESCAPE",
-            "OUTER",
-            "YEAR",
-            "EXCEPT",
-            "OUTPUT",
-            "ZONE",
-            "EXCEPTION",
-            "ABSOLUTE",
-            "HOST",
-            "RELATIVE",
-            "ACTION",
-            "HOUR",
-            "RELEASE",
-            "ADMIN",
-            "IGNORE",
-            "RESULT",
-            "AFTER",
-            "IMMEDIATE",
-            "RETURNS",
-            "AGGREGATE",
-            "INDICATOR",
-            "ROLE",
-            "ALIAS",
-            "INITIALIZE",
-            "ROLLUP",
-            "ALLOCATE",
-            "INITIALLY",
-            "ROUTINE",
-            "ARE",
-            "INOUT",
-            "ROW",
-            "ARRAY",
-            "INPUT",
-            "ROWS",
-            "ASENSITIVE",
-            "INT",
-            "SAVEPOINT",
-            "ASSERTION",
-            "INTEGER",
-            "SCROLL",
-            "ASYMMETRIC",
-            "INTERSECTION",
-            "SCOPE",
-            "AT",
-            "INTERVAL",
-            "SEARCH",
-            "ATOMIC",
-            "ISOLATION",
-            "SECOND",
-            "BEFORE",
-            "ITERATE",
-            "SECTION",
-            "BINARY",
-            "LANGUAGE",
-            "SENSITIVE",
-            "BIT",
-            "LARGE",
-            "SEQUENCE",
-            "BLOB",
-            "LAST",
-            "SESSION",
-            "BOOLEAN",
-            "LATERAL",
-            "SETS",
-            "BOTH",
-            "LEADING",
-            "SIMILAR",
-            "BREADTH",
-            "LESS",
-            "SIZE",
-            "CALL",
-            "LEVEL",
-            "SMALLINT",
-            "CALLED",
-            "LIKE_REGEX",
-            "SPACE",
-            "CARDINALITY",
-            "LIMIT",
-            "SPECIFIC",
-            "CASCADED",
-            "LN",
-            "SPECIFICTYPE",
-            "CAST",
-            "LOCAL",
-            "SQL",
-            "CATALOG",
-            "LOCALTIME",
-            "SQLEXCEPTION",
-            "CHAR",
-            "LOCALTIMESTAMP",
-            "SQLSTATE",
-            "CHARACTER",
-            "LOCATOR",
-            "SQLWARNING",
-            "CLASS",
-            "MAP",
-            "START",
-            "CLOB",
-            "MATCH",
-            "STATE",
-            "COLLATION",
-            "MEMBER",
-            "STATEMENT",
-            "COLLECT",
-            "METHOD",
-            "STATIC",
-            "COMPLETION",
-            "MINUTE",
-            "STDDEV_POP",
-            "CONDITION",
-            "MOD",
-            "STDDEV_SAMP",
-            "CONNECT",
-            "MODIFIES",
-            "STRUCTURE",
-            "CONNECTION",
-            "MODIFY",
-            "SUBMULTISET",
-            "CONSTRAINTS",
-            "MODULE",
-            "SUBSTRING_REGEX",
-            "CONSTRUCTOR",
-            "MONTH",
-            "SYMMETRIC",
-            "CORR",
-            "MULTISET",
-            "SYSTEM",
-            "CORRESPONDING",
-            "NAMES",
-            "TEMPORARY",
-            "COVAR_POP",
-            "NATURAL",
-            "TERMINATE",
-            "COVAR_SAMP",
-            "NCHAR",
-            "THAN",
-            "CUBE",
-            "NCLOB",
-            "TIME",
-            "CUME_DIST",
-            "NEW",
-            "TIMESTAMP",
-            "CURRENT_CATALOG",
-            "NEXT",
-            "TIMEZONE_HOUR",
-            "CURRENT_DEFAULT_TRANSFORM_GROUP",
-            "NO",
-            "TIMEZONE_MINUTE",
-            "CURRENT_PATH",
-            "NONE",
-            "TRAILING",
-            "CURRENT_ROLE",
-            "NORMALIZE",
-            "TRANSLATE_REGEX",
-            "CURRENT_SCHEMA",
-            "NUMERIC",
-            "TRANSLATION",
-            "CURRENT_TRANSFORM_GROUP_FOR_TYPE",
-            "OBJECT",
-            "TREAT",
-            "CYCLE",
-            "OCCURRENCES_REGEX",
-            "TRUE",
-            "DATA",
-            "OLD",
-            "UESCAPE",
-            "DATE",
-            "ONLY",
-            "UNDER",
-            "DAY",
-            "OPERATION",
-            "UNKNOWN",
-            "DEC",
-            "ORDINALITY",
-            "UNNEST",
-            "DECIMAL",
-            "OUT",
-            "USAGE",
-            "DEFERRABLE",
-            "OVERLAY",
-            "USING",
-            "DEFERRED",
-            "OUTPUT",
-            "VALUE",
-            "DEPTH",
-            "PAD",
-            "VAR_POP",
-            "DEREF",
-            "PARAMETER",
-            "VAR_SAMP",
-            "DESCRIBE",
-            "PARAMETERS",
-            "VARCHAR",
-            "DESCRIPTOR",
-            "PARTIAL",
-            "VARIABLE",
-            "DESTROY",
-            "PARTITION",
-            "WHENEVER",
-            "DESTRUCTOR",
-            "PATH",
-            "WIDTH_BUCKET",
-            "DETERMINISTIC",
-            "POSTFIX",
-            "WITHOUT",
-            "DICTIONARY",
-            "PREFIX",
-            "WINDOW",
-            "DIAGNOSTICS",
-            "PREORDER",
-            "WITHIN",
-            "DISCONNECT",
-            "PREPARE",
-            "WORK",
-            "DOMAIN",
-            "PERCENT_RANK",
-            "WRITE",
-            "DYNAMIC",
-            "PERCENTILE_CONT",
-            "XMLAGG",
-            "EACH",
-            "PERCENTILE_DISC",
-            "XMLATTRIBUTES",
-            "ELEMENT",
-            "POSITION_REGEX",
-            "XMLBINARY",
-            "END-EXEC",
-            "PRESERVE",
-            "XMLCAST",
-            "EQUALS",
-            "PRIOR",
-            "XMLCOMMENT",
-            "EVERY",
-            "PRIVILEGES",
-            "XMLCONCAT",
-            "EXCEPTION",
-            "RANGE",
-            "XMLDOCUMENT",
-            "FALSE",
-            "READS",
-            "XMLELEMENT",
-            "FILTER",
-            "REAL",
-            "XMLEXISTS",
-            "FIRST",
-            "RECURSIVE",
-            "XMLFOREST",
-            "FLOAT",
-            "REF",
-            "XMLITERATE",
-            "FOUND",
-            "REFERENCING",
-            "XMLNAMESPACES",
-            "FREE",
-            "REGR_AVGX",
-            "XMLPARSE",
-            "FULLTEXTTABLE",
-            "REGR_AVGY",
-            "XMLPI",
-            "FUSION",
-            "REGR_COUNT",
-            "XMLQUERY",
-            "GENERAL",
-            "REGR_INTERCEPT",
-            "XMLSERIALIZE",
-            "GET",
-            "REGR_R2",
-            "XMLTABLE",
-            "GLOBAL",
-            "REGR_SLOPE",
-            "XMLTEXT",
-            "GO",
-            "REGR_SXX",
-            "XMLVALIDATE",
-            "GROUPING",
-            "REGR_SXY",
-            "YEAR",
-            "HOLD",
-            "REGR_SYY",
-            "ZONE"
-        ];
+        yield return "ADD";
+        yield return "EXTERNAL";
+        yield return "PROCEDURE";
+        yield return "ALL";
+        yield return "FETCH";
+        yield return "PUBLIC";
+        yield return "ALTER";
+        yield return "FILE";
+        yield return "RAISERROR";
+        yield return "AND";
+        yield return "FILLFACTOR";
+        yield return "READ";
+        yield return "ANY";
+        yield return "FOR";
+        yield return "READTEXT";
+        yield return "AS";
+        yield return "FOREIGN";
+        yield return "RECONFIGURE";
+        yield return "ASC";
+        yield return "FREETEXT";
+        yield return "REFERENCES";
+        yield return "AUTHORIZATION";
+        yield return "FREETEXTTABLE";
+        yield return "REPLICATION";
+        yield return "BACKUP";
+        yield return "FROM";
+        yield return "RESTORE";
+        yield return "BEGIN";
+        yield return "FULL";
+        yield return "RESTRICT";
+        yield return "BETWEEN";
+        yield return "FUNCTION";
+        yield return "RETURN";
+        yield return "BREAK";
+        yield return "GOTO";
+        yield return "REVERT";
+        yield return "BROWSE";
+        yield return "GRANT";
+        yield return "REVOKE";
+        yield return "BULK";
+        yield return "GROUP";
+        yield return "RIGHT";
+        yield return "BY";
+        yield return "HAVING";
+        yield return "ROLLBACK";
+        yield return "CASCADE";
+        yield return "HOLDLOCK";
+        yield return "ROWCOUNT";
+        yield return "CASE";
+        yield return "IDENTITY";
+        yield return "ROWGUIDCOL";
+        yield return "CHECK";
+        yield return "IDENTITY_INSERT";
+        yield return "RULE";
+        yield return "CHECKPOINT";
+        yield return "IDENTITYCOL";
+        yield return "SAVE";
+        yield return "CLOSE";
+        yield return "IF";
+        yield return "SCHEMA";
+        yield return "CLUSTERED";
+        yield return "IN";
+        yield return "SECURITYAUDIT";
+        yield return "COALESCE";
+        yield return "INDEX";
+        yield return "SELECT";
+        yield return "COLLATE";
+        yield return "INNER";
+        yield return "SEMANTICKEYPHRASETABLE";
+        yield return "COLUMN";
+        yield return "INSERT";
+        yield return "SEMANTICSIMILARITYDETAILSTABLE";
+        yield return "COMMIT";
+        yield return "INTERSECT";
+        yield return "SEMANTICSIMILARITYTABLE";
+        yield return "COMPUTE";
+        yield return "INTO";
+        yield return "SESSION_USER";
+        yield return "CONSTRAINT";
+        yield return "IS";
+        yield return "SET";
+        yield return "CONTAINS";
+        yield return "JOIN";
+        yield return "SETUSER";
+        yield return "CONTAINSTABLE";
+        yield return "KEY";
+        yield return "SHUTDOWN";
+        yield return "CONTINUE";
+        yield return "KILL";
+        yield return "SOME";
+        yield return "CONVERT";
+        yield return "LEFT";
+        yield return "STATISTICS";
+        yield return "CREATE";
+        yield return "LIKE";
+        yield return "SYSTEM_USER";
+        yield return "CROSS";
+        yield return "LINENO";
+        yield return "TABLE";
+        yield return "CURRENT";
+        yield return "LOAD";
+        yield return "TABLESAMPLE";
+        yield return "CURRENT_DATE";
+        yield return "MERGE";
+        yield return "TEXTSIZE";
+        yield return "CURRENT_TIME";
+        yield return "NATIONAL";
+        yield return "THEN";
+        yield return "CURRENT_TIMESTAMP";
+        yield return "NOCHECK";
+        yield return "TO";
+        yield return "CURRENT_USER";
+        yield return "NONCLUSTERED";
+        yield return "TOP";
+        yield return "CURSOR";
+        yield return "NOT";
+        yield return "TRAN";
+        yield return "DATABASE";
+        yield return "NULL";
+        yield return "TRANSACTION";
+        yield return "DBCC";
+        yield return "NULLIF";
+        yield return "TRIGGER";
+        yield return "DEALLOCATE";
+        yield return "OF";
+        yield return "TRUNCATE";
+        yield return "DECLARE";
+        yield return "OFF";
+        yield return "TRY_CONVERT";
+        yield return "DEFAULT";
+        yield return "OFFSETS";
+        yield return "TSEQUAL";
+        yield return "DELETE";
+        yield return "ON";
+        yield return "UNION";
+        yield return "DENY";
+        yield return "OPEN";
+        yield return "UNIQUE";
+        yield return "DESC";
+        yield return "OPENDATASOURCE";
+        yield return "UNPIVOT";
+        yield return "DISK";
+        yield return "OPENQUERY";
+        yield return "UPDATE";
+        yield return "DISTINCT";
+        yield return "OPENROWSET";
+        yield return "UPDATETEXT";
+        yield return "DISTRIBUTED";
+        yield return "OPENXML";
+        yield return "USE";
+        yield return "DOUBLE";
+        yield return "OPTION";
+        yield return "USER";
+        yield return "DROP";
+        yield return "OR";
+        yield return "VALUES";
+        yield return "DUMP";
+        yield return "ORDER";
+        yield return "VARYING";
+        yield return "ELSE";
+        yield return "OUTER";
+        yield return "VIEW";
+        yield return "END";
+        yield return "OVER";
+        yield return "WAITFOR";
+        yield return "ERRLVL";
+        yield return "PERCENT";
+        yield return "WHEN";
+        yield return "ESCAPE";
+        yield return "PIVOT";
+        yield return "WHERE";
+        yield return "EXCEPT";
+        yield return "PLAN";
+        yield return "WHILE";
+        yield return "EXEC";
+        yield return "PRECISION";
+        yield return "WITH";
+        yield return "EXECUTE";
+        yield return "PRIMARY";
+        yield return "WITHIN GROUP";
+        yield return "EXISTS";
+        yield return "PRINT";
+        yield return "WRITETEXT";
+        yield return "EXIT";
+        yield return "PROC";
+        yield return "ABSOLUTE";
+        yield return "EXEC";
+        yield return "OVERLAPS";
+        yield return "ACTION";
+        yield return "EXECUTE";
+        yield return "PAD";
+        yield return "ADA";
+        yield return "EXISTS";
+        yield return "PARTIAL";
+        yield return "ADD";
+        yield return "EXTERNAL";
+        yield return "PASCAL";
+        yield return "ALL";
+        yield return "EXTRACT";
+        yield return "POSITION";
+        yield return "ALLOCATE";
+        yield return "FALSE";
+        yield return "PRECISION";
+        yield return "ALTER";
+        yield return "FETCH";
+        yield return "PREPARE";
+        yield return "AND";
+        yield return "FIRST";
+        yield return "PRESERVE";
+        yield return "ANY";
+        yield return "FLOAT";
+        yield return "PRIMARY";
+        yield return "ARE";
+        yield return "FOR";
+        yield return "PRIOR";
+        yield return "AS";
+        yield return "FOREIGN";
+        yield return "PRIVILEGES";
+        yield return "ASC";
+        yield return "FORTRAN";
+        yield return "PROCEDURE";
+        yield return "ASSERTION";
+        yield return "FOUND";
+        yield return "PUBLIC";
+        yield return "AT";
+        yield return "FROM";
+        yield return "READ";
+        yield return "AUTHORIZATION";
+        yield return "FULL";
+        yield return "REAL";
+        yield return "AVG";
+        yield return "GET";
+        yield return "REFERENCES";
+        yield return "BEGIN";
+        yield return "GLOBAL";
+        yield return "RELATIVE";
+        yield return "BETWEEN";
+        yield return "GO";
+        yield return "RESTRICT";
+        yield return "BIT";
+        yield return "GOTO";
+        yield return "REVOKE";
+        yield return "BIT_LENGTH";
+        yield return "GRANT";
+        yield return "RIGHT";
+        yield return "BOTH";
+        yield return "GROUP";
+        yield return "ROLLBACK";
+        yield return "BY";
+        yield return "HAVING";
+        yield return "ROWS";
+        yield return "CASCADE";
+        yield return "HOUR";
+        yield return "SCHEMA";
+        yield return "CASCADED";
+        yield return "IDENTITY";
+        yield return "SCROLL";
+        yield return "CASE";
+        yield return "IMMEDIATE";
+        yield return "SECOND";
+        yield return "CAST";
+        yield return "IN";
+        yield return "SECTION";
+        yield return "CATALOG";
+        yield return "INCLUDE";
+        yield return "SELECT";
+        yield return "CHAR";
+        yield return "INDEX";
+        yield return "SESSION";
+        yield return "CHAR_LENGTH";
+        yield return "INDICATOR";
+        yield return "SESSION_USER";
+        yield return "CHARACTER";
+        yield return "INITIALLY";
+        yield return "SET";
+        yield return "CHARACTER_LENGTH";
+        yield return "INNER";
+        yield return "SIZE";
+        yield return "CHECK";
+        yield return "INPUT";
+        yield return "SMALLINT";
+        yield return "CLOSE";
+        yield return "INSENSITIVE";
+        yield return "SOME";
+        yield return "COALESCE";
+        yield return "INSERT";
+        yield return "SPACE";
+        yield return "COLLATE";
+        yield return "INT";
+        yield return "SQL";
+        yield return "COLLATION";
+        yield return "INTEGER";
+        yield return "SQLCA";
+        yield return "COLUMN";
+        yield return "INTERSECT";
+        yield return "SQLCODE";
+        yield return "COMMIT";
+        yield return "INTERVAL";
+        yield return "SQLERROR";
+        yield return "CONNECT";
+        yield return "INTO";
+        yield return "SQLSTATE";
+        yield return "CONNECTION";
+        yield return "IS";
+        yield return "SQLWARNING";
+        yield return "CONSTRAINT";
+        yield return "ISOLATION";
+        yield return "SUBSTRING";
+        yield return "CONSTRAINTS";
+        yield return "JOIN";
+        yield return "SUM";
+        yield return "CONTINUE";
+        yield return "KEY";
+        yield return "SYSTEM_USER";
+        yield return "CONVERT";
+        yield return "LANGUAGE";
+        yield return "TABLE";
+        yield return "CORRESPONDING";
+        yield return "LAST";
+        yield return "TEMPORARY";
+        yield return "COUNT";
+        yield return "LEADING";
+        yield return "THEN";
+        yield return "CREATE";
+        yield return "LEFT";
+        yield return "TIME";
+        yield return "CROSS";
+        yield return "LEVEL";
+        yield return "TIMESTAMP";
+        yield return "CURRENT";
+        yield return "LIKE";
+        yield return "TIMEZONE_HOUR";
+        yield return "CURRENT_DATE";
+        yield return "LOCAL";
+        yield return "TIMEZONE_MINUTE";
+        yield return "CURRENT_TIME";
+        yield return "LOWER";
+        yield return "TO";
+        yield return "CURRENT_TIMESTAMP";
+        yield return "MATCH";
+        yield return "TRAILING";
+        yield return "CURRENT_USER";
+        yield return "MAX";
+        yield return "TRANSACTION";
+        yield return "CURSOR";
+        yield return "MIN";
+        yield return "TRANSLATE";
+        yield return "DATE";
+        yield return "MINUTE";
+        yield return "TRANSLATION";
+        yield return "DAY";
+        yield return "MODULE";
+        yield return "TRIM";
+        yield return "DEALLOCATE";
+        yield return "MONTH";
+        yield return "TRUE";
+        yield return "DEC";
+        yield return "NAMES";
+        yield return "UNION";
+        yield return "DECIMAL";
+        yield return "NATIONAL";
+        yield return "UNIQUE";
+        yield return "DECLARE";
+        yield return "NATURAL";
+        yield return "UNKNOWN";
+        yield return "DEFAULT";
+        yield return "NCHAR";
+        yield return "UPDATE";
+        yield return "DEFERRABLE";
+        yield return "NEXT";
+        yield return "UPPER";
+        yield return "DEFERRED";
+        yield return "NO";
+        yield return "USAGE";
+        yield return "DELETE";
+        yield return "NONE";
+        yield return "USER";
+        yield return "DESC";
+        yield return "NOT";
+        yield return "USING";
+        yield return "DESCRIBE";
+        yield return "NULL";
+        yield return "VALUE";
+        yield return "DESCRIPTOR";
+        yield return "NULLIF";
+        yield return "VALUES";
+        yield return "DIAGNOSTICS";
+        yield return "NUMERIC";
+        yield return "VARCHAR";
+        yield return "DISCONNECT";
+        yield return "OCTET_LENGTH";
+        yield return "VARYING";
+        yield return "DISTINCT";
+        yield return "OF";
+        yield return "VIEW";
+        yield return "DOMAIN";
+        yield return "ON";
+        yield return "WHEN";
+        yield return "DOUBLE";
+        yield return "ONLY";
+        yield return "WHENEVER";
+        yield return "DROP";
+        yield return "OPEN";
+        yield return "WHERE";
+        yield return "ELSE";
+        yield return "OPTION";
+        yield return "WITH";
+        yield return "END";
+        yield return "OR";
+        yield return "WORK";
+        yield return "END-EXEC";
+        yield return "ORDER";
+        yield return "WRITE";
+        yield return "ESCAPE";
+        yield return "OUTER";
+        yield return "YEAR";
+        yield return "EXCEPT";
+        yield return "OUTPUT";
+        yield return "ZONE";
+        yield return "EXCEPTION";
+        yield return "ABSOLUTE";
+        yield return "HOST";
+        yield return "RELATIVE";
+        yield return "ACTION";
+        yield return "HOUR";
+        yield return "RELEASE";
+        yield return "ADMIN";
+        yield return "IGNORE";
+        yield return "RESULT";
+        yield return "AFTER";
+        yield return "IMMEDIATE";
+        yield return "RETURNS";
+        yield return "AGGREGATE";
+        yield return "INDICATOR";
+        yield return "ROLE";
+        yield return "ALIAS";
+        yield return "INITIALIZE";
+        yield return "ROLLUP";
+        yield return "ALLOCATE";
+        yield return "INITIALLY";
+        yield return "ROUTINE";
+        yield return "ARE";
+        yield return "INOUT";
+        yield return "ROW";
+        yield return "ARRAY";
+        yield return "INPUT";
+        yield return "ROWS";
+        yield return "ASENSITIVE";
+        yield return "INT";
+        yield return "SAVEPOINT";
+        yield return "ASSERTION";
+        yield return "INTEGER";
+        yield return "SCROLL";
+        yield return "ASYMMETRIC";
+        yield return "INTERSECTION";
+        yield return "SCOPE";
+        yield return "AT";
+        yield return "INTERVAL";
+        yield return "SEARCH";
+        yield return "ATOMIC";
+        yield return "ISOLATION";
+        yield return "SECOND";
+        yield return "BEFORE";
+        yield return "ITERATE";
+        yield return "SECTION";
+        yield return "BINARY";
+        yield return "LANGUAGE";
+        yield return "SENSITIVE";
+        yield return "BIT";
+        yield return "LARGE";
+        yield return "SEQUENCE";
+        yield return "BLOB";
+        yield return "LAST";
+        yield return "SESSION";
+        yield return "BOOLEAN";
+        yield return "LATERAL";
+        yield return "SETS";
+        yield return "BOTH";
+        yield return "LEADING";
+        yield return "SIMILAR";
+        yield return "BREADTH";
+        yield return "LESS";
+        yield return "SIZE";
+        yield return "CALL";
+        yield return "LEVEL";
+        yield return "SMALLINT";
+        yield return "CALLED";
+        yield return "LIKE_REGEX";
+        yield return "SPACE";
+        yield return "CARDINALITY";
+        yield return "LIMIT";
+        yield return "SPECIFIC";
+        yield return "CASCADED";
+        yield return "LN";
+        yield return "SPECIFICTYPE";
+        yield return "CAST";
+        yield return "LOCAL";
+        yield return "SQL";
+        yield return "CATALOG";
+        yield return "LOCALTIME";
+        yield return "SQLEXCEPTION";
+        yield return "CHAR";
+        yield return "LOCALTIMESTAMP";
+        yield return "SQLSTATE";
+        yield return "CHARACTER";
+        yield return "LOCATOR";
+        yield return "SQLWARNING";
+        yield return "CLASS";
+        yield return "MAP";
+        yield return "START";
+        yield return "CLOB";
+        yield return "MATCH";
+        yield return "STATE";
+        yield return "COLLATION";
+        yield return "MEMBER";
+        yield return "STATEMENT";
+        yield return "COLLECT";
+        yield return "METHOD";
+        yield return "STATIC";
+        yield return "COMPLETION";
+        yield return "MINUTE";
+        yield return "STDDEV_POP";
+        yield return "CONDITION";
+        yield return "MOD";
+        yield return "STDDEV_SAMP";
+        yield return "CONNECT";
+        yield return "MODIFIES";
+        yield return "STRUCTURE";
+        yield return "CONNECTION";
+        yield return "MODIFY";
+        yield return "SUBMULTISET";
+        yield return "CONSTRAINTS";
+        yield return "MODULE";
+        yield return "SUBSTRING_REGEX";
+        yield return "CONSTRUCTOR";
+        yield return "MONTH";
+        yield return "SYMMETRIC";
+        yield return "CORR";
+        yield return "MULTISET";
+        yield return "SYSTEM";
+        yield return "CORRESPONDING";
+        yield return "NAMES";
+        yield return "TEMPORARY";
+        yield return "COVAR_POP";
+        yield return "NATURAL";
+        yield return "TERMINATE";
+        yield return "COVAR_SAMP";
+        yield return "NCHAR";
+        yield return "THAN";
+        yield return "CUBE";
+        yield return "NCLOB";
+        yield return "TIME";
+        yield return "CUME_DIST";
+        yield return "NEW";
+        yield return "TIMESTAMP";
+        yield return "CURRENT_CATALOG";
+        yield return "NEXT";
+        yield return "TIMEZONE_HOUR";
+        yield return "CURRENT_DEFAULT_TRANSFORM_GROUP";
+        yield return "NO";
+        yield return "TIMEZONE_MINUTE";
+        yield return "CURRENT_PATH";
+        yield return "NONE";
+        yield return "TRAILING";
+        yield return "CURRENT_ROLE";
+        yield return "NORMALIZE";
+        yield return "TRANSLATE_REGEX";
+        yield return "CURRENT_SCHEMA";
+        yield return "NUMERIC";
+        yield return "TRANSLATION";
+        yield return "CURRENT_TRANSFORM_GROUP_FOR_TYPE";
+        yield return "OBJECT";
+        yield return "TREAT";
+        yield return "CYCLE";
+        yield return "OCCURRENCES_REGEX";
+        yield return "TRUE";
+        yield return "DATA";
+        yield return "OLD";
+        yield return "UESCAPE";
+        yield return "DATE";
+        yield return "ONLY";
+        yield return "UNDER";
+        yield return "DAY";
+        yield return "OPERATION";
+        yield return "UNKNOWN";
+        yield return "DEC";
+        yield return "ORDINALITY";
+        yield return "UNNEST";
+        yield return "DECIMAL";
+        yield return "OUT";
+        yield return "USAGE";
+        yield return "DEFERRABLE";
+        yield return "OVERLAY";
+        yield return "USING";
+        yield return "DEFERRED";
+        yield return "OUTPUT";
+        yield return "VALUE";
+        yield return "DEPTH";
+        yield return "PAD";
+        yield return "VAR_POP";
+        yield return "DEREF";
+        yield return "PARAMETER";
+        yield return "VAR_SAMP";
+        yield return "DESCRIBE";
+        yield return "PARAMETERS";
+        yield return "VARCHAR";
+        yield return "DESCRIPTOR";
+        yield return "PARTIAL";
+        yield return "VARIABLE";
+        yield return "DESTROY";
+        yield return "PARTITION";
+        yield return "WHENEVER";
+        yield return "DESTRUCTOR";
+        yield return "PATH";
+        yield return "WIDTH_BUCKET";
+        yield return "DETERMINISTIC";
+        yield return "POSTFIX";
+        yield return "WITHOUT";
+        yield return "DICTIONARY";
+        yield return "PREFIX";
+        yield return "WINDOW";
+        yield return "DIAGNOSTICS";
+        yield return "PREORDER";
+        yield return "WITHIN";
+        yield return "DISCONNECT";
+        yield return "PREPARE";
+        yield return "WORK";
+        yield return "DOMAIN";
+        yield return "PERCENT_RANK";
+        yield return "WRITE";
+        yield return "DYNAMIC";
+        yield return "PERCENTILE_CONT";
+        yield return "XMLAGG";
+        yield return "EACH";
+        yield return "PERCENTILE_DISC";
+        yield return "XMLATTRIBUTES";
+        yield return "ELEMENT";
+        yield return "POSITION_REGEX";
+        yield return "XMLBINARY";
+        yield return "END-EXEC";
+        yield return "PRESERVE";
+        yield return "XMLCAST";
+        yield return "EQUALS";
+        yield return "PRIOR";
+        yield return "XMLCOMMENT";
+        yield return "EVERY";
+        yield return "PRIVILEGES";
+        yield return "XMLCONCAT";
+        yield return "EXCEPTION";
+        yield return "RANGE";
+        yield return "XMLDOCUMENT";
+        yield return "FALSE";
+        yield return "READS";
+        yield return "XMLELEMENT";
+        yield return "FILTER";
+        yield return "REAL";
+        yield return "XMLEXISTS";
+        yield return "FIRST";
+        yield return "RECURSIVE";
+        yield return "XMLFOREST";
+        yield return "FLOAT";
+        yield return "REF";
+        yield return "XMLITERATE";
+        yield return "FOUND";
+        yield return "REFERENCING";
+        yield return "XMLNAMESPACES";
+        yield return "FREE";
+        yield return "REGR_AVGX";
+        yield return "XMLPARSE";
+        yield return "FULLTEXTTABLE";
+        yield return "REGR_AVGY";
+        yield return "XMLPI";
+        yield return "FUSION";
+        yield return "REGR_COUNT";
+        yield return "XMLQUERY";
+        yield return "GENERAL";
+        yield return "REGR_INTERCEPT";
+        yield return "XMLSERIALIZE";
+        yield return "GET";
+        yield return "REGR_R2";
+        yield return "XMLTABLE";
+        yield return "GLOBAL";
+        yield return "REGR_SLOPE";
+        yield return "XMLTEXT";
+        yield return "GO";
+        yield return "REGR_SXX";
+        yield return "XMLVALIDATE";
+        yield return "GROUPING";
+        yield return "REGR_SXY";
+        yield return "YEAR";
+        yield return "HOLD";
+        yield return "REGR_SYY";
+        yield return "ZONE";
     }
-
 }

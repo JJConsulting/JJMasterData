@@ -43,6 +43,33 @@ internal sealed class EntityRepository(
     {
         return provider.InsertAsync(element, values);
     }
+    
+    public int BulkInsert(Element element, IEnumerable<Dictionary<string, object?>> values, Guid? connectionId = null)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+
+        var commandList = GetInsertCommandList(element, values);
+
+        return dataAccess.SetCommand(commandList);
+    }
+    
+    public Task<int> BulkInsertAsync(Element element, IEnumerable<Dictionary<string, object?>> valueList, Guid? connectionId = null)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+
+        var commandList = GetInsertCommandList(element, valueList);
+
+        return dataAccess.SetCommandListAsync(commandList);
+    }
+
+    private IEnumerable<DataAccessCommand> GetInsertCommandList(Element element, IEnumerable<Dictionary<string, object?>> values)
+    {
+        foreach (var valuesDictionary in values)
+        {
+            var command = provider.GetInsertCommand(element, valuesDictionary);
+            yield return command;
+        }
+    }
 
     public Task<int> UpdateAsync(Element element, Dictionary<string, object?> values)
     {

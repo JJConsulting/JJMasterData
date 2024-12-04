@@ -269,7 +269,7 @@ public static class Validate
             return false;
 
         var reservedKeywords = ReservedWords.GetReservedDatabaseKeywords();
-        return reservedKeywords.Contains(value.ToUpper());
+        return reservedKeywords.Contains(value, StringComparer.InvariantCultureIgnoreCase);
     }
 
     public static bool IsMasterDataKeyword(string value)
@@ -278,7 +278,7 @@ public static class Validate
             return false;
 
         var reservedKeywords = ReservedWords.GetReservedMasterDataKeywords();
-        return reservedKeywords.Contains(value.ToUpper());
+        return reservedKeywords.Contains(value, StringComparer.InvariantCultureIgnoreCase);
     }
 
 }

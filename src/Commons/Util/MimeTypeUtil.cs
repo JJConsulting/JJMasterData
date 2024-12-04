@@ -2,12 +2,16 @@
 using System.Collections.Frozen;
 using System.Collections.Generic;
 
+#if NETSTANDARD
+using JJMasterData.Commons.Extensions;
+#endif
+
 namespace JJMasterData.Commons.Util;
 
 public static class MimeTypeUtil
 {
     private static readonly FrozenDictionary<string, string> Mappings = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
-            #region Big freaking list of mime types
+            #region Big fucking list of mime types
             // combination of values from Windows 7 Registry and 
             // from C:\Windows\System32\inetsrv\config\applicationHost.config
             // some added, including .7z and .dat
@@ -577,9 +581,7 @@ public static class MimeTypeUtil
     public static string GetMimeType(string extension)
     {
         if (extension == null)
-        {
             throw new ArgumentNullException(nameof(extension));
-        }
 
         if (extension.Contains("."))
         {
@@ -592,6 +594,6 @@ public static class MimeTypeUtil
             extension = $".{extension}";
         }
 
-        return Mappings.TryGetValue(extension, out var mime) ? mime : "application/octet-stream";
+        return Mappings.GetValueOrDefault(extension, "application/octet-stream");
     }
 }

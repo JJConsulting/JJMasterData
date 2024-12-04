@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
-
 namespace JJMasterData.Commons.Data;
 
 [PublicAPI]
