@@ -129,7 +129,7 @@ public class ExcelWriter(
             await sw.WriteAsync("\t\t\t<tr>");
             foreach (var field in VisibleFields)
             {
-                string value = await CreateCell(row, field);
+                var value = await CreateCell(field, row);
 
                 string tdStyle;
                 if (field.DataType is FieldType.Float or FieldType.Int)
@@ -142,9 +142,7 @@ public class ExcelWriter(
                 }
 
                 await sw.WriteAsync($"\t\t\t\t<td{tdStyle}>");
-                await sw.WriteAsync(HttpUtility.HtmlEncode(value)?
-                    .Replace("\n"," ")
-                    .Replace("\t"," "));
+                await sw.WriteAsync(value.Replace("\n"," ").Replace("\t"," "));
                 await sw.WriteLineAsync("</td>");
             }
 
@@ -157,9 +155,9 @@ public class ExcelWriter(
         }
     }
 
-    private async Task<string> CreateCell(Dictionary<string, object> row, FormElementField field)
+    private async Task<string> CreateCell(FormElementField field, Dictionary<string, object> row)
     {
-        string value = string.Empty;
+        var value = string.Empty;
         if (field.DataBehavior is not FieldBehavior.Virtual && field.DataBehavior is not FieldBehavior.WriteOnly)
         {
             if (row.TryGetValue(field.Name, out var cellValue))
@@ -175,7 +173,7 @@ public class ExcelWriter(
                 value = $"<a href=\"{link}\">{value}</a>";
             else
             {
-                value = value?.Replace(",", "<br style=\"mso-data-placement:same-cell;\"/>");
+                value = value.Replace(",", "<br style=\"mso-data-placement:same-cell;\"/>");
             }
         }
 
@@ -197,7 +195,10 @@ public class ExcelWriter(
             }
         }
 
-        return value;
+        if (field.Component is FormComponent.File)
+            return value;
+        
+        return HttpUtility.HtmlEncode(value);
     }
 
     private async Task GenerateHeader(StreamWriter sw)
