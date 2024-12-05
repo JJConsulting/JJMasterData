@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Text;
 
 namespace JJMasterData.Commons.Logging;
 
@@ -26,11 +27,23 @@ internal sealed class BatchingLogger(BatchingLoggerProvider loggerProvider, stri
             return;
         }
 
+        var message = new StringBuilder();
+        message.AppendLine(formatter(state, exception));
+        if (exception is not null)
+        {
+            message.AppendLine("Exception:");
+            message.AppendLine(exception.ToString());
+            if (exception.StackTrace is not null)
+            {
+                message.AppendLine("StackTrace:");
+                message.AppendLine(exception.StackTrace);
+            }
+        }
         loggerProvider.AddMessage(new LogMessage
         {
             Category = categoryName,
             Timestamp = timestamp,
-            Message = formatter(state, exception),
+            Message = message.ToString(),
             Event = eventId.Name ?? string.Empty,
             LogLevel = logLevel
         });
