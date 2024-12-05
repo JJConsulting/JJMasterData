@@ -179,7 +179,7 @@ public class JJDataExportation : ProcessComponent
             }
 
             var btnCancel = ComponentFactory.Html.LinkButton.Create();
-            btnCancel.Text = "Close";
+            btnCancel.Text = StringLocalizer["Close"];
             btnCancel.IconClass = "fa fa-times";
             btnCancel.ShowAsButton = true;
             btnCancel.Attributes.Add(BootstrapHelper.DataDismiss, "modal");

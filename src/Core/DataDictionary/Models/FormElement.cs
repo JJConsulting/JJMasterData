@@ -106,7 +106,7 @@ public class FormElement : Element
     public FormElement(DataTable schema) : this()
     {
         if (schema == null)
-            throw new ArgumentNullException(nameof(schema), "DataTable schema cannot be null");
+            throw new ArgumentNullException(nameof(schema), @"DataTable schema cannot be null");
 
         Name = schema.TableName;
         TableName = schema.TableName;

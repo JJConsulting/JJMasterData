@@ -11,11 +11,8 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Represents a clickable button
 /// </summary>
-
 public class JJLinkButton : HtmlComponent
 {
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-
     private JJSpinner _spinner;
 
     public JJSpinner Spinner
@@ -28,12 +25,12 @@ public class JJLinkButton : HtmlComponent
         set => _spinner = value;
     }
     
-    [Localizable(false)]
+    [LocalizationRequired]
     public string Text { get; set; }
 
     public HtmlBuilder InnerHtml { get; } = new();
     
-    [Localizable(false)]
+    [LocalizationRequired]
     public string Tooltip { get; set; }
 
     /// <summary>
@@ -85,9 +82,8 @@ public class JJLinkButton : HtmlComponent
     
     public bool OpenInNewTab { get; set; }
 
-    internal JJLinkButton(IStringLocalizer<MasterDataResources> stringLocalizer)
+    internal JJLinkButton()
     {
-        _stringLocalizer = stringLocalizer;
     }
     
     internal override HtmlBuilder BuildHtml()
@@ -121,7 +117,7 @@ public class JJLinkButton : HtmlComponent
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);
-        html.WithToolTip(_stringLocalizer[Tooltip]);
+        html.WithToolTip(Tooltip);
         bool isOnClickEnabled = Enabled && !string.IsNullOrEmpty(OnClientClick) && UrlAction is null;
         html.WithAttributeIf(isOnClickEnabled, "onclick", OnClientClick);
         html.WithCssClassIf(!Enabled, "disabled");
@@ -132,7 +128,7 @@ public class JJLinkButton : HtmlComponent
         }
 
         if (!string.IsNullOrEmpty(Text)) 
-            html.AppendText("&nbsp;" + _stringLocalizer[Text]);
+            html.AppendText("&nbsp;" + Text);
         
         html.Append(InnerHtml);
         

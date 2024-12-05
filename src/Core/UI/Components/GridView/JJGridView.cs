@@ -960,14 +960,14 @@ public class JJGridView : AsyncComponent
         };
 
         var btnOk = ComponentFactory.Html.LinkButton.Create();
-        btnOk.Text = "Ok";
+        btnOk.Text = StringLocalizer["Ok"];
         btnOk.IconClass = "fa fa-check";
         btnOk.ShowAsButton = true;
         btnOk.OnClientClick = Scripts.GetGridSettingsScript(ConfigAction, RelationValues);
         modal.Buttons.Add(btnOk);
 
         var btnCancel = ComponentFactory.Html.LinkButton.Create();
-        btnCancel.Text = "Cancel";
+        btnCancel.Text = StringLocalizer["Cancel"];
         btnCancel.IconClass = "fa fa-times";
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();

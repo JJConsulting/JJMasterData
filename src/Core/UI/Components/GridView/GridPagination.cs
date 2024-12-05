@@ -111,7 +111,7 @@ internal sealed class GridPagination(JJGridView gridView)
 
         yield return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
-            .Append(new JJLinkButton(gridView.StringLocalizer)
+            .Append(new JJLinkButton
             {
                 ShowAsButton = false,
                 Icon = IconType.SolidMagnifyingGlassArrowRight,

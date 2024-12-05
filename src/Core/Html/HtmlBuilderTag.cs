@@ -64,6 +64,6 @@ public sealed class HtmlBuilderTag(HtmlTag htmlTag)
         HtmlTag.Ol => "ol",
         HtmlTag.Style => "style",
         HtmlTag.Iframe => "iframe",
-        _ => throw new ArgumentOutOfRangeException(nameof(HtmlTag), HtmlTag, "HTML tag not implemented.")
+        _ => throw new ArgumentOutOfRangeException(nameof(HtmlTag), HtmlTag, @"HTML tag not implemented.")
     };
 }

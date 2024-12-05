@@ -40,7 +40,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                 btnOk.OnClientClick = onClientClick;
 
                 var btnCancel = linkFactory.Create();
-                btnCancel.Text = "Cancel";
+                btnCancel.Text = _stringLocalizer["Cancel"];
                 btnCancel.IconClass = "fa fa-times";
                 btnCancel.ShowAsButton = true;
 
@@ -258,7 +258,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             ShowIcon = true,
             Name = $"data-exportation-warning{name}",
             ShowCloseButton = true,
-            Title = "Warning!",
+            Title = _stringLocalizer["Warning!"],
             Icon = IconType.ExclamationTriangle,
             Color = BootstrapColor.Warning,
             Messages =
@@ -283,7 +283,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             ExpandedByDefault = false,
             TitleIcon = new JJIcon(IconType.FolderOpenO),
             Visible = filesCount  > 0,
-            Title = $"{_stringLocalizer["Recently generated files"]} ({filesCount})",
+            Title = @$"{_stringLocalizer["Recently generated files"]} ({filesCount})",
             HtmlBuilderContent = GetLastFilesHtml(files)
         };
 

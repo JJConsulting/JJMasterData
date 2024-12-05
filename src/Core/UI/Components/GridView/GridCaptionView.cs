@@ -87,7 +87,7 @@ internal sealed class GridCaptionView(
             HtmlBuilderContent = form,
             Buttons = 
             [
-                new JJLinkButton(stringLocalizer)
+                new JJLinkButton
                 {
                     Name = $"{Name}-caption-modal-close-btn",
                     Icon = IconType.SolidXmark,

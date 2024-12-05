@@ -270,7 +270,7 @@ internal sealed class GridFilter(JJGridView gridView)
         {
             Name = $"filter-collapse-{gridView.Name}",
             HtmlBuilderContent = body,
-            Title = "Filter",
+            Title = _stringLocalizer["Filter"],
             ExpandedByDefault = gridView.FilterAction.ExpandedByDefault
         };
 

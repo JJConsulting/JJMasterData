@@ -276,7 +276,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         try
         {
             if (values == null || values.Count == 0)
-                throw new ArgumentException("Invalid parameter or not found", nameof(values));
+                throw new ArgumentException(@"Invalid parameter or not found", nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);

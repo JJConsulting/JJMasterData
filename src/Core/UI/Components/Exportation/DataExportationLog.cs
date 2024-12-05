@@ -36,11 +36,11 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             div.Append(HtmlTag.Br);
             div.WithCssClass("mb-1");
             var stopExportationScript = Scripts.GetStopExportationScript(StringLocalizer["Stopping Processing..."]);
-            div.AppendComponent(new JJLinkButton(StringLocalizer)
+            div.AppendComponent(new JJLinkButton
             {
                 IconClass = "fa fa-stop",
                 OnClientClick = stopExportationScript,
-                Text = "Stop the exportation",
+                Text = StringLocalizer["Stop the exportation"],
                 ShowAsButton = true
             });
         });

@@ -226,7 +226,7 @@ public class FileSystemDataDictionaryRepository
     private string GetFullFileName(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName), "Dictionary invalid");
+            throw new ArgumentNullException(nameof(elementName), @"Dictionary invalid");
 
         if (!elementName.EndsWith(".json"))
             elementName += ".json";

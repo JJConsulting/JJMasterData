@@ -56,7 +56,7 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
         var birthDateFieldName = context.ConfigurationMap[BirthDateFieldKey]?.ToString();
         
         if (birthDateFieldName is null)
-            throw new ArgumentNullException(birthDateFieldName, "You must set a BirthDate field");
+            throw new ArgumentNullException(birthDateFieldName, @"You must set a BirthDate field");
         
         var birthDate = values[birthDateFieldName];
 

@@ -15,7 +15,7 @@ public class LabelFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
     public JJLabel Create(FormElementField field)
     {
         if (field == null)
-            throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
+            throw new ArgumentNullException(nameof(field), @"FormElementField cannot be null");
 
         var label = Create();
         label.LabelFor = field.Name;

@@ -11,8 +11,7 @@ namespace JJMasterData.Core.UI.Components;
 internal sealed class ComboBoxFactory(
         IFormValues formValues,
         DataItemService dataItemService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILoggerFactory loggerFactory)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJComboBox>
 {
     public JJComboBox Create()
@@ -20,8 +19,7 @@ internal sealed class ComboBoxFactory(
         return new JJComboBox(
             formValues,
             dataItemService,
-            stringLocalizer,
-            loggerFactory.CreateLogger<JJComboBox>());
+            stringLocalizer);
     }
 
     public JJComboBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)

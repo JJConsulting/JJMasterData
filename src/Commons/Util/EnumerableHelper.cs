@@ -111,7 +111,7 @@ public static class EnumerableHelper
             case FieldType.UniqueIdentifier:
                 return typeof(Guid);
             default:
-                throw new ArgumentOutOfRangeException(nameof(fieldType), fieldType, "Unknown FieldType");
+                throw new ArgumentOutOfRangeException(nameof(fieldType), fieldType, @"Unknown FieldType");
         }
     }
 

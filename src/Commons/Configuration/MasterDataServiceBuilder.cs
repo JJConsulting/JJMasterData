@@ -42,7 +42,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
                 WithEntityProvider<OracleProvider>();
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(provider), provider, "Provider is not currently supported.");
+                throw new ArgumentOutOfRangeException(nameof(provider), provider, @"Provider is not currently supported.");
         }
 
         return this;

@@ -1,28 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Fluid;
+using Fluid.Values;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using static JJMasterData.Core.DataManager.Services.HtmlTemplateFunctions;
+using static JJMasterData.Core.Html.HtmlTemplateHelper;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class HtmlTemplateService(
+    HtmlTemplateRenderer<MasterDataResources> htmlTemplateRenderer,
     IEntityRepository entityRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    ILogger<HtmlTemplateService> logger,
-    FluidParser fluidParser)
+    ILogger<HtmlTemplateService> logger)
 {
     public async Task<HtmlBuilder> RenderTemplate(
         HtmlTemplateAction action,
@@ -49,7 +52,7 @@ public class HtmlTemplateService(
         var html = new HtmlBuilder();
         html.AppendDiv(div =>
         {
-            div.WithCssClass("text-end").AppendComponent(new JJLinkButton(stringLocalizer)
+            div.WithCssClass("text-end").AppendComponent(new JJLinkButton
             {
                 Icon = IconType.Print,
                 ShowAsButton = true,
@@ -69,19 +72,6 @@ public class HtmlTemplateService(
 
     public ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
     {
-        if (!fluidParser.TryParse(templateString, out var template, out var error))
-        {
-            return new(error);
-        }
-
-        var context = new TemplateContext(values);
-        
-        context.SetValue("isNullOrWhiteSpace", IsNullOrWhiteSpace);
-        context.SetValue("isNullOrEmpty",IsNullOrEmpty);
-        context.SetValue("substring", Substring);
-        context.SetValue("formatDate", FormatDate);
-        context.SetValue("localize", GetLocalizerFunction(stringLocalizer));
-
-        return template.RenderAsync(context);
+        return htmlTemplateRenderer.RenderTemplate(templateString, values);
     }
 }

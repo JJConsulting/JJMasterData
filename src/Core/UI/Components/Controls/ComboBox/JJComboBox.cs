@@ -12,30 +12,29 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
+public class JJComboBox(
+    IFormValues formValues,
+    DataItemService dataItemService,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
+    : ControlBase(formValues), IDataItemControl, IFloatingLabelControl
 {
     private string? _selectedValue;
 
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private DataItemService DataItemService { get; }
-    internal ILogger<JJComboBox> Logger { get; }
-    
     public Guid? ConnectionId { get; set; }
 
-    public FormStateData FormStateData{ get; set; }
+    public FormStateData FormStateData { get; set; } = new(new Dictionary<string, object?>(), PageState.List);
 
     public string? Id { get; set; }
 
     /// <summary>
     /// If the filter is MULTVALUES_EQUALS, enable multiselect.
     /// </summary>
-    public bool MultiSelect { get; set; }
+    public bool MultiSelect { get; set; } = true;
 
-    public FormElementDataItem DataItem { get; set; }
+    public FormElementDataItem DataItem { get; set; } = new();
 
     public string? SelectedValue
     {
@@ -52,25 +51,10 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
     }
 
     public bool EnableLocalization { get; set; } = true;
-    
+
     public string? FloatingLabel { get; set; }
     public bool UseFloatingLabel { get; set; }
 
-    public JJComboBox(
-        IFormValues formValues,
-        DataItemService dataItemService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILogger<JJComboBox> logger) : base(formValues)
-    {
-        DataItemService = dataItemService;
-        Logger = logger;
-        StringLocalizer = stringLocalizer;
-        Enabled = true;
-        MultiSelect = false;
-        DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, object?>();
-        FormStateData = new FormStateData(defaultValues, PageState.List);
-    }
 
     protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
@@ -98,12 +82,12 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
             .WithName(Name)
             .WithId(Id ?? Name)
             .WithAttributeIf(MultiSelect, "multiple")
-            .WithAttributeIf(MultiSelect, "title", StringLocalizer["All"])
+            .WithAttributeIf(MultiSelect, "title", stringLocalizer["All"])
             .WithAttributeIf(MultiSelect && FormStateData.PageState == PageState.Filter, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
-            .WithAttributeIf(BootstrapHelper.Version is 3,"data-style", "form-control")
-            .WithAttributeIf(BootstrapHelper.Version is 5,"data-style-base", "form-select form-dropdown")
+            .WithAttributeIf(BootstrapHelper.Version is 3, "data-style", "form-control")
+            .WithAttributeIf(BootstrapHelper.Version is 5, "data-style-base", "form-select form-dropdown")
             .WithAttributes(Attributes)
             .AppendRange(GetOptions(values));
 
@@ -117,25 +101,25 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
                     label.WithAttribute("for", Name);
                 });
         }
-        
+
         //Workaround for when nothing is selected at multiselect.
         if (MultiSelect)
         {
             select.AppendInput(input => input.WithName(Name).WithAttribute("hidden"));
         }
-        
+
         return select;
     }
 
     private IEnumerable<HtmlBuilder> GetOptions(List<DataItemValue> values)
     {
         if (DataItem == null)
-            throw new ArgumentException("[DataItem] properties not defined for combo", Name);
+            throw new ArgumentException(@"[DataItem] properties not defined for combo", Name);
 
         var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
-            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, StringLocalizer["(All)"])
-            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, StringLocalizer["(Choose)"]);
+            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, stringLocalizer["(All)"])
+            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, stringLocalizer["(Choose)"]);
 
         if (DataItem.FirstOption != FirstOptionMode.None)
             yield return firstOption;
@@ -154,7 +138,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 
             yield return optgroup;
         }
-        
+
         foreach (var value in values.Where(v => v.Group == null))
         {
             yield return CreateOption(value);
@@ -163,7 +147,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 
     private HtmlBuilder CreateOption(DataItemValue value)
     {
-        var label = IsManualValues() && EnableLocalization ? StringLocalizer[value.Description!] : value.Description;
+        var label = IsManualValues() && EnableLocalization ? stringLocalizer[value.Description!] : value.Description;
 
         bool isSelected;
 
@@ -177,7 +161,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
         }
 
         var content = new HtmlBuilder();
-        content.AppendComponentIf(DataItem.ShowIcon, ()=> new JJIcon(value.Icon, value.IconColor));
+        content.AppendComponentIf(DataItem.ShowIcon, () => new JJIcon(value.Icon, value.IconColor));
         content.Append(HtmlTag.Span, span =>
         {
             span.AppendText(label);
@@ -231,7 +215,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
             selectedText = item.Description;
 
             if (IsManualValues())
-                selectedText = StringLocalizer[selectedText];
+                selectedText = stringLocalizer[selectedText];
 
             break;
         }
@@ -241,9 +225,9 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
 
     public Task<List<DataItemValue>> GetValuesAsync()
     {
-        return DataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
+        return dataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
     }
-    
+
     /// <summary>
     /// Recovers the description from the selected value;
     /// </summary>
@@ -254,7 +238,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
         if (item == null)
             return null;
 
-        var label = IsManualValues() ? StringLocalizer[item.Description] : item.Description;
+        var label = IsManualValues() ? stringLocalizer[item.Description] : item.Description;
 
         if (DataItem.ShowIcon)
         {
@@ -287,7 +271,7 @@ public class JJComboBox : ControlBase, IDataItemControl, IFloatingLabelControl
         {
             SearchId = searchId
         };
-        var values = await DataItemService.GetValuesAsync(DataItem, dataQuery);
+        var values = await dataItemService.GetValuesAsync(DataItem, dataQuery);
         return values.Find(v => string.Equals(v.Id, searchId, StringComparison.InvariantCultureIgnoreCase));
     }
 

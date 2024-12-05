@@ -278,7 +278,7 @@ internal sealed class DataPanelControl
         2 => "col-sm-5", // 5 * 2 = 10
         3 => "col-sm-3", // 3 * 3 = 9 
         4 => "col-sm-2", // 2 * 4 = 8 
-        _ => throw new ArgumentException("Invalid number of columns", nameof(cols))
+        _ => throw new ArgumentException(@"Invalid number of columns", nameof(cols))
     };
 
     private static string GetHorizontalTextAreaClass(int cols) => cols switch
@@ -287,7 +287,7 @@ internal sealed class DataPanelControl
         2 => "col-sm-9",
         3 => "col-sm-9",
         4 => "col-sm-8",
-        _ => throw new ArgumentException("Invalid number of columns", nameof(cols))
+        _ => throw new ArgumentException(@"Invalid number of columns", nameof(cols))
     };
 
     private static bool IsRange(ElementField field, PageState pageState)

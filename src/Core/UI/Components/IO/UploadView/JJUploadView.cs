@@ -769,11 +769,11 @@ public class JJUploadView : AsyncComponent
         btnOk.Type = LinkButtonType.Button;
         btnOk.Name = $"btnDoUpload_{UploadArea.Name}";
         btnOk.CssClass = "btn btn-primary";
-        btnOk.Text = "Save";
+        btnOk.Text = StringLocalizer["Save"];
 
         var btnCancel = ComponentFactory.Html.LinkButton.Create();
         btnCancel.Type = LinkButtonType.Button;
-        btnCancel.Text = "Cancel";
+        btnCancel.Text = StringLocalizer["Cancel"];
         btnCancel.SetAttr(BootstrapHelper.DataDismiss, "modal");
 
         var modal = ComponentFactory.Html.ModalDialog.Create();

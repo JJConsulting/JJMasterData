@@ -403,7 +403,7 @@ public class JJDataImportation : ProcessComponent
     {
         var button = ComponentFactory.Html.LinkButton.Create();
         button.IconClass = "fa fa-arrow-left";
-        button.Text = "Back";
+        button.Text = StringLocalizer["Back"];
         button.ShowAsButton = true;
         button.OnClientClick = DataImportationScripts.GetBackScript();
         return button;
@@ -413,7 +413,7 @@ public class JJDataImportation : ProcessComponent
     {
         var button = ComponentFactory.Html.LinkButton.Create();
         button.Icon = IconType.SolidXmark;
-        button.Text = "Close";
+        button.Text = StringLocalizer["Close"];
         button.ShowAsButton = true;
         button.OnClientClick = DataImportationScripts.GetCloseModalScript();
         return button;
@@ -423,7 +423,7 @@ public class JJDataImportation : ProcessComponent
     {
         var button = ComponentFactory.Html.LinkButton.Create();
         button.IconClass = "fa fa-question-circle";
-        button.Text = "Help";
+        button.Text = StringLocalizer["Help"];
         button.ShowAsButton = true;
         button.OnClientClick = DataImportationScripts.GetHelpScript();
         return button;
@@ -433,7 +433,7 @@ public class JJDataImportation : ProcessComponent
     {
         var button = ComponentFactory.Html.LinkButton.Create();
         button.IconClass = "fa fa-film";
-        button.Text = "Last Importation";
+        button.Text = StringLocalizer["Last Importation"];
         button.ShowAsButton = true;
         button.OnClientClick = DataImportationScripts.GetLogScript();
         return button;

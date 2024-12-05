@@ -1,15 +1,40 @@
+#nullable enable
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Fluid;
 using Fluid.Values;
-using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.DataManager.Services;
+namespace JJMasterData.Core.Html;
 
-public static class HtmlTemplateFunctions
+public static class HtmlTemplateHelper
 {
-    public static FunctionValue GetLocalizerFunction(IStringLocalizer<MasterDataResources> stringLocalizer)
+    public static FilterDelegate GetLocalizeFilter(IStringLocalizer stringLocalizer)
+    {
+        return (input, args, _) =>
+        {
+            var inputString = input.ToStringValue();
+            var argsValues = args.Values;
+
+            string localizedString;
+            
+            if (argsValues is not null)
+            {
+                var localizerArgs = argsValues.Select(v => v.ToStringValue()).ToArray();
+
+                localizedString = stringLocalizer[inputString, localizerArgs.ToArray()].Value;
+            }
+            else
+            {
+                localizedString = stringLocalizer[inputString];
+            }
+            return new ValueTask<FluidValue>(new StringValue(localizedString));
+        };
+    }
+    
+    public static FunctionValue GetLocalizeFunction(IStringLocalizer stringLocalizer)
     {
         var localize = new FunctionValue((args, _) =>
         {
@@ -65,7 +90,7 @@ public static class HtmlTemplateFunctions
 
         var substring = args.Count > 2
             ? str.Substring(startIndex, length)
-            : str.Substring(startIndex);
+            : str[startIndex..];
 
         return new StringValue(substring);
     });

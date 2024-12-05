@@ -11,7 +11,7 @@ public class FormFilePathBuilder(FormElement formElement)
     public string GetFolderPath(FormElementField field, Dictionary<string, object> formValues)
     {
         if (field.DataFile == null)
-            throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);
+            throw new ArgumentException(@$"{nameof(FormElementField.DataFile)} not defined.", field.Name);
 
         //Pks concat with  underline
         string pkval = DataHelper.ParsePkValues(formElement, formValues, '_');
@@ -20,9 +20,9 @@ public class FormFilePathBuilder(FormElement formElement)
         string path = field.DataFile.FolderPath;
 
         if (string.IsNullOrEmpty(path))
-            throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", field.Name);
+            throw new ArgumentException(@$"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", field.Name);
 
-        char separator = Path.DirectorySeparatorChar;
+        var separator = Path.DirectorySeparatorChar;
 
         string appPath = FileIO.GetApplicationPath().TrimEnd(separator);
 

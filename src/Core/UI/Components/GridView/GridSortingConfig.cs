@@ -29,12 +29,12 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         btnSort.Name = $"btnsort_{gridView.Name}";
         btnSort.IconClass = IconType.Check.GetCssClass();
         btnSort.ShowAsButton = true;
-        btnSort.Text = "Sort";
+        btnSort.Text = _stringLocalizer["Sort"];
         btnSort.OnClientClick = gridView.Scripts.GetSortMultItemsScript();
         dialog.Buttons.Add(btnSort);
 
         var btnCancel = _componentFactory.Html.LinkButton.Create();
-        btnCancel.Text = "Cancel";
+        btnCancel.Text = _stringLocalizer["Cancel"];
         btnCancel.IconClass = IconType.Times.GetCssClass();
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = BootstrapHelper.GetCloseModalScript($"{gridView.Name}-sort-modal");
