@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Serialization;
 using JJMasterData.Core.UI;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -69,7 +69,7 @@ public class AuditLogService(
             .Where(item => item.Value is not DBNull)
             .ToDictionary(item => item.Key, item => item.Value);
 
-        return JsonSerializer.Serialize(valuesAux, SerializerOptions.Default);
+        return JsonSerializer.Serialize(valuesAux, MasterDataJsonSerializerOptions.Default);
     }
 
     public static string GetKey(Element element, Dictionary<string, object>values)

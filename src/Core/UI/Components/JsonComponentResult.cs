@@ -1,6 +1,6 @@
 #nullable enable
 using System.Text.Json;
-using JJMasterData.Core.Serialization;
+using JJMasterData.Commons.Serialization;
 #if NET
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +15,7 @@ public sealed class JsonComponentResult(object objectResult) : ComponentResult
 #endif
 {
     private object ObjectResult { get; } = objectResult;
-    public override string Content => JsonSerializer.Serialize(ObjectResult, SerializerOptions.Default);
+    public override string Content => JsonSerializer.Serialize(ObjectResult, MasterDataJsonSerializerOptions.Default);
 
 #if NET
     public Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)

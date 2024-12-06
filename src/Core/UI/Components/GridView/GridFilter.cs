@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Serialization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -13,7 +14,6 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Serialization;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
@@ -350,7 +350,7 @@ internal sealed class GridFilter(JJGridView gridView)
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = gridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            values = JsonSerializer.Deserialize<Dictionary<string, object>>(filterJson, SerializerOptions.Default)!;
+            values = JsonSerializer.Deserialize<Dictionary<string, object>>(filterJson, MasterDataJsonSerializerOptions.Default)!;
         }
 
         var fieldsFilter = gridView.FormElement.Fields.FindAll(x => x.Filter.Type != FilterMode.None);

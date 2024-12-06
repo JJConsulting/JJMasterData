@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using JJMasterData.Core.Serialization;
+using JJMasterData.Commons.Serialization;
 
 
 namespace JJMasterData.Brasil.Models;
@@ -21,7 +21,7 @@ public class CepResult
     
     public static CepResult FromJson(string json)
     {
-        return JsonSerializer.Deserialize<CepResult>(json, SerializerOptions.Default)!;
+        return JsonSerializer.Deserialize<CepResult>(json, MasterDataJsonSerializerOptions.Default)!;
     }
     
     public Dictionary<string, object?> ToDictionary()

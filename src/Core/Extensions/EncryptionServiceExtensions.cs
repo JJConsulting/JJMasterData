@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Serialization;
-using JJMasterData.Core.Serialization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Routing;
 
@@ -35,12 +34,12 @@ public static class EncryptionServiceExtensions
     
     public static string EncryptObject<T>(this IEncryptionService service, T @object)
     {
-        return service.EncryptStringWithUrlEscape(JsonSerializer.Serialize(@object, SerializerOptions.Default));
+        return service.EncryptStringWithUrlEscape(JsonSerializer.Serialize(@object, MasterDataJsonSerializerOptions.Default));
     }
     
     public static T DecryptObject<T>(this IEncryptionService service, string encryptedObject)
     {
-        return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, SerializerOptions.Default);
+        return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, MasterDataJsonSerializerOptions.Default);
     }
     
     public static Dictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)

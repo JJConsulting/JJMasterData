@@ -1,9 +1,8 @@
 using System.Text.Json;
-using JJMasterData.Commons.Serialization;
 
-namespace JJMasterData.Core.Serialization;
+namespace JJMasterData.Commons.Serialization;
 
-public static class SerializerOptions
+public static class MasterDataJsonSerializerOptions
 {
     public static readonly JsonSerializerOptions Default = new()
     {
