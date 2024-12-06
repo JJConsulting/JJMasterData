@@ -32,7 +32,7 @@ public class JJComboBox(
     /// <summary>
     /// If the filter is MULTVALUES_EQUALS, enable multiselect.
     /// </summary>
-    public bool MultiSelect { get; set; } = true;
+    public bool MultiSelect { get; set; } = false;
 
     public FormElementDataItem DataItem { get; set; } = new();
 
