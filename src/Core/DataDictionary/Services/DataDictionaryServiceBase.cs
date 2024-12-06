@@ -84,7 +84,7 @@ public abstract class DataDictionaryServiceBase(
         return validationDictionary.IsValid;
     }
 
-    protected static bool ValidateExpression(string value, params string[] args)
+    protected static bool ValidateExpression(string value, params IEnumerable<string> args)
     {
         return args.Any(value.StartsWith);
     }

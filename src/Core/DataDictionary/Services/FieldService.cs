@@ -193,8 +193,8 @@ public class FieldService(IValidationDictionary validationDictionary,
 
     private void ValidateExpressions(FormElementField field)
     {
-        var syncProviders = expressionProviders.GetSyncProvidersPrefixes();
-        var asyncProviders = expressionProviders.GetAsyncProvidersPrefixes();
+        var syncProviders = expressionProviders.GetSyncProvidersPrefixes().ToArray();
+        var asyncProviders = expressionProviders.GetAsyncProvidersPrefixes().ToArray();
         
         if (string.IsNullOrWhiteSpace(field.VisibleExpression))
             AddError(nameof(field.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);

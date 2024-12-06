@@ -6,17 +6,17 @@ namespace JJMasterData.Core.Extensions;
 
 public static class ExpressionProviderEnumerableExtensions
 {
-    public static string[] GetProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
+    public static IEnumerable<string> GetProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
     {
-        return expressionProviders.Select(p => p.Prefix).ToArray();
+        return expressionProviders.Select(p => p.Prefix);
     }
-    public static string[] GetAsyncProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
+    public static IEnumerable<string> GetAsyncProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
     {
-        return expressionProviders.Where(p => p is IAsyncExpressionProvider).Select(p => p.Prefix).ToArray();
+        return expressionProviders.OfType<IAsyncExpressionProvider>().Select(p => p.Prefix);
     }
     
-    public static string[] GetSyncProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
+    public static IEnumerable<string> GetSyncProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
     {
-        return expressionProviders.Where(p => p is ISyncExpressionProvider).Select(p => p.Prefix).ToArray();
+        return expressionProviders.OfType<ISyncExpressionProvider>().Select(p => p.Prefix);
     }
 }
