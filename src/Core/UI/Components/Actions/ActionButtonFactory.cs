@@ -22,15 +22,13 @@ public class ActionButtonFactory(
     public JJLinkButton Create(BasicAction action, bool visible, bool enabled)
     {
         var button = linkButtonFactory.Create();
-        button.Tooltip = action.Tooltip;
-        button.Text = action.Text;
+        button.Tooltip = stringLocalizer[action.Tooltip];
+        button.Text = stringLocalizer[action.Text];
         button.Color = action.Color;
         button.IsGroup = action.IsGroup;
         button.IsDefaultOption = action.IsDefaultOption;
         button.DividerLine = action.DividerLine;
         button.ShowAsButton = !action.IsGroup && action.ShowAsButton;
-        button.Type = action is SubmitAction ? LinkButtonType.Submit : default;
-        button.UrlAction = action is SubmitAction submitAction ? submitAction.FormAction : null;
         button.CssClass = action.CssClass;
         button.IconClass = $"{action.Icon.GetCssClass()} fa-fw";
         button.Enabled = enabled;

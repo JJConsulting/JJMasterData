@@ -124,8 +124,7 @@ public class DataDictionaryFormElementFactory(
                 ShowAsButton = true,
                 UrlRedirect = urlHelper.Action("Add", "Element", new {Area="DataDictionary"})
             },
-
-            new SubmitAction
+            new ScriptAction
             {
                 Name = "btnDeleteSelected",
                 Order = 0,
@@ -134,9 +133,8 @@ public class DataDictionaryFormElementFactory(
                 IsGroup = false,
                 ConfirmationMessage = stringLocalizer["Do you want to delete ALL selected records?"],
                 ShowAsButton = true,
-                FormAction = urlHelper.Action("Delete", "Element", new {Area="DataDictionary"}),
+                OnClientClick = "deleteSelected();"
             },
-
             new ScriptAction
             {
                 Name = "btnAbout",

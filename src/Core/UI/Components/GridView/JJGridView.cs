@@ -1367,12 +1367,6 @@ public class JJGridView : AsyncComponent
         ToolbarActions.Add(action);
     }
 
-    public void AddToolbarAction(SubmitAction action)
-    {
-        ValidateAction(action);
-        ToolbarActions.Add(action);
-    }
-
     public void AddToolbarAction(ScriptAction action)
     {
         ValidateAction(action);

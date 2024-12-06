@@ -15,4 +15,14 @@
     @Html.Raw(ViewData["FormViewHtml"])
 </master-data-form>
 
+@section Scripts{
+    <script>
+        function deleteSelected(){
+            const form = getMasterDataForm();
+            form.action = '@Url.Action("Delete", "Element", new {Area="DataDictionary"})';
+            form.submit();
+        }
+    </script>
+}
+
 <offcanvas name="about-offcanvas" position="End"/>
