@@ -338,6 +338,20 @@ internal sealed class EntityRepository(
         var dataAccess = GetDataAccess(connectionId);
         return dataAccess.GetDataSetAsync(command, cancellationToken);
     }
+    public Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
+    {
+        return provider.GetStoredProcedureDefinitionAsync(procedureName,connectionId);
+    }
+
+    public Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
+    {
+        return provider.DropStoredProcedureAsync(procedureName,connectionId);
+    }
+    
+    public Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
+    {
+        return provider.GetStoredProcedureListAsync(connectionId);
+    }
     
     private DataAccess GetDataAccess(Guid? connectionId)
     {

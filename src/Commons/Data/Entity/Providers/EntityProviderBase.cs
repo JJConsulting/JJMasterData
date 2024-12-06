@@ -33,6 +33,18 @@ public abstract class EntityProviderBase(
     public abstract DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> primaryKeys);
     public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter);
     protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values);
+    public abstract bool TableExists(string tableName, Guid? connectionId = null);
+    public abstract Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default);
+
+    public abstract Task<bool> ColumnExistsAsync(
+        string tableName, 
+        string columnName,
+        Guid? connectionId = null,
+        CancellationToken cancellationToken = default);
+    
+    public abstract Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null);
+    public abstract Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null);
+    public abstract Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null);
     
     public async Task InsertAsync(Element element, Dictionary<string,object?> values)
     {
@@ -157,7 +169,6 @@ public abstract class EntityProviderBase(
         int numberRowsAffected = await dataAccess.SetCommandAsync(cmd);
         return numberRowsAffected;
     }
-    
     
     
     public async Task<DictionaryListResult> GetDictionaryListAsync(
@@ -301,13 +312,4 @@ public abstract class EntityProviderBase(
         var connection = Options.GetConnectionString(connectionId);
         return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
-    
-    public abstract bool TableExists(string tableName, Guid? connectionId = null);
-    public abstract Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default);
-
-    public abstract Task<bool> ColumnExistsAsync(
-        string tableName, 
-        string columnName,
-        Guid? connectionId = null,
-        CancellationToken cancellationToken = default);
 }

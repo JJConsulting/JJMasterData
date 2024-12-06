@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
@@ -400,6 +401,66 @@ public class SqlServerProvider(
 
         return command;
     }
+    
+    public override async Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
+    {
+        if (string.IsNullOrEmpty(procedureName))
+            throw new ArgumentNullException(nameof(procedureName));
+
+        var dataAccess = GetDataAccess(connectionId);
+
+        var command = new DataAccessCommand
+        {
+            Sql = $"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = '{procedureName}') " +
+                  $"BEGIN DROP PROCEDURE [dbo].[{procedureName}] END",
+            Type = CommandType.Text
+        };
+        
+
+        await dataAccess.SetCommandAsync(command);
+    }
+    
+    public override async Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+        var command = new DataAccessCommand
+        {
+            Sql = "SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' order by ROUTINE_NAME",
+            Type = CommandType.Text
+        };
+
+        var procedures = await dataAccess.GetDictionaryListAsync(command);
+        var procedureList = new List<string>();
+        foreach (var procedure in procedures)
+        {
+            if (procedure.TryGetValue("ROUTINE_NAME", out var procedureName) && procedureName is not null)
+            {
+                procedureList.Add(procedureName.ToString()!);
+            }
+        }
+
+        return procedureList;
+    }
+    
+    public override async Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
+    {
+        if (string.IsNullOrEmpty(procedureName))
+            throw new ArgumentNullException(nameof(procedureName));
+
+        var dataAccess = GetDataAccess(connectionId);
+
+        var command = new DataAccessCommand
+        {
+            Sql = @"SELECT OBJECT_DEFINITION(OBJECT_ID(@ProcedureName)) AS Definition",
+            Type = CommandType.Text
+        };
+
+        command.Parameters.Add(new DataAccessParameter("@ProcedureName", procedureName, DbType.String));
+
+        var result = await dataAccess.GetResultAsync(command);
+        return result?.ToString();
+    }
+
     
     private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)
     {

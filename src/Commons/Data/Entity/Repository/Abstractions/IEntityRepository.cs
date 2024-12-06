@@ -192,4 +192,9 @@ public interface IEntityRepository
     DataSet GetDataSet(DataAccessCommand command, Guid? connectionId = null);
     
     Task<DataSet> GetDataSetAsync(DataAccessCommand command, Guid? connectionId = null, CancellationToken cancellationToken = default);
+    
+    public Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null);
+
+    public Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null);
+    public Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null);
 }

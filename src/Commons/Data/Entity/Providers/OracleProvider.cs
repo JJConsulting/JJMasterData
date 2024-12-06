@@ -819,7 +819,21 @@ public class OracleProvider(
         throw new NotImplementedException();
     }
 
+    public override Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
+    {
+        throw new NotImplementedException();
+    }
 
+    public override Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
+    {
+        throw new NotImplementedException();
+    }
+    
     public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         return "Not implemented";
