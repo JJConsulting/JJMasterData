@@ -119,30 +119,30 @@ public class ActionsService(IValidationDictionary validationDictionary,
             AddError(nameof(actionName), StringLocalizer["Required [Name] field"]);
         }
 
-        if (originalName != null && originalName.Equals(actionName))
+        if (originalName?.Equals(actionName) == true)
             return;
         
-        IList<BasicAction> listAction = null;
+        IEnumerable<BasicAction> actions = null;
         switch (context)
         {
             case ActionSource.Field:
             {
                 var field = formElement.Fields[fieldName];
-                listAction = field.Actions.GetAllSorted();
+                actions = field.Actions.GetAllSorted();
                 break;
             }
             case ActionSource.GridTable:
-                listAction = formElement.Options.GridTableActions.GetAllSorted();
+                actions = formElement.Options.GridTableActions.GetAllSorted();
                 break;
             case ActionSource.GridToolbar:
-                listAction = formElement.Options.GridToolbarActions.GetAllSorted();
+                actions = formElement.Options.GridToolbarActions.GetAllSorted();
                 break;
         }
 
-        if (listAction == null) 
+        if (actions == null) 
             return;
         
-        foreach (var a in listAction)
+        foreach (var a in actions)
         {
             if (a.Name.Equals(actionName))
                 AddError(nameof(actionName),

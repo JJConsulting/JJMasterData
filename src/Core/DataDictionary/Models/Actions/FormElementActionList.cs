@@ -55,7 +55,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     public TAction? GetOrDefault<TAction>(string actionName) where TAction : BasicAction =>
         List.OfType<TAction>().FirstOrDefault(a => a.Name == actionName);
 
-    public List<BasicAction> GetAllSorted() => List.OrderBy(x => x.Order).ToList();
+    public IEnumerable<BasicAction> GetAllSorted() => List.OrderBy(x => x.Order);
 
     public void SetDefaultOption(string actionName)
     {

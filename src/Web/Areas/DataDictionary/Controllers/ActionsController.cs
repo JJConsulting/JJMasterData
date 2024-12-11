@@ -21,9 +21,9 @@ public class ActionsController(ActionsService actionsService,
         var formElement = await actionsService.GetFormElementAsync(elementName);
         var model = new ActionsListViewModel(elementName, "Actions")
         {
-            GridTableActions = formElement.Options.GridTableActions.GetAllSorted(),
-            GridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted(),
-            FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted()
+            GridTableActions = formElement.Options.GridTableActions.GetAllSorted().ToList(),
+            GridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted().ToList(),
+            FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().ToList()
         };
 
         if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab))

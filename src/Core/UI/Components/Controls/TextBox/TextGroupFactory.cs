@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -61,7 +62,7 @@ public sealed class TextGroupFactory(
                                 ControlContext controlContext, 
                                 JJTextGroup textGroup)
     {
-        var actions = field.Actions.GetAllSorted().FindAll(x => x.IsVisible);
+        var actions = field.Actions.GetAllSorted().Where(x => x.IsVisible);
         
         foreach (var action in actions)
         {

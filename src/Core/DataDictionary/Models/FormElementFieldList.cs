@@ -39,7 +39,7 @@ public class FormElementFieldList : IList<FormElementField>
     {
         _baseFields = baseFields;
 
-        _formFields = new List<FormElementField>();
+        _formFields = [];
 
         foreach (var field in _baseFields)
         {

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Web;
 using JetBrains.Annotations;
@@ -94,19 +95,17 @@ public partial class HtmlBuilder
         if (classes == null || string.IsNullOrWhiteSpace(classes))
             return this;
         
-        if (!_attributes.TryGetValue("class", out var value))
+        if (!_attributes.TryGetValue("class", out var existingClasses))
             return WithAttribute("class", classes);
 
-        List<string> classList = [];
-        classList.AddRange(value.Split(' '));
+        var classSet = new HashSet<string>(existingClasses.Split(' '), StringComparer.InvariantCultureIgnoreCase);
         
         foreach (var cssClass in classes.Split(' '))
         {
-            if (!classList.Contains(cssClass))
-                classList.Add(cssClass);
+            classSet.Add(cssClass);
         }
 
-        _attributes["class"] = string.Join(" ", classList);
+        _attributes["class"] = string.Join(" ", classSet);
 
         return this;
     }

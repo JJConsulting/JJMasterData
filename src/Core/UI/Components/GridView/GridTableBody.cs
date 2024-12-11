@@ -295,8 +295,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         {
             await div.AppendControlAsync(control);
         }
-
-
+        
         return div;
     }
 
@@ -304,7 +303,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     {
         List<HtmlBuilder> result = [];
         var basicActions = gridView.TableActions.OrderBy(x => x.Order).ToList();
-        var actionsWithoutGroup = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: false });
+        var actionsWithoutGroup = basicActions.Where(x => x is { IsVisible: true, IsGroup: false });
         var groupedActions = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: true });
         
         result.AddRange(await GetActionsWithoutGroupHtmlAsync(actionsWithoutGroup, formStateData));
@@ -317,7 +316,8 @@ internal sealed class GridTableBody(JJGridView gridView)
         return result;
     }
     
-    private async ValueTask<HtmlBuilder> GetActionsGroupHtmlAsync(List<BasicAction> actions,
+    private async ValueTask<HtmlBuilder> GetActionsGroupHtmlAsync(
+        List<BasicAction> actions,
         FormStateData formStateData)
     {
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -327,7 +327,7 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         var factory = gridView.ComponentFactory.ActionButton;
 
-        foreach (var groupedAction in actions.FindAll(a => a.IsGroup))
+        foreach (var groupedAction in actions)
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
             var linkButton = factory.CreateGridTableButton(groupedAction, gridView, formStateData);
@@ -346,7 +346,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     }
     
     private async ValueTask<List<HtmlBuilder>> GetActionsWithoutGroupHtmlAsync(
-        List<BasicAction> actionsWithoutGroup, FormStateData formStateData)
+        IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
         var factory = gridView.ComponentFactory.ActionButton;
         List<HtmlBuilder> result = [];

@@ -14,7 +14,7 @@ internal static class DataExportationHelper
     public static string GetFolderPath(FormElement formElement, string path, string userId)
     {
         var processOptions = formElement.Options.GridToolbarActions.ExportAction.ProcessOptions;
-        string folderPath = Path.Combine(path, formElement.Name);
+        var folderPath = Path.Combine(path, formElement.Name);
 
         if (processOptions.Scope == ProcessScope.User)
         {
@@ -26,7 +26,6 @@ internal static class DataExportationHelper
     public static string GetFolderPath(JJDataExportation dataExportation)
     {
         var path = dataExportation.MasterDataOptions.ExportationFolderPath;
-        return DataExportationHelper.GetFolderPath(dataExportation.FormElement , path, dataExportation.UserId);    
+        return GetFolderPath(dataExportation.FormElement , path, dataExportation.UserId);    
     }
-    
 }

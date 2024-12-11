@@ -810,7 +810,7 @@ public class JJGridView : AsyncComponent
             html.Append(await GetCaptionHtml());
         }
 
-        html.Append(HtmlTag.Div, div => div.WithCssClass("clearfix"));
+        html.AppendDiv(div => div.WithCssClass("clearfix"));
 
         return html;
     }
