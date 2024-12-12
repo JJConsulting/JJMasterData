@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
@@ -36,9 +37,16 @@ public class ScriptsService(IEntityRepository entityRepository,
         List<RelationshipReference> relationshipList = [];
         foreach (var r in formElement.Relationships.GetElementRelationships())
         {
-            var tableName = (await dataDictionaryRepository.GetFormElementAsync(r.ChildElement)).TableName;
+            if (await dataDictionaryRepository.ExistsAsync(r.ChildElement))
+            {
+                var tableName = (await dataDictionaryRepository.GetFormElementAsync(r.ChildElement)).TableName;
 
-            relationshipList.Add(new(r.ChildElement, tableName));
+                relationshipList.Add(new(r.ChildElement, tableName));
+            }
+            else
+            {
+                throw new JJMasterDataException("Relationship reference could not be found. Please check the relationship list and create or import any missing elements.");
+            }
         }
         return relationshipList;
     }
