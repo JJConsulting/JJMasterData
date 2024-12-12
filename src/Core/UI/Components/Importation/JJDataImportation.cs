@@ -16,6 +16,7 @@ using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
@@ -238,8 +239,8 @@ public class JJDataImportation : ProcessComponent
             {
                 msg.WithAttribute("id", "process-status")
                     .WithStyle( "display:none")
-                    .Append(HtmlTag.Div, status => { status.WithAttribute("id", "divStatus"); })
-                    .Append(HtmlTag.Span, resume => { resume.WithAttribute("id", "process-message"); });
+                    .Append(HtmlTag.Div, status => status.WithAttribute("id", "divStatus"))
+                    .Append(HtmlTag.Span, resume => resume.WithAttribute("id", "process-message"));
             })
             .Append(HtmlTag.Div, div =>
             {
@@ -268,6 +269,7 @@ public class JJDataImportation : ProcessComponent
         var btnStop = ComponentFactory.Html.LinkButton.Create();
         btnStop.Type = LinkButtonType.Button;
         btnStop.ShowAsButton = true;
+        btnStop.Visible = reporter.UserId == CurrentContext.User.GetUserId();
         btnStop.OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]);
         btnStop.Icon = IconType.Stop;
         btnStop.Text = StringLocalizer["Stop the importation"];

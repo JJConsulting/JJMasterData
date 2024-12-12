@@ -1,7 +1,7 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
-/// Escopo de execução do pocesso
+/// Execution scope of the process
 /// </summary>
 public enum ProcessScope
 {
@@ -9,18 +9,18 @@ public enum ProcessScope
     /// Global
     /// </summary>
     /// <remarks>
-    /// Somente uma importação desse dicionário poderá ser excutada por vez 
-    /// e todos os usuários poderão visualizar o último log 
-    /// e a execução de um processo em andamento.
+    /// Only one import of this dictionary can be executed at a time, 
+    /// and all users can view the last log 
+    /// and the execution of a process in progress.
     /// </remarks>
     Global = 0,
 
     /// <summary>
-    /// Usuário
+    /// User
     /// </summary>
     /// <remarks>
-    /// Varios usuários poderão executar esse processo simultaneamente, 
-    /// porém visualiza apenas o log e a execução do seu processo.
+    /// Multiple users can execute this process simultaneously, 
+    /// but each can only view the log and execution of their own process.
     /// </remarks>
     User = 1
 }

@@ -1,4 +1,6 @@
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
@@ -6,8 +8,8 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class DataExportationLog(JJDataExportation dataExportation)
 {
-    private DataExportationScripts Scripts { get; } = dataExportation.Scripts;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = dataExportation.StringLocalizer;
+    private readonly DataExportationScripts _scripts  = dataExportation.Scripts;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer = dataExportation.StringLocalizer;
 
     internal HtmlBuilder GetLoadingHtml()
     {
@@ -27,7 +29,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
 
             div.Append(HtmlTag.Br);
 
-            div.AppendText(StringLocalizer["Exportation started on"]);
+            div.AppendText(_stringLocalizer["Exportation started on"]);
 
             div.AppendText(" ");
             
@@ -35,17 +37,19 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             
             div.Append(HtmlTag.Br);
             div.WithCssClass("mb-1");
-            var stopExportationScript = Scripts.GetStopExportationScript(StringLocalizer["Stopping Processing..."]);
+            var stopExportationScript = _scripts.GetStopExportationScript(_stringLocalizer["Stopping Processing..."]);
+            var reporter = dataExportation.BackgroundTaskManager.GetProgress<DataExportationReporter>(dataExportation.ProcessKey);
             div.AppendComponent(new JJLinkButton
             {
                 IconClass = "fa fa-stop",
                 OnClientClick = stopExportationScript,
-                Text = StringLocalizer["Stop the exportation"],
+                Visible = reporter.UserId == dataExportation.CurrentContext.User.GetUserId(),
+                Text = _stringLocalizer["Stop the exportation"],
                 ShowAsButton = true
             });
         });
 
-        div.AppendScript(Scripts.GetStartProgressVerificationScript());
+        div.AppendScript(_scripts.GetStartProgressVerificationScript());
         
         return div;
     }

@@ -2457,7 +2457,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Several users can run this process simultaneously, but only see the log and one run of your process." xml:space="preserve">
-    <value>Vários usuários podem executar esse processo simultaneamente, porém visualiza apenas o log e uma execução do seu processo. </value>
+    <value>Vários usuários podem executar esse processo simultaneamente, porém eles visualizarão apenas o log e uma execução do seu processo. </value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Show as Button" xml:space="preserve">
