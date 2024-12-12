@@ -5,7 +5,7 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public sealed class ElementBean
 {
-    [Display(Name = "Table Or View Name", Prompt = "Table Or View Name")]
+    [Display(Name = "Table or View Name", Prompt = "Table or View Name")]
     public string Name { get; init; } = null!;
     
     [Display(Name = "Import Fields")]
