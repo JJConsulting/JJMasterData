@@ -15,7 +15,7 @@ public interface IDataDictionaryRepository
     FormElement GetFormElement(string elementName);
     ValueTask<FormElement> GetFormElementAsync(string elementName);
     Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null);
-    Task<List<string>> GetNameListAsync();
+    ValueTask<List<string>> GetElementNameListAsync();
     List<FormElement> GetFormElementList(bool? apiSync = null);
 
     Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderByData, int recordsPerPage, int currentPage);

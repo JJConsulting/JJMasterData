@@ -202,6 +202,11 @@ public class FormElementFieldList : IList<FormElementField>
         return _formFields.FindAll(predicate);
     }
     
+    public bool Exists(string name)
+    {
+        return _formFields.Exists(f=>f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    }
+    
     public bool Exists(Predicate<FormElementField> predicate)
     {
         return _formFields.Exists(predicate);

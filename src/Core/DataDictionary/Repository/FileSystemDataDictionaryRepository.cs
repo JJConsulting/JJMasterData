@@ -60,7 +60,7 @@ public class FileSystemDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
-    public List<string> GetNameList()
+    public List<string> GetElementNameList()
     {
         var list = new List<string>();
         var dir = new DirectoryInfo(FolderPath);
@@ -81,11 +81,11 @@ public class FileSystemDataDictionaryRepository
         return list;
     }
 
-    public Task<List<string>> GetNameListAsync()
+    public ValueTask<List<string>> GetElementNameListAsync()
     {
-        var names = GetNameList();
+        var names = GetElementNameList();
 
-        return Task.FromResult(names);
+        return new(names);
     }
 
     public List<FormElement> GetFormElementList(bool? apiSync = null) => GetMetadataList(apiSync);

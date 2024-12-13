@@ -54,7 +54,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
         return formElementEntities.ConvertAll(f => f.FormElement);
     }
 
-    public async Task<List<string>> GetNameListAsync()
+    public async ValueTask<List<string>> GetElementNameListAsync()
     {
         var formElements = await _formElementCollection.FindAsync(_ => true);
         var names = new List<string>();

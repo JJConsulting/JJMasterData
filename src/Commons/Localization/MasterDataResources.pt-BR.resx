@@ -1864,6 +1864,10 @@
     <value>Nome do campo já existe</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Field {0} already exists." xml:space="preserve">
+    <value>Campo {0} já existe.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Need more help?" xml:space="preserve">
     <value>Precisa de mais ajuda?</value>
     <comment>JJMasterDataWeb</comment>
@@ -4109,5 +4113,8 @@
   </data>
   <data name="Buttons" xml:space="preserve">
     <value>Botões</value>
+  </data>
+  <data name="Copy From..." xml:space="preserve">
+    <value>Copiar De...</value>
   </data>
 </root>

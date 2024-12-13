@@ -18,7 +18,7 @@
 }
 
 @{
-    string elementName = ViewBag.ElementName;
+    var elementName = ViewData["ElementName"]!.ToString()!;
     var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(elementName) as IEventHandler ?? GridEventHandlerResolver.GetGridEventHandler(elementName);
 
     var isCustomizedField = formEventHandler?.GetCustomizedFields().Contains(Model.Name) ?? false;
@@ -103,27 +103,27 @@
 <div class="jjtoolbar mb-1 col-sm-12">
     <hr/>
     <link-button 
-        text="Save" 
+        text="@StringLocalizer["Save"]" 
         color="Primary" 
         icon="Check" 
         on-client-click="save()"/>
     <link-button
         asp-action="Index"
         asp-route-fieldName="@Model.Name"
-        asp-route-elementName="@ViewBag.ElementName"
-        text="Refresh" 
+        asp-route-elementName="@elementName"
+        text="@StringLocalizer["Refresh"]" 
         icon="Refresh"/>
     
  
     <link-button 
         asp-action="Delete"
         asp-route-fieldName="@Model.Name"
-        asp-route-elementName="@ViewBag.ElementName"
-        text="Delete" 
+        asp-route-elementName="@elementName"
+        text="@StringLocalizer["Delete"]" 
         icon="SolidTrashCan" />
     
     <link-button 
-        text="Copy"  
+        text="@StringLocalizer["Copy"]"  
         icon="FilesO" 
         on-client-click="copy()"/>
 </div>

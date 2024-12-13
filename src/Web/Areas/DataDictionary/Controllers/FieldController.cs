@@ -1,18 +1,23 @@
 ﻿#nullable enable
 
 using System.Text.Json;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Core.UI.Html;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Localization;
 
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class FieldController(FieldService fieldService)
+public class FieldController(
+    FieldService fieldService,
+    IStringLocalizer<MasterDataResources> stringLocalizer
+    )
     : DataDictionaryController
 {
     [ImportModelState]
@@ -35,7 +40,7 @@ public class FieldController(FieldService fieldService)
             field = formElement.Fields[fieldName];
         }
 
-        await PopulateViewBag(formElement, field);
+        await PopulateViewData(formElement, field);
         return View(nameof(Index), field);
     }
 
@@ -43,7 +48,7 @@ public class FieldController(FieldService fieldService)
     {
         var formElement = await fieldService.GetFormElementAsync(elementName);
         var field = formElement.Fields[fieldName];
-        await PopulateViewBag(formElement, field);
+        await PopulateViewData(formElement, field);
         return PartialView("_Detail", field);
     }
 
@@ -51,7 +56,7 @@ public class FieldController(FieldService fieldService)
     {
         var formElement = await fieldService.GetFormElementAsync(elementName);
         var field = new FormElementField();
-        await PopulateViewBag(formElement, field);
+        await PopulateViewData(formElement, field);
         return PartialView("_Detail", field);
     }
 
@@ -66,7 +71,7 @@ public class FieldController(FieldService fieldService)
     public async Task<IActionResult> Index(string elementName, string? fieldName, FormElementField? field)
     {
         var formElement = await fieldService.GetFormElementAsync(elementName);
-        await PopulateViewBag(formElement, field);
+        await PopulateViewData(formElement, field);
         return View("Index", field);
     }
 
@@ -81,8 +86,7 @@ public class FieldController(FieldService fieldService)
         {
             return RedirectToIndex(elementName, field);
         }
-
-        ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
+        
         return RedirectToIndex(elementName, field);
     }
 
@@ -102,7 +106,7 @@ public class FieldController(FieldService fieldService)
         if (!ModelState.IsValid)
             ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
 
-        await PopulateViewBag(dictionary, field);
+        await PopulateViewData(dictionary, field);
         return View("Index", field);
     }
 
@@ -163,14 +167,14 @@ public class FieldController(FieldService fieldService)
     private RedirectToActionResult RedirectToIndex(string elementName, FormElementField field)
     {
         TempData.Put("field", field);
-        TempData["error"] = ViewBag.Error;
+        TempData["Error"] = ViewData["Error"];
         TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
-        TempData["originalName"] = ModelState.IsValid ? field.Name : Request.Form["originalName"].ToString();
+        TempData["OriginalName"] = ModelState.IsValid ? field.Name : Request.Form["originalName"].ToString();
 
         return RedirectToAction("Index", new { elementName });
     }
 
-    private async Task PopulateViewBag(FormElement formElement, FormElementField? field)
+    private async Task PopulateViewData(FormElement formElement, FormElementField? field)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -188,37 +192,38 @@ public class FieldController(FieldService fieldService)
             field.Actions = formElement.Fields[field.Name].Actions;
 
         if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab))
-            ViewBag.Tab = selectedTab;
+            ViewData["Tab"] = selectedTab;
 
         else if (TempData.TryGetValue("selected-tab", out var tempSelectedTab))
-            ViewBag.Tab = tempSelectedTab?.ToString()!;
+            ViewData["Tab"] = tempSelectedTab?.ToString()!;
 
-        if (TempData.TryGetValue("error", out var value))
-            ViewBag.Error = value!;
+        if (TempData.TryGetValue("Error", out var value))
+            ViewData["Error"] = value!;
 
         if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
-            ViewBag.OriginalName = originalName;
+            ViewData["OriginalName"] = originalName;
         else if (TempData.TryGetValue("originalName", out var tempOriginalName))
-            ViewBag.OriginalName = tempOriginalName?.ToString()!;
+            ViewData["OriginalName"] = tempOriginalName?.ToString()!;
 
-        if (TempData["originalName"] != null)
-            ViewBag.OriginalName = TempData["originalName"]!;
+        if (TempData["OriginalName"] != null)
+            ViewData["OriginalName"] = TempData["originalName"]!;
         else
-            ViewBag.OriginalName = field.Name;
+            ViewData["OriginalName"] = field.Name;
 
-        ViewBag.IsForm = formElement.TypeIdentifier == 'F';
-        ViewBag.MenuId = "Fields";
-        ViewBag.FormElement = formElement;
-        ViewBag.ElementName = formElement.Name;
-        ViewBag.CodeMirrorHintList = JsonSerializer.Serialize(DataDictionaryServiceBase.GetAutocompleteHints(formElement));
+        ViewData["IsForm"] = formElement.TypeIdentifier == 'F';
+        ViewData["MenuId"] = "Fields";
+        ViewData["FormElement"] = formElement;
+        ViewData["ElementName"] = formElement.Name;
+        ViewData["CodeMirrorHintList"] = JsonSerializer.Serialize(DataDictionaryServiceBase.GetAutocompleteHints(formElement));
 
         // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
         // Under normal circumstances, there is no need to increase the size of the HTTP request.
-        ViewBag.MaxRequestLength = 30720000;
+        ViewData["MaxRequestLength"] = 30720000;
 
-        ViewBag.FieldName = field.Name;
-        ViewBag.Fields = formElement.Fields;
-
+        ViewData["FieldName"] = field.Name;
+        ViewData["Fields"] = formElement.Fields;
+        ViewData["ElementNameList"] = await fieldService.GetElementsDictionaryAsync();
+        
         if (field.Component is not FormComponent.Lookup &&
             field.Component is not FormComponent.Search &&
             field.Component is not FormComponent.ComboBox &&
@@ -229,9 +234,8 @@ public class FieldController(FieldService fieldService)
 
         field.DataItem.ElementMap ??= new DataElementMap();
 
-        ViewBag.ElementNameList = (await fieldService.GetElementsDictionaryAsync()).OrderBy(e => e.Key);
-        ViewBag.ElementFieldList =
-            (await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap)).OrderBy(e => e.Key);
+
+        ViewData["ElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName);
     }
 
     private void RecoverCustomAttributes(ref FormElementField field)
@@ -306,5 +310,47 @@ public class FieldController(FieldService fieldService)
                     Request.Form[FormElementField.CultureInfoAttribute].ToString());
                 break;
         }
+    }
+
+    public async Task<ContentResult> PopulateCopyFromFields(string elementName)
+    {
+        var options = new HtmlBuilder();
+
+        var formElement = await fieldService.GetFormElementAsync(elementName);
+        
+        foreach (var field in formElement.Fields)
+        {
+            options.Append(HtmlTag.Option, option =>
+            {
+                option.WithValue(field.Name);
+                option.AppendText(field.Name);
+            });
+        }
+
+        return Content(options.ToString());
+    }
+    
+    public async Task<RedirectToActionResult> CopyFrom(string elementName, string copyFromElementName, string copyFromFieldName)
+    {
+        var copyFromFormElement = await fieldService.GetFormElementAsync(copyFromElementName);
+        var field = copyFromFormElement.Fields[copyFromFieldName];
+
+        var formElement = await fieldService.GetFormElementAsync(elementName);
+
+        if (formElement.Fields.Exists(field.Name))
+        {
+            ModelState.AddModelError(field.Name,stringLocalizer["Field {0} already exists.", field.Name]);
+        }
+        else
+        {
+            formElement.Fields.Add(field);
+        }
+
+        await fieldService.SetFormElementAsync(formElement);
+
+        if (!ModelState.IsValid)
+            ViewData["Error"] = fieldService.GetValidationSummary().GetHtml();
+        
+        return RedirectToIndex(elementName, field);
     }
 }

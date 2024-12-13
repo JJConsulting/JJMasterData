@@ -11,8 +11,10 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @{
-    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Fields"]}";
-    Layout = !ViewBag.IsForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
+    ViewData["Title"] = $"{ViewData["ElementName"]} - {StringLocalizer["Fields"]}";
+    var isForm = ViewData["IsForm"] is true;
+    var elementName = ViewData["ElementName"]!.ToString();
+    Layout = !isForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
 @functions{
@@ -72,9 +74,38 @@
 }
 
 
-@if (ViewBag.IsForm)
+@if (isForm)
 {
-    <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
+    <partial name="_Menu" model="@(new DataDictionaryViewModel(elementName, ViewBag.MenuId))"/>
+    
+    <offcanvas position="Bottom" title="@StringLocalizer["Copy From..."]" name="copy-from-offcanvas">
+        <form asp-action="CopyFrom" asp-controller="Field" asp-route-elementName="@elementName">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-floating">
+                        <select name="copyFromElementName"
+                                asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
+                                onclick="populateCopyFromFields(this)"
+                                required="required"
+                                class="form-select"></select>
+                        <label>@StringLocalizer["Element Name"]</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-floating">
+                        <select name="copyFromFieldName"
+                                id="copyFromFieldName"
+                                required="required"
+                                class="form-select"></select>
+                        <label>@StringLocalizer["Field Name"]</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-primary" type="submit"><span class="fa-solid fa-copy"></span>&nbsp;@StringLocalizer["Copy"]</button>
+                </div>
+            </div>
+        </form>
+    </offcanvas>
 }
 
 @using (Html.BeginMasterDataForm("Index", "Field"))
@@ -82,11 +113,19 @@
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
     <div class="row">
         <div class="col-sm-3">
-            <div class="input-group jjform-action ">
-                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
-                <a href="javascript: void(0);" class="input-group-text link-underline link-underline-opacity-0" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
-                    <span class="fa fa-plus  bi"></span>
-                </a>
+            <div class="input-group">
+                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="@StringLocalizer["Search..."]" type="text" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
+                
+                @if (isForm)
+                {
+                    <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip" title="@StringLocalizer["Copy From..."]" onclick="OffcanvasHelper.showOffcanvas('copy-from-offcanvas')">
+                        <span class="fa-solid fa-copy"></span>
+                    </div>
+                }
+                
+                <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = elementName })', '');">
+                    <span class="fa fa-plus"></span>
+                </div>
             </div>
             <br/>
             <div class="jjrelative">
@@ -101,11 +140,11 @@
                             FormElementField field = ViewBag.Fields[i];
                             var fieldName = field.Name;
 
-                            <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
+                            <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = elementName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
                                id="@fieldName">
                                 <div style="height: 33px;">
-                                    <div class="@BootstrapHelper.PullLeft">
+                                    <div class="float-start">
                                         <b>@fieldName</b>
                                         @if (field.IsPk)
                                         {
@@ -140,9 +179,9 @@
                                             @GetFieldDataTypeText(field)
                                         </small>
                                     </div>
-                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
+                                    <div class="float-end jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
                                     </div>
-                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
+                                    <span class="float-end jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
                                         @i
                                     </span>
                                 </div>
@@ -182,19 +221,32 @@
     </script>
 
 <script type="text/javascript">
+
+        async function populateCopyFromFields(formElementCombobox) {
+            const fieldNameSelect = document.getElementById('copyFromFieldName');
+            if (!fieldNameSelect) return;
+
+            const response = await fetch('@Url.Action("PopulateCopyFromFields", "Field")' + '?elementName=' + formElementCombobox.value);
+            
+            if (!response.ok) 
+                return;
+
+            fieldNameSelect.innerHTML = await response.text();
+        }
+        
          function setupCodeMirror(){
             @if (Model.DataItem is not null)
             {
                 <text>
-                 CodeMirrorWrapper.setupCodeMirror("@Html.IdFor(m=>m.DataItem!.Command!.Sql)",{
+                 CodeMirrorWrapper.setupCodeMirror("@Html.IdFor(m => m.DataItem!.Command!.Sql)",{
                      mode: "text/x-sql",
                      hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
                      hintKey: '{'
                  });
                 </text>
-              
+
             }
-             CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m=>m.GridRenderingTemplate)",{
+             CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m => m.GridRenderingTemplate)",{
                  mode: "text/x-liquid",
                  hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
                  hintKey: '{',
@@ -202,8 +254,7 @@
              });
          }
          
-           
-         function listenTabs (){
+         function listenTabs(){
             setupCodeMirror(); 
             
             const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
@@ -227,7 +278,8 @@
          }
 
          document.addEventListener("DOMContentLoaded", listenTabs);
-    </script>
+    
+</script>
 
 <script type="text/javascript">        
         document.addEventListener("DOMContentLoaded",function (){
@@ -242,7 +294,7 @@
                 currentTab = "#div-general";
             }
             
-            let tabLinks = document.querySelectorAll("[@BootstrapHelper.DataToggle='tab']");
+            let tabLinks = document.querySelectorAll("[data-bs-toggle='tab']");
             tabLinks.forEach(function(link) {
                 if (link.getAttribute('href') === currentTab) {
                     link.classList.add('active');
@@ -286,7 +338,7 @@
         function moveFields(order) {
             const formData = new FormData();
             formData.append('fieldsOrder', order);
-            fetch('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
+            fetch('@Url.Action("Sort", new { elementName })', {
                 method: "POST",
                 body: formData
             })

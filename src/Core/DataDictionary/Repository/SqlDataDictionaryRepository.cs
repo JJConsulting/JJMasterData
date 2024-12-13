@@ -24,6 +24,7 @@ public class SqlDataDictionaryRepository(
     private readonly Element _masterDataElement  = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
     private readonly bool _enableDataDictionaryCaching  = options.Value.EnableDataDictionaryCaching;
     
+    private static readonly Guid ElementNameListCacheKey = Guid.Parse("fb545293-9793-4f00-8f2f-b961999c8202");
     public List<FormElement> GetFormElementList(bool? apiSync = null)
     {
         var parameters = GetFormElementListParameters(apiSync);
@@ -63,14 +64,25 @@ public class SqlDataDictionaryRepository(
         return JsonSerializer.Deserialize<FormElement>(dictionary[DataDictionaryStructure.Json]!.ToString()!)!;
     }
 
-    public async Task<List<string>> GetNameListAsync()
+    public async ValueTask<List<string>> GetElementNameListAsync()
     {
+        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(ElementNameListCacheKey, out List<string>? nameList))
+        {
+            return nameList!;
+        }
         var filter = new Dictionary<string, object?> { { DataDictionaryStructure.Type, "F" } };
 
+        var orderBy = new OrderByData();
+        orderBy.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
+        
         var dt = await entityRepository.GetDictionaryListResultAsync(_masterDataElement,
-            new EntityParameters { Filters = filter }, false);
+            new EntityParameters { Filters = filter, OrderBy = orderBy}, false);
 
-        return dt.Data.ConvertAll(row => row[DataDictionaryStructure.Name]!.ToString()!);
+        nameList = dt.Data.ConvertAll(row => row[DataDictionaryStructure.Name]!.ToString()!);
+        
+        memoryCache.Set(ElementNameListCacheKey, nameList);
+        
+        return nameList;
     }
 
     public FormElement? GetFormElement(string elementName)
@@ -225,6 +237,8 @@ public class SqlDataDictionaryRepository(
         if (!formElement.UseWriteProcedure)
             memoryCache.Remove(formElement.Name + "_WriteScript");
 
+        
+        memoryCache.Remove(ElementNameListCacheKey);
         memoryCache.Remove(formElement.Name);
     }
 }

@@ -59,9 +59,8 @@ public class ElementFieldList : IList<ElementField>
     {
         if (item == null)
             throw new ArgumentException("ElementField can not be null");
-
-        int qtd = _list.Count(x => x.Name.Equals(item.Name));
-        if (qtd > 0)
+        
+        if (_list.Any(x => x.Name.Equals(item.Name, StringComparison.InvariantCultureIgnoreCase)))
             throw new JJMasterDataException($"Field [{item.Name}] already exists in Element.Fields");
 
         _list.Add(item);

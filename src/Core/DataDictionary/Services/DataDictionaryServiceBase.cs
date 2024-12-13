@@ -42,9 +42,9 @@ public abstract class DataDictionaryServiceBase(
         return DataDictionaryRepository.GetFormElementAsync(elementName);
     }
     
-    public Task<List<string>> GetNameListAsync()
+    public ValueTask<List<string>> GetNameListAsync()
     {
-        return DataDictionaryRepository.GetNameListAsync();
+        return DataDictionaryRepository.GetElementNameListAsync();
     }
 
     public bool ValidateName(string name)
@@ -115,11 +115,11 @@ public abstract class DataDictionaryServiceBase(
             yield return field.Name;
     }
 
-    public async Task<Dictionary<string, string>> GetElementsDictionaryAsync()
+    public async ValueTask<Dictionary<string, string>> GetElementsDictionaryAsync()
     {
         var elementList = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
-        var list = await DataDictionaryRepository.GetNameListAsync();
+        var list = await DataDictionaryRepository.GetElementNameListAsync();
         
         foreach (var name in list)
         {

@@ -161,8 +161,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
             var value = parentPanel.Values[col.PkColumn];
             filter[col.FkColumn] = value;
         }
-
-
+        
         switch (relationship.ViewType)
         {
             case RelationshipViewType.Update:

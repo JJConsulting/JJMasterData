@@ -448,18 +448,18 @@ public class FieldService(IValidationDictionary validationDictionary,
         return nextField;
     }
 
-    public async Task<Dictionary<string, string>> GetElementFieldListAsync(DataElementMap elementMap)
+    public async Task<Dictionary<string, string>> GetElementFieldListAsync(string elementName)
     {
         var fields = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
-        if (string.IsNullOrEmpty(elementMap.ElementName))
+        if (string.IsNullOrEmpty(elementName))
             return fields;
 
-        var dataEntry = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var dataEntry = await DataDictionaryRepository.GetFormElementAsync(elementName);
         if (dataEntry == null)
             return fields;
 
-        foreach (var field in dataEntry.Fields)
+        foreach (var field in dataEntry.Fields.OrderBy(e => e.Name))
         {
             fields.Add(field.Name, field.Name);
         }
@@ -480,5 +480,10 @@ public class FieldService(IValidationDictionary validationDictionary,
         formElement.Fields.Add(newField);
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
         return IsValid;
+    }
+
+    public Task SetFormElementAsync(FormElement formElement)
+    {
+        return DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 }
