@@ -712,40 +712,37 @@ public class JJGridView : AsyncComponent
 
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
-        html.WithAttribute("id", Name);
-        await html.AppendAsync(HtmlTag.Div, async div =>
+        var div = new HtmlBuilder(HtmlTag.Div);
+        div.WithAttribute("id", Name);
+        
+        if (ShowTitle)
+            div.AppendComponent(GetTitle());
+            
+        if (FilterAction.IsVisible)
+            div.Append(await Filter.GetFilterHtml());
+
+        if (OnBeforeTableRenderAsync is not null)
         {
-            if (ShowTitle)
-                div.AppendComponent(GetTitle());
-            
-            if (FilterAction.IsVisible)
-                div.Append(await Filter.GetFilterHtml());
-
-            if (OnBeforeTableRenderAsync is not null)
+            await OnBeforeTableRenderAsync(this, new()
             {
-                await OnBeforeTableRenderAsync(this, new()
-                {
-                    HtmlBuilder = div
-                });
-            }
+                HtmlBuilder = div
+            });
+        }
 
-            if (ShowToolbar)
-                div.Append(await GetToolbarHtmlBuilder());
+        if (ShowToolbar)
+            div.Append(await GetToolbarHtmlBuilder());
 
-            div.Append(await GetTableHtmlBuilder());
+        div.Append(await GetTableHtmlBuilder());
             
-            if (OnAfterTableRenderAsync is not null)
+        if (OnAfterTableRenderAsync is not null)
+        {
+            await OnAfterTableRenderAsync(this, new()
             {
-                await OnAfterTableRenderAsync(this, new()
-                {
-                    HtmlBuilder = div
-                });
-            }
-        });
+                HtmlBuilder = div
+            });
+        }
 
-
-        return html;
+        return div;
     }
 
     public ValueTask<Dictionary<string, object?>> GetCurrentFilterAsync()
@@ -774,7 +771,11 @@ public class JJGridView : AsyncComponent
         html.WithAttribute("id", $"grid-view-table-{Name}");
 
         if (SortAction.IsVisible)
-            await html.AppendAsync(GetSortingConfigAsync);
+        {
+            var sortConfig = await GetSortingConfigAsync();
+            html.Append(sortConfig);
+        }
+    
         
         html.AppendRange(GetHiddenInputs());
 
@@ -830,7 +831,7 @@ public class JJGridView : AsyncComponent
 
     private IEnumerable<HtmlBuilder> GetHiddenInputs()
     {
-        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter() ?? string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter());
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString());
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", EncryptionService.EncryptObject(CurrentActionMap) ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty);

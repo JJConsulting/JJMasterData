@@ -199,8 +199,8 @@ public class JJLookup : ControlBase
         idTextBox.Enabled = Enabled;
 
         idTextBox.Attributes["style"] = $"flex:{flexLayout.Item1}";
-        
-        await div.AppendControlAsync(idTextBox);
+
+        div.Append(idTextBox.GetHtmlBuilder());
         
         if (!string.IsNullOrEmpty(ElementMap!.DescriptionFieldName))
         {
@@ -225,7 +225,7 @@ public class JJLookup : ControlBase
 
             descriptionTextBox.Attributes["style"] = $"flex:{flexLayout.Item2}";
             
-            await div.AppendControlAsync(descriptionTextBox);
+            div.Append(descriptionTextBox.GetHtmlBuilder());
         }
 
         var formViewUrl = LookupService.GetFormViewUrl(ElementMap, FormStateData, Name);

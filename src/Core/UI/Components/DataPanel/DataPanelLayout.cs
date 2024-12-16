@@ -15,18 +15,14 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 {
-    private string Name { get; } = dataPanel.Name;
-
-    private bool RenderPanelGroup { get; } = dataPanel.RenderPanelGroup;
-
-    private FormElement FormElement {  get; } = dataPanel.FormElement;
-
-    private DataPanelControl DataPanelControl { get; } = new(dataPanel);
-    private IFormValues FormValues { get;  } = dataPanel.CurrentContext.Request.Form;
-
-    private PageState PageState { get; } = dataPanel.PageState;
-
-    private ExpressionsService ExpressionsService { get; } = dataPanel.ExpressionsService;
+    private readonly string _name = dataPanel.Name;
+    private readonly bool _renderPanelGroup = dataPanel.RenderPanelGroup;
+    private readonly FormElement _formElement = dataPanel.FormElement;
+    private readonly DataPanelControl _dataPanelControl = new(dataPanel);
+    private readonly IFormValues _formValues = dataPanel.CurrentContext.Request.Form;
+    private readonly PageState _pageState = dataPanel.PageState;
+    private readonly ExpressionsService _expressionsService= dataPanel.ExpressionsService;
+    
     public async Task<List<HtmlBuilder>> GetHtmlPanelList()
     {
         List<HtmlBuilder> panels =
@@ -43,7 +39,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     [ItemCanBeNull]
     private async Task<HtmlBuilder> GetTabPanelsHtml()
     {
-        var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
+        var tabs = _formElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
 
         if (tabs.Count == 0)
             return null;
@@ -55,7 +51,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     private async Task<List<HtmlBuilder>> GetNonTabPanels()
     {
         List<HtmlBuilder> htmlList = [];
-        foreach (var panel in FormElement.Panels.Where(p => p.Layout != PanelLayout.Tab))
+        foreach (var panel in _formElement.Panels.Where(p => p.Layout != PanelLayout.Tab))
         {
             var htmlPanel = await GetHtmlPanelGroup(panel);
             if (htmlPanel != null)
@@ -68,12 +64,12 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     private async Task<List<HtmlBuilder>> GetFieldsWithoutPanel()
     {
         List<HtmlBuilder> htmlList = [];
-        bool dontContainsVisibleFields = !FormElement.Fields.Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression, DataPanelControl.FormStateData));
+        bool dontContainsVisibleFields = !_formElement.Fields.Exists(x => x.PanelId == 0 && _expressionsService.GetBoolValue(x.VisibleExpression, _dataPanelControl.FormStateData));
     
         if (dontContainsVisibleFields)
             return htmlList;
     
-        if (!RenderPanelGroup)
+        if (!_renderPanelGroup)
             htmlList.Add(await GetHtmlForm(null));
         else
         {
@@ -90,9 +86,9 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
     private async Task<JJTabNav> GetTabNav(List<FormElementPanel> tabs)
     {
-        var navTab = new JJTabNav(FormValues)
+        var navTab = new JJTabNav(_formValues)
         {
-            Name = $"nav_{Name}"
+            Name = $"nav_{_name}"
         };
         foreach (var panel in tabs)
         {
@@ -116,7 +112,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     {
         return dataPanel
             .ExpressionsService
-            .GetExpressionValue(expression, DataPanelControl.FormStateData)
+            .GetExpressionValue(expression, _dataPanelControl.FormStateData)
             ?.ToString() ?? string.Empty;
     }
 
@@ -128,12 +124,12 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
         if (panel.Layout == PanelLayout.Collapse)
         {
-            var collapse = new JJCollapsePanel(FormValues)
+            var collapse = new JJCollapsePanel(_formValues)
             {
                 Title = GetPanelExpression(panel.Title),
                 SubTitle =GetPanelExpression(panel.SubTitle),
                 TitleIcon = panel.Icon.HasValue ? new JJIcon(panel.Icon.Value) : null,
-                Name = $"{Name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
+                Name = $"{_name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
                 CssClass = panel.CssClass,
                 HtmlBuilderContent = await GetHtmlForm(panel),
                 ExpandedByDefault = panel.ExpandedByDefault,
@@ -157,7 +153,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     {
         int panelId = panel?.PanelId ?? 0;
         
-        var fields = FormElement.Fields
+        var fields = _formElement.Fields
             .Where(x => x.PanelId == panelId)
             .OrderBy(x => x.LineGroup)
             .ToList();
@@ -166,13 +162,13 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
             return null;
         
         
-        if (panel != null && !IsEnabled(panel) || PageState is PageState.View)
+        if (_pageState is PageState.View || (panel != null && !IsEnabled(panel)))
         {
             foreach (var field in fields)
                 field.EnableExpression = "val:0";
         }
 
-        var formContent = await DataPanelControl.GetHtmlForm(fields);
+        var formContent = await _dataPanelControl.GetHtmlForm(fields);
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("container-fluid")
             .Append(formContent);
@@ -182,14 +178,14 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
     private bool IsEnabled(FormElementPanel panel)
     {
-        return DataPanelControl.ExpressionsService.GetBoolValue(
-            panel.EnableExpression, DataPanelControl.FormStateData);
+        return _dataPanelControl.ExpressionsService.GetBoolValue(
+            panel.EnableExpression, _dataPanelControl.FormStateData);
     }
 
     private bool IsVisible(FormElementPanel panel)
     {
-        return DataPanelControl.ExpressionsService.GetBoolValue(
-            panel.VisibleExpression, DataPanelControl.FormStateData);
+        return _dataPanelControl.ExpressionsService.GetBoolValue(
+            panel.VisibleExpression, _dataPanelControl.FormStateData);
     }
 
 }

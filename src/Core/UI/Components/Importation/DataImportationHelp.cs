@@ -69,14 +69,16 @@ internal sealed class DataImportationHelp
                             .Append(HtmlTag.Br);
                     });
             });
-        await html.AppendAsync(HtmlTag.Div, async div =>
+
+        var bodyHtml = await GetBodyHtml(list);
+        html.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("table-responsive");
-            await div.AppendAsync(HtmlTag.Table, async table =>
+            div.Append(HtmlTag.Table, table =>
             {
                 table.WithCssClass("table table-hover")
                     .Append(GetHeaderColumns())
-                    .Append(await GetBodyColumns(list));
+                    .Append(bodyHtml);
             });
         });
 
@@ -110,7 +112,7 @@ internal sealed class DataImportationHelp
         return head;
     }
 
-    private async Task<HtmlBuilder> GetBodyColumns(List<FormElementField> list)
+    private async Task<HtmlBuilder> GetBodyHtml(List<FormElementField> list)
     {
         var body = new HtmlBuilder(HtmlTag.Tbody);
         var orderField = 1;
@@ -129,10 +131,13 @@ internal sealed class DataImportationHelp
                         .WithStyle( "color:#efd829;");
                 });
             });
-            tr.Append(HtmlTag.Td, td => { td.AppendText(GetDataTypeDescription(field.DataType)); });
+            tr.Append(HtmlTag.Td, td => td.AppendText(GetDataTypeDescription(field.DataType)));
             tr.Append(HtmlTag.Td,
-                td => { td.AppendText(field.IsRequired ? StringLocalizer["Yes"] : StringLocalizer["No"]); });
-            await tr.AppendAsync(HtmlTag.Td, async td => { td.AppendText(await GetFormatDescription(field)); });
+                td => td.AppendText(field.IsRequired ? StringLocalizer["Yes"] : StringLocalizer["No"]));
+
+            var formatDescription = await GetFormatDescription(field);
+            
+            tr.Append(HtmlTag.Td, td => td.AppendText(formatDescription));
 
             body.Append(tr);
             orderField++;

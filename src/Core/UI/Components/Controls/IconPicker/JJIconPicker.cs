@@ -61,7 +61,7 @@ public class JJIconPicker(
         comboBox.Attributes["data-none-results-text"] = stringLocalizer["No icons found."];
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClassIf(Enabled,"input-group");
-        await div.AppendControlAsync(comboBox);
+        div.Append(await comboBox.GetHtmlBuilderAsync());
         div.AppendIf(Enabled,HtmlTag.Div,div =>
         {
             var tooltip = stringLocalizer["Search Icon"];

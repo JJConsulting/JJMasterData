@@ -14,7 +14,7 @@ public class JJTitle : HtmlComponent
     public IconType? Icon { get; set; }
 
     public List<TitleAction>? Actions { get; set; }
-    
+
     private HtmlTag Tag => Size switch
     {
         HeadingSize.H1 => HtmlTag.H1,
@@ -25,12 +25,12 @@ public class JJTitle : HtmlComponent
         HeadingSize.H6 => HtmlTag.H6,
         _ => throw new ArgumentOutOfRangeException()
     };
-    
+
     public JJTitle()
     {
         Size = HeadingSize.H1;
     }
-    
+
     public JJTitle(string title, string subtitle)
     {
         Title = title;
@@ -42,7 +42,7 @@ public class JJTitle : HtmlComponent
     {
         if (string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(SubTitle))
             return new HtmlBuilder();
-        
+
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
@@ -63,25 +63,25 @@ public class JJTitle : HtmlComponent
                 });
             });
 
-        if (Actions == null) 
+        if (Actions == null)
             return div;
 
         div.AppendDiv(div =>
         {
             foreach (var action in Actions)
             {
-                div.Append(HtmlTag.A,a =>
+                div.Append(HtmlTag.A, a =>
                 {
                     a.WithCssClass("btn btn-secondary");
                     a.WithHref(action.Url);
                     a.AppendComponentIf(action.Icon.HasValue, () => new JJIcon(action.Icon!.Value));
-                    a.AppendTextIf(!string.IsNullOrEmpty(action.Text),"&nbsp;"+ action.Text!);
+                    a.AppendTextIf(!string.IsNullOrEmpty(action.Text), "&nbsp;" + action.Text!);
                     a.WithToolTip(action.Tooltip);
                 });
             }
         });
 
-        
+
         return div;
     }
 
@@ -93,10 +93,7 @@ public class JJTitle : HtmlComponent
             .Append(HtmlTag.Blockquote, block =>
             {
                 block.WithCssClass("blockquote mb-1");
-                block.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.P, p =>
-                {
-                    p.AppendText(Title);
-                });
+                block.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.P, p => { p.AppendText(Title); });
                 block.AppendIf(!string.IsNullOrEmpty(SubTitle), HtmlTag.Footer, p =>
                 {
                     p.WithCssClass("blockquote-footer");
@@ -107,5 +104,4 @@ public class JJTitle : HtmlComponent
 
         return row;
     }
-
 }

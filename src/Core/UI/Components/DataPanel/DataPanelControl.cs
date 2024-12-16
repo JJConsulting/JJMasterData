@@ -260,12 +260,15 @@ internal sealed class DataPanelControl
             
             row?.WithCssClass(cssClass)
              .AppendComponent(label);
+
+            var controlHtml =
+                IsViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value);
             
-            await row?.AppendAsync(HtmlTag.Div, async col =>
+            row?.Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass(fieldClass);
-                col.Append(IsViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value));
-            })!;
+                col.Append(controlHtml);
+            });
         }
 
         return html;

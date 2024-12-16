@@ -9,15 +9,13 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataPanelExpressionScripts(JJDataPanel dataPanel)
 {
-    private JJDataPanel DataPanel { get; } = dataPanel;
-
-    private FormElement FormElement => DataPanel.FormElement;
+    private readonly FormElement _formElement = dataPanel.FormElement;
 
     public string GetHtmlFormScript()
     {
         var script = new StringBuilder();
-        var fieldsWithExpression = FormElement.Fields.Where(x => x.EnableExpression.StartsWith("exp:"));
-        var pageState = DataPanel.PageState;
+        var fieldsWithExpression = _formElement.Fields.Where(x => x.EnableExpression.StartsWith("exp:"));
+        var pageState = dataPanel.PageState;
         foreach (var field in fieldsWithExpression)
         {
             var expressionBuilder = new StringBuilder(field.EnableExpression);
@@ -80,28 +78,28 @@ internal sealed class DataPanelExpressionScripts(JJDataPanel dataPanel)
 
     private string ExecuteExpression(string exp, List<string> list)
     {
-        var formData = new FormStateData(DataPanel.Values, DataPanel.UserValues, DataPanel.PageState);
+        var formData = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
         foreach (var fieldName in list)
         {
             string val = null;
-            var field = FormElement.Fields.FirstOrDefault(x => x.Name.Equals(fieldName));
+            var field = _formElement.Fields.FirstOrDefault(x => x.Name.Equals(fieldName));
             if (field is { AutoPostBack: true })
                 continue;
 
-            if (DataPanel.UserValues.TryGetValue(fieldName, out var value))
+            if (dataPanel.UserValues.TryGetValue(fieldName, out var value))
             {
                 val = $"'{value}'";
             }
-            else if (DataPanel.CurrentContext.Session[fieldName] != null)
+            else if (dataPanel.CurrentContext.Session[fieldName] != null)
             {
-                val = $"'{DataPanel.CurrentContext.Session[fieldName]}'";
+                val = $"'{dataPanel.CurrentContext.Session[fieldName]}'";
             }
             //Hidden fields
-            else if (DataPanel.Values.TryGetValue(fieldName, out var panelValue))
+            else if (dataPanel.Values.TryGetValue(fieldName, out var panelValue))
             {
                 if (field != null)
                 {
-                    var visible = DataPanel.ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
+                    var visible = dataPanel.ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
                     if (!visible)
                     {
                         val = $"'{panelValue}'";

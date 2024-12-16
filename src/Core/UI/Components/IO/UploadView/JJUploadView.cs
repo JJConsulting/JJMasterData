@@ -536,23 +536,25 @@ public class JJUploadView : AsyncComponent
             var file = fileInfo.Content;
             var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
-            await col.AppendAsync(HtmlTag.Ul, async ul =>
+            
+            var fileValues = ConvertFormFileToDictionary(file);
+            var formStateData = new FormStateData(fileValues, UserValues, PageState.List);
+            var actionsHtml = await GridView.Table.Body.GetActionsHtmlListAsync(formStateData); 
+            
+            col.Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("list-group list-group-flush");
                 ul.Append(GetHtmlGalleryPreview(file.FileName));
-                ul.Append(GetHtmlGalleryListItem("Name", file.FileName));
-                ul.Append(GetHtmlGalleryListItem("Size", $"{file.Length} Bytes"));
-                ul.Append(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
-                await ul.AppendAsync(HtmlTag.Li, async li =>
+                
+                ul.AppendRange(GetGalleryListItems(file));
+                
+                ul.Append(HtmlTag.Li, li =>
                 {
                     li.WithCssClass("list-group-item");
-                    await li.AppendAsync(HtmlTag.Table, async table =>
+                    li.Append(HtmlTag.Table, table =>
                     {
                         table.WithCssClass("table-gallery");
-                        var fileValues = ConvertFormFileToDictionary(file);
-                        var formStateData = new FormStateData(fileValues, UserValues, PageState.List);
-                        var htmlActions = await GridView.Table.Body.GetActionsHtmlListAsync(formStateData); 
-                        table.AppendRange(htmlActions);
+                        table.AppendRange(actionsHtml);
                     });
                 });
             });
@@ -561,6 +563,13 @@ public class JJUploadView : AsyncComponent
         }
 
         return row;
+    }
+    
+    private IEnumerable<HtmlBuilder> GetGalleryListItems(FormFileContent file)
+    {
+        yield return GetHtmlGalleryListItem("Name", file.FileName);
+        yield return GetHtmlGalleryListItem("Size", $"{file.Length} Bytes");
+        yield return GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture));
     }
 
     private HtmlBuilder GetHtmlGalleryListItem(string label, string value)
@@ -732,15 +741,17 @@ public class JJUploadView : AsyncComponent
         group.Name = $"preview_filename-{UploadArea.Name}";
         group.Addons = new InputAddons(".png");
         group.Text = "image";
+
+        var groupHtml = await group.GetHtmlBuilderAsync();
         
-        await html.AppendAsync(HtmlTag.Div, async row =>
+        html.Append(HtmlTag.Div, row =>
         {
             row.WithCssClass("row");
-            await row.AppendAsync(HtmlTag.Div, async col =>
+            row.Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass("col-sm-12");
                 col.AppendComponent(label);
-                await col.AppendControlAsync(group);
+                col.Append(groupHtml);
             });
         });
 

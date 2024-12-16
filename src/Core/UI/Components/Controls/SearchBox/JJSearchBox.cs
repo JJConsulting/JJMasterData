@@ -267,8 +267,12 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
         var selectedValue = await GetSelectedValueAsync();
 
+        string? description = Text;
+        if (string.IsNullOrEmpty(description) && selectedValue != null && !string.IsNullOrEmpty(selectedValue))
+            description = await GetDescriptionAsync(selectedValue);
+        
         var div = new HtmlBuilder(HtmlTag.Div);
-        await div.AppendAsync(HtmlTag.Input, async input =>
+        div.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("id", $"{HtmlId}_text");
             input.WithAttribute("name", $"{HtmlId}_text");
@@ -288,12 +292,9 @@ public class JJSearchBox : ControlBase, IDataItemControl
             input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");
             input.WithCssClass(CssClass);
 
-            string? description = Text;
-            if (string.IsNullOrEmpty(description) && selectedValue != null && !string.IsNullOrEmpty(selectedValue))
-                description = await GetDescriptionAsync(selectedValue);
-
             input.WithAttributeIfNotEmpty("value", description);
         });
+        
         div.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");

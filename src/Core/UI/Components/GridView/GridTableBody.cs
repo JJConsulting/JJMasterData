@@ -89,7 +89,7 @@ internal sealed class GridTableBody(JJGridView gridView)
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jj-checkbox");
 
-            await td.AppendControlAsync(checkBox);
+            td.Append(checkBox.GetHtmlBuilder());
 
             if (!gridView.EnableEditMode && onClickScript.Length == 0)
             {
@@ -288,12 +288,12 @@ internal sealed class GridTableBody(JJGridView gridView)
             }
             else
             {
-                await div.AppendControlAsync(control);
+                div.Append(await control.GetHtmlBuilderAsync());
             }
         }
         else
         {
-            await div.AppendControlAsync(control);
+            div.Append(await control.GetHtmlBuilderAsync());
         }
         
         return div;

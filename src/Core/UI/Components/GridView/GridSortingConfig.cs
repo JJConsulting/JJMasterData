@@ -50,11 +50,13 @@ internal sealed class GridSortingConfig(JJGridView gridView)
                 ShowCloseButton = false
             });
 
-        await htmlContent.AppendAsync(HtmlTag.Table, async table =>
+        var body = await GetHtmlBody();
+        
+        htmlContent.Append(HtmlTag.Table, table =>
         {
             table.WithCssClass("table table-hover");
             table.Append(GetHtmlHeader());
-            table.Append(await GetHtmlBody());
+            table.Append(body);
         });
 
         dialog.HtmlBuilderContent = htmlContent;
@@ -123,16 +125,16 @@ internal sealed class GridSortingConfig(JJGridView gridView)
                     comboBox.SelectedValue = sort.IsAsc ? "A" : "D";
                 }
 
-                await tbody.AppendAsync(HtmlTag.Tr, async tr =>
+                var comboHtml = await comboBox.GetHtmlBuilderAsync();
+                
+                tbody.Append(HtmlTag.Tr, tr =>
                 {
                     tr.WithAttribute("id", field.Name);
                     tr.WithCssClass("ui-sortable-handle");
                     tr.Append(HtmlTag.Td, td => td.AppendComponent(new JJIcon("fa fa-arrows")));
                     tr.Append(HtmlTag.Td, td => td.AppendText(_stringLocalizer[field.LabelOrName]));
-                    await tr.AppendAsync(HtmlTag.Td, async td =>
+                    tr.Append(HtmlTag.Td, td =>
                     {
-                        var comboHtml = await comboBox.GetHtmlBuilderAsync();
-
                         td.Append(comboHtml);
                     });
                 });

@@ -20,10 +20,12 @@ internal sealed class GridTableHeader(JJGridView gridView)
         if (gridView.DataSource?.Count == 0 && !gridView.ShowHeaderWhenEmpty)
             return html;
 
-        await html.AppendAsync(HtmlTag.Tr, async tr =>
+        var visibleFieldsThList = await GetVisibleFieldsThList();
+        
+        html.Append(HtmlTag.Tr, tr =>
         {
             tr.AppendIf(gridView.EnableMultiSelect, GetMultSelectThHtmlElement);
-            tr.AppendRange(await GetVisibleFieldsThList());
+            tr.AppendRange(visibleFieldsThList);
             tr.AppendRange(GetActionsThList());
         });
 

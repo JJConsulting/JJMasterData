@@ -105,21 +105,6 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendAsync(Func<Task<HtmlBuilder>> builderFunc)
-    {
-        var html = await builderFunc(); 
-        Append(html);
-        return this;
-    }
-    
-    public async Task<HtmlBuilder> AppendAsync(HtmlTag tag, Func<HtmlBuilder,Task> builderFunc)
-    {
-        var child = new HtmlBuilder(tag);
-        await builderFunc.Invoke(child);
-        Append(child);
-        return this;
-    }
-        
     /// <summary>
     /// Conditional insert a HTML builder from a return of a function. Use this to improve performance.
     /// </summary>
@@ -129,14 +114,6 @@ public partial class HtmlBuilder
             Append(func.Invoke());
 
         return this;
-    }
-    
-    public async Task AppendIfAsync(bool condition, Func<Task<HtmlBuilder>> func)
-    {
-        if (condition)
-        {
-            Append(await func.Invoke());
-        }
     }
     
     /// <summary>
@@ -245,14 +222,6 @@ public partial class HtmlBuilder
     {
         if (condition)
             AppendComponent(componentFunc());
-
-        return this;
-    }
-    
-    public async ValueTask<HtmlBuilder> AppendControlAsync(ControlBase? control)
-    {
-        if (control != null)
-            Append(await control.GetHtmlBuilderAsync());
 
         return this;
     }

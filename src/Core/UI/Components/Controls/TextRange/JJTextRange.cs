@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
@@ -14,8 +15,8 @@ public class JJTextRange(IFormValues formValues,
 {
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    internal ControlBase FromField { get; set; }
-    internal ControlBase ToField { get; set; }
+    internal JJTextGroup FromField { get; set; }
+    internal JJTextGroup ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
@@ -23,44 +24,46 @@ public class JJTextRange(IFormValues formValues,
     
     public bool IsVerticalLayout { get; set; }
 
-    protected override async ValueTask<ComponentResult> BuildResultAsync()
+    protected override ValueTask<ComponentResult> BuildResultAsync()
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("row");
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
-        await div.AppendAsync(HtmlTag.Div, async div =>
+        
+        FromField.Name = $"{Name}_from";
+        FromField.Enabled = Enabled;
+
+        var fromFieldHtml = FromField.GetHtmlBuilder();
+        
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-5");
-
-            FromField.Name = $"{Name}_from";
-            FromField.Enabled = Enabled;
-
-            await div.AppendControlAsync(FromField);
+            div.Append(fromFieldHtml);
         });
-        await div.AppendAsync(HtmlTag.Div, async div =>
+        
+        ToField.Name = $"{Name}_to";
+        ToField.Enabled = Enabled;
+
+        var toFieldHtml = ToField.GetHtmlBuilder();
+
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-5");
-
-            ToField.Name = $"{Name}_to";
-            ToField.Enabled = Enabled;
-
-            await div.AppendControlAsync(ToField);
+            div.Append(toFieldHtml);
         });
         div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-2");
             div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
-
-        var result = new RenderedComponentResult(div);
-
-        return result;
+        
+        return new(new RenderedComponentResult(div));
     }
 
     private HtmlBuilder GetDatePeriodsHtmlElement()
     {
-        var now = DateTime.Today;
+
 
         var dropdown = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("dropdown")
@@ -69,15 +72,22 @@ public class JJTextRange(IFormValues formValues,
             {
                 ul.WithCssClass("dropdown-menu");
                 ul.WithAttribute("aria-labelledby", $"dropdown_{Name}");
-                ul.Append(GetListItem(StringLocalizer["Today"], GetTodayScript(now)));
-                ul.Append(GetListItem(StringLocalizer["Yesterday"], GetYesterdayScript(now)));
-                ul.Append(GetListItem(StringLocalizer["This month"], GetThisMonthScript(now)));
-                ul.Append(GetListItem(StringLocalizer["Last month"], GetLastMonthScript(now)));
-                ul.Append(GetListItem(StringLocalizer["Last three months"], GetLastThreeMonthsScript(now)));
-                ul.Append(GetListItem(StringLocalizer["Clear"], GetClearScript()));
+                ul.AppendRange(GetListItems());
             });
 
         return dropdown;
+    }
+    
+    private IEnumerable<HtmlBuilder> GetListItems()
+    {
+        var now = DateTime.Today;
+        
+        yield return GetListItem(StringLocalizer["Today"], GetTodayScript(now));
+        yield return GetListItem(StringLocalizer["Yesterday"], GetYesterdayScript(now));
+        yield return GetListItem(StringLocalizer["This month"], GetThisMonthScript(now));
+        yield return GetListItem(StringLocalizer["Last month"], GetLastMonthScript(now));
+        yield return GetListItem(StringLocalizer["Last three months"], GetLastThreeMonthsScript(now));
+        yield return GetListItem(StringLocalizer["Clear"], GetClearScript());
     }
 
     private HtmlBuilder GetDropdownButton()
