@@ -136,7 +136,7 @@ The `BatchingLoggerOptions` class provides configurable settings applicable to b
       "BackgroundQueueSize": 500,
       "BatchSize": 50,
       "IsEnabled": true,
-      "IncludeScopes": true
+      "IncludeScopes": true,
       "TableName": "ApplicationLogs"
     }
   }
