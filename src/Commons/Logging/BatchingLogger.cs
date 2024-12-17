@@ -19,9 +19,10 @@ internal sealed class BatchingLogger(BatchingLoggerProvider loggerProvider, stri
         return loggerProvider.IsEnabled;
     }
 
-    private void Log<TState>(DateTimeOffset timestamp, LogLevel logLevel, EventId eventId, TState state, Exception exception,
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
         Func<TState, Exception, string> formatter)
     {
+        var timestamp = DateTimeOffset.Now;
         if (!IsEnabled(logLevel))
         {
             return;
@@ -47,11 +48,5 @@ internal sealed class BatchingLogger(BatchingLoggerProvider loggerProvider, stri
             Event = eventId.Name ?? string.Empty,
             LogLevel = logLevel
         });
-    }
-
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-        Func<TState, Exception, string> formatter)
-    {
-        Log(DateTimeOffset.Now, logLevel, eventId, state, exception, formatter);
     }
 }
