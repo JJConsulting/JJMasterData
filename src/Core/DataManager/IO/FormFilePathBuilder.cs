@@ -14,27 +14,28 @@ public class FormFilePathBuilder(FormElement formElement)
             throw new ArgumentException(@$"{nameof(FormElementField.DataFile)} not defined.", field.Name);
 
         //Pks concat with  underline
-        string pkval = DataHelper.ParsePkValues(formElement, formValues, '_');
+        var pkValues = DataHelper.ParsePkValues(formElement, formValues, '_');
 
         //Path configured in the dictionary
-        string path = field.DataFile.FolderPath;
+        var path = field.DataFile.FolderPath;
 
         if (string.IsNullOrEmpty(path))
             throw new ArgumentException(@$"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", field.Name);
 
         var separator = Path.DirectorySeparatorChar;
 
-        string appPath = FileIO.GetApplicationPath().TrimEnd(separator);
+        if (path.Contains("{app.path}"))
+        {
+            var appPath = FileIO.GetApplicationPath().TrimEnd(separator);
 
-        path = path.Replace("{app.path}", appPath);
-        path = Path.Combine(path, pkval);
+            path = path.Replace("{app.path}", appPath);
+        }
+
+        path = Path.Combine(path, pkValues);
 
         if (!path.EndsWith(separator.ToString()))
             path += separator;
 
         return path;
     }
-
-   
-
 }
