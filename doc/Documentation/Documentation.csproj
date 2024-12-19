@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>13</LangVersion>
     <RootNamespace>JJMasterData.Documentation</RootNamespace>
     <AssemblyName>JJMasterData.Documentation</AssemblyName>
   </PropertyGroup>
@@ -18,12 +19,5 @@
   <ItemGroup>
     <None Remove="server.bat" />
   </ItemGroup>
-
-<!--  <ItemGroup>-->
-<!--    <PackageReference Include="docfx.console" Version="2.59.4">-->
-<!--      <PrivateAssets>all</PrivateAssets>-->
-<!--      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
-<!--    </PackageReference>-->
-<!--  </ItemGroup>-->
 
 </Project>
