@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Frozen;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -32,3 +36,22 @@ public enum FieldType
     [Display(GroupName = "3. DateTime")]
     Time = 12
 }
+
+#if NET
+public static class DataTypeHelper
+{
+    private static readonly FrozenDictionary<FieldType, string> DisplayNameDictionary;
+
+    static DataTypeHelper()
+    {
+        DisplayNameDictionary = Enum.GetValues<FieldType>()
+            .ToDictionary(action => action, action => EnumExtensions.GetDisplayName(action))
+            .ToFrozenDictionary();
+    }
+
+    public static string GetDisplayName(this FieldType action)
+    {
+        return DisplayNameDictionary[action];
+    }
+}
+#endif
