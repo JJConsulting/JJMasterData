@@ -99,8 +99,8 @@ public class ExcelWriter(
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)DataSource.Count / RecordsPerPage);
-            for (int i = 2; i <= totPag; i++)
+            var totalOfPages = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
+            for (int i = 2; i <= totalOfPages; i++)
             {
                 entityParameters = new EntityParameters
                 {

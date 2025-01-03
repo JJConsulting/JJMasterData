@@ -72,8 +72,9 @@ public class TextWriter(
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
-            for (int i = 2; i <= totPag; i++)
+            var totalOfPages = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
+            
+            for (var i = 2; i <= totalOfPages; i++)
             {
                 entityParameters = new EntityParameters
                 {

@@ -55,13 +55,7 @@ public class PdfWriter(
     public bool ShowRowStriped { get; set; }
 
     public bool IsLandscape { get; set; }
-
-    private DataItemService DataItemService { get; } = dataItemService;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-
-    private FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
-
-
+    
     public override async Task GenerateDocument(Stream ms, CancellationToken token)
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);
@@ -134,7 +128,7 @@ public class PdfWriter(
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            var result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
+            var result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
             DataSource = result.Data;
             TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
@@ -142,8 +136,9 @@ public class PdfWriter(
             Reporter(ProcessReporter);
             await GenerateRows(table, token);
 
-            int totPag = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
-            for (int i = 2; i <= totPag; i++)
+            var totalOfPages = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
+
+            for (var i = 2; i <= totalOfPages; i++)
             {
                 entityParameters = new EntityParameters
                 {
@@ -152,7 +147,7 @@ public class PdfWriter(
                     OrderBy = CurrentOrder,
                     CurrentPage = i,
                 };
-                result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
+                result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
                 DataSource = result.Data;
                 TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(table, token);
@@ -202,7 +197,7 @@ public class PdfWriter(
             else
             {
                 var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
-                value = await FieldFormattingService.FormatGridValueAsync(fieldSelector, new FormStateData(row,PageState.List));
+                value = await fieldFormattingService.FormatGridValueAsync(fieldSelector, new FormStateData(row,PageState.List));
             }
         }
 
@@ -310,7 +305,7 @@ public class PdfWriter(
 
         var dataQuery = new DataQuery(formStateData, FormElement.ConnectionId);
         
-        var dataItemValues = await DataItemService.GetValuesAsync(field.DataItem!, dataQuery);
+        var dataItemValues = await dataItemService.GetValuesAsync(field.DataItem!, dataQuery);
         var item =  dataItemValues.First(v=>v.Id == selectedValue);
 
         if (item != null)
@@ -354,11 +349,9 @@ public class PdfWriter(
         if (resFilestream == null)
             return null;
         
-        byte[] ba = new byte[resFilestream.Length];
+        var byteArray = new byte[resFilestream.Length];
         // ReSharper disable once MustUseReturnValue
-        resFilestream.Read(ba, 0, ba.Length);
-        return ba;
+        resFilestream.Read(byteArray, 0, byteArray.Length);
+        return byteArray;
     }
-
-
 }

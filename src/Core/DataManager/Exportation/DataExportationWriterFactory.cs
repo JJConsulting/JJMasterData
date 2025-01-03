@@ -11,13 +11,11 @@ namespace JJMasterData.Core.DataManager.Exportation;
 
 public class DataExportationWriterFactory(IServiceProvider serviceProvider)
 {
-    private IServiceProvider ServiceProvider { get; } = serviceProvider;
-
     public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
 
     private IPdfWriter? GetPdfWriter()
     {
-        return ServiceProvider.GetService<IPdfWriter>();
+        return serviceProvider.GetService<IPdfWriter>();
     }
     
     public bool PdfWriterExists()
@@ -27,15 +25,15 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
 
     private IExcelWriter GetExcelWriter()
     {
-        return ServiceProvider.GetRequiredService<IExcelWriter>();
+        return serviceProvider.GetRequiredService<IExcelWriter>();
     }
 
     private ITextWriter GetTextWriter()
     {
-        return ServiceProvider.GetRequiredService<ITextWriter>();
+        return serviceProvider.GetRequiredService<ITextWriter>();
     }
 
-    public DataExportationWriterBase? GetInstance(JJDataExportation dataExportation)
+    public DataExportationWriterBase GetInstance(JJDataExportation dataExportation)
     {
         DataExportationWriterBase writer;
         switch (dataExportation.ExportOptions.FileExtension)
