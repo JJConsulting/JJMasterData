@@ -4117,4 +4117,37 @@
   <data name="Copy From..." xml:space="preserve">
     <value>Copiar De...</value>
   </data>
+  <data name="Just now" xml:space="preserve">
+    <value>Agora mesmo</value>
+  </data>
+  <data name="1 minute ago" xml:space="preserve">
+    <value>Há 1 minuto</value>
+  </data>
+  <data name="{0} minutes ago" xml:space="preserve">
+    <value>Há {0} minutos</value>
+  </data>
+  <data name="1 hour ago" xml:space="preserve">
+    <value>Há 1 hora</value>
+  </data>
+  <data name="{0} hours ago" xml:space="preserve">
+    <value>Há {0} horas</value>
+  </data>
+  <data name="1 day ago" xml:space="preserve">
+    <value>Há 1 dia</value>
+  </data>
+  <data name="{0} days ago" xml:space="preserve">
+    <value>Há {0} dias</value>
+  </data>
+  <data name="{0} months and 1 day ago" xml:space="preserve">
+    <value>Há {0} meses e 1 dia</value>
+  </data>
+  <data name="{0} months and {1} days ago" xml:space="preserve">
+    <value>Há {0} meses e {1} dias</value>
+  </data>
+  <data name="1 year ago" xml:space="preserve">
+    <value>Há 1 ano</value>
+  </data>
+  <data name="{0} years ago" xml:space="preserve">
+    <value>Há {0} anos</value>
+  </data>
 </root>

@@ -8,6 +8,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -77,5 +78,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEncryptionService, EncryptionService>();
 
         services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
+        
+        services.AddTransient<DateService>();
     }
 }

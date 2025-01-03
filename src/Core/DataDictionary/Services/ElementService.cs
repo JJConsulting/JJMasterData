@@ -1,16 +1,20 @@
 ﻿#nullable enable
 
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
 
@@ -23,6 +27,7 @@ public class ElementService(
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
+        DateService dateService,
         IUrlHelper urlHelper)
     : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
@@ -156,14 +161,23 @@ public class ElementService(
         {
             if (args.Field.Name == DataDictionaryStructure.Name)
             {
-                if (args.DataRow.TryGetValue("info", out var info) && !string.IsNullOrWhiteSpace(info?.ToString()))
+                var info = args.DataRow[DataDictionaryStructure.Info]?.ToString();
+                if (!string.IsNullOrWhiteSpace(info))
                 {
-                    args.HtmlResult?.AppendSpan(span =>
+                    args.HtmlResult!.AppendSpan(span =>
                     {
                         span.WithCssClass("fa fa-question-circle help-description");
-                        span.WithToolTip(info?.ToString());
+                        span.WithToolTip(info);
                     });
                 }
+            }
+            
+            if (args.Field.Name == DataDictionaryStructure.LastModified)
+            {
+                var lastModified = (DateTime)args.DataRow[DataDictionaryStructure.LastModified]!;
+                args.HtmlResult = new HtmlBuilder(HtmlTag.Span)
+                    .WithToolTip(lastModified.ToString(CultureInfo.CurrentCulture))
+                    .AppendText(dateService.GetPhrase(lastModified));
             }
 
             return ValueTaskHelper.CompletedTask;
