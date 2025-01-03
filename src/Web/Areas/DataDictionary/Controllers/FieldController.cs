@@ -312,10 +312,13 @@ public class FieldController(
         }
     }
 
-    public async Task<ContentResult> PopulateCopyFromFields(string elementName)
+    public async Task<ContentResult> PopulateCopyFromFields(string? elementName)
     {
         var options = new HtmlBuilder();
 
+        if (string.IsNullOrEmpty(elementName)) 
+            return Content(options.ToString());
+        
         var formElement = await fieldService.GetFormElementAsync(elementName);
         
         foreach (var field in formElement.Fields)
@@ -326,6 +329,7 @@ public class FieldController(
                 option.AppendText(field.Name);
             });
         }
+
 
         return Content(options.ToString());
     }

@@ -85,7 +85,7 @@
                     <div class="form-floating">
                         <select name="copyFromElementName"
                                 asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
-                                onclick="populateCopyFromFields(this)"
+                                onchange="populateCopyFromFields(this)"
                                 required="required"
                                 class="form-select"></select>
                         <label>@StringLocalizer["Element Name"]</label>
