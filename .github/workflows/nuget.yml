@@ -38,7 +38,7 @@ jobs:
       - name: Build and publish NuGet package
         shell: pwsh
         run: |
-          npm install --prefix src/Web
+          npm install --prefix src\Web
           Push-Location ${{ matrix.project }}
           dotnet build -c release
           dotnet pack -c release --output="nuget"
