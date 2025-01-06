@@ -12,7 +12,9 @@ public static class DataExtensions
         for (var i = 0; i < dataReader.FieldCount; i++)
         {
             var column = new DataColumn(dataReader.GetName(i), dataReader.GetFieldType(i)!);
-            dataTable.Columns.Add(column);
+            
+            if(!dataTable.Columns.Contains(column.ColumnName))
+                dataTable.Columns.Add(column);
         }
 
         var values = new object[dataTable.Columns.Count];
