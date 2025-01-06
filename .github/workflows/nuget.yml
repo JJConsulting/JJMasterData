@@ -5,7 +5,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
     
@@ -22,7 +22,7 @@ jobs:
           dotnet restore
     
   nuget-push:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: setup
     strategy:
       matrix:
@@ -36,12 +36,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build and publish NuGet package
+        shell: pwsh
         run: |
           npm install --prefix src/Web
-          cd ${{ matrix.project }}
+          Push-Location ${{ matrix.project }}
           dotnet build -c release
           dotnet pack -c release --output="nuget"
-          cd nuget
+          Push-Location nuget
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-
-          
+          Pop-Location
+          Pop-Location
