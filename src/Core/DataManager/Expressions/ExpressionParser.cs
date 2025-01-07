@@ -73,6 +73,9 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
             case "userid":
                 parsedValue = DataHelper.GetCurrentUserId(httpContext, userValues!);
                 break;
+            case "legacyid":
+                parsedValue = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == "LegacyId")?.Value;
+                break;
             default:
             {
                 if(userValues != null && userValues.TryGetValue(field, out var value))
