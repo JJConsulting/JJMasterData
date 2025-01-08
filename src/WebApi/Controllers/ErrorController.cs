@@ -6,7 +6,7 @@ namespace JJMasterData.WebApi.Controllers;
 
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
-public class ErrorController : ControllerBase
+public class ErrorController(ILogger<ErrorController> logger) : ControllerBase
 {
     [Route("/Error")]
     public IActionResult HandleError()
@@ -14,8 +14,12 @@ public class ErrorController : ControllerBase
         var exceptionHandlerFeature =
             HttpContext.Features.Get<IExceptionHandlerFeature>()!;
 
-        var responseLetter = ExceptionManager.GetResponse(exceptionHandlerFeature.Error);
+        var error = exceptionHandlerFeature.Error;
+        
+        var responseLetter = ExceptionManager.GetResponse(error);
 
+        logger.LogCritical(error, "Unexpected error at WebApi.");
+        
         return new ObjectResult(responseLetter)
         {
             StatusCode = responseLetter.Status
