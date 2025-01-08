@@ -25,12 +25,15 @@ Implement <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> in your
 
 Your implementation will look like this:
 ```cs
-
-[CustomizedFields(IconeFieldName)]
 public class AgendamentoStatusFormEventHandler : FormEventHandlerBase
 {
     private const string IconeFieldName = "Icone";
     public override string ElementName => "AgendamentoStatus";
+    
+    public IEnumerable<string> GetCustomizedFields()
+    {
+        yield return IconeFieldName;
+    }
     
     public override ValueTask OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args)
     {

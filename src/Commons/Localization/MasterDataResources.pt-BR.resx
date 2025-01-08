@@ -213,6 +213,19 @@
     <value>Erro renderizando template.</value>
     <comment>JJMasterDataCore</comment>
   </data>
+
+  <data name="Element with custom events" xml:space="preserve">
+    <value>Elemento com eventos customizados</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="This element has external customizations using programming and its behavior is changed at runtime." xml:space="preserve">
+    <value>Este elemento possui customizações externas utilizando programação e seu comportamento é alterado em tempo de execução.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The following fields are used:" xml:space="preserve">
+    <value>Os seguintes campos são utilizados:</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Redirect Url" xml:space="preserve">
     <value>Url de Redirecionamento</value>
     <comment>JJMasterDataWeb</comment>

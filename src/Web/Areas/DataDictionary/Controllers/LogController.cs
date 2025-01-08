@@ -7,6 +7,7 @@ using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
