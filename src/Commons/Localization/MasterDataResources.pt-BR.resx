@@ -3569,6 +3569,9 @@
   <data name="Filter Mode" xml:space="preserve">
     <value>Modo do Filtro</value>
   </data>
+  <data name="Never" xml:space="preserve">
+    <value>Nunca</value>
+  </data>
   <data name="Enable Exportation" xml:space="preserve">
     <value>Habilitar Exportação</value>
   </data>
