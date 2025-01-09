@@ -84,3 +84,14 @@ Returns the URL path of the application.
     <img src="{{urlPath()}}Identity/Profile/AvatarByLegacyId?legacyId={{CodUser}}" style="width:30px" class="rounded-circle">
 </div>
 ```
+
+### 6. `dateAsText`
+Returns the date as a string representation.
+
+```liquid
+{{ dateAsText(dateObject) }}
+```
+
+It will be rendered as "1 minute ago" for example.
+
+
