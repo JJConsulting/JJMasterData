@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Fluid;
-using Fluid.Values;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
@@ -17,7 +14,6 @@ using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using static JJMasterData.Core.Html.HtmlTemplateHelper;
 
 namespace JJMasterData.Core.DataManager.Services;
 
