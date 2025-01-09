@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Html;
@@ -46,6 +47,16 @@ public static class HtmlTemplateHelper
             return new ValueTask<FluidValue>(new StringValue(localizedString));
         });
         return localize;
+    }
+    
+    public static FunctionValue GetUrlPathFunction(IHttpContext httpContext)
+    {
+        var urlAction = new FunctionValue((_, _) =>
+        {
+            return new ValueTask<FluidValue>(new StringValue(httpContext.Request.ApplicationPath));
+        });
+        
+        return urlAction;
     }
     
     public static FunctionValue FormatDate { get; } = new((args, _) =>

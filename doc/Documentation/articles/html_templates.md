@@ -74,3 +74,13 @@ Extracts a substring from a given string, starting at a specified index and with
 {{ substring(myString, 0, 5) }} 
 ```
 If only the start index is provided, the function returns the substring from that index to the end of the string. If both start index and length are provided, it extracts that range of characters.
+
+
+### 6. `urlPath`
+Returns the URL path of the application.
+
+```liquid
+<div class="avatar avatar-m">
+    <img src="{{urlPath()}}Identity/Profile/AvatarByLegacyId?legacyId={{CodUser}}" style="width:30px" class="rounded-circle">
+</div>
+```

@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using static JJMasterData.Core.Html.HtmlTemplateHelper;
 
 namespace JJMasterData.Core.Html;
 
-public class HtmlTemplateRenderer<TResource>(FluidParser fluidParser, IStringLocalizer<TResource> stringLocalizer)
+public class HtmlTemplateRenderer<TResource>(
+    FluidParser fluidParser, 
+    IHttpContext httpContext,
+    IStringLocalizer<TResource> stringLocalizer)
 {
     public ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
     {
@@ -23,6 +27,7 @@ public class HtmlTemplateRenderer<TResource>(FluidParser fluidParser, IStringLoc
         context.SetValue("isNullOrEmpty",IsNullOrEmpty);
         context.SetValue("substring", Substring);
         context.SetValue("formatDate", FormatDate);
+        context.SetValue("urlPath", GetUrlPathFunction(httpContext));
         context.SetValue("localize", GetLocalizeFunction(stringLocalizer));
 
         return template.RenderAsync(context);
