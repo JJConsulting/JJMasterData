@@ -4160,6 +4160,9 @@
   <data name="A month ago" xml:space="preserve">
     <value>Há 1 mês</value>
   </data>
+  <data name="A month ago and {0} days ago" xml:space="preserve">
+    <value>Há 1 mês e {0} dias</value>
+  </data>
   <data name="A month and 1 day ago" xml:space="preserve">
     <value>Há 1 mês e 1 dia</value>
   </data>

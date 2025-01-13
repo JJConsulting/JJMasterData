@@ -61,7 +61,10 @@ public class DateService(IStringLocalizer<MasterDataResources> localizer)
             
             if (months == 1 && remainingDays == 0)
                 return localizer["A month ago"];
-                
+
+            if (months == 1)
+                return localizer["A month ago and {0} days ago", months, remainingDays];
+            
             return localizer["{0} months and {1} days ago", months, remainingDays];
         }
         
