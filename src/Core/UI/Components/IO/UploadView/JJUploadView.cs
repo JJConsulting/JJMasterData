@@ -4,7 +4,6 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Exceptions;
@@ -17,7 +16,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
@@ -314,14 +312,6 @@ public class JJUploadView : AsyncComponent
 
     public async Task<ComponentResult> GetUploadViewResult()
     {
-        var previewImage = CurrentContext.Request.QueryString["previewImage"];
-        if (!string.IsNullOrEmpty(previewImage))
-            return new ContentComponentResult(GetHtmlPreviewImage(previewImage));
-
-        var previewVideo = CurrentContext.Request.QueryString["previewVideo"];
-        if (!string.IsNullOrEmpty(previewVideo))
-            return new ContentComponentResult(GetHtmlPreviewVideo(previewVideo));
-
         var html = new HtmlBuilder(HtmlTag.Div);
 
         var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
@@ -364,8 +354,6 @@ public class JJUploadView : AsyncComponent
             {
                 return result;
             }
-            
-     
         }
 
         html.AppendComponent(await GetPreviewModalHtml());
@@ -373,80 +361,6 @@ public class JJUploadView : AsyncComponent
         html.WithId(Name);
         
         return new RenderedComponentResult(html);
-    }
-
-    private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
-    {
-        var fileName = EncryptionService.DecryptStringWithUrlUnescape(previewVideo);
-        var fileContent = FormFileManager.GetFile(fileName).Content;
-        var fileBytes = fileContent.Bytes.ToArray();
-        var srcVideo = $"data:video/mp4;base64,{Convert.ToBase64String(fileBytes, 0, fileBytes.Length)}";
-        
-        var script = new StringBuilder();
-        script.AppendLine("	$(document).ready(function () { ");
-        script.AppendLine("   window.parent.$('#popup-modal').find('.close').click(function(){$('#video').trigger('pause')})");
-        script.AppendLine("   $('#video').css('max-height',window.innerHeight);");
-        script.AppendLine("	}); ");
-
-        var html = new HtmlBuilder(HtmlTag.Div);
-        html.Append(HtmlTag.Center, c =>
-        {
-            c.Append(HtmlTag.Video, video =>
-            {
-                video.WithAttribute("id", "video")
-                     .WithAttribute("src", srcVideo)
-                     .WithAttribute("autoplay", "autoplay")
-                     .WithStyle( "width:100%;height:100%;")
-                     .WithCssClass("img-responsive");
-            });
-        });
-        html.AppendScript(script.ToString());
-        return html;
-    }
-
-    private HtmlBuilder GetHtmlPreviewImage(string previewImage)
-    {
-        var fileName = EncryptionService.DecryptStringWithUrlUnescape(previewImage);
-        var file = FormFileManager.GetFile(fileName);
-
-        if (file == null)
-            return null;
-
-        string src;
-        if (file.IsInMemory)
-        {
-            var base64 = Convert.ToBase64String(file.Content.Bytes.ToArray());
-            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
-        }
-        else
-        {
- 
-            var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
-            var downloader = ComponentFactory.Downloader.Create();
-            downloader.FilePath = filePath;
-            src = downloader.GetDownloadUrl();
-        }
-
-        const string script = """
-            $(document).ready(function () {
-                $('#img').css('max-height',window.innerHeight);
-                $('#img').show('slow');
-            });
-        """;
-
-        var html = new HtmlBuilder(HtmlTag.Div);
-        html.Append(HtmlTag.Center, c =>
-        {
-            c.Append(HtmlTag.Img, img =>
-            {
-                img.WithAttribute("id", "img")
-                    .WithAttribute("src", src).WithAttribute("alt", fileName)
-                   .WithStyle( "max-height:350px;display:none;")
-                   .WithCssClass("img-responsive");
-            });
-        });
-        html.AppendScript(script);
-        return html;
     }
 
     private ComponentResult GetUploadActionResult(string uploadViewAction)
@@ -657,11 +571,9 @@ public class JJUploadView : AsyncComponent
     private HtmlBuilder GetHtmlImageBox(string fileName)
     {
         var file = FormFileManager.GetFile(fileName);
-        var url = CurrentContext.Request.AbsoluteUri;
 
         string src;
-     
-
+        
         if (file.IsInMemory)
         {
             var base64 = Convert.ToBase64String(file.Content.Bytes.ToArray());
@@ -674,44 +586,21 @@ public class JJUploadView : AsyncComponent
             downloader.FilePath = filePath;
             src = downloader.GetDownloadUrl();
         }
+        
+        var html = new HtmlBuilder(HtmlTag.Img);
 
-        if (url.Contains('?'))
-            url += "&";
-        else
-            url += "?";
-
-        url += "previewImage=";
-        url += EncryptionService.EncryptStringWithUrlEscape(fileName);
-
-        var html = new HtmlBuilder(HtmlTag.A)
-        .WithHref($"javascript:defaultModal.showUrl('{url}', '{fileName}',1);")
-        .Append(HtmlTag.Img, img =>
-        {
-            img.WithAttribute("loading", "lazy")
-               .WithAttribute("src", src)
-               .WithStyle( "height:180px;")
-               .WithCssClass("img-responsive")
-               .WithToolTip(fileName);
-        });
-
+        html.WithAttribute("loading", "lazy")
+            .WithAttribute("src", src)
+            .WithStyle( "height:180px;")
+            .WithCssClass("img-responsive")
+            .WithToolTip(fileName);
+    
         return html;
     }
 
-    private HtmlBuilder GetHtmlVideoBox(string fileName)
+    private static HtmlBuilder GetHtmlVideoBox(string fileName)
     {
-        var videoUrl = CurrentContext.Request.AbsoluteUri;
-
-        if (videoUrl.Contains('?'))
-            videoUrl += "&";
-        else
-            videoUrl += "?";
-
-        videoUrl += "previewVideo=";
-        videoUrl += EncryptionService.EncryptStringWithUrlEscape(fileName);
-
-        var html = new HtmlBuilder(HtmlTag.A)
-         .WithHref($"javascript:defaultModal.showUrl('{videoUrl}', '{fileName}',1);")
-         .Append(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
+        var html = GetHtmlItemBox(fileName, "fa fa-play-circle", "red");
 
         return html;
     }
