@@ -81,4 +81,14 @@ public class HtmlTemplateHelper<TResource>(
 
         return urlAction;
     }
+    
+    public FunctionValue GetAppUrlFunction()
+    {
+        var urlAction = new FunctionValue((_, _) =>
+        {
+            return new ValueTask<FluidValue>(new StringValue(httpContext.Request.ApplicationUri));
+        });
+
+        return urlAction;
+    }
 }
