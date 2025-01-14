@@ -301,9 +301,39 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine();
 
         sql.Append(Tab);
+        sql.AppendLine("--DEBUG QUERY");
+        sql.Append(Tab);
+        sql.AppendLine("--DECLARE @debugQuery VARCHAR(MAX) ");
+        sql.Append(Tab);
+        sql.AppendLine("--SET @debugQuery = N'SELECT ' + @sqlColumn + @sqlTable + @sqlWhere");
+
+        if (element.UseReadProcedure)
+        {
+            foreach (var field in element.Fields)
+            {
+                if (IsFilter(field))
+                {
+                    var fieldName = field.Name;
+                    sql.Append(Tab);
+                    if (field.Filter.Type == FilterMode.Range)
+                    {
+                        sql.AppendLine($"--SET @debugQuery = REPLACE(@debugQuery, '@{fieldName}_from', '''' + ISNULL(@{fieldName}_from, 'NULL') + '''')");
+                        sql.Append(Tab);
+                        sql.AppendLine($"--SET @debugQuery = REPLACE(@debugQuery, '@{fieldName}_to', '''' + ISNULL(@{fieldName}_to, 'NULL') + '''')");
+                    }
+                    else
+                    {
+                        sql.AppendLine($"--SET @debugQuery = REPLACE(@debugQuery, '@{fieldName}', '''' + ISNULL(@{fieldName}, 'NULL') + '''')");
+                    }
+                }
+            }
+        }
+
+        sql.AppendLine();
+        sql.Append(Tab);
         sql.AppendLine("--DATASET RESULT");
         sql.Append(Tab);
-
+        
         sql.AppendLine("SET @query = N'SELECT ' + @sqlColumn + @sqlTable + @sqlWhere + @sqlOrderBy + @sqlOffset");
         sql.Append(Tab);
         sql.AppendLine("EXECUTE sp_executesql @query,");
