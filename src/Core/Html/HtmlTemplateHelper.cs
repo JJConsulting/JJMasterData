@@ -5,13 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Html;
 
-public static class HtmlTemplateHelper
+public class HtmlTemplateHelper<TResource>(
+    IStringLocalizer<TResource> stringLocalizer,
+    DateService dateService,
+    IHttpContext httpContext)
 {
-    public static FilterDelegate GetLocalizeFilter(IStringLocalizer stringLocalizer)
+    public FilterDelegate GetLocalizeFilter()
     {
         return (input, args, _) =>
         {
@@ -19,11 +24,10 @@ public static class HtmlTemplateHelper
             var argsValues = args.Values;
 
             string localizedString;
-            
+
             if (argsValues is not null)
             {
                 var localizerArgs = argsValues.Select(v => v.ToStringValue()).ToArray();
-
                 localizedString = stringLocalizer[inputString, localizerArgs.ToArray()].Value;
             }
             else
@@ -34,7 +38,27 @@ public static class HtmlTemplateHelper
         };
     }
     
-    public static FunctionValue GetLocalizeFunction(IStringLocalizer stringLocalizer)
+    public FunctionValue GetDatePhraseFunction()
+    {
+        var localize = new FunctionValue((args, _) =>
+        {
+            var dateArg = args.At(0).ToStringValue();
+            
+            if (DateTime.TryParse(dateArg, out var date))
+            {
+                var phrase = dateService.GetPhrase(date);
+            
+                return new ValueTask<FluidValue>(new StringValue(phrase));
+            }
+            else
+            {
+                return new StringValue(string.Empty);
+            }
+        });
+        return localize;
+    }
+
+    public FunctionValue GetLocalizeFunction()
     {
         var localize = new FunctionValue((args, _) =>
         {
@@ -47,51 +71,14 @@ public static class HtmlTemplateHelper
         });
         return localize;
     }
-    
-    public static FunctionValue FormatDate { get; } = new((args, _) =>
+
+    public FunctionValue GetUrlPathFunction()
     {
-        var obj = args.At(0).ToStringValue();
-        var format = args.At(1).ToStringValue();
-    
-        return StringValue.Create(DateTime.TryParse(obj, out var dt) ? dt.ToString(format) : obj);
-    });
-    
-    public static FunctionValue IsNullOrEmpty{ get; } = new((args, _) =>
-    {
-        var str = args.At(0).ToStringValue();
-        return BooleanValue.Create(string.IsNullOrEmpty(str));
-    });
-    
-    public static FunctionValue IsNullOrWhiteSpace { get; } = new((args, _) =>
-    {
-        var str = args.At(0).ToStringValue();
-        return BooleanValue.Create(string.IsNullOrWhiteSpace(str));
-    });
-    
-    public static FunctionValue Substring{ get; } = new((args, _) =>
-    {
-        if (args.Count < 2)
+        var urlAction = new FunctionValue((_, _) =>
         {
-            return new StringValue("Error: Not enough arguments");
-        }
+            return new ValueTask<FluidValue>(new StringValue(httpContext.Request.ApplicationPath));
+        });
 
-        var str = args.At(0).ToObjectValue().ToString()!;
-        if (!int.TryParse(args.At(1).ToStringValue(), out var startIndex))
-        {
-            return new StringValue("Error: Invalid start index");
-        }
-
-        int length = 0;
-
-        if (args.Count > 2 && !int.TryParse(args.At(2).ToStringValue(), out length))
-        {
-            return new StringValue("Error: Invalid length");
-        }
-
-        var substring = args.Count > 2
-            ? str.Substring(startIndex, length)
-            : str[startIndex..];
-
-        return new StringValue(substring);
-    });
+        return urlAction;
+    }
 }

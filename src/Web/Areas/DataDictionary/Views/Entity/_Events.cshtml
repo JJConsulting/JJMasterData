@@ -1,0 +1,22 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@model EntityViewModel
+
+@{
+    var customizedFields = Model.FormEvent!.GetCustomizedFields().ToList();
+}
+
+<alert color="Info" icon="IconType.SolidCircleInfo" title="@StringLocalizer["Element with custom events"]" >
+    <span>@StringLocalizer["This element has external customizations using programming and its behavior is changed at runtime."]</span>
+    <br/>
+    @if (customizedFields.Count > 0)
+    {
+        <span>@StringLocalizer["The following fields are used:"]</span>
+        <ul>
+            @foreach (var field in customizedFields)
+            {
+                <li>@field</li>
+            }
+        </ul>
+    }
+</alert>

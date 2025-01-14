@@ -1194,7 +1194,7 @@ public class JJFormView : AsyncComponent
 
             html.PrependComponent(await GetFormToolbarAsync(topActions));
             
-            html.Append((HtmlBuilder?)htmlResult.HtmlBuilder);
+            html.Append(htmlResult.HtmlBuilder);
             var toolbarActions = FormElement.Options.FormToolbarActions;
 
             var bottomActions = 
@@ -1226,6 +1226,8 @@ public class JJFormView : AsyncComponent
         {
             case PageState.Insert when panelState is PageState.Insert:
                 formToolbarActions.BackAction.SetVisible(false);
+                if (RelationshipType is RelationshipType.OneToOne)
+                    formToolbarActions.CancelAction.SetVisible(false);
                 break;
             case PageState.Insert when IsInsertAtGridView:
                 formToolbarActions.CancelAction.SetVisible(false);
@@ -1239,10 +1241,9 @@ public class JJFormView : AsyncComponent
                 formToolbarActions.FormEditAction.SetVisible(false);
                 formToolbarActions.BackAction.SetVisible(false);
                 break;
-            case PageState.View:
+            case PageState.View when RelationshipType is RelationshipType.OneToOne:
             {
-                if (RelationshipType is RelationshipType.OneToOne)
-                    formToolbarActions.BackAction.SetVisible(false);
+                formToolbarActions.BackAction.SetVisible(false);
                 break;
             }
         }

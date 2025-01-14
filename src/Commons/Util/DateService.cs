@@ -47,15 +47,27 @@ public class DateService(IStringLocalizer<MasterDataResources> localizer)
             int remainingDays = (int)(timeDifference.TotalDays % 30);
             if (remainingDays == 1)
             {
-                return months == 0
-                    ? localizer["1 day ago"]
-                    : localizer["{0} months and 1 day ago", months];
+                if (months == 0)
+                    return localizer["1 day ago"];
+                
+                if (months == 1)
+                    return localizer["A month and 1 day ago", months];
+
+                return localizer["{0} months and 1 day ago", months];
             }
 
-            return months == 0
-                ? localizer["{0} days ago", remainingDays]
-                : localizer["{0} months and {1} days ago", months, remainingDays];
+            if (months == 0)
+                return localizer["{0} days ago", remainingDays];
+            
+            if (months == 1 && remainingDays == 0)
+                return localizer["A month ago"];
+
+            if (months == 1)
+                return localizer["A month ago and {0} days ago", months, remainingDays];
+            
+            return localizer["{0} months and {1} days ago", months, remainingDays];
         }
+        
         int years = (int)(timeDifference.TotalDays / 365);
         return years == 1
             ? localizer["1 year ago"]

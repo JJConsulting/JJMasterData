@@ -32,9 +32,7 @@
     
     if (Model.FormEvent != null)
     {
-        <collapse-panel name="eventsPanel" icon="SolidBoltLightning" title="@StringLocalizer["Events"]" expanded-by-default="true">
-            <partial name="_EventsPanel" model="Model"/>
-        </collapse-panel>
+        <partial name="_Events" model="Model"/>
     }
     <input asp-for="ElementName" hidden="hidden"/>
 

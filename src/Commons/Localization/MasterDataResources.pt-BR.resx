@@ -213,6 +213,19 @@
     <value>Erro renderizando template.</value>
     <comment>JJMasterDataCore</comment>
   </data>
+
+  <data name="Element with custom events" xml:space="preserve">
+    <value>Elemento com eventos customizados</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="This element has external customizations using programming and its behavior is changed at runtime." xml:space="preserve">
+    <value>Este elemento possui customizações externas utilizando programação e seu comportamento é alterado em tempo de execução.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The following fields are used:" xml:space="preserve">
+    <value>Os seguintes campos são utilizados:</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Redirect Url" xml:space="preserve">
     <value>Url de Redirecionamento</value>
     <comment>JJMasterDataWeb</comment>
@@ -3556,6 +3569,9 @@
   <data name="Filter Mode" xml:space="preserve">
     <value>Modo do Filtro</value>
   </data>
+  <data name="Never" xml:space="preserve">
+    <value>Nunca</value>
+  </data>
   <data name="Enable Exportation" xml:space="preserve">
     <value>Habilitar Exportação</value>
   </data>
@@ -4140,6 +4156,15 @@
   </data>
   <data name="{0} months and 1 day ago" xml:space="preserve">
     <value>Há {0} meses e 1 dia</value>
+  </data>
+  <data name="A month ago" xml:space="preserve">
+    <value>Há 1 mês</value>
+  </data>
+  <data name="A month ago and {0} days ago" xml:space="preserve">
+    <value>Há 1 mês e {0} dias</value>
+  </data>
+  <data name="A month and 1 day ago" xml:space="preserve">
+    <value>Há 1 mês e 1 dia</value>
   </data>
   <data name="{0} months and {1} days ago" xml:space="preserve">
     <value>Há {0} meses e {1} dias</value>
