@@ -720,7 +720,7 @@ public class JJFormView : AsyncComponent
         if (messageBox is null)
         {
             CurrentActionMap = null;
-            if (string.IsNullOrEmpty(sqlAction.RedirectUrl))
+            if (!string.IsNullOrEmpty(sqlAction.RedirectUrl))
             {
                 return new RedirectComponentResult(sqlAction.RedirectUrl!);
             }
