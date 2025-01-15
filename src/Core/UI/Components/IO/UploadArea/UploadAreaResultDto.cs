@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public record UploadAreaResultDto
+public class UploadAreaResultDto
 {
     [JsonPropertyName("message")]
     public string? SuccessMessage { get; set; }
