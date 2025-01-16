@@ -24,9 +24,9 @@ public class LocalizationController(LocalizationService localizationService) : D
         });
     }
 
-    public async Task<FileContentResult> DownloadStrings()
+    public async Task<FileStreamResult> DownloadStrings()
     {
-        var fileBytes = await localizationService.GetAllStringsFile();
-        return File(fileBytes,"application/octet-stream",$"LocalizationStrings-{CultureInfo.CurrentUICulture.Name}.csv");
+        var fileStream = await localizationService.GetAllStringsStream();
+        return File(fileStream,"application/octet-stream",$"LocalizationStrings-{CultureInfo.CurrentUICulture.Name}.csv");
     }
 }

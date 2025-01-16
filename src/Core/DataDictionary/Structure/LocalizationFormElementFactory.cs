@@ -61,7 +61,7 @@ public class LocalizationFormElementFactory(
         var cultureField = formElement.Fields["cultureCode"];
         cultureField.IsRequired = true;
         cultureField.CssClass = "col-sm-6";
-        cultureField.Component = FormComponent.Search;
+        cultureField.Component = FormComponent.ComboBox;
         cultureField.DataItem = new FormElementDataItem
         {
             Items = [],

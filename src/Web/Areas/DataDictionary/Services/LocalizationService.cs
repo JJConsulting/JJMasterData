@@ -13,20 +13,16 @@ namespace JJMasterData.Web.Areas.DataDictionary.Services;
 public class LocalizationService(
     IFormElementComponentFactory<JJFormView> formViewFactory,
     LocalizationFormElementFactory localizationFormElementFactory,
-    IOptions<RequestLocalizationOptions> requestLocalizationOptions,
+    IOptionsSnapshot<RequestLocalizationOptions> requestLocalizationOptions,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IMemoryCache memoryCache)
 {
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
-    private LocalizationFormElementFactory LocalizationFormElementFactory { get; } = localizationFormElementFactory;
-    private IMemoryCache MemoryCache { get; } = memoryCache;
-
     public JJFormView GetFormView()
     {
         var supportedCultures = requestLocalizationOptions.Value.SupportedCultures?.ToArray() ?? [];
-        var formElement = LocalizationFormElementFactory.GetFormElement(supportedCultures);
+        var formElement = localizationFormElementFactory.GetFormElement(supportedCultures);
 
-        var formView = FormViewFactory.Create(formElement);
+        var formView = formViewFactory.Create(formElement);
 
         formView.OnAfterInsertAsync += ClearCache;
         formView.OnAfterUpdateAsync += ClearCache;
@@ -40,12 +36,13 @@ public class LocalizationService(
         return ValueTask.CompletedTask;
     }
     
-    public async Task<byte[]> GetAllStringsFile()
+    
+    public async Task<Stream> GetAllStringsStream()
     {
         var localizedStrings = stringLocalizer.GetAllStrings();
         var currentCulture = CultureInfo.CurrentUICulture.Name;
-        using var memoryStream = new MemoryStream();
-        await using TextWriter textWriter = new StreamWriter(memoryStream);
+        var memoryStream = new MemoryStream();
+        var textWriter = new StreamWriter(memoryStream);
         
         foreach (var localizedString in localizedStrings)
         {
@@ -54,12 +51,14 @@ public class LocalizationService(
             await textWriter.FlushAsync();
         }
 
-        return memoryStream.ToArray();
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        
+        return memoryStream;
     }
 
     private void ClearCache()
     {
-        MemoryCache.Remove(
+        memoryCache.Remove(
             $"JJMasterData.Commons.Localization.MasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
     }
 }

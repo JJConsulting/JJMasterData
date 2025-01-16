@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Localization;
 
 namespace JJMasterData.Web.Configuration;
 
-public static class WebApplicationExtensions
+public static partial class WebApplicationExtensions
 {
     [PublicAPI]
     public static WebApplication UseUrlRequestLocalization(this WebApplication app, Action<MasterDataLocalizationOptions>? configureLocalization = null)
@@ -34,13 +34,10 @@ public static class WebApplicationExtensions
             {
                 string currentCulture;
             
-                var segments = context.Request.Path.Value?.Split(new[] { '/' },
+                var segments = context.Request.Path.Value?.Split(['/'],
                     StringSplitOptions.RemoveEmptyEntries);
-                
-                var culturePattern = new Regex("^[a-z]{2}(-[a-z]{2,4})?$",
-                    RegexOptions.IgnoreCase);
             
-                if (segments?.Length > 0 && culturePattern.IsMatch(segments[0]))
+                if (segments?.Length > 0 && CultureRegex().IsMatch(segments[0]))
                 {
                     currentCulture = segments[0];
                 }
@@ -80,4 +77,7 @@ public static class WebApplicationExtensions
             name: "JJMasterData",
             pattern: pattern);
     }
+
+    [GeneratedRegex("^[a-z]{2}(-[a-z]{2,4})?$", RegexOptions.IgnoreCase, "pt-BR")]
+    private static partial Regex CultureRegex();
 }
