@@ -303,7 +303,7 @@ public class SqlServerProvider(
         if (string.IsNullOrEmpty(tableName))
             throw new ArgumentNullException(nameof(tableName));
 
-        if (!await TableExistsAsync(tableName))
+        if (!await TableExistsAsync(tableName, connectionId))
             throw new JJMasterDataException($"Table {tableName} not found");
 
         var element = new Element

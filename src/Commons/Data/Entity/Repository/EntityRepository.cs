@@ -100,7 +100,7 @@ internal sealed class EntityRepository(
 
     public Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null)
     {
-        return provider.TableExistsAsync(tableName);
+        return provider.TableExistsAsync(tableName, connectionId);
     }
 
     public bool TableExists(string tableName, Guid? connectionId = null)
