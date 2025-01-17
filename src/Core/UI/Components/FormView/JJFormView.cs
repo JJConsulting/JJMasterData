@@ -717,6 +717,15 @@ public class JJFormView : AsyncComponent
         if (CurrentAction!.Location is not null)
             DataPanel.Values = await EntityRepository.GetFieldsAsync(FormElement, CurrentActionMap!.PkFieldValues);
 
+        if (messageBox is null)
+        {
+            CurrentActionMap = null;
+            if (!string.IsNullOrEmpty(sqlAction.RedirectUrl))
+            {
+                return new RedirectComponentResult(sqlAction.RedirectUrl!);
+            }
+        }
+        
         var result = await GetDefaultResult();
 
         if (result is HtmlComponentResult htmlComponentResult)

@@ -26,6 +26,7 @@ public class HtmlTemplateRenderer<TResource>(
         context.SetValue("formatDate", FormatDate);
         context.SetValue("dateAsText", helper.GetDatePhraseFunction());
         context.SetValue("urlPath", helper.GetUrlPathFunction());
+        context.SetValue("appUrl", helper.GetUrlPathFunction());
         context.SetValue("localize", helper.GetLocalizeFunction());
 
         return template.RenderAsync(context);

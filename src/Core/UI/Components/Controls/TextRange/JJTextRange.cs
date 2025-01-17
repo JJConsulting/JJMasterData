@@ -55,6 +55,7 @@ public class JJTextRange(IFormValues formValues,
         div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-2");
+            div.WithCssClassIf(IsVerticalLayout, "text-end");
             div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
         
