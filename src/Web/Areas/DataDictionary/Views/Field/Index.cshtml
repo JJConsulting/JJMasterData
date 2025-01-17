@@ -351,25 +351,31 @@
                messageBox.show('@StringLocalizer["Error"]', error.message, 4);
             });
         }
-    
+
         function loadFieldDetails(url, fieldName) {
+            const safeFieldName = fieldName.replace(/[^\w-]/g, '\\$&');
+
             document.querySelector("#sortable-grid .active")?.classList?.remove("active");
-    
-            if (fieldName !== "")
-                document.querySelector("#" + fieldName).classList.add("active");
-            
-            SpinnerOverlay.show()
-            
-            fetch(url).then((response)=>response.text()).then((html)=>{
-                HTMLHelper.setInnerHTML("field-details",html)
-                
+
+            if (safeFieldName !== "" && safeFieldName !== '\\_') {
+                const element = document.querySelector("#" + safeFieldName);
+                if (element) {
+                    element.classList.add("active");
+                }
+            }
+
+            SpinnerOverlay.show();
+
+            fetch(url).then((response) => response.text()).then((html) => {
+                HTMLHelper.setInnerHTML("field-details", html);
+
                 listenAllEvents("#field-details");
                 listenTabs();
                 saveTabState();
-                SpinnerOverlay.hide()
-            })
+                SpinnerOverlay.hide();
+            });
         }
-    
+
         function searchFields(oDom) {
             const value = $(oDom).val().toLowerCase();
             $("#sortable-grid a").filter(function () {
