@@ -353,6 +353,7 @@
         }
 
         function loadFieldDetails(url, fieldName) {
+            
             const safeFieldName = fieldName.replace(/[^\w-]/g, '\\$&');
 
             document.querySelector("#sortable-grid .active")?.classList?.remove("active");
