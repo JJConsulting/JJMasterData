@@ -337,7 +337,7 @@ public class FieldController(
     public async Task<RedirectToActionResult> CopyFrom(string elementName, string copyFromElementName, string copyFromFieldName)
     {
         var copyFromFormElement = await fieldService.GetFormElementAsync(copyFromElementName);
-        var field = copyFromFormElement.Fields[copyFromFieldName];
+        var field = copyFromFormElement.Fields[copyFromFieldName].DeepCopy();
 
         var formElement = await fieldService.GetFormElementAsync(elementName);
 
