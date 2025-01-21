@@ -52,6 +52,7 @@ Building an expression<br>
 - {ComponentName} = Name of the component that the field resides
 - {FieldName} = Name of the field that triggered the AutoPostBack event
 - {UserId} = Identifier of the authenticated user, can be recovered from UserValues, Session or Claims
+- {UserEmail} = Email of the user recovered from the Claims
 
 Dynamic values will be recovered in the following order:
 1. MasterData keywords
