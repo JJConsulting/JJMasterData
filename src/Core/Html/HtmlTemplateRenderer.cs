@@ -24,6 +24,9 @@ public class HtmlTemplateRenderer<TResource>(
         context.SetValue("isNullOrEmpty",IsNullOrEmpty);
         context.SetValue("substring", Substring);
         context.SetValue("formatDate", FormatDate);
+        context.SetValue("trim", Trim);
+        context.SetValue("trimStart", TrimStart);
+        context.SetValue("trimEnd", TrimEnd);
         context.SetValue("dateAsText", helper.GetDatePhraseFunction());
         context.SetValue("urlPath", helper.GetUrlPathFunction());
         context.SetValue("appUrl", helper.GetUrlPathFunction());
