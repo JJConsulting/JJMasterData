@@ -334,23 +334,32 @@ public class FieldController(
         return Content(options.ToString());
     }
     
-    public async Task<RedirectToActionResult> CopyFrom(string elementName, string copyFromElementName, string copyFromFieldName)
+    public async Task<RedirectToActionResult> CopyFrom(string elementName, string copyFromElementName, string[] copyFromFieldNames)
     {
         var copyFromFormElement = await fieldService.GetFormElementAsync(copyFromElementName);
-        var field = copyFromFormElement.Fields[copyFromFieldName];
+
 
         var formElement = await fieldService.GetFormElementAsync(elementName);
 
-        if (formElement.Fields.Exists(field.Name))
+        FormElementField field = null!;
+        
+        foreach (var copyFromFieldName in copyFromFieldNames)
         {
-            ModelState.AddModelError(field.Name,stringLocalizer["Field {0} already exists.", field.Name]);
-        }
-        else
-        {
-            formElement.Fields.Add(field);
-        }
+            field = copyFromFormElement.Fields[copyFromFieldName];
 
-        await fieldService.SetFormElementAsync(formElement);
+            field.PanelId = 0;
+            
+            if (formElement.Fields.Exists(field.Name))
+            {
+                ModelState.AddModelError(field.Name,stringLocalizer["Field {0} already exists.", field.Name]);
+            }
+            else
+            {
+                formElement.Fields.Add(field);
+            }
+
+            await fieldService.SetFormElementAsync(formElement);
+        }
 
         if (!ModelState.IsValid)
             ViewData["Error"] = fieldService.GetValidationSummary().GetHtml();

@@ -82,27 +82,32 @@
         <form asp-action="CopyFrom" asp-controller="Field" asp-route-elementName="@elementName">
             <div class="row">
                 <div class="col-sm-4">
-                    <div class="form-floating">
+                    <div class="form-group">
+                        <label for="copyFromElementName">@StringLocalizer["Element Name"]</label>
                         <select name="copyFromElementName"
+                                id="copyFromElementName"
                                 asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
                                 onchange="populateCopyFromFields(this)"
                                 required="required"
                                 class="form-select"></select>
-                        <label>@StringLocalizer["Element Name"]</label>
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="form-floating">
-                        <select name="copyFromFieldName"
-                                id="copyFromFieldName"
+                    <div class="form-group">
+                        <label for="copyFromFieldNames">@StringLocalizer["Fields"]</label>
+                        <select name="copyFromFieldNames"
+                                id="copyFromFieldNames"
                                 required="required"
+                                multiple="multiple"
                                 class="form-select"></select>
-                        <label>@StringLocalizer["Field Name"]</label>
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-primary" type="submit"><span class="fa-solid fa-copy"></span>&nbsp;@StringLocalizer["Copy"]</button>
+                    <button class="btn btn-primary" type="submit">
+                        <span class="fa-solid fa-copy"></span>&nbsp;@StringLocalizer["Copy"]
+                    </button>
                 </div>
+
             </div>
         </form>
     </offcanvas>
@@ -223,15 +228,15 @@
 <script type="text/javascript">
 
         async function populateCopyFromFields(formElementCombobox) {
-            const fieldNameSelect = document.getElementById('copyFromFieldName');
-            if (!fieldNameSelect) return;
+            const fieldNamesSelect = document.getElementById('copyFromFieldNames');
+            if (!fieldNamesSelect) return;
 
             const response = await fetch('@Url.Action("PopulateCopyFromFields", "Field")' + '?elementName=' + formElementCombobox.value);
             
             if (!response.ok) 
                 return;
 
-            fieldNameSelect.innerHTML = await response.text();
+            fieldNamesSelect.innerHTML = await response.text();
         }
         
          function setupCodeMirror(){
@@ -351,23 +356,29 @@
                messageBox.show('@StringLocalizer["Error"]', error.message, 4);
             });
         }
-    
+
         function loadFieldDetails(url, fieldName) {
+            const safeFieldName = fieldName.replace(/[^\w-]/g, '\\$&');
+
             document.querySelector("#sortable-grid .active")?.classList?.remove("active");
-    
-            if (fieldName !== "")
-                document.querySelector("#" + fieldName).classList.add("active");
-            
-            SpinnerOverlay.show()
-            
-            fetch(url).then((response)=>response.text()).then((html)=>{
-                HTMLHelper.setInnerHTML("field-details",html)
-                
+
+            if (safeFieldName !== "" && safeFieldName !== '\\_') {
+                const element = document.querySelector("#" + safeFieldName);
+                if (element) {
+                    element.classList.add("active");
+                }
+            }
+
+            SpinnerOverlay.show();
+
+            fetch(url).then((response) => response.text()).then((html) => {
+                HTMLHelper.setInnerHTML("field-details", html);
+
                 listenAllEvents("#field-details");
                 listenTabs();
                 saveTabState();
-                SpinnerOverlay.hide()
-            })
+                SpinnerOverlay.hide();
+            });
         }
     
         function searchFields(oDom) {
