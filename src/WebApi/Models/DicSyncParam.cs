@@ -18,5 +18,5 @@ public class DicSyncParam
     /// Array com o nome do campo e valor
     /// </summary>
     [JsonPropertyName("filters")]
-    public Hashtable? Filters { get; set; }
+    public Dictionary<string,object?>? Filters { get; set; }
 }

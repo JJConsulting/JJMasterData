@@ -109,18 +109,18 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         return result.TotalOfRecords;
     }
     
-    private static Dictionary<string,object?> GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
+    private static Dictionary<string,object?> GetSyncInfoFilter(string? userId, FormElement metadata, Dictionary<string,object?>? metadataFilters)
     {
         var filters = new Dictionary<string,object?>();
         var fields = metadata.Fields;
         if (metadataFilters != null)
         {
-            foreach (DictionaryEntry osFilter in metadataFilters)
+            foreach (var kvp in metadataFilters)
             {
-                if (!fields.Contains(osFilter.Key.ToString()))
+                if (!fields.Contains(kvp.Key))
                     continue;
 
-                filters.Add(fields[osFilter.Key.ToString()!].Name, osFilter.Value);
+                filters.Add(fields[kvp.Key].Name, kvp.Value);
             }
         }
 
