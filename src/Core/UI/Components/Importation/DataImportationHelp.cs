@@ -237,7 +237,7 @@ internal sealed class DataImportationHelp
         text.Append(", ");
         text.Append(StringLocalizer["with the maximum size of"]);
         text.Append(" <b>");
-        text.Append(Format.FormatFileSize(JJUploadArea.GetMaxRequestLength()));
+        text.Append(Format.FormatFileSize(upload.GetMaxRequestLength()));
         text.Append("</b>");
         text.Append(", ");
         text.Append(StringLocalizer["do not include caption or description in the first line"]);

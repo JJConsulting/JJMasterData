@@ -15,6 +15,8 @@ public static class HttpServiceExtensions
         services.AddScoped<IHttpContext, HttpContextWrapper>();
 #if NET
         services.AddHttpContextAccessor();
+        services.AddScoped<IRequestLengthService, Http.AspNetCore.RequestLengthService>();  
+
         services.AddScoped<IHttpSession, Http.AspNetCore.HttpSessionWrapper>();
         services.AddScoped<IHttpRequest, Http.AspNetCore.HttpRequestWrapper>();
         services.AddScoped<IQueryString, Http.AspNetCore.QueryStringWrapper>();  
@@ -31,6 +33,7 @@ public static class HttpServiceExtensions
    
 
 #if NETFRAMEWORK
+        services.AddScoped<IRequestLengthService, Http.SystemWeb.SystemWebRequestLengthService>();
         services.AddScoped<IHttpSession, Http.SystemWeb.SystemWebHttpSessionWrapper>();
         services.AddScoped<IHttpRequest, Http.SystemWeb.SystemWebHttpRequestWrapper>();
         services.AddScoped<IQueryString, Http.SystemWeb.SystemWebQueryStringWrapper>();

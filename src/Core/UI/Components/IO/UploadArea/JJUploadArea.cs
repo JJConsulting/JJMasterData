@@ -21,6 +21,13 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJUploadArea : AsyncComponent
 {
+    private readonly IRequestLengthService _requestLengthService;
+    private readonly IHttpContext _httpContext ;
+    private readonly UploadAreaService _uploadAreaService ;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer ;
+    private readonly IEncryptionService _encryptionService;
+    
+    
     /// <summary>
     /// Event fired when the file is posted.
     /// </summary>  
@@ -75,7 +82,7 @@ public class JJUploadArea : AsyncComponent
 
     public bool EnableCopyPaste { get; set; } = true;
     public bool ShowFileSize { get; set; } = true;
-    public int MaxFileSize { get; set; }
+    public long MaxFileSize { get; set; }
 
     /// <summary>
     /// JS code to be executed after all server side uploads are completed.
@@ -96,10 +103,7 @@ public class JJUploadArea : AsyncComponent
     /// This property will be used only if Multiple is true.
     /// </summary>
     public int MaxFiles { get; set; } = int.MaxValue;
-    private IHttpContext CurrentContext { get; }
-    private UploadAreaService UploadAreaService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private IEncryptionService EncryptionService { get; }
+
     
     private RouteContext? _routeContext;
 
@@ -110,7 +114,7 @@ public class JJUploadArea : AsyncComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(_httpContext.Request.QueryString, _encryptionService);
             _routeContext = factory.Create();
             
             return _routeContext;
@@ -118,22 +122,24 @@ public class JJUploadArea : AsyncComponent
     }
     
     public JJUploadArea(
-        IHttpContext currentContext,
+        IHttpContext httpContext,
         UploadAreaService uploadAreaService,
         IEncryptionService encryptionService,
+        IRequestLengthService requestLengthService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
+        _requestLengthService = requestLengthService;
         Name = "upload-area";
-        CurrentContext = currentContext;
-        UploadAreaService = uploadAreaService;
-        StringLocalizer = stringLocalizer;
-        EncryptionService = encryptionService;
-        MaxFileSize = GetMaxRequestLength();
+        _httpContext = httpContext;
+        _uploadAreaService = uploadAreaService;
+        _stringLocalizer = stringLocalizer;
+        _encryptionService = encryptionService;
+        MaxFileSize = _requestLengthService.GetMaxRequestBodySize();
     }
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (UploadAreaService.TryGetFile(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", out var formFile))
+        if (_uploadAreaService.TryGetFile(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", out var formFile))
             return await GetFileUploadResultAsync(formFile!);
         
         return new RenderedComponentResult(GetUploadAreaHtmlBuilder());
@@ -142,12 +148,12 @@ public class JJUploadArea : AsyncComponent
     public async Task<ComponentResult> GetFileUploadResultAsync(FormFileContent formFile)
     {
         if (OnFileUploaded != null)
-            UploadAreaService.OnFileUploaded += OnFileUploaded;
+            _uploadAreaService.OnFileUploaded += OnFileUploaded;
 
         if (OnFileUploadedAsync != null)
-            UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
+            _uploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
 
-        var dto = await UploadAreaService.UploadFileAsync(formFile, AllowedTypes);
+        var dto = await _uploadAreaService.UploadFileAsync(formFile, AllowedTypes);
 
         var result = new JsonComponentResult(dto);
         
@@ -171,7 +177,7 @@ public class JJUploadArea : AsyncComponent
         div.WithAttributes(Attributes);
         div.WithAttributeIf(Url is not null,"upload-url", Url!);
         div.WithAttribute("js-callback",JsCallback);
-        div.WithAttribute((string)"route-context", EncryptionService.EncryptObject(RouteContext));
+        div.WithAttribute((string)"route-context", _encryptionService.EncryptObject(RouteContext));
         div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
         div.WithAttribute("query-string-params", GetQueryStringParams());
         div.WithAttribute("max-file-size", MaxFileSize.ToString());
@@ -181,11 +187,11 @@ public class JJUploadArea : AsyncComponent
         div.WithAttribute("allowed-types", GetAllowedTypes());     
         div.WithAttribute("max-files", Multiple ? MaxFiles : 1);
         div.WithAttribute("parallel-uploads", ParallelUploads);
-        div.WithAttribute("drag-drop-label", StringLocalizer[GetUploadAreaLabel()]);
-        div.WithAttribute("cancel-label", StringLocalizer[CancelLabel]);
-        div.WithAttribute("abort-label", StringLocalizer[AbortLabel]);
-        div.WithAttribute("extension-not-allowed-label", StringLocalizer[ExtensionNotAllowedLabel, AllowedTypes]);
-        div.WithAttribute("file-size-error-label", StringLocalizer[SizeErrorLabel, MaxFileSize]);
+        div.WithAttribute("drag-drop-label", _stringLocalizer[GetUploadAreaLabel()]);
+        div.WithAttribute("cancel-label", _stringLocalizer[CancelLabel]);
+        div.WithAttribute("abort-label", _stringLocalizer[AbortLabel]);
+        div.WithAttribute("extension-not-allowed-label", _stringLocalizer[ExtensionNotAllowedLabel, AllowedTypes]);
+        div.WithAttribute("file-size-error-label", _stringLocalizer[SizeErrorLabel, MaxFileSize]);
         
         return div;
     }
@@ -218,27 +224,6 @@ public class JJUploadArea : AsyncComponent
     public string? Url { get; set; }
 
     public string? ParentName { get; set; }
-
-    /// <remarks>
-    /// To change this in .NET Framework, change web.config in system.web/httpRuntime
-    /// Measured in bytes
-    /// </remarks>
-    public static int GetMaxRequestLength()
-    {
-#if NETFRAMEWORK
-        var maxRequestLength = 4194304; //4mb
-        if (System.Configuration.ConfigurationManager.GetSection("system.web/httpRuntime") is System.Web.Configuration.HttpRuntimeSection section)
-            maxRequestLength = section.MaxRequestLength * 1024;
-#else
-
-        // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
-        // Under normal circumstances, there is no need to increase the size of the HTTP request.
-        const int maxRequestLength = 30720000;
-#endif
-
-        return maxRequestLength;
-    }
-    
     
     public string GetQueryStringParams()
     {
@@ -252,5 +237,9 @@ public class JJUploadArea : AsyncComponent
             select $"{key}={value}";
         return string.Join("&", keyValuePairs);
     }
-    
+
+    public long GetMaxRequestLength()
+    {
+        return _requestLengthService.GetMaxRequestBodySize();
+    }
 }
