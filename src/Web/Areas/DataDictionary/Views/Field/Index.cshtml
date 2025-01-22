@@ -83,7 +83,7 @@
             <div class="row">
                 <div class="col-sm-4">
                     <div class="form-group">
-                        <label for="copyFromElementName">@StringLocalizer["Element Name"]</label>
+                        <label for="copyFromElementName" class="form-label">@StringLocalizer["Element Name"]</label>
                         <select name="copyFromElementName"
                                 id="copyFromElementName"
                                 asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
@@ -94,7 +94,7 @@
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group">
-                        <label for="copyFromFieldNames">@StringLocalizer["Fields"]</label>
+                        <label for="copyFromFieldNames" class="form-label">@StringLocalizer["Fields"]</label>
                         <select name="copyFromFieldNames"
                                 id="copyFromFieldNames"
                                 required="required"

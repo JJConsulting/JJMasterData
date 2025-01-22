@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
@@ -68,11 +69,13 @@ public sealed class DictionaryStringObjectJsonConverter : JsonConverter<Dictiona
         switch (reader.TokenType)
         {
             case JsonTokenType.String:
-                if (reader.TryGetDateTime(out var date))
+                var jsonString = reader.GetString();
+            
+                if (DateTime.TryParse(jsonString, out var date))
                 {
                     return date;
                 }
-                return reader.GetString();
+                return jsonString;
             case JsonTokenType.False:
                 return false;
             case JsonTokenType.True:

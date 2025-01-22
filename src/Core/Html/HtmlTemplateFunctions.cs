@@ -12,6 +12,28 @@ public static class HtmlTemplateFunctions
 
         return StringValue.Create(DateTime.TryParse(obj, out var dt) ? dt.ToString(format) : obj);
     });
+    
+    public static FunctionValue Trim { get; } = new((args, _) =>
+    {
+        var str = args.At(0).ToStringValue();
+
+        return StringValue.Create(str.Trim());
+    });
+    
+    public static FunctionValue TrimStart { get; } = new((args, _) =>
+    {
+        var str = args.At(0).ToStringValue();
+
+        return StringValue.Create(str.TrimStart());
+    });
+    
+    public static FunctionValue TrimEnd { get; } = new((args, _) =>
+    {
+        var str = args.At(0).ToStringValue();
+
+        return StringValue.Create(str.TrimEnd());
+    });
+
 
     public static FunctionValue IsNullOrEmpty { get; } = new((args, _) =>
     {

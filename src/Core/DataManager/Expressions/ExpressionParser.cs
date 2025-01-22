@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
@@ -72,6 +73,9 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
                 break;
             case "userid":
                 parsedValue = DataHelper.GetCurrentUserId(httpContext, userValues!);
+                break;
+            case "useremail":
+                parsedValue = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
                 break;
             case "legacyid":
                 parsedValue = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == "LegacyId")?.Value;

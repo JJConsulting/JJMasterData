@@ -94,4 +94,13 @@ Returns the date as a string representation.
 
 It will be rendered as "1 minute ago" for example.
 
+### 6. `trim`
+Removes leading and trailing whitespace from the string.
+
+### 7. `trimStart`
+Removes leading whitespace from the string.
+
+### 8. `trimEnd`
+Removes trailing whitespace from the string.  
+
 
