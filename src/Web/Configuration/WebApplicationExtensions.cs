@@ -34,8 +34,7 @@ public static partial class WebApplicationExtensions
             {
                 string currentCulture;
             
-                var segments = context.Request.Path.Value?.Split(['/'],
-                    StringSplitOptions.RemoveEmptyEntries);
+                var segments = context.Request.Path.Value?.Split('/', StringSplitOptions.RemoveEmptyEntries);
             
                 if (segments?.Length > 0 && CultureRegex().IsMatch(segments[0]))
                 {
