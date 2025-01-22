@@ -48,8 +48,6 @@ public class ExcelWriter(
     /// </summary>
     public bool ShowRowStriped { get; set; }
 
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -91,14 +89,15 @@ public class ExcelWriter(
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            var result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
+            await Task.Delay(-1);
+            var result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
             DataSource = result.Data;
             TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
-
+            
             var totalOfPages = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
             for (int i = 2; i <= totalOfPages; i++)
             {
@@ -109,7 +108,7 @@ public class ExcelWriter(
                     RecordsPerPage = RecordsPerPage,
                     OrderBy = CurrentOrder
                 };
-                result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
+                result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
                 DataSource = result.Data;
                 TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);

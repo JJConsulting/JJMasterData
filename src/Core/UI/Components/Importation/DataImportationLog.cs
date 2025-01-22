@@ -13,14 +13,14 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataImportationLog
 {
-    internal DataImportationReporter Reporter { get; }
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    internal IHttpContext CurrentContext { get; }
+    private readonly DataImportationReporter _reporter;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
+    private readonly IHttpContext _currentContext;
     internal DataImportationLog(JJDataImportation dataImportation)
     {
-        StringLocalizer = dataImportation.StringLocalizer;
-        CurrentContext = dataImportation.CurrentContext;
-        Reporter = dataImportation.GetCurrentReporter();
+        _stringLocalizer = dataImportation.StringLocalizer;
+        _currentContext = dataImportation.CurrentContext;
+        _reporter = dataImportation.GetCurrentReporter();
     }
 
     public HtmlBuilder GetHtmlLog()
@@ -43,46 +43,46 @@ internal sealed class DataImportationLog
             .WithStyle( "text-align: center;")
             .WithCssClass("jjlabel-process");
 
-        html.AppendIf(Reporter.EndDate != DateTime.MinValue, HtmlTag.Div, div =>
+        html.AppendIf(_reporter.EndDate != DateTime.MinValue, HtmlTag.Div, div =>
         {
-            string elapsedTime = Format.FormatTimeSpan(Reporter.StartDate, Reporter.EndDate);
-            div.AppendText(StringLocalizer["Process performed on {0}", elapsedTime]);
+            string elapsedTime = Format.FormatTimeSpan(_reporter.StartDate, _reporter.EndDate);
+            div.AppendText(_stringLocalizer["Process performed on {0}", elapsedTime]);
         });
 
         html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelSuccess)
              .WithAttribute("id", "lblInsert")
-             .WithAttributeIf(Reporter.Insert == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Inserted:"])
+             .WithAttributeIf(_reporter.Insert == 0, "style", "display:none;")
+             .AppendText(_stringLocalizer["Inserted:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblInsertCount")
-                      .AppendText(Reporter.Insert.ToString("N0"));
+                      .AppendText(_reporter.Insert.ToString("N0"));
              });
         });
         html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelSuccess)
              .WithAttribute("id", "lblUpdate")
-             .WithAttributeIf(Reporter.Update == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Updated:"])
+             .WithAttributeIf(_reporter.Update == 0, "style", "display:none;")
+             .AppendText(_stringLocalizer["Updated:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblUpdateCount")
-                      .AppendText(Reporter.Update.ToString("N0"));
+                      .AppendText(_reporter.Update.ToString("N0"));
              });
         });
         html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelDefault)
              .WithAttribute("id", "lblDelete")
-             .WithAttributeIf(Reporter.Delete == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Deleted:"])
+             .WithAttributeIf(_reporter.Delete == 0, "style", "display:none;")
+             .AppendText(_stringLocalizer["Deleted:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblDeleteCount")
-                      .AppendText(Reporter.Delete.ToString("N0"));
+                      .AppendText(_reporter.Delete.ToString("N0"));
              });
         });
 
@@ -90,12 +90,12 @@ internal sealed class DataImportationLog
         {
             s.WithCssClass(BootstrapHelper.LabelWarning)
              .WithAttribute("id", "lblIgnore")
-             .WithAttributeIf(Reporter.Ignore == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Ignored:"])
+             .WithAttributeIf(_reporter.Ignore == 0, "style", "display:none;")
+             .AppendText(_stringLocalizer["Ignored:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblIgnoreCount")
-                      .AppendText(Reporter.Ignore.ToString("N0"));
+                      .AppendText(_reporter.Ignore.ToString("N0"));
              });
         });
 
@@ -103,12 +103,12 @@ internal sealed class DataImportationLog
         {
             s.WithCssClass(BootstrapHelper.LabelDanger)
              .WithAttribute("id", "lblError")
-             .WithAttributeIf(Reporter.Error == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Errors:"])
+             .WithAttributeIf(_reporter.Error == 0, "style", "display:none;")
+             .AppendText(_stringLocalizer["Errors:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblErrorCount")
-                      .AppendText(Reporter.Error.ToString("N0"));
+                      .AppendText(_reporter.Error.ToString("N0"));
              });
         });
 
@@ -117,30 +117,30 @@ internal sealed class DataImportationLog
 
     private HtmlBuilder GetLogDetailsHtml()
     {
-        var panel = new JJCollapsePanel(CurrentContext.Request.Form)
+        var panel = new JJCollapsePanel(_currentContext.Request.Form)
         {
-            Title = StringLocalizer["Importation Details"],
+            Title = _stringLocalizer["Importation Details"],
             TitleIcon = new JJIcon(IconType.Film),
             ExpandedByDefault = true,
             HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-                .Append(HtmlTag.B,b=>b.AppendText(StringLocalizer["Start:"]))
-                .AppendText(Reporter.StartDate.ToString(CultureInfo.CurrentCulture))
+                .Append(HtmlTag.B,b=>b.AppendText(_stringLocalizer["Start:"]))
+                .AppendText(_reporter.StartDate.ToString(CultureInfo.CurrentCulture))
                 .Append(HtmlTag.Br)
-                .Append(HtmlTag.B,b=>b.AppendText(StringLocalizer["End:"]))
-                .AppendText(Reporter.EndDate.ToString(CultureInfo.CurrentCulture))
+                .Append(HtmlTag.B,b=>b.AppendText(_stringLocalizer["End:"]))
+                .AppendText(_reporter.EndDate.ToString(CultureInfo.CurrentCulture))
         };
 
-        if (!string.IsNullOrEmpty(Reporter.UserId))
+        if (!string.IsNullOrEmpty(_reporter.UserId))
         {
             panel.HtmlBuilderContent.Append(HtmlTag.Br)
-                .Append(HtmlTag.B, b => b.AppendText(StringLocalizer["UserId:"]))
+                .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["UserId:"]))
                 .AppendText("&nbsp;")
-                .AppendText(Reporter.UserId.ToString(CultureInfo.CurrentCulture));
+                .AppendText(_reporter.UserId.ToString(CultureInfo.CurrentCulture));
         }
 
         panel.HtmlBuilderContent
               .Append(HtmlTag.Br)
-              .AppendText(Reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
+              .AppendText(_reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
 
         return panel.BuildHtml();
     }
@@ -153,24 +153,24 @@ internal sealed class DataImportationLog
             ShowIcon = true
         };
 
-        if (Reporter.HasError || Reporter.TotalProcessed == Reporter.Error)
+        if (_reporter.HasError || _reporter.TotalProcessed == _reporter.Error)
         {
             alert.Icon = IconType.ExclamationTriangle;
             alert.Color = BootstrapColor.Danger;
-            alert.Title = StringLocalizer["Error importing file!"];
-            alert.Messages.Add(StringLocalizer[Reporter.Message]);
+            alert.Title = _stringLocalizer["Error importing file!"];
+            alert.Messages.Add(_stringLocalizer[_reporter.Message]);
         }
-        else if (Reporter.Error > 0)
+        else if (_reporter.Error > 0)
         {
             alert.Icon = IconType.InfoCircle;
             alert.Color = BootstrapColor.Info;
-            alert.Title =StringLocalizer[Reporter.Message];
+            alert.Title =_stringLocalizer[_reporter.Message];
         }
         else
         {
             alert.Icon = IconType.Check;
             alert.Color = BootstrapColor.Success;
-            alert.Title = StringLocalizer[Reporter.Message];
+            alert.Title = _stringLocalizer[_reporter.Message];
         }
 
         return alert;

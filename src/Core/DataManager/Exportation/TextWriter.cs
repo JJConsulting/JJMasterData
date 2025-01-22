@@ -36,7 +36,6 @@ public class TextWriter(
 {
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     public string Delimiter { get; set; }
-    private IEntityRepository EntityRepository { get; } = entityRepository;
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -65,7 +64,7 @@ public class TextWriter(
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            var result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
+            var result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
             DataSource = result.Data;
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...",  result.TotalOfRecords.ToString("N0")];
@@ -83,7 +82,7 @@ public class TextWriter(
                     OrderBy = CurrentOrder,
                     CurrentPage = i,
                 };
-                result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
+                result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
                 DataSource = result.Data;
                 TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);

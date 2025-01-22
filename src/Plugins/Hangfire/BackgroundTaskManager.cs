@@ -34,9 +34,8 @@ public sealed class BackgroundTaskManager: IBackgroundTaskManager
 
         //Workaround: Interfaces are not a good idea with Hangfire.
         var taskTrigger = new TaskTrigger();
-        taskWrapper.JobId = taskTrigger.RunInBackground(key,worker);
-
         Tasks.Add(taskWrapper);
+        taskWrapper.JobId = taskTrigger.RunInBackground(key,worker);
     }
 
     public bool IsRunning(string key)

@@ -16,7 +16,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
 
     public MasterDataServiceBuilder WithBackgroundTaskManager<T>() where T : class, IBackgroundTaskManager
     {
-        Services.Replace(ServiceDescriptor.Transient<IBackgroundTaskManager, T>());
+        Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskManager, T>());
         return this;
     }
 
