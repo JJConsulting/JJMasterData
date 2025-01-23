@@ -10,7 +10,8 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public sealed class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncExpressionProvider
 {
-    public string Prefix => "sql";
+    public const string Prefix = "sql";
+    string IExpressionProvider.Prefix => Prefix;
     public string Title => "SQL";
     public Guid? ConnectionId { get; set; }
 

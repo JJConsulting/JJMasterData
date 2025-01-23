@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -38,23 +39,32 @@ public class FieldValuesService(ExpressionsService expressionsService)
         return new Dictionary<string, object?>(formStateData.Values);
     }
 
-    public async ValueTask<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
+    public async ValueTask<Dictionary<string, object?>> GetDefaultValuesAsync(
+        FormElement formElement,
+        FormStateData formStateData,
+        bool allowSqlValues = true)
     {
         var defaultValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var formStateDataCopy = formStateData.DeepCopy();
         var values = formStateData.Values;
-        var fieldsWithDefaultValue = formElement.Fields
-            .Where(f => !string.IsNullOrEmpty(f.DefaultValue) && 
-                        (!values.ContainsKey(f.Name) || string.IsNullOrEmpty(values[f.Name]?.ToString())));
-        
-        foreach (var field in fieldsWithDefaultValue)
+
+        foreach (var field in formElement.Fields)
         {
-            var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
-            var defaultValue = await expressionsService.GetDefaultValueAsync(fieldSelector, formStateDataCopy);
-            if (!string.IsNullOrEmpty(defaultValue?.ToString()))
+            var hasExpression = !string.IsNullOrEmpty(field.DefaultValue);
+            var valueDoesNotExist = !values.ContainsKey(field.Name) || string.IsNullOrEmpty(values[field.Name]?.ToString());
+            if (hasExpression && valueDoesNotExist)
             {
-                defaultValues.Add(field.Name, defaultValue);
-                formStateDataCopy.Values[field.Name] = defaultValue;
+                if (!allowSqlValues && field.DefaultValue!.StartsWith(SqlExpressionProvider.Prefix))
+                    continue;
+                
+                var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
+                var defaultValue = await expressionsService.GetDefaultValueAsync(fieldSelector, formStateDataCopy);
+
+                if (!string.IsNullOrEmpty(defaultValue?.ToString()))
+                {
+                    defaultValues.Add(field.Name, defaultValue);
+                    formStateDataCopy.Values[field.Name] = defaultValue;
+                }
             }
         }
 

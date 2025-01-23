@@ -25,6 +25,7 @@ public class FormService(
     ILogger<FormService> logger)
 {
     #region Events
+
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeDeleteAsync;
     public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeInsertAsync;
@@ -32,8 +33,29 @@ public class FormService(
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeUpdateAsync;
     public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
+
     #endregion
+
     #region Methods
+
+    public async Task<FormLetter<Dictionary<string, object>>> GetAsync(FormElement formElement,
+        Dictionary<string, object> filters)
+    {
+        var errors = new Dictionary<string, string>();
+        var formLetter = new FormLetter<Dictionary<string, object>>(errors);
+
+        try
+        {
+            formLetter.Result = await entityRepository.GetFieldsAsync(formElement, filters);
+        }
+        catch (Exception e)
+        {
+            logger.LogFormServiceError(e, nameof(GetAsync));
+            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
+        }
+
+        return formLetter;
+    }
 
     /// <summary>
     /// Update records applying expressions and default values.
@@ -41,14 +63,15 @@ public class FormService(
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
+    public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values,
+        DataContext dataContext)
     {
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors =  fieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
+        var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdateAsync != null)
-        {           
+        {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
             await OnBeforeUpdateAsync(dataContext, beforeActionArgs);
         }
@@ -64,7 +87,7 @@ public class FormService(
         }
         catch (Exception e)
         {
-            logger.LogFormServiceError(e,  nameof(UpdateAsync));
+            logger.LogFormServiceError(e, nameof(UpdateAsync));
             errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
@@ -78,18 +101,19 @@ public class FormService(
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
-        
+
         if (OnAfterUpdateAsync != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             await OnAfterUpdateAsync.Invoke(this, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
-        
+
         return result;
     }
 
-    public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext, bool validateFields = true)
+    public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object> values,
+        DataContext dataContext, bool validateFields = true)
     {
         var isForm = dataContext.Source is DataContextSource.Form;
         Dictionary<string, string> errors;
@@ -99,7 +123,7 @@ public class FormService(
             errors = new Dictionary<string, string>();
 
         var result = new FormLetter(errors);
-        
+
         if (OnBeforeInsertAsync != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
@@ -115,7 +139,7 @@ public class FormService(
         }
         catch (Exception e)
         {
-            logger.LogFormServiceError(e,  nameof(InsertAsync));
+            logger.LogFormServiceError(e, nameof(InsertAsync));
             errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
@@ -127,7 +151,7 @@ public class FormService(
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
-        
+
         if (OnAfterInsertAsync != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
@@ -144,7 +168,8 @@ public class FormService(
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
+    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,
+        Dictionary<string, object> values, DataContext dataContext)
     {
         var isForm = dataContext.Source is DataContextSource.Form;
         var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
@@ -153,20 +178,20 @@ public class FormService(
         if (OnBeforeImportAsync != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            
+
             await OnBeforeImportAsync.Invoke(dataContext, beforeActionArgs);
         }
 
         if (errors.Count > 0)
             return letter;
-        
+
         try
         {
             letter.Result = await entityRepository.SetValuesAsync(formElement, values);
         }
         catch (Exception e)
         {
-            logger.LogFormServiceError(e,  nameof(InsertOrReplaceAsync));
+            logger.LogFormServiceError(e, nameof(InsertOrReplaceAsync));
             errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
@@ -178,7 +203,7 @@ public class FormService(
 
         if (dataContext.Source == DataContextSource.Form)
             formFileService.SaveFormMemoryFiles(formElement, values);
-        
+
         switch (letter.Result)
         {
             case CommandOperation.Insert when OnAfterInsertAsync != null:
@@ -215,7 +240,8 @@ public class FormService(
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>
     /// <param name="dataContext"></param>
     /// >
-    public async Task<FormLetter> DeleteAsync(FormElement formElement, Dictionary<string, object> primaryKeys, DataContext dataContext)
+    public async Task<FormLetter> DeleteAsync(FormElement formElement, Dictionary<string, object> primaryKeys,
+        DataContext dataContext)
     {
         var errors = new Dictionary<string, string>();
         var result = new FormLetter(errors);
@@ -236,7 +262,7 @@ public class FormService(
         }
         catch (Exception e)
         {
-            logger.LogFormServiceError(e,  nameof(DeleteAsync));
+            logger.LogFormServiceError(e, nameof(DeleteAsync));
             errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
         }
 
