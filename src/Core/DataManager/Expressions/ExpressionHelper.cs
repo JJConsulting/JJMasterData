@@ -21,9 +21,9 @@ public static class ExpressionHelper
 
             var stringValue = value switch
             {
-                double doubleValue => doubleValue.ToString("F", NumberFormatInfo.InvariantInfo),
-                decimal decimalValue => decimalValue.ToString("F", NumberFormatInfo.InvariantInfo),
-                float floatValue => floatValue.ToString("F", NumberFormatInfo.InvariantInfo),
+                double doubleValue => doubleValue.ToString("F6", NumberFormatInfo.InvariantInfo),
+                decimal decimalValue => decimalValue.ToString("F6", NumberFormatInfo.InvariantInfo),
+                float floatValue => floatValue.ToString("F6", NumberFormatInfo.InvariantInfo),
                 _ => value?.ToString() ?? string.Empty
             };
 
