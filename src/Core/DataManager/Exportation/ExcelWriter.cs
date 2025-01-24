@@ -89,7 +89,7 @@ public class ExcelWriter(
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            await Task.Delay(-1);
+
             var result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
             DataSource = result.Data;
             TotalOfRecords = result.TotalOfRecords;
