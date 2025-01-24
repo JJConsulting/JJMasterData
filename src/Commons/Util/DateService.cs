@@ -51,7 +51,7 @@ public class DateService(IStringLocalizer<MasterDataResources> localizer)
                     return localizer["1 day ago"];
                 
                 if (months == 1)
-                    return localizer["A month and 1 day ago", months];
+                    return localizer["A month and 1 day ago"];
 
                 return localizer["{0} months and 1 day ago", months];
             }
@@ -63,7 +63,7 @@ public class DateService(IStringLocalizer<MasterDataResources> localizer)
                 return localizer["A month ago"];
 
             if (months == 1)
-                return localizer["A month ago and {0} days ago", months, remainingDays];
+                return localizer["A month ago and {0} days ago", remainingDays];
             
             return localizer["{0} months and {1} days ago", months, remainingDays];
         }
