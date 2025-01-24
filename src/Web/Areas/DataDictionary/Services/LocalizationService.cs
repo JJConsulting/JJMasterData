@@ -4,7 +4,6 @@ using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
@@ -14,8 +13,7 @@ public class LocalizationService(
     IFormElementComponentFactory<JJFormView> formViewFactory,
     LocalizationFormElementFactory localizationFormElementFactory,
     IOptionsSnapshot<RequestLocalizationOptions> requestLocalizationOptions,
-    IStringLocalizer<MasterDataResources> stringLocalizer,
-    IMemoryCache memoryCache)
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public JJFormView GetFormView()
     {
@@ -30,9 +28,9 @@ public class LocalizationService(
         return formView;
     }
 
-    private ValueTask ClearCache(object sender, FormAfterActionEventArgs args)
+    private static ValueTask ClearCache(object sender, FormAfterActionEventArgs args)
     {
-        ClearCache();
+        MasterDataStringLocalizer.ClearCache();
         return ValueTask.CompletedTask;
     }
     
@@ -54,11 +52,5 @@ public class LocalizationService(
         memoryStream.Seek(0, SeekOrigin.Begin);
         
         return memoryStream;
-    }
-
-    private void ClearCache()
-    {
-        memoryCache.Remove(
-            $"JJMasterData.Commons.Localization.MasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
     }
 }
