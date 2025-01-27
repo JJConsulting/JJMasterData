@@ -82,10 +82,6 @@ public class FieldController(
         RecoverCustomAttributes(ref field);
 
         await fieldService.SaveFieldAsync(elementName, field, originalName);
-        if (ModelState.IsValid)
-        {
-            return RedirectToIndex(elementName, field);
-        }
         
         return RedirectToIndex(elementName, field);
     }
@@ -103,9 +99,6 @@ public class FieldController(
     {
         var dictionary = await fieldService.GetFormElementAsync(elementName);
         await fieldService.CopyFieldAsync(dictionary, field);
-        if (!ModelState.IsValid)
-            ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
-
         await PopulateViewData(dictionary, field);
         return View("Index", field);
     }
@@ -148,11 +141,7 @@ public class FieldController(
     public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field,
         DataElementMapFilter elementMapFilter)
     {
-        bool isValid = await fieldService.AddElementMapFilterAsync(field, elementMapFilter);
-        if (!isValid)
-        {
-            ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
-        }
+        await fieldService.AddElementMapFilterAsync(field, elementMapFilter);
 
         return RedirectToIndex(elementName, field);
     }
@@ -167,7 +156,6 @@ public class FieldController(
     private RedirectToActionResult RedirectToIndex(string elementName, FormElementField field)
     {
         TempData.Put("field", field);
-        TempData["Error"] = ViewData["Error"];
         TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
         TempData["OriginalName"] = ModelState.IsValid ? field.Name : Request.Form["originalName"].ToString();
 
@@ -196,9 +184,6 @@ public class FieldController(
 
         else if (TempData.TryGetValue("selected-tab", out var tempSelectedTab))
             ViewData["Tab"] = tempSelectedTab?.ToString()!;
-
-        if (TempData.TryGetValue("Error", out var value))
-            ViewData["Error"] = value!;
 
         if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
             ViewData["OriginalName"] = originalName;
@@ -360,9 +345,6 @@ public class FieldController(
 
             await fieldService.SetFormElementAsync(formElement);
         }
-
-        if (!ModelState.IsValid)
-            ViewData["Error"] = fieldService.GetValidationSummary().GetHtml();
         
         return RedirectToIndex(elementName, field);
     }
