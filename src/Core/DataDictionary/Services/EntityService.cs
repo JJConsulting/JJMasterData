@@ -53,10 +53,12 @@ public class EntityService(IValidationDictionary validationDictionary,
             if (!entityName.Equals(formElement.Name))
             {
                 await DataDictionaryRepository.DeleteAsync(entityName);
+
+                await UpdateOldElementNameReferences(entityName, formElement);
             }
 
             await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-
+            
             return formElement;
 
         }
@@ -68,5 +70,39 @@ public class EntityService(IValidationDictionary validationDictionary,
 
     }
 
+    private async Task UpdateOldElementNameReferences(string entityName, FormElement formElement)
+    {
+        var elementList = await DataDictionaryRepository.GetFormElementListAsync();
+        bool updateElement = false;
+        foreach (var element in elementList)
+        {
+            foreach (var relationship in element.Relationships)
+            {
+                if (relationship.ElementRelationship != null &&
+                    relationship.ElementRelationship.ChildElement == entityName)
+                {
+                    relationship.ElementRelationship.ChildElement = formElement.Name;
+                    updateElement = true;
+                }
+            }
 
+            foreach (var field in element.Fields)
+            {
+                if (field.DataItem?.ElementMap is not null)
+                {
+                    if (field.DataItem.ElementMap.ElementName == entityName)
+                    {
+                        field.DataItem.ElementMap.ElementName = formElement.Name;
+                        updateElement = true;
+                    }
+                }
+            }
+
+            if (updateElement)
+            {
+                await DataDictionaryRepository.InsertOrReplaceAsync(element);
+                updateElement = false;
+            }
+        }
+    }
 }
