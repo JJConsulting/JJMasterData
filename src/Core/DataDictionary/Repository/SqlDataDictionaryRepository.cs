@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -109,7 +110,7 @@ public class SqlDataDictionaryRepository(
         return null;
     }
 
-    public async ValueTask<FormElement?> GetFormElementAsync(string elementName)
+    public async ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
         if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement? formElement))
             return formElement!.DeepCopy();
@@ -118,22 +119,19 @@ public class SqlDataDictionaryRepository(
 
         var values = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
 
+        if (values.Count == 0)
+            throw new JJMasterDataException($"Element {elementName} was not found.");
+        
         var model = DataDictionaryModel.FromDictionary(values);
         
-        if (model != null)
-        {
-            formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
-            
-            if(_enableDataDictionaryCaching)
-                memoryCache.Set(elementName, formElement);
-            
-            return formElement!.DeepCopy();
-        }
-
-        return null;
+        formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
+        
+        if(_enableDataDictionaryCaching)
+            memoryCache.Set(elementName, formElement);
+        
+        return formElement!.DeepCopy();
     }
-
-
+    
     public async Task InsertOrReplaceAsync(FormElement formElement)
     {
         var values = GetFormElementDictionary(formElement);
