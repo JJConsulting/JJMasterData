@@ -152,7 +152,7 @@ class ActionHelper {
                         defaultModal.showUrl(data.urlRedirect, data.modalTitle, data.modalSize);
                     }
                 }
-                if (openNewTab) {
+                else if (openNewTab) {
                     window.open(data.urlRedirect, '_blank');
                 }
                 else {
