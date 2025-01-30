@@ -23,5 +23,5 @@ public class UrlRedirectModel
     public required ModalSize ModalSize { get; set; }
     
     [JsonPropertyName("OpenInNewTab")] 
-    public bool OpenNewTabPage { get; set; }
+    public bool OpenInNewTab { get; set; }
 }

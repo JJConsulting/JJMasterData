@@ -68,7 +68,7 @@ public class UrlRedirectService(
             ModalTitle = parsedTitle!,
             UrlAsModal = action.IsModal,
             ModalSize = action.ModalSize,
-            OpenNewTabPage = action.OpenInNewTab
+            OpenInNewTab = action.OpenInNewTab
         };
         
         return new JsonComponentResult(model);
