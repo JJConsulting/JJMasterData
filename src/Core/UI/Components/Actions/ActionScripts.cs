@@ -97,13 +97,14 @@ public class ActionScripts(
             var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
 
             return
-                $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+                $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}', '{action.OpenInNewTab.ToString().ToLower()}' {(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
 
         var script = new StringBuilder();
         string url = urlRedirectService.GetParsedUrl(action, actionContext.FormStateData);
         string isModal = action.IsModal ? "true" : "false";
         string isIframe = action.IsIframe ? "true" : "false";
+        string isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
 
         string modalTitle = action.ModalTitle;
 
@@ -117,6 +118,8 @@ public class ActionScripts(
         script.Append((int)action.ModalSize);
         script.Append("',");
         script.Append(isIframe);
+        script.Append(',');
+        script.Append(isOpenNewTabPage);
         script.Append(",'");
         script.Append(stringLocalizer[action.ConfirmationMessage]);
         script.Append("');");

@@ -31,6 +31,10 @@ public sealed class UrlRedirectAction : BasicAction
     [Display(Name="Encrypt Parameters")]
     public bool EncryptParameters { get; set; }
     
+    [JsonPropertyName("openInNewTab")]
+    [Display(Name="Open in New Tab")]
+    public bool OpenInNewTab { get; set; }
+    
     public UrlRedirectAction()
     {
         Icon = IconType.ExternalLink;
