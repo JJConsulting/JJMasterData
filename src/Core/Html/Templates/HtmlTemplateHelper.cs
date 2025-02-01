@@ -56,7 +56,7 @@ public class HtmlTemplateHelper(
         return localize;
     }
 
-    public FunctionValue HtmlEncoderHtmlEncoderGetLocalizeFunction()
+    public FunctionValue GetLocalizeFunction()
     {
         var localize = new FunctionValue((args, _) =>
         {
