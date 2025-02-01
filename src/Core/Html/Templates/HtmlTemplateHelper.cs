@@ -2,7 +2,6 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using JJMasterData.Commons.Localization;
@@ -35,7 +34,7 @@ public class HtmlTemplateHelper(
             {
                 localizedString = stringLocalizer[inputString];
             }
-            return StringValue.Create(localizedString, encode:true);
+            return StringValue.Create(localizedString);
         };
     }
     
@@ -57,7 +56,7 @@ public class HtmlTemplateHelper(
         return localize;
     }
 
-    public FunctionValue GetLocalizeFunction()
+    public FunctionValue HtmlEncoderHtmlEncoderGetLocalizeFunction()
     {
         var localize = new FunctionValue((args, _) =>
         {
@@ -66,7 +65,7 @@ public class HtmlTemplateHelper(
 
             var localizedString = stringLocalizer[firstArg, localizerArgs.ToArray()];
 
-            return StringValue.Create(localizedString, encode: true);
+            return StringValue.Create(localizedString);
         });
         return localize;
     }
@@ -97,21 +96,21 @@ public class HtmlTemplateHelper(
     {
         var str = args.At(0).ToStringValue();
 
-        return StringValue.Create(str.Trim(), encode:true);
+        return StringValue.Create(str.Trim());
     });
     
     public static FunctionValue TrimStart { get; } = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
 
-        return StringValue.Create(str.TrimStart(), encode:true);
+        return StringValue.Create(str.TrimStart());
     });
     
     public static FunctionValue TrimEnd { get; } = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
 
-        return StringValue.Create(str.TrimEnd(), encode:true);
+        return StringValue.Create(str.TrimEnd());
     });
     
     public static FunctionValue IsNullOrEmpty { get; } = new((args, _) =>
@@ -150,6 +149,6 @@ public class HtmlTemplateHelper(
             ? str.Substring(startIndex, length)
             : str[startIndex..];
 
-        return new StringValue(substring, encode:true);
+        return new StringValue(substring);
     });
 }
