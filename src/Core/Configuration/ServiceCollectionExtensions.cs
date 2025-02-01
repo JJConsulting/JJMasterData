@@ -5,6 +5,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Html.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -54,8 +55,8 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
 
-        services.AddTransient(typeof(HtmlTemplateRenderer<>));
-        services.AddTransient(typeof(HtmlTemplateHelper<>));
+        services.AddTransient<HtmlTemplateHelper>();
+        services.AddTransient<HtmlTemplateRenderer>();
         
         services.AddScoped<IExcelWriter, ExcelWriter>();
         services.AddScoped<ITextWriter, TextWriter>();

@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Html.Templates;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
@@ -18,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataManager.Services;
 
 public class HtmlTemplateService(
-    HtmlTemplateRenderer<MasterDataResources> htmlTemplateRenderer,
+    HtmlTemplateRenderer htmlTemplateRenderer,
     IEntityRepository entityRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILogger<HtmlTemplateService> logger)

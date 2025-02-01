@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
-using static JJMasterData.Core.Html.HtmlTemplateFunctions;
+using static JJMasterData.Core.Html.Templates.HtmlTemplateHelper;
 
-namespace JJMasterData.Core.Html;
+namespace JJMasterData.Core.Html.Templates;
 
-public class HtmlTemplateRenderer<TResource>(
+public class HtmlTemplateRenderer(
     FluidParser fluidParser, 
-    HtmlTemplateHelper<TResource> helper)
+    HtmlTemplateHelper helper)
 {
     public ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
     {
@@ -29,9 +30,9 @@ public class HtmlTemplateRenderer<TResource>(
         context.SetValue("trimEnd", TrimEnd);
         context.SetValue("dateAsText", helper.GetDatePhraseFunction());
         context.SetValue("urlPath", helper.GetUrlPathFunction());
-        context.SetValue("appUrl", helper.GetUrlPathFunction());
+        context.SetValue("appUrl", helper.GetAppUrlFunction());
         context.SetValue("localize", helper.GetLocalizeFunction());
 
-        return template.RenderAsync(context);
+        return template.RenderAsync(context, HtmlEncoder.Default);
     }
 }
