@@ -31,13 +31,17 @@
 
         <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
                     <label asp-for="UrlRedirect" class="form-label"></label>
                     <tooltip title="@StringLocalizer["This field support runtime values between {}. Use {AppPath} for the base path of the application."]"/>
                     <input asp-for="UrlRedirect" class="form-control font-monospace"/>
                 </div>
-
-
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <div class="mb-3 col-sm-12">
+                        <checkbox for="OpenInNewTab" layout="Switch"/>
+                    </div>
+                </div>
+                
             </div>
 
             <collapse-panel title="@StringLocalizer["Modal"]" icon="SolidWindowMaximize" expanded-by-default="false">

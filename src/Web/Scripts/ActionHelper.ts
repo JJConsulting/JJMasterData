@@ -80,7 +80,7 @@ class ActionHelper {
         }, title, ModalSize.Default);
     }
 
-    static async executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {
+    static async executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, openNewTab?: boolean, confirmationMessage?: string ) {
         if (confirmationMessage) {
             const result = await showConfirmationMessage(confirmationMessage);
             if (!result) {
@@ -119,12 +119,12 @@ class ActionHelper {
 
         const url = urlBuilder.build();
 
-        this.executeUrlRedirect(url);
+        this.executeUrlRedirect(url, openNewTab);
 
         return true;
     }
 
-    static async executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
+    static async executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, openNewTab, confirmationMessage) {
         if (confirmationMessage) {
             const result = await showConfirmationMessage(confirmationMessage);
             if (!result) {
@@ -137,12 +137,15 @@ class ActionHelper {
             } else {
                 defaultModal.showUrl(url, modalTitle, modalSize);
             }
+        }
+        else if (openNewTab) {
+            window.open(url, '_blank');
         } else {
             window.location.href = url;
         }
     }
 
-    private static executeUrlRedirect(url: string) {
+    private static executeUrlRedirect(url: string, openNewTab: boolean) {
         postFormValues({
             url: url,
             success: (data: UrlRedirectModel) => {
@@ -152,6 +155,8 @@ class ActionHelper {
                     } else {
                         defaultModal.showUrl(data.urlRedirect, data.modalTitle, data.modalSize);
                     }
+                } else if (openNewTab) {
+                    window.open(data.urlRedirect, '_blank');
                 } else {
                     window.location.href = data.urlRedirect;
                 }

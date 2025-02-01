@@ -76,7 +76,7 @@ class ActionHelper {
             }, title, ModalSize.Default);
         });
     }
-    static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
+    static executeRedirectAction(componentName, routeContext, encryptedActionMap, openNewTab, confirmationMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (confirmationMessage) {
                 const result = yield showConfirmationMessage(confirmationMessage);
@@ -112,11 +112,11 @@ class ActionHelper {
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("componentName", componentName);
             const url = urlBuilder.build();
-            this.executeUrlRedirect(url);
+            this.executeUrlRedirect(url, openNewTab);
             return true;
         });
     }
-    static executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
+    static executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, openNewTab, confirmationMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             if (confirmationMessage) {
                 const result = yield showConfirmationMessage(confirmationMessage);
@@ -132,12 +132,15 @@ class ActionHelper {
                     defaultModal.showUrl(url, modalTitle, modalSize);
                 }
             }
+            else if (openNewTab) {
+                window.open(url, '_blank');
+            }
             else {
                 window.location.href = url;
             }
         });
     }
-    static executeUrlRedirect(url) {
+    static executeUrlRedirect(url, openNewTab) {
         postFormValues({
             url: url,
             success: (data) => {
@@ -148,6 +151,9 @@ class ActionHelper {
                     else {
                         defaultModal.showUrl(data.urlRedirect, data.modalTitle, data.modalSize);
                     }
+                }
+                else if (openNewTab) {
+                    window.open(data.urlRedirect, '_blank');
                 }
                 else {
                     window.location.href = data.urlRedirect;
