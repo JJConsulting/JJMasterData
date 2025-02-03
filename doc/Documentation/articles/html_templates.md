@@ -2,36 +2,7 @@
 
 HTML templates are made using a Liquid template rendered by [Fluid](https://github.com/sebastienros/fluid).
 
-## Objects
-Objects are used to output dynamic content and are enclosed in `{{ }}`.
-
-```liquid
-{{ variable_name }}
-```
-If you are at Grid Rendering Template, you can use {{ MyField }}, if you are at [HTML Template Action, read more here](actions/html_template_action.md).
-
-## Tags
-Tags control the logic and flow. They are enclosed in `{% %}`.
-
-### Control Flow:
-```liquid
-{% if age > 18 %}
-  You are an adult
-{% elsif age > 12 %}
-  You are a teenager
-{% else %}
-  You are a child
-{% endif %}
-```
-
-### Loops:
-```liquid
-{% for child in children %}
-  * {{ child }}
-{% else %}
-  You have no kids. Enjoy all your money.
-{% endfor %}
-```
+Check [Liquid](https://shopify.github.io/liquid/) docs for more info.
 
 ## Available JJMasterData Functions
 
