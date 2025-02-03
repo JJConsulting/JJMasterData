@@ -282,7 +282,9 @@ public class JJDataPanel(
 
     private void AppendHiddenInputs(HtmlBuilder html)
     {
-        var containsPkErrors = FormElement.Fields.Any(field => Errors.ContainsKey(field.Name));
+        var containsPkErrors = FormElement.Fields
+            .Where(f=>f.IsPk)
+            .Any(field => Errors.ContainsKey(field.Name));
         
         if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues && !containsPkErrors)
             html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
