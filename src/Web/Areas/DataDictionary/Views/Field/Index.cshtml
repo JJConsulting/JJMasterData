@@ -12,6 +12,7 @@
 
 @{
     ViewData["Title"] = $"{ViewData["ElementName"]} - {StringLocalizer["Fields"]}";
+    ViewData["UseCodeMirror"] = true;
     var isForm = ViewData["IsForm"] is true;
     var elementName = ViewData["ElementName"]!.ToString();
     Layout = !isForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;

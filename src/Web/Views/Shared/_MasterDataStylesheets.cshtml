@@ -2,7 +2,6 @@
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
-    var areaName = ViewContext.RouteData.Values["area"] as string;
     var pathBase = Context.Request.PathBase;
 }
 
@@ -35,7 +34,7 @@ else
 <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/ssms.min.css" />
 <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/dropzone/dropzone.min.css" />
 <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/dropzone/dropzone-theme.css" />
-@if (areaName is "DataDictionary")
+@if (ViewData["UseCodeMirror"] is true)
 {
     <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css"  />
     <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css"  />
