@@ -141,7 +141,7 @@ public class ExcelWriter(
                 }
 
                 await sw.WriteAsync($"\t\t\t\t<td{tdStyle}>");
-                await sw.WriteAsync(value.Replace("\n"," ").Replace("\t"," "));
+                await sw.WriteAsync(value?.Replace("\n"," ").Replace("\t"," "));
                 await sw.WriteLineAsync("</td>");
             }
 
