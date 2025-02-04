@@ -16,8 +16,8 @@
     <input asp-for="MenuId" hidden/>
     <div class="row">
         <div class="col-sm-12">
-            <link-button text="Save" color="Primary" icon="Check" type="LinkButtonType.Submit"/>
-            <link-button text="Cancel" icon="SolidXmark" asp-action="Index" asp-route-elementName="@Model.ElementName"/>
+            <link-button text="@StringLocalizer["Save"]" color="Primary" icon="Check" type="LinkButtonType.Submit"/>
+            <link-button text="@StringLocalizer["Cancel"]" icon="SolidXmark" asp-action="Index" asp-route-elementName="@Model.ElementName"/>
         </div>
     </div>
     <br>
