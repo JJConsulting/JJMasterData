@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -9,10 +10,15 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementExportService(IDataDictionaryRepository dataDictionaryRepository)
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions JsonSerializerOptions;
+    static ElementExportService()
     {
-        WriteIndented = true
-    };
+        JsonSerializerOptions= new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
+        };
+    }
 
     public async Task<MemoryStream> ExportSingleRowAsync(Dictionary<string, object> row)
     {
@@ -40,7 +46,7 @@ public class ElementExportService(IDataDictionaryRepository dataDictionaryReposi
 
                 var jsonFile = archive.CreateEntry($"{elementName}.json");
                 using var jsonFileStream = jsonFile.Open();
-                await JsonSerializer.SerializeAsync(jsonFileStream, formElement);
+                await JsonSerializer.SerializeAsync(jsonFileStream, formElement, JsonSerializerOptions.Default);
             }
         }
         
