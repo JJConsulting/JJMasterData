@@ -54,13 +54,79 @@ public class JJFormView : AsyncComponent
 {
     #region "Events"
 
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeDeleteAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync
+    {
+        add
+        {
+            _formService.OnBeforeImportAsync += value;
+            DataImportation.OnBeforeImportAsync += value;
+        }
+        remove
+        {
+            _formService.OnBeforeImportAsync -= value;
+            DataImportation.OnBeforeImportAsync -= value;
+        }
+    }
+
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync
+    {
+        add => _formService.OnBeforeInsertAsync += value;
+        remove => _formService.OnBeforeInsertAsync -= value;
+    }
+
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync
+    {
+        add => _formService.OnBeforeUpdateAsync += value;
+        remove => _formService.OnBeforeUpdateAsync -= value;
+    }
+
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeDeleteAsync
+    {
+        add => _formService.OnBeforeDeleteAsync += value;
+        remove => _formService.OnBeforeDeleteAsync -= value;
+    }
+
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync
+    {
+        add
+        {
+            _formService.OnAfterInsertAsync += value;
+            DataImportation.OnAfterInsertAsync += value;
+        }
+        remove
+        {
+            _formService.OnAfterInsertAsync -= value;
+            DataImportation.OnAfterInsertAsync -= value;
+        }
+    }
+
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync
+    {
+        add
+        {
+            _formService.OnAfterUpdateAsync += value;
+            DataImportation.OnAfterUpdateAsync += value;
+        }
+        remove
+        {
+            _formService.OnAfterUpdateAsync -= value;
+            DataImportation.OnAfterUpdateAsync -= value;
+        }
+    }
+
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync
+    {
+        add
+        {
+            _formService.OnAfterDeleteAsync += value;
+            DataImportation.OnAfterDeleteAsync += value;
+        }
+        remove
+        {
+            _formService.OnAfterDeleteAsync -= value;
+            DataImportation.OnAfterDeleteAsync -= value;
+        }
+    }
 
     #endregion
 
@@ -136,10 +202,6 @@ public class JJFormView : AsyncComponent
                 return _dataImportation;
 
             _dataImportation = GridView.DataImportation;
-            _dataImportation.OnBeforeImportAsync += OnBeforeImportAsync;
-            _dataImportation.OnAfterDeleteAsync += OnAfterDeleteAsync;
-            _dataImportation.OnAfterInsertAsync += OnAfterInsertAsync;
-            _dataImportation.OnAfterUpdateAsync += OnAfterUpdateAsync;
             _dataImportation.RelationValues = RelationValues;
 
             return _dataImportation;
@@ -633,8 +695,6 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetFormActionResult()
     {
-        SetFormServiceEvents();
-
         var result = CurrentAction switch
         {
             ViewAction => await GetViewResult(),
@@ -823,17 +883,6 @@ public class JJFormView : AsyncComponent
         DataHelper.CopyIntoDictionary(DataPanel.SecretValues, secretValues, true);
     }
 
-    private void SetFormServiceEvents()
-    {
-        _formService.OnBeforeInsertAsync += OnBeforeInsertAsync;
-        _formService.OnBeforeDeleteAsync += OnBeforeDeleteAsync;
-        _formService.OnBeforeUpdateAsync += OnBeforeUpdateAsync;
-
-        _formService.OnAfterInsertAsync += OnAfterInsertAsync;
-        _formService.OnAfterUpdateAsync += OnAfterUpdateAsync;
-        _formService.OnAfterDeleteAsync += OnAfterDeleteAsync;
-    }
-
     private Task<ComponentResult> GetGridViewResult()
     {
         return GridView.GetResultAsync();
@@ -899,7 +948,7 @@ public class JJFormView : AsyncComponent
             FormElement,
             formStateData,
             allowSqlValues: false);
-        
+
         DataHelper.CopyIntoDictionary(filters, defaultValues, true);
 
         DataHelper.RemoveNullValues(filters);
@@ -1113,7 +1162,7 @@ public class JJFormView : AsyncComponent
         {
             return await GetGridResultWithErrors(errors);
         }
-        
+
         return await GetFormResult(values, PageState, false);
     }
 
@@ -1121,7 +1170,7 @@ public class JJFormView : AsyncComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         var messageFactory = ComponentFactory.Html.MessageBox;
-  
+
         var filters = await GetFiltersWithDefaultValues(PageState.Delete);
 
         var errors = await DeleteFormValuesAsync(filters!);
@@ -1134,7 +1183,7 @@ public class JJFormView : AsyncComponent
             if (GridView.EnableMultiSelect)
                 GridView.ClearSelectedGridValues();
         }
-        
+
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
             return new RedirectComponentResult(UrlRedirect!);
@@ -1223,7 +1272,8 @@ public class JJFormView : AsyncComponent
         return GetFormResult(values, new(), pageState, autoReloadFormFields);
     }
 
-    private async Task<ComponentResult> GetFormResult(Dictionary<string, object?> values, Dictionary<string, string> errors,
+    private async Task<ComponentResult> GetFormResult(Dictionary<string, object?> values,
+        Dictionary<string, string> errors,
         PageState pageState, bool autoReloadFormFields)
     {
         var visibleRelationships = GetVisibleRelationships(values, pageState);
@@ -1247,15 +1297,15 @@ public class JJFormView : AsyncComponent
 
         if (relationshipResult is not HtmlComponentResult htmlComponentResult)
             return relationshipResult;
-        
+
         var parentIsHidden = !visibleRelationships.Any(r => r.IsParent);
 
         if (parentIsHidden)
             DataPanel.AppendHiddenInputs(htmlComponentResult.HtmlBuilder);
-        
+
         return relationshipResult;
     }
-    
+
     internal async Task<ComponentResult> GetRelationshipLayoutResult(
         List<FormElementRelationship> visibleRelationships,
         Dictionary<string, object?> values)
@@ -1403,7 +1453,7 @@ public class JJFormView : AsyncComponent
 
         if (!DataPanel.ContainsPanelState())
             DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState : PageState.View;
-        
+
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
         ConfigureFormToolbar();
@@ -1675,21 +1725,15 @@ public class JJFormView : AsyncComponent
 
     public void AddFormEventHandler(IFormEventHandler? formEventHandler)
     {
-        if (formEventHandler != null)
-        {
-            AddEventHandlers(formEventHandler);
-        }
-    }
-
-    private void AddEventHandlers(IFormEventHandler eventHandler)
-    {
-        OnBeforeInsertAsync += eventHandler.OnBeforeInsertAsync;
-        OnBeforeDeleteAsync += eventHandler.OnBeforeDeleteAsync;
-        OnBeforeUpdateAsync += eventHandler.OnBeforeUpdateAsync;
-        OnBeforeImportAsync += eventHandler.OnBeforeImportAsync;
-        OnAfterDeleteAsync += eventHandler.OnAfterDeleteAsync;
-        OnAfterInsertAsync += eventHandler.OnAfterInsertAsync;
-        OnAfterUpdateAsync += eventHandler.OnAfterUpdateAsync;
+        if (formEventHandler == null)
+            return;
+        OnBeforeInsertAsync += formEventHandler.OnBeforeInsertAsync;
+        OnBeforeDeleteAsync += formEventHandler.OnBeforeDeleteAsync;
+        OnBeforeUpdateAsync += formEventHandler.OnBeforeUpdateAsync;
+        OnBeforeImportAsync += formEventHandler.OnBeforeImportAsync;
+        OnAfterDeleteAsync += formEventHandler.OnAfterDeleteAsync;
+        OnAfterInsertAsync += formEventHandler.OnAfterInsertAsync;
+        OnAfterUpdateAsync += formEventHandler.OnAfterUpdateAsync;
     }
 
     private JJTitle GetTitle(FormStateData formStateData)

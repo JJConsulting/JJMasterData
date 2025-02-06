@@ -645,7 +645,7 @@ public class JJGridView : AsyncComponent
         
         if (ComponentContext is ComponentContext.GridViewRow)
         {
-            int rowIndex = int.Parse(CurrentContext.Request.QueryString["gridViewRowIndex"]);
+            var rowIndex = int.Parse(CurrentContext.Request.QueryString["gridViewRowIndex"]);
 
             await SetDataSource();
             

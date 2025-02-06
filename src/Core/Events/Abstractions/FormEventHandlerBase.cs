@@ -7,7 +7,6 @@ namespace JJMasterData.Core.Events.Abstractions;
 
 public abstract class FormEventHandlerBase : IFormEventHandler
 {
-    public abstract string ElementName { get; }
     public virtual ValueTask OnBeforeInsertAsync(object sender, FormBeforeActionEventArgs args) => ValueTaskHelper.CompletedTask;
     public virtual ValueTask OnBeforeUpdateAsync(object sender, FormBeforeActionEventArgs args) => ValueTaskHelper.CompletedTask;
     public virtual ValueTask OnBeforeDeleteAsync(object sender, FormBeforeActionEventArgs args) => ValueTaskHelper.CompletedTask;

@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+using System;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.UI.Events.Abstractions;
 
 namespace JJMasterData.Core.UI.Events;
 
-public class GridEventHandlerResolver
-    (IEnumerable<IGridEventHandler> eventHandlers) : EventHandlerResolverBase<IGridEventHandler>(eventHandlers),
+internal sealed class GridEventHandlerResolver(IServiceProvider serviceProvider)
+    : EventHandlerResolverBase<IGridEventHandler>(serviceProvider),
         IGridEventHandlerResolver
 {
     public IGridEventHandler GetGridEventHandler(string elementName)

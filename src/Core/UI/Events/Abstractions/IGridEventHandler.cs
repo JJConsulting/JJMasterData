@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using JJMasterData.Core.Events.Abstractions;
-using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 
 namespace JJMasterData.Core.UI.Events.Abstractions;
@@ -10,7 +9,7 @@ public interface IGridEventHandler : IEventHandler
     public ValueTask OnFilterLoadAsync(object sender, GridFilterLoadEventArgs eventArgs)
 #if NET
     {
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
         ;
@@ -19,7 +18,7 @@ public interface IGridEventHandler : IEventHandler
     public ValueTask OnRenderCellAsync(object sender, GridCellEventArgs eventArgs)
 #if NET
     {
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
         ;
@@ -28,7 +27,7 @@ public interface IGridEventHandler : IEventHandler
     public ValueTask OnRenderSelectedCellAsync(object sender, GridSelectedCellEventArgs eventArgs)
 #if NET
     {
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
         ;
@@ -45,7 +44,7 @@ public interface IGridEventHandler : IEventHandler
     public ValueTask OnRenderActionAsync(object sender, ActionEventArgs eventArgs)
 #if NET
     {
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
         ;
@@ -53,7 +52,7 @@ public interface IGridEventHandler : IEventHandler
     ValueTask OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs e)
 #if NET
     {
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
         ;
@@ -61,7 +60,7 @@ public interface IGridEventHandler : IEventHandler
     ValueTask OnRenderRowAsync(object sender, GridRowEventArgs e)
 #if NET
     {
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 #else
         ;

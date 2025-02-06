@@ -1,13 +1,14 @@
 ﻿#nullable enable
-using System.Collections.Generic;
-using System.Linq;
+using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Events.Abstractions;
 
-public class EventHandlerResolverBase<TEventHandler>(IEnumerable<TEventHandler> eventHandlers) where TEventHandler : IEventHandler
+internal class EventHandlerResolverBase<TEventHandler>(IServiceProvider serviceProvider) where TEventHandler : IEventHandler
 {
     protected TEventHandler? GetEventHandler(string elementName)
     {
-        return eventHandlers.FirstOrDefault(e => e.ElementName == elementName);
+        var eventHandler = serviceProvider.GetKeyedService<TEventHandler>(elementName);
+        return eventHandler;
     }
 }

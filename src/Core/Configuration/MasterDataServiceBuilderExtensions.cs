@@ -36,13 +36,6 @@ public static class MasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static MasterDataServiceBuilder WithEventHandlers(this MasterDataServiceBuilder builder, Assembly[] assemblies)
-    {
-        builder.Services.AddEventHandlers(assemblies);
-
-        return builder;
-    }
-    
     public static MasterDataServiceBuilder WithPdfExportation<T>(this MasterDataServiceBuilder builder) where T : IPdfWriter
     {
         builder.Services.AddTransient(typeof(IPdfWriter), typeof(T));

@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+using System;
 using JJMasterData.Core.Events.Abstractions;
 
 namespace JJMasterData.Core.Events;
 
-public class FormEventHandlerResolver
-    (IEnumerable<IFormEventHandler> eventHandlers) : EventHandlerResolverBase<IFormEventHandler>(eventHandlers),
-        IFormEventHandlerResolver
+internal sealed class FormEventHandlerResolver(IServiceProvider serviceProvider)
+    : EventHandlerResolverBase<IFormEventHandler>(serviceProvider), IFormEventHandlerResolver
 {
     public IFormEventHandler GetFormEventHandler(string elementName)
     {
