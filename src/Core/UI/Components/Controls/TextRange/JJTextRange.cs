@@ -152,11 +152,10 @@ public class JJTextRange(IFormValues formValues,
     {
         return new HtmlBuilder(HtmlTag.Li)
             .WithOnClick( script)
-            .Append(HtmlTag.A, a =>
+            .AppendDiv(div =>
             {
-                a.WithCssClass("dropdown-item");
-                a.WithAttribute("href", "#");
-                a.AppendText(label);
+                div.WithCssClass("dropdown-item");
+                div.AppendText(label);
             });
     }
 
