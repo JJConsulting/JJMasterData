@@ -272,15 +272,15 @@ public class JJDataPanel(
             .WithCssClass(CssClass);
 
         AppendHiddenInputs(html);
-
+        
         var panelGroup = new DataPanelLayout(this);
         html.AppendRange(await panelGroup.GetHtmlPanelList());
         html.AppendScript(GetHtmlFormScript());
-
+        
         return html;
     }
 
-    private void AppendHiddenInputs(HtmlBuilder html)
+    internal void AppendHiddenInputs(HtmlBuilder html)
     {
         var containsPkErrors = FormElement.Fields
             .Where(f=>f.IsPk)

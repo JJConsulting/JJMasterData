@@ -1223,7 +1223,7 @@ public class JJFormView : AsyncComponent
         return GetFormResult(values, new(), pageState, autoReloadFormFields);
     }
 
-    private Task<ComponentResult> GetFormResult(Dictionary<string, object?> values, Dictionary<string, string> errors,
+    private async Task<ComponentResult> GetFormResult(Dictionary<string, object?> values, Dictionary<string, string> errors,
         PageState pageState, bool autoReloadFormFields)
     {
         var visibleRelationships = GetVisibleRelationships(values, pageState);
@@ -1231,7 +1231,9 @@ public class JJFormView : AsyncComponent
 
         if (!containsRelationshipLayout && !DataPanel.HasCustomPanelState &&
             RelationshipType is not RelationshipType.OneToOne)
+        {
             DataPanel.PageState = pageState;
+        }
 
         DataPanel.Errors = errors;
         DataPanel.Values = values;
@@ -1239,12 +1241,21 @@ public class JJFormView : AsyncComponent
         DataPanel.IsAtModal = CurrentAction is IModalAction { ShowAsModal: true };
 
         if (!containsRelationshipLayout)
-            return GetDataPanelResult();
+            return await GetDataPanelResult();
 
-        return GetRelationshipLayoutResult(visibleRelationships, values);
+        var relationshipResult = await GetRelationshipLayoutResult(visibleRelationships, values);
+
+        if (relationshipResult is not HtmlComponentResult htmlComponentResult)
+            return relationshipResult;
+        
+        var parentIsHidden = !visibleRelationships.Any(r => r.IsParent);
+
+        if (parentIsHidden)
+            DataPanel.AppendHiddenInputs(htmlComponentResult.HtmlBuilder);
+        
+        return relationshipResult;
     }
-
-
+    
     internal async Task<ComponentResult> GetRelationshipLayoutResult(
         List<FormElementRelationship> visibleRelationships,
         Dictionary<string, object?> values)
@@ -1392,7 +1403,7 @@ public class JJFormView : AsyncComponent
 
         if (!DataPanel.ContainsPanelState())
             DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState : PageState.View;
-
+        
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
         ConfigureFormToolbar();
