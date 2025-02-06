@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
@@ -70,10 +70,13 @@ public sealed class DictionaryStringObjectJsonConverter : JsonConverter<Dictiona
         {
             case JsonTokenType.String:
                 var jsonString = reader.GetString();
-            
-                if (DateTime.TryParse(jsonString, out var date))
+
+                if (jsonString?.Count(x => x is '/' or '-') == 2)
                 {
-                    return date;
+                    if (DateTime.TryParse(jsonString, out var date))
+                    {
+                        return date;
+                    }
                 }
                 return jsonString;
             case JsonTokenType.False:
