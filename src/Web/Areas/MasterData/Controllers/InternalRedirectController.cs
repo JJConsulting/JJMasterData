@@ -32,8 +32,9 @@ public class InternalRedirectController(
             case RelationshipViewType.List:
             {
                 var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                formView.ShowTitle = state.ShowTitle;
                 formView.RelationValues = state.RelationValues;
-
+                
                 if (userId != null)
                 {
                     formView.SetUserValues("USERID", userId);
@@ -143,6 +144,9 @@ public class InternalRedirectController(
             {
                 case "formname":
                     state.ElementName = @params.Get(key);
+                    break;
+                case "showtitle":
+                    state.ShowTitle = @params.Get(key) == "1";
                     break;
                 case "viewtype":
                     state.RelationshipType = (RelationshipViewType)int.Parse(@params.Get(key) ?? string.Empty);

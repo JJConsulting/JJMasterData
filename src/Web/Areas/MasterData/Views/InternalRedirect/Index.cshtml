@@ -14,7 +14,8 @@
     <script lang="js" type="text/javascript">
          window.parent.defaultModal.modalTitle = '@Html.Raw(Model.Title)';
     </script>
-    if (ViewBag.Success == true)
+    
+    if (ViewData["Success"] is true)
     {
         <script lang="js" type="text/javascript">
             submitParentWindow()

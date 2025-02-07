@@ -7,4 +7,5 @@ public class InternalRedirectState
     public string? ElementName { get; set; }
     public RelationshipViewType RelationshipType { get; set; } = RelationshipViewType.List;
     public Dictionary<string, object> RelationValues { get; } = new();
+    public bool ShowTitle { get; set; }
 }
