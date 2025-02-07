@@ -38,12 +38,13 @@ public class FormController(
 
     private void ConfigureFormView(JJFormView formView)
     {
-        var userId = HttpContext.User.GetUserId();
+        var user = HttpContext.User;
+        var userId = user.GetUserId();
 
         if (userId == null)
             return;
 
-        if (HttpContext.User.HasClaim(c => c.Type is "DataDictionary"))
+        if (user.IsInRole("Admin") || user.HasClaim(c => c.Type is "DataDictionary"))
         {
             formView.TitleActions =
             [
