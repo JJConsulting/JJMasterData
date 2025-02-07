@@ -197,6 +197,9 @@
     <value>Redireciona para esta URL após o comando ser executado com sucesso.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Cannot add a recursive relationship." xml:space="preserve">
+    <value>Não é possível adicionar um relacionamento recursivo.</value>
+  </data>
   <data name="About" xml:space="preserve">
     <value>Sobre</value>
     <comment>JJMasterDataWeb</comment>

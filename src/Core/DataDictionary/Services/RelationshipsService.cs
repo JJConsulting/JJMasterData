@@ -77,7 +77,15 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
             AddError("Entity", StringLocalizer["Entity {0} not found", childElementName]);
             return IsValid;
         }
+        
+        var childElement = await DataDictionaryRepository.GetFormElementAsync(childElementName);
 
+        if (childElement.Relationships.Any(r =>
+                r.ElementRelationship != null && r.ElementRelationship.ChildElement == elementName))
+        {
+            AddError("Entity", StringLocalizer["Cannot add a recursive relationship.", childElementName]);
+        }
+        
         if (string.IsNullOrEmpty(pkColumnName))
         {
             AddError("PkColumn", StringLocalizer["Required PkColumn field"]);
