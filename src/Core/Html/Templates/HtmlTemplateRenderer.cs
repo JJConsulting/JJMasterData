@@ -10,7 +10,8 @@ namespace JJMasterData.Core.Html.Templates;
 [PublicAPI]
 public class HtmlTemplateRenderer(
     FluidParser fluidParser,
-    HtmlTemplateHelper helper)
+    HtmlTemplateHelper helper
+    )
 {
     public ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
     {
@@ -23,23 +24,6 @@ public class HtmlTemplateRenderer(
 
         return template.RenderAsync(context, HtmlEncoder.Default);
     }
-
-    private void SetDefaultValues(TemplateContext context)
-    {
-        context.Options.Filters.AddFilter("localize", helper.GetLocalizeFilter());
-
-        context.SetValue("isNullOrWhiteSpace", IsNullOrWhiteSpace);
-        context.SetValue("isNullOrEmpty", IsNullOrEmpty);
-        context.SetValue("substring", Substring);
-        context.SetValue("formatDate", FormatDate);
-        context.SetValue("trim", Trim);
-        context.SetValue("trimStart", TrimStart);
-        context.SetValue("trimEnd", TrimEnd);
-        context.SetValue("dateAsText", helper.GetDatePhraseFunction());
-        context.SetValue("urlPath", helper.GetUrlPathFunction());
-        context.SetValue("appUrl", helper.GetAppUrlFunction());
-        context.SetValue("localize", helper.GetLocalizeFunction());
-    }
     
     public ValueTask<string> RenderTemplate(
         string templateString,
@@ -51,5 +35,23 @@ public class HtmlTemplateRenderer(
         SetDefaultValues(context);
 
         return template.RenderAsync(context, HtmlEncoder.Default);
+    }
+    
+    private void SetDefaultValues(TemplateContext context)
+    {
+        context.Options.Filters.AddFilter("localize", helper.GetLocalizeFilter());
+
+        context.SetValue("isNullOrWhiteSpace", IsNullOrWhiteSpace);
+        context.SetValue("isNullOrEmpty", IsNullOrEmpty);
+        context.SetValue("substring", Substring);
+        context.SetValue("capitalize", Capitalize);
+        context.SetValue("formatDate", FormatDate);
+        context.SetValue("trim", Trim);
+        context.SetValue("trimStart", TrimStart);
+        context.SetValue("trimEnd", TrimEnd);
+        context.SetValue("dateAsText", helper.GetDatePhraseFunction());
+        context.SetValue("urlPath", helper.GetUrlPathFunction());
+        context.SetValue("appUrl", helper.GetAppUrlFunction());
+        context.SetValue("localize", helper.GetLocalizeFunction());
     }
 }

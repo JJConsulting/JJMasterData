@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Globalization;
 using System.Linq;
 using Fluid;
 using Fluid.Values;
@@ -125,6 +126,12 @@ public class HtmlTemplateHelper(
         return BooleanValue.Create(string.IsNullOrWhiteSpace(str));
     });
 
+    public static FunctionValue Capitalize { get; } = new((args, _) =>
+    {
+        var str = args.At(0).ToStringValue();
+        return StringValue.Create(CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str?.ToLower() ?? string.Empty));
+    });
+    
     public static FunctionValue Substring { get; } = new((args, _) =>
     {
         if (args.Count < 2)
