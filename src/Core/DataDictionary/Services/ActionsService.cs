@@ -39,24 +39,24 @@ public class ActionsService(IValidationDictionary validationDictionary,
             case ActionSource.Field:
             {
                 var field = formElement.Fields[fieldName];
-                var fieldAction = field.Actions.Get(originalName);
+                var fieldAction = field.Actions[originalName];
                 field.Actions.Remove(fieldAction);
                 break;
             }
             case ActionSource.GridTable:
             {
-                var gridTableAction = formElement.Options.GridTableActions.Get(originalName);
+                var gridTableAction = formElement.Options.GridTableActions[originalName];
                 formElement.Options.GridTableActions.Remove(gridTableAction);
                 break;
             }
             case ActionSource.GridToolbar:
             {
-                var gridToolbarAction = formElement.Options.GridToolbarActions.Get(originalName);
+                var gridToolbarAction = formElement.Options.GridToolbarActions[originalName];
                 formElement.Options.GridToolbarActions.Remove(gridToolbarAction);
                 break;
             }
             case ActionSource.FormToolbar:
-                var formToolbarAction = formElement.Options.FormToolbarActions.Get(originalName);
+                var formToolbarAction = formElement.Options.FormToolbarActions[originalName];
                 formElement.Options.FormToolbarActions.Remove(formToolbarAction);
                 break;
             default:
@@ -229,10 +229,10 @@ public class ActionsService(IValidationDictionary validationDictionary,
 
             var action = actionContext switch
             {
-                ActionSource.GridTable => formElement.Options.GridTableActions.Get(actionName),
-                ActionSource.GridToolbar => formElement.Options.GridToolbarActions.Get(actionName),
-                ActionSource.Field => formElement.Fields[fieldName].Actions.Get(actionName),
-                ActionSource.FormToolbar => formElement.Options.FormToolbarActions.Get(actionName),
+                ActionSource.GridTable => formElement.Options.GridTableActions[actionName],
+                ActionSource.GridToolbar => formElement.Options.GridToolbarActions[actionName],
+                ActionSource.Field => formElement.Fields[fieldName].Actions[actionName],
+                ActionSource.FormToolbar => formElement.Options.FormToolbarActions[actionName],
                 _ => throw new ArgumentOutOfRangeException(nameof(actionContext), actionContext, null)
             };
             action.Order = i + 1;
@@ -247,9 +247,9 @@ public class ActionsService(IValidationDictionary validationDictionary,
         var dicParser = await DataDictionaryRepository.GetFormElementAsync(elementName);
         BasicAction action = actionContext switch
         {
-            ActionSource.GridTable => dicParser.Options.GridTableActions.Get(actionName),
-            ActionSource.GridToolbar => dicParser.Options.GridToolbarActions.Get(actionName),
-            ActionSource.FormToolbar => dicParser.Options.FormToolbarActions.Get(actionName),
+            ActionSource.GridTable => dicParser.Options.GridTableActions[actionName],
+            ActionSource.GridToolbar => dicParser.Options.GridToolbarActions[actionName],
+            ActionSource.FormToolbar => dicParser.Options.FormToolbarActions[actionName],
             _ => null
         };
 

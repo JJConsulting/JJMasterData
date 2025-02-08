@@ -50,11 +50,6 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public IEnumerator<BasicAction> GetEnumerator() => List.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    public BasicAction Get(string actionName) => List.First(a => a.Name == actionName);
-
-    public TAction? GetOrDefault<TAction>(string actionName) where TAction : BasicAction =>
-        List.OfType<TAction>().FirstOrDefault(a => a.Name == actionName);
-
     public IEnumerable<BasicAction> GetAllSorted() => List.OrderBy(x => x.Order);
 
     public void SetDefaultOption(string actionName)
@@ -97,6 +92,12 @@ public abstract class FormElementActionList : IList<BasicAction>
         get => List[index];
         set => List[index] = value;
     }
+    
+    public BasicAction this[string actionName] => Get(actionName);
+    
+    public BasicAction Get(string actionName) => List.First(a => a.Name == actionName);
+    public TAction? GetOrDefault<TAction>(string actionName) where TAction : BasicAction =>
+        List.OfType<TAction>().FirstOrDefault(a => a.Name == actionName);
     
     protected T GetOrAdd<T>() where T : BasicAction, new()
     {

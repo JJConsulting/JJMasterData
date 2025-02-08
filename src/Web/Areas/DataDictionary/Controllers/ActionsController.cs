@@ -42,10 +42,10 @@ public class ActionsController(ActionsService actionsService,
 
         var action = context switch
         {
-            ActionSource.GridTable => formElement.Options.GridTableActions.Get(actionName),
-            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.Get(actionName),
-            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.Get(actionName),
-            ActionSource.Field => formElement.Fields[fieldName].Actions.Get(actionName),
+            ActionSource.GridTable => formElement.Options.GridTableActions[actionName],
+            ActionSource.GridToolbar => formElement.Options.GridToolbarActions[actionName],
+            ActionSource.FormToolbar => formElement.Options.FormToolbarActions[actionName],
+            ActionSource.Field => formElement.Fields[fieldName].Actions[actionName],
             _ => null
         };
 
