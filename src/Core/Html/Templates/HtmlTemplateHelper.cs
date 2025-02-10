@@ -85,7 +85,7 @@ public class HtmlTemplateHelper(
         return urlAction;
     }
     
-    public static FunctionValue FormatDate { get; } = new((args, _) =>
+    public static readonly FunctionValue FormatDate = new((args, _) =>
     {
         var obj = args.At(0).ToStringValue();
         var format = args.At(1).ToStringValue();
@@ -93,46 +93,46 @@ public class HtmlTemplateHelper(
         return StringValue.Create(DateTime.TryParse(obj, out var dt) ? dt.ToString(format) : obj);
     });
     
-    public static FunctionValue Trim { get; } = new((args, _) =>
+    public static readonly FunctionValue Trim = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
 
         return StringValue.Create(str.Trim());
     });
     
-    public static FunctionValue TrimStart { get; } = new((args, _) =>
+    public static readonly FunctionValue TrimStart = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
 
         return StringValue.Create(str.TrimStart());
     });
     
-    public static FunctionValue TrimEnd { get; } = new((args, _) =>
+    public static readonly FunctionValue TrimEnd  = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
 
         return StringValue.Create(str.TrimEnd());
     });
     
-    public static FunctionValue IsNullOrEmpty { get; } = new((args, _) =>
+    public static readonly FunctionValue IsNullOrEmpty = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
         return BooleanValue.Create(string.IsNullOrEmpty(str));
     });
 
-    public static FunctionValue IsNullOrWhiteSpace { get; } = new((args, _) =>
+    public static readonly FunctionValue IsNullOrWhiteSpace = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
         return BooleanValue.Create(string.IsNullOrWhiteSpace(str));
     });
 
-    public static FunctionValue Capitalize { get; } = new((args, _) =>
+    public static readonly FunctionValue Capitalize = new((args, _) =>
     {
         var str = args.At(0).ToStringValue();
         return StringValue.Create(CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str?.ToLower() ?? string.Empty));
     });
     
-    public static FunctionValue Substring { get; } = new((args, _) =>
+    public static readonly FunctionValue Substring = new((args, _) =>
     {
         if (args.Count < 2)
         {
