@@ -33,6 +33,7 @@ jobs:
           - src/WebApi
           - src/Plugins/Hangfire
           - src/Plugins/Pdf
+          - src/Plugins/Brasil
     steps:
       - uses: actions/checkout@v4
       - name: Build and publish NuGet package

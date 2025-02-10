@@ -5,6 +5,10 @@
         <Nullable>enable</Nullable>
         <RootNamespace>JJMasterData.Brasil</RootNamespace>
         <AssemblyName>JJMasterData.Brasil</AssemblyName>
+        <Version>1.0.0</Version>
+        <PackageVersion>$(Version)</PackageVersion>
+        <AssemblyVersion>$(Version)</AssemblyVersion>
+        <FileVersion>$(Version)</FileVersion>
   </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Commons\Commons.csproj" />
