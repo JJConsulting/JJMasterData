@@ -1428,7 +1428,7 @@ public class JJFormView : AsyncComponent
         if (!IsInsertAtGridView || (IsInsertAtGridView && DataPanel.Errors.Count != 0))
             DataPanel.Values = await DataPanel.GetFormValuesAsync();
 
-        var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
+        var parentPanelHtml = await DataPanel.GetHtmlBuilderAsync();
 
         var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement);
         panelAndBottomToolbarActions.AddRange(GetBottomToolbarActions(FormElement));
@@ -1454,7 +1454,7 @@ public class JJFormView : AsyncComponent
         if (!DataPanel.ContainsPanelState())
             DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState : PageState.View;
 
-        var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
+        var parentPanelHtml = await DataPanel.GetHtmlBuilderAsync();
 
         ConfigureFormToolbar();
 

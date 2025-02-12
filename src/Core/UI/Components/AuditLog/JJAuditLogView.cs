@@ -126,7 +126,7 @@ public class JJAuditLogView : AsyncComponent
             {
                 var panel = await GetDetailsPanel(logId);
 
-                var panelHtmlBuilder = await panel.GetPanelHtmlBuilderAsync();
+                var panelHtmlBuilder = await panel.GetHtmlBuilderAsync();
 
                 return new ContentComponentResult(panelHtmlBuilder);
             }
@@ -236,7 +236,7 @@ public class JJAuditLogView : AsyncComponent
             });
         });
 
-        var panelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
+        var panelHtml = await DataPanel.GetHtmlBuilderAsync();
 
         row.Append(HtmlTag.Div, d =>
         {

@@ -227,7 +227,7 @@ public class JJDataPanel(
                 return ComponentFactory.Downloader.Create().GetDownloadResult();
             case ComponentContext.DataPanelReload:
             {
-                var html = await GetPanelHtmlBuilderAsync();
+                var html = await GetHtmlBuilderAsync();
                 return new ContentComponentResult(html);
             }
             case ComponentContext.UrlRedirect:
@@ -242,8 +242,13 @@ public class JJDataPanel(
             }
          
             default:
-                return new RenderedComponentResult(await GetPanelHtmlBuilderAsync());
+                return new RenderedComponentResult(await GetHtmlBuilderAsync());
         }
+    }
+
+    public async Task<string> GetHtmlAsync()
+    {
+        return (await GetHtmlBuilderAsync()).ToString();
     }
 
     private async ValueTask<ComponentResult> GetFieldResultAsync<TControl>() where TControl : ControlBase
@@ -264,7 +269,7 @@ public class JJDataPanel(
         return await control.GetResultAsync();
     }
 
-    internal async Task<HtmlBuilder> GetPanelHtmlBuilderAsync()
+    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
