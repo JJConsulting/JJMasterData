@@ -2351,6 +2351,7 @@ class SearchBoxListener {
                 if (selectedValue.id != "") {
                     FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
                 }
+                $(this).trigger("change");
             });
             $('.typeahead').bind('typeahead:change', function (ev, suggestion) {
                 if ($(jjSearchBoxHiddenSelector).val() == "") {
