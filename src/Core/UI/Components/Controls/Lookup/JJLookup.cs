@@ -186,10 +186,15 @@ public class JJLookup : ControlBase
         Attributes["route-context"] = EncryptionService.EncryptObject(routeContext);
 
         var flexLayout = GetFlexLayout();
+
+        var hasDescription = !string.IsNullOrEmpty(ElementMap.DescriptionFieldName);
         
         var idTextBox = ComponentFactory.Controls.TextBox.Create();
         idTextBox.Name = Name;
-        idTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
+        
+        var icon = GetFeedbackIcon(inputValue?.ToString(), description, hasDescription);
+
+        idTextBox.CssClass = $"form-control jj-lookup {icon} {CssClass}";
         idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
         idTextBox.MaxLength = MaxLength;
         idTextBox.Text = SelectedValue?.ToString() ?? string.Empty;
@@ -202,7 +207,7 @@ public class JJLookup : ControlBase
 
         div.Append(idTextBox.GetHtmlBuilder());
         
-        if (!string.IsNullOrEmpty(ElementMap!.DescriptionFieldName))
+        if (hasDescription)
         {
             if (BootstrapHelper.Version == 3)
             {
@@ -254,6 +259,16 @@ public class JJLookup : ControlBase
         return div;
     }
 
+    private static string? GetFeedbackIcon(string? inputValue, string? description, bool hasDescription)
+    {
+        return string.IsNullOrEmpty(inputValue) switch
+        {
+            false when !string.IsNullOrEmpty(description) || !hasDescription => " jj-icon-success ",
+            false when string.IsNullOrEmpty(description) || hasDescription => " jj-icon-warning",
+            _ => null
+        };
+    }
+
     private (int,int) GetFlexLayout()
     {
         return MaxLength switch
@@ -264,14 +279,5 @@ public class JJLookup : ControlBase
             <= 16  => (5, 7),
             _  => (6, 6)
         };
-    }
-    
-    private static string? GetFeedbackIcon(string? value, string? description)
-    {
-        if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(description))
-            return " jj-icon-success ";
-        if (!string.IsNullOrEmpty(value) && string.IsNullOrEmpty(description))
-            return " jj-icon-warning";
-        return null;
     }
 }
