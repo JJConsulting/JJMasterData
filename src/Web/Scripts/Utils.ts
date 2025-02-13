@@ -74,19 +74,20 @@
             const self = $("#" + currentId);
             const form = self.parents("form:eq(0)");
             const focusable = form.find("input,a.btn,textarea,select,button").filter(":visible");
-            let next = focusable.eq(focusable.index(self) + 1);
+            let nextIndex = focusable.index(self) + 1;
+            let next = focusable.eq(nextIndex);
+
+            while (next.length && (next.is(":disabled") || next.hasClass("disabled") || (next.is("button, a.btn") && next.closest(".input-group").length))) {
+                nextIndex++;
+                next = focusable.eq(nextIndex);
+            }
+
             if (next.length) {
-                if (next.is(":disabled")) {
-                    for (let i = 2; i < 1000; i++) {
-                        next = focusable.eq(focusable.index(self) + i);
-                        if (!next.is(":disabled") && !next.hasClass("disabled") && next.is(":visible"))
-                            break;
-                    }
-                }
                 next.trigger("focus");
                 next.trigger("select");
             }
         },
+
 
         replaceEntertoTab: function (objid) {
             $("#" + objid + " input, #" + objid + " select").on("keypress change", function (e) {
