@@ -34,6 +34,8 @@ public class ActionScripts(
         @params.Append(elementRedirect.ElementNameRedirect);
         @params.Append("&showTitle=");
         @params.Append(action.ShowTitle ? '1' : '0');
+        @params.Append("&parentElementName=");
+        @params.Append(actionContext.FormElement.Name);
         @params.Append("&viewtype=");
         @params.Append((int)elementRedirect.ViewType);
 

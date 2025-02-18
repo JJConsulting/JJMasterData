@@ -453,7 +453,7 @@ public static class StringManager
             if (closeIndex == -1)
                 break;
 
-            yield return text.AsSpan(openIndex, closeIndex - openIndex).ToString();
+            yield return text.Substring(openIndex, closeIndex - openIndex);
 
             currentIndex = closeIndex + 1;
         }
