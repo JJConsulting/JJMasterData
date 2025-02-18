@@ -25,6 +25,8 @@ public sealed class MasterDataCommonsOptions
 
     public List<ConnectionString> AdditionalConnectionStrings { get; set; } = [];
     
+    public string? LocalizationTableSchema { get; set; }
+    
     /// <summary>
     /// Default value: tb_masterdata_resources <br></br>
     /// </summary>

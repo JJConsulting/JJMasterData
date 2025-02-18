@@ -91,6 +91,7 @@ public class AuditLogService(
     {
         string tableName = options.Value.AuditLogTableName;
         var element = new Element(tableName, stringLocalizer["Audit Log"]);
+        element.Schema = options.Value.AuditLogTableSchema;
         element.Fields.AddPk(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicName, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);
         element.Fields.Add(DicAction, "Action", FieldType.Int, 1, true, FilterMode.Equal);

@@ -16,12 +16,13 @@ public static class DataDictionaryStructure
     public const string LastModifiedTo = "modified_to";
     public const string Json = "json";
     
-    public static Element GetElement(string tableName)
+    public static Element GetElement(string tableSchema, string tableName)
     {
         if (string.IsNullOrEmpty(tableName))
             throw new ArgumentNullException(nameof(tableName));
         
         var element = new Element(tableName, "Data Dictionary");
+        element.Schema = tableSchema;
         element.Fields.AddPk(Type, "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields[Type].EnableOnDelete = false;
         element.Fields.AddPk(Name, "Element", FieldType.NVarchar, 64, false, FilterMode.Equal);

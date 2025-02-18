@@ -85,6 +85,7 @@ public class FormElement : Element
     public FormElement(Element element)
     {
         Name = element.Name;
+        Schema = element.Schema;
         TableName = element.TableName;
         Info = element.Info;
         Indexes = element.Indexes;

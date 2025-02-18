@@ -14,6 +14,7 @@ public static class DbLoggerElement
         _element = new Element
         {
             Name = options.TableName,
+            Schema = options.TableSchema,
             TableName = options.TableName,
             UseReadProcedure = false,
             UseWriteProcedure = false,

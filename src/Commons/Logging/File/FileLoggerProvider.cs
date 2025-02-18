@@ -19,7 +19,7 @@ namespace JJMasterData.Commons.Logging.File;
 /// A <see cref="BatchingLoggerProvider"/> which writes out to a file.
 /// </summary>
 [ProviderAlias(ProviderAlias)]
-public class FileLoggerProvider : BatchingLoggerProvider
+public sealed class FileLoggerProvider : BatchingLoggerProvider
 {
     private const string ProviderAlias = "File";
     private readonly string _fileName;

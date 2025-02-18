@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Logging.Db;
 
 [ProviderAlias(ProviderAlias)]
-public class DbLoggerProvider(IServiceProvider serviceProvider, IOptionsMonitor<DbLoggerOptions> options) : BatchingLoggerProvider(options)
+public sealed class DbLoggerProvider(IServiceProvider serviceProvider, IOptionsMonitor<DbLoggerOptions> options) : BatchingLoggerProvider(options)
 {
     private bool _tableExists;
     private const string ProviderAlias = "Database";

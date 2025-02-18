@@ -20,7 +20,7 @@ public class DataDictionaryFormElementFactory(
 
     public FormElement GetFormElement()
     {
-        var element = DataDictionaryStructure.GetElement(_options.DataDictionaryTableName);
+        var element = DataDictionaryStructure.GetElement(_options.DataDictionaryTableSchema, _options.DataDictionaryTableName);
 
         var formElement = GetFormElement(element);
 

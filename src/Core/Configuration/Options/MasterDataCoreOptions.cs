@@ -13,12 +13,18 @@ namespace JJMasterData.Core.Configuration.Options;
 
 public sealed class MasterDataCoreOptions
 {
+    [Display(Name = "Data Dictionary Table Schema")]
+    public string? DataDictionaryTableSchema { get; set; }
+    
     /// <summary>
     /// Default value: tb_masterdata
     /// </summary>
     [Display(Name = "Data Dictionary Table Name")]
     public string DataDictionaryTableName { get; set; } = "tb_masterdata";
 
+    [Display(Name = "Audit Log Table Schema")]
+    public string? AuditLogTableSchema { get; set; }
+    
     /// <summary>
     /// Default value: tb_masterdata_auditlog
     /// </summary>

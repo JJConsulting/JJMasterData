@@ -16,21 +16,31 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class SqlDataDictionaryRepository(
-    IEntityRepository entityRepository, 
-    IMemoryCache memoryCache,
-    IOptionsSnapshot<MasterDataCoreOptions> options)
-    : IDataDictionaryRepository
+public class SqlDataDictionaryRepository : IDataDictionaryRepository
 {
-    private readonly Element _masterDataElement  = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
-    private readonly bool _enableDataDictionaryCaching  = options.Value.EnableDataDictionaryCaching;
-    
+    private readonly Element _masterDataElement;
+    private readonly bool _enableDataDictionaryCaching;
+    private readonly IEntityRepository _entityRepository;
+    private readonly IMemoryCache _memoryCache;
+
+    public SqlDataDictionaryRepository(
+        IEntityRepository entityRepository, 
+        IMemoryCache memoryCache,
+        IOptionsSnapshot<MasterDataCoreOptions> options)
+    {
+        _entityRepository = entityRepository;
+        _memoryCache = memoryCache;
+        var mdOptions = options.Value;
+        _masterDataElement = DataDictionaryStructure.GetElement(mdOptions.DataDictionaryTableSchema, mdOptions.DataDictionaryTableName);
+        _enableDataDictionaryCaching = mdOptions.EnableDataDictionaryCaching;
+    }
+
     private static readonly Guid ElementNameListCacheKey = Guid.Parse("fb545293-9793-4f00-8f2f-b961999c8202");
     public List<FormElement> GetFormElementList(bool? apiSync = null)
     {
         var parameters = GetFormElementListParameters(apiSync);
 
-        var result = entityRepository.GetDictionaryListResult(_masterDataElement,
+        var result = _entityRepository.GetDictionaryListResult(_masterDataElement,
             parameters, false);
 
         return result.Data.ConvertAll(DeserializeDictionary);
@@ -40,7 +50,7 @@ public class SqlDataDictionaryRepository(
     {
         var parameters = GetFormElementListParameters(apiSync);
 
-        var result = await entityRepository.GetDictionaryListResultAsync(_masterDataElement,
+        var result = await _entityRepository.GetDictionaryListResultAsync(_masterDataElement,
             parameters, false);
 
         return result.Data.ConvertAll(DeserializeDictionary);
@@ -67,7 +77,7 @@ public class SqlDataDictionaryRepository(
 
     public async ValueTask<List<string>> GetElementNameListAsync()
     {
-        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(ElementNameListCacheKey, out List<string>? nameList))
+        if (_enableDataDictionaryCaching && _memoryCache.TryGetValue(ElementNameListCacheKey, out List<string>? nameList))
         {
             return nameList!;
         }
@@ -76,24 +86,24 @@ public class SqlDataDictionaryRepository(
         var orderBy = new OrderByData();
         orderBy.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
         
-        var dt = await entityRepository.GetDictionaryListResultAsync(_masterDataElement,
+        var dt = await _entityRepository.GetDictionaryListResultAsync(_masterDataElement,
             new EntityParameters { Filters = filter, OrderBy = orderBy}, false);
 
         nameList = dt.Data.ConvertAll(row => row[DataDictionaryStructure.Name]!.ToString()!);
         
-        memoryCache.Set(ElementNameListCacheKey, nameList);
+        _memoryCache.Set(ElementNameListCacheKey, nameList);
         
         return nameList;
     }
 
     public FormElement? GetFormElement(string elementName)
     {
-        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement? formElement))
+        if (_enableDataDictionaryCaching && _memoryCache.TryGetValue(elementName, out FormElement? formElement))
             return formElement!.DeepCopy();
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
-        var values =  entityRepository.GetFields(_masterDataElement, filter);
+        var values =  _entityRepository.GetFields(_masterDataElement, filter);
 
         var model = DataDictionaryModel.FromDictionary(values);
 
@@ -102,7 +112,7 @@ public class SqlDataDictionaryRepository(
             formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
             
             if(_enableDataDictionaryCaching)
-                memoryCache.Set(elementName, formElement);
+                _memoryCache.Set(elementName, formElement);
             
             return formElement!.DeepCopy();
         }
@@ -112,12 +122,12 @@ public class SqlDataDictionaryRepository(
 
     public async ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
-        if (_enableDataDictionaryCaching && memoryCache.TryGetValue(elementName, out FormElement? formElement))
+        if (_enableDataDictionaryCaching && _memoryCache.TryGetValue(elementName, out FormElement? formElement))
             return formElement!.DeepCopy();
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
-        var values = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
+        var values = await _entityRepository.GetFieldsAsync(_masterDataElement, filter);
 
         if (values.Count == 0)
             throw new JJMasterDataException($"Element {elementName} was not found.");
@@ -127,7 +137,7 @@ public class SqlDataDictionaryRepository(
         formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
         
         if(_enableDataDictionaryCaching)
-            memoryCache.Set(elementName, formElement);
+            _memoryCache.Set(elementName, formElement);
         
         return formElement!.DeepCopy();
     }
@@ -136,7 +146,7 @@ public class SqlDataDictionaryRepository(
     {
         var values = GetFormElementDictionary(formElement);
 
-        await entityRepository.SetValuesAsync(_masterDataElement, values);
+        await _entityRepository.SetValuesAsync(_masterDataElement, values);
 
         if(_enableDataDictionaryCaching)
             ClearCache(formElement);
@@ -146,7 +156,7 @@ public class SqlDataDictionaryRepository(
     {
         var values = GetFormElementDictionary(formElement);
 
-        entityRepository.SetValues(_masterDataElement, values);
+        _entityRepository.SetValues(_masterDataElement, values);
         
         if(_enableDataDictionaryCaching)
             ClearCache(formElement);
@@ -191,24 +201,24 @@ public class SqlDataDictionaryRepository(
 
         var filters = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
-        await entityRepository.DeleteAsync(_masterDataElement, filters);
+        await _entityRepository.DeleteAsync(_masterDataElement, filters);
         
         if(_enableDataDictionaryCaching)
-            memoryCache.Remove(elementName);
+            _memoryCache.Remove(elementName);
     }
 
 
     public async Task<bool> ExistsAsync(string elementName)
     {
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
-        var fields = await entityRepository.GetFieldsAsync(_masterDataElement, filter);
+        var fields = await _entityRepository.GetFieldsAsync(_masterDataElement, filter);
         return fields.Count > 0;
     }
 
     public async Task CreateStructureIfNotExistsAsync()
     {
-        if (!await entityRepository.TableExistsAsync(_masterDataElement.Name, _masterDataElement.ConnectionId))
-            await entityRepository.CreateDataModelAsync(_masterDataElement,[]);
+        if (!await _entityRepository.TableExistsAsync(_masterDataElement.Name, _masterDataElement.ConnectionId))
+            await _entityRepository.CreateDataModelAsync(_masterDataElement,[]);
     }
 
     public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filter,
@@ -217,7 +227,7 @@ public class SqlDataDictionaryRepository(
         var filters = filter.ToDictionary();
         filters.Add(DataDictionaryStructure.Type, "F");
 
-        var result = await entityRepository.GetDictionaryListResultAsync(_masterDataElement,
+        var result = await _entityRepository.GetDictionaryListResultAsync(_masterDataElement,
             new EntityParameters
             {
                 Filters = filters!, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
@@ -231,12 +241,12 @@ public class SqlDataDictionaryRepository(
     private void ClearCache(FormElement formElement)
     {
         if (!formElement.UseReadProcedure)
-            memoryCache.Remove(formElement.Name + "_ReadScript");
+            _memoryCache.Remove(formElement.Name + "_ReadScript");
         if (!formElement.UseWriteProcedure)
-            memoryCache.Remove(formElement.Name + "_WriteScript");
+            _memoryCache.Remove(formElement.Name + "_WriteScript");
 
         
-        memoryCache.Remove(ElementNameListCacheKey);
-        memoryCache.Remove(formElement.Name);
+        _memoryCache.Remove(ElementNameListCacheKey);
+        _memoryCache.Remove(formElement.Name);
     }
 }

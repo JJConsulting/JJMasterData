@@ -1,10 +1,15 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-public class DbLoggerOptions : BatchingLoggerOptions
+public sealed class DbLoggerOptions : BatchingLoggerOptions
 {
     public Guid? ConnectionStringId { get; set; } 
+    
+    [CanBeNull]
+    public string TableSchema { get; set; }
+    
     public string TableName { get; set; } = "tb_masterdata_log";
     
     public string IdColumnName { get; set; } = "Id";

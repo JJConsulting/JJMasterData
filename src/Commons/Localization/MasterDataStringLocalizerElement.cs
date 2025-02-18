@@ -10,6 +10,7 @@ public static class MasterDataStringLocalizerElement
         var element = new Element
         {
             Name = options.LocalizationTableName,
+            Schema = options.LocalizationTableSchema,
             TableName = options.LocalizationTableName,
             UseReadProcedure = false,
             UseWriteProcedure = false
