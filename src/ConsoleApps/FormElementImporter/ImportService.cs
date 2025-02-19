@@ -16,7 +16,7 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
         Console.WriteLine("Starting Process...");
 
         var start = DateTime.Now;
-        var databaseDictionaries = await dataDictionaryRepository.GetFormElementListAsync(false);
+        var databaseDictionaries = await dataDictionaryRepository.GetFormElementListAsync();
         var folderDictionaries = new List<FormElement>();
 
         if (_dictionariesPath != null)
