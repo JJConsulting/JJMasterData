@@ -173,6 +173,12 @@
     <value>5) Cuidado para não configurar um caminho já existente em outro dicionário</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="No elements found." xml:space="preserve">
+    <value>Nenhum elemento encontrado.</value>
+  </data>
+  <data name="No fields found." xml:space="preserve">
+    <value>Nenhum campo encontrado.</value>
+  </data>
   <data name="6 (six columns)" xml:space="preserve">
     <value>6 (seis colunas)</value>
     <comment>JJMasterDataWeb</comment>

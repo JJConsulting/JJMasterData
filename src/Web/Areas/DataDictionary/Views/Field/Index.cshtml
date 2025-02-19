@@ -2,12 +2,12 @@
 @using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Commons.Extensions
 @using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI.Components
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
-
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @{
@@ -19,6 +19,7 @@
 }
 
 @functions{
+
     string GetFieldDataTypeText(FormElementField field)
     {
         var sql = new StringBuilder();
@@ -72,46 +73,70 @@
             _ => IconType.Question
         };
     }
+
 }
 
 
 @if (isForm)
 {
     <partial name="_Menu" model="@(new DataDictionaryViewModel(elementName, ViewBag.MenuId))"/>
-    
-    <offcanvas position="Bottom" title="@StringLocalizer["Copy From..."]" name="copy-from-offcanvas">
-        <form asp-action="CopyFrom" asp-controller="Field" asp-route-elementName="@elementName">
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <label for="copyFromElementName" class="form-label">@StringLocalizer["Element Name"]</label>
-                        <select name="copyFromElementName"
-                                id="copyFromElementName"
-                                asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
-                                onchange="populateCopyFromFields(this)"
-                                required="required"
-                                class="form-select"></select>
-                    </div>
+
+    <div class="modal fade" id="copyFromModal" tabindex="-1" aria-labelledby="copyFromModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="copyFromModalLabel">@StringLocalizer["Copy From..."]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <label for="copyFromFieldNames" class="form-label">@StringLocalizer["Fields"]</label>
-                        <select name="copyFromFieldNames"
-                                id="copyFromFieldNames"
-                                required="required"
-                                multiple="multiple"
-                                class="form-select"></select>
-                    </div>
+                <div class="modal-body">
+                    <form id="copyFromForm" asp-action="CopyFrom" asp-controller="Field"
+                          asp-route-elementName="@elementName">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="copyFromElementName"
+                                           class="form-label">@StringLocalizer["Element Name"]</label>
+                                    <select name="copyFromElementName"
+                                            id="copyFromElementName"
+                                            asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
+                                            onchange="populateCopyFromFields(this)"
+                                            required
+                                            class="form-control selectpicker"
+                                            data-style-base="form-select form-dropdown"
+                                            data-live-search="true"
+                                            data-virtual-scroll="true"
+                                            data-none-results-text="@StringLocalizer["No elements found."]">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="copyFromFieldNames"
+                                           class="form-label">@StringLocalizer["Fields"]</label>
+                                    <select name="copyFromFieldNames"
+                                            id="copyFromFieldNames"
+                                            required
+                                            multiple
+                                            class="form-control selectpicker"
+                                            data-style-base="form-select form-dropdown"
+                                            data-live-search="true"
+                                            data-none-selected-text="@StringLocalizer["--Select--"]"
+                                            data-virtual-scroll="true"
+                                            data-none-results-text="@StringLocalizer["No fields found."]">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <div class="col-sm-4">
-                    <button class="btn btn-primary" type="submit">
-                        <span class="fa-solid fa-copy"></span>&nbsp;@StringLocalizer["Copy"]
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" form="copyFromForm">
+                        <i class="fa-solid fa-copy"></i>&nbsp;@StringLocalizer["Copy"]
                     </button>
                 </div>
-
             </div>
-        </form>
-    </offcanvas>
+        </div>
+    </div>
 }
 
 @using (Html.BeginMasterDataForm("Index", "Field"))
@@ -120,16 +145,22 @@
     <div class="row">
         <div class="col-sm-3">
             <div class="input-group">
-                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="@StringLocalizer["Search..."]" type="text" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
-                
+                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);"
+                       placeholder="@StringLocalizer["Search..."]" type="text" class="form-control"
+                       data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
+
                 @if (isForm)
                 {
-                    <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip" title="@StringLocalizer["Copy From..."]" onclick="OffcanvasHelper.showOffcanvas('copy-from-offcanvas')">
+                    <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip"
+                         title="@StringLocalizer["Copy From..."]"
+                         onclick="showCopyFromModal()">
                         <span class="fa-solid fa-copy"></span>
                     </div>
                 }
-                
-                <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = elementName })', '');">
+
+                <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip"
+                     title="@StringLocalizer["Add"]"
+                     onclick="loadFieldDetails('@Url.Action("Add", new { elementName = elementName })', '');">
                     <span class="fa fa-plus"></span>
                 </div>
             </div>
@@ -154,19 +185,23 @@
                                         <b>@fieldName</b>
                                         @if (field.IsPk)
                                         {
-                                            <span class="fa fa-star text-warning"  data-bs-toggle="tooltip" title="@StringLocalizer["Primary key"]"></span>
+                                            <span class="fa fa-star text-warning" data-bs-toggle="tooltip"
+                                                  title="@StringLocalizer["Primary key"]"></span>
                                         }
                                         @if (field.Component is not FormComponent.Text)
                                         {
-                                            <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" title="@field.Component.ToString()"></span>
+                                            <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1"
+                                                  data-bs-toggle="tooltip" title="@field.Component.ToString()"></span>
                                         }
                                         @if (field.Filter.Type is not FilterMode.None)
                                         {
-                                            <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip" title="@field.Filter.Type.ToString()"></span>
+                                            <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip"
+                                                  title="@field.Filter.Type.ToString()"></span>
                                         }
                                         @if (field.AutoPostBack)
                                         {
-                                            <span class="@IconType.SolidBoltLightning.GetCssClass() text-warning ms-1" data-bs-toggle="tooltip" title="AutoPostBack"></span>
+                                            <span class="@IconType.SolidBoltLightning.GetCssClass() text-warning ms-1"
+                                                  data-bs-toggle="tooltip" title="AutoPostBack"></span>
                                         }
                                         <br>
                                         <small>
@@ -185,9 +220,11 @@
                                             @GetFieldDataTypeText(field)
                                         </small>
                                     </div>
-                                    <div class="float-end jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
+                                    <div class="float-end jjsortable-icon"
+                                         title="@StringLocalizer["Drag and drop to move"]">
                                     </div>
-                                    <span class="float-end jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
+                                    <span class="float-end jjsortable-span"
+                                          title="@StringLocalizer["Drag and drop to move"]">
                                         @i
                                     </span>
                                 </div>
@@ -206,189 +243,201 @@
     </div>
 }
 
-<script>
-        function saveScrollPosition() {
-            const listField = document.getElementById('field-list');
-            if (listField) {
-                sessionStorage.setItem('listFieldScrollPosition', listField.scrollTop);
-            }
-        }
 
-        function restoreScrollPosition() {
-            const listField = document.getElementById('field-list');
-            const savedScrollPosition = sessionStorage.getItem('listFieldScrollPosition');
-            if (listField && savedScrollPosition) {
-                listField.scrollTop = parseInt(savedScrollPosition);
-                sessionStorage.removeItem('listFieldScrollPosition');
-            }
-        }
-        document.addEventListener("DOMContentLoaded", restoreScrollPosition)
-        window.addEventListener('beforeunload', saveScrollPosition);
-    </script>
 
 <script type="text/javascript">
 
-        async function populateCopyFromFields(formElementCombobox) {
-            const fieldNamesSelect = document.getElementById('copyFromFieldNames');
-            if (!fieldNamesSelect) return;
-
-            const response = await fetch('@Url.Action("PopulateCopyFromFields", "Field")' + '?elementName=' + formElementCombobox.value);
-            
-            if (!response.ok) 
-                return;
-
-            fieldNamesSelect.innerHTML = await response.text();
+    function saveScrollPosition() {
+        const listField = document.getElementById('field-list');
+        if (listField) {
+            sessionStorage.setItem('listFieldScrollPosition', listField.scrollTop);
         }
-        
-         function setupCodeMirror(){
-            @if (Model.DataItem is not null)
-            {
-                <text>
-                 CodeMirrorWrapper.setupCodeMirror("@Html.IdFor(m => m.DataItem!.Command!.Sql)",{
-                     mode: "text/x-sql",
-                     hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
-                     hintKey: '{'
-                 });
-                </text>
+    }
 
-            }
-             CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m => m.GridRenderingTemplate)",{
-                 mode: "text/x-liquid",
-                 hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
-                 hintKey: '{',
-                 size: 320
-             });
-         }
-         
-         function listenTabs(){
-            setupCodeMirror(); 
-            
-            const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
-            
-            if(!tabs)
-                return;
-            
-            tabs.forEach((tab)=>{
-                 tab.addEventListener('shown.bs.tab', () => {
-                     const codeMirrorElements = document.querySelectorAll(".CodeMirror");
-                     if (codeMirrorElements){
-                         codeMirrorElements.forEach(function (c){
-                             c.CodeMirror.refresh();
-                         })
-                     }
-                     else{
-                        setupCodeMirror();
-                     }
-                 })
+    function restoreScrollPosition() {
+        const listField = document.getElementById('field-list');
+        const savedScrollPosition = sessionStorage.getItem('listFieldScrollPosition');
+        if (listField && savedScrollPosition) {
+            listField.scrollTop = parseInt(savedScrollPosition);
+            sessionStorage.removeItem('listFieldScrollPosition');
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", restoreScrollPosition)
+    window.addEventListener('beforeunload', saveScrollPosition);
+
+
+    function showCopyFromModal() {
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('copyFromModal'));
+        modal.show();
+    }
+
+    async function populateCopyFromFields(formElementCombobox) {
+        const fieldNamesSelect = document.getElementById('copyFromFieldNames');
+        if (!fieldNamesSelect) return;
+
+        const response = await fetch('@Url.Action("PopulateCopyFromFields", "Field")' + '?elementName=' + formElementCombobox.value);
+
+        if (!response.ok)
+            return;
+
+        fieldNamesSelect.innerHTML = await response.text();
+        const $fieldNames = $('#copyFromFieldNames');
+        $fieldNames.selectpicker('destroy');
+        $fieldNames.selectpicker({
+            iconBase:  'fa' ,
+            styleBase:"form-select form-dropdown"
+        });
+    }
+
+    function setupCodeMirror() {
+        @if (Model.DataItem is not null)
+        {
+            <text>
+                CodeMirrorWrapper.setupCodeMirror("@Html.IdFor(m => m.DataItem!.Command!.Sql)", {
+                    mode: "text/x-sql",
+                    hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+                    hintKey: '{'
+                });
+            </text>
+        }
+        CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m => m.GridRenderingTemplate)", {
+            mode: "text/x-liquid",
+            hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+            hintKey: '{',
+            size: 320
+        });
+    }
+
+    function listenTabs() {
+        setupCodeMirror();
+
+        const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
+
+        if (!tabs)
+            return;
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('shown.bs.tab', () => {
+                const codeMirrorElements = document.querySelectorAll(".CodeMirror");
+                if (codeMirrorElements) {
+                    codeMirrorElements.forEach(function (c) {
+                        c.CodeMirror.refresh();
+                    })
+                } else {
+                    setupCodeMirror();
+                }
             })
-         }
+        })
+    }
 
-         document.addEventListener("DOMContentLoaded", listenTabs);
-    
+    document.addEventListener("DOMContentLoaded", listenTabs);
+
+
 </script>
 
-<script type="text/javascript">        
-        document.addEventListener("DOMContentLoaded",function (){
-            sortableGrid();
-            saveTabState();
-        })
-        
-    
-        function saveTabState() {
-            let currentTab = document.querySelector("#selected-tab").value;
-            if (!currentTab) {
-                currentTab = "#div-general";
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        sortableGrid();
+        saveTabState();
+    })
+
+
+    function saveTabState() {
+        let currentTab = document.querySelector("#selected-tab").value;
+        if (!currentTab) {
+            currentTab = "#div-general";
+        }
+
+        let tabLinks = document.querySelectorAll("[data-bs-toggle='tab']");
+        tabLinks.forEach(function (link) {
+            if (link.getAttribute('href') === currentTab) {
+                link.classList.add('active');
+                link.classList.add('show');
+            } else {
+                link.classList.remove('active');
+                link.classList.remove('remove');
             }
-            
-            let tabLinks = document.querySelectorAll("[data-bs-toggle='tab']");
-            tabLinks.forEach(function(link) {
-                if (link.getAttribute('href') === currentTab) {
-                    link.classList.add('active');
-                    link.classList.add('show');
-                } else {
-                    link.classList.remove('active');
-                    link.classList.remove('remove');
-                }
+        });
+
+        document.querySelectorAll(".tab-pane").forEach(function (tabPane) {
+            if (tabPane.id === currentTab.replace("#", "")) {
+                tabPane.classList.add('active');
+                tabPane.classList.add('show');
+            } else {
+                tabPane.classList.remove('active');
+                tabPane.classList.remove('remove');
+            }
+        })
+
+        document.querySelector(currentTab).classList.add('active');
+        document.querySelector(currentTab).classList.add('show');
+
+        tabLinks.forEach(function (tabLink) {
+            tabLink.addEventListener("click", function (e) {
+
+                document.querySelector("#selected-tab").value = e.target.getAttribute("href");
             });
-            
-            document.querySelectorAll(".tab-pane").forEach(function (tabPane){
-              if (tabPane.id === currentTab.replace("#","")) {
-                    tabPane.classList.add('active');
-                    tabPane.classList.add('show');
-                } else {
-                    tabPane.classList.remove('active');
-                    tabPane.classList.remove('remove');
-                }
-            })
-        
-            document.querySelector(currentTab).classList.add('active');
-            document.querySelector(currentTab).classList.add('show');
-            
-            tabLinks.forEach(function(tabLink) {
-                tabLink.addEventListener("click", function(e) {
-                   
-                    document.querySelector("#selected-tab").value = e.target.getAttribute("href");
-                });
-            });
-        }
-    
-        function sortableGrid() {
-            $("#sortable-grid").sortable({
-                update: function () {
-                    const order = $(this).sortable('toArray');
-                    moveFields(order);
-                }
-            }).disableSelection();
-        }
-    
-        function moveFields(order) {
-            const formData = new FormData();
-            formData.append('fieldsOrder', order);
-            fetch('@Url.Action("Sort", new { elementName })', {
-                method: "POST",
-                body: formData
-            })
+        });
+    }
+
+    function sortableGrid() {
+        $("#sortable-grid").sortable({
+            update: function () {
+                const order = $(this).sortable('toArray');
+                moveFields(order);
+            }
+        }).disableSelection();
+    }
+
+    function moveFields(order) {
+        const formData = new FormData();
+        formData.append('fieldsOrder', order);
+        fetch('@Url.Action("Sort", new { elementName })', {
+            method: "POST",
+            body: formData
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('@StringLocalizer["Error while ordering fields."]');
                 }
             })
             .catch(error => {
-               messageBox.show('@StringLocalizer["Error"]', error.message, 4);
+                messageBox.show('@StringLocalizer["Error"]', error.message, 4);
             });
-        }
+    }
 
-        function loadFieldDetails(url, fieldName) {
-            const safeFieldName = fieldName.replace(/[^\w-]/g, '\\$&');
+    function loadFieldDetails(url, fieldName) {
+        const safeFieldName = fieldName.replace(/[^\w-]/g, '\\$&');
 
-            document.querySelector("#sortable-grid .active")?.classList?.remove("active");
+        document.querySelector("#sortable-grid .active")?.classList?.remove("active");
 
-            if (safeFieldName !== "" && safeFieldName !== '\\_') {
-                const element = document.querySelector("#" + safeFieldName);
-                if (element) {
-                    element.classList.add("active");
-                }
+        if (safeFieldName !== "" && safeFieldName !== '\\_') {
+            const element = document.querySelector("#" + safeFieldName);
+            if (element) {
+                element.classList.add("active");
             }
-
-            SpinnerOverlay.show();
-
-            fetch(url).then((response) => response.text()).then((html) => {
-                HTMLHelper.setInnerHTML("field-details", html);
-
-                listenAllEvents("#field-details");
-                listenTabs();
-                saveTabState();
-                SpinnerOverlay.hide();
-            });
         }
-    
-        function searchFields(oDom) {
-            const value = $(oDom).val().toLowerCase();
-            $("#sortable-grid a").filter(function () {
-                const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
-                const isSearch = textValues.toLowerCase().indexOf(value) > -1;
-    
-                $(this).toggle(isSearch);
-            });
-        }
-    </script>
+
+        SpinnerOverlay.show();
+
+        fetch(url).then((response) => response.text()).then((html) => {
+            HTMLHelper.setInnerHTML("field-details", html);
+
+            listenAllEvents("#field-details");
+            listenTabs();
+            saveTabState();
+            SpinnerOverlay.hide();
+        });
+    }
+
+    function searchFields(oDom) {
+        const value = $(oDom).val().toLowerCase();
+        $("#sortable-grid a").filter(function () {
+            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const isSearch = textValues.toLowerCase().indexOf(value) > -1;
+
+            $(this).toggle(isSearch);
+        });
+    }
+</script>
