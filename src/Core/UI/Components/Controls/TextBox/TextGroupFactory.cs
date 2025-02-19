@@ -184,13 +184,9 @@ public sealed class TextGroupFactory(
                     "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.Hour:
-                var btn = GetDateAction(component,textGroup.Enabled);
-                btn.IconClass = "fa fa-clock";
-                textGroup.Actions.Add(btn);
-
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 5;
-                textGroup.GroupCssClass = "flatpickr date jjform-hour";
+                textGroup.GroupCssClass = "date";
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
                 textGroup.SetAttr("data-inputmask-inputFormat", "HH:MM");
                 textGroup.SetAttr("data-inputmask-displayFormat","HH:MM");
@@ -199,7 +195,7 @@ public sealed class TextGroupFactory(
                 break;
             case FormComponent.Date:
                 textGroup.GroupCssClass = "flatpickr date jjform-date";
-                textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
+                textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
@@ -210,7 +206,7 @@ public sealed class TextGroupFactory(
                 break;
             case FormComponent.DateTime:
                 textGroup.GroupCssClass = "flatpickr date jjform-datetime";
-                textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
+                textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
@@ -234,11 +230,11 @@ public sealed class TextGroupFactory(
         textGroup.SetAttr("class", string.Join(" ", listClass));
     }
 
-    private JJLinkButton GetDateAction(FormComponent component, bool isEnabled)
+    private JJLinkButton GetDateAction(bool isEnabled)
     {
         var btn = actionButtonFactory.Create();
-        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : "fa fa-calendar";
-        btn.Tooltip = component is FormComponent.Hour ? stringLocalizer["Clock"] : stringLocalizer["Calendar"];
+        btn.IconClass = "fa fa-calendar";
+        btn.Tooltip = stringLocalizer["Calendar"];
         btn.Enabled = isEnabled;
         btn.SetAttr("data-toggle", "date");
         btn.SetAttr("tabindex", "-1");

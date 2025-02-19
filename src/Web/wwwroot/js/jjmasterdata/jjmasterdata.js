@@ -344,25 +344,6 @@ class CalendarListener {
                 locale: localeCode,
             });
         });
-        const hourInputs = document.querySelectorAll(prefixSelector + ".jjform-hour");
-        hourInputs.forEach(function (div) {
-            flatpickr(div, {
-                enableTime: true,
-                wrap: true,
-                noCalendar: true,
-                allowInput: true,
-                altInput: false,
-                dateFormat: "H:i",
-                mode: "single",
-                time_24hr: true,
-                onOpen: function (selectedDates, dateStr, instance) {
-                    if (instance.input.getAttribute("autocompletePicker") === "True") {
-                        instance.setDate(Date.now());
-                    }
-                },
-                locale: localeCode,
-            });
-        });
     }
 }
 class CheckboxHelper {
