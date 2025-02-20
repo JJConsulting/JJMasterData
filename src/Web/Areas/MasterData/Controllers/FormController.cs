@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -28,12 +29,29 @@ public class FormController(
         if (result is IActionResult actionResult)
             return actionResult;
 
-        Title = formView.FormElement.Name;
+        SetTitle(formView.FormElement.Name);
+        
         FormViewHtml = result.Content;
 
         HttpContext.Items["ElementName"] = elementName;
 
         return View();
+    }
+
+    private void SetTitle(string elementName)
+    {
+        if (TempData.TryGetValue("Title", out var title))
+        {
+            Title = title?.ToString();
+        }
+        else if (Request.HasFormContentType && Request.Form.TryGetValue("masterdata-title", out var mdTitle))
+        {
+            Title = mdTitle;
+        }
+        else
+        {
+            Title = elementName;
+        }
     }
 
     private void ConfigureFormView(JJFormView formView)

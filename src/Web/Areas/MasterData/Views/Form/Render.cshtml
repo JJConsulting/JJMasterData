@@ -1,11 +1,6 @@
 ﻿@using JJMasterData.Web.TagHelpers
-@{
-    if (TempData.TryGetValue("Title", out var title))
-    {
-        ViewData["Title"] = title;
-    }
-}
 
 <master-data-form asp-controller="Form" asp-action="Render" asp-area="MasterData">
+    <input type="hidden" name="masterdata-title" value="@ViewData["Title"]"/>
     @Html.Raw(ViewData["FormViewHtml"])
 </master-data-form>
