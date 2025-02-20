@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,6 @@ public class FileController(ElementFileService service) : MasterDataController
         if(fileStream == null)
             return NotFound();
         
-        return File(fileStream, "application/octet-stream", fileName);
+        return File(fileStream, MimeTypeUtil.GetMimeType(Path.GetExtension(fileName)), fileName);
     }
 }
