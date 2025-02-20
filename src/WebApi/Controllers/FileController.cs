@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,21 +9,24 @@ namespace JJMasterData.WebApi.Controllers;
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
 [Route("masterApi/{elementName}/{id}/{fieldName}/file")]
-public class FileController(FileService service) : ControllerBase
+public class FileController(ElementFileService service) : ControllerBase
 {
     [HttpGet]
     [Route("{fileName}")]
-    public async Task<IActionResult> GetFile(string elementName, string id, string fieldName, string fileName)
+    public async Task<IActionResult> GetFile(string elementName, string fieldName, string id, string fileName)
     {
-        var fileStream = await service.GetDictionaryFileAsync(elementName, id, fieldName, fileName);
+        var fileStream = await service.GetElementFileAsync(elementName, id, fieldName, fileName);
 
+        if(fileStream == null)
+            return NotFound();
+        
         return File(fileStream, "application/octet-stream", fileName);
     }
     
     [HttpPost]
     public async Task<IActionResult> PostFile(string elementName, string fieldName, string id, IFormFile file)
     {
-        await service.SetDictionaryFileAsync(elementName, fieldName, id, file);
+        await service.SetElementFileAsync(elementName, fieldName, id, file);
 
         return Created($"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}", "File successfully created.");
     }
