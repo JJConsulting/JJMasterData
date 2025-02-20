@@ -19,6 +19,9 @@ public static class DataManagerServiceExtensions
         services.AddScoped<FormValuesService>();
         services.AddScoped<FormFileManagerFactory>();
         services.AddScoped<FormFileService>();
+#if NET
+        services.AddScoped<ElementFileService>();
+#endif
         services.AddScoped<ElementMapService>();
         services.AddScoped<UrlRedirectService>();
         
