@@ -3,7 +3,10 @@ using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JJMasterData.Web.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace JJMasterData.Web.Configuration;
 
@@ -64,14 +67,14 @@ public static partial class WebApplicationExtensions
 
         configure?.Invoke(options);
 
-        var pattern = "{area}/{controller}/{action}/{elementName?}/";
+        var pattern = "{area}/{controller}/{action}/{elementName?}/{fieldName?}/{id?}";
 
         if (options.Prefix is not null)
             pattern = $"{options.Prefix.Replace("/", string.Empty)}/{pattern}";
 
         if (options.EnableCultureProvider)
             pattern = $"/{{culture}}/{pattern}";
-
+        
         return app.MapControllerRoute(
             name: "JJMasterData",
             pattern: pattern);

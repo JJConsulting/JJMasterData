@@ -1,37 +1,49 @@
+#if NET
+
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.IO;
+using Microsoft.AspNetCore.Http;
 
-namespace JJMasterData.WebApi.Services;
+namespace JJMasterData.Core.DataManager.Services;
 
-public class FileService(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
+public class ElementFileService(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
 {
-    public async Task<FileStream> GetDictionaryFileAsync(string elementName, string pkValues, string fieldName, string fileName)
+    public async Task<FileStream?> GetElementFileAsync(string elementName, string pkValues, string fieldName, string fileName)
     {
-        var formElement =await dictionaryRepository.GetFormElementAsync(elementName);
-        if (!formElement.ApiOptions.EnableGetDetail)
-            throw new UnauthorizedAccessException();
+        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
 
+        fileName = Path.GetFileName(fileName);
+        
         var field = formElement.Fields.First(f => f.Name == fieldName);
 
         var builder = new FormFilePathBuilder(formElement);
 
         var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
-        string? file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
+        var file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
 
         if (file == null)
-            throw new KeyNotFoundException("File not found");
+            return null;
 
         var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
         
         return fileStream;
     }
     
-    public async Task SetDictionaryFileAsync(string elementName, string fieldName, string pkValues, IFormFile file)
+    public async Task SetElementFileAsync(
+        string elementName,
+        string fieldName,
+        string pkValues,
+        IFormFile file)
     {
         var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
         
@@ -42,14 +54,17 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
 
         await SetPhysicalFileAsync(formElement, field, pkValues, file);
 
-        await SetEntityFileAsync(formElement, field, pkValues, file.FileName);
+        var fileName = Path.GetFileName(file.FileName);
+        
+        await SetEntityFileAsync(formElement, field, pkValues, fileName);
     }
     
     private async Task SetEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
         var values = await entityRepository.GetFieldsAsync(formElement, primaryKeys);
-
+        fileName = Path.GetFileName(fileName);
+        
         if (values == null)
             throw new KeyNotFoundException();
         
@@ -59,7 +74,7 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
             var dbValue = values[field.Name];
             if (dbValue != null && dbValue is not DBNull)
             {
-                currentFiles = ((string)dbValue).Split(",").ToList();
+                currentFiles = ((string)dbValue).Split(',').ToList();
             }
             
             if (!currentFiles.Contains(fileName))
@@ -76,7 +91,11 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         await entityRepository.SetValuesAsync(formElement, values);
     }
     
-    private static async Task SetPhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, IFormFile file)
+    private static async Task SetPhysicalFileAsync(
+        FormElement formElement,
+        FormElementField field,
+        string pkValues,
+        IFormFile file)
     {
         var builder = new FormFilePathBuilder(formElement);
 
@@ -87,19 +106,21 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
 
+        var fileName = Path.GetFileName(file.FileName);
+        
         if (field.DataFile!.MultipleFile)
         {
             foreach (var fileInfo in new DirectoryInfo(path).EnumerateFiles())
             {
-                if (fileInfo.Name == file.FileName)
+                if (fileInfo.Name == fileName)
                 {
                     fileInfo.Delete();
                 }
             }
         }
-
+        
         await using var fileStream =
-            new FileStream(Path.Combine(path, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            new FileStream(Path.Combine(path, fileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
         await file.CopyToAsync(fileStream);
     }
@@ -113,6 +134,8 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
+        fileName = Path.GetFileName(fileName);
+        
         DeletePhysicalFile(formElement, field, pkValues, fileName);
         await DeleteEntityFileAsync(formElement, field, pkValues, fileName);
     }
@@ -123,6 +146,8 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
 
         var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
+        fileName = Path.GetFileName(fileName);
+        
         var filePath = Path.Combine(path, fileName);
         
         if (File.Exists(filePath))
@@ -138,9 +163,11 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         if (values == null)
             throw new KeyNotFoundException();
         
+        fileName = Path.GetFileName(fileName);
+        
         if (field.DataFile!.MultipleFile)
         {
-            var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+            var currentFiles = values[field.Name]!.ToString()!.Split(',').ToList();
 
             if (currentFiles.Contains(fileName))
             {
@@ -166,6 +193,9 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
 
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
+        oldName = Path.GetFileName(oldName);
+        newName = Path.GetFileName(newName);
+        
         RenamePhysicalFile(formElement, field, pkValues, oldName, newName);
         await RenameEntityFileAsync(formElement,field, pkValues, oldName, newName);
     }
@@ -175,7 +205,7 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         var builder = new FormFilePathBuilder(formElement);
 
         var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
-
+        
         var oldFilePath = Path.Combine(path, oldName);
         var newFilePath = Path.Combine(path, newName);
 
@@ -196,7 +226,7 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         
         if (field.DataFile!.MultipleFile)
         {
-            var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+            var currentFiles = values[field.Name]!.ToString()!.Split(',').ToList();
 
             currentFiles.Remove(oldName);
             currentFiles.Add(newName);
@@ -211,3 +241,4 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         await entityRepository.SetValuesAsync(formElement, values);
     }
 }
+#endif

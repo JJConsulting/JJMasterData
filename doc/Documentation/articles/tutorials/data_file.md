@@ -63,3 +63,7 @@ When exporting the field to excel it is not allowed to place more than one link 
 
 ### What can you do
 Unfortunately in this scenario you will have to create a field for each file.
+
+## Como acessar o arquivo de fora do elemento em uma rota externa?
+
+Utilize o endpoint `/MasterData/File/Index/{elementName}/{fieldName}/{id}?fileName=YourFileName.png` para recuperar seu arquivo. Onde {id} é sua chave primária, caso seja mais de um campo, utilize vírgula para separar os valores.
