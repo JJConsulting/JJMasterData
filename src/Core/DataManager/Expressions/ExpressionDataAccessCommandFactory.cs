@@ -31,9 +31,12 @@ public static class ExpressionDataAccessCommandFactory
             expression = expression.Replace($"'{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}'",
                 $" {parameterName} ");
 
+            object? value;
+            
             if (oldExpression != expression)
             {
                 dbType = DbType.AnsiString;
+                value = keyValuePair.Value?.ToString();
             }
             else
             {
@@ -41,10 +44,9 @@ public static class ExpressionDataAccessCommandFactory
                     $" {parameterName} ");
 
                 dbType = GetDbTypeFromObject(keyValuePair.Value);
+                value = keyValuePair.Value;
             }
-
-            var value = keyValuePair.Value;
-
+            
             if (value is string stringValue)
                 value = stringValue.Trim(); //this prevents errors when coalescing string to numeric values.
 
