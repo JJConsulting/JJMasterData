@@ -177,7 +177,10 @@ public class GridActions
         Remove(action);
     }
 
+#pragma warning disable CA1822
+    // ReSharper disable once MemberCanBeMadeStatic.Local
     private void ValidateAction(BasicAction action)
+#pragma warning restore CA1822
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action));

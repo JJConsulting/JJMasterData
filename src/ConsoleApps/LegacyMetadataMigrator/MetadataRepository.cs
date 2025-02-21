@@ -25,7 +25,7 @@ public class MetadataRepository(IEntityRepository entityRepository, IOptions<Mas
             if (_masterDataElement == null)
             {
                 var tableName = options.Value.DataDictionaryTableName;
-                _masterDataElement = DataDictionaryStructure.GetElement(tableName);
+                _masterDataElement = DataDictionaryStructure.GetElement("dbo", tableName);
             }
             return _masterDataElement;
         }
@@ -150,18 +150,18 @@ public class MetadataRepository(IEntityRepository entityRepository, IOptions<Mas
         }
 
         //Arturito
-        foreach (var action in dicParser.Options.GridActions.GetAll()
-                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
-        {
-            //action.IsUserCreated = true;
-        }
-
-        foreach (var action in dicParser.Options.ToolbarActions
-                     .GetAll()
-                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
-        {
-            //action.IsUserCreated = true;
-        }
+        // foreach (var action in dicParser.Options.GridActions.GetAll()
+        //              .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        // {
+        //     //action.IsUserCreated = true;
+        // }
+        //
+        // foreach (var action in dicParser.Options.ToolbarActions
+        //              .GetAll()
+        //              .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        // {
+        //     //action.IsUserCreated = true;
+        // }
         
 
         //Sirius

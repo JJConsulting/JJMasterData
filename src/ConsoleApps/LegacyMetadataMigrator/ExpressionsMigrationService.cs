@@ -81,7 +81,10 @@ public class ExpressionsMigrationService(
         }
     }
 
+    // ReSharper disable once MemberCanBeMadeStatic.Local
+#pragma warning disable CA1822
     private void FixPanelExpressions(FormElementPanel panel)
+#pragma warning restore CA1822
     {
         var visibleExpressionBefore = panel.VisibleExpression;
 
@@ -108,7 +111,10 @@ public class ExpressionsMigrationService(
         }
     }
 
+    // ReSharper disable once MemberCanBeMadeStatic.Local
+#pragma warning disable CA1822
     private void FixActionExpressions(BasicAction action)
+#pragma warning restore CA1822
     {
         var visibleExpressionBefore = action.VisibleExpression;
 
