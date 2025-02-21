@@ -5,22 +5,22 @@
 @model RelationshipsListViewModel
 
 @functions {
-
     private static string GetRelationshipIconCssClass(FormElementRelationship relationship)
     {
         if (relationship.Panel.Icon.HasValue)
             return relationship.Panel.Icon.Value.GetCssClass();
-        
+
         if (relationship.IsParent)
             return "fa-crown";
-        
+
         return relationship.ViewType switch
         {
             RelationshipViewType.List => "fa-table-cells",
             RelationshipViewType.View => "fa-eye",
+            RelationshipViewType.Insert => "fa-plus",
             RelationshipViewType.Update => "fa-pencil",
             _ => "fa-ban"
-            };
+        };
     }
 
 }
@@ -29,18 +29,18 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         $("#sortable").sortable({
-               update: function () {
-                 const relationships = $(this).sortable('toArray');
-                 fetch('@Url.Action("Sort", new { elementName = Model.ElementName })', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json'
-                     },
-                     body: JSON.stringify(relationships)
-                 }).catch(error => {
+            update: function () {
+                const relationships = $(this).sortable('toArray');
+                fetch('@Url.Action("Sort", new { elementName = Model.ElementName })', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(relationships)
+                }).catch(error => {
                     messageBox.show("JJMasterData", error.message, 4);
-                 });
-               }
+                });
+            }
         }).disableSelection();
     });
 
@@ -63,7 +63,8 @@
                                 @title
                             </div>
                             <div class=@BootstrapHelper.PullRight>
-                                <button class="@BootstrapHelper.BtnDefault btn-small" type="button" onclick="defaultModal.showIframe('@Url.Action("LayoutDetails", "Relationships", new { elementName = Model.ElementName, relationship.Id })','Layout - @title')">
+                                <button class="@BootstrapHelper.BtnDefault btn-small" type="button"
+                                        onclick="defaultModal.showIframe('@Url.Action("LayoutDetails", "Relationships", new { elementName = Model.ElementName, relationshipId = relationship.Id })','Layout - @title')">
                                     <span class="fa fa-pencil"></span>
                                 </button>
                             </div>
@@ -74,7 +75,8 @@
         }
         else
         {
-            <alert icon="IconType.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default" show-close-button="false"/>
+            <alert icon="IconType.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default"
+                   show-close-button="false"/>
         }
     </div>
 </div>

@@ -76,7 +76,9 @@ public class FieldValuesService(ExpressionsService expressionsService)
         var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
   
         foreach (var v in formStateData.Values)
+        {
             values.Add(v.Key, v.Value);
+        }
 
         await ApplyDefaultValues(formElement, formStateData, false);
         return values;
@@ -106,17 +108,15 @@ public class FieldValuesService(ExpressionsService expressionsService)
 
     private async ValueTask ApplyTriggerValues(FormElement formElement, FormStateData formStateData)
     {
-        var fieldsWithTrigger = formElement.Fields
-            .Where(x => !string.IsNullOrEmpty(x.TriggerExpression));
-        
-        foreach (var field in fieldsWithTrigger)
+        foreach (var field in formElement.Fields)
         {
+            if (string.IsNullOrEmpty(field.TriggerExpression)) 
+                continue;
+            
             var fieldSelector = new FormElementFieldSelector(formElement, field.Name);
             var value = await expressionsService.GetTriggerValueAsync(fieldSelector, formStateData);
             if (value != null)
-            {
                 formStateData.Values[field.Name] = value;
-            }
         }
     }
 
@@ -125,14 +125,17 @@ public class FieldValuesService(ExpressionsService expressionsService)
         if (value is null)
             return value;
 
-        return field.Component switch
+        switch (field.Component)
         {
-            FormComponent.Cnpj or FormComponent.CnpjCpf => StringManager.ClearCpfCnpjChars(
-                value.ToString()!),
-            FormComponent.Tel => StringManager.ClearTelChars(value.ToString()!),
-            FormComponent.Cep => value.ToString()!.Replace("-", ""),
-            _ => value
-        };
+            case FormComponent.Cnpj or FormComponent.CnpjCpf:
+                return StringManager.ClearCpfCnpjChars(value.ToString()!);
+            case FormComponent.Tel:
+                return StringManager.ClearTelChars(value.ToString()!);
+            case FormComponent.Cep:
+                return value.ToString()!.Replace("-", "");
+            default:
+                return value;
+        }
     }
 
 }

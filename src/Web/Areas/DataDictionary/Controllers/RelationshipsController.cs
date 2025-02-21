@@ -27,9 +27,9 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
     }
 
     [HttpPost]
-    public async Task<ActionResult> Delete(string elementName, int id)
+    public async Task<ActionResult> Delete(string elementName, [FromQuery] int relationshipId)
     {
-        await relationshipsService.DeleteAsync(elementName, id);
+        await relationshipsService.DeleteAsync(elementName, relationshipId);
         return RedirectToAction("Index", new { elementName });
     }
 
@@ -176,9 +176,9 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
     #region LayoutDetails
 
     [HttpGet]
-    public async Task<IActionResult> LayoutDetails(string elementName, int id)
+    public async Task<IActionResult> LayoutDetails(string elementName, int relationshipId)
     {
-        var model = await CreateLayoutDetailsViewModel(elementName, id);
+        var model = await CreateLayoutDetailsViewModel(elementName, relationshipId);
         return View("DetailLayout", model);
     }
     

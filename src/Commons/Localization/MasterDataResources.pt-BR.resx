@@ -133,6 +133,21 @@
     <value>--Selecione--</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="None - The relationship is hidden and not rendered in any component." xml:space="preserve">
+    <value>Nenhum - O relacionamento está oculto e não é renderizado em nenhum componente.</value>
+  </data>
+  <data name="List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)." xml:space="preserve">
+    <value>Lista - O relacionamento é exibido em uma lista com ações controladas pelo respectivo Dicionário de Dados (1xn).</value>
+  </data>
+  <data name="View - The relationship is shown in a read-only form (1x1)." xml:space="preserve">
+    <value>Visualização - O relacionamento é exibido em um formulário somente leitura (1x1).</value>
+  </data>
+  <data name="Insert - The relationship is shown in an insert form (1x1)." xml:space="preserve">
+    <value>Inserção - O relacionamento é exibido em um formulário de inserção (1x1).</value>
+  </data>
+  <data name="Update - The relationship is shown in an update form (1x1)." xml:space="preserve">
+    <value>Atualização - O relacionamento é exibido em um formulário de atualização (1x1).</value>
+  </data>
   <data name="1 (one column)" xml:space="preserve">
     <value>1 (uma coluna)</value>
     <comment>JJMasterDataWeb</comment>

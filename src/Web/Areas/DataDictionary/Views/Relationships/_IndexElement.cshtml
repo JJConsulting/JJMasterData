@@ -77,7 +77,7 @@
                         type="LinkButtonType.Submit"
                         asp-controller="Relationships"
                         asp-action="Delete"
-                        asp-route-id="@relationship.Id"
+                        asp-route-relationshipId="@relationship.Id"
                         asp-route-elementName="@Model.ElementName"
                         show-as-button="false"
                         on-client-click="return deleteRelationship();"

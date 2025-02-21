@@ -69,12 +69,21 @@ public class InternalRedirectController(
                 model = new(title ?? panel.Name, result.Content!, false);
                 break;
             }
+            case RelationshipViewType.Insert:
             case RelationshipViewType.Update:
             {
                 var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
-                panel.PageState = PageState.Update;
-            
-                await panel.LoadValuesFromPkAsync(state.RelationValues);
+
+                var pageState = state.RelationshipType is RelationshipViewType.Update
+                    ? PageState.Update
+                    : PageState.Insert;
+                
+                panel.PageState = pageState;
+
+                if (pageState is PageState.Update)
+                {
+                    await panel.LoadValuesFromPkAsync(state.RelationValues);
+                }
                 
                 DataHelper.CopyIntoDictionary(panel.Values, state.RelationValues!);
                 
@@ -85,7 +94,7 @@ public class InternalRedirectController(
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.Update))?.ToString();
+                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!,pageState))?.ToString();
                 model = new(title ?? panel.Name, result.Content, true);
                 break;
             }
@@ -102,9 +111,12 @@ public class InternalRedirectController(
         var state = GetInternalRedirectState(parameters);
         var userId = HttpContext.User.GetUserId();
         var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
-        panel.PageState = PageState.Update;
 
-        await panel.LoadValuesFromPkAsync(state.RelationValues);
+        if (panel.PageState is PageState.Update)
+        {
+            await panel.LoadValuesFromPkAsync(state.RelationValues);
+        }
+     
         if (userId != null)
             panel.SetUserValues("USERID", userId);
 
