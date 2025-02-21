@@ -91,6 +91,8 @@ public class ActionScripts(
         string confirmationMessage =
             GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
+        string isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
+        
         if (actionSource is ActionSource.Field or ActionSource.FormToolbar)
         {
             var actionMap = actionContext.ToActionMap(actionSource);
@@ -101,14 +103,13 @@ public class ActionScripts(
             var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
 
             return
-                $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}', '{action.OpenInNewTab.ToString().ToLower()}' {(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+                $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}', {isOpenNewTabPage} {(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
 
         var script = new StringBuilder();
         string url = urlRedirectService.GetParsedUrl(action, actionContext.FormStateData);
         string isModal = action.IsModal ? "true" : "false";
         string isIframe = action.IsIframe ? "true" : "false";
-        string isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
 
         string modalTitle = action.ModalTitle;
 
