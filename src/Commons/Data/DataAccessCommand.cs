@@ -53,6 +53,11 @@ public class DataAccessCommand
     {
         Parameters.Add(new DataAccessParameter(name, value, dbType));
     }
+    
+    public void AddParameter(string name, object? value, DbType dbType, int size)
+    {
+        Parameters.Add(new DataAccessParameter(name, value, dbType, size));
+    }
 
     public static DataAccessCommand FromFormattableString(FormattableString formattableString)
     {
