@@ -210,7 +210,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         FormElementRelationship relationship, Dictionary<string, object?> filter)
     {
         Dictionary<string, object?>? childValues = null;
-        if (filter.Count > 0 && relationship.ViewType is RelationshipViewType.Update)
+        if (filter.Count > 0 && relationship.ViewType is RelationshipViewType.Update or RelationshipViewType.View)
         {
             childValues =
                 await parentFormView.EntityRepository.GetFieldsAsync(childFormView.FormElement, filter!);
