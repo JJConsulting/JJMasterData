@@ -59,7 +59,8 @@
       "_gitContribute": {
         "branch": "main",
         "apiSpecFolder":"api",
-        "repo": "https://github.com/jjconsulting/JJMasterData"
+        "repo": "https://github.com/jjconsulting/JJMasterData",
+        "_googleAnalyticsTagId" : "G-60L9XB7X4J"
       },
       "_gitUrlPattern": "github",
       "_disableSideFilter":true,
