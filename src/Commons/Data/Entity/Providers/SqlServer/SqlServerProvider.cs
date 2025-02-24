@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
@@ -192,19 +191,20 @@ public class SqlServerProvider(
             Type = element.UseWriteProcedure ? CommandType.StoredProcedure : CommandType.Text,
             Sql = sql
         };
-        writeCommand.Parameters.Add(new DataAccessParameter("@action", action, DbType.AnsiString, 1));
-
-        var fields = element.Fields
-            .FindAll(x => x.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly);
-
-        foreach (var field in fields)
+        
+        writeCommand.AddParameter("@action", action, DbType.AnsiString, 1);
+        
+        foreach (var field in element.Fields)
         {
+            if (field.DataBehavior is not (FieldBehavior.Real or FieldBehavior.WriteOnly))
+                continue;
+            
             var value = GetElementValue(field, values);
             var parameter = new DataAccessParameter
             {
-                Name = $"@{field.Name}",
-                Size = field.Size,
-                Value = value,
+                Name = field.Name,
+                Size = field.Size, 
+                Value = value, 
                 Type = GetDbType(field.DataType)
             };
             writeCommand.Parameters.Add(parameter);
