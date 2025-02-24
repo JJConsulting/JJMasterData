@@ -54,12 +54,12 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
 
     #region ElementDetails
 
-    public async Task<ActionResult> ElementDetails(string elementName, int? id)
+    public async Task<ActionResult> ElementDetails(string elementName, int? relationshipId)
     {
         var formElement = await relationshipsService.GetFormElementAsync(elementName);
-        var relationship = id != null ? formElement.Relationships.GetById(id.Value).ElementRelationship! : new ElementRelationship();
+        var relationship = relationshipId != null ? formElement.Relationships.GetById(relationshipId.Value).ElementRelationship! : new ElementRelationship();
 
-        var model = await CreateElementDetailsViewModel(elementName, relationship, id);
+        var model = await CreateElementDetailsViewModel(elementName, relationship, relationshipId);
 
         return View("DetailElement", model);
     }

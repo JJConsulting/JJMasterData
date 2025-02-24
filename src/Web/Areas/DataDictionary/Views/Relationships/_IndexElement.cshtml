@@ -3,7 +3,6 @@
 @model RelationshipsListViewModel
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IUrlHelper UrlHelper
 
 <script type="text/javascript">
          function deleteRelationship() {
@@ -17,7 +16,7 @@
 <div class="row">
     <div class="col-sm-8">
         @{
-            var url = UrlHelper.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
+            var url = Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
         }
         <link-button icon="PlusCircle"
                      text="@StringLocalizer["New"]"
@@ -65,7 +64,7 @@
                 </td>
                 <td style="text-align: center;width: 9.375rem">
                     @{
-                        var urlEdit = UrlHelper.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id });
+                        var urlEdit = Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, relationshipId = relationship.Id });
                     }
                     <link-button
                         icon="Pencil"
