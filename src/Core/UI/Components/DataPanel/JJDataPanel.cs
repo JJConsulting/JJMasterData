@@ -246,11 +246,6 @@ public class JJDataPanel(
         }
     }
 
-    public async Task<string> GetHtmlAsync()
-    {
-        return (await GetHtmlBuilderAsync()).ToString();
-    }
-
     private async ValueTask<ComponentResult> GetFieldResultAsync<TControl>() where TControl : ControlBase
     {
         var fieldName = CurrentContext.Request.QueryString["fieldName"];
