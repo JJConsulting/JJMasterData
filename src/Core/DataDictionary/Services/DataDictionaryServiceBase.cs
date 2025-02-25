@@ -100,21 +100,6 @@ public abstract class DataDictionaryServiceBase(
         return true;
     }
 
-    public static IEnumerable<string> GetAutocompleteHints(FormElement formElement, bool includeAdditionalHints = true)
-    {
-        if (includeAdditionalHints)
-        {
-            yield return "PageState";
-            yield return "FieldName";
-            yield return "UserId";
-            yield return "SearchId";
-            yield return "SearchText";
-        }
-        
-        foreach (var field in formElement.Fields)
-            yield return field.Name;
-    }
-
     public async ValueTask<Dictionary<string, string>> GetElementsDictionaryAsync()
     {
         var elementList = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };

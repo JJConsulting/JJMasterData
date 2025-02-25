@@ -6,6 +6,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
+using JJMasterData.Web.Components;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -410,13 +411,19 @@ public class ActionsController(ActionsService actionsService,
         else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
             ViewBag.Tab = tempSelectedTab?.ToString()!;
         
-        ViewBag.ElementName = elementName;
-        ViewBag.ContextAction = context;
-        ViewBag.MenuId = "Actions";
-        ViewBag.FieldName = fieldName!;
+        ViewData["ElementName"] = elementName;
+        ViewData["ContextAction"] = context;
+        ViewData["MenuId"] = "Actions";
+        ViewData["FieldName"] = fieldName!;
         var formElement = await actionsService.GetFormElementAsync(elementName);
-        ViewBag.FormElement = formElement;
-        ViewBag.CodeMirrorHintList = JsonSerializer.Serialize(DataDictionaryServiceBase.GetAutocompleteHints(formElement, includeAdditionalHints:false).ToList());
+        ViewData["FormElement"] = formElement;
+        ViewData["CodeEditorHints"] = formElement.Fields.Select(f => new CodeEditorHint
+        {
+            Language = "sql",
+            InsertText = f.Name,
+            Label = f.Name,
+            Details = "Form Element Field",
+        }).ToList();
 
         if (basicAction is InternalAction internalAction)
         {
@@ -426,5 +433,4 @@ public class ActionsController(ActionsService actionsService,
             ViewBag.RedirectFieldList = await actionsService.GetFieldList(elementNameRedirect);
         }
     }
-    
 }

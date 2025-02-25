@@ -9,43 +9,6 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
-
-@section Scripts{
-    <script lang="javascript" type="text/javascript">
-        function setupCodeMirror(){
-            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql",size: 320, hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
-        }
-        
-        document.addEventListener("DOMContentLoaded",()=>{
-            listenTabs();
-        });
-
-        function listenTabs (){
-            setupCodeMirror();
-
-            const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
-
-            if(!tabs)
-                return;
-
-            tabs.forEach((tab)=>{
-                tab.addEventListener('shown.bs.tab', () => {
-                    const codeMirrorElements = document.querySelectorAll(".CodeMirror");
-                    if (codeMirrorElements){
-                        codeMirrorElements.forEach(function (c){
-                            c.CodeMirror.refresh();
-                        })
-                    }
-                    else{
-                        setupCodeMirror();
-                    }
-                })
-            })
-        }
-    
-    </script>
-}
-
 @using (Html.BeginMasterDataForm("SqlCommandAction", "Actions",
             new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
 {
@@ -74,7 +37,7 @@
                     <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
                     <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
                     <div class="well" style="margin-bottom: 0">
-                        @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "15" })
+                        <code-editor asp-for="SqlCommand" language="sql" height="300"/>
                     </div>
                 </div>
                 @if (ViewBag.ContextAction is ActionSource.GridToolbar)

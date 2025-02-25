@@ -4,6 +4,7 @@ using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Services;
+using JJMasterData.Web.Components.Configuration;
 using JJMasterData.Web.Configuration.Options;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
@@ -85,6 +86,8 @@ public static class ServiceCollectionExtensions
         
         services.AddMvcServices(configuration ?? new());
         
+        
+        services.AddComponentServices();
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();

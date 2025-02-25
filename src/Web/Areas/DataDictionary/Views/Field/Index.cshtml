@@ -1,8 +1,6 @@
 ﻿@using System.Text
 @using JJMasterData.Commons.Data.Entity.Models
-@using JJMasterData.Commons.Extensions
 @using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Core.UI.Components
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
 
@@ -12,18 +10,17 @@
 
 @{
     ViewData["Title"] = $"{ViewData["ElementName"]} - {StringLocalizer["Fields"]}";
-    ViewData["UseCodeMirror"] = true;
+    ViewData["UseCodeEditor"] = true;
     var isForm = ViewData["IsForm"] is true;
     var elementName = ViewData["ElementName"]!.ToString();
     Layout = !isForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
 @functions{
-
-    string GetFieldDataTypeText(FormElementField field)
+    static string GetFieldDataTypeText(FormElementField field)
     {
         var sql = new StringBuilder();
-        sql.Append(StringLocalizer[field.DataType.GetDisplayName()]);
+        sql.Append(field.DataType.GetDisplayName());
 
         if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
         {
@@ -73,7 +70,6 @@
             _ => IconType.Question
         };
     }
-
 }
 
 
@@ -289,51 +285,6 @@
             styleBase:"form-select form-dropdown"
         });
     }
-
-    function setupCodeMirror() {
-        @if (Model.DataItem is not null)
-        {
-            <text>
-                CodeMirrorWrapper.setupCodeMirror("@Html.IdFor(m => m.DataItem!.Command!.Sql)", {
-                    mode: "text/x-sql",
-                    hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
-                    hintKey: '{'
-                });
-            </text>
-        }
-        CodeMirrorWrapper.setupCodeMirror("@Html.NameFor(m => m.GridRenderingTemplate)", {
-            mode: "text/x-liquid",
-            hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
-            hintKey: '{',
-            size: 320
-        });
-    }
-
-    function listenTabs() {
-        setupCodeMirror();
-
-        const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
-
-        if (!tabs)
-            return;
-
-        tabs.forEach((tab) => {
-            tab.addEventListener('shown.bs.tab', () => {
-                const codeMirrorElements = document.querySelectorAll(".CodeMirror");
-                if (codeMirrorElements) {
-                    codeMirrorElements.forEach(function (c) {
-                        c.CodeMirror.refresh();
-                    })
-                } else {
-                    setupCodeMirror();
-                }
-            })
-        })
-    }
-
-    document.addEventListener("DOMContentLoaded", listenTabs);
-
-
 </script>
 
 <script type="text/javascript">
@@ -425,7 +376,6 @@
             HTMLHelper.setInnerHTML("field-details", html);
 
             listenAllEvents("#field-details");
-            listenTabs();
             saveTabState();
             SpinnerOverlay.hide();
         });

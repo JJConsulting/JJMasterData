@@ -6,7 +6,7 @@
 
 @{
     Layout = Options.Value.ModalLayoutPath;
-    ViewData["UseCodeMirror"] = true;
+    ViewData["UseCodeEditor"] = true;
 }
 
 @using (Html.BeginMasterDataForm("ExportAction", "Actions",
@@ -23,7 +23,7 @@
             <partial name="_NavGeneral" model="Model"/>
         </div>
         <div id="divExportAction" class="tab-pane fade">
-            <partial name="_ProcessOptions" model="Model.ProcessOptions"/>
+            <partial name="_ProcessOptions" for="ProcessOptions"/>
             <div class="row">
                 <div class=" col-sm-3">
                     <label asp-for="FileName" class="form-label"></label>

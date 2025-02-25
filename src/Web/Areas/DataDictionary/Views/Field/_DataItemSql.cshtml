@@ -14,7 +14,7 @@
         <label asp-for="DataItem!.Command!.Sql" class="form-label"></label>
         <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
         <div class="well" style="margin-bottom: 0">
-            @Html.TextAreaFor(model => model.DataItem!.Command!.Sql, new { @class = "form-control", rows = "10" })
+            <code-editor asp-for="DataItem!.Command!.Sql" language="sql" height="300"/>
         </div>
     </div>
     <collapse-panel color="Info" title="@StringLocalizer["Data Item SQL Query"]" icon="InfoCircle" expanded-by-default="true">

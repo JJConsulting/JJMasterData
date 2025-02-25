@@ -8,8 +8,6 @@
 
 <script lang="javascript" type="text/javascript">
     document.addEventListener("DOMContentLoaded",()=>{
-        listenTabs();
-
         $("#cboSqlEvent").change(function () {
             const selectedVal = $("#cboSqlEvent").selectpicker('val');
             if (selectedVal == "1") {
@@ -21,34 +19,6 @@
             }
         });
     });
-
-    function setupCodeMirror(){
-        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandBeforeProcess',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'});
-        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandAfterProcess',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'}); 
-    }
-    
-    function listenTabs (){
-        setupCodeMirror();
-
-        const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
-
-        if(!tabs)
-            return;
-
-        tabs.forEach((tab)=>{
-            tab.addEventListener('shown.bs.tab', () => {
-                const codeMirrorElements = document.querySelectorAll(".CodeMirror");
-                if (codeMirrorElements){
-                    codeMirrorElements.forEach(function (c){
-                        c.CodeMirror.refresh();
-                    })
-                }
-                else{
-                    setupCodeMirror();
-                }
-            })
-        })
-    }
 </script>
 
 
@@ -71,16 +41,15 @@
 <div class="row">
     <div id="divCommandBefore" class="@BootstrapHelper.FormGroup col-sm-12">
         <div class="well" style="margin-bottom:0px">
-            <textarea class="form-control" cols="20" id="ProcessOptions_CommandBeforeProcess" name="ProcessOptions.CommandBeforeProcess" rows="5">@Model.CommandBeforeProcess</textarea>
+            <code-editor asp-for="CommandBeforeProcess" language="sql" height="300"/>
         </div>
     </div>
 
     <div id="divCommandAfter" class="@BootstrapHelper.FormGroup col-sm-12" style="display:none;">
         <div class="well" style="margin-bottom:0px">
-            <textarea class="form-control" cols="20" id="ProcessOptions_CommandAfterProcess" name="ProcessOptions.CommandAfterProcess" rows="5">@Model.CommandAfterProcess</textarea>
-        </div>
+            <code-editor asp-for="CommandAfterProcess" language="sql" height="300"/>
+            </div>
     </div>
-
 </div>
 <hr />
 <div class="row">

@@ -6,7 +6,7 @@
 
 @{
     Layout = Options.Value.ModalLayoutPath;
-    ViewData["UseCodeMirror"] = true;
+    ViewData["UseCodeEditor"] = true;
 }
 
 @using (Html.BeginMasterDataForm("ImportAction", "Actions",
@@ -24,7 +24,7 @@
         </div>
 
         <div id="divImportAction" class="tab-pane fade">
-            <partial name="_ProcessOptions" model="Model.ProcessOptions"/>
+            <partial name="_ProcessOptions" for="ProcessOptions"/>
             <label asp-for="HelpText" class="form-label"></label>
             <tooltip title="@StringLocalizer["Help text that will be shown to the user."]"/>
             <textarea asp-for="HelpText" class="form-control" rows="5"></textarea>

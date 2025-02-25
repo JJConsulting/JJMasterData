@@ -208,8 +208,6 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
 
         var relationship = formElement.Relationships.GetById(id);
         
-        ViewBag.CodeMirrorHintList = JsonSerializer.Serialize(DataDictionaryServiceBase.GetAutocompleteHints(formElement));
-        
         return new RelationshipsLayoutDetailsViewModel(elementName, "Relationships")
         {
             Id = id,

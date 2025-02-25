@@ -1,0 +1,33 @@
+@using System.Text.Json
+
+@{
+    var editorId = $"{Name}-editor".Replace(".", "_");
+}
+
+<style>
+    @("#" + editorId) {
+        height: @(Height)px;
+    }
+</style>
+<div class="w-100 h-100">
+    <textarea hidden="hidden" name="@Name" id="@Name">@Value</textarea>
+    <div id="@editorId"></div>
+</div>
+<script>
+    onDOMReady(function (){
+        require(['vs/editor/editor.main'],function (){
+            const editor = monaco.editor.create(document.getElementById('@editorId'), {
+                value: '@Value',
+                automaticLayout:true,
+                language: '@Language',
+                theme: getTheme() === "dark" ? "vs-dark" : "vs"
+            });
+
+            const editorTextArea = document.getElementById("@Name");
+
+            editor.getModel().onDidChangeContent((event) => {
+                editorTextArea.value = editor.getValue();
+            });
+        });
+    });
+</script>

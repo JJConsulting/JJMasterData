@@ -191,6 +191,9 @@
   <data name="No elements found." xml:space="preserve">
     <value>Nenhum elemento encontrado.</value>
   </data>
+  <data name="Grid Template" xml:space="preserve">
+    <value>Template da Grid</value>
+  </data>
   <data name="No fields found." xml:space="preserve">
     <value>Nenhum campo encontrado.</value>
   </data>
