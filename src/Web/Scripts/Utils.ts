@@ -134,6 +134,10 @@
     
 })();
 
+function getTheme(){
+    return document.documentElement.getAttribute("data-bs-theme") ?? "light";
+}
+
 function printTemplateIframe() {
     // @ts-ignore
     const iframe: HTMLIFrameElement = document.getElementById('jjmasterdata-template-iframe');

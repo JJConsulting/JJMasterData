@@ -16,24 +16,21 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const hints = @Json.Serialize(codeEditorHints);
-
-        Object.keys(hints).forEach(lang => {
-            monaco.languages.registerCompletionItemProvider(lang, {
-                provideCompletionItems: function(model, position) {
-                    const suggestions = hints[lang].map(h => ({
-                        label: h.label,
-                        kind: 17,
-                        insertText: h.insertText,
-                        detail: h.details
-                    }));
-                    return { suggestions };
-                }
+        require(['vs/editor/editor.main'],function (){
+            const hints = @Json.Serialize(codeEditorHints);
+            Object.keys(hints).forEach(lang => {
+                monaco.languages.registerCompletionItemProvider(lang, {
+                    provideCompletionItems: function(model, position) {
+                        const suggestions = hints[lang].map(h => ({
+                            label: h.label,
+                            kind: 17,
+                            insertText: h.insertText,
+                            detail: h.details
+                        }));
+                        return { suggestions };
+                    }
+                });
             });
-        });
-        
-        
-        setTimeout(() => {
             const observer = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     if (mutation.type === "attributes" && mutation.attributeName === "data-bs-theme") {
@@ -44,6 +41,6 @@
             });
 
             observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
-        }, 600);
+        });
     });
 </script>
