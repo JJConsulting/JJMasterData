@@ -34,6 +34,7 @@ public class InternalRedirectController(
                 var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
                 formView.ShowTitle = state.ShowTitle;
                 formView.RelationValues = state.RelationValues;
+                formView.FormElement.Options.Grid.MaintainValuesOnLoad = false;
                 
                 if (userId != null)
                 {
