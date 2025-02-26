@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -18,7 +19,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
         string? expression,
         FormStateData formStateData)
     {
-        var result = new Dictionary<string, object?>();
+        var result = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
 
         if (expression is null)
             return result;

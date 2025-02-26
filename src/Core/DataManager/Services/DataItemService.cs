@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -125,18 +124,13 @@ public class DataItemService(
         FormElementDataItem dataItem,
         DataQuery dataQuery)
     {
-        var formStateData = dataQuery.FormStateData;
-        var searchId = dataQuery.SearchId;
-        var searchText = dataQuery.SearchText;
-        var connectionId = dataQuery.ConnectionId;
-        
-        var command = GetDataItemCommand(dataItem, formStateData, searchText, searchId);
+        var command = GetDataItemCommand(dataItem, dataQuery);
         
         DataTable dataTable;
         
         try
         {
-             dataTable = await entityRepository.GetDataTableAsync(command, connectionId);
+             dataTable = await entityRepository.GetDataTableAsync(command, dataQuery.ConnectionId);
         }
         catch (Exception ex)
         {
@@ -144,8 +138,10 @@ public class DataItemService(
             throw;
         }
         
+        var searchText = dataQuery.SearchText;
+        
         List<DataItemValue> result = [];
-
+        
         foreach (DataRow row in dataTable.Rows)
         {
             var item = new DataItemValue();
@@ -186,17 +182,16 @@ public class DataItemService(
         return result;
     }
 
-    private DataAccessCommand GetDataItemCommand(FormElementDataItem dataItem, FormStateData formStateData, string? searchText,
-        string? searchId)
+    private DataAccessCommand GetDataItemCommand(FormElementDataItem dataItem, DataQuery dataQuery)
     {
         var sql = dataItem.Command!.Sql;
-        var parsedValues = expressionParser.ParseExpression(sql, formStateData);
+        var parsedValues = expressionParser.ParseExpression(sql, dataQuery.FormStateData);
         
-        if (searchId != null)
-            parsedValues["SearchId"] = searchId;
+        if (dataQuery.SearchId != null)
+            parsedValues["SearchId"] = dataQuery.SearchId;
 
-        if (searchText != null)
-            parsedValues["SearchText"] = searchId;
+        if (dataQuery.SearchText != null)
+            parsedValues["SearchText"] = dataQuery.SearchText;
         
         return ExpressionDataAccessCommandFactory.Create(sql, parsedValues);
     }

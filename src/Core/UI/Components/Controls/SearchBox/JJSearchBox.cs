@@ -156,7 +156,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
         if (!string.IsNullOrEmpty(Text))
         {
-            var values = await GetValuesAsync(Text);
+            var values = await GetValuesAsync(_selectedValue, Text);
             var item = values.FirstOrDefault();
             if (item == null)
                 return null;
@@ -359,7 +359,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     /// <summary>
     /// Recover values from the given text.
     /// </summary>
-    private async Task<List<DataItemValue>> GetValuesAsync(string? searchText)
+    private async Task<List<DataItemValue>> GetValuesAsync(string? searchId, string? searchText)
     {
         var list = new List<DataItemValue>();
         if (OnSearchQuery != null)
@@ -372,8 +372,10 @@ public class JJSearchBox : ControlBase, IDataItemControl
         {
             var dataQuery = new DataQuery(FormStateData, ConnectionId)
             {
+                SearchId = searchId,
                 SearchText = searchText
             };
+            
             list.AddRange(await DataItemService.GetValuesAsync(DataItem, dataQuery));
         }
 
@@ -384,7 +386,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     private async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
         var searchText = Request.Form[Name + "_text"];
-        var values = await GetValuesAsync(searchText);
+        var values = await GetValuesAsync(searchId: null, searchText);
         return values.ConvertAll(v=>new DataItemResult
         {
             Id = v.Id,

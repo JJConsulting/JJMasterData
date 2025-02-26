@@ -225,7 +225,10 @@ public class JJComboBox(
 
     public Task<List<DataItemValue>> GetValuesAsync()
     {
-        return dataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
+        return dataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId)
+        {
+            SearchId = SelectedValue
+        });
     }
 
     /// <summary>
