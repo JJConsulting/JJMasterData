@@ -7,22 +7,26 @@ using JJMasterData.Commons.Exceptions;
 namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary>
-/// Table Field List
+/// Represents a collection of <see cref="ElementField"/> objects with additional utility methods for field management.
 /// </summary>
-/// <remarks>2017-03-22 JJTeam</remarks>
+/// <remarks>Originally created by JJTeam on 2017-03-22.</remarks>
 public class ElementFieldList : IList<ElementField>
 {
     private readonly List<ElementField> _list = [];
 
     public ElementFieldList()
     {
-        
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElementFieldList"/> class with an existing list of fields.
+    /// </summary>
+    /// <param name="fields">A list of <see cref="ElementField"/> objects to initialize the collection.</param>
     public ElementFieldList(List<ElementField> fields)
     {
         _list = fields;
     }
-    
+
     #region Implementation of IEnumerable
 
     public IEnumerator<ElementField> GetEnumerator()
@@ -35,9 +39,14 @@ public class ElementFieldList : IList<ElementField>
         return GetEnumerator();
     }
 
+    /// <summary>
+    /// Determines whether a field with the specified name exists in the list.
+    /// </summary>
+    /// <param name="name">The name of the field to locate.</param>
+    /// <returns><c>true</c> if a field with the specified name exists; otherwise, <c>false</c>.</returns>
     public bool ContainsKey(string name)
     {
-        foreach(ElementField field in _list)
+        foreach (var field in _list)
         {
             if (field.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                 return true;
@@ -50,16 +59,16 @@ public class ElementFieldList : IList<ElementField>
 
     #region Implementation of ICollection<T>
 
-
     /// <summary>
-    /// Add Field
+    /// Adds a new field to the collection.
     /// </summary>
-    /// <param name="item">Object with field information</param>
+    /// <param name="item">The <see cref="ElementField"/> object to add.</param>
+    /// <exception cref="ArgumentException">Thrown if the item is null or already exists in the collection.</exception>
     public void Add(ElementField item)
     {
         if (item == null)
             throw new ArgumentException("ElementField can not be null");
-        
+
         if (_list.Any(x => x.Name.Equals(item.Name, StringComparison.InvariantCultureIgnoreCase)))
             throw new JJMasterDataException($"Field [{item.Name}] already exists in Element.Fields");
 
@@ -68,14 +77,14 @@ public class ElementFieldList : IList<ElementField>
 
 
     /// <summary>
-    /// Add Field
+    /// Adds a new field with the specified properties.
     /// </summary>
-    /// <param name="name">Column Name</param>
-    /// <param name="label">Description on the form</param>
-    /// <param name="dataType">Data Type</param>
-    /// <param name="size">Field Size</param>
-    /// <param name="required">Required Field</param>
-    /// <param name="filterMode">Filter Type</param>
+    /// <param name="name">The field name.</param>
+    /// <param name="label">The label or description.</param>
+    /// <param name="dataType">The data type of the field.</param>
+    /// <param name="size">The size of the field.</param>
+    /// <param name="required">Indicates whether the field is required.</param>
+    /// <param name="filterMode">The filter mode of the field.</param>
     public void Add(string name, string label, FieldType dataType, int size, bool required, FilterMode filterMode)
     {
         var field = new ElementField
@@ -96,16 +105,17 @@ public class ElementFieldList : IList<ElementField>
 
 
     /// <summary>
-    /// Add Field
+    /// Adds a new field with the specified properties.
     /// </summary>
-    /// <param name="name">Column Name</param>
-    /// <param name="label">Description on the form</param>
-    /// <param name="dataType">Data Type</param>
-    /// <param name="size">Field Size</param>
-    /// <param name="required">Required field</param>
-    /// <param name="filterMode">Filter type</param>
+    /// <param name="name">The field name.</param>
+    /// <param name="label">The label or description.</param>
+    /// <param name="dataType">The data type of the field.</param>
+    /// <param name="size">The size of the field.</param>
+    /// <param name="required">Indicates whether the field is required.</param>
+    /// <param name="filterMode">The filter mode of the field.</param>
     /// <param name="dataBehavior">Specifies the behavior of the field.</param>
-    public void Add(string name, string label, FieldType dataType, int size, bool required, FilterMode filterMode, FieldBehavior dataBehavior)
+    public void Add(string name, string label, FieldType dataType, int size, bool required, FilterMode filterMode,
+        FieldBehavior dataBehavior)
     {
         var field = new ElementField
         {
@@ -123,15 +133,16 @@ public class ElementFieldList : IList<ElementField>
         _list.Add(field);
     }
 
+
     /// <summary>
-    /// Add primary key
+    /// Adds a new primary key field.
     /// </summary>
-    /// <param name="name">Column Name</param>
-    /// <param name="label">Description on the form</param>
-    /// <param name="dataType">Data Type</param>
-    /// <param name="size">Field Size</param>
-    /// <param name="autoNum">Auto Numerical (Identity)</param>
-    /// <param name="filterMode">Filter type</param>
+    /// <param name="name">The primary key field name.</param>
+    /// <param name="label">The label or description.</param>
+    /// <param name="dataType">The data type of the field.</param>
+    /// <param name="size">The size of the field.</param>
+    /// <param name="autoNum">Indicates whether the field is auto-incremented.</param>
+    /// <param name="filterMode">The filter mode of the field.</param>
     public void AddPk(string name, string label, FieldType dataType, int size, bool autoNum, FilterMode filterMode)
     {
         var field = new ElementField
@@ -224,11 +235,11 @@ public class ElementFieldList : IList<ElementField>
                     break;
                 }
             }
+
             if (!isOk)
                 throw new ArgumentException($"Value {fieldName} not found");
         }
     }
-
 
     #endregion
 
@@ -246,9 +257,9 @@ public class ElementFieldList : IList<ElementField>
     {
         _list.AddRange(fields);
     }
-    
+
     public ElementFieldList DeepCopy()
     {
-        return new(_list.ConvertAll(f=>f.DeepCopy()));
+        return new(_list.ConvertAll(f => f.DeepCopy()));
     }
 }

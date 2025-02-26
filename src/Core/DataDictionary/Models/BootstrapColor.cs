@@ -3,9 +3,6 @@ using JJMasterData.Core.UI;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
-/// <summary>
-/// Cor do painel de agrupamento de dados
-/// </summary>
 public enum BootstrapColor
 {
     Default = 0, //At Bootstrap 5+ we will use Secondary depending on the situation

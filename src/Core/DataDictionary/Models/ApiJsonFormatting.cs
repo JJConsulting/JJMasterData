@@ -1,7 +1,7 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
-/// Tipo de filtro na Grid
+/// Specifies the JSON formatting options for API responses.
 /// </summary>
 public enum ApiJsonFormatting
 {
