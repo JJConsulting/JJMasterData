@@ -14,12 +14,10 @@ public class FormElementPanel
 
     [JsonPropertyName("title")]
     [Display(Name = "Title")]
-    [SyncExpression]
     public string? Title { get; set; }
 
     [JsonPropertyName("subtitle")]
     [Display(Name = "SubTitle")]
-    [SyncExpression]
     public string? SubTitle { get; set; }
 
     [JsonPropertyName("layout")]
@@ -43,7 +41,6 @@ public class FormElementPanel
     /// </remarks>
     [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
-    [SyncExpression]
     public string VisibleExpression { get; set; } = "val:1";
 
     /// <remarks>
@@ -51,7 +48,6 @@ public class FormElementPanel
     /// </remarks>
     [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
-    [SyncExpression]
     public string EnableExpression { get; set; } = "val:1";
 
     [JsonPropertyName("cssClass")]

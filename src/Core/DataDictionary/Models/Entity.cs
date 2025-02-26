@@ -30,14 +30,12 @@ public sealed class Entity
     public required string? WriteProcedureName { get; set; }
     
     [Display(Name = "Title")]
-    [SyncExpression]
     public required string? Title { get; set; }
     
     [Display(Name = "Size")]
     public required HeadingSize TitleSize { get; set; }
     
     [Display(Name = "SubTitle")]
-    [SyncExpression]
     public required string? SubTitle { get; set; }
     
     [Display(Name = "Additional Info")]

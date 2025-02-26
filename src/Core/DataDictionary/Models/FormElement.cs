@@ -10,7 +10,6 @@ using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
 
-
 namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElement : Element
@@ -18,11 +17,11 @@ public class FormElement : Element
     private FormElementFieldList? _fields;
     private FormElementRelationshipList? _relationships;
 
-    [JsonIgnore] internal string? ParentName { get; set; }
+    [JsonIgnore]
+    internal string? ParentName { get; set; }
 
     [JsonPropertyName("title")]
     [Display(Name = "Title")]
-    [SyncExpression]
     public string? Title { get; set; }
 
     [JsonPropertyName("titleSize")]
@@ -31,7 +30,6 @@ public class FormElement : Element
 
     [JsonPropertyName("subTitle")]
     [Display(Name = "SubTitle")]
-    [SyncExpression]
     public string? SubTitle { get; set; }
     
     [JsonPropertyName("icon")]

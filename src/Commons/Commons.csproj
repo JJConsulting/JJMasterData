@@ -43,13 +43,5 @@
 	  <Compile Update="Data\DataAccessAsync.cs">
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
-	  <Compile Remove="Tasks\BackgroundTaskScheduler.cs" />
-	  <Compile Remove="Tasks\BackgroundTaskList.cs" />
-	  <Compile Update="Data\Entity\Models\SyncExpressionAttribute.cs">
-	    <DependentUpon>ExpressionAttribute.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Data\Entity\Models\AsyncExpressionAttribute.cs">
-	    <DependentUpon>ExpressionAttribute.cs</DependentUpon>
-	  </Compile>
 	</ItemGroup>
 </Project>

@@ -74,7 +74,6 @@ public class ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonPropertyName("defaultvalue")]
-    [AsyncExpression]
     [Display(Name = "Default Value Expression")]
     public string? DefaultValue { get; set; }
     

@@ -39,7 +39,6 @@ public class FormElementField : ElementField
     /// </remarks>
     [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
-    [SyncExpression]
     [Required]
     public string VisibleExpression { get; set; }
 
@@ -48,7 +47,6 @@ public class FormElementField : ElementField
     /// </remarks>
     [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
-    [SyncExpression]
     [Required]
     public string EnableExpression { get; set; }
 
@@ -150,7 +148,6 @@ public class FormElementField : ElementField
     /// </remarks>
     [JsonPropertyName("triggerExpression")]
     [Display(Name = "Trigger Expression")]
-    [AsyncExpression]
     public string? TriggerExpression { get; set; }
 
     /// <summary>
