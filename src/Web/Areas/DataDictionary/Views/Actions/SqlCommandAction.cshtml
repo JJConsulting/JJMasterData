@@ -34,9 +34,9 @@
         <div id="div-sql-command" class="tab-pane fade">
             <div class="row">
 
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
-                    <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
+                <div class="mb-3 col-sm-12 required">
+                    <label class="form-label">@StringLocalizer["Sql Command"]</label>
+                    <span class="small text-end text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
                     <div class="well" style="margin-bottom: 0">
                         <code-editor asp-for="SqlCommand" language="sql" height="300"/>
                     </div>
@@ -46,7 +46,7 @@
                     <hr/>
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="@BootstrapHelper.FormGroup col-sm-6">
+                            <div class="mb-3 col-sm-6">
                                 <checkbox tooltip="@StringLocalizer["When the command is triggered only the selected lines are affected."]" for="ApplyOnSelected" layout="Switch" />
                             </div>
                         </div>
@@ -54,7 +54,7 @@
                 }
                 <div class="col-sm-12">
                     <label asp-for="RedirectUrl" class="form-label"></label>
-                    <tooltip title="Redirects to this URL after the command is executed successfully."></tooltip>
+                    <tooltip title="@StringLocalizer["Redirects to this URL after the command is executed successfully."]"></tooltip>
                     <input asp-for="RedirectUrl" class="form-control font-monospace"/>
                 </div>
             </div>
