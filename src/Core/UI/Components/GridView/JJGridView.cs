@@ -93,6 +93,7 @@ public class JJGridView : AsyncComponent
     private Dictionary<string, object?>? _defaultValues;
     private FormStateData? _formStateData;
     private ActionMap? _currentActionMap;
+    private bool _isCustomCurrentActionMap;
     private JJDataImportation? _dataImportation;
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
@@ -100,7 +101,8 @@ public class JJGridView : AsyncComponent
     
     private readonly FieldValidationService _fieldValidationService;
     private readonly UrlRedirectService _urlRedirectService;
-    
+
+
     internal JJDataImportation DataImportation
     {
         get
@@ -507,7 +509,7 @@ public class JJGridView : AsyncComponent
     {
         get
         {
-            if (_currentActionMap != null) 
+            if (_currentActionMap != null || _isCustomCurrentActionMap) 
                 return _currentActionMap;
             var encryptedActionMap = CurrentContext.Request.Form[$"grid-view-action-map-{Name}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
@@ -516,7 +518,11 @@ public class JJGridView : AsyncComponent
             _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
             return _currentActionMap;
         }
-        set => _currentActionMap = value;
+        set
+        {
+            _currentActionMap = value;
+            _isCustomCurrentActionMap = true;
+        }
     }
 
     private string? SelectedRowsId
