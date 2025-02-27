@@ -11,8 +11,7 @@ namespace JJMasterData.Core.Html.Templates;
 [PublicAPI]
 public class HtmlTemplateHelper(
     FluidParser fluidParser,
-    HtmlTemplateFunctions functions
-    )
+    HtmlTemplateFunctions functions)
 {
     public IFluidTemplate ParseTemplate(string template)
     {
