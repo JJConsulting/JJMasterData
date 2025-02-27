@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataManager.Services;
 
 public class HtmlTemplateService(
-    HtmlTemplateRenderer htmlTemplateRenderer,
+    HtmlTemplateHelper htmlTemplateHelper,
     IEntityRepository entityRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILogger<HtmlTemplateService> logger)
@@ -69,6 +69,6 @@ public class HtmlTemplateService(
 
     public ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
     {
-        return htmlTemplateRenderer.RenderTemplate(templateString, values);
+        return htmlTemplateHelper.RenderTemplate(templateString, values);
     }
 }

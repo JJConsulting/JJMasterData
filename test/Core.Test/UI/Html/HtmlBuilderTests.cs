@@ -80,8 +80,6 @@ public class HtmlBuilderTests
                 });
             });
 
-
-
         var shtml = builder.ToString(indentHtml: true);
         
         Assert.Equal(shtml, builder.ToString(true));

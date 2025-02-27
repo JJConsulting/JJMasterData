@@ -55,8 +55,8 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
 
+        services.AddTransient<HtmlTemplateFunctions>();
         services.AddTransient<HtmlTemplateHelper>();
-        services.AddTransient<HtmlTemplateRenderer>();
         
         services.AddScoped<IExcelWriter, ExcelWriter>();
         services.AddScoped<ITextWriter, TextWriter>();

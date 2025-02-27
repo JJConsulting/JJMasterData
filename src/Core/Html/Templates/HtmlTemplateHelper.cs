@@ -1,161 +1,69 @@
-#nullable enable
-
 using System;
-using System.Globalization;
-using System.Linq;
+using System.Collections.Generic;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
-using Fluid.Values;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.Http.Abstractions;
-using Microsoft.Extensions.Localization;
+using JetBrains.Annotations;
+using static JJMasterData.Core.Html.Templates.HtmlTemplateFunctions;
 
 namespace JJMasterData.Core.Html.Templates;
 
+[PublicAPI]
 public class HtmlTemplateHelper(
-    IStringLocalizer<MasterDataResources> stringLocalizer,
-    DateService dateService,
-    IHttpContext httpContext)
+    FluidParser fluidParser,
+    HtmlTemplateFunctions functions
+    )
 {
-    public FilterDelegate GetLocalizeFilter()
+    public IFluidTemplate ParseTemplate(string template)
     {
-        return (input, args, _) =>
-        {
-            var inputString = input.ToStringValue();
-            var argsValues = args.Values;
-
-            string localizedString;
-
-            if (argsValues is not null)
-            {
-                var localizerArgs = argsValues.Select(v => v.ToStringValue()).ToArray();
-                localizedString = stringLocalizer[inputString, localizerArgs.ToArray()].Value;
-            }
-            else
-            {
-                localizedString = stringLocalizer[inputString];
-            }
-            return StringValue.Create(localizedString);
-        };
+        return fluidParser.Parse(template);
     }
     
-    public FunctionValue GetDatePhraseFunction()
+    public ValueTask<string> RenderTemplate(string templateString, Dictionary<string, object> values)
     {
-        var localize = new FunctionValue((args, _) =>
-        {
-            var dateArg = args.At(0).ToStringValue();
-            
-            if (DateTime.TryParse(dateArg, out var date))
-            {
-                var phrase = dateService.GetPhrase(date);
+        if (!fluidParser.TryParse(templateString, out var template, out var error))
+            return new(error);
 
-                return StringValue.Create(phrase);
-            }
+        var context = new TemplateContext(values, allowModelMembers:true, StringComparer.InvariantCultureIgnoreCase);
 
-            return StringValue.Empty;
-        });
-        return localize;
-    }
+        SetDefaultValues(context);
 
-    public FunctionValue GetLocalizeFunction()
-    {
-        var localize = new FunctionValue((args, _) =>
-        {
-            var firstArg = args.At(0).ToStringValue();
-            var localizerArgs = args.Values.Skip(1).Select(v => v.ToStringValue()).ToArray();
-
-            var localizedString = stringLocalizer[firstArg, localizerArgs.ToArray()];
-
-            return StringValue.Create(localizedString);
-        });
-        return localize;
-    }
-
-    public FunctionValue GetUrlPathFunction()
-    {
-        var urlAction = new FunctionValue((_, _) => StringValue.Create(httpContext.Request.ApplicationPath));
-
-        return urlAction;
+        return template.RenderAsync(context, HtmlEncoder.Default);
     }
     
-    public FunctionValue GetAppUrlFunction()
+    public ValueTask<string> RenderTemplate(
+        string templateString,
+        TemplateContext context)
     {
-        var urlAction = new FunctionValue((_, _) => StringValue.Create(httpContext.Request.ApplicationUri));
+        if (!fluidParser.TryParse(templateString, out var template, out var error))
+            return new(error);
 
-        return urlAction;
+        SetDefaultValues(context);
+
+        return template.RenderAsync(context, HtmlEncoder.Default);
     }
     
-    public static readonly FunctionValue FormatDate = new((args, _) =>
+    public ValueTask<string> RenderTemplate(IFluidTemplate template, TemplateContext context)
     {
-        var obj = args.At(0).ToStringValue();
-        var format = args.At(1).ToStringValue();
-
-        return StringValue.Create(DateTime.TryParse(obj, out var dt) ? dt.ToString(format) : obj);
-    });
+        SetDefaultValues(context);
+        
+        return template.RenderAsync(context, HtmlEncoder.Default);
+    }
     
-    public static readonly FunctionValue Trim = new((args, _) =>
+    private void SetDefaultValues(TemplateContext context)
     {
-        var str = args.At(0).ToStringValue();
-
-        return StringValue.Create(str.Trim());
-    });
-    
-    public static readonly FunctionValue TrimStart = new((args, _) =>
-    {
-        var str = args.At(0).ToStringValue();
-
-        return StringValue.Create(str.TrimStart());
-    });
-    
-    public static readonly FunctionValue TrimEnd  = new((args, _) =>
-    {
-        var str = args.At(0).ToStringValue();
-
-        return StringValue.Create(str.TrimEnd());
-    });
-    
-    public static readonly FunctionValue IsNullOrEmpty = new((args, _) =>
-    {
-        var str = args.At(0).ToStringValue();
-        return BooleanValue.Create(string.IsNullOrEmpty(str));
-    });
-
-    public static readonly FunctionValue IsNullOrWhiteSpace = new((args, _) =>
-    {
-        var str = args.At(0).ToStringValue();
-        return BooleanValue.Create(string.IsNullOrWhiteSpace(str));
-    });
-
-    public static readonly FunctionValue Capitalize = new((args, _) =>
-    {
-        var str = args.At(0).ToStringValue();
-        return StringValue.Create(CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str?.ToLower() ?? string.Empty));
-    });
-    
-    public static readonly FunctionValue Substring = new((args, _) =>
-    {
-        if (args.Count < 2)
-        {
-            return new StringValue("Error: Not enough arguments");
-        }
-
-        var str = args.At(0).ToObjectValue().ToString()!;
-        if (!int.TryParse(args.At(1).ToStringValue(), out var startIndex))
-        {
-            return new StringValue("Error: Invalid start index");
-        }
-
-        int length = 0;
-
-        if (args.Count > 2 && !int.TryParse(args.At(2).ToStringValue(), out length))
-        {
-            return new StringValue("Error: Invalid length");
-        }
-
-        var substring = args.Count > 2
-            ? str.Substring(startIndex, length)
-            : str[startIndex..];
-
-        return new StringValue(substring);
-    });
+        context.SetValue("isNullOrWhiteSpace", IsNullOrWhiteSpace);
+        context.SetValue("isNullOrEmpty", IsNullOrEmpty);
+        context.SetValue("substring", Substring);
+        context.SetValue("capitalize", Capitalize);
+        context.SetValue("formatDate", FormatDate);
+        context.SetValue("trim", Trim);
+        context.SetValue("trimStart", TrimStart);
+        context.SetValue("trimEnd", TrimEnd);
+        context.SetValue("table", Table);
+        context.SetValue("dateAsText", functions.GetDatePhraseFunction());
+        context.SetValue("urlPath", functions.GetUrlPathFunction());
+        context.SetValue("appUrl", functions.GetAppUrlFunction());
+        context.SetValue("localize", functions.GetLocalizeFunction());
+    }
 }
