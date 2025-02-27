@@ -227,7 +227,7 @@ public class JJComboBox(
     {
         return dataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId)
         {
-            SearchId = SelectedValue
+            SearchId = FormStateData.PageState == PageState.View ? SelectedValue : null
         });
     }
 

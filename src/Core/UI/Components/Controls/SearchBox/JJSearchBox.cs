@@ -343,7 +343,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         {
             var dataQuery = new DataQuery(FormStateData, ConnectionId)
             {
-                SearchId = searchId
+                SearchId = FormStateData.PageState == PageState.View ? searchId : null
             };
             _values ??= await DataItemService.GetValuesAsync(DataItem, dataQuery);
         }
@@ -381,7 +381,6 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
         return list;
     }
-
 
     private async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
