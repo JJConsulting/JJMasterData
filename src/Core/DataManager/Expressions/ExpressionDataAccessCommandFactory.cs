@@ -17,8 +17,7 @@ public static class ExpressionDataAccessCommandFactory
 
         foreach (var variable in variables)
         {
-            // ReSharper disable once CanSimplifyDictionaryLookupWithTryAdd
-            if(!parsedValues.ContainsKey(variable))
+            if(!parsedValues.ContainsKey(variable) && !variable.Contains("\n"))
                 parsedValues.Add(variable, null);
         }
 
