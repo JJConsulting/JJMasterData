@@ -149,7 +149,7 @@ public class HtmlTemplateFunctions(
             .Select(v => (IFluidIndexable)v)
             .ToList();
 
-        var headers = dataSource.SelectMany(d => d.Keys);
+        var headers = dataSource[0].Keys;
 
         var builder = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("table-responsive");
