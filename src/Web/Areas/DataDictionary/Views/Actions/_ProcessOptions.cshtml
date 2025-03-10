@@ -28,7 +28,8 @@
         <label class="@BootstrapHelper.Label">@StringLocalizer["Sql Command"]</label>
     </div>
     <div class="col-sm-4">
-        <select class="form-control form-select selectpicker" id="cboSqlEvent" name="cboSqlEvent">
+        <select class="form-control selectpicker"
+                data-style-base="form-select form-dropdown" id="cboSqlEvent" name="cboSqlEvent">
             <option value="1" selected="selected" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@StringLocalizer["Before starting the process"]">@StringLocalizer["Before starting the process"]</option>
             <option value="2" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@StringLocalizer["After finishing the process"]">@StringLocalizer["After finishing the process"]</option>
         </select>
@@ -39,37 +40,19 @@
 
 </div>
 <div class="row">
-    <div id="divCommandBefore" class="@BootstrapHelper.FormGroup col-sm-12">
-        <div class="well" style="margin-bottom:0px">
-            <code-editor asp-for="CommandBeforeProcess" language="sql" height="300"/>
-        </div>
+    <div id="divCommandBefore" class="mb-3 col-sm-12">
+            <code-editor name="ProcessOptions.CommandBeforeProcess" value="@Model.CommandBeforeProcess" language="sql" height="300"/>
     </div>
 
-    <div id="divCommandAfter" class="@BootstrapHelper.FormGroup col-sm-12" style="display:none;">
-        <div class="well" style="margin-bottom:0px">
-            <code-editor asp-for="CommandAfterProcess" language="sql" height="300"/>
-            </div>
+    <div id="divCommandAfter" class="mb-3 col-sm-12" style="display:none;">
+            <code-editor name="ProcessOptions.CommandAfterProcess" value="@Model.CommandAfterProcess" language="sql" height="300"/>
     </div>
 </div>
 <hr />
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-3">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom">@StringLocalizer["Scope"]</label>
-        <select class="form-control form-select" id="ProcessOptions_Scope" name="ProcessOptions.Scope">
-            @foreach (ProcessScope scope in Enum.GetValues(typeof(ProcessScope)))
-            {
-                if (Model.Scope == scope)
-                {
-                    <option value="@((int)scope)" selected="selected">@scope</option>
-                }
-                else
-                {
-                    <option value="@((int)scope)">@scope</option>
-                }
-            }
-
-        </select>
-
+        <select class="form-control form-select" asp-for="Scope" asp-items="Html.GetEnumSelectList<ProcessScope>()"></select>
     </div>
 
     <div class="col-sm-9">

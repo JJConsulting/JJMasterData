@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System.Text.Json;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -89,14 +88,14 @@ public class FieldController(
 
 
     [HttpPost]
-    public async Task<IActionResult> Sort(string elementName, string fieldsOrder)
+    public async Task<JsonResult> Sort(string elementName, string fieldsOrder)
     {
         await fieldService.SortFieldsAsync(elementName, fieldsOrder.Split(","));
         return Json(new { success = true });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Copy(string elementName, FormElementField? field)
+    public async Task<ViewResult> Copy(string elementName, FormElementField? field)
     {
         var dictionary = await fieldService.GetFormElementAsync(elementName);
         await fieldService.CopyFieldAsync(dictionary, field);
@@ -105,7 +104,7 @@ public class FieldController(
     }
 
     [HttpPost]
-    public IActionResult AddDataItem(string elementName, FormElementField field, int qtdRowsToAdd)
+    public RedirectToActionResult AddDataItem(string elementName, FormElementField field, int qtdRowsToAdd)
     {
         field.DataItem ??= new FormElementDataItem();
         field.DataItem.Items ??= [];
@@ -125,7 +124,7 @@ public class FieldController(
     }
 
     [HttpPost]
-    public IActionResult RemoveDataItem(string elementName, FormElementField field, int dataItemIndex)
+    public RedirectToActionResult RemoveDataItem(string elementName, FormElementField field, int dataItemIndex)
     {
         field.DataItem?.Items?.RemoveAt(dataItemIndex);
         return RedirectToIndex(elementName, field);
