@@ -139,6 +139,7 @@ public class FieldController(
     }
 
     [HttpPost]
+    [ExportModelState]
     public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field,
         DataElementMapFilter elementMapFilter)
     {
