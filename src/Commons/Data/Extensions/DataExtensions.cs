@@ -13,8 +13,7 @@ public static class DataExtensions
         {
             var column = new DataColumn(dataReader.GetName(i), dataReader.GetFieldType(i)!);
             
-            if(!dataTable.Columns.Contains(column.ColumnName))
-                dataTable.Columns.Add(column);
+            dataTable.Columns.Add(column);
         }
 
         var values = new object[dataTable.Columns.Count];
