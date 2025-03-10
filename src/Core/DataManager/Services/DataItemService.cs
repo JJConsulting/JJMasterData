@@ -144,8 +144,10 @@ public class DataItemService(
         
         foreach (DataRow row in dataTable.Rows)
         {
-            var item = new DataItemValue();
-            item.Id = row[0].ToString();
+            var item = new DataItemValue
+            {
+                Id = row[0].ToString()
+            };
 
             if (row.Table.Columns.Count == 1)
             {
@@ -154,22 +156,22 @@ public class DataItemService(
             else
             {
                 item.Description = row[1].ToString()!;
-            }
-            
-            if (dataItem.ShowIcon)
-            {
-                item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
-                item.IconColor = row[3].ToString();
-                if (row.Table.Columns.Count >= 5)
+                
+                if (dataItem.ShowIcon)
                 {
-                    item.Group = row[4]?.ToString();
+                    item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
+                    item.IconColor = row[3].ToString();
+                    if (row.Table.Columns.Count >= 5)
+                    {
+                        item.Group = row[4]?.ToString();
+                    }
                 }
-            }
-            else
-            {
-                if (row.Table.Columns.Count >= 3)
+                else
                 {
-                    item.Group = row[2]?.ToString();
+                    if (row.Table.Columns.Count >= 3)
+                    {
+                        item.Group = row[2]?.ToString();
+                    }
                 }
             }
 
