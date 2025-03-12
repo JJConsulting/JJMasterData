@@ -4,7 +4,7 @@
 This is probably the first error you can find setting up JJMasterData. You can easily 
 solve it in different ways.
 
-## .NET 6+
+## ..NET 8+
 Add a default connection string to appsettings.json.
 ```json
 {

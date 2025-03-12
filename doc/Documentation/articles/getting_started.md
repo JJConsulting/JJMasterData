@@ -1,6 +1,6 @@
 # Getting Started
 
-This tutorial assumes you will use .NET 6+, for .NET Framework 4.8 support,
+This tutorial assumes you will use .NET 8+, for .NET Framework 4.8 support,
 check our [documentation](miscellaneous/netframework.md).
 
 ## 1. Install JJMasterData.Web from NuGet

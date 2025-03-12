@@ -51,7 +51,7 @@ public static class FileIO
     /// <summary>
     /// Returns the application path.
     /// .NET Framework: AppDomain.CurrentDomain.BaseDirectory
-    /// .NET 6+: Environment.CurrentDirectory
+    /// ..NET 8+: Environment.CurrentDirectory
     /// </summary>
     /// <returns></returns>
     public static string GetApplicationPath()

@@ -5,7 +5,7 @@
 </h1>
 <p align="center">
   <a href="https://img.shields.io/badge/.NET-5C2D91">
-    <img src="https://img.shields.io/badge/.NET-512BD4?logo=dotnet" alt=".NET 6">
+    <img src="https://img.shields.io/badge/.NET-512BD4?logo=dotnet" alt="..NET 8">
   </a>
   <a href="https://img.shields.io/badge/TypeScript-007ACC">
     <img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TS">
