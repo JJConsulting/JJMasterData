@@ -44,17 +44,16 @@ builder.Services.AddFormEventHandler<MyFormEventHandler>("MyElementName");
 ```
 
 > [!TIP] 
-> If you add the <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler.GetCustomizedFields> method at your class, your customized fields will look like the image below.
-
+> If you add the <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler>.`GetCustomizedFields` method at your class, an information alert will be added at your element configuration like the image below.
 <br>
-<img alt="Customized Fields" src="../media/CustomizedFieldsAttribute.png"/>
+<img alt="Customized Fields" src="../media/CustomFields.png"/>
 
 > [!TIP] 
 > If you want to also customize Grid events, you can also implement <xref:JJMasterData.Core.UI.Events.Abstractions.IGridEventHandler> at your class.
 
 ## IFormEventResolver
 
-<xref:JJMasterData.Core.Events.Abstractions.IFormEventHandlerResolver> is the responsible for retrieving <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> implementations from a element name.
+<xref:JJMasterData.Core.Events.Abstractions.IFormEventHandlerResolver> is the responsible for retrieving <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> implementations from an element name.
 You can also create your own implementation.
 At your Program.cs use:
 ```cs
