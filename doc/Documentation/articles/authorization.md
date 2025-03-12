@@ -21,7 +21,6 @@ You can also inject your custom authorization requirements for routes using:
 ```cs
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseJJMasterDataWeb();
 app.MapJJMasterData()
     .RequireAuthorization("MasterDataPolicy");
 ```

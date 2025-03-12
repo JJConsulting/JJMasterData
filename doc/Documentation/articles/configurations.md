@@ -67,13 +67,6 @@ You can change any property from:
 [Read more](logging.md) about logging.
 
 **Localization**
-```cs
-app.UseJJMasterDataWeb(options =>
-{
-    options.AdditionalCultures.Add(new CultureInfo("es-AR"));
-});
-
-```
 [Read more](localization.md) about localization.
 <br>
 

@@ -22,8 +22,7 @@ builder.Services.AddJJMasterDataWeb().WithHangfire();
 ///...
 
 app.UseHangfireDashboard();
-app.UseJJMasterDataWeb();
-app.MapJJMasterDataWeb();
+app.MapJJMasterData();
 ```
 
 ## Usage

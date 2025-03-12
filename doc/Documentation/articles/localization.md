@@ -2,16 +2,9 @@
 
 
 First you will need to add the following line to your Program.cs, with the additional cultures you will be using:
-```cs
-app.UseJJMasterDataWeb(options =>
-{
-    options.AdditionalCultures.Add(new CultureInfo("es-AR"));
-});
-```
 
-You can also configure your localization using the `Action<RequestLocalizationOptions>` overload:
 ```cs
-app.UseJJMasterDataWeb(options =>
+services.PostConfigure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new List<CultureInfo>
     {
