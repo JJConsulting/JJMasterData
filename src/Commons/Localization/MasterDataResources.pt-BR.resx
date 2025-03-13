@@ -3728,8 +3728,8 @@
   <data name="Defines the field size. Use -1 to specify MAX keyword." xml:space="preserve">
     <value>Tamanho do campo. Utilize -1 para utilizar a keyword MAX.</value>
   </data>
-  <data name="This data type ({0}) is not recommended by modern database providers." xml:space="preserve">
-    <value>Esse tipo de dado ({0}) não é recomendado por provedores de banco de dados modernos.</value>
+  <data name="The data type ({0}) is not recommended by modern database providers." xml:space="preserve">
+    <value>O tipo de dado ({0}) não é recomendado por provedores de banco de dados modernos.</value>
   </data>
   <data name="The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38." xml:space="preserve">
     <value>O número total de dígitos que podem ser armazenados, incluindo os antes e depois da vírgula. Vai de 1 a 38.</value>
