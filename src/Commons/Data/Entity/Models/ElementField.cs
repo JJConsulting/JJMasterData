@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
@@ -12,7 +13,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// </summary>
 /// <remarks>2017-03-22 - JJTeam</remarks>
 [DebuggerDisplay("Name = {Name}, DataType = {DataType}")]
-public class ElementField
+public class ElementField : IValidatableObject
 {
     /// <summary>
     /// Internal field id
@@ -62,6 +63,10 @@ public class ElementField
     [Display(Name = "Size")]
     public int Size { get; set; }
 
+    [JsonPropertyName("numberOfDecimalPlaces")]
+    [Display(Name = "Number of Decimal Places")]
+    public int NumberOfDecimalPlaces { get; set; }
+    
     /// <summary>
     /// Default field initializer
     /// <para/> Expression for a default value
@@ -123,5 +128,26 @@ public class ElementField
         var copy = (ElementField)MemberwiseClone();
         copy.Filter = Filter.DeepCopy();
         return copy;
+    }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (NumberOfDecimalPlaces < 0 && DataType is FieldType.Decimal or FieldType.Float)
+        {
+            yield return new ValidationResult("[Number of Decimal Places] cannot be lesser than 0", [nameof(NumberOfDecimalPlaces)]);
+        }
+
+        if (DataType is FieldType.Decimal)
+        {
+            if (NumberOfDecimalPlaces > Size)
+            {
+                yield return new ValidationResult("[Number of Decimal Places] cannot be greater than [Size]", [nameof(NumberOfDecimalPlaces)]);
+            }
+
+            if (Size is < 1 or > 38)
+            {
+                yield return new ValidationResult("[Size] must be between 1 and 38.", [nameof(Size)]);
+            }
+        }
     }
 }

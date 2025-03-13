@@ -3188,8 +3188,8 @@
     <value>Campo [{0}] duplicado na procedure de get</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="{0} field cannot contain more than {1} characters" xml:space="preserve">
-    <value>Campo {0} não pode conter mais de {1} caracteres</value>
+  <data name="Field {0} cannot contain more than {1} characters." xml:space="preserve">
+    <value>Campo {0} não pode conter mais de {1} caracteres.</value>
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="{0} field contains invalid or not allowed character" xml:space="preserve">
@@ -3328,8 +3328,8 @@
     <value>Chave primária {0} contém caracter inválido</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Only fields of type VarChar or Text can have a filter of the type Contains." xml:space="preserve">
-    <value>Somente campos do tipo VarChar ou Texto podem ter um filtro do tipo Contains.</value>
+  <data name="Only fields of type Varchar or Text can have a filter of the type Contains." xml:space="preserve">
+    <value>Somente campos do tipo Varchar ou Text podem ter um filtro do tipo Contains.</value>
   </data>
   <data name="Application Settings" xml:space="preserve">
     <value>Configurações da Aplicação</value>
@@ -3680,6 +3680,15 @@
   <data name="Replace On Grid" xml:space="preserve">
     <value>Substituir na Grid</value>
   </data>
+  <data name="Attributes" xml:space="preserve">
+    <value>Atributos</value>
+  </data>
+  <data name="Field {0} exceeds maximum size of {0} digits." xml:space="preserve">
+    <value>Campo {0} excede o tamanho máximo de {1} dígitos.</value>
+</data>
+  <data name="Field {0} exceeds maximum number of {1} decimal places." xml:space="preserve">
+    <value>Campo {0} excede o número máximo de casas decimais de {1}.</value>
+</data>
   <data name="Name of the field at the database." xml:space="preserve">
     <value>Nome do campo no banco de dados.</value>
   </data>
@@ -3704,8 +3713,14 @@
   <data name="Validates possibly dangerous values on request on .NET Framework 4.8." xml:space="preserve">
     <value>Valida valores potencialmente perigosos na requisição no .NET Framework 4.8</value>
   </data>
-  <data name="Field size. Use -1 to use the MAX keyword." xml:space="preserve">
+  <data name="Defines the field size. Use -1 to specify MAX keyword." xml:space="preserve">
     <value>Tamanho do campo. Utilize -1 para utilizar a keyword MAX.</value>
+  </data>
+  <data name="This data type ({0}) is not recommended by modern database providers." xml:space="preserve">
+    <value>Esse tipo de dado ({0}) não é recomendado por provedores de banco de dados modernos.</value>
+  </data>
+  <data name="The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38." xml:space="preserve">
+    <value>O número total de dígitos que podem ser armazenados, incluindo os antes e depois da vírgula. Vai de 1 a 38.</value>
   </data>
   <data name="Default" xml:space="preserve">
     <value>Padrão</value>

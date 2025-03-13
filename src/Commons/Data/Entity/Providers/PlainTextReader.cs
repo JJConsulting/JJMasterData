@@ -117,6 +117,10 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
                                     sRet.Append(double.Parse(dr.GetValue(ordinal).ToString() ?? string.Empty)
                                         .ToString("G", culture));
                                     break;
+                                case FieldType.Decimal:
+                                    sRet.Append(decimal.Parse(dr.GetValue(ordinal).ToString() ?? string.Empty)
+                                        .ToString("G", culture));
+                                    break;
                                 default:
                                     sRet.Append(dr.GetValue(ordinal).ToString()?.TrimEnd());
                                     break;

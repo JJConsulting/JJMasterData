@@ -38,17 +38,26 @@ public abstract class SqlServerScriptsBase
             sql.Append(" DEFAULT (newsequentialid())");
         }
 
-        if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+        if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
         {
             sql.Append(" (");
             sql.Append(field.Size == -1 ? "MAX" : field.Size);
             sql.Append(')');
         }
 
+        if (field.DataType is FieldType.Decimal)
+        {
+            sql.Append(" (");
+            sql.Append(field.Size);
+            sql.Append(',');
+            sql.Append(field.NumberOfDecimalPlaces);
+            sql.Append(')');
+        }
+
         if (field.IsRequired)
             sql.Append(" NOT NULL");
 
-        if (field.AutoNum && field.DataType is not FieldType.UniqueIdentifier)
+        if (field is { AutoNum: true, DataType: not FieldType.UniqueIdentifier })
             sql.Append(" IDENTITY ");
 
         return sql.ToString();

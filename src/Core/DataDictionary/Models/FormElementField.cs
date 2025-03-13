@@ -149,17 +149,7 @@ public class FormElementField : ElementField
     [JsonPropertyName("triggerExpression")]
     [Display(Name = "Trigger Expression")]
     public string? TriggerExpression { get; set; }
-
-    /// <summary>
-    /// Number of decimal places. The default value is 0.
-    /// </summary>
-    /// <remarks>
-    /// Property valid only for numeric types
-    /// </remarks>
-    [JsonPropertyName("numberOfDecimalPlaces")]
-    [Display(Name = "Number of Decimal Places")]
-    public int NumberOfDecimalPlaces { get; set; }
-
+    
     /// <summary>
     /// This id references a FormElementPanel
     /// </summary>

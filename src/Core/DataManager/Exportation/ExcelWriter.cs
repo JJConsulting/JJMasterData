@@ -131,7 +131,7 @@ public class ExcelWriter(
                 var value = await CreateCell(field, row);
 
                 string tdStyle;
-                if (field.DataType is FieldType.Float or FieldType.Int)
+                if (field.DataType is FieldType.Float or FieldType.Int or FieldType.Decimal)
                 {
                     tdStyle = " style=\"text-align:right;\" ";
                 }
@@ -206,7 +206,7 @@ public class ExcelWriter(
         foreach (var field in VisibleFields)
         {
             string thStyle = "";
-            if (field.DataType is FieldType.Float or FieldType.Int)
+            if (field.DataType is FieldType.Float or FieldType.Int or FieldType.Decimal)
             {
                 thStyle = " style=\"text-align:right;\" ";
             }

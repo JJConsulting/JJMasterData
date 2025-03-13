@@ -147,7 +147,13 @@ public class FormValuesService(
                 {
                     parsedValue = doubleValue;
                 }
-
+                break;
+            case FieldType.Decimal:
+                if (decimal.TryParse(value, NumberStyles.Any,
+                        cultureInfo, out var decimalValue))
+                {
+                    parsedValue = decimalValue;
+                }
                 break;
             case FieldType.Int:
                 if (int.TryParse(value, NumberStyles.Currency,
@@ -174,6 +180,10 @@ public class FormValuesService(
             case FieldType.Float:
                 if (double.TryParse(value, out var doubleValue))
                     parsedValue = doubleValue;
+                break;
+            case FieldType.Decimal:
+                if (decimal.TryParse(value, out var decimalValue))
+                    parsedValue = decimalValue;
                 break;
             case FieldType.Int:
                 if (int.TryParse(value, out var numericValue))

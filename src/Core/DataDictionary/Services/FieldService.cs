@@ -136,7 +136,7 @@ public class FieldService(IValidationDictionary validationDictionary,
             if (field.Filter.Type is FilterMode.Contain)
             {
                 AddError(nameof(field.Filter.Type),
-                    StringLocalizer["Only fields of type VarChar or Text can be of type Contains."]);
+                    StringLocalizer["Only fields of type Varchar or Text can be of type Contains."]);
             }
         }
 
@@ -161,7 +161,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         {
             if (field.NumberOfDecimalPlaces > 0)
             {
-                if (field.DataType != FieldType.Float)
+                if (field.DataType is not FieldType.Float and not FieldType.Decimal)
                 {
                     AddError(nameof(field.DataType),
                         StringLocalizer["The field [NumberOfDecimalPlaces] cannot be defined with the type "] +

@@ -232,7 +232,7 @@ public class SqlServerProvider(
 
         return field.DataType switch
         {
-            FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int or FieldType.Time when
+            FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Decimal or FieldType.Int or FieldType.Time when
                 string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
             FieldType.UniqueIdentifier => TryGetGuid(value),
             FieldType.Bit => StringManager.ParseBool(values[field.Name]),
@@ -261,6 +261,7 @@ public class SqlServerProvider(
             FieldType.DateTime => DbType.DateTime,
             FieldType.DateTime2 => DbType.DateTime,
             FieldType.Float => DbType.Double, //SQL Server Float is equivalent of the C# double.
+            FieldType.Decimal => DbType.Decimal,
             FieldType.Int => DbType.Int32,
             FieldType.Bit => DbType.Boolean,
             FieldType.UniqueIdentifier => DbType.Guid,
@@ -284,8 +285,9 @@ public class SqlServerProvider(
             "bit" => FieldType.Bit,
             "nvarchar" or "nchar" => FieldType.NVarchar,
             "int" or "int identity" or "bigint" or "tinyint" => FieldType.Int,
-            "float" or "decimal" or "numeric" or "money" or "smallmoney" or "real" => FieldType.Float,
+            "float" or "numeric" or "money" or "smallmoney" or "real" => FieldType.Float,
             "time" => FieldType.Time,
+            "decimal" => FieldType.Decimal,
             "date" => FieldType.Date,
             "datetime" => FieldType.DateTime,
             "datetime2" => FieldType.DateTime2,

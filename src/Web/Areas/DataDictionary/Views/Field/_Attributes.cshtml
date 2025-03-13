@@ -19,9 +19,9 @@
      or FormComponent.CnpjCpf
      or FormComponent.Cep)
 {
-    <div class="@BootstrapHelper.FormGroup col-sm-3">
+    <div class="@BootstrapHelper.FormGroup col-sm-4">
         <div class="form-floating">
-            <input class="form-control" id="txtPlaceHolder" name="txtPlaceHolder" maxlength="100" type="text" value="@Model.GetAttr(FormElementField.PlaceholderAttribute)">
+            <input class="form-control" placeholder="" id="txtPlaceHolder" name="txtPlaceHolder" maxlength="100" type="text" value="@Model.GetAttr(FormElementField.PlaceholderAttribute)">
             <label for="txtPlaceHolder">@StringLocalizer["Placeholder"]</label>
         </div>
     </div>

@@ -194,7 +194,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 return "text-align:center;";
             default:
             {
-                if (field.DataType is FieldType.Float or FieldType.Int)
+                if (field.DataType is FieldType.Float or FieldType.Int or FieldType.Decimal)
                 {
                     if (!field.IsPk)
                         return "text-align:right;";

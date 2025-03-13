@@ -160,11 +160,13 @@ public class FormElement : Element
         {
             field.DataType = FieldType.Int;
         }
-        else if (type == typeof(decimal) ||
-                 type == typeof(double) ||
-                 type == typeof(float))
+        else if (type == typeof(double) || type == typeof(float))
         {
             field.DataType = FieldType.Float;
+        }
+        else if (type == typeof(decimal))
+        {
+            field.DataType = FieldType.Decimal;
         }
         else if (type == typeof(DateTime))
         {

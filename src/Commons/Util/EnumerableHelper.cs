@@ -119,6 +119,8 @@ public static class EnumerableHelper
                 return typeof(DateTime);
             case FieldType.Float:
                 return typeof(double);
+            case FieldType.Decimal:
+                return typeof(decimal);
             case FieldType.Int:
                 return typeof(int);
             case FieldType.NText:
