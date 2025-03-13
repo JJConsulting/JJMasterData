@@ -3,13 +3,16 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@{
+    var isForm = ViewData["IsForm"] is true;
+}
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
         @{
             var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
 
-            if (!ViewBag.IsForm)
+            if (!isForm)
             {
                 componentList.RemoveAll(c => c.Text == "File");
             }
@@ -25,16 +28,9 @@
             <label asp-for="Component"></label>
         </div>
     </div>
+</div>
 
-    @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider or FormComponent.Percentage)
-    {
-        <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <div class="form-floating">
-                @Html.TextBoxFor(model => model.NumberOfDecimalPlaces, new { type = "number", @class = "form-control", placeholder = "" })
-                <label asp-for="NumberOfDecimalPlaces"></label>
-            </div>
-        </div>
-    }
+<div class="row">
     <partial name="_Attributes" model="@Model"/>
 </div>
 
@@ -44,7 +40,7 @@
      or FormComponent.Cep
      or FormComponent.Cnpj
      or FormComponent.Cpf
-     or FormComponent.CnpjCpf && ViewBag.IsForm)
+     or FormComponent.CnpjCpf && isForm)
 {
     if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
     {

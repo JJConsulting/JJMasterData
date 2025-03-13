@@ -44,6 +44,7 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
         {
             FieldType.Date or FieldType.DateTime or FieldType.DateTime2 => "DateTime",
             FieldType.Float => "double",
+            FieldType.Decimal => "decimal",
             FieldType.Int => "int",
             FieldType.Bit => "bool",
             FieldType.UniqueIdentifier => "Guid",

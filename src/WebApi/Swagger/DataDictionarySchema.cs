@@ -49,6 +49,7 @@ internal static class DataDictionarySchema
         {
             FieldType.Int => new OpenApiInteger(0),
             FieldType.Float => new OpenApiDouble(0),
+            FieldType.Decimal => new OpenApiDouble(0),
             FieldType.Date => new OpenApiDate(DateTime.Now),
             FieldType.DateTime => new OpenApiDateTime(DateTime.Now),
             _ => new OpenApiString("string"),
@@ -68,6 +69,7 @@ internal static class DataDictionarySchema
                     Format = "int32"
                 };
                 break;
+            case FieldType.Decimal:
             case FieldType.Float:
                 itemSchema = new OpenApiSchema
                 {

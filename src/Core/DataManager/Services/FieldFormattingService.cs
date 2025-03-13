@@ -56,12 +56,14 @@ public class FieldFormattingService(
 
                 if (value is double doubleValue || double.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out doubleValue))
                     stringValue = doubleValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
+                else if (value is decimal decimalValue || decimal.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out decimalValue))
+                    stringValue = decimalValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
                 else
                     stringValue = null;
                 break;
             case FormComponent.Lookup
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
-                var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
+                var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float or FieldType.Decimal;
                 stringValue = await lookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formStateData,
                     value.ToString(), allowOnlyNumerics);
                 break;
@@ -160,6 +162,11 @@ public class FieldFormattingService(
         {
             if (value is int intValue || int.TryParse(value.ToString(), out intValue))
                 stringValue = intValue.ToString("0");
+        }
+        else if (field.DataType == FieldType.Decimal)
+        {
+            if (value is decimal decimalValue || decimal.TryParse(value.ToString(), out decimalValue))
+                stringValue = decimalValue.ToString($"N{field.NumberOfDecimalPlaces}");
         }
         else
         {

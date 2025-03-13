@@ -406,7 +406,7 @@ internal sealed class GridTableBody(JJGridView gridView)
             case FormComponent.Icon:
                 return "text-align:center";
             default:
-                if (field.DataType is FieldType.Float or FieldType.Int)
+                if (field.DataType is FieldType.Float or FieldType.Int or FieldType.Decimal)
                 {
                     if (!field.IsPk)
                         return "text-align:right";

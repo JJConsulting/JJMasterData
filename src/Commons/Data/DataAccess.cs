@@ -10,6 +10,7 @@ using System.Text;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

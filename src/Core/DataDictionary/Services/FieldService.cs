@@ -136,7 +136,7 @@ public class FieldService(IValidationDictionary validationDictionary,
             if (field.Filter.Type is FilterMode.Contain)
             {
                 AddError(nameof(field.Filter.Type),
-                    StringLocalizer["Only fields of type VarChar or Text can be of type Contains."]);
+                    StringLocalizer["Only fields of type Varchar or Text can be of type Contains."]);
             }
         }
 
@@ -150,7 +150,24 @@ public class FieldService(IValidationDictionary validationDictionary,
             AddError(nameof(field.DataType),
                 StringLocalizer["Bit fields can only be a checkbox (true or false.)"]);
         }
-        
+
+        if (field.NumberOfDecimalPlaces < 0 && field.DataType is FieldType.Decimal or FieldType.Float)
+        {
+            AddError(nameof(field.NumberOfDecimalPlaces), StringLocalizer["[Number of Decimal Places] cannot be lesser than 0."]);
+        }
+
+        if (field.DataType is FieldType.Decimal)
+        {
+            if (field.NumberOfDecimalPlaces > field.Size)
+            {
+                AddError(nameof(field.NumberOfDecimalPlaces), StringLocalizer["[Number of Decimal Places] cannot be greater than [Size]."]);
+            }
+
+            if (field.Size is < 1 or > 38)
+            {
+                AddError(nameof(field.Size), StringLocalizer["[Size] must be between 1 and 38."]);
+            }
+        }
         if (field.Component is FormComponent.CheckBox && field.DataType is not FieldType.Bit && field.DataType is not FieldType.Int)
         {
             AddError(nameof(field.DataType),
@@ -161,7 +178,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         {
             if (field.NumberOfDecimalPlaces > 0)
             {
-                if (field.DataType != FieldType.Float)
+                if (field.DataType is not FieldType.Float and not FieldType.Decimal)
                 {
                     AddError(nameof(field.DataType),
                         StringLocalizer["The field [NumberOfDecimalPlaces] cannot be defined with the type "] +

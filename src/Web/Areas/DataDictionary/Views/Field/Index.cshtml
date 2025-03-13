@@ -22,7 +22,7 @@
         var sql = new StringBuilder();
         sql.Append(field.DataType.GetDisplayName());
 
-        if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+        if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
         {
             sql.Append('(');
             sql.Append(field.Size == -1 ? "MAX" : field.Size);

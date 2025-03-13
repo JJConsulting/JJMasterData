@@ -158,6 +158,7 @@ internal sealed class DataImportationHelp
             case FieldType.Int:
                 return StringLocalizer["Integer number"];
             case FieldType.Float:
+            case FieldType.Decimal:
                 return StringLocalizer["Decimal number"];
             default:
                 return StringLocalizer["Text"];
@@ -195,7 +196,7 @@ internal sealed class DataImportationHelp
                 {
                     text.Append(StringLocalizer["No dot or comma."]);
                 }
-                else if (field.DataType == FieldType.Float)
+                else if (field.DataType is FieldType.Float or FieldType.Decimal)
                 {
                     if (field.Size > 0)
                     {

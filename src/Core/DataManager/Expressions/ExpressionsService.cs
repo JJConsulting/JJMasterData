@@ -141,6 +141,8 @@ public class ExpressionsService(
                         out var intResult) => intResult,
                     FieldType.Float when double.TryParse(stringResult.Trim(),
                         out var doubleResult) => doubleResult,
+                    FieldType.Decimal when decimal.TryParse(stringResult.Trim(),
+                        out var decimalResult) => decimalResult,
                     _ => result
                 };
             }

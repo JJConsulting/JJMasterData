@@ -71,6 +71,14 @@ public class DataAccessParameter
         Direction = ParameterDirection.Input;
     }
 
+    public DataAccessParameter(string name, decimal value)
+    {
+        Name = name;
+        Value = value;
+        Type = DbType.Decimal;
+        Direction = ParameterDirection.Input;
+    }
+    
     public DataAccessParameter(string name, DateTime value)
     {
         Name = name;

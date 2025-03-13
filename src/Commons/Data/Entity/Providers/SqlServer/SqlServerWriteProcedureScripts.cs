@@ -51,10 +51,20 @@ public class SqlServerWriteProcedureScripts(
             sql.Append(field.Name);
             sql.Append(' ');
             sql.Append(field.DataType);
+            
             if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
             {
                 sql.Append('(');
                 sql.Append(field.Size == -1 ? "MAX" : field.Size);
+                sql.Append(')');
+            }
+            
+            if (field.DataType is FieldType.Decimal)
+            {
+                sql.Append('(');
+                sql.Append(field.Size);
+                sql.Append(',');
+                sql.Append(field.NumberOfDecimalPlaces);
                 sql.Append(')');
             }
 

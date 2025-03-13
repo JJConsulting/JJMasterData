@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
-
 namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary>
@@ -62,6 +61,10 @@ public class ElementField
     [Display(Name = "Size")]
     public int Size { get; set; }
 
+    [JsonPropertyName("numberOfDecimalPlaces")]
+    [Display(Name = "Number of Decimal Places")]
+    public int NumberOfDecimalPlaces { get; set; }
+    
     /// <summary>
     /// Default field initializer
     /// <para/> Expression for a default value

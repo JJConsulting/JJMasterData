@@ -162,7 +162,8 @@ public class FieldValidationService(
 
     private string ValidateDataType(ElementField field, object value, string fieldName)
     {
-        switch (field.DataType)
+        var dataType = field.DataType;
+        switch (dataType)
         {
             case FieldType.Date:
             case FieldType.DateTime:
@@ -199,14 +200,31 @@ public class FieldValidationService(
                 }
 
                 break;
+            case FieldType.Decimal:
+                if (!decimal.TryParse(value?.ToString(), out var decimalValue))
+                {
+                    return localizer["{0} field has an invalid number",
+                        fieldName];
+                }
+                
+                var integerLength = (int)Math.Floor(Math.Log10(Math.Abs((double)decimalValue)) + 1);
+                var decimalLength = BitConverter.GetBytes(decimal.GetBits(decimalValue)[3])[2];
+
+                if (integerLength + decimalLength > field.Size)
+                {
+                    return localizer["Field {0} exceeds maximum size of {0} digits.", fieldName, field.Size];
+                }
+                
+                if (decimalLength > field.NumberOfDecimalPlaces)
+                {
+                    return localizer["Field {0} exceeds maximum number of {1} decimal places.", fieldName, field.NumberOfDecimalPlaces];
+                }
+                break;
             default:
                 if (field.Size > 0 &&
-                    value?.ToString()?.Length > field.Size &&
-                    value is not bool &&
-                    value is not TimeSpan &&
-                    value is not DateTime)
+                    value?.ToString()?.Length > field.Size && dataType is FieldType.Varchar or FieldType.NVarchar or FieldType.Text or FieldType.NText)
                 {
-                    return localizer["{0} field cannot contain more than {1} characters",
+                    return localizer["Field {0} cannot contain more than {1} characters.",
                         fieldName, field.Size];
                 }
 

@@ -265,7 +265,7 @@ public class PdfWriter(
         cell.SetBorderLeft(ShowBorder ? new GrooveBorder(WebColors.GetRGBColor("black"), 1f) : null);
 
         if (!field.IsPk && field.Component != FormComponent.ComboBox &&
-            field.DataType is FieldType.Float or FieldType.Int)
+            field.DataType is FieldType.Float or FieldType.Int or FieldType.Decimal)
         {
             cell.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
         }
@@ -283,7 +283,7 @@ public class PdfWriter(
         cell.SetBorderLeft(ShowBorder ? new GrooveBorder(WebColors.GetRGBColor("black"), 1f) : null);
 
         if (!field.IsPk && field.Component != FormComponent.ComboBox &&
-            (field.DataType == FieldType.Float || field.DataType == FieldType.Int))
+            field.DataType is FieldType.Float or FieldType.Int or FieldType.Decimal)
         {
             cell.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
         }
