@@ -150,7 +150,24 @@ public class FieldService(IValidationDictionary validationDictionary,
             AddError(nameof(field.DataType),
                 StringLocalizer["Bit fields can only be a checkbox (true or false.)"]);
         }
-        
+
+        if (field.NumberOfDecimalPlaces < 0 && field.DataType is FieldType.Decimal or FieldType.Float)
+        {
+            AddError(nameof(field.NumberOfDecimalPlaces), StringLocalizer["[Number of Decimal Places] cannot be lesser than 0."]);
+        }
+
+        if (field.DataType is FieldType.Decimal)
+        {
+            if (field.NumberOfDecimalPlaces > field.Size)
+            {
+                AddError(nameof(field.NumberOfDecimalPlaces), StringLocalizer["[Number of Decimal Places] cannot be greater than [Size]."]);
+            }
+
+            if (field.Size is < 1 or > 38)
+            {
+                AddError(nameof(field.Size), StringLocalizer["[Size] must be between 1 and 38."]);
+            }
+        }
         if (field.Component is FormComponent.CheckBox && field.DataType is not FieldType.Bit && field.DataType is not FieldType.Int)
         {
             AddError(nameof(field.DataType),

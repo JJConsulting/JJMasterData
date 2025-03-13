@@ -3188,6 +3188,18 @@
     <value>Campo [{0}] duplicado na procedure de get</value>
     <comment>JJMasterData.Commons</comment>
   </data>
+  <data name="[Size] must be between 1 and 38." xml:space="preserve">
+    <value>[Tamanho] deve ser entre 1 e 38.</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="[Number of Decimal Places] cannot be lesser than 0." xml:space="preserve">
+    <value>[Número de Casas Decimais] não pode ser menor que zero.</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="[Number of Decimal Places] cannot be greater than [Size]." xml:space="preserve">
+    <value>[Número de Casas Decimais] não pode ser maior que o [Tamanho].</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
   <data name="Field {0} cannot contain more than {1} characters." xml:space="preserve">
     <value>Campo {0} não pode conter mais de {1} caracteres.</value>
     <comment>JJMasterData.Commons</comment>
