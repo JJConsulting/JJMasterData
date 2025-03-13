@@ -1,10 +1,8 @@
 ﻿#nullable enable
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
-
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -13,7 +11,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// </summary>
 /// <remarks>2017-03-22 - JJTeam</remarks>
 [DebuggerDisplay("Name = {Name}, DataType = {DataType}")]
-public class ElementField 
+public class ElementField
 {
     /// <summary>
     /// Internal field id
