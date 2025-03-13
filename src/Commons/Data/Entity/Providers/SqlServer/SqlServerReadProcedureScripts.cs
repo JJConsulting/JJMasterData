@@ -432,7 +432,15 @@ public class SqlServerReadProcedureScripts(
                         sql.Append(field.Size == -1 ? "MAX" : field.Size);
                         sql.Append(')');
                     }
-
+                    else if (field.DataType is FieldType.Decimal)
+                    {
+                        sql.Append('(');
+                        sql.Append(field.Size);
+                        sql.Append(',');
+                        sql.Append(field.NumberOfDecimalPlaces);
+                        sql.Append(')');
+                    }
+                    
                     sql.AppendLine(",");
                     sql.Append(Tab, tabLevel);
                     sql.Append('@');
@@ -445,6 +453,15 @@ public class SqlServerReadProcedureScripts(
                         sql.Append(field.Size == -1 ? "MAX" : field.Size);
                         sql.Append(") ");
                     }
+                    else if (field.DataType is FieldType.Decimal)
+                    {
+                        sql.Append('(');
+                        sql.Append(field.Size);
+                        sql.Append(',');
+                        sql.Append(field.NumberOfDecimalPlaces);
+                        sql.Append(')');
+                    }
+                    
                     sql.AppendLine(",");
                     sql.Append(Tab, tabLevel);
                     break;
@@ -470,6 +487,14 @@ public class SqlServerReadProcedureScripts(
                             sql.Append('(');
                             sql.Append(field.Size == -1 ? "MAX" : field.Size);
                             sql.AppendLine("), ");
+                        }
+                        else if (field.DataType is FieldType.Decimal)
+                        {
+                            sql.Append('(');
+                            sql.Append(field.Size);
+                            sql.Append(',');
+                            sql.Append(field.NumberOfDecimalPlaces);
+                            sql.Append(')');
                         }
                         else
                         {

@@ -44,8 +44,7 @@ public abstract class SqlServerScriptsBase
             sql.Append(field.Size == -1 ? "MAX" : field.Size);
             sql.Append(')');
         }
-
-        if (field.DataType is FieldType.Decimal)
+        else if (field.DataType is FieldType.Decimal)
         {
             sql.Append(" (");
             sql.Append(field.Size);
