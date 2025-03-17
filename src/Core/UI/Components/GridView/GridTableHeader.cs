@@ -69,12 +69,14 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 }
                 span.Append(HtmlTag.Span, s =>
                 {
-                    if (!string.IsNullOrEmpty(field.HelpDescription))
-                    {
-                        s.WithToolTip(field.HelpDescription);
-                    }
-
                     s.AppendText(_stringLocalizer[field.LabelOrName]);
+                    
+                    var tooltip = field.HelpDescription;
+                    s.AppendIf(!string.IsNullOrEmpty(tooltip), HtmlTag.Span, circle =>
+                    {
+                        circle.WithCssClass("fa fa-question-circle help-description");
+                        circle.WithToolTip(_stringLocalizer[tooltip!]);
+                    });
                 });
             });
 
