@@ -465,7 +465,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         return nextField;
     }
 
-    public async Task<Dictionary<string, string>> GetElementFieldListAsync(string elementName)
+    public async ValueTask<Dictionary<string, string>> GetElementFieldListAsync(string elementName, bool recoverOnlyFilters = false)
     {
         var fields = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
@@ -478,7 +478,18 @@ public class FieldService(IValidationDictionary validationDictionary,
 
         foreach (var field in dataEntry.Fields.OrderBy(e => e.Name))
         {
-            fields.Add(field.Name, field.Name);
+            if (recoverOnlyFilters)
+            {
+                if (field.IsPk || field.Filter.Type is FilterMode.Equal)
+                {
+                    fields.Add(field.Name, field.Name);
+                }
+              
+            }
+            else
+            {
+                fields.Add(field.Name, field.Name);
+            }
         }
 
         return fields;

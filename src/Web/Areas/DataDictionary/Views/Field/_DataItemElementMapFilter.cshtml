@@ -7,7 +7,7 @@
                <div class="@BootstrapHelper.FormGroup col-sm-2">
                    <div class="form-floating">
                        @Html.DropDownListFor(m => m.FieldName,
-                       new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                       new SelectList(ViewBag.LookupFilterElementFieldList, "Key", "Value"),
                        new { @class = "form-control" })
                        <label >@StringLocalizer["Field"]</label>
                    </div>

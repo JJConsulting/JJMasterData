@@ -234,9 +234,13 @@ public class FieldController(
         }
 
         field.DataItem.ElementMap ??= new DataElementMap();
-
-
+        
         ViewData["ElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName);
+
+        if (field.Component is FormComponent.Lookup)
+        {
+            ViewData["LookupFilterElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName, recoverOnlyFilters:true);
+        }
     }
 
     private void RecoverCustomAttributes(ref FormElementField field)

@@ -1560,7 +1560,8 @@ class LookupListener {
                     success: (data) => {
                         if (!data.description) {
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.warningClass);
-                            lookupDescriptionInput.value = String();
+                            lookupDescriptionInput.value = "";
+                            lookupInput.value = "";
                         }
                         else {
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.successClass);
@@ -1573,7 +1574,7 @@ class LookupListener {
                     error: (_) => {
                         FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
                         if (lookupDescriptionInput) {
-                            lookupDescriptionInput.value = String();
+                            lookupDescriptionInput.value = "";
                         }
                     }
                 });
