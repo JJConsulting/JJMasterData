@@ -59,15 +59,14 @@
       "_gitContribute": {
         "branch": "main",
         "apiSpecFolder":"api",
-        "repo": "https://github.com/jjconsulting/JJMasterData",
-        "_googleAnalyticsTagId" : "G-60L9XB7X4J"
+        "repo": "https://github.com/jjconsulting/JJMasterData"
       },
       "_gitUrlPattern": "github",
       "_disableSideFilter":true,
       "_appLogoPath": "logo.png",
-
+      "_googleAnalyticsTagId" : "G-60L9XB7X4J",
       "_appFooter": "Sun Version - 4.0.x",
-      "_copyrightFooter":"2023 JJConsulting. All rights reserved."
+      "_copyrightFooter":"2025 JJConsulting. All rights reserved."
     },
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
