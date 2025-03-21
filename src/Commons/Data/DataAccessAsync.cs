@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -202,11 +203,22 @@ public partial class DataAccess
         return GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
-    /// <inheritdoc cref="GetHashtable"/>
-    public async Task<Dictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command,
+    public Task<Dictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
-        var result = new Dictionary<string, object?>();
+        return GetDataAsync<Dictionary<string,object?>>(command, cancellationToken);
+    }
+
+    public Task<Hashtable> GetHashtableAsync(DataAccessCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        return GetDataAsync<Hashtable>(command, cancellationToken);
+    }
+
+    private async Task<T> GetDataAsync<T>(DataAccessCommand command,
+        CancellationToken cancellationToken) where T : IDictionary, new()
+    {
+        var result = new T();
         try
         {
             using var dbCommand = CreateDbCommand(command);
@@ -222,7 +234,7 @@ public partial class DataAccess
                         for (var count = 0; count < dataReader.FieldCount; count++)
                         {
                             var fieldName = dataReader.GetName(count);
-                            if (result.ContainsKey(fieldName))
+                            if (result.Contains(fieldName))
                                 throw new DataAccessException($"[{fieldName}] field duplicated at SQL query.");
 
                             result.Add(fieldName, dataReader.GetValue(count));
@@ -240,8 +252,7 @@ public partial class DataAccess
 
         return result;
     }
-
-
+    
     public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
