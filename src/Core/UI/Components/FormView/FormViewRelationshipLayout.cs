@@ -218,6 +218,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         
         childFormView.RelationshipType = RelationshipType.OneToOne;
 
+        var containsPanelState = childFormView.DataPanel.ContainsPanelState();
         var isDisabled = IsRelationshipDisabled(relationship);
         
         if (relationship.ViewType is RelationshipViewType.View ||
@@ -228,9 +229,14 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         else
         {
             childFormView.PageState = childValues is not null ? PageState.Update : PageState.Insert;
-            
+
             if (childValues is not null)
-                childFormView.DataPanel.PageState = relationship.EditModeOpenByDefault ? childFormView.PageState: PageState.View;
+            {
+                if (!containsPanelState)
+                {
+                    childFormView.DataPanel.PageState = relationship.EditModeOpenByDefault ? childFormView.PageState: PageState.View;
+                }
+            }
             else
                 childFormView.DataPanel.PageState = PageState.Insert;
         }
@@ -242,7 +248,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         if (childValues is not null)
             childFormView.DataPanel.Values = childValues;
         
-        childFormView.DataPanel.RenderPanelGroup = false;
+        childFormView.DataPanel.RenderPanelGroup = containsPanelState;
         childFormView.DataPanel.FormUI = childFormView.FormElement.Options.Form;
     }
 
