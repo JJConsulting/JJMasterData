@@ -206,19 +206,22 @@ public partial class DataAccess
     public Task<Dictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
-        return GetDataAsync<Dictionary<string,object?>>(command, cancellationToken);
+        var result = new Dictionary<string,object?>(StringComparer.InvariantCultureIgnoreCase);
+        return GetDataAsync(result, command, cancellationToken);
     }
 
     public Task<Hashtable> GetHashtableAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
-        return GetDataAsync<Hashtable>(command, cancellationToken);
+        var result = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        return GetDataAsync(result, command, cancellationToken);
     }
 
-    private async Task<T> GetDataAsync<T>(DataAccessCommand command,
+    private async Task<T> GetDataAsync<T>(
+        T result,
+        DataAccessCommand command,
         CancellationToken cancellationToken) where T : IDictionary, new()
     {
-        var result = new T();
         try
         {
             using var dbCommand = CreateDbCommand(command);
