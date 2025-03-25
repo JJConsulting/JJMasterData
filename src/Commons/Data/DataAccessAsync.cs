@@ -210,11 +210,14 @@ public partial class DataAccess
         return GetDataAsync(result, command, cancellationToken);
     }
 
-    public Task<Hashtable> GetHashtableAsync(DataAccessCommand command,
+    public async Task<Hashtable?> GetHashtableAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
         var result = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        return GetDataAsync(result, command, cancellationToken);
+        
+        var data = await GetDataAsync(result, command, cancellationToken);
+
+        return data.Count == 0 ? null : data;
     }
 
     private async Task<T> GetDataAsync<T>(
