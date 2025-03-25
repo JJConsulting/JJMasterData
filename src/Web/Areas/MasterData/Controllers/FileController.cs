@@ -6,6 +6,7 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FileController(ElementFileService service) : MasterDataController
 {
+    [ResponseCache(Duration = 14400)]
     public async Task<IActionResult> Index(
         string elementName,
         string fieldName, 
