@@ -74,13 +74,6 @@ public class JJAlert : HtmlComponent
                 title.AppendText(Title);
             });
         }
-
-        if (InnerHtml is not null)
-        {
-            if (!hasTitle && ShowIcon)
-                AppendAlertIcon(html);
-            html.Append(InnerHtml);
-        }
         
         html.AppendDiv(div =>
         {
@@ -88,6 +81,9 @@ public class JJAlert : HtmlComponent
             
             if (!hasTitle && ShowIcon)
                 AppendAlertIcon(div);
+            
+            if (InnerHtml is not null)
+                div.Append(InnerHtml);
             
             if (Messages.Count > 1)
             {
