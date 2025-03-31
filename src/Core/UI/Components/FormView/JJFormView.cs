@@ -1453,7 +1453,9 @@ public class JJFormView : AsyncComponent
 
         if (!DataPanel.ContainsPanelState())
             DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState : PageState.View;
-
+        else if (ComponentContext is ComponentContext.RenderComponent)
+            DataPanel.PageState = relationship.EditModeOpenByDefault ? DataPanel.PageState : PageState.View;
+        
         var parentPanelHtml = await DataPanel.GetHtmlBuilderAsync();
 
         ConfigureFormToolbar();
@@ -1511,7 +1513,7 @@ public class JJFormView : AsyncComponent
         return toolbar;
     }
 
-    private async ValueTask<JJToolbar> GetFormToolbarAsync(IList<BasicAction> actions)
+    private async ValueTask<JJToolbar> GetFormToolbarAsync(List<BasicAction> actions)
     {
         var toolbar = new JJToolbar
         {
