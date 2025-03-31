@@ -27,7 +27,7 @@ public class FormElementDataFile
 
     /// <summary>
     /// Allowed extension types, separated by a comma.
-    /// Default: *
+    /// Default value: *.
     /// </summary>
     /// <remarks>
     /// Example: txt,csv,log
@@ -38,8 +38,8 @@ public class FormElementDataFile
     public string AllowedTypes { get; set; } = "*";
 
     /// <summary>
-    /// Permite upload simultaneo de arquivos.
-    /// Default: True
+    /// Allows simultaneous file uploads.
+    /// Default value: false.
     /// </summary>
     [JsonPropertyName("multipleFile")]
     [Display(Name = "Allow Multiple Files")]
@@ -51,7 +51,6 @@ public class FormElementDataFile
     [JsonPropertyName("exportAsLink")]
     [Display(Name = "Export as Link")]
     public bool ExportAsLink { get; set; }
-
 
     /// <summary>
     /// Preview images in gallery format

@@ -16,7 +16,8 @@ public class FormFileService(FormFileManagerFactory formFileManagerFactory)
         {
             var folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
             var manager = formFileManagerFactory.Create($"{field.Name}-upload-view-files");
-            manager.SaveMemoryFiles(folderPath);
+            
+            manager.SaveMemoryFiles(folderPath, deleteExistingFiles: !field.DataFile.MultipleFile);
         }
     }
 

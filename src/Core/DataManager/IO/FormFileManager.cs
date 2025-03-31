@@ -226,7 +226,7 @@ public class FormFileManager(string memoryFilesSessionName,
         return listFiles.Count(x => !x.Deleted);
     }
 
-    public void SaveMemoryFiles(string folderPath)
+    public void SaveMemoryFiles(string folderPath, bool deleteExistingFiles = false)
     {
         if (string.IsNullOrEmpty(folderPath))
             throw new ArgumentNullException(nameof(folderPath));
@@ -238,6 +238,13 @@ public class FormFileManager(string memoryFilesSessionName,
             Directory.CreateDirectory(folderPath);
 
         FolderPath = folderPath;
+
+        if (deleteExistingFiles)
+        {
+            var filePaths = Directory.GetFiles(FolderPath);
+            foreach (var filePath in filePaths)
+                File.Delete(filePath);
+        }
         
         foreach (var file in MemoryFiles)
         {
@@ -262,9 +269,9 @@ public class FormFileManager(string memoryFilesSessionName,
 
     private List<FormFileInfo> GetPhysicalFiles()
     {
-        var formfiles = new List<FormFileInfo>();
+        var formFileInfoList = new List<FormFileInfo>();
         if (string.IsNullOrEmpty(FolderPath))
-            return formfiles;
+            return formFileInfoList;
 
         var directory = new DirectoryInfo(FolderPath);
         if (directory.Exists)
@@ -272,7 +279,7 @@ public class FormFileManager(string memoryFilesSessionName,
             var files = directory.GetFiles();
             foreach (var file in files)
             {
-                var formfile = new FormFileInfo
+                formFileInfoList.Add(new FormFileInfo
                 {
                     Content =
                     {
@@ -280,11 +287,10 @@ public class FormFileManager(string memoryFilesSessionName,
                         Length = file.Length,
                         LastWriteTime = file.LastWriteTime,
                     }
-                };
-                formfiles.Add(formfile);
+                });
             }
         }
-        return formfiles;
+        return formFileInfoList;
     }
 
     private void SavePhysicalFile(FormFileContent file)
