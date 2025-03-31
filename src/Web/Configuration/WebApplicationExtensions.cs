@@ -1,18 +1,18 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Web.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Web.Configuration;
 
 public static partial class WebApplicationExtensions
 {
     [PublicAPI]
+    [Obsolete("Please handle request localization at your application.")]
     public static WebApplication UseUrlRequestLocalization(this WebApplication app, Action<MasterDataLocalizationOptions>? configureLocalization = null)
     {
         app.UseRequestLocalization(options =>
@@ -57,9 +57,8 @@ public static partial class WebApplicationExtensions
         return app;
     }
 
-    /// <summary>
-    /// Adds endpoints for JJMasterData Pages to the <see cref="WebApplication"/>.
-    /// </summary>
+   
+    [Obsolete("Please use both MapDataDictionary and MapMasterData instead.")]
     public static ControllerActionEndpointConventionBuilder MapJJMasterData(this WebApplication app,
         Action<MasterDataAreaOptions>? configure = null)
     {
@@ -70,7 +69,7 @@ public static partial class WebApplicationExtensions
         var pattern = "{area}/{controller}/{action}/{elementName?}/{fieldName?}/{id?}";
 
         if (options.Prefix is not null)
-            pattern = $"{options.Prefix.Replace("/", string.Empty)}/{pattern}";
+            pattern = $"{options.Prefix.Trim('/')}/{pattern}";
 
         if (options.EnableCultureProvider)
             pattern = $"/{{culture}}/{pattern}";
@@ -78,6 +77,32 @@ public static partial class WebApplicationExtensions
         return app.MapControllerRoute(
             name: "JJMasterData",
             pattern: pattern);
+    }
+
+    [PublicAPI]
+    public static async Task CreateStructureIfNotExistsAsync(this WebApplication app)
+    {
+        using var dbScope = app.Services.CreateScope();
+        var serviceProvider = dbScope.ServiceProvider;
+    
+        var dataDictionaryRepository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
+        await dataDictionaryRepository.CreateStructureIfNotExistsAsync();
+    }
+    
+    public static ControllerActionEndpointConventionBuilder MapDataDictionary(this WebApplication app)
+    {
+        return app.MapAreaControllerRoute(
+            name: "dataDictionary",
+            areaName: "DataDictionary",
+            pattern: "DataDictionary/{controller=Element}/{action=Index}/{elementName?}/{fieldName?}");
+    }
+    
+    public static ControllerActionEndpointConventionBuilder MapMasterData(this WebApplication app)
+    {
+        return app.MapAreaControllerRoute(
+            name: "masterData",
+            areaName: "MasterData",
+            pattern:  "MasterData/{controller}/{action}/{elementName?}/{fieldName?}/{id?}");
     }
 
     [GeneratedRegex("^[a-z]{2}(-[a-z]{2,4})?$", RegexOptions.IgnoreCase, "pt-BR")]

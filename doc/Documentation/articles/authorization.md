@@ -21,8 +21,13 @@ You can also inject your custom authorization requirements for routes using:
 ```cs
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapJJMasterData()
+
+app.MapDataDictionary()
+    .RequireAuthorization(builder=>builder.RequireClaim("DataDictionary"));
+app.MapMasterData()
     .RequireAuthorization("MasterDataPolicy");
+    
+await app.CreateStructureIfNotExistsAsync();
 ```
 
 If you are not familiarized with the concept of policies, please check

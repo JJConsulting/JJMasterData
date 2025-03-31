@@ -22,7 +22,11 @@ builder.Services.AddJJMasterDataWeb().WithHangfire();
 ///...
 
 app.UseHangfireDashboard();
-app.MapJJMasterData();
+
+app.MapDataDictionary();
+app.MapMasterData();
+
+await app.CreateStructureIfNotExistsAsync();
 ```
 
 ## Usage

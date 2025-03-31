@@ -78,7 +78,10 @@ var app = builder.Build();
 app.UseStaticFiles();
 app.UseSession();
 
-app.MapJJMasterData();
+app.MapDataDictionary();
+app.MapMasterData();
+
+await app.CreateStructureIfNotExistsAsync();
 
 app.Run();
 ```

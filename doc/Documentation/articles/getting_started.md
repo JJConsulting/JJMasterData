@@ -32,8 +32,11 @@ Add the following lines to your Program.cs
 //This line will add JJMasterData required services.
 builder.Services.AddJJMasterDataWeb();
 
-//Add this line before specifing default route.
-app.MapJJMasterData();
+//Add these lines before specifing default route.
+app.MapDataDictionary();
+app.MapMasterData();
+
+await app.CreateStructureIfNotExistsAsync();
 ```
 
 ## 4. Navigate on Data Dictionary
