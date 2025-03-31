@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
+using static JJMasterData.Core.UI.DateFormatMapper;
+
 namespace JJMasterData.Core.UI.Components;
 
 public sealed class TextGroupFactory(
-        IFormValues formValues,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory,
-        ActionButtonFactory actionButtonFactory)
+    IFormValues formValues,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory,
+    ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>
 {
     public JJTextGroup Create()
     {
-        return new JJTextGroup(linkButtonGroupFactory,formValues);
+        return new JJTextGroup(linkButtonGroupFactory, formValues);
     }
-    
+
     public JJTextGroup Create(FormElementField field, object value)
     {
         var textGroup = Create(field);
@@ -31,9 +31,9 @@ public sealed class TextGroupFactory(
         {
             value = value?.ToString()?.Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
         }
-        
+
         textGroup.Text = value?.ToString() ?? string.Empty;
-        
+
         return textGroup;
     }
 
@@ -51,19 +51,19 @@ public sealed class TextGroupFactory(
 
         if (formStateData.PageState is not PageState.Filter)
             AddUserActions(formElement, field, context, textGroup);
-        
+
         return textGroup;
     }
 
 
     private void AddUserActions(
-                                FormElement formElement,
-                                FormElementField field,
-                                ControlContext controlContext, 
-                                JJTextGroup textGroup)
+        FormElement formElement,
+        FormElementField field,
+        ControlContext controlContext,
+        JJTextGroup textGroup)
     {
         var actions = field.Actions.GetAllSorted().Where(x => x.IsVisible);
-        
+
         foreach (var action in actions)
         {
             var actionContext = new ActionContext
@@ -75,8 +75,8 @@ public sealed class TextGroupFactory(
                 ParentComponentName = controlContext.ParentComponentName
             };
 
-            var link = actionButtonFactory.CreateFieldButton(action,actionContext);
-            
+            var link = actionButtonFactory.CreateFieldButton(action, actionContext);
+
             textGroup.Actions.Add(link);
         }
     }
@@ -98,26 +98,27 @@ public sealed class TextGroupFactory(
 
     public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup(linkButtonGroupFactory,formValues);
+        var textGroup = new JJTextGroup(linkButtonGroupFactory, formValues);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }
 
     private void SetDefaultAttrs(JJTextGroup textGroup, FormComponent component)
     {
-        var listClass = new List<string>
-        {
+        List<string> cssClassList =
+        [
             "form-control"
-        };
+        ];
 
         switch (component)
         {
             case FormComponent.Currency:
-                listClass.Add(BootstrapHelper.TextRight);
+                cssClassList.Add(BootstrapHelper.TextRight);
 
                 textGroup.MaxLength = 18;
-                
-                if (textGroup.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName))
+
+                if (textGroup.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) &&
+                    !string.IsNullOrEmpty(cultureInfoName))
                 {
                     var cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName);
                     textGroup.CultureInfo = cultureInfo;
@@ -127,18 +128,18 @@ public sealed class TextGroupFactory(
                 {
                     textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
                 }
-                
+
                 textGroup.InputType = InputType.Currency;
                 textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
                 break;
             case FormComponent.Number:
-                listClass.Add(BootstrapHelper.TextRight);
+                cssClassList.Add(BootstrapHelper.TextRight);
                 textGroup.MaxLength = 22;
                 textGroup.InputType = InputType.Number;
-                
-                if(textGroup.NumberOfDecimalPlaces == 0 )
+
+                if (textGroup.NumberOfDecimalPlaces == 0)
                     textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
-                
+
                 textGroup.SetAttr("step", textGroup.Attributes.TryGetValue("step", out var stepValue) ? stepValue : 1);
                 textGroup.SetAttr("onclick", "this.select();");
 
@@ -189,34 +190,47 @@ public sealed class TextGroupFactory(
                 textGroup.GroupCssClass = "date";
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
                 textGroup.SetAttr("data-inputmask-inputFormat", "HH:MM");
-                textGroup.SetAttr("data-inputmask-displayFormat","HH:MM");
+                textGroup.SetAttr("data-inputmask-displayFormat", "HH:MM");
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
             case FormComponent.Date:
+            {
+                var currentCulture = CultureInfo.CurrentUICulture;
+                var inputmask = GetInputmask(currentCulture);
+                
                 textGroup.GroupCssClass = "flatpickr date jjform-date";
                 textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-inputmask-inputFormat", Format.DateFormat.ToLowerInvariant());
-                textGroup.SetAttr("data-inputmask-displayFormat", Format.DateFormat.ToLowerInvariant());
+                textGroup.SetAttr("data-flatpickr-mask", GetFlatpickr(currentCulture));
+                textGroup.SetAttr("data-inputmask-inputFormat", inputmask);
+                textGroup.SetAttr("data-inputmask-displayFormat", inputmask);
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
+            }
             case FormComponent.DateTime:
+            {
+                var currentCulture = CultureInfo.CurrentUICulture;
+                var inputmask = GetInputmask(currentCulture, includeTime: true);
+                
                 textGroup.GroupCssClass = "flatpickr date jjform-datetime";
                 textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
                 textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-inputmask-inputFormat", $"{Format.DateFormat.ToLowerInvariant()} HH:MM");
-                textGroup.SetAttr("data-inputmask-displayFormat", $"{Format.DateFormat.ToLowerInvariant()} HH:MM");
+                textGroup.SetAttr("data-flatpickr-mask", GetFlatpickr(currentCulture, includeTime:true));
+                textGroup.SetAttr("data-inputmask-inputFormat", inputmask);
+                textGroup.SetAttr("data-inputmask-displayFormat", inputmask);
                 textGroup.SetAttr("data-inputmask-placeholder", "");
                 textGroup.SetAttr("data-input", "date");
                 break;
+            }
+
             case FormComponent.Percentage:
-                listClass.Add(BootstrapHelper.TextRight);
+                cssClassList.Add(BootstrapHelper.TextRight);
                 textGroup.MaxLength = 18;
                 textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.PercentSymbol);
                 textGroup.InputType = InputType.Percentage;
@@ -227,7 +241,7 @@ public sealed class TextGroupFactory(
                 break;
         }
 
-        textGroup.SetAttr("class", string.Join(" ", listClass));
+        textGroup.SetAttr("class", string.Join(" ", cssClassList));
     }
 
     private JJLinkButton GetDateAction(bool isEnabled)

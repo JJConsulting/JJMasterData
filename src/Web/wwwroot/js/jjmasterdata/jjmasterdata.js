@@ -317,7 +317,7 @@ class CalendarListener {
                 monthSelectorType: 'static',
                 time_24hr: true,
                 mode: "single",
-                dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
+                dateFormat: div.children[0].dataset.flatpickrMask,
                 onOpen: function (selectedDates, dateStr, instance) {
                     if (instance.input.getAttribute("autocompletePicker") === "True") {
                         instance.setDate(Date.now());
@@ -335,7 +335,7 @@ class CalendarListener {
                 altInput: false,
                 monthSelectorType: 'static',
                 mode: "single",
-                dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
+                dateFormat: div.children[0].dataset.flatpickrMask,
                 onOpen: function (selectedDates, dateStr, instance) {
                     if (instance.input.getAttribute("autocompletePicker") === "True") {
                         instance.setDate(Date.now());
