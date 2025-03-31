@@ -241,8 +241,7 @@ public class FormFileManager(string memoryFilesSessionName,
 
         if (deleteExistingFiles)
         {
-            var filePaths = Directory.GetFiles(FolderPath);
-            foreach (var filePath in filePaths)
+            foreach (var filePath in Directory.GetFiles(FolderPath))
                 File.Delete(filePath);
         }
         
