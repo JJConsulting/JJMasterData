@@ -428,6 +428,9 @@
     <value>Sempre aplique UserId (do login) como filtro e valor padrão no conjunto.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Brazil Phone Number" xml:space="preserve">
+    <value>Número de Telefone Brasileiro</value>
+  </data>
   <data name="Back" xml:space="preserve">
     <value>Voltar</value>
     <comment>JJMasterDataWeb</comment>

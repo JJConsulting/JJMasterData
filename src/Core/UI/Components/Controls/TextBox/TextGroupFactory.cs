@@ -176,13 +176,13 @@ public sealed class TextGroupFactory(
             case FormComponent.Tel:
                 textGroup.Addons = new InputAddons
                 {
-                    Tooltip = "Brasil",
+                    Tooltip = stringLocalizer["Brazil Phone Number"],
                     Text = "+55"
                 };
                 textGroup.MaxLength = 15;
                 textGroup.InputType = InputType.Tel;
                 textGroup.SetAttr("data-inputmask",
-                    "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
+                    "'mask': '[(99) 9999[9]-9999]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.Hour:
                 textGroup.InputType = InputType.Text;
