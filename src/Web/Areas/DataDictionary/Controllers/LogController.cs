@@ -61,7 +61,8 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     [HttpGet]
     public async Task<IActionResult> ClearAll(bool isModal)
     {
-        var sql = $"TRUNCATE TABLE {_options.TableName}";
+        var schema = string.IsNullOrEmpty(_options.TableSchema) ? "dbo" : _options.TableSchema;
+        var sql = $"TRUNCATE TABLE {schema}.{_options.TableName}";
 
         await entityRepository.SetCommandAsync(new DataAccessCommand(sql));
 
