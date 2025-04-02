@@ -55,7 +55,9 @@ public static class ServiceCollectionExtensions
         services.AddOptions<MasterDataCommonsOptions>()
             .BindConfiguration("JJMasterData")
             .Validate(o => !string.IsNullOrEmpty(o.ConnectionString),
-                "Connection string is required at JJMasterData:ConnectionString.")
+                "Connection string is required at JJMasterData:ConnectionString at your configuration source.")
+            .Validate(o => !string.IsNullOrEmpty(o.SecretKey),
+                "Secret key is required at JJMasterData:SecretKey at your configuration source.")
             .ValidateOnStart();
         
         services.AddLocalization();
