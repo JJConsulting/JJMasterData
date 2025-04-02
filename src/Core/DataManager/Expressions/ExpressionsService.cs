@@ -61,7 +61,7 @@ public class ExpressionsService(
             parsedValues[key] = encryptionService.EncryptStringWithUrlEscape(parsedValues[key]!.ToString()!);
         }
     }
-    
+
     public bool GetBoolValue(string? expression, FormStateData formStateData)
     {
         return ParseBool(GetExpressionValue(expression, formStateData));
@@ -89,8 +89,14 @@ public class ExpressionsService(
         }
         catch (Exception ex)
         {
-            var exception = new ExpressionException("Unhandled exception at a expression provider.", ex);
-            
+            var exception = new ExpressionException("Unhandled exception at a expression provider.", ex)
+            {
+                Data =
+                {
+                    ["Expression"] = expression
+                }
+            };
+
             logger.LogExpressionError(expression);
 
             throw exception;
@@ -152,7 +158,13 @@ public class ExpressionsService(
         catch (Exception ex)
         {
             var exception =
-                new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex);
+                new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex)
+                {
+                    Data =
+                    {
+                        ["Expression"] = expression
+                    }
+                };
 
             logger.LogExpressionErrorWithField(expression, field.Name);
 

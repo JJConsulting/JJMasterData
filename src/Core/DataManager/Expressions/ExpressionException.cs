@@ -12,5 +12,6 @@ public class ExpressionException : JJMasterDataException
 
     public ExpressionException(string message, Exception innerException) : base(message, innerException)
     {
+        
     }
 } 

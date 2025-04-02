@@ -40,15 +40,21 @@ internal sealed class BatchingLogger(BatchingLoggerProvider loggerProvider, stri
                 message.AppendLine(exception.StackTrace);
             }
             
+            if (exception.Data.Contains("Expression"))
+            {
+                message.AppendLine("Expression:");
+                message.AppendLine(exception.Data["Expression"]?.ToString());
+            }
+            
             if (exception.Data.Contains("DataAccess Query"))
             {
                 message.AppendLine("DataAccess Query:");
-                message.AppendLine(exception.Data["DataAccess Query"].ToString());
+                message.AppendLine(exception.Data["DataAccess Query"]?.ToString());
             }
             if (exception.Data.Contains("DataAccess Parameters"))
             {
                 message.AppendLine("DataAccess Parameters:");
-                message.AppendLine(exception.Data["DataAccess Parameters"].ToString());
+                message.AppendLine(exception.Data["DataAccess Parameters"]?.ToString());
             }
         }
         loggerProvider.AddMessage(new LogMessage
