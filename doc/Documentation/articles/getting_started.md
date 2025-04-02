@@ -51,14 +51,11 @@ await app.UseMasterDataSeedingAsync();
 ## 4. Navigate on Data Dictionary
 Next, run your website and open in your browser the route:
 ```
-/en-us/DataDictionary/Element/Index
+/DataDictionary
 ```
 you will be presented with the following screen:
 
 ![DataDictionaries Home](../media/DataDictionariesHome.png)
-
-> [!TIP] 
-> If you want to remove the current culture from the URL, change the `EnableCultureProvider` value at `MapJJMasterData` method.
 
 ## 5. Create your first Data Dictionary
 Click in `New` Data Dictionary button, enter the table name (Person), after that, you will have a representation of your metadata.
@@ -85,10 +82,10 @@ JJFormView is the class responsible to render all JJMasterData CRUDs. It have ma
 a huge customization potential using .NET code, you can even inject Python code in your application at runtime.
 You have 2 options to instantiate a JJFormView:
 
-1. Using the `/DataDictionary/Render/{elementName}` route
+1. Using the `/MasterData/Form/Render/{elementName}` route
 2. Creating a View or Page instantiating a JJFormView
 
-For customization you have a lot of scenarios too:
+For customization, you have a lot of scenarios too:
 1. Using the DataDictionary Web interface, we have lots of options, we don't have everything documented **yet**, but you can help submitting a PR
 2. Using the <xhref: JJMasterData.Core.Events.Abstractions.IFormEventHandler> interface (recommended), check the docs for more information
 3. Customizing your own JJFormView object at your pages (the old school way of the JJ Consulting team in the WebForms era, not recommended)
