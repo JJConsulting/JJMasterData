@@ -191,6 +191,9 @@
   <data name="No elements found." xml:space="preserve">
     <value>Nenhum elemento encontrado.</value>
   </data>
+  <data name="{0} months ago" xml:space="preserve">
+    <value>{0} meses atrás</value>
+  </data>
   <data name="Grid Template" xml:space="preserve">
     <value>Template da Grid</value>
   </data>
