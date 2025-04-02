@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -77,11 +76,6 @@ public class FormController(
         }
 
         formView.GridView.SetCurrentFilter("USERID", userId);
-        formView.FormElement.Fields["Nome"].EnableExpression = "val:1";
-        // formView.FormElement.Fields["Status"].EnableExpression = "val:1";
-        // formView.FormElement.Fields["CampoData"].EnableExpression = "val:0";
-        formView.GridView.EnableEditMode = true;
         formView.SetUserValues("USERID", userId);
-        formView.SetUserValues("Nome", "Gustavo Barros");
     }
 }
