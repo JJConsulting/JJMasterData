@@ -3,6 +3,7 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Web.Areas.DataDictionary.Models;
@@ -134,7 +135,7 @@ public class ElementController(
     [HttpPost]
     public async Task<IActionResult> Add(ElementBean model)
     {
-        var formElement = await elementService.CreateEntityAsync(model);
+        var formElement = await elementService.CreateEntityAsync(model, HttpContext.User.GetUserId());
         if (formElement != null)
         {
             return RedirectToAction("Index", "Entity", new { elementName = formElement.Name });

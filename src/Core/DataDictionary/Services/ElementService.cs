@@ -33,7 +33,7 @@ public class ElementService(
 {
     #region Add Dictionary
 
-    public async Task<FormElement?> CreateEntityAsync(ElementBean elementBean)
+    public async Task<FormElement?> CreateEntityAsync(ElementBean elementBean, string? userId)
     {
         var tableName = elementBean.Name;
         var importFields = elementBean.ImportFields;
@@ -59,6 +59,12 @@ public class ElementService(
             };
         }
 
+        if (string.IsNullOrEmpty(userId))
+        {
+            formElement.Options.GridToolbarActions.ImportAction.ProcessOptions.Scope = ProcessScope.Global;
+            formElement.Options.GridToolbarActions.ExportAction.ProcessOptions.Scope = ProcessScope.Global;
+        }
+        
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return formElement;
