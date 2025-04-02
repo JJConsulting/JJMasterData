@@ -80,7 +80,7 @@ public static partial class WebApplicationExtensions
     }
 
     [PublicAPI]
-    public static async Task CreateStructureIfNotExistsAsync(this WebApplication app)
+    public static async Task UseMasterDataSeedingAsync(this WebApplication app)
     {
         using var dbScope = app.Services.CreateScope();
         var serviceProvider = dbScope.ServiceProvider;

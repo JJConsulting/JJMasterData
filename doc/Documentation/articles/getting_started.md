@@ -19,6 +19,7 @@ You can replace the appsettings.json url from [here]((https://raw.githubusercont
 {
   "AllowedHosts": "*",
   "JJMasterData": {
+    "SecretKey": "My secret key for cryptography",
     "ConnectionString": "data source=localhost,1433;initial catalog=JJMasterData;Integrated Security=True"
   }
 }
@@ -32,11 +33,19 @@ Add the following lines to your Program.cs
 //This line will add JJMasterData required services.
 builder.Services.AddJJMasterDataWeb();
 
-//Add these lines before specifing default route.
-app.MapDataDictionary();
-app.MapMasterData();
+//Required middleware for JJMasterData
+app.UseSession();
 
-await app.CreateStructureIfNotExistsAsync();
+//Add these lines before specifing default route:
+
+// Admin routes to create CRUDs
+app.MapDataDictionary(); 
+
+// User routes to consume CRUDs
+app.MapMasterData(); 
+
+//Create the db structure
+await app.UseMasterDataSeedingAsync(); 
 ```
 
 ## 4. Navigate on Data Dictionary

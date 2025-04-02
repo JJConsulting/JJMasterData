@@ -27,7 +27,7 @@ app.MapDataDictionary()
 app.MapMasterData()
     .RequireAuthorization("MasterDataPolicy");
     
-await app.CreateStructureIfNotExistsAsync();
+await app.UseMasterDataSeedingAsync();
 ```
 
 If you are not familiarized with the concept of policies, please check

@@ -77,7 +77,11 @@ public class FormController(
         }
 
         formView.GridView.SetCurrentFilter("USERID", userId);
-
+        formView.FormElement.Fields["Nome"].EnableExpression = "val:1";
+        // formView.FormElement.Fields["Status"].EnableExpression = "val:1";
+        // formView.FormElement.Fields["CampoData"].EnableExpression = "val:0";
+        formView.GridView.EnableEditMode = true;
         formView.SetUserValues("USERID", userId);
+        formView.SetUserValues("Nome", "Gustavo Barros");
     }
 }

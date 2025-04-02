@@ -81,7 +81,7 @@ app.UseSession();
 app.MapDataDictionary();
 app.MapMasterData();
 
-await app.CreateStructureIfNotExistsAsync();
+await app.UseMasterDataSeedingAsync();
 
 app.Run();
 ```
