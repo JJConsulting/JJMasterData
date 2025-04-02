@@ -213,11 +213,6 @@ public class ElementService(
     
 
     #endregion
-    
-    public Task CreateStructureIfNotExistsAsync()
-    {
-        return DataDictionaryRepository.CreateStructureIfNotExistsAsync();
-    }
 
     public Task DeleteAsync(string? elementName)
     {
