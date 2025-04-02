@@ -89,18 +89,7 @@ public abstract class ProcessComponent(
             return processKey.ToString();
 
         if (string.IsNullOrEmpty(UserId))
-        {
-            var error = new StringBuilder();
-            error.AppendLine("User not found, contact system administrator.");
-            error.Append("Import configured with scope per user, but no key with USERID found.");
-
-            var errorMessage = error.ToString();
-            
-            var exception = new JJMasterDataException(errorMessage);
-            Logger.LogError(exception,"Error while creating process key");
-            
-            throw exception;
-        }
+            return processKey.ToString();
 
         processKey.Append($"?userid={UserId}");
 

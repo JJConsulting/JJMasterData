@@ -135,7 +135,7 @@ public class ElementController(
     [HttpPost]
     public async Task<IActionResult> Add(ElementBean model)
     {
-        var formElement = await elementService.CreateEntityAsync(model, HttpContext.User.GetUserId());
+        var formElement = await elementService.CreateEntityAsync(model);
         if (formElement != null)
         {
             return RedirectToAction("Index", "Entity", new { elementName = formElement.Name });
