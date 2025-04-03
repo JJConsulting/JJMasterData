@@ -19,7 +19,6 @@
         <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
         <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.10" />
         <Reference Include="System.Web" />
-
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net4.8' OR '$(TargetFramework)' == 'netstandard2.0'">
