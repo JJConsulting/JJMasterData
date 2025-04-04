@@ -21,10 +21,8 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 internal sealed class DataPanelControl
 {
-
     private DataPanelScripts? _panelScripts;
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
-
 
     public string ParentComponentName { get; }
 
@@ -310,8 +308,7 @@ internal sealed class DataPanelControl
 
         return label;
     }
-
-
+    
     private async ValueTask<HtmlBuilder> GetStaticField(FormElementField field)
     {
         var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);

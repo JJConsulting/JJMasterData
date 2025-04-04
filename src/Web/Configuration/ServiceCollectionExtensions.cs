@@ -3,7 +3,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Areas.DataDictionary.Services;
 using JJMasterData.Web.Components.Configuration;
 using JJMasterData.Web.Configuration.Options;
 using JJMasterData.Web.Extensions;
@@ -85,6 +84,8 @@ public static class ServiceCollectionExtensions
         }); 
         
         services.AddMvcServices(configuration ?? new());
+
+        services.AddLocalization();
         
         services.AddMemoryCache();
         
