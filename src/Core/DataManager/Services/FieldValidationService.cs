@@ -160,7 +160,7 @@ public class FieldValidationService(
         return null;
     }
 
-    private string ValidateDataType(ElementField field, object value, string fieldName)
+    private string ValidateDataType(FormElementField field, object value, string fieldName)
     {
         var dataType = field.DataType;
         switch (dataType)
@@ -173,7 +173,6 @@ public class FieldValidationService(
                     return localizer["{0} field is an invalid date",
                         fieldName];
                 }
-
                 break;
             case FieldType.Time:
                 if (!TimeSpan.TryParse(value?.ToString(), out _))
@@ -220,15 +219,16 @@ public class FieldValidationService(
                     return localizer["Field {0} exceeds maximum number of {1} decimal places.", fieldName, field.NumberOfDecimalPlaces];
                 }
                 break;
-            default:
-                if (field.Size > 0 &&
-                    value?.ToString()?.Length > field.Size && dataType is FieldType.Varchar or FieldType.NVarchar or FieldType.Text or FieldType.NText)
+            case FieldType.Varchar:
+            case FieldType.NVarchar:
+            {
+                if (field.Size > 0 && field.Component is FormComponent.Text or FormComponent.TextArea)
                 {
                     return localizer["Field {0} cannot contain more than {1} characters.",
                         fieldName, field.Size];
                 }
-
                 break;
+            }
         }
 
         return null;
