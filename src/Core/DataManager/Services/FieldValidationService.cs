@@ -224,8 +224,11 @@ public class FieldValidationService(
             {
                 if (field.Size > 0 && field.Component is FormComponent.Text or FormComponent.TextArea)
                 {
-                    return localizer["Field {0} cannot contain more than {1} characters.",
-                        fieldName, field.Size];
+                    if(value.ToString().Length > field.Size)
+                    {
+                        return localizer["Field {0} cannot contain more than {1} characters.",
+                            fieldName, field.Size];
+                    }
                 }
                 break;
             }
