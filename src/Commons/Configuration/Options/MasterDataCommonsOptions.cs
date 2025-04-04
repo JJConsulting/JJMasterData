@@ -24,14 +24,6 @@ public sealed class MasterDataCommonsOptions
     public DataAccessProvider ConnectionProvider { get; set; }
 
     public List<ConnectionString> AdditionalConnectionStrings { get; set; } = [];
-    
-    public string? LocalizationTableSchema { get; set; }
-    
-    /// <summary>
-    /// Default value: tb_masterdata_resources <br></br>
-    /// </summary>
-    [Display(Name = "Localization Table Name")]
-    public string LocalizationTableName { get; set; } = "tb_masterdata_resources";
 
     /// <summary>
     /// Default value: {tablename}Get <br></br>

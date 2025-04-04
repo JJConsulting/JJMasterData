@@ -86,12 +86,12 @@ public static class ServiceCollectionExtensions
         
         services.AddMvcServices(configuration ?? new());
         
+        services.AddMemoryCache();
         
         services.AddComponentServices();
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();
-        services.AddTransient<LocalizationService>();
 
         services.AddHttpContextAccessor();
         services.AddSession(o =>

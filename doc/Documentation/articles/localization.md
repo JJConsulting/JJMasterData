@@ -1,41 +1,14 @@
-<h1>Localization</h1>
+# Localization
 
+We use `Microsoft.Extensions.Localization` to localize the application. But you need something to translate your form labels, tooltips etc.
 
-First you will need to add the following line to your Program.cs, with the additional cultures you will be using:
+You have two ways to do this:
 
-```cs
-services.PostConfigure<RequestLocalizationOptions>(options =>
-{
-    var supportedCultures = new List<CultureInfo>
-    {
-        new("pt-BR"),
-        new("en-US")
-    };
-    options.DefaultRequestCulture = new RequestCulture("pt-BR");
-    options.SupportedCultures = supportedCultures;
-    options.SupportedUICultures = supportedCultures;
-    options.RequestCultureProviders.Insert(0,new CookieRequestCultureProvider
-    {
-        CookieName = CookieRequestCultureProvider.DefaultCookieName,
-        Options = options,
-    });
-});
-```
+## Implement IStringLocalizer
 
-Now we have 3 scenarios to accomplish this:
+See [ASP.NET Core Docs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/localization) for more information.
 
-## Resource File
-Fork JJMasterData, add a resource file for your language like [this one](https://github.com/JJConsulting/JJMasterData/blob/main/src/Commons/Localization/MasterDataResources.pt-BR.resx), and send us a pull request. Other people from your country will have the values already out of the box.
-
-## Database
-Go to ```/en-us/DataDictionary/Localization``` or click at the localization modal located at Data Dictionary and populate the strings with your culture values, but only your system will reflect these changes
-
-<img alt="Localization Modal" src="../media/Localization.png"/>
-<br>
-
-> [!TIP] 
-> By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the LocalizationTableName property in the <xref:JJMasterData.Commons.Configuration.Options.MasterDataCommonsOptions> class.
-
-## Implement IStringLocalizer<MasterDataResources>
-
-See [ASP.NET Core Docs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-8.0) for more information.
+## JJInfinity
+JJInfinity is a powerful tool that allows you to create and manage reports and forms dynamically. It provides a centralized portal for your systems, enabling efficient user access management while ensuring security.
+JJMasterData is installed at it by default. With JJInfinity you can easily manage your localization strings for MasterData with our `IStringLocalizer` implementation that recover strings from the database.
+Learn more about JJInfinity at [our landing page](https://www.jjconsulting.com.br/en-us/produtos/portal-empresarial).

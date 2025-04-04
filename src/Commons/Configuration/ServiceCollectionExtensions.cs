@@ -60,12 +60,6 @@ public static class ServiceCollectionExtensions
                 "Secret key is required at JJMasterData:SecretKey at your configuration source.")
             .ValidateOnStart();
         
-        services.AddLocalization();
-        services.AddMemoryCache();
-        services.AddSingleton<ResourceManagerStringLocalizerFactory>();
-        services.AddSingleton<IStringLocalizerFactory, MasterDataStringLocalizerFactory>();
-        services.AddTransient(typeof(IStringLocalizer<>), typeof(MasterDataStringLocalizer<>));
-
         services.AddScoped<DataAccess>();
         services.AddScoped<SqlServerInfo>();
 
