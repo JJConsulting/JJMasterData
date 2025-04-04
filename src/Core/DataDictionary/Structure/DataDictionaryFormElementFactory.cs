@@ -198,20 +198,6 @@ public class DataDictionaryFormElementFactory(
                 UrlRedirect = urlHelper.Action("Index", "Log", new {Area="DataDictionary", isModal = true}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
-            },
-            new UrlRedirectAction
-            {
-                Name = "btnI18n",
-                Text = stringLocalizer["Internationalization"],
-                Icon = IconType.SolidEarthAmericas,
-                ShowAsButton = true,
-                IsModal = true,
-                IsGroup = true,
-                ModalTitle = stringLocalizer["Internationalization"],
-                ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = urlHelper.Action("Index", "Localization", new {Area="DataDictionary", isModal=true}),
-                Order = 11,
-                CssClass = BootstrapHelper.PullRight
             }
         ];
         formElement.Options.GridToolbarActions.AddRange(actions);
