@@ -9,7 +9,7 @@ public class LabelFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public JJLabel Create()
     {
-        return new JJLabel(stringLocalizer);
+        return new JJLabel();
     }
     
     public JJLabel Create(FormElementField field)
@@ -19,9 +19,10 @@ public class LabelFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
 
         var label = Create();
         label.LabelFor = field.Name;
-        label.Text = field.LabelOrName;
+        label.Text = string.IsNullOrEmpty(field.Label) ? field.Name : stringLocalizer[field.Label];
         label.Tooltip = field.HelpDescription;
         label.IsRequired = field.IsRequired;
+        label.RequiredText = stringLocalizer["Required"];
         
         return label;
     }

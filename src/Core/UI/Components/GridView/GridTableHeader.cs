@@ -69,7 +69,14 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 }
                 span.Append(HtmlTag.Span, s =>
                 {
-                    s.AppendText(_stringLocalizer[field.LabelOrName]);
+                    if (string.IsNullOrEmpty(field.Label)) 
+                    {
+                        s.AppendText(field.Name);
+                    }
+                    else
+                    {
+                        s.AppendText(_stringLocalizer[field.Label]);
+                    }
                     
                     var tooltip = field.HelpDescription;
                     s.AppendIf(!string.IsNullOrEmpty(tooltip), HtmlTag.Span, circle =>

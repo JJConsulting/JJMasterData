@@ -150,7 +150,7 @@ public class TextWriter(
             else
                 await sw.WriteAsync(Delimiter);
 
-            await sw.WriteAsync(StringLocalizer[field.LabelOrName]);
+            await sw.WriteAsync(string.IsNullOrEmpty(field.Label) ? field.Name : StringLocalizer[field.Label]);
         }
         await sw.WriteLineAsync("");
         await sw.FlushAsync();

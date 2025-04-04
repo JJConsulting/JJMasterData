@@ -353,7 +353,7 @@ internal sealed class DataPanelControl
         
         if (useFloatingLabels && control is IFloatingLabelControl floatingLabelControl)
         {
-            floatingLabelControl.FloatingLabel = StringLocalizer[field.LabelOrName];
+            floatingLabelControl.FloatingLabel = string.IsNullOrEmpty(field.Label) ? field.Name : StringLocalizer[field.Label!];
             floatingLabelControl.UseFloatingLabel = field.SupportsFloatingLabel();
         }
         

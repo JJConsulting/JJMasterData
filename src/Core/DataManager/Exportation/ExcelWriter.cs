@@ -212,7 +212,7 @@ public class ExcelWriter(
             }
 
             await sw.WriteAsync($"\t\t\t\t<td{thStyle}>");
-            await sw.WriteAsync(StringLocalizer[field.LabelOrName]);
+            await sw.WriteAsync(string.IsNullOrEmpty(field.Label) ? field.Name : StringLocalizer[field.Label!]);
             await sw.WriteLineAsync("</td>");
         }
 
