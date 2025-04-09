@@ -54,6 +54,7 @@ public class ElementService(
         {
             formElement = new FormElement
             {
+                Schema = schema,
                 TableName = tableName,
                 Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName),
                 ConnectionId = connectionId,
