@@ -66,6 +66,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (!dictionary.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
+        var recoverTotalOfRecords = total == 0;
         var filters = GetDefaultFilter(dictionary, true);
         var result = await entityRepository.GetDictionaryListResultAsync(dictionary, new EntityParameters
         {
@@ -73,18 +74,18 @@ public class MasterApiService(ExpressionsService expressionsService,
             CurrentPage = pag,
             RecordsPerPage = regporpag,
             OrderBy = OrderByData.FromString(orderby)
-        });
+        }, recoverTotalOfRecords);
 
         if (result == null || result.Data.Count == 0)
             throw new KeyNotFoundException("No records found");
 
-        var ret = new MasterApiListResponse
+        var response = new MasterApiListResponse
         {
-            TotalOfRecords = total
+            TotalOfRecords = recoverTotalOfRecords ? result.TotalOfRecords : total
         };
-        ret.SetData(dictionary, result.Data);
+        response.SetData(dictionary, result.Data);
 
-        return ret;
+        return response;
     }
 
     public async Task<Dictionary<string, object>> GetFieldsAsync(string elementName, string id)
