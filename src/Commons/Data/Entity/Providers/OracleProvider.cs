@@ -783,6 +783,11 @@ public class OracleProvider(
     }
 
 
+    public override Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    {
+        throw new NotImplementedException();
+    }
+
     public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
     {
         return GetCommandWrite(InsertKeyword, element, values);
@@ -804,6 +809,12 @@ public class OracleProvider(
     }
 
     public override bool TableExists(string tableName, Guid? connectionId = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null,
+        CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

@@ -147,12 +147,22 @@ public interface IEntityRepository
     Task<int> GetCountAsync(Element element, Dictionary<string, object?> filters);
     
     
+    /// <summary>
+    /// Build an element from an existing table.
+    /// </summary>
+    Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId = null);
+
         
     /// <summary>
-    /// Build a element from a existing table
+    /// <inheritdoc cref="GetElementFromTableAsync(string,string,System.Guid?)"/>
     /// </summary>
     public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null);
 
+    
+    /// <summary>
+    /// Check if table exists in the database
+    /// </summary>
+    public Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null);
     
     /// <summary>
     /// Check if table exists in the database

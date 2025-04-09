@@ -36,6 +36,7 @@ public class ElementService(
     public async Task<FormElement?> CreateEntityAsync(ElementBean elementBean)
     {
         var tableName = elementBean.Name;
+        var schema = elementBean.Schema;
         var importFields = elementBean.ImportFields;
         var connectionId = elementBean.ConnectionId;
         
@@ -45,7 +46,7 @@ public class ElementService(
         FormElement formElement;
         if (importFields)
         {
-            var element = await entityRepository.GetElementFromTableAsync(tableName, connectionId);
+            var element = await entityRepository.GetElementFromTableAsync(schema, tableName, connectionId);
             element.Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName);
             formElement = new FormElement(element);
         }
@@ -80,7 +81,7 @@ public class ElementService(
 
         if (importFields && IsValid)
         {
-            var exists = await entityRepository.TableExistsAsync(tableName, connectionId);
+            var exists = await entityRepository.TableExistsAsync(elementBean.Schema, tableName, connectionId);
             if (!exists)
                 AddError("Name", StringLocalizer["Table not found"]);
         }

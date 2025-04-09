@@ -28,12 +28,17 @@ public abstract class EntityProviderBase(
     public abstract string? GetReadProcedureScript(Element element);
     public abstract string? GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     public abstract Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null);
+    public abstract Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid);
+    
     public abstract DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values);
     public abstract DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values);
     public abstract DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> primaryKeys);
     public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter);
     protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values);
     public abstract bool TableExists(string tableName, Guid? connectionId = null);
+    
+    public abstract Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default);
+    
     public abstract Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default);
 
     public abstract Task<bool> ColumnExistsAsync(

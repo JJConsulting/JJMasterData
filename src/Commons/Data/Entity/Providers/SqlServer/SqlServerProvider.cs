@@ -23,7 +23,7 @@ public class SqlServerProvider(
     ILoggerFactory loggerFactory)
     : EntityProviderBase(options, loggerFactory)
 {
-    private readonly TimeSpan _cacheExpiration = new (4, 0, 0);
+    private readonly TimeSpan _cacheExpiration = new(4, 0, 0);
 
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
@@ -32,9 +32,9 @@ public class SqlServerProvider(
 
     public override string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
     {
-        return SqlServerScripts.GetCreateTableScript(element,relationships ?? []);
+        return SqlServerScripts.GetCreateTableScript(element, relationships ?? []);
     }
-    
+
     public override string GetWriteProcedureScript(Element element)
     {
         return sqlServerScripts.GetWriteProcedureScript(element);
@@ -44,23 +44,23 @@ public class SqlServerProvider(
     {
         return sqlServerScripts.GetReadProcedureScript(element);
     }
-    
-    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
+
+    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values)
     {
         return GetWriteCommand(InsertInitial, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values)
+    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object?> values)
     {
         return GetWriteCommand(UpdateInitial, element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, Dictionary<string, object> filters)
     {
         return GetWriteCommand(DeleteInitial, element, filters!);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
     {
         return GetWriteCommand(string.Empty, element, values);
     }
@@ -69,8 +69,9 @@ public class SqlServerProvider(
     {
         return SqlServerScripts.GetAlterTableScript(element, fields);
     }
-    
-    public override DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter)
+
+    public override DataAccessCommand GetReadCommand(Element element, EntityParameters parameters,
+        DataAccessParameter totalOfRecordsParameter)
     {
         string sql;
 
@@ -91,12 +92,12 @@ public class SqlServerProvider(
                 memoryCache.Set(cacheKey, sql, _cacheExpiration);
             }
         }
-        
+
         var readCommand = new DataAccessCommand
         {
             Type = element.UseReadProcedure ? CommandType.StoredProcedure : CommandType.Text,
             Sql = sql,
-            Parameters = 
+            Parameters =
             {
                 new("@orderby", parameters.OrderBy.ToQueryParameter()),
                 new("@regporpag", parameters.RecordsPerPage),
@@ -115,6 +116,7 @@ public class SqlServerProvider(
                     valueFrom = parameters.Filters[$"{field.Name}_from"];
                     valueFrom = valueFrom?.ToString();
                 }
+
                 var fromParameter = new DataAccessParameter
                 {
                     Direction = ParameterDirection.Input,
@@ -132,6 +134,7 @@ public class SqlServerProvider(
                     valueTo = parameters.Filters[$"{field.Name}_to"];
                     valueTo = valueTo?.ToString();
                 }
+
                 var toParameter = new DataAccessParameter
                 {
                     Direction = ParameterDirection.Input,
@@ -165,7 +168,7 @@ public class SqlServerProvider(
     }
 
 
-    private DataAccessCommand GetWriteCommand(string action, Element element, Dictionary<string,object?> values)
+    private DataAccessCommand GetWriteCommand(string action, Element element, Dictionary<string, object?> values)
     {
         string sql;
 
@@ -186,25 +189,26 @@ public class SqlServerProvider(
                 memoryCache.Set(cacheKey, sql, _cacheExpiration);
             }
         }
+
         var writeCommand = new DataAccessCommand
         {
             Type = element.UseWriteProcedure ? CommandType.StoredProcedure : CommandType.Text,
             Sql = sql
         };
-        
+
         writeCommand.AddParameter("@action", action, DbType.AnsiString, 1);
-        
+
         foreach (var field in element.Fields)
         {
             if (field.DataBehavior is not (FieldBehavior.Real or FieldBehavior.WriteOnly))
                 continue;
-            
+
             var value = GetElementValue(field, values);
             var parameter = new DataAccessParameter
             {
                 Name = field.Name,
-                Size = field.Size, 
-                Value = value, 
+                Size = field.Size,
+                Value = value,
                 Type = GetDbType(field.DataType)
             };
             writeCommand.Parameters.Add(parameter);
@@ -221,10 +225,10 @@ public class SqlServerProvider(
 
         return writeCommand;
     }
-    
-    private static object GetElementValue(ElementField field, Dictionary<string,object?> values)
+
+    private static object GetElementValue(ElementField field, Dictionary<string, object?> values)
     {
-        if (!values.TryGetValue(field.Name, out var value)) 
+        if (!values.TryGetValue(field.Name, out var value))
             return DBNull.Value;
 
         if (value is null)
@@ -232,7 +236,8 @@ public class SqlServerProvider(
 
         return field.DataType switch
         {
-            FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Decimal or FieldType.Int or FieldType.Time when
+            FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Decimal or FieldType.Int
+                or FieldType.Time when
                 string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
             FieldType.UniqueIdentifier => TryGetGuid(value),
             FieldType.Bit => StringManager.ParseBool(values[field.Name]),
@@ -245,8 +250,8 @@ public class SqlServerProvider(
     {
         if (value is Guid guid)
             return guid;
-        
-        if(Guid.TryParse(value?.ToString(), out guid))
+
+        if (Guid.TryParse(value?.ToString(), out guid))
             return guid;
 
         return DBNull.Value;
@@ -297,15 +302,26 @@ public class SqlServerProvider(
             _ => FieldType.Varchar
         };
     }
-    
-    public override async Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
+
+    public override Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    {
+        return GetElementFromTableAsyncCore(schemaName, connectionId, guid);
+    }
+
+    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
+    {
+        return GetElementFromTableAsyncCore("dbo", tableName, connectionId);
+    }
+
+    private async Task<Element> GetElementFromTableAsyncCore(string schemaName, string tableName,
+        Guid? connectionId)
     {
         var dataAccess = GetDataAccess(connectionId);
-        
+
         if (string.IsNullOrEmpty(tableName))
             throw new ArgumentNullException(nameof(tableName));
 
-        if (!await TableExistsAsync(tableName, connectionId))
+        if (!await TableExistsAsync(schemaName, tableName, connectionId))
             throw new JJMasterDataException($"Table {tableName} not found");
 
         var element = new Element
@@ -321,7 +337,8 @@ public class SqlServerProvider(
             Sql = "sp_columns"
         };
         cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-        
+        cmdFields.Parameters.Add(new DataAccessParameter("@table_owner", schemaName));
+
         var dtFields = await dataAccess.GetDataTableAsync(cmdFields);
         if (dtFields.Rows.Count == 0)
             throw new JJMasterDataException($"Table {tableName} has invalid structure");
@@ -330,7 +347,7 @@ public class SqlServerProvider(
         {
             var field = new ElementField
             {
-                Name = row["COLUMN_NAME"].ToString()!.Replace(" ","_"),
+                Name = row["COLUMN_NAME"].ToString()!.Replace(" ", "_"),
                 Label = (string)row["COLUMN_NAME"],
                 Size = (int)row["LENGTH"],
                 AutoNum = ((string)row["TYPE_NAME"]).IndexOf("IDENTITY", StringComparison.OrdinalIgnoreCase) >= 0,
@@ -341,7 +358,6 @@ public class SqlServerProvider(
             element.Fields.Add(field);
         }
 
-        //Primary Keys
         var cmdPks = new DataAccessCommand
         {
             Type = CommandType.StoredProcedure,
@@ -349,6 +365,8 @@ public class SqlServerProvider(
         };
 
         cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
+        cmdPks.Parameters.Add(new DataAccessParameter("@table_owner", schemaName));
+
         var primaryKeys = await dataAccess.GetDictionaryListAsync(cmdPks);
         foreach (var row in primaryKeys)
         {
@@ -357,37 +375,52 @@ public class SqlServerProvider(
 
         return element;
     }
-    
+
     /// <summary>
     /// Check if table exists in the database
     /// </summary>
     public override bool TableExists(string tableName, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
-        var result = dataAccess.GetResult(GetTableExistsCommand(tableName));
+        var result = dataAccess.GetResult(GetTableExistsCommand("dbo", tableName));
         return result as int? == 1;
     }
-    
-    /// <inheritdoc cref="TableExists"/>
-    public override async Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+
+    public override async Task<bool> TableExistsAsync(
+        string schema,
+        string tableName,
+        Guid? connectionId = null,
+        CancellationToken cancellationToken = default)
     {
         var dataAccess = GetDataAccess(connectionId);
-        var command = GetTableExistsCommand(tableName);
+        var command = GetTableExistsCommand(schema, tableName);
         var result = await dataAccess.GetResultAsync(command, cancellationToken);
         return result as int? == 1;
     }
-    
-    public override async Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+
+    /// <inheritdoc cref="TableExists"/>
+    public override async Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dataAccess = GetDataAccess(connectionId);
+        var command = GetTableExistsCommand("dbo", tableName);
+        var result = await dataAccess.GetResultAsync(command, cancellationToken);
+        return result as int? == 1;
+    }
+
+    public override async Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
+        CancellationToken cancellationToken = default)
     {
         var dataAccess = GetDataAccess(connectionId);
         var command = GetColumnExistsCommand(tableName, columnName);
         var result = await dataAccess.GetResultAsync(command, cancellationToken);
         return result as int? == 1;
     }
-    
-    private static DataAccessCommand GetTableExistsCommand(string table)
+
+    private static DataAccessCommand GetTableExistsCommand(string schema, string table)
     {
-        const string sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
+        const string sql =
+            "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table AND TABLE_SCHEMA = @Schema";
         var command = new DataAccessCommand
         {
             Sql = sql,
@@ -397,13 +430,18 @@ public class SqlServerProvider(
                 {
                     Name = "@Table",
                     Value = table
+                },
+                new DataAccessParameter
+                {
+                    Name = "@Schema",
+                    Value = schema
                 }
             }
         };
 
         return command;
     }
-    
+
     public override async Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
     {
         if (string.IsNullOrEmpty(procedureName))
@@ -417,17 +455,18 @@ public class SqlServerProvider(
                   $"BEGIN DROP PROCEDURE [dbo].[{procedureName}] END",
             Type = CommandType.Text
         };
-        
+
 
         await dataAccess.SetCommandAsync(command);
     }
-    
+
     public override async Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         var command = new DataAccessCommand
         {
-            Sql = "SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' order by ROUTINE_NAME",
+            Sql =
+                "SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' order by ROUTINE_NAME",
             Type = CommandType.Text
         };
 
@@ -443,8 +482,9 @@ public class SqlServerProvider(
 
         return procedureList;
     }
-    
-    public override async Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
+
+    public override async Task<string?> GetStoredProcedureDefinitionAsync(string procedureName,
+        Guid? connectionId = null)
     {
         if (string.IsNullOrEmpty(procedureName))
             throw new ArgumentNullException(nameof(procedureName));
@@ -463,12 +503,13 @@ public class SqlServerProvider(
         return result?.ToString();
     }
 
-    
+
     private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)
     {
         var command = new DataAccessCommand
         {
-            Sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
+            Sql =
+                "SELECT COUNT(1) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
         };
 
         command.AddParameter("@TableName", tableName, DbType.AnsiString);

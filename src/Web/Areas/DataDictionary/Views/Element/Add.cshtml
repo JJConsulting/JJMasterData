@@ -23,14 +23,22 @@
   
     <div class="row mb-3">
         <div class="col-sm-6">
-            <div class="input-group">
-                <span class="input-group-text">
+            <div class="input-group d-flex">
+                <span class="input-group-text" style="flex:2">
                     <input asp-for="ImportFields"
                            class="form-check-input"
                            type="checkbox"></input>
                     <label class="ms-1 form-check-label" asp-for="ImportFields"></label>
                 </span>
-                <div class="form-floating">
+                <div class="form-floating" style="flex:2">
+                    <input
+                        maxlength="64"
+                        type="text"
+                        class="form-control"
+                        asp-for="Schema">
+                    <label asp-for="Schema"></label>
+                </div>
+                <div class="form-floating"  style="flex:8">
                     <input
                         maxlength="64"
                         type="text"

@@ -250,6 +250,11 @@ public class SQLiteProvider(
         throw new NotImplementedException();
     }
 
+    public override Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    {
+        throw new NotImplementedException();
+    }
+
     public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values)
     {
         return GetScriptInsert(element, values, false);
@@ -271,6 +276,12 @@ public class SQLiteProvider(
     }
 
     public override bool TableExists(string tableName, Guid? connectionId = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null,
+        CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
@@ -652,7 +663,6 @@ public class SQLiteProvider(
 
         return cmd;
     }
-
 
     public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {

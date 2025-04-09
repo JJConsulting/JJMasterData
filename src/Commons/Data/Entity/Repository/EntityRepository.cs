@@ -87,11 +87,16 @@ internal sealed class EntityRepository(
         return provider.SetValues(element, values, ignoreResults);
     }
 
+    public Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId = null)
+    {
+        return provider.GetElementFromTableAsync(schemaName, tableName, connectionId);
+    }
+
     public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         return provider.GetElementFromTableAsync(tableName, connectionId);
     }
-
+    
     public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
@@ -101,6 +106,11 @@ internal sealed class EntityRepository(
     public Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null)
     {
         return provider.TableExistsAsync(tableName, connectionId);
+    }
+    
+    public Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null)
+    {
+        return provider.TableExistsAsync(schema, tableName, connectionId);
     }
 
     public bool TableExists(string tableName, Guid? connectionId = null)

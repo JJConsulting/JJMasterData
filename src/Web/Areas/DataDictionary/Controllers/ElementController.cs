@@ -36,10 +36,7 @@ public class ElementController(
         return View();
     }
 
-    public ViewResult Add()
-    {
-        return View();
-    }
+    public ViewResult Add() => View(new ElementBean());
 
     public async Task<FileResult> Export()
     {
