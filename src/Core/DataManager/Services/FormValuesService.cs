@@ -70,7 +70,7 @@ public class FormValuesService(
         object? parsedValue = null;
         switch (field.Component)
         {
-            case FormComponent.Hour:
+            case FormComponent.Hour when field.DataType is FieldType.Time:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
 

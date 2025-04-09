@@ -219,19 +219,21 @@ public class FieldValidationService(
                     return localizer["Field {0} exceeds maximum number of {1} decimal places.", fieldName, field.NumberOfDecimalPlaces];
                 }
                 break;
-            case FieldType.Varchar:
-            case FieldType.NVarchar:
-            {
-                if (field.Size > 0 && field.Component is FormComponent.Text or FormComponent.TextArea)
+
+            default:
+                if (field.Size > 0 && 
+                    value?.ToString()?.Length > field.Size && 
+                    value is not bool &&
+                    value is not TimeSpan && 
+                    value is not DateTime)
                 {
-                    if(value.ToString().Length > field.Size)
-                    {
-                        return localizer["Field {0} cannot contain more than {1} characters.",
-                            fieldName, field.Size];
-                    }
+                    return localizer["Field {0} cannot contain more than {1} characters.",
+
+                        fieldName, field.Size];
+
                 }
+
                 break;
-            }
         }
 
         return null;
