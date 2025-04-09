@@ -76,5 +76,14 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
         
         services.AddTransient<DateService>();
+
+        services.AddLocalizationServices();
+    }
+
+    private static void AddLocalizationServices(this IServiceCollection services)
+    {
+        services.AddSingleton<ResourceManagerStringLocalizerFactory>();
+        services.AddSingleton<IStringLocalizerFactory, MasterDataStringLocalizerFactory>();
+        services.AddTransient(typeof(IStringLocalizer<>), typeof(MasterDataStringLocalizer<>));
     }
 }

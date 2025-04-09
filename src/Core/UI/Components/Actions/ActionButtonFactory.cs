@@ -1,3 +1,5 @@
+#nullable enable
+
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -22,13 +24,13 @@ public class ActionButtonFactory(
     public JJLinkButton Create(BasicAction action, bool visible, bool enabled)
     {
         var button = linkButtonFactory.Create();
-        button.Tooltip = stringLocalizer[action.Tooltip];
-        button.Text = stringLocalizer[action.Text];
+        button.Tooltip = string.IsNullOrEmpty(action.Tooltip) ? action.Tooltip : stringLocalizer[action.Tooltip!];
+        button.Text = string.IsNullOrEmpty(action.Text) ? action.Text : stringLocalizer[action.Text!];
         button.Color = action.Color;
         button.IsGroup = action.IsGroup;
         button.IsDefaultOption = action.IsDefaultOption;
         button.DividerLine = action.DividerLine;
-        button.ShowAsButton = !action.IsGroup && action.ShowAsButton;
+        button.ShowAsButton = action is { IsGroup: false, ShowAsButton: true };
         button.CssClass = action.CssClass;
         button.IconClass = $"{action.Icon.GetCssClass()} fa-fw";
         button.Enabled = enabled;

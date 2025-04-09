@@ -1,7 +1,8 @@
+#nullable enable
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -10,7 +11,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// </summary>
 public abstract class BasicAction
 {
-    private string _name;
+    private string _name = null!;
 
     ///  <summary>
     ///  Identifier of the component
@@ -33,13 +34,13 @@ public abstract class BasicAction
     /// Action description
     /// </summary>
     [JsonPropertyName("text")]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     /// <summary>
     /// Control mouse tooltip
     /// </summary>
     [JsonPropertyName("tooltip")]
-    public string Tooltip { get; set; }
+    public string? Tooltip { get; set; }
 
     /// <summary>
     /// Execute this action as default
@@ -88,7 +89,7 @@ public abstract class BasicAction
     /// </summary>
     [JsonPropertyName("confirmationMessage")]
     [Display(Name = "Confirmation Message")]
-    public string ConfirmationMessage { get; set; }
+    public string? ConfirmationMessage { get; set; }
 
     /// <summary>
     /// Expression that returns a boolean. Operators such as equal symbol and in can be used.
@@ -101,7 +102,7 @@ public abstract class BasicAction
     /// </remarks>
     [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
-    public string EnableExpression { get; set; }
+    public string? EnableExpression { get; set; }
 
     /// <summary>
     /// Expression that returns a boolean. Operators such as equal symbol and in can be used.
@@ -114,7 +115,7 @@ public abstract class BasicAction
     /// </remarks>
     [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
-    public string VisibleExpression { get; set; }
+    public string? VisibleExpression { get; set; }
 
     /// <summary>
     /// Order of the action (0, 1, 2...)
@@ -134,7 +135,7 @@ public abstract class BasicAction
     /// CSS3 Stylesheet Class
     /// </summary>
     [JsonPropertyName("cssClass")]
-    public string CssClass { get; set; }
+    public string? CssClass { get; set; }
 
     [JsonIgnore]
     public abstract bool IsCustomAction { get; }

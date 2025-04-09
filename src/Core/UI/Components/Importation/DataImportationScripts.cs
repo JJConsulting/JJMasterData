@@ -15,16 +15,12 @@ internal sealed class DataImportationScripts(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IEncryptionService encryptionService)
 {
-    private string Name { get; } = name;
-    private string ModalTitle { get; } = formElement.Options.GridToolbarActions.ImportAction.Tooltip;
-    private FormElement FormElement { get; } = formElement;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private readonly string _modalTitle = formElement.Options.GridToolbarActions.ImportAction.Tooltip ?? string.Empty;
 
     private string GetEncryptedRouteContext()
     {
-        var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataImportation);
-        var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
+        var routeContext = RouteContext.FromFormElement(formElement, ComponentContext.DataImportation);
+        var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
         return encryptedRouteContext;
     }
 
@@ -35,44 +31,44 @@ internal sealed class DataImportationScripts(
     public string GetStartProgressVerificationScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.startProgressVerification('{Name}', '{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.startProgressVerification('{name}', '{GetEncryptedRouteContext()}')";
     }
     
     public string GetBackScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.back('{Name}', '{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.back('{name}', '{GetEncryptedRouteContext()}')";
     }
     
     public string GetShowScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.show('{Name}','{StringLocalizer[ModalTitle]}','{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.show('{name}','{stringLocalizer[_modalTitle]}','{GetEncryptedRouteContext()}')";
     }
 
     
     public string GetHelpScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.help('{Name}','{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.help('{name}','{GetEncryptedRouteContext()}')";
     }
     
     public string GetStopScript(string stopMessage)
     {
         //language=Javascript
-        return $"DataImportationHelper.stop('{Name}','{GetEncryptedRouteContext()}','{stopMessage}')";
+        return $"DataImportationHelper.stop('{name}','{GetEncryptedRouteContext()}','{stopMessage}')";
     }
 
     public string GetLogScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.showLog('{Name}','{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.showLog('{name}','{GetEncryptedRouteContext()}')";
     }
     
     public string GetUploadCallbackScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.uploadCallback('{Name}','{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.uploadCallback('{name}','{GetEncryptedRouteContext()}')";
     }
 
     public static string GetCloseModalScript()
