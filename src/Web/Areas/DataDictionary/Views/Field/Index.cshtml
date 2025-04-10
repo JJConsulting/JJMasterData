@@ -10,7 +10,6 @@
 
 @{
     ViewData["Title"] = $"{ViewData["ElementName"]} - {StringLocalizer["Fields"]}";
-    ViewData["UseCodeEditor"] = true;
     var isForm = ViewData["IsForm"] is true;
     var elementName = ViewData["ElementName"]!.ToString();
     Layout = !isForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
@@ -66,6 +65,7 @@
             FormComponent.Slider => IconType.Sliders,
             FormComponent.Color => IconType.SolidPaintbrush,
             FormComponent.Icon => IconType.SolidIcons,
+            FormComponent.CodeEditor => IconType.Code,
             FormComponent.Percentage => IconType.Percent,
             _ => IconType.Question
         };

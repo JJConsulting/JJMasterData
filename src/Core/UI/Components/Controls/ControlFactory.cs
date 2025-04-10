@@ -134,6 +134,9 @@ public class ControlFactory(IServiceProvider serviceProvider,
                     control = Create<JJTextFile>(formElement, field, context);
                 }
                 break;
+            case FormComponent.CodeEditor:
+                control = Create<JJCodeEditor>(formElement,field,context);
+                break;
             default:
                 control = Create<JJTextGroup>(formElement, field, context);
                 break;

@@ -6,7 +6,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
-using JJMasterData.Web.Components;
+using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 

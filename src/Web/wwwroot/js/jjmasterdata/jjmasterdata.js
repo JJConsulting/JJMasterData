@@ -357,6 +357,97 @@ class CheckboxHelper {
         }
     }
 }
+class CodeEditor {
+    static setup(selectorPrefix) {
+        const editors = document.querySelectorAll(selectorPrefix + '.jj-code-editor');
+        if (editors.length === 0)
+            return;
+        if (!CodeEditor.monacoLoaded) {
+            CodeEditor.loadMonaco(editors);
+            CodeEditor.monacoLoaded = true;
+        }
+        else {
+            require(['vs/editor/editor.main'], function () {
+                CodeEditor.initializeEditors(editors);
+            });
+        }
+    }
+    static loadMonaco(editors) {
+        var _a;
+        const base = ((_a = document.querySelector('base')) === null || _a === void 0 ? void 0 : _a.getAttribute('href')) || '';
+        const monacoBase = base + '_content/JJMasterData.Web/js/monaco';
+        window.require = { paths: { vs: monacoBase } };
+        const script2 = document.createElement('script');
+        script2.src = monacoBase + '/loader.js';
+        script2.onload = () => {
+            const script3 = document.createElement('script');
+            script3.src = monacoBase + '/editor/editor.main.js';
+            script3.onload = function () {
+                require(['vs/editor/editor.main'], function () {
+                    CodeEditor.observeTheme();
+                    CodeEditor.loadHints();
+                    CodeEditor.initializeEditors(editors);
+                });
+            };
+            document.body.appendChild(script3);
+        };
+        document.body.appendChild(script2);
+    }
+    static observeTheme() {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === "attributes" && mutation.attributeName === "data-bs-theme") {
+                    const theme = document.documentElement.getAttribute("data-bs-theme");
+                    monaco.editor.setTheme(theme === "dark" ? "vs-dark" : "vs");
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
+    }
+    static loadHints() {
+        const el = document.getElementById("jj-code-editor-hints");
+        if (!el || !el.value)
+            return;
+        let hints;
+        try {
+            hints = JSON.parse(el.value);
+        }
+        catch (_a) {
+            return;
+        }
+        Object.keys(hints).forEach(lang => {
+            monaco.languages.registerCompletionItemProvider(lang, {
+                provideCompletionItems: function (model, position) {
+                    const suggestions = hints[lang].map(h => ({
+                        label: h.label,
+                        kind: 17,
+                        insertText: h.insertText,
+                        detail: h.details
+                    }));
+                    return { suggestions };
+                }
+            });
+        });
+    }
+    static initializeEditors(editors) {
+        editors.forEach((el) => {
+            const editorId = el.dataset.editorId;
+            const language = el.dataset.language;
+            const name = el.dataset.editorName;
+            const editorTextArea = document.getElementById(name);
+            const editor = monaco.editor.create(document.getElementById(editorId), {
+                value: editorTextArea.value,
+                automaticLayout: true,
+                language: language,
+                theme: getTheme() === 'dark' ? 'vs-dark' : 'vs'
+            });
+            editor.getModel().onDidChangeContent(() => {
+                editorTextArea.value = editor.getValue();
+            });
+        });
+    }
+}
+CodeEditor.monacoLoaded = false;
 class CollapsePanelListener {
     static listen(componentName) {
         let nameSelector = "#" + componentName;
@@ -1462,6 +1553,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     if (bootstrapVersion === 3) {
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     }
+    CodeEditor.setup(selectorPrefix);
     CalendarListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
     SearchBoxListener.listenTypeahead(selectorPrefix);

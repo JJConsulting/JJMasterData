@@ -4235,6 +4235,9 @@
   <data name="{0} years ago" xml:space="preserve">
     <value>Há {0} anos</value>
   </data>
+  <data name="Code Editor" xml:space="preserve">
+    <value>Editor de Código</value>
+  </data>
   <data name="Open in New Tab" xml:space="preserve">
     <value>Abrir em uma Nova Aba</value>
     <comment>JJMasterDataWeb</comment>

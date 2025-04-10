@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Web.Components;
+﻿namespace JJMasterData.Web.Models;
 
 public sealed class CodeEditorHint
 {

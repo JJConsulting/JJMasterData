@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace JJMasterData.Web.Components;
+namespace JJMasterData.Web.Utils;
 
 public sealed class ComponentRenderer(HtmlRenderer htmlRenderer)
 {

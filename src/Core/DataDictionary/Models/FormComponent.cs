@@ -55,4 +55,6 @@ public enum FormComponent
     Icon = 25,
     [Display(Name = "Percentage", GroupName = "2. Numeric")]
     Percentage = 26,
+    [Display(Name = "Code Editor",GroupName = "8. Especial")]
+    CodeEditor = 27
 }

@@ -1,13 +1,14 @@
 #nullable disable
 
-using JJMasterData.Web.Components;
+using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
 [HtmlTargetElement("code-editor", TagStructure = TagStructure.WithoutEndTag)]
-public sealed class CodeEditorTagHelper(ComponentRenderer componentRenderer) : TagHelper
+public sealed class CodeEditorTagHelper(IControlFactory<JJCodeEditor> codeEditorFactory) : TagHelper
 {
     [HtmlAttributeName("name")]
     public string Name { get; set; }
@@ -25,20 +26,18 @@ public sealed class CodeEditorTagHelper(ComponentRenderer componentRenderer) : T
     public int Height { get; set; } = 500;
     
     /// <inheritdoc />
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var name = string.IsNullOrEmpty(Name) ? For.Name : Name;
         var value = string.IsNullOrEmpty(Value) ? For?.Model : Value;
+
+        var codeEditor = codeEditorFactory.Create();
+        codeEditor.Name = name;
+        codeEditor.Height = Height;
+        codeEditor.Language = Language;
+        codeEditor.Text = value?.ToString();
         
-        var parameters =  new Dictionary<string, object>
-        {
-            {"Name", name},
-            {"Value", value},
-            {"Language", Language},
-            {"Height", Height}
-        };
-        var content = await componentRenderer.RenderAsync<CodeEditor>(parameters);
         output.TagName = null;
-        output.Content.SetHtmlContent(content);
+        output.Content.SetHtmlContent(codeEditor.GetHtmlBuilder().ToString());
     }
 }

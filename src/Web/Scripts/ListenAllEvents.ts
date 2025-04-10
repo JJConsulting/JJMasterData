@@ -10,6 +10,7 @@
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     }
     
+    CodeEditor.setup(selectorPrefix);
     CalendarListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
     SearchBoxListener.listenTypeahead(selectorPrefix);

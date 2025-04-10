@@ -1,0 +1,57 @@
+#nullable enable
+
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Web;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
+
+namespace JJMasterData.Core.UI.Components;
+
+public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
+{
+    public string Language { get; set; } = "html";
+    public int Height { get; set; } = 250;
+
+    protected override ValueTask<ComponentResult> BuildResultAsync()
+    {
+        var html = GetHtmlBuilder();
+
+        return new ValueTask<ComponentResult>(new RenderedComponentResult(html));
+    }
+
+    public HtmlBuilder GetHtmlBuilder()
+    {
+        var editorId = (Name + "-editor").Replace(".", "_");
+
+        var style = new HtmlBuilder(HtmlTag.Style)
+            .AppendText($"#{editorId} {{ height: {(Height * 1.3).ToString(CultureInfo.InvariantCulture)}px; }}")
+            .AppendText($"@media (max-width: 1200px) {{ #{editorId} {{ height: {Height}px; }} }}")
+            .AppendText($"@media (max-width: 768px) {{ #{editorId} {{ height: {(Height * 0.7).ToString(CultureInfo.InvariantCulture)}px; }} }}")
+            .AppendText($"@media (max-width: 480px) {{ #{editorId} {{ height: {(Height * 0.4).ToString(CultureInfo.InvariantCulture)}px; }} }}");
+
+        var wrapper = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass("w-100 h-100")
+            .WithCssClass("jj-code-editor")
+            .WithAttribute("data-editor-id",editorId)
+            .WithAttribute("data-editor-name",Name)
+            .WithAttribute("data-language", Language)
+            .Append(HtmlTag.TextArea, textarea =>
+            {
+                textarea.WithAttribute("hidden", "hidden")
+                    .WithName(Name)
+                    .WithId(Name)
+                    .AppendText(Text);
+            })
+            .Append(HtmlTag.Div, div => div.WithId(editorId));
+
+        var script = new HtmlBuilder();
+        
+        var html = new HtmlBuilder()
+            .Append(style)
+            .Append(wrapper)
+            .Append(script);
+        return html;
+    }
+}

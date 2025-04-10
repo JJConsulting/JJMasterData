@@ -3,10 +3,11 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Components.Configuration;
 using JJMasterData.Web.Configuration.Options;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
+using JJMasterData.Web.Utils;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -104,6 +105,12 @@ public static class ServiceCollectionExtensions
         services.AddActionFilters();
     }
 
+    private static void AddComponentServices(this IServiceCollection services)
+    {
+        services.AddScoped<HtmlRenderer>();
+        services.AddTransient<ComponentRenderer>();
+    }
+    
     private static void AddMvcServices(
         this IServiceCollection services,
         MasterDataWebOptionsConfiguration configuration)
