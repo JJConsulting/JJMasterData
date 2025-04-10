@@ -1,9 +1,7 @@
 #nullable enable
 
-using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
 
@@ -46,12 +44,9 @@ public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
             })
             .Append(HtmlTag.Div, div => div.WithId(editorId));
 
-        var script = new HtmlBuilder();
-        
         var html = new HtmlBuilder()
             .Append(style)
-            .Append(wrapper)
-            .Append(script);
+            .Append(wrapper);
         return html;
     }
 }

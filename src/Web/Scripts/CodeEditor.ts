@@ -18,32 +18,22 @@ class CodeEditor {
     }
 
     private static loadMonaco(editors) {
-        const base = document.querySelector('base')?.getAttribute('href') || '';
-        const monacoBase = base + '_content/JJMasterData.Web/js/monaco';
-        
-        (window as any).require = { paths: { vs: monacoBase } };
-        
-        const script2 = document.createElement('script');
-        script2.src = monacoBase + '/loader.js';
-        script2.onload = () => {
-            const script3 = document.createElement('script');
-            script3.src = monacoBase + '/editor/editor.main.js';
-            script3.onload = function(){
-                //@ts-ignore
-                require(['vs/editor/editor.main'],function () {
-                    CodeEditor.observeTheme();
-                    CodeEditor.loadHints();
-                    CodeEditor.initializeEditors(editors);
-                });
-            };
-            document.body.appendChild(script3);
+        const script1 = document.createElement('script');
+        script1.src = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js';
+        script1.onload = () => {
+            //@ts-ignore
+            require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } });
+            //@ts-ignore
+            require(['vs/editor/editor.main'], function () {
+                CodeEditor.observeTheme();
+                CodeEditor.loadHints();
+                CodeEditor.initializeEditors(editors);
+            });
         };
-        document.body.appendChild(script2);
+        document.body.appendChild(script1);
     }
 
-    
-    
-    private static observeTheme(){
+    private static observeTheme() {
         const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 if (mutation.type === "attributes" && mutation.attributeName === "data-bs-theme") {
@@ -57,7 +47,7 @@ class CodeEditor {
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
     }
 
-    private static loadHints(){
+    private static loadHints() {
         const el = document.getElementById("jj-code-editor-hints") as HTMLInputElement;
         if (!el || !el.value) return;
 
@@ -83,7 +73,7 @@ class CodeEditor {
             });
         });
     }
-    
+
     private static initializeEditors(editors: NodeListOf<Element>) {
         editors.forEach((el: HTMLElement) => {
             const editorId = el.dataset.editorId;
@@ -91,8 +81,6 @@ class CodeEditor {
             const name = el.dataset.editorName;
             const editorTextArea = document.getElementById(name);
 
- 
-            
             // @ts-ignore
             const editor = monaco.editor.create(document.getElementById(editorId), {
                 // @ts-ignore

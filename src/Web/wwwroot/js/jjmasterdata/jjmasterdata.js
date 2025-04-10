@@ -373,25 +373,17 @@ class CodeEditor {
         }
     }
     static loadMonaco(editors) {
-        var _a;
-        const base = ((_a = document.querySelector('base')) === null || _a === void 0 ? void 0 : _a.getAttribute('href')) || '';
-        const monacoBase = base + '_content/JJMasterData.Web/js/monaco';
-        window.require = { paths: { vs: monacoBase } };
-        const script2 = document.createElement('script');
-        script2.src = monacoBase + '/loader.js';
-        script2.onload = () => {
-            const script3 = document.createElement('script');
-            script3.src = monacoBase + '/editor/editor.main.js';
-            script3.onload = function () {
-                require(['vs/editor/editor.main'], function () {
-                    CodeEditor.observeTheme();
-                    CodeEditor.loadHints();
-                    CodeEditor.initializeEditors(editors);
-                });
-            };
-            document.body.appendChild(script3);
+        const script1 = document.createElement('script');
+        script1.src = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js';
+        script1.onload = () => {
+            require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } });
+            require(['vs/editor/editor.main'], function () {
+                CodeEditor.observeTheme();
+                CodeEditor.loadHints();
+                CodeEditor.initializeEditors(editors);
+            });
         };
-        document.body.appendChild(script2);
+        document.body.appendChild(script1);
     }
     static observeTheme() {
         const observer = new MutationObserver(mutations => {
