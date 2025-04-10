@@ -22,7 +22,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     {
         var formElement = loggerFormElementFactory.GetFormElement(isModal);
 
-        if (!await entityRepository.TableExistsAsync(_options.TableName))
+        if (!await entityRepository.TableExistsAsync(_options.TableSchema ?? "dbo",_options.TableName))
         {
             await entityRepository.CreateDataModelAsync(formElement,[]);
         }
