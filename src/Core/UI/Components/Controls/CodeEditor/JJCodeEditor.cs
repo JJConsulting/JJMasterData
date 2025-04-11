@@ -34,7 +34,7 @@ public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
             .WithCssClass("jj-code-editor")
             .WithAttribute("data-editor-id",editorId)
             .WithAttribute("data-editor-name",Name)
-            .WithAttribute("data-readonly", Enabled.ToString().ToLowerInvariant())
+            .WithAttribute("data-readonly", (!Enabled).ToString().ToLowerInvariant())
             .WithAttribute("data-language", Language)
             .Append(HtmlTag.TextArea, textarea =>
             {
