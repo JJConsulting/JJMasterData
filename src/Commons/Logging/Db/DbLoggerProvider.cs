@@ -37,7 +37,7 @@ public sealed class DbLoggerProvider(IServiceProvider serviceProvider, IOptionsM
 
         if (!_tableExists)
         {
-            if (!await repository.TableExistsAsync(currentOptions.TableName, currentOptions.ConnectionStringId))
+            if (!await repository.TableExistsAsync(currentOptions.TableSchema ?? "dbo", currentOptions.TableName, currentOptions.ConnectionStringId))
             {
                 await repository.CreateDataModelAsync(element);
             }
