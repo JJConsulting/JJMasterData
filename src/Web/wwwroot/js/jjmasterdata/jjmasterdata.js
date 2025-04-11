@@ -426,11 +426,13 @@ class CodeEditor {
             const editorId = el.dataset.editorId;
             const language = el.dataset.language;
             const name = el.dataset.editorName;
+            const readonly = el.dataset.readonly == "true";
             const editorTextArea = document.getElementById(name);
             const editor = monaco.editor.create(document.getElementById(editorId), {
                 value: editorTextArea.value,
                 automaticLayout: true,
                 language: language,
+                readOnly: readonly,
                 theme: getTheme() === 'dark' ? 'vs-dark' : 'vs'
             });
             editor.getModel().onDidChangeContent(() => {

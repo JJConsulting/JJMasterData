@@ -66,13 +66,13 @@
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-component"
                href="#div-component">@StringLocalizer["Component"]</a>
         </li>
-        <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced"
-               href="#div-advanced">@StringLocalizer["Expressions"]</a>
-        </li>
         <li class="nav-item" id="nav-layout" @Active("#div-layout")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-layout"
                href="#div-layout">@StringLocalizer["Layout"]</a>
+        </li>
+        <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced"
+               href="#div-advanced">@StringLocalizer["Expressions"]</a>
         </li>
         @if (isForm)
         {
@@ -90,11 +90,11 @@
         <div id="div-component" class="tab-pane fade @Active("#div-component")">
             <partial name="_Component" model="Model"/>
         </div>
-        <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
-            <partial name="_Expressions" model="Model"/>
-        </div>
         <div id="div-layout" class="tab-pane fade @Active("#div-layout")">
             <partial name="_FieldLayout" model="Model"/>
+        </div>
+        <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
+            <partial name="_Expressions" model="Model"/>
         </div>
         <div id="div-template" class="tab-pane fade @Active("#div-template")">
 

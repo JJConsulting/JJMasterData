@@ -10,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
 {
     public string Language { get; set; } = "html";
-    public int Height { get; set; } = 250;
+    public int Height { get; set; } = 400;
 
     protected override ValueTask<ComponentResult> BuildResultAsync()
     {
@@ -34,6 +34,7 @@ public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
             .WithCssClass("jj-code-editor")
             .WithAttribute("data-editor-id",editorId)
             .WithAttribute("data-editor-name",Name)
+            .WithAttribute("data-readonly", Enabled.ToString().ToLowerInvariant())
             .WithAttribute("data-language", Language)
             .Append(HtmlTag.TextArea, textarea =>
             {

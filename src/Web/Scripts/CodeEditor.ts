@@ -79,6 +79,7 @@ class CodeEditor {
             const editorId = el.dataset.editorId;
             const language = el.dataset.language;
             const name = el.dataset.editorName;
+            const readOnly = el.dataset.readonly === "true";
             const editorTextArea = document.getElementById(name);
 
             // @ts-ignore
@@ -87,6 +88,7 @@ class CodeEditor {
                 value: editorTextArea.value,
                 automaticLayout: true,
                 language: language,
+                readOnly: readOnly,
                 theme: getTheme() === 'dark' ? 'vs-dark' : 'vs'
             });
 
