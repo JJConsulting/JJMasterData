@@ -59,7 +59,7 @@ public class AuditLogService(
     private async Task CreateTableIfNotExistsAsync(Guid? connectionId)
     {
         var logElement = GetElement(connectionId);
-        if (!await entityRepository.TableExistsAsync(logElement.TableName, logElement.ConnectionId))
+        if (!await entityRepository.TableExistsAsync(logElement.Schema, logElement.TableName, logElement.ConnectionId))
             await entityRepository.CreateDataModelAsync(logElement);
     }
 

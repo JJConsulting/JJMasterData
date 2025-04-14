@@ -217,7 +217,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
     public async Task CreateStructureIfNotExistsAsync()
     {
-        if (!await _entityRepository.TableExistsAsync(_masterDataElement.Schema ?? "dbo", _masterDataElement.Name, _masterDataElement.ConnectionId))
+        if (!await _entityRepository.TableExistsAsync(_masterDataElement.Schema, _masterDataElement.Name, _masterDataElement.ConnectionId))
             await _entityRepository.CreateDataModelAsync(_masterDataElement,[]);
     }
 

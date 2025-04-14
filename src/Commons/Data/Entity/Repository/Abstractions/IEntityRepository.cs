@@ -162,7 +162,7 @@ public interface IEntityRepository
     /// <summary>
     /// Check if table exists in the database
     /// </summary>
-    public Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null);
+    public Task<bool> TableExistsAsync(string? schema, string tableName, Guid? connectionId = null);
     
     /// <summary>
     /// Check if table exists in the database

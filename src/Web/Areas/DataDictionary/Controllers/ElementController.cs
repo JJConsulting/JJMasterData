@@ -117,7 +117,7 @@ public class ElementController(
     {
         var formElement = await elementService.GetFormElementAsync(elementName);
         var scripts = await scriptsService.GetScriptsAsync(formElement);
-        var tableExists = await entityRepository.TableExistsAsync(formElement.TableName, formElement.ConnectionId);
+        var tableExists = await entityRepository.TableExistsAsync(formElement.Schema, formElement.TableName, formElement.ConnectionId);
         
         var model = new ElementScriptsViewModel
         {

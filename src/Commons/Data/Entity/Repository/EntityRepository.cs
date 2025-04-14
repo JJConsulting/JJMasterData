@@ -108,9 +108,9 @@ internal sealed class EntityRepository(
         return provider.TableExistsAsync(tableName, connectionId);
     }
     
-    public Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null)
+    public Task<bool> TableExistsAsync(string? schema, string tableName, Guid? connectionId = null)
     {
-        return provider.TableExistsAsync(schema, tableName, connectionId);
+        return provider.TableExistsAsync(schema ?? "dbo", tableName, connectionId);
     }
 
     public bool TableExists(string tableName, Guid? connectionId = null)
@@ -222,7 +222,7 @@ internal sealed class EntityRepository(
     {
         List<ElementField> addedFields = [];
 
-        if (!await TableExistsAsync(element.TableName, element.ConnectionId))
+        if (!await TableExistsAsync(element.Schema ?? "dbo", element.TableName, element.ConnectionId))
             return addedFields;
 
         foreach (var field in element.Fields.Where(f => f.DataBehavior == FieldBehavior.Real))
