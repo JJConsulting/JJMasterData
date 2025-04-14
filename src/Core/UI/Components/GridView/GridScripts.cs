@@ -51,13 +51,13 @@ public class GridScripts
     public string GetFilterScript()
     {
         // language=JavaScript
-        return $"GridViewFilterHelper.filter('{_gridView.Name}','{_defaultEncryptedRouteContext}')";
+        return $"GridViewFilterHelper.filter('{_gridView.Name}','{_defaultEncryptedRouteContext}',{_gridView.FilterAction.IsSubmit.ToString().ToLowerInvariant()},)";
     }
     
     public string GetClearFilterScript()
     {
         // language=JavaScript
-        return $"GridViewFilterHelper.clearFilter('{_gridView.Name}','{_defaultEncryptedRouteContext}')";
+        return $"GridViewFilterHelper.clearFilter('{_gridView.Name}','{_defaultEncryptedRouteContext}',{_gridView.FilterAction.IsSubmit.ToString().ToLowerInvariant()})";
     }
 
     public string GetSelectAllScript()

@@ -1134,13 +1134,18 @@ var bootstrapVersion = (() => {
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class GridViewFilterHelper {
-    static filter(gridViewName, routeContext) {
+    static filter(gridViewName, routeContext, isSubmit) {
         document.querySelector("#grid-view-filter-action-" + gridViewName).value = "filter";
         document.querySelector("#grid-view-action-map-" + gridViewName).value = "";
         document.querySelector("#grid-view-page-" + gridViewName).value = "1";
         GridViewHelper.clearCurrentFormAction(gridViewName);
-        GridViewHelper.refreshGrid(gridViewName, routeContext);
-        this.showFilterIcon(gridViewName);
+        if (isSubmit) {
+            getMasterDataForm().submit();
+        }
+        else {
+            GridViewHelper.refreshGrid(gridViewName, routeContext);
+            this.showFilterIcon(gridViewName);
+        }
     }
     static showFilterIcon(gridViewName) {
         const filterIcon = document.getElementById(gridViewName + "-filter-icon");
@@ -1204,10 +1209,15 @@ class GridViewFilterHelper {
         document.querySelector("#grid-view-action-map-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName);
     }
-    static clearFilter(componentName, routeContext) {
+    static clearFilter(componentName, routeContext, isSubmit) {
         this.clearFilterInputs(componentName);
-        GridViewHelper.refreshGrid(componentName, routeContext);
-        document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+        if (isSubmit) {
+            getMasterDataForm().submit();
+        }
+        else {
+            GridViewHelper.refreshGrid(componentName, routeContext);
+            document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+        }
     }
     static searchOnDOM(componentName, oDom) {
         const value = $(oDom).val().toString().toLowerCase();

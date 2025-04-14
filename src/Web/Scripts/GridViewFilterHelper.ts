@@ -1,13 +1,18 @@
 class GridViewFilterHelper {
-    static filter(gridViewName, routeContext) {
+    static filter(gridViewName, routeContext, isSubmit) {
         document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + gridViewName).value = "filter";
         document.querySelector<HTMLInputElement>("#grid-view-action-map-" + gridViewName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-page-" + gridViewName).value = "1";
         
         GridViewHelper.clearCurrentFormAction(gridViewName);
-        GridViewHelper.refreshGrid(gridViewName, routeContext);
 
-        this.showFilterIcon(gridViewName);
+        if(isSubmit) {
+            getMasterDataForm().submit();
+        }
+        else{
+            GridViewHelper.refreshGrid(gridViewName, routeContext);
+            this.showFilterIcon(gridViewName);
+        }
     }
 
     static showFilterIcon(gridViewName: string){
@@ -83,12 +88,16 @@ class GridViewFilterHelper {
         GridViewHelper.clearCurrentFormAction(componentName)
     }
 
-    static clearFilter(componentName, routeContext) {
+    static clearFilter(componentName, routeContext, isSubmit) {
         this.clearFilterInputs(componentName);
 
-        GridViewHelper.refreshGrid(componentName, routeContext);
-
-        document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+        if(isSubmit) {
+            getMasterDataForm().submit();
+        }
+        else{
+            GridViewHelper.refreshGrid(componentName, routeContext);
+            document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+        }
     }
 
     static searchOnDOM(componentName, oDom) {

@@ -6,7 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// <summary>
 /// Represents the dictionary export button.
 /// </summary>
-public sealed class FilterAction : GridToolbarAction
+public sealed class FilterAction : GridToolbarAction, ISubmittableAction
 {
     public const string ActionName = "filter";
     
@@ -48,6 +48,8 @@ public sealed class FilterAction : GridToolbarAction
     [Display(Name = "Enable Client-Side Search")]
     public bool EnableScreenSearch { get; set; }
 
+    public bool IsSubmit { get; set; }
+    
     public FilterAction()
     {
         Name = ActionName;
