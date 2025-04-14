@@ -16,9 +16,13 @@ public class MasterApiController(MasterApiService service) : ControllerBase
 {
     [HttpGet]
     [Produces<MasterApiListResponse>]
-    [Route("{pag:int?}/{regporpag:int?}/{orderby?}/{tot?}")]
-    public async Task<ActionResult<MasterApiListResponse>> GetAll(string elementName, [FromQuery] int pag = 1,
-        [FromQuery] int regporpag = 1000, [FromQuery] string? orderby = null, [FromQuery] int? tot = 0)
+    [Route("")]
+    public async Task<ActionResult<MasterApiListResponse>> GetAll(
+        string elementName, 
+        [FromQuery] int pag = 1,
+        [FromQuery] int regporpag = 1000, 
+        [FromQuery] string? orderby = null, 
+        [FromQuery] int? tot = 0)
     {
         if (Request.Headers.Accept.ToString().Contains("text/csv"))
         {
