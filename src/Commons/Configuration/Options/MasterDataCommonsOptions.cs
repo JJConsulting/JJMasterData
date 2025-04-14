@@ -61,22 +61,38 @@ public sealed class MasterDataCommonsOptions
     
     public string GetReadProcedureName(Element element)
     {
+        string name;
+
         if (!string.IsNullOrEmpty(element.ReadProcedureName))
-            return element.ReadProcedureName!;
+        {
+            name = element.ReadProcedureName!;
+        }
+        else
+        {
+            var tableName = element.TableName;
 
-        var tableName = element.TableName;
-
-        return ReadProcedurePattern.Replace("{tablename}", tableName);
+            name = ReadProcedurePattern.Replace("{tablename}", tableName);
+        }
+        
+        return $"[{element.Schema ?? "dbo"}].[{name}]";
     }
 
     public string GetWriteProcedureName(Element element)
     {
+        string name;
+
         if (!string.IsNullOrEmpty(element.WriteProcedureName))
-            return element.WriteProcedureName!;
+        {
+            name = element.WriteProcedureName!;
+        }
+        else
+        {
+            var tableName = element.TableName;
 
-        var tableName = element.TableName;
-
-        return WriteProcedurePattern.Replace("{tablename}", tableName);
+            name = WriteProcedurePattern.Replace("{tablename}", tableName);
+        }
+        
+        return $"[{element.Schema ?? "dbo"}].[{name}]";
     }
 
     public string GetReadProcedureName(string tableName)
