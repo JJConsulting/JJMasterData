@@ -9,6 +9,8 @@ public sealed class OffcanvasTagHelper(HtmlComponentFactory htmlComponentFactory
     [HtmlAttributeName("name")]
     public required string Name { get; set; }
     
+    public OffcanvasSize Size { get; set; }
+
     public OffcanvasPosition Position { get; set; }
     
     public string? Title { get; set; } 
@@ -20,7 +22,8 @@ public sealed class OffcanvasTagHelper(HtmlComponentFactory htmlComponentFactory
         offcanvas.Name = Name;
         offcanvas.Title = Title;
         offcanvas.Position = Position;
-        
+        offcanvas.Size = Size;
+
         var content = (await output.GetChildContentAsync()).GetContent();
 
         offcanvas.Body = new HtmlBuilder(content);

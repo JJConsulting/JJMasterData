@@ -7,12 +7,16 @@ public class JJOffcanvas : HtmlComponent
 {
     public OffcanvasPosition Position { get; set; }
     public string? Title { get; set; }
+    
+    public OffcanvasSize Size { get; set; }
+    
     public HtmlBuilder? Body { get; set; }
 
     internal override HtmlBuilder BuildHtml()
     {
         var offcanvas = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"offcanvas {Position.GetCssClass()}")
+            .WithCssClassIf(Size == OffcanvasSize.Wide, "offcanvas-wide")
             .WithAttribute("tabindex", "-1")
             .WithId(Name)
             .AppendDiv(div =>

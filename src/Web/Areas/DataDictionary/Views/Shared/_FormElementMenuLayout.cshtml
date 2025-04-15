@@ -1,5 +1,4 @@
-﻿@using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Core.UI.Components
+﻿@using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.TagHelpers
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
@@ -16,37 +15,10 @@
 
 @section Stylesheets{
     @await RenderSectionAsync("Stylesheets", required: false)
-    <style>
-        .offcanvas {
-            width: 1100px !important;
-        }
-        @@media (max-width: 1200px) {
-            .offcanvas {
-                width: 800px !important;
-            }
-        }
-        @@media (max-width: 992px) {
-            .offcanvas {
-                width: 650px !important;
-            }
-
-        }
-        @@media (max-width: 768px) {
-            .offcanvas {
-                width: 500px !important;
-            }
-
-        }
-        @@media (max-width: 576px) {
-            .offcanvas {
-                width: 100% !important;
-            }
-        }
-    </style>
     <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/theme.min.css"/>
 }
 
-<offcanvas name="sql-scripts-offcanvas" position="End" title="@StringLocalizer["Database Scripts"]"/>
+<offcanvas name="sql-scripts-offcanvas" size="Wide" position="End" title="@StringLocalizer["Database Scripts"]"/>
 
 <div class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-center">
     <breadcrumb items="breadcrumbs" css-class=""/>
