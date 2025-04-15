@@ -38,7 +38,7 @@ public class MasterApiController(MasterApiService service) : ControllerBase
     [HttpGet]
     [Produces<Dictionary<string,object>>]
     [Route("{id}")]
-    public async Task<ActionResult<Dictionary<string, object>>> Get(string elementName, string id)
+    public async Task<ActionResult<Dictionary<string, object?>>> Get(string elementName, string id)
     {
         return Ok(await service.GetFieldsAsync(elementName, id));
     }

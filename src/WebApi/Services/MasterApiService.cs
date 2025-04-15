@@ -88,7 +88,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return response;
     }
 
-    public async Task<Dictionary<string, object>> GetFieldsAsync(string elementName, string id)
+    public async Task<Dictionary<string, object?>> GetFieldsAsync(string elementName, string id)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetDetail)
@@ -102,15 +102,15 @@ public class MasterApiService(ExpressionsService expressionsService,
             throw new KeyNotFoundException("No records found");
 
         //We transform to dictionary to preserve the order of fields in parse
-        var listRet = new Dictionary<string, object>();
+        var result = new Dictionary<string, object?>();
         foreach (var field in formElement.Fields)
         {
-            string fieldName = formElement.ApiOptions.GetJsonFieldName(field.Name);
-            if (fields.TryGetValue(field.Name, out var field1))
-                listRet.Add(fieldName, field1!);
+            var fieldName = formElement.ApiOptions.GetJsonFieldName(field.Name);
+            if (fields.TryGetValue(field.Name, out var value))
+                result.Add(fieldName, value == DBNull.Value ? null : value);
         }
 
-        return listRet;
+        return result;
     }
 
     public async Task<List<ResponseLetter>> SetFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
