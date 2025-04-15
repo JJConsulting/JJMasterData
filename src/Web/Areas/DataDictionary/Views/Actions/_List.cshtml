@@ -29,31 +29,31 @@
             <ul class="dropdown-menu">
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(UrlRedirectAction))">
+                       onclick="@GetAddScript(nameof(UrlRedirectAction))">
                         @StringLocalizer["Url Redirect"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(InternalAction))">
+                       onclick="@GetAddScript(nameof(InternalAction))">
                         @StringLocalizer["Internal Redirect"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(SqlCommandAction))">
+                       onclick="@GetAddScript(nameof(SqlCommandAction))">
                         @StringLocalizer["Sql Command"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(ScriptAction))">
+                       onclick="@GetAddScript(nameof(ScriptAction))">
                         @StringLocalizer["JavaScript Script"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(HtmlTemplateAction))">
+                       onclick="@GetAddScript(nameof(HtmlTemplateAction))">
                         @StringLocalizer["HTML Template"]
                     </a>
                 </li>
@@ -69,14 +69,14 @@
                             @if (plugin is IPluginFieldActionHandler)
                             {
                                 <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                                   onclick="@GetAddScript(typeof(PluginFieldAction), plugin.Id)">
+                                   onclick="@GetAddScript(nameof(PluginFieldAction), plugin.Id)">
                                     @StringLocalizer[plugin.Title]
                                 </a>
                             }
                             else
                             {
                                 <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                                   onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">
+                                   onclick="@GetAddScript(nameof(PluginAction), plugin.Id)">
                                     @StringLocalizer[plugin.Title]
                                 </a>
                             }
@@ -87,7 +87,7 @@
                         @foreach (var plugin in ActionPluginHandlers.Where(p => p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
                         {
                             <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                               onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">
+                               onclick="@GetAddScript(nameof(PluginAction), plugin.Id)">
                                 @StringLocalizer[plugin.Title]
                             </a>
                         }
@@ -159,53 +159,41 @@
     private string GetEditScript(BasicAction action)
     {
         var actionName = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
-        var script = new StringBuilder();
-        script.Append("defaultModal.showIframe('");
-        script.Append(Url.Action("Edit", "Actions",
-            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName }));
-        script.Append("','");
-        script.Append($" {StringLocalizer[actionName]}', {(int)ModalSize.ExtraLarge}");
-        script.Append(");");
-
-        return script.ToString();
+        
+        var url = Url.Action("Edit", "Actions",
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName });
+        
+        //lang=javascript
+        return $"defaultModal.showIframe('{url}', '{actionName}', {(int)ModalSize.ExtraLarge})";
     }
 
-    private string GetAddScript(MemberInfo actionType, Guid? pluginId = null)
+    private string GetAddScript(string actionType, Guid? pluginId = null)
     {
-        var script = new StringBuilder();
-        script.Append("defaultModal.showIframe('");
-        script.Append(Url.Action("Add", "Actions",
-            new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Source, fieldName = Model.FieldName, pluginId }));
-        script.Append("','");
-        script.Append($"{StringLocalizer["New Action"]}',{(int)ModalSize.ExtraLarge}");
-        script.Append(");");
+        var url = Url.Action("Add", "Actions",
+            new { elementName = Model.ElementName, actionType, context = Model.Source, fieldName = Model.FieldName, pluginId });
 
-        return script.ToString();
+        //lang=javascript
+        return $"defaultModal.showIframe('{url}', '{StringLocalizer["New Action"]}', {(int)ModalSize.ExtraLarge})";
     }
 
 
     private string GetDeleteScript(BasicAction action)
     {
-        var script = new StringBuilder();
-        script.Append("DataDictionaryUtils.deleteAction('");
-        script.Append(action.Name);
-        script.Append("', '");
-        script.Append(Url.Action("Remove", "Actions",
-            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName }));
-        script.Append("', '");
-        script.Append(StringLocalizer["Are you sure you want to delete [{0}] action?", action.Name]);
-        script.Append("');");
+        var actionName = action.Name;
+        var confirmationMessage = StringLocalizer["Are you sure you want to delete [{0}] action?", actionName].Value;
+        var url = Url.Action("Remove", "Actions", new { elementName = Model.ElementName, actionName, context = Model.Source, fieldName = Model.FieldName });
 
-        return script.ToString();
+        //lang=javascript
+        return $"DataDictionaryUtils.deleteAction('{actionName}', '{url}', '{confirmationMessage}');";
     }
 
-    public string? GetUrlDisable(BasicAction action)
+    private string? GetUrlDisable(BasicAction action)
     {
         return Url.Action("EnableDisable", "Actions",
             new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName });
     }
 
-    public string? GetUrlSort()
+    private string? GetUrlSort()
     {
         return Url.Action("Sort", "Actions",
             new { elementName = Model.ElementName, fieldName = Model.FieldName });
