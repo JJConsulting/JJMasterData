@@ -29,7 +29,7 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 * [Community Discord Server](https://discord.gg/s9F2ntBXnn)
 
 ## What is a Data Dictionary?
-Learn more [at this blog article](https://www.jjconsulting.com.br/en-US/blog/software-architecture/data-dictionary) about the concept that JJMasterData works.
+Learn more [in this blog article](https://www.jjconsulting.com.br/en-US/blog/software-architecture/data-dictionary) about the concept on which JJMasterData works.
 
 ## Features
 - Components generated at runtime 🔥
