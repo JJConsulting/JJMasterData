@@ -1,0 +1,49 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@section Stylesheets{
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/theme.min.css"/>
+}
+
+<div class="jjrelative">
+    <div class="bs-clipboard">
+        <div class="btn-group">
+            <button type="button" class="@BootstrapHelper.BtnDefault btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Copy to Clipboard"]">
+                <span class="fa fa-copy fa-fw"></span>
+                &nbsp;@StringLocalizer["Copy"]
+            </button>
+        </div>
+    </div>
+    <pre><code class="language-csharp">@ViewData["Class"]</code></pre>
+</div>
+
+@section Scripts{
+    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
+    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
+    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/csharp.min.js"></script>
+    <script type="text/javascript">
+
+        function copyContent(obj) {
+            const textVal = $("pre").text().trim();
+            copyText(textVal);
+            displayAsCopied(obj);
+        }
+
+        function displayAsCopied(obj) {
+            const btnContent = $(obj).html();
+            $(obj).html("<span class='fa fa-check'></span> Copied!")
+                .attr("class", "btn btn-success btn-small btn-sm");
+
+            setTimeout(function() {
+                $(obj).html(btnContent)
+                    .attr("class", "@BootstrapHelper.BtnDefault btn-small btn-sm");
+            },2000);
+        }
+
+        function copyText(value) {
+            navigator.clipboard.writeText(value);
+        }
+
+        hljs.highlightAll();
+    </script>
+}
+

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class OffcanvasTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelper
+public sealed class OffcanvasTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelper
 {
     [HtmlAttributeName("name")]
     public required string Name { get; set; }
@@ -25,7 +25,7 @@ public class OffcanvasTagHelper(HtmlComponentFactory htmlComponentFactory) : Tag
 
         offcanvas.Body = new HtmlBuilder(content);
         
-        output.TagMode = TagMode.StartTagAndEndTag;
+        output.TagName = null;
         output.Content.SetHtmlContent(offcanvas.GetHtml());
     }
 }

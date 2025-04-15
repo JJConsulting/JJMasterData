@@ -11,19 +11,15 @@ public abstract class SqlServerScriptsBase
     
     protected static string GetTableName(Element element)
     {
-        return FormatWithSchema(element.TableName, element.Schema);
-    }
-    
-    protected static string FormatWithSchema(string name, string? schema)
-    {
         var sql = new StringBuilder();
 
-        if (!string.IsNullOrEmpty(schema))
+        if (!string.IsNullOrEmpty(element.Schema))
         {
-            sql.AppendFormat("[{0}]", schema);
+            sql.Append($"[{element.Schema}]");
             sql.Append('.');
         }
-        sql.AppendFormat("[{0}]", name);
+
+        sql.Append($"[{element.TableName}]");
 
         return sql.ToString();
     }
@@ -74,7 +70,7 @@ public abstract class SqlServerScriptsBase
         return sql.ToString();
     }
 
-    public static string GetSqlDropIfExists(string objname)
+    protected static string GetSqlDropIfExists(string objname)
     {
         var sql = new StringBuilder();
         sql.AppendLine("IF EXISTS (SELECT * ");

@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public sealed class RelationshipsElementDetailsViewModel : DataDictionaryViewModel
+public sealed class RelationshipsElementDetailsViewModel 
 {
     public required int? Id { get; set; }
+    public required string ElementName { get; set; }
     public required ElementRelationship Relationship { get; set; }
     public required List<SelectListItem>? PrimaryKeysSelectList { get; set; }
     public required List<SelectListItem>? ForeignKeysSelectList { get; set; }
@@ -16,15 +17,4 @@ public sealed class RelationshipsElementDetailsViewModel : DataDictionaryViewMod
     public string? AddPrimaryKeyName { get; set; }
     [DisplayName("Foreign Key Column")]
     public string? AddForeignKeyName { get; set; }
-
-    // ReSharper disable once UnusedMember.Global
-    // Reason: Used for model binding.
-    public RelationshipsElementDetailsViewModel()
-    {
-        
-    }
-    
-    public RelationshipsElementDetailsViewModel(string elementName, string menuId) : base(elementName, menuId)
-    {
-    }
 }

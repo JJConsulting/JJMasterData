@@ -4,8 +4,10 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public sealed class ApiViewModel : DataDictionaryViewModel
+public sealed class ApiViewModel 
 {
+    public required string ElementName { get; set; }
+    
     [Display(Name = "Enable Synchronism")]
     public bool EnableSynchronism { get; set; }
     
@@ -13,14 +15,4 @@ public sealed class ApiViewModel : DataDictionaryViewModel
     public SynchronismMode SynchronismMode { get; set; }
     public List<ElementField>? ElementFields { get; set; } 
     public FormElementApiOptions ApiOptions { get; set; } = null!;
-    
-    // ReSharper disable once UnusedMember.Global
-    // Reason: Used for model binding.
-    public ApiViewModel()
-    {
-        
-    }
-    public ApiViewModel(string elementName, string menuId) : base(elementName, menuId)
-    {
-    }
 }

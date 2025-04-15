@@ -19,21 +19,20 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
 
         foreach (var item in formElement.Fields)
         {
+            properties.AppendLine("");
             var propertyName = StringManager.ToPascalCase(item.Name);
             var propertyType = GetPropertyType(item.DataType, item.IsRequired);
             var property = propertyTemplate.Replace("@PropertyName", propertyName).Replace("@PropertyType", propertyType);
 
             properties.AppendLine($"\t[JsonPropertyName( \"{item.Name}\")] ");
             properties.AppendLine($"\t{property}");
-            properties.AppendLine("");
-
         }
 
         var classResult = new StringBuilder();
 
         classResult.AppendLine($"public class {formElement.Name}\r\n{{");
         classResult.AppendLine(properties.ToString());
-        classResult.AppendLine("\r\n}");
+        classResult.AppendLine("}");
 
         return classResult.ToString();
     }

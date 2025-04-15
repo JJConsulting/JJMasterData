@@ -27,7 +27,6 @@ public class SqlServerReadProcedureScripts(
         var sql = new StringBuilder();
 
         var procedureName = options.Value.GetReadProcedureName(element);
-        var procedureFinalName = FormatWithSchema(procedureName, element.Schema);
 
         if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
@@ -35,11 +34,11 @@ public class SqlServerReadProcedureScripts(
         }
         else
         {
-            sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
+            sql.AppendLine(GetSqlDropIfExists(procedureName));
             sql.Append("CREATE PROCEDURE ");
         }
 
-        sql.AppendLine(procedureFinalName);
+        sql.AppendLine(procedureName);
         sql.AppendLine("@orderby VARCHAR(MAX), ");
         sql.AppendLine(GetParameters(fields, addMasterDataParameters: true));
         sql.AppendLine("AS ");

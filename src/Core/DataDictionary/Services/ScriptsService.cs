@@ -19,8 +19,8 @@ public class ScriptsService(IEntityRepository entityRepository,
         var relationships = await GetFormElementRelationships(formElement);
         
         var createTableScript = entityRepository.GetCreateTableScript(formElement,relationships);
-        var readProcedureScript = formElement.UseReadProcedure ? entityRepository.GetReadProcedureScript(formElement) : null;
-        var writeProcedureScript = formElement.UseWriteProcedure ? entityRepository.GetWriteProcedureScript(formElement) : null;
+        var readProcedureScript =  entityRepository.GetReadProcedureScript(formElement);
+        var writeProcedureScript = entityRepository.GetWriteProcedureScript(formElement);
         var alterTableScript = await entityRepository.GetAlterTableScriptAsync(formElement);
         
         return new ScriptsResult
@@ -28,7 +28,9 @@ public class ScriptsService(IEntityRepository entityRepository,
             CreateTableScript = createTableScript,
             ReadProcedureScript = readProcedureScript,
             WriteProcedureScript = writeProcedureScript,
-            AlterTableScript = alterTableScript
+            AlterTableScript = alterTableScript,
+            UseWriteProcedure = formElement.UseWriteProcedure,
+            UseReadProcedure = formElement.UseReadProcedure
         };
     }
 

@@ -105,12 +105,12 @@ public class ElementController(
         return View(new DuplicateElementViewModel{ OriginalElementName = elementName });
     }
 
-    public async ValueTask<PartialViewResult> ClassSourceCode(string elementName)
+    public async ValueTask<ViewResult> Class(string elementName)
     {
-        ViewBag.ClassSourceCode = await classGenerationService.GetClassSourceCode(elementName);
-        ViewBag.ElementName = elementName;
+        ViewData["Class"] = await classGenerationService.GetClassSourceCode(elementName);
+        ViewData["ElementName"] = elementName;
 
-        return PartialView("ClassSourceCode");
+        return View("Class");
     }
 
     public async Task<PartialViewResult> Scripts(string elementName)
@@ -126,7 +126,7 @@ public class ElementController(
             TableExists = tableExists
         };
 
-        return PartialView(model);
+        return PartialView("_Scripts", model);
     }
 
     [HttpPost]

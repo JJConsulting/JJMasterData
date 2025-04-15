@@ -1,21 +1,23 @@
 ﻿class OffcanvasHelper{
     
-    static showOffcanvas(id){
+    static showOffcanvas(id: string, url: string = null){
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
+        
+        if(url != null){
+            const offcanvasBody = document.getElementById(`${id}-body`);
+            if(offcanvasBody.childElementCount === 0){
+                fetch(url).then(response=>{
+                   return response.text();
+                }).then(data=>{
+                    HTMLHelper.setInnerHTML(offcanvasBody, data);
+                });
+            }
+        }        
+        
         offcanvasElement.show();
     }
-
     static hide(id){
         const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
         offcanvasElement.hide();
-    }
-    
-    static async populateOffcanvas(id, url) {
-        const offcanvasElement = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(id));
-        const response = await fetch(url);
-        const data = await response.text();
-        const offcanvasBody = document.getElementById(`${id}-body`);
-        offcanvasBody.innerHTML = data;
-        offcanvasElement.show();
     }
 }

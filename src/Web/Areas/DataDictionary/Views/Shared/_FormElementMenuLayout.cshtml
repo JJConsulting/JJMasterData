@@ -1,0 +1,120 @@
+﻿@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI.Components
+@using JJMasterData.Web.TagHelpers
+
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject JJMasterDataLogo MasterDataLogo
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
+
+
+@{
+    var backUrl = Url.Action("Index", "Element")!;
+    Layout = Options.Value.LayoutPath;
+    var elementName = ViewData["ElementName"]!.ToString()!;
+    List<BreadcrumbItem> breadcrumbs = [new(MasterDataLogo.GetHtmlBuilder(), backUrl), new(StringLocalizer["Data Dictionary"], backUrl), new(elementName)];
+}
+
+@section Stylesheets{
+    @await RenderSectionAsync("Stylesheets", required: false)
+    <style>
+        .offcanvas {
+            width: 1100px !important;
+        }
+        @@media (max-width: 1200px) {
+            .offcanvas {
+                width: 800px !important;
+            }
+        }
+        @@media (max-width: 992px) {
+            .offcanvas {
+                width: 650px !important;
+            }
+
+        }
+        @@media (max-width: 768px) {
+            .offcanvas {
+                width: 500px !important;
+            }
+
+        }
+        @@media (max-width: 576px) {
+            .offcanvas {
+                width: 100% !important;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/theme.min.css"/>
+}
+
+<offcanvas name="sql-scripts-offcanvas" position="End" title="@StringLocalizer["Database Scripts"]"/>
+
+<div class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-center">
+    <breadcrumb items="breadcrumbs" css-class=""/>
+    <div class="d-flex flex-nowrap">
+        <button class="btn btn-secondary" type="button"
+                onclick="OffcanvasHelper.showOffcanvas('sql-scripts-offcanvas','@Url.Action("Scripts", "Element", new { elementName })');">
+                        <span class="fa-solid fa-scroll">
+                        </span>
+            @StringLocalizer["Database Scripts"]
+        </button>
+        <a class="btn btn-secondary ms-1"
+           href="@Url.Action("Render", "Form", new { area = "MasterData", elementName })">
+            <span class="fa fa-play">
+            </span>
+            &nbsp;
+            @StringLocalizer["Render"]
+        </a>
+    </div>
+</div>
+<ul class="nav nav-tabs mb-3">
+    @{
+        NavItem("Entity", "fa fa-database", Url.Action("Index", "Entity", new { elementName }));
+        NavItem("Fields", "fa-regular fa-rectangle-list", Url.Action("Index", "Field", new { elementName }));
+        NavItem("Panels", "fa-solid fa-layer-group", Url.Action("Index", "Panel", new { elementName }));
+        NavItem("Relationships", "fa-solid fa-code-branch", Url.Action("Index", "Relationships", new { elementName }));
+        NavItem("Indexes", "fa fa-indent", Url.Action("Index", "Indexes", new { elementName }));
+        NavItem("Options", "fa fa-gears", Url.Action("Index", "UIOptions", new { elementName }));
+        NavItem("Actions", "fa-solid fa-bolt", Url.Action("Index", "Actions", new { elementName }));
+        NavItem("WebApi", "fa-solid fa-globe", Url.Action("Index", "Api", new { elementName }));
+    }
+</ul>
+<div class="tab-content">
+    @RenderBody()
+</div>
+
+@section Scripts{
+    @await RenderSectionAsync("Scripts", required: false)
+    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
+    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
+}
+
+@functions
+{
+    private string? _currentMenuId;
+
+    private string IsActive(string menuId)
+    {
+        _currentMenuId ??= ViewData["MenuId"]!.ToString()!;
+        var cssClass = string.Empty;
+
+        if (_currentMenuId.Equals(menuId))
+        {
+            cssClass += " active";
+        }
+
+        return cssClass;
+    }
+
+    private void NavItem(
+        string label,
+        string iconCssClass,
+        string? url)
+    {
+        <li class="nav-item">
+            <a class="nav-link @IsActive(label)" href="@url">
+                <span class="@iconCssClass"></span>&nbsp;@StringLocalizer[label]
+            </a>
+        </li>
+    }
+
+}

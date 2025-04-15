@@ -5,6 +5,7 @@
 
 @{
     ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Panels"]}";
+    Layout = "_FormElementMenuLayout";
 }
 
 <script type="text/javascript">
@@ -125,8 +126,6 @@
         });
     }
 </script>
-
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
 @using (Html.BeginMasterDataForm())
 {

@@ -8,16 +8,17 @@
 
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";
-    string urlEdit = Url.Action("Edit", new { elementName = Model.ElementName })!;
+    ViewData["ElementName"] = Model.ElementName;
+    ViewData["MenuId"] = "Entity";
+    var urlEdit = Url.Action("Edit", new { elementName = Model.ElementName })!;
+    Layout = "_FormElementMenuLayout";
 }
 
 
-<partial name="_Menu"/>
 
 
 @using (Html.BeginMasterDataForm())
 {
-    <input asp-for="MenuId" hidden/>
     <div class="row">
         <div class="col-sm-12">
             <link-button icon="Pencil" 

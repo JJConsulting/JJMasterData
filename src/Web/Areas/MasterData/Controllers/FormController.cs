@@ -11,11 +11,8 @@ public class FormController(
     IFormElementComponentFactory<JJFormView> formViewFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer) : MasterDataController
 {
-    [ViewData]
-    public string? Title { get; set; }
-   
-    [ViewData]
-    public string? FormViewHtml { get; set; }
+    
+    
     
     public async Task<IActionResult> Render(string elementName)
     {
@@ -30,7 +27,7 @@ public class FormController(
 
         SetTitle(formView.FormElement.Name);
         
-        FormViewHtml = result.Content;
+        ViewData["FormViewHtml"] = result.Content;
 
         HttpContext.Items["ElementName"] = elementName;
 
@@ -41,15 +38,15 @@ public class FormController(
     {
         if (TempData.TryGetValue("Title", out var title))
         {
-            Title = title?.ToString();
+            ViewData["Title"] = title?.ToString();
         }
         else if (Request.HasFormContentType && Request.Form.TryGetValue("masterdata-title", out var mdTitle))
         {
-            Title = mdTitle;
+            ViewData["Title"] = mdTitle;
         }
         else
         {
-            Title = elementName;
+            ViewData["Title"] = elementName;
         }
     }
 

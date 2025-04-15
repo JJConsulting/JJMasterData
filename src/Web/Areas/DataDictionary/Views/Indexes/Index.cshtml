@@ -1,5 +1,4 @@
-﻿@using JJMasterData.Core.Http.Abstractions
-@using JJMasterData.Core.UI.Components
+﻿@using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
@@ -10,9 +9,9 @@
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
-@inject IHttpContext HttpContext
 @{
     ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Indexes"]}";
+    Layout = "_FormElementMenuLayout";
 }
 
 @section Scripts
@@ -29,10 +28,6 @@
         })
     </script>
 }
-
-
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
-
 
 @using (Html.BeginMasterDataForm())
 {

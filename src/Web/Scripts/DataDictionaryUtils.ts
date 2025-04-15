@@ -84,6 +84,6 @@
     }
     
     static async showAbout(url) {
-        await OffcanvasHelper.populateOffcanvas("about-offcanvas",url);
+        await OffcanvasHelper.showOffcanvas("about-offcanvas",url);
     }
 }

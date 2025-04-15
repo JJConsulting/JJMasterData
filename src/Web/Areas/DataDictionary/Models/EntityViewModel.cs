@@ -4,23 +4,13 @@ using JJMasterData.Core.Events.Abstractions;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
-public sealed class EntityViewModel : DataDictionaryViewModel
+public sealed class EntityViewModel
 {
+    public required string ElementName { get; set; }
     public Entity Entity { get; set; } = null!;
     public IEventHandler? FormEvent { get; set; }
     [Display(Name = "Type")]
     public string FormEventType => IsPythonFormEvent ? "Python" : ".NET";
     public bool IsPythonFormEvent => FormEvent != null && FormEvent.GetType().ToString().Contains('$');
     public bool Disabled { get; init; }
-    
-    // ReSharper disable once UnusedMember.Global
-    // Reason: Used for model binding.
-    public EntityViewModel()
-    {
-        
-    }
-    
-    public EntityViewModel(string elementName, string menuId) : base(elementName, menuId)
-    {
-    }
 }

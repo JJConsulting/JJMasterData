@@ -12,7 +12,7 @@
     ViewData["Title"] = $"{ViewData["ElementName"]} - {StringLocalizer["Fields"]}";
     var isForm = ViewData["IsForm"] is true;
     var elementName = ViewData["ElementName"]!.ToString();
-    Layout = !isForm ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
+    Layout = !isForm ? Options.Value.ModalLayoutPath : "_FormElementMenuLayout";
 }
 
 @functions{
@@ -75,8 +75,6 @@
 
 @if (isForm)
 {
-    <partial name="_Menu" model="@(new DataDictionaryViewModel(elementName, ViewBag.MenuId))"/>
-
     <div class="modal fade" id="copyFromModal" tabindex="-1" aria-labelledby="copyFromModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">

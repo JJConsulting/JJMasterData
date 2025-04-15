@@ -27,7 +27,6 @@ public class SqlServerWriteProcedureScripts(
 
         var sql = new StringBuilder();
         var procedureName = options.Value.GetWriteProcedureName(element);
-        var procedureFinalName = FormatWithSchema(procedureName, element.Schema);
 
         if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
         {
@@ -35,11 +34,11 @@ public class SqlServerWriteProcedureScripts(
         }
         else
         {
-            sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
+            sql.AppendLine(GetSqlDropIfExists(procedureName));
             sql.Append("CREATE PROCEDURE ");
         }
 
-        sql.AppendLine(procedureFinalName);
+        sql.AppendLine(procedureName);
         sql.AppendLine("@action varchar(1), ");
 
         var fields = element.Fields

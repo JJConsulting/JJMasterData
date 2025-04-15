@@ -9,7 +9,9 @@
     }
 </style>
 
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
+@{
+    Layout = "_FormElementMenuLayout";
+}
 
 @using (Html.BeginMasterDataForm("Edit", "UIOptions"))
 {

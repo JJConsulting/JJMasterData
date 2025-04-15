@@ -20,8 +20,9 @@ public class ActionsController(ActionsService actionsService,
     public async Task<ActionResult> Index(string elementName)
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
-        var model = new ActionsListViewModel(elementName, "Actions")
+        var model = new ActionsListViewModel
         {
+            ElementName = elementName,
             GridTableActions = formElement.Options.GridTableActions.GetAllSorted().ToList(),
             GridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted().ToList(),
             FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().ToList()
@@ -37,8 +38,7 @@ public class ActionsController(ActionsService actionsService,
     {
         if (elementName is null)
             throw new ArgumentNullException(nameof(elementName));
-
-
+        
         var formElement = await actionsService.GetFormElementAsync(elementName);
 
         var action = context switch

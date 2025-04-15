@@ -44,9 +44,10 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
     private static RelationshipsListViewModel CreateListViewModel(string elementName,
         FormElementRelationshipList relationships)
     {
-        return new RelationshipsListViewModel(elementName, "Relationships")
+        return new RelationshipsListViewModel
         {
-            Relationships = relationships
+            Relationships = relationships,
+            ElementName = elementName
         };
     }
 
@@ -122,13 +123,14 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
         string elementName,
         ElementRelationship relationship, int? id = null)
     {
-        return new RelationshipsElementDetailsViewModel(elementName, "Relationships")
+        return new RelationshipsElementDetailsViewModel
         {
             Id = id,
             Relationship = relationship,
             ElementsSelectList = await GetElementsSelectList(relationship.ChildElement),
             PrimaryKeysSelectList = await GetPrimaryKeysSelectList(elementName),
-            ForeignKeysSelectList = await GetForeignKeysSelectList(relationship.ChildElement)
+            ForeignKeysSelectList = await GetForeignKeysSelectList(relationship.ChildElement),
+            ElementName = elementName
         };
     }
 
@@ -208,13 +210,14 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
 
         var relationship = formElement.Relationships.GetById(id);
         
-        return new RelationshipsLayoutDetailsViewModel(elementName, "Relationships")
+        return new RelationshipsLayoutDetailsViewModel
         {
             Id = id,
             IsParent = relationship.IsParent,
             EditModeOpenByDefault = relationship.EditModeOpenByDefault,
             Panel = relationship.Panel,
-            ViewType = relationship.ViewType
+            ViewType = relationship.ViewType,
+            ElementName = elementName
         };
     }
     

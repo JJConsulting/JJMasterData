@@ -30,8 +30,6 @@ public class EntityController(
         {
             return View(model);
         }
-
-        model.MenuId = "Entity";
             
         return View(model);
 
@@ -53,8 +51,7 @@ public class EntityController(
             return RedirectToAction("Index", new { elementName = entity.Name });
         }
 
-        model.MenuId = "Entity";
-            
+
         return View(model);
 
     }
@@ -63,9 +60,10 @@ public class EntityController(
     {
         var formElement = await entityService.GetFormElementAsync(elementName);
         var entity = Entity.FromFormElement(formElement);
-        var viewModel = new EntityViewModel(menuId:"Entity", elementName:elementName)
+        var viewModel = new EntityViewModel
         {
             Entity = entity,
+            ElementName = elementName,
             FormEvent = formEventHandlerFactory?.GetFormEventHandler(elementName) as IEventHandler ?? gridEventHandlerResolver?.GetGridEventHandler(elementName),
             Disabled = readOnly
         };

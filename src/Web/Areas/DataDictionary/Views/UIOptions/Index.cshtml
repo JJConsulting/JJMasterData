@@ -6,6 +6,7 @@
 
 @{
     ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Options"]}";
+    Layout = "_FormElementMenuLayout";
 }
 
 <style>
@@ -13,8 +14,6 @@
         margin: 2px 0 0;
     }
 </style>
-
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
 <div class="row">
     <div class="col-sm-12">

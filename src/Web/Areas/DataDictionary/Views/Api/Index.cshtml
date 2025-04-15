@@ -5,9 +5,11 @@
 
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["WebApi"]}";
+    ViewData["ElementName"] = Model.ElementName;
+    ViewData["MenuId"] = "Api";
+    Layout = "_FormElementMenuLayout";
 }
 
-<partial name="_Menu"/>
 
 <div class="row">
     <div class="col-sm-12">

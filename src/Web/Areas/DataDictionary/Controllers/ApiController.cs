@@ -42,8 +42,9 @@ public class ApiController(ApiService apiService) : DataDictionaryController
     }
     private static ApiViewModel PopulateViewModel(FormElement metadata)
     {
-        var model = new ApiViewModel(elementName:metadata.Name, menuId:"WebApi")
+        var model = new ApiViewModel
         {
+            ElementName = metadata.Name,
             ApiOptions = metadata.ApiOptions,
             SynchronismMode = metadata.SynchronismMode,
             EnableSynchronism = metadata.EnableSynchronism,

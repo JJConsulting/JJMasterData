@@ -7,13 +7,14 @@
 
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";
+    Layout = "_FormElementMenuLayout";
+    ViewData["ElementName"] = Model.ElementName;
+    ViewData["MenuId"] = "Entity";
 }
 
-<partial name="_Menu"></partial>
 
 @using (Html.BeginMasterDataForm("Edit", "Entity"))
 {
-    <input asp-for="MenuId" hidden/>
     <div class="row">
         <div class="col-sm-12">
             <link-button text="@StringLocalizer["Save"]" color="Primary" icon="Check" type="LinkButtonType.Submit"/>

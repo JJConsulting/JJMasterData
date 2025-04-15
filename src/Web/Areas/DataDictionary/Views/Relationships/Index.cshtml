@@ -1,10 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model RelationshipsListViewModel
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-<partial name="_Menu" model="Model"/>
+
 
 @{
+    ViewData["ElementName"] = Model.ElementName;
+    ViewData["MenuId"] = "Relationships";
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Relationships"]}";
+    Layout = "_FormElementMenuLayout";
 }
 
 @section Scripts{

@@ -6,10 +6,12 @@
 @model ApiViewModel
     
 @{
+    Layout = "_FormElementMenuLayout";
+    ViewData["ElementName"] = Model.ElementName;
+    ViewData["MenuId"] = "Api";
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["WebApi"]}";
 }
 
-<partial name="_Menu" model="Model"/>
 
 @{
     var cancelLocation = Url.Action("Index", new { elementName = Model.ElementName })!;
@@ -17,7 +19,6 @@
 
 @using (Html.BeginMasterDataForm("Edit", "Api"))
 {
-    <input asp-for="MenuId" hidden="hidden"/>
     <input asp-for="ElementName" hidden="hidden"/>
     <div class="row">
         <div class="col-sm-12">
