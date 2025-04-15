@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -12,8 +13,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class FieldService(IValidationDictionary validationDictionary,
+public class FieldService(
+        IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
+        IEntityRepository entityRepository,
         IEnumerable<IExpressionProvider> expressionProviders,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
@@ -513,5 +516,22 @@ public class FieldService(IValidationDictionary validationDictionary,
     public Task SetFormElementAsync(FormElement formElement)
     {
         return DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+    }
+
+    public async Task ImportFieldsFromTable(string elementName)
+    {
+        var existingElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var elementFromDb = await entityRepository.GetElementFromTableAsync(existingElement.Schema ?? "dbo", existingElement.TableName);
+        
+        var fields = elementFromDb.Fields;
+        foreach (var field in fields)
+        {
+            if (!existingElement.Fields.Contains(field.Name))
+            {
+                existingElement.Fields.Add(new(field));
+            }
+        }
+
+        await DataDictionaryRepository.InsertOrReplaceAsync(existingElement);
     }
 }

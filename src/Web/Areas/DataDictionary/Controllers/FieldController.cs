@@ -368,4 +368,10 @@ public class FieldController(
         
         return RedirectToIndex(elementName, field);
     }
+
+    public async Task<IActionResult> ImportFields(string elementName)
+    {
+       await fieldService.ImportFieldsFromTable(elementName);
+       return RedirectToAction("Index", new {elementName});
+    }
 }

@@ -3515,6 +3515,9 @@
   <data name="FormElement" xml:space="preserve">
     <value>Formulário do Elemento</value>
   </data>
+  <data name="Import Fields From Table" xml:space="preserve">
+    <value>Importar Campos da Tabela</value>
+  </data>
   <data name="Auto Reload" xml:space="preserve">
     <value>Recarregar Valores</value>
   </data>
