@@ -8,9 +8,12 @@ You have two options.
 
 Setting the `CustomBootstrapPath` property, `bootstrap.min.css` not will be generate in `_MasterDataStylesheets` and your custom path will be used.
 ```cs
-builder.Services.AddJJMasterDataWeb(o =>
+builder.Services.AddJJMasterDataWeb(options =>
 {
-    o.CustomBootstrapPath = "/home/gumbarros/css/bootstrap.css"
+    options.ConfigureWeb = webOptions =>
+    {
+        webOptions.CustomBootstrapPath = "/home/gumbarros/css/bootstrap.css";
+    };
 })
 ```
 > [!TIP]
@@ -28,15 +31,16 @@ Your custom layout will look like this:
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, JJMasterData.Web
 <!DOCTYPE html>
-<html lang="@System.Globalization.CultureInfo.CurrentCulture.Name">
+<html data-bs-theme="light" lang="@System.Globalization.CultureInfo.CurrentCulture.Name">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JJMasterData</title>
+    <title>@ViewData["Title"]</title>
 
     <!-- do not remove -->
     <partial name="_MasterDataStylesheets"/>
+    @await RenderSectionAsync("Stylesheets", required: false)
     <partial name="_MasterDataScripts"/>
 </head>
 <body>

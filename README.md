@@ -76,7 +76,7 @@ var app = builder.Build();
 
 //Required middlewares
 app.UseStaticFiles();
-app.UseSession();
+app.UseSession(); //Session is very important
 
 app.MapDataDictionary();
 app.MapMasterData();
@@ -86,7 +86,7 @@ await app.UseMasterDataSeedingAsync();
 app.Run();
 ```
 4. Create a `wwwroot` folder if your project is empty
-5. Run the project and visit `/en-US/DataDictionary/Element/Index` <br>
+5. Run the project and visit `/DataDictionary/Element/Index` <br>
 <img width="960" alt="image" src="https://github.com/JJConsulting/JJMasterData/assets/52143624/c4bf083d-38e1-486d-aaf2-2177d7ad77ef">
 
 

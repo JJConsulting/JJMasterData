@@ -10,6 +10,7 @@
     <title>@(ViewData["Title"] ?? "JJMasterData")</title>
     <link rel="icon" type="image/x-icon" href="~/_content/JJMasterData.Web/favicon.ico">
     <partial name="_MasterDataStylesheets"/>
+    @await RenderSectionAsync("Stylesheets", required: false)
     <partial name="_MasterDataScripts"/>
 </head>
 <body>
