@@ -9,44 +9,44 @@ public sealed class FormToolbarActionList : FormElementActionList
     public SaveAction SaveAction
     {
         get => GetOrAdd<SaveAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
 
     [JsonPropertyName("backAction")]
     public BackAction BackAction
     {
         get => GetOrAdd<BackAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
 
     [JsonPropertyName("cancelAction")]
     public CancelAction CancelAction
     {
         get => GetOrAdd<CancelAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
 
     [JsonPropertyName("formEditAction")]
     public FormEditAction FormEditAction
     {
         get => GetOrAdd<FormEditAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
 
     [JsonPropertyName("auditLogFormToolbarAction")]
     public AuditLogFormToolbarAction AuditLogFormToolbarAction
     {
         get => GetOrAdd<AuditLogFormToolbarAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
     
     public FormToolbarActionList()
     {
-        Set(new SaveAction());
-        Set(new BackAction());
-        Set(new CancelAction());
-        Set(new FormEditAction());
-        Set(new AuditLogFormToolbarAction());
+        Add(new SaveAction());
+        Add(new BackAction());
+        Add(new CancelAction());
+        Add(new FormEditAction());
+        Add(new AuditLogFormToolbarAction());
     }
     
     private FormToolbarActionList(List<BasicAction> actions) : base(actions)

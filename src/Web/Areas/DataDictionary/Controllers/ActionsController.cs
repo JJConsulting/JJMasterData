@@ -392,24 +392,24 @@ public class ActionsController(ActionsService actionsService,
         await actionsService.SaveAction(elementName, basicAction, context, originalName, fieldName);
 
         if (ModelState.IsValid)
-            ViewBag.Success = true;
+            ViewData["Success"] = true;
         else
-            ViewBag.Error = actionsService.GetValidationSummary().GetHtml();
+            ViewData["Error"] = actionsService.GetValidationSummary().GetHtml();
     }
 
     private async Task PopulateViewBag(string elementName, BasicAction basicAction, ActionSource context,
         string? fieldName = null)
     {
         if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
-            ViewBag.OriginalName = originalName;
+            ViewData["OriginalName"] = originalName;
         else
-            ViewBag.OriginalName = basicAction.Name;
+            ViewData["OriginalName"] = basicAction.Name;
 
         if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
-            ViewBag.Tab = selectedTab;
+            ViewData["Tab"] = selectedTab;
 
         else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
-            ViewBag.Tab = tempSelectedTab?.ToString()!;
+            ViewData["Tab"] = tempSelectedTab?.ToString()!;
         
         ViewData["ElementName"] = elementName;
         ViewData["ContextAction"] = context;
@@ -427,10 +427,10 @@ public class ActionsController(ActionsService actionsService,
 
         if (basicAction is InternalAction internalAction)
         {
-            ViewBag.ElementNameList = (await actionsService.GetElementsDictionaryAsync()).OrderBy(n=>n.Key).ToList();
-            ViewBag.InternalFieldList = await actionsService.GetFieldList(elementName);
+            ViewData["ElementNameList"] = (await actionsService.GetElementsDictionaryAsync()).OrderBy(n=>n.Key).ToList();
+            ViewData["InternalFieldList"] = await actionsService.GetFieldList(elementName);
             var elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
-            ViewBag.RedirectFieldList = await actionsService.GetFieldList(elementNameRedirect);
+            ViewData["RedirectFieldList"] = await actionsService.GetFieldList(elementNameRedirect);
         }
     }
 }

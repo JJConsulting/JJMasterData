@@ -8,9 +8,10 @@ using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public abstract class FormElementActionList : IList<BasicAction>
+public abstract class FormElementActionList(List<BasicAction> list) : IList<BasicAction>
 {
-    [JsonIgnore] protected List<BasicAction> List { get; }
+    [JsonIgnore] 
+    protected List<BasicAction> List { get; } = list;
 
     [JsonPropertyName("sqlActions")]
     [JsonInclude]
@@ -38,14 +39,8 @@ public abstract class FormElementActionList : IList<BasicAction>
     [JsonInclude]
     protected internal List<InternalAction> InternalActions => List.OfType<InternalAction>().ToList();
 
-    protected FormElementActionList()
+    protected FormElementActionList() : this([])
     {
-        List = [];
-    }
-
-    protected FormElementActionList(List<BasicAction> list)
-    {
-        List = list;
     }
 
     public IEnumerator<BasicAction> GetEnumerator() => List.GetEnumerator();
@@ -74,7 +69,21 @@ public abstract class FormElementActionList : IList<BasicAction>
             List.Add(item);
         }
     }
-
+    
+    protected void SetOfType<T>(T item) where T : BasicAction
+    {
+        var existingAction = List.OfType<T>().FirstOrDefault();
+        if (existingAction != null)
+        {
+            var index = List.IndexOf(existingAction);
+            List[index] = item;
+        }
+        else
+        {
+            List.Add(item);
+        }
+    }
+    
     public void Clear() => List.Clear();
     public bool Contains(BasicAction item) => List.Contains(item);
     public void CopyTo(BasicAction[] array, int arrayIndex) => List.CopyTo(array, arrayIndex);

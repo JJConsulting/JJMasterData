@@ -9,28 +9,28 @@ public sealed class GridTableActionList : FormElementActionList
     public DeleteAction DeleteAction
     {
         get => GetOrAdd<DeleteAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
 
     [JsonPropertyName("editAction")]
     public EditAction EditAction
     {
         get => GetOrAdd<EditAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
 
     [JsonPropertyName("viewAction")]
     public ViewAction ViewAction
     {
         get => GetOrAdd<ViewAction>();
-        set => Set(value);
+        set => SetOfType(value);
     }
 
     public GridTableActionList()
     {
-        Set(new ViewAction());
-        Set(new EditAction());
-        Set(new DeleteAction());
+        Add(new ViewAction());
+        Add(new EditAction());
+        Add(new DeleteAction());
     }
 
     private GridTableActionList(List<BasicAction> list) : base(list)
