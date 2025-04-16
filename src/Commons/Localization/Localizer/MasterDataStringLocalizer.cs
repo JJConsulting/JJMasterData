@@ -19,7 +19,7 @@ public sealed class MasterDataStringLocalizer(
     ) : IStringLocalizer
 {
     private static readonly LocalizedString Empty = new(string.Empty, string.Empty, resourceNotFound: true);
-    private static readonly ConcurrentDictionary<string, FrozenDictionary<string, string>> Cache = new();
+    private static readonly ConcurrentDictionary<string, FrozenDictionary<string, string>> Cache = new(StringComparer.InvariantCultureIgnoreCase);
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
