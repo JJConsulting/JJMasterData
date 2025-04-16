@@ -487,7 +487,6 @@ public class FieldService(
                 {
                     fields.Add(field.Name, field.Name);
                 }
-              
             }
             else
             {

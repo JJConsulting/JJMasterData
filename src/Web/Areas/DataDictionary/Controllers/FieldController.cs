@@ -236,10 +236,9 @@ public class FieldController(
         field.DataItem.ElementMap ??= new DataElementMap();
         
         ViewData["ElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName);
-
-        if (field.Component is FormComponent.Lookup)
+        if (field.DataItem.DataItemType is DataItemType.ElementMap)
         {
-            ViewData["LookupFilterElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName, recoverOnlyFilters:true);
+            ViewData["FiltersElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName, recoverOnlyFilters:true);
         }
     }
 
