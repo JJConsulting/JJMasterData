@@ -21,6 +21,7 @@ public interface IDataDictionaryRepository
     Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderByData, int recordsPerPage, int currentPage);
     Task<bool> ExistsAsync(string elementName);
     Task InsertOrReplaceAsync(FormElement formElement);
+    Task InsertOrReplaceAsync(IEnumerable<FormElement> formElements);
     void InsertOrReplace(FormElement formElement);
     Task DeleteAsync(string elementName);
 }

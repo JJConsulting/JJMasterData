@@ -34,7 +34,7 @@ public abstract class EntityProviderBase(
     public abstract DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values);
     public abstract DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> primaryKeys);
     public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter);
-    protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values);
+    protected internal abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values);
     public abstract bool TableExists(string tableName, Guid? connectionId = null);
     
     public abstract Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default);
@@ -141,10 +141,13 @@ public abstract class EntityProviderBase(
 
         if (newFields == null)
             return commandType;
-        
-        foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
+
+        foreach (var entry in newFields)
         {
-            values[entry.Key] = entry.Value;
+            if (element.Fields.ContainsKey(entry.Key))
+            {
+                values[entry.Key] = entry.Value;
+            }
         }
 
         return commandType;

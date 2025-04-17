@@ -50,6 +50,8 @@ public interface IEntityRepository
     int Delete(Element element, Dictionary<string, object> primaryKeys);
     
     void Insert(Element element, Dictionary<string, object?> values);
+    public int Insert(Element element, IEnumerable<Dictionary<string, object?>> values);
+
     
     /// <summary>
     /// Add a record to the database.
@@ -62,12 +64,7 @@ public interface IEntityRepository
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
     public Task InsertAsync(Element element, Dictionary<string,object?> values);
-
-    public int BulkInsert(Element element, IEnumerable<Dictionary<string, object?>> values,
-        Guid? connectionId = null);
-    
-    public Task<int> BulkInsertAsync(Element element, IEnumerable<Dictionary<string, object?>> values,
-        Guid? connectionId = null);
+    public Task<int> InsertAsync(Element element, IEnumerable<Dictionary<string, object?>> values);
     
     /// <summary>
     /// Set a record in the database.
@@ -85,6 +82,9 @@ public interface IEntityRepository
     /// </remarks>
     public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values, bool ignoreResults = false);
     CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults = false);
+
+    public Task SetValuesAsync(Element element, IEnumerable<Dictionary<string,object?>> values);
+
     
     void CreateDataModel(Element element,List<RelationshipReference>? relationships = null);
     

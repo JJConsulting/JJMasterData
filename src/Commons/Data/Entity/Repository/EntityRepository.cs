@@ -44,29 +44,38 @@ internal sealed class EntityRepository(
         return provider.InsertAsync(element, values);
     }
     
-    public int BulkInsert(Element element, IEnumerable<Dictionary<string, object?>> values, Guid? connectionId = null)
+    public int Insert(Element element, IEnumerable<Dictionary<string, object?>> values)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = GetDataAccess(element.ConnectionId);
 
-        var commandList = GetInsertCommandList(element, values);
+        var commandList = GetInsertCommands(element, values);
 
         return dataAccess.SetCommand(commandList);
     }
     
-    public Task<int> BulkInsertAsync(Element element, IEnumerable<Dictionary<string, object?>> valueList, Guid? connectionId = null)
+    public Task<int> InsertAsync(Element element, IEnumerable<Dictionary<string, object?>> valueList)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = GetDataAccess(element.ConnectionId);
 
-        var commandList = GetInsertCommandList(element, valueList);
+        var commandList = GetInsertCommands(element, valueList);
 
         return dataAccess.SetCommandListAsync(commandList);
     }
 
-    private IEnumerable<DataAccessCommand> GetInsertCommandList(Element element, IEnumerable<Dictionary<string, object?>> values)
+    private IEnumerable<DataAccessCommand> GetInsertCommands(Element element, IEnumerable<Dictionary<string, object?>> values)
     {
         foreach (var valuesDictionary in values)
         {
             var command = provider.GetInsertCommand(element, valuesDictionary);
+            yield return command;
+        }
+    }
+    
+    private IEnumerable<DataAccessCommand> GetSetValuesCommands(Element element, IEnumerable<Dictionary<string, object?>> values)
+    {
+        foreach (var valuesDictionary in values)
+        {
+            var command = provider.GetInsertOrReplaceCommand(element, valuesDictionary);
             yield return command;
         }
     }
@@ -85,6 +94,15 @@ internal sealed class EntityRepository(
     public CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults = false)
     {
         return provider.SetValues(element, values, ignoreResults);
+    }
+
+    public Task SetValuesAsync(Element element, IEnumerable<Dictionary<string, object?>> values)
+    {
+        var dataAccess = GetDataAccess(element.ConnectionId);
+
+        var commandList = GetSetValuesCommands(element, values);
+
+        return dataAccess.SetCommandListAsync(commandList);
     }
 
     public Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId = null)

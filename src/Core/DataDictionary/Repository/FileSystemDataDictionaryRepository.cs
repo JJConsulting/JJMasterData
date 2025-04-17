@@ -124,6 +124,14 @@ public class FileSystemDataDictionaryRepository
         File.WriteAllText(fileFullName, json);
     }
 
+    public async Task InsertOrReplaceAsync(IEnumerable<FormElement> formElements)
+    {
+        foreach (var formElement in formElements)
+        {
+            await InsertOrReplaceAsync(formElement);
+        }
+    }
+
     public Task InsertOrReplaceAsync(FormElement metadata)
     {
         InsertOrReplace(metadata);

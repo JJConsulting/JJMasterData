@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -150,6 +151,27 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         if(_enableDataDictionaryCaching)
             ClearCache(formElement);
+    }
+    
+    public async Task InsertOrReplaceAsync(IEnumerable<FormElement> formElements)
+    {
+        var formElementsList = formElements.ToList(); 
+
+        var values = GetValues(formElementsList);
+
+        await _entityRepository.SetValuesAsync(_masterDataElement, values);
+    
+        foreach (var formElement in formElementsList)
+            ClearCache(formElement);
+    }
+    
+    private static IEnumerable<Dictionary<string, object?>> GetValues(List<FormElement> formElements)
+    {
+        foreach (var formElement in formElements)
+        {
+            var elementDictionary = GetFormElementDictionary(formElement);
+            yield return elementDictionary;
+        }
     }
 
     public void InsertOrReplace(FormElement formElement)

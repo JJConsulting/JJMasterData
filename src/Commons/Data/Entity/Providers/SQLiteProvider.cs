@@ -270,7 +270,7 @@ public class SQLiteProvider(
         return GetScriptDelete(element, filters);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
+    protected internal override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
     {
         return GetScriptInsert(element, values, true);
     }

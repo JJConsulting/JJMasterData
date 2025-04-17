@@ -16,6 +16,7 @@ public static class DbLoggerElement
             Name = options.TableName,
             Schema = options.TableSchema,
             TableName = options.TableName,
+            ConnectionId = options.ConnectionStringId,
             UseReadProcedure = false,
             UseWriteProcedure = false,
             Info = "System Log",

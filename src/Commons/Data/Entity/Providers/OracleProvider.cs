@@ -803,7 +803,7 @@ public class OracleProvider(
         return GetCommandWrite(DeleteKeyword, element, filters!);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
+    protected internal override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }

@@ -45,6 +45,6 @@ public sealed class DbLoggerProvider(IServiceProvider serviceProvider, IOptionsM
             _tableExists = true;
         }
         
-        await repository.BulkInsertAsync(element, values, currentOptions.ConnectionStringId);
+        await repository.InsertAsync(element, values);
     }
 }

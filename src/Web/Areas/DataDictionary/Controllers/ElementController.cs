@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Net;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -78,7 +79,7 @@ public class ElementController(
 
     private void ConfigureUploadArea(JJUploadArea upload)
     {
-        upload.AllowedTypes = "json";
+        upload.AllowedTypes = "json,zip";
         upload.JsCallback = "importationCallback()";
         upload.Url = Url.Action("Import", "Element");
         upload.OnFileUploadedAsync += FileUploaded;
@@ -87,7 +88,15 @@ public class ElementController(
     private async ValueTask FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
         await using var ms = new MemoryStream(e.File.Bytes);
-        await elementImportService.Import(ms);
+        if (e.File.FileName.EndsWith(".zip"))
+        {
+            await elementImportService.ImportZipFile(ms);
+        }
+        else
+        {
+            await elementImportService.Import(ms);
+        }
+ 
         if (ModelState.IsValid)
         {
             e.SuccessMessage = stringLocalizer["Dictionary imported successfully!"];

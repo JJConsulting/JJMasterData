@@ -125,6 +125,14 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
             replacement: new MongoDBFormElement(formElement));
     }
 
+    public async Task InsertOrReplaceAsync(IEnumerable<FormElement> formElements)
+    {
+        foreach (var formElement in formElements)
+        {
+            await InsertOrReplaceAsync(formElement);
+        }
+    }
+
     public void InsertOrReplace(FormElement formElement)
     {
         _formElementCollection.ReplaceOne(

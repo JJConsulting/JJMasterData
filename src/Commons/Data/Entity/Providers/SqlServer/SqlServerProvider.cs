@@ -60,7 +60,7 @@ public class SqlServerProvider(
         return GetWriteCommand(DeleteInitial, element, filters!);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
+    protected internal override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
     {
         return GetWriteCommand(string.Empty, element, values);
     }
