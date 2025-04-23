@@ -198,7 +198,7 @@ public class JJAuditLogView : AsyncComponent
 
         var filter = new Dictionary<string, object> { { AuditLogService.DicId, logId } };
 
-        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(FormElement.ConnectionId), filter);
+        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
         var json = values[AuditLogService.DicJson]?.ToString();
         var recordsKey = values[AuditLogService.DicKey]?.ToString();
         var auditLogValues = JsonSerializer.Deserialize<Dictionary<string, object>>(json ?? string.Empty, MasterDataJsonSerializerOptions.Default);
@@ -265,7 +265,7 @@ public class JJAuditLogView : AsyncComponent
     {
         var filter = new Dictionary<string, object> { { AuditLogService.DicId, logId } };
 
-        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(FormElement.ConnectionId), filter);
+        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
         string json = values[AuditLogService.DicJson].ToString();
 
         var fields = JsonSerializer.Deserialize<Dictionary<string, object>>(json!, MasterDataJsonSerializerOptions.Default);

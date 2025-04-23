@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary;
@@ -14,16 +13,13 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class AuditLogService(
     IEntityRepository entityRepository,
-    IOptionsSnapshot<MasterDataCoreOptions> options,
-    IStringLocalizer<MasterDataResources> stringLocalizer)
+    IOptionsSnapshot<MasterDataCoreOptions> options)
 {
     public const string DicId = "id";
     public const string DicName = "dictionary";
@@ -51,15 +47,14 @@ public class AuditLogService(
             { DicJson, GetJsonFields(formValues) }
         };
 
-        var logElement = GetElement(element.ConnectionId);
-        await CreateTableIfNotExistsAsync(element.ConnectionId);
+        var logElement = GetElement();
         await entityRepository.InsertAsync(logElement, values);
     }
 
-    private async Task CreateTableIfNotExistsAsync(Guid? connectionId)
+    public async Task CreateStructureIfNotExistsAsync()
     {
-        var logElement = GetElement(connectionId);
-        if (!await entityRepository.TableExistsAsync(logElement.Schema, logElement.TableName, logElement.ConnectionId))
+        var logElement = GetElement();
+        if (!await entityRepository.TableExistsAsync(logElement.Schema, logElement.TableName))
             await entityRepository.CreateDataModelAsync(logElement);
     }
 
@@ -87,10 +82,10 @@ public class AuditLogService(
         return key.ToString();
     }
 
-    public Element GetElement(Guid? connectionId)
+    public Element GetElement()
     {
         string tableName = options.Value.AuditLogTableName;
-        var element = new Element(tableName, stringLocalizer["Audit Log"]);
+        var element = new Element(tableName, "Audit Log");
         element.Schema = options.Value.AuditLogTableSchema;
         element.Fields.AddPk(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicName, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);
@@ -102,7 +97,7 @@ public class AuditLogService(
         element.Fields.Add(DicOrigin, "Origin", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicKey, "Record Key", FieldType.Varchar, 100, true, FilterMode.Contain);
         element.Fields.Add(DicJson, "Object", FieldType.Text, 0, false, FilterMode.None);
-        element.ConnectionId = connectionId;
+
         element.UseReadProcedure = false;
         element.UseWriteProcedure = false;
         
@@ -111,7 +106,7 @@ public class AuditLogService(
 
     public FormElement GetFormElement(FormElement formElement)
     {
-        var auditLogFormElement = new FormElement(GetElement(formElement.ConnectionId));
+        var auditLogFormElement = new FormElement(GetElement());
         auditLogFormElement.Fields[DicId].VisibleExpression = "val:0";
         auditLogFormElement.Fields[DicName].VisibleExpression = "val:0";
         auditLogFormElement.Fields[DicBrowser].VisibleExpression = "val:0";
