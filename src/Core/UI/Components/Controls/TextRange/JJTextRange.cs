@@ -101,7 +101,7 @@ public class JJTextRange(IFormValues formValues,
             .WithAttribute("aria-expanded", "true")
             .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
             .AppendText($"{StringLocalizer["Periods"]}&nbsp;")
-            .Append(HtmlTag.Span, span => { span.WithCssClass("caret"); });
+            .Append(HtmlTag.Span, span => span.WithCssClass("caret"));
     }
 
     private string GetClearScript()
@@ -151,11 +151,12 @@ public class JJTextRange(IFormValues formValues,
     private static HtmlBuilder GetListItem(string label, string script)
     {
         return new HtmlBuilder(HtmlTag.Li)
-            .WithOnClick( script)
-            .AppendDiv(div =>
+            .WithOnClick(script)
+            .Append(BootstrapHelper.Version == 5 ? HtmlTag.Div : HtmlTag.A,tag =>
             {
-                div.WithCssClass("dropdown-item");
-                div.AppendText(label);
+                tag.WithAttributeIf(BootstrapHelper.Version == 3,"href","javascript:void(0)");
+                tag.WithCssClass("dropdown-item");
+                tag.AppendText(label);
             });
     }
 
