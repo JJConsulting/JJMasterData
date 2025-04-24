@@ -85,6 +85,7 @@ public class JJTextRange(IFormValues formValues,
         
         yield return GetListItem(StringLocalizer["Today"], GetTodayScript(now));
         yield return GetListItem(StringLocalizer["Yesterday"], GetYesterdayScript(now));
+        yield return GetListItem(StringLocalizer["This week"], GetThisWeekScript(now));
         yield return GetListItem(StringLocalizer["This month"], GetThisMonthScript(now));
         yield return GetListItem(StringLocalizer["Last month"], GetLastMonthScript(now));
         yield return GetListItem(StringLocalizer["Last three months"], GetLastThreeMonthsScript(now));
@@ -109,19 +110,19 @@ public class JJTextRange(IFormValues formValues,
         return GetjQueryFromToScript(string.Empty, string.Empty, false);
     }
 
-    private string GetLastThreeMonthsScript(DateTime now)
+    private string GetLastThreeMonthsScript(DateTime date)
     {
-        var lastQuarter = now.AddMonths(-3);
+        var lastQuarter = date.AddMonths(-3);
         var dtLastQuarterFrom = new DateTime(lastQuarter.Year, lastQuarter.Month, 1).ToShortDateString();
-        var dtMonthTo = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month))
+        var dtMonthTo = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month))
             .ToShortDateString();
 
         return GetjQueryFromToScript(dtLastQuarterFrom, dtMonthTo, IsTimeAware);
     }
 
-    private string GetLastMonthScript(DateTime now)
+    private string GetLastMonthScript(DateTime date)
     {
-        var lastMonth = now.AddMonths(-1);
+        var lastMonth = date.AddMonths(-1);
         var dtLastMonthFrom = new DateTime(lastMonth.Year, lastMonth.Month, 1).ToShortDateString();
         var dtLastMonthTo = new DateTime(lastMonth.Year, lastMonth.Month,
             DateTime.DaysInMonth(lastMonth.Year, lastMonth.Month)).ToShortDateString();
@@ -129,23 +130,36 @@ public class JJTextRange(IFormValues formValues,
         return GetjQueryFromToScript(dtLastMonthFrom, dtLastMonthTo, IsTimeAware);
     }
 
-    private string GetThisMonthScript(DateTime now)
+    private string GetThisMonthScript(DateTime date)
     {
-        var dtMonthFrom = new DateTime(now.Year, now.Month, 1).ToShortDateString();
-        var dtMonthTo = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month))
+        var dtMonthFrom = new DateTime(date.Year, date.Month, 1).ToShortDateString();
+        var dtMonthTo = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month))
             .ToShortDateString();
         return GetjQueryFromToScript(dtMonthFrom, dtMonthTo, IsTimeAware);
     }
 
-    private string GetYesterdayScript(DateTime now)
+    private string GetThisWeekScript(DateTime date)
     {
-        string yesterdayDate = now.AddDays(-1).ToShortDateString();
+        var diff = (int)date.DayOfWeek - (int)DayOfWeek.Monday;
+        if (diff < 0) 
+            diff += 7;
+        
+        var weekStart = date.AddDays(-diff).Date.ToShortDateString();
+        var weekEnd = date.AddDays(6 - diff).Date.ToShortDateString();
+
+        return GetjQueryFromToScript(weekStart, weekEnd, IsTimeAware);
+    }
+    
+    private string GetYesterdayScript(DateTime date)
+    {
+        string yesterdayDate = date.AddDays(-1).ToShortDateString();
         return GetjQueryFromToScript(yesterdayDate, yesterdayDate, IsTimeAware);
     }
 
-    private string GetTodayScript(DateTime now)
+    private string GetTodayScript(DateTime date)
     {
-        return GetjQueryFromToScript(now.ToShortDateString(), now.ToShortDateString(), IsTimeAware);
+        var today = date.ToShortDateString();
+        return GetjQueryFromToScript(today, today, IsTimeAware);
     }
 
     private static HtmlBuilder GetListItem(string label, string script)
