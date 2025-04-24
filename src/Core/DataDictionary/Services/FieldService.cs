@@ -520,7 +520,7 @@ public class FieldService(
     public async Task ImportFieldsFromTable(string elementName)
     {
         var existingElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
-        var elementFromDb = await entityRepository.GetElementFromTableAsync(existingElement.Schema ?? "dbo", existingElement.TableName);
+        var elementFromDb = await entityRepository.GetElementFromTableAsync(existingElement.Schema ?? "dbo", existingElement.TableName, existingElement.ConnectionId);
         
         var fields = elementFromDb.Fields;
         foreach (var field in fields)

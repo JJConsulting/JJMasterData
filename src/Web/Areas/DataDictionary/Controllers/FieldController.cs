@@ -316,6 +316,7 @@ public class FieldController(
         }
     }
 
+    [HttpGet]
     public async Task<ContentResult> PopulateCopyFromFields(string? elementName)
     {
         var options = new HtmlBuilder();
@@ -338,6 +339,7 @@ public class FieldController(
         return Content(options.ToString());
     }
     
+    [HttpPost]
     public async Task<RedirectToActionResult> CopyFrom(string elementName, string copyFromElementName, string[] copyFromFieldNames)
     {
         var copyFromFormElement = await fieldService.GetFormElementAsync(copyFromElementName);
@@ -368,6 +370,7 @@ public class FieldController(
         return RedirectToIndex(elementName, field);
     }
 
+    [HttpPost]
     public async Task<IActionResult> ImportFields(string elementName)
     {
        await fieldService.ImportFieldsFromTable(elementName);
