@@ -38,11 +38,11 @@ public class EntityService(IValidationDictionary validationDictionary,
     }
 
 
-    public async Task<FormElement> EditEntityAsync(Entity entity, string entityName)
+    public async Task EditEntityAsync(Entity entity, string entityName)
     {
         var isValid = await ValidateEntity(entity, entityName);
         if (!isValid)
-            return null;
+            return;
         
         try
         {
@@ -58,16 +58,11 @@ public class EntityService(IValidationDictionary validationDictionary,
             }
 
             await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-            
-            return formElement;
-
         }
         catch (Exception ex)
         {
             AddError("Entity", ex.Message);
-            return null;
         }
-
     }
 
     private async Task UpdateOldElementNameReferences(string entityName, FormElement formElement)

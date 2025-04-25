@@ -24,12 +24,7 @@ public class EntityController(
     public async Task<ActionResult> Index(
         EntityViewModel model)
     {
-        var entity = await entityService.EditEntityAsync(model.Entity, model.ElementName);
-
-        if (entity != null)
-        {
-            return View(model);
-        }
+        await entityService.EditEntityAsync(model.Entity, model.ElementName);
             
         return View(model);
 
@@ -44,16 +39,12 @@ public class EntityController(
     public async Task<ActionResult> Edit(
         EntityViewModel model)
     {
-        var entity = await entityService.EditEntityAsync(model.Entity, model.ElementName);
+        await entityService.EditEntityAsync(model.Entity, model.ElementName);
 
-        if (entity != null)
-        {
-            return RedirectToAction("Index", new { elementName = entity.Name });
-        }
-
-
+        if (ModelState.IsValid)
+            return RedirectToAction("Index", new { elementName = model.ElementName });
+        
         return View(model);
-
     }
 
     private async Task<EntityViewModel> Populate(string elementName, bool readOnly)
