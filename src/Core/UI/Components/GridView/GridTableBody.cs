@@ -51,7 +51,7 @@ internal sealed class GridTableBody(JJGridView gridView)
        
             tr.Append(HtmlTag.Td, td =>
             {
-                td.WithAttribute("colspan", "1000");
+                td.WithAttribute("colspan", "100%");
                 td.Append(HtmlTag.Span, span =>
                 {
                     span.WithCssClass("placeholder w-100")

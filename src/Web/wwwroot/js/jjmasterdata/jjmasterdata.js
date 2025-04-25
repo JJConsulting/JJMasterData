@@ -1343,16 +1343,17 @@ class GridViewHelper {
         if (currentGridAction)
             currentGridAction.value = "";
     }
-    static scroll(componentName, routeContext, currentPage) {
+    static setCurrentPage(componentName, currentPage) {
         this.setCurrentGridPage(componentName, currentPage);
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
+    }
+    static scroll(componentName, routeContext, currentPage) {
+        GridViewHelper.setCurrentPage(componentName, currentPage);
         GridViewHelper.appendGridRows(componentName, routeContext);
     }
     static paginate(componentName, routeContext, currentPage) {
-        this.setCurrentGridPage(componentName, currentPage);
-        this.clearCurrentGridAction(componentName);
-        this.clearCurrentFormAction(componentName);
+        GridViewHelper.setCurrentPage(componentName, currentPage);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static jumpToPage(componentName, routeContext) {
