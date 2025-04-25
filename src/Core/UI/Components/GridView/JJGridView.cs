@@ -99,7 +99,6 @@ public class JJGridView : AsyncComponent
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
     private GridToolbar? _toolbar;
-    private GridPagination? _gridPagination;
     
     private readonly FieldValidationService _fieldValidationService;
     private readonly UrlRedirectService _urlRedirectService;
@@ -386,19 +385,6 @@ public class JJGridView : AsyncComponent
             _filter.OnFilterLoadAsync += OnFilterLoadAsync;
 
             return _filter;
-        }
-    }
-
-    internal GridPagination GridPagination
-    {
-        get
-        {
-            if(_gridPagination != null)
-                return _gridPagination;
-
-            _gridPagination = new(this);
-
-            return _gridPagination;
         }
     }
 
