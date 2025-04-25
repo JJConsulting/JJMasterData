@@ -215,14 +215,15 @@ class GridViewHelper {
         postFormValues({
             url: urlBuilder.build(),
             success: function (data) {
-                const gridViewTableElement = document.querySelector<HTMLInputElement>("#grid-view-table-" + componentName);
+                const gridViewTableIdSelector = "#grid-view-table-" + componentName;
+                const gridViewTableElement = document.querySelector<HTMLInputElement>(gridViewTableIdSelector);
                 const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
                 if (gridViewTableElement) {
-                    TooltipHelper.dispose("#" + componentName)
+                    TooltipHelper.dispose(gridViewTableIdSelector)
                     gridViewTableElement.outerHTML = data;
                     
-                    listenAllEvents("#" + componentName);
+                    listenAllEvents(gridViewTableIdSelector);
                     
                     if(filterActionElement){
                         filterActionElement.value = "";

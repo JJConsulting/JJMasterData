@@ -24,7 +24,7 @@
     GridViewHelper.setupInfiniteScroll();
     
     //@ts-ignore
-    Inputmask().mask(document.querySelectorAll("input"));
+    Inputmask().mask(document.querySelectorAll(selectorPrefix+"input"));
     
     if(bootstrapVersion === 5){
         TooltipHelper.listen(selectorPrefix);

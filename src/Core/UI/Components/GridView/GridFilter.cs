@@ -193,15 +193,16 @@ internal sealed class GridFilter(JJGridView gridView)
         btnDoFilter.Text = _stringLocalizer["Filter"];
         btnDoFilter.IconClass = "fa fa-search";
         btnDoFilter.ShowAsButton = true;
-        btnDoFilter.Type = LinkButtonType.Submit;
-        btnDoFilter.OnClientClick = $"{gridView.Scripts.GetFilterScript()};return false;";
+        btnDoFilter.Type = LinkButtonType.Button;
+        btnDoFilter.OnClientClick = $"{gridView.Scripts.GetFilterScript()};";
 
         var btnCancel = gridView.ComponentFactory.Html.LinkButton.Create();
         btnCancel.Enabled = gridView.EnableFilter;
         btnCancel.Text = _stringLocalizer["Clear Filter"];
         btnCancel.IconClass = "fa fa-trash";
         btnCancel.ShowAsButton = true;
-        btnCancel.OnClientClick = $"{gridView.Scripts.GetClearFilterScript()};return false;";
+        btnDoFilter.Type = LinkButtonType.Button;
+        btnCancel.OnClientClick = $"{gridView.Scripts.GetClearFilterScript()};";
 
         if (action.ShowAsCollapse)
         {
@@ -345,7 +346,7 @@ internal sealed class GridFilter(JJGridView gridView)
             throw new NullReferenceException(nameof(gridView.FormElement));
 
         //Relation Filters
-        var values = new Dictionary<string, object>();
+        var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         var filters = _currentContext.Request.Form[$"grid-view-filters-{gridView.Name}"];
         if (!string.IsNullOrEmpty(filters))
         {

@@ -1425,12 +1425,13 @@ class GridViewHelper {
         postFormValues({
             url: urlBuilder.build(),
             success: function (data) {
-                const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
+                const gridViewTableIdSelector = "#grid-view-table-" + componentName;
+                const gridViewTableElement = document.querySelector(gridViewTableIdSelector);
                 const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
                 if (gridViewTableElement) {
-                    TooltipHelper.dispose("#" + componentName);
+                    TooltipHelper.dispose(gridViewTableIdSelector);
                     gridViewTableElement.outerHTML = data;
-                    listenAllEvents("#" + componentName);
+                    listenAllEvents(gridViewTableIdSelector);
                     if (filterActionElement) {
                         filterActionElement.value = "";
                     }
@@ -1632,7 +1633,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
     GridViewHelper.setupInfiniteScroll();
-    Inputmask().mask(document.querySelectorAll("input"));
+    Inputmask().mask(document.querySelectorAll(selectorPrefix + "input"));
     if (bootstrapVersion === 5) {
         TooltipHelper.listen(selectorPrefix);
     }
