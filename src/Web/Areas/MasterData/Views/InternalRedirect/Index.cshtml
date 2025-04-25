@@ -1,12 +1,14 @@
 ﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJMasterData.Core.UI.Components
+@using JJMasterData.Web.Extensions
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @{
     Layout = Options.Value.ModalLayoutPath;
 }
 
-<master-data-form>
+@using (Html.BeginMasterDataForm())
+{
     <script lang="javascript" type="text/javascript">
         window.parent.defaultModal.modalTitle = '@Html.Raw(Model.Title)';
         @if (Model.SubmitParentWindow)
@@ -31,4 +33,4 @@
 
         <validation-summary/>
     }
-</master-data-form>
+}
