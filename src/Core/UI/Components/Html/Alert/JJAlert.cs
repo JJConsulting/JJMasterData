@@ -49,8 +49,7 @@ public class JJAlert : HtmlComponent
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
-            .WithCssClass("mt-3")
-            .WithCssClass("alert")
+            .WithCssClass("alert mt-3")
             .WithCssClassIf(BootstrapHelper.Version > 3, "alert-dismissible")
             .WithCssClass(GetClassType())
             .WithAttribute("role", "alert");

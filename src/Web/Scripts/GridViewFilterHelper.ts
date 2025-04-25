@@ -95,6 +95,7 @@ class GridViewFilterHelper {
             getMasterDataForm().submit();
         }
         else{
+            GridViewHelper.setCurrentGridPage(componentName, 1)
             GridViewHelper.refreshGrid(componentName, routeContext);
             document.getElementById(componentName + "-filter-icon").classList.add("d-none");
         }

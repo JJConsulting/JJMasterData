@@ -53,8 +53,7 @@ public class JJIcon : HtmlComponent
         var span = new HtmlBuilder(HtmlTag.Span)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
-            .WithCssClass(IconClass)
-            .WithCssClass(CssClass)
+            .WithCssClass($"{IconClass} {CssClass}")
             .WithToolTip(Tooltip)
             .WithAttributeIf(!string.IsNullOrEmpty(Color), "style",$"color:{Color}");
 

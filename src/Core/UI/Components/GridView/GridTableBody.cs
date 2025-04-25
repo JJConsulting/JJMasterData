@@ -47,8 +47,8 @@ internal sealed class GridTableBody(JJGridView gridView)
         {
             var glow = row % 2 == 0;
             var tr = new HtmlBuilder(HtmlTag.Tr);
-
-            tr.WithCssClass(glow ? "placeholder-glow md-tr-placeholder" : "placeholder-wave md-tr-placeholder");
+            
+            tr.WithCssClass($"d-none md-tr-placeholder {(glow ? "placeholder-glow" : "placeholder-wave")}");
        
             tr.Append(HtmlTag.Td, td =>
             {

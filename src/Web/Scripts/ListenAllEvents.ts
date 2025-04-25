@@ -21,7 +21,7 @@
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
     
-    GridViewHelper.setupInfiniteScroll(selectorPrefix);
+    GridViewHelper.setupInfiniteScroll();
     
     //@ts-ignore
     Inputmask().mask(document.querySelectorAll("input"));

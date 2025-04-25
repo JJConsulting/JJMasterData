@@ -1215,6 +1215,7 @@ class GridViewFilterHelper {
             getMasterDataForm().submit();
         }
         else {
+            GridViewHelper.setCurrentGridPage(componentName, 1);
             GridViewHelper.refreshGrid(componentName, routeContext);
             document.getElementById(componentName + "-filter-icon").classList.add("d-none");
         }
@@ -1465,8 +1466,7 @@ class GridViewHelper {
             }
         });
     }
-    static setupInfiniteScroll(selectorPrefix) {
-        selectorPrefix = selectorPrefix.substring(0, selectorPrefix.length - 1);
+    static setupInfiniteScroll() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1479,7 +1479,7 @@ class GridViewHelper {
                 }
             });
         });
-        document.querySelectorAll(selectorPrefix + '.grid-pagination-last-row').forEach(el => {
+        document.querySelectorAll('.grid-pagination-last-row').forEach(el => {
             if (!el.getAttribute("observed")) {
                 observer.observe(el);
             }
@@ -1631,7 +1631,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     TabNavListener.listenTabNavs(selectorPrefix);
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
-    GridViewHelper.setupInfiniteScroll(selectorPrefix);
+    GridViewHelper.setupInfiniteScroll();
     Inputmask().mask(document.querySelectorAll("input"));
     if (bootstrapVersion === 5) {
         TooltipHelper.listen(selectorPrefix);

@@ -264,9 +264,7 @@ class GridViewHelper {
         });
     }
 
-    static setupInfiniteScroll(selectorPrefix: string) {
-        selectorPrefix = selectorPrefix.substring(0, selectorPrefix.length - 1);
-        
+    static setupInfiniteScroll() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -280,8 +278,8 @@ class GridViewHelper {
                 }
             });
         });
-
-        document.querySelectorAll(selectorPrefix + '.grid-pagination-last-row').forEach(el => {
+        
+        document.querySelectorAll('.grid-pagination-last-row').forEach(el => {
             if(!el.getAttribute("observed")){
                 observer.observe(el);
             }
