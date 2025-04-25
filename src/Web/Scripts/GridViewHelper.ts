@@ -110,20 +110,20 @@ class GridViewHelper {
             currentGridAction.value = "";
     }
 
-    static scroll(componentName, routeContext, currentPage: number) {
-
-        
+    private static setCurrentPage(componentName, currentPage){
         this.setCurrentGridPage(componentName,currentPage);
-        this.clearCurrentGridAction(componentName)
-        this.clearCurrentFormAction(componentName)
+        this.clearCurrentGridAction(componentName);
+        this.clearCurrentFormAction(componentName);
+    }
+    
+    static scroll(componentName, routeContext, currentPage: number) {
+        GridViewHelper.setCurrentPage(componentName, currentPage);
 
         GridViewHelper.appendGridRows(componentName, routeContext);
     }
     
     static paginate(componentName, routeContext, currentPage: number) {
-        this.setCurrentGridPage(componentName,currentPage);
-        this.clearCurrentGridAction(componentName)
-        this.clearCurrentFormAction(componentName)
+        GridViewHelper.setCurrentPage(componentName, currentPage);
 
         GridViewHelper.refreshGrid(componentName, routeContext);
     }

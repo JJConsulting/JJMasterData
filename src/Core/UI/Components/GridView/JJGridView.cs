@@ -302,7 +302,7 @@ public class JJGridView : AsyncComponent
             else
             {
                 int page = 1;
-                if (MaintainValuesOnLoad && FormElement.Options.Grid.PaginationType is GridPaginationType.Buttons)
+                if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
                 {
                     var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
