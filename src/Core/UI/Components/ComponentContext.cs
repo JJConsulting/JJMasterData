@@ -15,7 +15,7 @@ public enum ComponentContext
     
     GridViewFilterReload,
     
-    GridViewInfiniteScroll,
+    GridViewScrollPagination,
     
     /// <summary>
     /// Reloads the current JJDataPanel

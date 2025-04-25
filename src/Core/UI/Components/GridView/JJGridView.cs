@@ -687,7 +687,7 @@ public class JJGridView : AsyncComponent
             return new ContentComponentResult(new HtmlBuilder(htmlResponse));
         }
         
-        if (ComponentContext is ComponentContext.GridViewInfiniteScroll)
+        if (ComponentContext is ComponentContext.GridViewScrollPagination)
         {
             await SetDataSource();
 

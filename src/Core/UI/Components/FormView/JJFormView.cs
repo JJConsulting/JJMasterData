@@ -525,7 +525,7 @@ public class JJFormView : AsyncComponent
                 return await GetReloadPanelResultAsync();
             case ComponentContext.DataExportation:
             case ComponentContext.GridViewReload:
-            case ComponentContext.GridViewInfiniteScroll:
+            case ComponentContext.GridViewScrollPagination:
             case ComponentContext.GridViewFilterReload:
             case ComponentContext.SearchBoxFilter:
                 return await GridView.GetResultAsync();

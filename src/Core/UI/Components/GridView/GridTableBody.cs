@@ -91,7 +91,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         row.WithAttribute("grid-pagination-next-page",gridView.CurrentPage + 1);
 
         var routeContext =
-            RouteContext.FromFormElement(gridView.FormElement, ComponentContext.GridViewInfiniteScroll);
+            RouteContext.FromFormElement(gridView.FormElement, ComponentContext.GridViewScrollPagination);
 
         row.WithAttribute("grid-pagination-route-context",
             gridView.EncryptionService.EncryptObject(routeContext));
