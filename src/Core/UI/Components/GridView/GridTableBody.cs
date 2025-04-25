@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -32,21 +34,67 @@ internal sealed class GridTableBody(JJGridView gridView)
         tbody.WithAttribute("id", _name);
         tbody.AppendRange(await GetRowsList());
 
+        if (gridView.PaginationType is GridPaginationType.Scroll)
+            tbody.AppendRange(GetPlaceholderRows());
+
         return tbody;
     }
 
-    private async ValueTask<List<HtmlBuilder>> GetRowsList()
+    private static IEnumerable<HtmlBuilder> GetPlaceholderRows()
+    {
+        for (int row = 0; row < 5; row++)
+        {
+            var glow = row % 2 == 0;
+            var tr = new HtmlBuilder(HtmlTag.Tr);
+
+            tr.WithCssClass(glow ? "placeholder-glow md-tr-placeholder" : "placeholder-wave md-tr-placeholder");
+       
+            tr.Append(HtmlTag.Td, td =>
+            {
+                td.WithAttribute("colspan", "1000");
+                td.Append(HtmlTag.Span, span =>
+                {
+                    span.WithCssClass("placeholder w-100")
+                        .WithCssClassIf(glow, "placeholder-sm");
+                });
+            });
+            
+            yield return tr;
+        }
+    }
+
+    internal async ValueTask<List<HtmlBuilder>> GetRowsList()
     {
         List<HtmlBuilder> rows = [];
         
         var dataSource = gridView.DataSource;
-
+        
         for (var i = 0; i < dataSource?.Count; i++)
         {
-            rows.Add(await GetRowHtml(dataSource[i], i));
+            var row = await GetRowHtml(dataSource[i], i);
+            
+            if (gridView.PaginationType is GridPaginationType.Scroll && i == dataSource.Count - 1)
+                SetPaginationScrollAttributes(row);
+            
+            rows.Add(row);
         }
 
         return rows;
+    }
+
+    private void SetPaginationScrollAttributes(HtmlBuilder row)
+    {
+        if (gridView.CurrentPage < gridView.TotalOfPages)
+            row.WithCssClass("grid-pagination-last-row");
+                
+        row.WithAttribute("grid-name", gridView.Name);
+        row.WithAttribute("grid-pagination-next-page",gridView.CurrentPage + 1);
+
+        var routeContext =
+            RouteContext.FromFormElement(gridView.FormElement, ComponentContext.GridViewInfiniteScroll);
+
+        row.WithAttribute("grid-pagination-route-context",
+            gridView.EncryptionService.EncryptObject(routeContext));
     }
 
     private async ValueTask<HtmlBuilder> GetRowHtml(Dictionary<string, object?> row, int index)

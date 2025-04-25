@@ -12,9 +12,10 @@ public enum ComponentContext
     GridViewSelectAllRows,
     GridViewRow,
     GridViewReload,
-
+    
     GridViewFilterReload,
     
+    GridViewInfiniteScroll,
     
     /// <summary>
     /// Reloads the current JJDataPanel

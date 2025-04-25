@@ -73,7 +73,8 @@ public class LoggerFormElementFactory(
 
         formElement.Options.Grid.IsCompact = true;
         formElement.Options.Grid.UseVerticalLayoutAtFilter = false;
-
+        formElement.Options.Grid.PaginationType = GridPaginationType.Scroll;
+        
         return formElement;
     }
 }
