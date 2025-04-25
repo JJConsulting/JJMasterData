@@ -47,7 +47,12 @@ public class InternalRedirectController(
                     return actionResult;
 
                 var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.List))?.ToString();
-                model = new(title ?? formView.Name, result.Content!, false);
+                model = new()
+                {
+                    HtmlContent = result.Content,
+                    ShowToolbar = false,
+                    Title = title ?? formView.Name
+                };
                 break;
             }
             case RelationshipViewType.View:
@@ -67,7 +72,12 @@ public class InternalRedirectController(
                     return actionResult;
                 
                 var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.View))?.ToString();
-                model = new(title ?? panel.Name, result.Content!, false);
+                model = new()
+                {
+                    HtmlContent =  result.Content,
+                    ShowToolbar = false,
+                    Title = title ?? panel.Name
+                };
                 break;
             }
             case RelationshipViewType.Insert:
@@ -96,7 +106,12 @@ public class InternalRedirectController(
                     return actionResult;
                 
                 var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!,pageState))?.ToString();
-                model = new(title ?? panel.Name, result.Content, true);
+                model = new()
+                {
+                    HtmlContent = result.Content,
+                    ShowToolbar = true,
+                    Title = title ?? panel.Name
+                };
                 break;
             }
             default:
@@ -117,23 +132,41 @@ public class InternalRedirectController(
         {
             await panel.LoadValuesFromPkAsync(state.RelationValues);
         }
+        else
+        {
+            foreach (var kvp in state.RelationValues)
+            {
+                panel.Values[kvp.Key] = kvp.Value;
+            }
+        }
      
         if (userId != null)
             panel.SetUserValues("USERID", userId);
 
         var values = await panel.GetFormValuesAsync();
         var letter = await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request, DataContextSource.Form, userId));
-
-        ViewBag.Success = letter.Errors.Count == 0;
-        if (letter.Errors.Count > 0)
-            ViewBag.Error = componentFactory.Html.ValidationSummary.Create(letter.Errors).GetHtml();
+        
+        var hasErrors = letter.Errors.Count > 0;
+        if (hasErrors)
+        {
+            foreach (var error in letter.Errors)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
+            }
+        }
 
         var result = await panel.GetResultAsync();
         if (result is IActionResult actionResult)
             return actionResult;
 
         var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.Update))?.ToString();
-        var model = new InternalRedirectViewModel(title ?? panel.Name, result.Content, true);
+        var model = new InternalRedirectViewModel
+        {
+            HtmlContent = result.Content,
+            ShowToolbar = false,
+            SubmitParentWindow = !hasErrors,
+            Title = title ?? panel.Name
+        };
 
         return View("Index", model);
     }

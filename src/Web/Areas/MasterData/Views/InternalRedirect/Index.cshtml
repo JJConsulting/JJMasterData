@@ -1,38 +1,34 @@
 ﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJMasterData.Core.UI.Components
-@using JJMasterData.Web.Extensions
-@using JJMasterData.Web.TagHelpers
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @{
     Layout = Options.Value.ModalLayoutPath;
-    
 }
 
-@using (Html.BeginMasterDataForm())
-{
-    <script lang="js" type="text/javascript">
-         window.parent.defaultModal.modalTitle = '@Html.Raw(Model.Title)';
+<master-data-form>
+    <script lang="javascript" type="text/javascript">
+        window.parent.defaultModal.modalTitle = '@Html.Raw(Model.Title)';
+        @if (Model.SubmitParentWindow)
+        {
+            <text>
+                submitParentWindow();
+            </text>
+        }
     </script>
-    
-    if (ViewData["Success"] is true)
-    {
-        <script lang="js" type="text/javascript">
-            submitParentWindow()
-        </script>
-    }
 
     @Html.Raw(Model.HtmlContent)
 
-    if (Model.ShowToolBar)
+    @if (Model.ShowToolbar)
     {
         <div id="divToolbar">
-            <link-button text="Save" type="LinkButtonType.Submit" icon="Check" color="Primary" asp-action="Save" asp-route-parameters="@Context.Request.Query["parameters"]"/>
+            <link-button text="Save" type="LinkButtonType.Submit" icon="Check" color="Primary" asp-action="Save"
+                         asp-route-parameters="@Context.Request.Query["parameters"]"/>
             <link-button text="Cancel" icon="SolidXmark" on-client-click="window.parent.defaultModal.hide();"/>
         </div>
-        
+
         <br/>
-    
-        @Html.Raw(ViewBag.Error)
+
+        <validation-summary/>
     }
-}
+</master-data-form>
