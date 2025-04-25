@@ -11,9 +11,6 @@ public class FormController(
     IFormElementComponentFactory<JJFormView> formViewFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer) : MasterDataController
 {
-    
-    
-    
     public async Task<IActionResult> Render(string elementName)
     {
         var formView = await formViewFactory.CreateAsync(elementName);

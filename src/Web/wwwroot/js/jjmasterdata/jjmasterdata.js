@@ -1343,10 +1343,17 @@ class GridViewHelper {
         if (currentGridAction)
             currentGridAction.value = "";
     }
-    static paginate(componentName, routeContext, currentPage) {
+    static setCurrentPage(componentName, currentPage) {
         this.setCurrentGridPage(componentName, currentPage);
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
+    }
+    static scroll(componentName, routeContext, currentPage) {
+        GridViewHelper.setCurrentPage(componentName, currentPage);
+        GridViewHelper.appendGridRows(componentName, routeContext);
+    }
+    static paginate(componentName, routeContext, currentPage) {
+        GridViewHelper.setCurrentPage(componentName, currentPage);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static jumpToPage(componentName, routeContext) {
@@ -1376,6 +1383,46 @@ class GridViewHelper {
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
         getMasterDataForm().submit();
+    }
+    static appendGridRows(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        SpinnerOverlay.visible = false;
+        const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
+        const tbody = gridViewTableElement.querySelector("tbody");
+        const placeholders = tbody.querySelectorAll(".md-tr-placeholder");
+        placeholders.forEach(placeholder => placeholder.classList.remove("d-none"));
+        postFormValues({
+            url: urlBuilder.build(),
+            success: function (data) {
+                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                if (gridViewTableElement) {
+                    console.log("opa");
+                    console.log(data);
+                    TooltipHelper.dispose("#" + componentName);
+                    const target = placeholders[0];
+                    if (target) {
+                        target.insertAdjacentHTML('beforebegin', data);
+                    }
+                    placeholders.forEach(placeholder => placeholder.classList.add("d-none"));
+                    listenAllEvents("#" + componentName);
+                    if (filterActionElement) {
+                        filterActionElement.value = "";
+                    }
+                }
+                else {
+                    console.error("One or both of the elements were not found.");
+                }
+            },
+            error: function (error) {
+                console.error(error);
+                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                if (filterActionElement) {
+                    filterActionElement.value = "";
+                }
+            }
+        });
+        SpinnerOverlay.visible = true;
     }
     static refreshGrid(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -1418,6 +1465,25 @@ class GridViewHelper {
                 $("#" + componentName + " #row" + gridViewRowIndex).html(data);
                 listenAllEvents("#" + componentName);
                 jjutil.gotoNextFocus(fieldId);
+            }
+        });
+    }
+    static setupInfiniteScroll(selectorPrefix) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    observer.unobserve(entry.target);
+                    entry.target.setAttribute("observed", "true");
+                    const gridName = entry.target.getAttribute("grid-name");
+                    const routeContext = entry.target.getAttribute("grid-pagination-route-context");
+                    const nextPage = entry.target.getAttribute("grid-pagination-next-page");
+                    GridViewHelper.scroll(gridName, routeContext, Number(nextPage));
+                }
+            });
+        });
+        document.querySelectorAll(selectorPrefix + '.grid-pagination-last-row').forEach(el => {
+            if (!el.getAttribute("observed")) {
+                observer.observe(el);
             }
         });
     }
@@ -1567,6 +1633,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     TabNavListener.listenTabNavs(selectorPrefix);
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
+    GridViewHelper.setupInfiniteScroll(selectorPrefix);
     Inputmask().mask(document.querySelectorAll("input"));
     if (bootstrapVersion === 5) {
         TooltipHelper.listen(selectorPrefix);

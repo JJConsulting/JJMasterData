@@ -4196,6 +4196,9 @@
   <data name="Buttons" xml:space="preserve">
     <value>Botões</value>
   </data>
+  <data name="Pagination Type" xml:space="preserve">
+    <value>Tipo de Paginação</value>
+  </data>
   <data name="Copy From..." xml:space="preserve">
     <value>Copiar De...</value>
   </data>

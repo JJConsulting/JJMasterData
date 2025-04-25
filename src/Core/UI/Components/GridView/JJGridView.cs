@@ -83,6 +83,7 @@ public class JJGridView : AsyncComponent
     private OrderByData? _currentOrder;
     private string? _selectedRowsId;
     private int _currentPage;
+    private int? _totalOfPages;
     private GridSettings? _currentSettings;
     private GridSettingsForm? _gridSettingsForm;
     private ExportOptions? _currentExportConfig;
@@ -101,8 +102,7 @@ public class JJGridView : AsyncComponent
     
     private readonly FieldValidationService _fieldValidationService;
     private readonly UrlRedirectService _urlRedirectService;
-
-
+    
     internal JJDataImportation DataImportation
     {
         get
@@ -301,7 +301,7 @@ public class JJGridView : AsyncComponent
             else
             {
                 int page = 1;
-                if (MaintainValuesOnLoad)
+                if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
                 {
                     var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
@@ -322,6 +322,19 @@ public class JJGridView : AsyncComponent
                 CurrentContext.Session[$"jjcurrentpage_{Name}"] = value.ToString();
 
             _currentPage = value;
+        }
+    }
+
+    public int TotalOfPages
+    {
+        get
+        {
+            if (_totalOfPages is not null)
+                return _totalOfPages.Value;
+
+            _totalOfPages = (int)Math.Ceiling(TotalOfRecords / (double)CurrentSettings.RecordsPerPage);
+
+            return _totalOfPages.Value;
         }
     }
 
@@ -659,6 +672,18 @@ public class JJGridView : AsyncComponent
 
             return new ContentComponentResult(new HtmlBuilder(htmlResponse));
         }
+        
+        if (ComponentContext is ComponentContext.GridViewScrollPagination)
+        {
+            await SetDataSource();
+
+            var htmlBuilder = new HtmlBuilder();
+            
+            var rows = await Table.Body.GetRowsList();
+            htmlBuilder.AppendRange(rows);
+            
+            return new ContentComponentResult(htmlBuilder);
+        }
 
         if (ComponentContext is ComponentContext.GridViewSelectAllRows)
         {
@@ -755,8 +780,7 @@ public class JJGridView : AsyncComponent
     {
         return Filter.GetCurrentFilterAsync();
     }
-
-
+    
     public void SetCurrentFilter(string key, object value)
     {
         Filter.SetCurrentFilter(key, value);
@@ -772,7 +796,7 @@ public class JJGridView : AsyncComponent
 
         await SetDataSource();
 
-        var totalPages = (int)Math.Ceiling(TotalOfRecords / (double)CurrentSettings.RecordsPerPage);
+        var totalOfPages = TotalOfPages;
         
         html.WithAttribute("id", $"grid-view-table-{Name}");
 
@@ -787,20 +811,33 @@ public class JJGridView : AsyncComponent
 
         if (CurrentPage <= 0)
         {
-            html.AppendComponent(GetPaginationWarningAlert(totalPages));
+            html.AppendComponent(GetPaginationWarningAlert(totalOfPages));
         }
-        else if (CurrentPage > totalPages && totalPages != 0)
+        else if (CurrentPage > totalOfPages && totalOfPages != 0)
         {
-            html.AppendComponent(GetPaginationWarningAlert(totalPages));
+            html.AppendComponent(GetPaginationWarningAlert(totalOfPages));
         }
         else
         {
+            if (PaginationType == GridPaginationType.Scroll)
+            {
+                var wrapper = new HtmlBuilder(HtmlTag.Div)
+                    .WithCssClass("d-flex align-items-center justify-content-between mt-3")
+                    .Append(HtmlTag.Div)
+                    .Append(HtmlTag.P, p =>
+                    {
+                        p.WithCssClass("fs-9 text-muted m-0")
+                            .Append(HtmlTag.Strong, strong => strong.AppendText(TotalOfRecords))
+                            .AppendText($" {StringLocalizer["record(s)"]}");
+                    });
+                html.Append(wrapper);
+            }
             html.Append(await Table.GetHtmlBuilder());
             
             if (DataSource?.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
                 html.Append(await GetNoRecordsAlert());
             
-            if (IsPagingEnabled())
+            if (IsPagingEnabled() && PaginationType == GridPaginationType.Buttons)
             {
                 var gridPagination = new GridPagination(this);
 
@@ -821,6 +858,8 @@ public class JJGridView : AsyncComponent
 
         return html;
     }
+
+    public GridPaginationType PaginationType => FormElement.Options.Grid.PaginationType;
 
     private JJAlert GetPaginationWarningAlert(int totalPages)
     {
@@ -848,13 +887,13 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    internal async Task<string> GetTableRowHtmlAsync(int rowIndex)
+    private async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
         var row = DataSource?[rowIndex];
 
         string result = string.Empty;
-        foreach (var builder in await Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
-            result += builder;
+        foreach (var td in await Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
+            result += td;
         
         return result;
     }
@@ -984,7 +1023,19 @@ public class JJGridView : AsyncComponent
         return modal.GetHtmlBuilder();
     }
 
-    private bool CanCustomPaging() => IsPagingEnabled() && CurrentSettings.RecordsPerPage % 5 == 0 && CurrentSettings.RecordsPerPage <= 50;
+    private bool CanCustomPaging()
+    {
+        if (PaginationType is GridPaginationType.Scroll)
+            return false;
+        
+        if (!IsPagingEnabled())
+            return false;
+        
+        if (CurrentSettings.RecordsPerPage % 5 != 0)
+            return false;
+
+        return CurrentSettings.RecordsPerPage <= 50;
+    }
 
     private async ValueTask<HtmlBuilder> GetExportHtml()
     {

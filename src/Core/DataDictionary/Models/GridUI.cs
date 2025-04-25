@@ -158,6 +158,10 @@ public class GridUI
     [Display(Name = "Compact mode")]
     public bool IsCompact { get; set; }
 
+    [JsonPropertyName("paginationType")]
+    [Display(Name = "Pagination Type")]
+    public GridPaginationType PaginationType { get; set; }
+    
     public GridUI DeepCopy()
     {
         return (GridUI)MemberwiseClone();
