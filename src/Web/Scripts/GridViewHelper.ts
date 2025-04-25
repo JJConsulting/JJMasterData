@@ -116,13 +116,13 @@ class GridViewHelper {
         this.clearCurrentFormAction(componentName);
     }
     
-    static scroll(componentName, routeContext, currentPage: number) {
+    static scroll(componentName, routeContext, currentPage) {
         GridViewHelper.setCurrentPage(componentName, currentPage);
 
-        GridViewHelper.appendGridRows(componentName, routeContext);
+        GridViewHelper.appendGridRows(componentName, currentPage, routeContext);
     }
     
-    static paginate(componentName, routeContext, currentPage: number) {
+    static paginate(componentName, routeContext, currentPage) {
         GridViewHelper.setCurrentPage(componentName, currentPage);
 
         GridViewHelper.refreshGrid(componentName, routeContext);
@@ -172,49 +172,39 @@ class GridViewHelper {
         getMasterDataForm().submit();
     }
 
-    static appendGridRows(componentName: string, routeContext: string) {
+    static async appendGridRows(componentName: string, page: string, routeContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         SpinnerOverlay.visible = false;
         const gridViewTableElement = document.querySelector<HTMLInputElement>("#grid-view-table-" + componentName);
-        const tbody = gridViewTableElement.querySelector("tbody")
+        const tbody = gridViewTableElement.querySelector("tbody.md-table-body")
         const placeholders = tbody.querySelectorAll(".md-tr-placeholder");
         placeholders.forEach(placeholder => placeholder.classList.remove("d-none"));
 
-        postFormValues({
-            url: urlBuilder.build(),
-            success: function (data) {
-                const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
+        try {
+            const data = await postFormValuesAsync(urlBuilder.build());
+            const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
-                if (gridViewTableElement) {
-                    console.log("opa");
-                    console.log(data);
-                    TooltipHelper.dispose("#" + componentName)
-                  
-                    const target = placeholders[0];
+            if (gridViewTableElement) {
+                const target = placeholders[0];
 
-                    if (target) {
-                        target.insertAdjacentHTML('beforebegin', data);
-                    }
-                    placeholders.forEach(placeholder => placeholder.classList.add("d-none"));
-                    listenAllEvents("#" + componentName);
-
-                    if(filterActionElement){
-                        filterActionElement.value = "";
-                    }
-                } else {
-                    console.error("One or both of the elements were not found.");
+                if (target) {
+                    target.insertAdjacentHTML('beforebegin', data);
                 }
-            },
-            error: function (error) {
-                console.error(error);
-                const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
+                placeholders.forEach(placeholder => placeholder.classList.add("d-none"));
+                listenAllEvents(`#${componentName} .md-row-page-${page}`);
 
-                if (filterActionElement) {
+                if(filterActionElement){
                     filterActionElement.value = "";
                 }
+            } else {
+                console.error("One or both of the elements were not found.");
             }
-        });
+        }
+        catch(error) {
+            console.error(error);
+            GridViewHelper.clearFilter(componentName);
+        }
         SpinnerOverlay.visible = true;
     }
     
@@ -243,13 +233,17 @@ class GridViewHelper {
             },
             error: function (error) {
                 console.error(error);
-                const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
-
-                if (filterActionElement) {
-                    filterActionElement.value = "";
-                }
+                GridViewHelper.clearFilter(componentName);
             }
         });
+    }
+    
+    private static clearFilter(componentName){
+        const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
+
+        if (filterActionElement) {
+            filterActionElement.value = "";
+        }
     }
     
     static reloadGridRow(componentName, fieldName , gridViewRowIndex, routeContext){
@@ -271,6 +265,8 @@ class GridViewHelper {
     }
 
     static setupInfiniteScroll(selectorPrefix: string) {
+        selectorPrefix = selectorPrefix.substring(0, selectorPrefix.length - 1);
+        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -280,7 +276,7 @@ class GridViewHelper {
                     const gridName = entry.target.getAttribute("grid-name")
                     const routeContext = entry.target.getAttribute("grid-pagination-route-context")
                     const nextPage = entry.target.getAttribute("grid-pagination-next-page")
-                    GridViewHelper.scroll(gridName,routeContext, Number(nextPage));
+                    GridViewHelper.scroll(gridName,routeContext, nextPage);
                 }
             });
         });

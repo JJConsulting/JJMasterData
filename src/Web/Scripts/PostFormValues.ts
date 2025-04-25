@@ -51,3 +51,25 @@ function postFormValues(options : PostFormValuesOptions) {
             SpinnerOverlay.hide();
         });
 }
+
+async function postFormValuesAsync(url: string) {
+    SpinnerOverlay.show();
+    const requestOptions = getRequestOptions();
+    try {
+        const response = await fetch(url, requestOptions);
+
+        if (response.headers.get("content-type")?.includes("application/json")) {
+            return await response.json();
+        } else if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        } else if (response.status === 440 || response.status === 403 || response.status === 401) {
+            getMasterDataForm().submit();
+            return;
+        } else {
+            return await response.text();
+        }
+    } finally {
+        SpinnerOverlay.hide();
+    }
+}

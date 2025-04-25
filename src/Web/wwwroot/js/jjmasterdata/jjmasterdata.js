@@ -1350,7 +1350,7 @@ class GridViewHelper {
     }
     static scroll(componentName, routeContext, currentPage) {
         GridViewHelper.setCurrentPage(componentName, currentPage);
-        GridViewHelper.appendGridRows(componentName, routeContext);
+        GridViewHelper.appendGridRows(componentName, currentPage, routeContext);
     }
     static paginate(componentName, routeContext, currentPage) {
         GridViewHelper.setCurrentPage(componentName, currentPage);
@@ -1384,28 +1384,25 @@ class GridViewHelper {
         this.clearCurrentFormAction(componentName);
         getMasterDataForm().submit();
     }
-    static appendGridRows(componentName, routeContext) {
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", routeContext);
-        SpinnerOverlay.visible = false;
-        const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
-        const tbody = gridViewTableElement.querySelector("tbody");
-        const placeholders = tbody.querySelectorAll(".md-tr-placeholder");
-        placeholders.forEach(placeholder => placeholder.classList.remove("d-none"));
-        postFormValues({
-            url: urlBuilder.build(),
-            success: function (data) {
+    static appendGridRows(componentName, page, routeContext) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            SpinnerOverlay.visible = false;
+            const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
+            const tbody = gridViewTableElement.querySelector("tbody.md-table-body");
+            const placeholders = tbody.querySelectorAll(".md-tr-placeholder");
+            placeholders.forEach(placeholder => placeholder.classList.remove("d-none"));
+            try {
+                const data = yield postFormValuesAsync(urlBuilder.build());
                 const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
                 if (gridViewTableElement) {
-                    console.log("opa");
-                    console.log(data);
-                    TooltipHelper.dispose("#" + componentName);
                     const target = placeholders[0];
                     if (target) {
                         target.insertAdjacentHTML('beforebegin', data);
                     }
                     placeholders.forEach(placeholder => placeholder.classList.add("d-none"));
-                    listenAllEvents("#" + componentName);
+                    listenAllEvents(`#${componentName} .md-row-page-${page}`);
                     if (filterActionElement) {
                         filterActionElement.value = "";
                     }
@@ -1413,16 +1410,13 @@ class GridViewHelper {
                 else {
                     console.error("One or both of the elements were not found.");
                 }
-            },
-            error: function (error) {
-                console.error(error);
-                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                if (filterActionElement) {
-                    filterActionElement.value = "";
-                }
             }
+            catch (error) {
+                console.error(error);
+                GridViewHelper.clearFilter(componentName);
+            }
+            SpinnerOverlay.visible = true;
         });
-        SpinnerOverlay.visible = true;
     }
     static refreshGrid(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -1446,12 +1440,15 @@ class GridViewHelper {
             },
             error: function (error) {
                 console.error(error);
-                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                if (filterActionElement) {
-                    filterActionElement.value = "";
-                }
+                GridViewHelper.clearFilter(componentName);
             }
         });
+    }
+    static clearFilter(componentName) {
+        const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+        if (filterActionElement) {
+            filterActionElement.value = "";
+        }
     }
     static reloadGridRow(componentName, fieldName, gridViewRowIndex, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -1469,6 +1466,7 @@ class GridViewHelper {
         });
     }
     static setupInfiniteScroll(selectorPrefix) {
+        selectorPrefix = selectorPrefix.substring(0, selectorPrefix.length - 1);
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1477,7 +1475,7 @@ class GridViewHelper {
                     const gridName = entry.target.getAttribute("grid-name");
                     const routeContext = entry.target.getAttribute("grid-pagination-route-context");
                     const nextPage = entry.target.getAttribute("grid-pagination-next-page");
-                    GridViewHelper.scroll(gridName, routeContext, Number(nextPage));
+                    GridViewHelper.scroll(gridName, routeContext, nextPage);
                 }
             });
         });
@@ -2353,6 +2351,33 @@ function postFormValues(options) {
     })
         .then(() => {
         SpinnerOverlay.hide();
+    });
+}
+function postFormValuesAsync(url) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        SpinnerOverlay.show();
+        const requestOptions = getRequestOptions();
+        try {
+            const response = yield fetch(url, requestOptions);
+            if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+                return yield response.json();
+            }
+            else if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            else if (response.status === 440 || response.status === 403 || response.status === 401) {
+                getMasterDataForm().submit();
+                return;
+            }
+            else {
+                return yield response.text();
+            }
+        }
+        finally {
+            SpinnerOverlay.hide();
+        }
     });
 }
 class SearchBoxListener {

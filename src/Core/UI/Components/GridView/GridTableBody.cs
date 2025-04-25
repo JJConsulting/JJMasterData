@@ -32,6 +32,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
 
         tbody.WithAttribute("id", _name);
+        tbody.WithCssClass("md-table-body");
         tbody.AppendRange(await GetRowsList());
 
         if (gridView.PaginationType is GridPaginationType.Scroll)
@@ -69,12 +70,20 @@ internal sealed class GridTableBody(JJGridView gridView)
         
         var dataSource = gridView.DataSource;
         
+        var currentPageCssClass = $"md-row-page-{gridView.CurrentPage}";
+        
         for (var i = 0; i < dataSource?.Count; i++)
         {
             var row = await GetRowHtml(dataSource[i], i);
+
+            if (gridView.PaginationType is GridPaginationType.Scroll)
+            {
+                if (i == dataSource.Count - 1)
+                    SetPaginationScrollAttributes(row);
+                
+                row.WithCssClass(currentPageCssClass);
+            }
             
-            if (gridView.PaginationType is GridPaginationType.Scroll && i == dataSource.Count - 1)
-                SetPaginationScrollAttributes(row);
             
             rows.Add(row);
         }
