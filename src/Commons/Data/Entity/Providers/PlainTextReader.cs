@@ -64,7 +64,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
             dbCmd.CommandType = cmd.Type;
             dbCmd.CommandText = cmd.Sql;
             dbCmd.Connection = conn;
-            dbCmd.CommandTimeout = dataAccess.TimeOut;
+            dbCmd.CommandTimeout = cmd.TimeoutSeconds ?? 240;
             var dr = await dbCmd.ExecuteReaderAsync();
 
             int col = 0;

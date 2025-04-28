@@ -16,7 +16,7 @@ public class DataAccessCommand
 {
     [JsonPropertyName("cmdType")]
     public CommandType Type { get; set; }
-
+    
     [JsonPropertyName("sql")]
     [Display(Name = "Sql Command")]
     public string Sql { get; set; }
@@ -24,6 +24,9 @@ public class DataAccessCommand
     [JsonPropertyName("parameters")]
     [JsonInclude]
     public List<DataAccessParameter> Parameters { get; private set; }
+    
+    [JsonIgnore]
+    public int? TimeoutSeconds { get; set; }
     
     public DataAccessCommand()
     {

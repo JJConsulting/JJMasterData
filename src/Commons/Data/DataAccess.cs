@@ -37,6 +37,7 @@ public partial class DataAccess
     /// <summary>
     /// Waiting time to execute a command on the database (seconds - default 240s)
     /// </summary>
+    [Obsolete("Please use DataAccessCommand.TimeoutSeconds instead.")]
     public int TimeOut { get; set; } = 240;
     
     /// <summary>
@@ -142,6 +143,7 @@ public partial class DataAccess
     /// </summary>
     /// <param name="sqlConn">Open Connection</param>
     /// <param name="sql">Script sql, never use with concat parameters</param>
+    [Obsolete("Inject your SQL connection instead.")]
     public DataTable GetDataTable(ref DbConnection sqlConn, string sql)
     {
         var dt = new DataTable();
@@ -626,7 +628,10 @@ public partial class DataAccess
         
         dbCommand.CommandType = command.Type;
         dbCommand.CommandText = command.Sql;
-        dbCommand.CommandTimeout = TimeOut;
+        
+#pragma warning disable CS0618 // Type or member is obsolete
+        dbCommand.CommandTimeout = command.TimeoutSeconds ?? TimeOut;
+#pragma warning restore CS0618 // Type or member is obsolete
         
         foreach (var parameter in command.Parameters)
         {
