@@ -32,7 +32,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Fluid.Core" Version="2.23.0" />
+        <PackageReference Include="Fluid.Core" Version="2.24.0" />
         <PackageReference Include="NCalcSync" Version="5.4.1" />
         <PackageReference Include="NCalc.MemoryCache" Version="5.4.1" />
         <PackageReference Include="NCalc.DependencyInjection" Version="5.4.1" />
