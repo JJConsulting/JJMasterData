@@ -163,7 +163,7 @@ public class InternalRedirectController(
         var model = new InternalRedirectViewModel
         {
             HtmlContent = result.Content,
-            ShowToolbar = false,
+            ShowToolbar = true,
             SubmitParentWindow = !hasErrors,
             Title = title ?? panel.Name
         };
