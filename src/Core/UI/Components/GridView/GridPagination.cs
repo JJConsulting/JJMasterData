@@ -19,7 +19,7 @@ internal sealed class GridPagination(JJGridView gridView)
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        _totalPages = (int)Math.Ceiling(gridView.TotalOfRecords / (double)gridView.CurrentSettings.RecordsPerPage);
+        _totalPages = gridView.TotalOfPages;
         _totalButtons = gridView.CurrentSettings.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((gridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;

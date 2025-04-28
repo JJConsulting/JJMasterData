@@ -227,8 +227,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
         }
         else
         {
-            var totalPages = (int)Math.Ceiling(gridView.TotalOfRecords / (double)gridView.CurrentSettings.RecordsPerPage);
-            if (totalPages <= 1)
+            if (gridView.TotalOfPages <= 1)
                 hasPages = false;
         }
 
