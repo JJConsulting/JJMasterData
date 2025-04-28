@@ -85,7 +85,7 @@ public class JJComboBox(
             .WithAttributeIf(MultiSelect, "title", stringLocalizer["All"])
             .WithAttributeIf(MultiSelect && FormStateData.PageState == PageState.Filter, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
-            .WithAttributeIf(!Enabled, "disabled", "disabled")
+            .WithAttributeIf(!Enabled, "disabled")
             .WithAttributeIf(BootstrapHelper.Version is 3, "data-style", "form-control")
             .WithAttributeIf(BootstrapHelper.Version is 5, "data-style-base", "form-select form-dropdown")
             .WithAttributes(Attributes)
@@ -139,9 +139,12 @@ public class JJComboBox(
             yield return optgroup;
         }
 
-        foreach (var value in values.Where(v => v.Group == null))
+        foreach (var value in values)
         {
-            yield return CreateOption(value);
+            if (value.Group == null)
+            {
+                yield return CreateOption(value);
+            }
         }
     }
 
@@ -210,14 +213,16 @@ public class JJComboBox(
         if (SelectedValue == null)
             return selectedText;
 
-        foreach (var item in list.Where(item => SelectedValue.Equals(item.Id)))
+        foreach (var item in list)
         {
-            selectedText = item.Description;
+            if (SelectedValue.Equals(item.Id))
+            {
+                selectedText = item.Description;
 
-            if (IsManualValues())
-                selectedText = stringLocalizer[selectedText];
+                if (IsManualValues()) selectedText = stringLocalizer[selectedText];
 
-            break;
+                break;
+            }
         }
 
         return selectedText;
@@ -227,7 +232,7 @@ public class JJComboBox(
     {
         return dataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId)
         {
-            SearchId = FormStateData.PageState == PageState.View ? SelectedValue : null
+            SearchId = FormStateData.PageState == PageState.View && !MultiSelect ? SelectedValue : null
         });
     }
 
