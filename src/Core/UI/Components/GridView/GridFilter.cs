@@ -188,20 +188,20 @@ internal sealed class GridFilter(JJGridView gridView)
             .AppendHiddenInput($"grid-view-filter-action-{gridView.Name}")
             .Append(htmlPanel);
 
-        var btnDoFilter = gridView.ComponentFactory.Html.LinkButton.Create();
-        btnDoFilter.Enabled = gridView.EnableFilter;
-        btnDoFilter.Text = _stringLocalizer["Filter"];
-        btnDoFilter.IconClass = "fa fa-search";
-        btnDoFilter.ShowAsButton = true;
-        btnDoFilter.Type = LinkButtonType.Button;
-        btnDoFilter.OnClientClick = $"{gridView.Scripts.GetFilterScript()};";
+        var btnFilter = gridView.ComponentFactory.Html.LinkButton.Create();
+        btnFilter.Enabled = gridView.EnableFilter;
+        btnFilter.Text = _stringLocalizer["Filter"];
+        btnFilter.IconClass = "fa fa-search";
+        btnFilter.ShowAsButton = true;
+        btnFilter.Type = LinkButtonType.Submit;
+        btnFilter.OnClientClick = $"{gridView.Scripts.GetFilterScript()};";
 
         var btnCancel = gridView.ComponentFactory.Html.LinkButton.Create();
         btnCancel.Enabled = gridView.EnableFilter;
         btnCancel.Text = _stringLocalizer["Clear Filter"];
         btnCancel.IconClass = "fa fa-trash";
         btnCancel.ShowAsButton = true;
-        btnDoFilter.Type = LinkButtonType.Button;
+        btnCancel.Type = LinkButtonType.Button;
         btnCancel.OnClientClick = $"{gridView.Scripts.GetClearFilterScript()};";
 
         if (action.ShowAsCollapse)
@@ -230,7 +230,7 @@ internal sealed class GridFilter(JJGridView gridView)
                 Title = _stringLocalizer[action.Text]
             };
             
-            panel.Buttons.Add(btnDoFilter);
+            panel.Buttons.Add(btnFilter);
             panel.Buttons.Add(btnCancel);
             
             panel.ExpandedByDefault = action.ExpandedByDefault;
@@ -245,12 +245,12 @@ internal sealed class GridFilter(JJGridView gridView)
             {
                 Name = $"{gridView.Name}-filter-modal"
             };
-            btnDoFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
+            btnFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
             btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
 
             modal.HtmlBuilderContent = html;
             modal.Title = _stringLocalizer["Detailed Filters"];
-            modal.Buttons.Add(btnDoFilter);
+            modal.Buttons.Add(btnFilter);
             modal.Buttons.Add(btnCancel);
 
             html = modal.GetHtmlBuilder();
