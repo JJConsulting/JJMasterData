@@ -2,7 +2,7 @@
 using System.Collections.Frozen;
 using System.Collections.Generic;
 
-#if NETSTANDARD
+#if NET48
 using JJMasterData.Commons.Extensions;
 #endif
 

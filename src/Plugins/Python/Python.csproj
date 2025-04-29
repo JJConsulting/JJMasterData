@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>netstandard2.0</TargetFramework>
+	  <TargetFrameworks>net4.8;net8.0</TargetFrameworks>
 	  <Description>JJMasterData IronPython support for Actions and FormEvents.</Description>
 	  <PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
 	  <RepositoryUrl>https://www.github.com/jjconsulting/jjmasterdata</RepositoryUrl>

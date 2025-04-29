@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>4.4.4</Version>
+		<Version>4.4.5</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
@@ -13,7 +13,7 @@
 		<WarningsAsErrors>CA1859;CS4014</WarningsAsErrors>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Company>JJ Consulting</Company>
-		<Copyright>© 2024 JJConsulting. All rights reserved.</Copyright>
+		<Copyright>© 2025 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<ResourceLanguages>en</ResourceLanguages>

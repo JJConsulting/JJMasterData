@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net4.8;net8.0</TargetFrameworks>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<LangVersion>12</LangVersion>
 		<Nullable>disable</Nullable>
@@ -15,22 +15,22 @@
 		<PackageReference Include="JetBrains.Annotations" Version="2024.3.0">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.4" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-		<PackageReference Include="System.Threading.Channels" Version="8.0.0" />
-		<PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
-		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+	<ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.4" />
+		<PackageReference Include="System.Collections.Immutable" Version="9.0.4" />
 		<PackageReference Include="PolySharp" Version="1.14.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="System.Text.Json" Version="9.0.4" />
+		<PackageReference Include="System.Threading.Channels" Version="9.0.4" />
 	</ItemGroup>
 	
 	<ItemGroup>

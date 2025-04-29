@@ -145,7 +145,7 @@ public partial class DataAccess
 
         using var connection = await CreateConnectionAsync(cancellationToken);
         
-#if NETSTANDARD
+#if NET48
         using var transaction = connection.BeginTransaction();
 #else
         using var transaction = await connection.BeginTransactionAsync(cancellationToken);
@@ -161,7 +161,7 @@ public partial class DataAccess
 
                 numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
             }
-#if NETSTANDARD
+#if NET48
             transaction.Commit();
 #else
             await transaction.CommitAsync(cancellationToken);
@@ -169,7 +169,7 @@ public partial class DataAccess
         }
         catch (Exception ex)
         {
-#if NETSTANDARD
+#if NET48
             transaction.Rollback();
 #else
             await transaction.RollbackAsync(cancellationToken);

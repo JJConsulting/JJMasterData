@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net4.8;netstandard2.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>net4.8;net8.0</TargetFrameworks>
         <LangVersion>12</LangVersion>
         <RuntimeFrameworkVersion>8.0</RuntimeFrameworkVersion>
         <Nullable>disable</Nullable>
@@ -17,12 +17,10 @@
     
     <ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
         <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.15" />
-        <Reference Include="System.Web" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net4.8' OR '$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="9.0.4" />
         <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.4" />
+        <Reference Include="System.Web" />
     </ItemGroup>
     
     <!--Runtime dependencies-->
@@ -96,9 +94,5 @@
       <Compile Update="UI\Components\FileComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
-    </ItemGroup>
-    
-    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-      <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.15" />
     </ItemGroup>
 </Project>
