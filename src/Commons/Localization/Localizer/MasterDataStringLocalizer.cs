@@ -89,7 +89,7 @@ public sealed class MasterDataStringLocalizer(
             }
         }
 
-        return stringLocalizerValues.ToFrozenDictionary();
+        return stringLocalizerValues.ToFrozenDictionary(StringComparer.InvariantCultureIgnoreCase);
     }
 
     private Dictionary<string, string> GetStringLocalizerValues()
@@ -118,7 +118,7 @@ public sealed class MasterDataStringLocalizer(
         using var scope = serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetService<ILocalizationRepository>();
 
-        return repository?.GetAllStrings(culture) ?? new();
+        return repository?.GetAllStrings(culture) ?? new(StringComparer.InvariantCultureIgnoreCase);
     }
     public static void ClearCache()
     {

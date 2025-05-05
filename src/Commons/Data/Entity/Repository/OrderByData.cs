@@ -8,15 +8,15 @@ namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class OrderByData
 {
-    private Dictionary<string, OrderByDirection> Fields { get; } = new();
+    private readonly Dictionary<string, OrderByDirection> _fields = new();
 
-    public bool Any() => Fields.Count > 0;
+    public bool Any() => _fields.Count > 0;
     
     public string ToQueryParameter()
     {
         var queryParameter = new StringBuilder();
         
-        foreach (var field in Fields)
+        foreach (var field in _fields)
         {
             if (queryParameter.Length > 0)
             {
@@ -31,7 +31,7 @@ public class OrderByData
     
     public OrderByData AddOrReplace(string fieldName, OrderByDirection direction)
     {
-        Fields[fieldName] = direction;
+        _fields[fieldName] = direction;
         return this;
     }
     
@@ -46,10 +46,10 @@ public class OrderByData
 
     public bool Validate(ElementFieldList elementFields)
     {
-        if (Fields.Count == 0)
+        if (_fields.Count == 0)
             return true;
 
-        foreach (var field in Fields)
+        foreach (var field in _fields)
         {
             if (!elementFields.ContainsKey(field.Key))
                 return false;
@@ -60,7 +60,7 @@ public class OrderByData
 
     public void Set(string? orderBy)
     {
-        Fields.Clear();
+        _fields.Clear();
         
         if (orderBy == null || string.IsNullOrEmpty(orderBy))
         {
@@ -82,7 +82,7 @@ public class OrderByData
 
             var direction = ParseDirection(directionStr);
 
-            Fields[fieldName] = direction;
+            _fields[fieldName] = direction;
         }
     }
 

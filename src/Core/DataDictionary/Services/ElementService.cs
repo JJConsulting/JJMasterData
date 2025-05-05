@@ -134,7 +134,7 @@ public class ElementService(
     {
         var formView = formViewFactory.Create(dataDictionaryFormElementFactory.GetFormElement());
         
-        formView.GridView.SetCurrentFilter(DataDictionaryStructure.Type,"F");
+        formView.GridView.SetCurrentFilter(DataDictionaryStructure.Type, "F");
 
         if (!formView.GridView.CurrentOrder.Any())
         {
@@ -172,6 +172,14 @@ public class ElementService(
                         span.WithToolTip(info);
                     });
                 }
+            }
+            
+            if (args.Field.Name == DataDictionaryStructure.TableName)
+            {
+                var tableName = args.DataRow[DataDictionaryStructure.TableName]?.ToString();
+                args.HtmlResult = new HtmlBuilder(HtmlTag.Span)
+                    .WithCssClass("font-monospace")
+                    .AppendText(tableName);
             }
             
             if (args.Field.Name == DataDictionaryStructure.LastModified)

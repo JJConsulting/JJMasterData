@@ -252,7 +252,10 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var result = await _entityRepository.GetDictionaryListResultAsync(_masterDataElement,
             new EntityParameters
             {
-                Filters = filters!, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
+                Filters = filters!, 
+                OrderBy = orderBy,
+                CurrentPage = currentPage,
+                RecordsPerPage = recordsPerPage
             });
 
         var formElementInfoList = result.Data.ConvertAll(FormElementInfo.FromDictionary);
