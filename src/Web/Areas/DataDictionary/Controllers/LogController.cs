@@ -1,7 +1,9 @@
-﻿using JJMasterData.Commons.Data;
+﻿using System.Web;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Logging.Db;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
@@ -11,21 +13,18 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
+public class LogController(
+        IFormElementComponentFactory<JJFormView> formViewFactory,
         LoggerFormElementFactory loggerFormElementFactory,
+        DateService dateService,
         IEntityRepository entityRepository,
         IOptionsSnapshot<DbLoggerOptions> options)
     : DataDictionaryController
 {
     private readonly DbLoggerOptions _options = options.Value;
-    public async Task<IActionResult> Index(bool isModal)
+    public async Task<IActionResult> Index([FromQuery] bool isModal)
     {
         var formElement = loggerFormElementFactory.GetFormElement(isModal);
-
-        if (!await entityRepository.TableExistsAsync(_options.TableSchema, _options.TableName))
-        {
-            await entityRepository.CreateDataModelAsync(formElement,[]);
-        }
 
         var formView = formViewFactory.Create(formElement);
         formView.ShowTitle = !isModal;
@@ -37,11 +36,30 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
 
         formView.GridView.OnRenderCellAsync += (_, args) =>
         {
-            if (!args.Field.Name.Equals(_options.MessageColumnName))
-                return ValueTask.CompletedTask;
-            
-            var message = args.DataRow[_options.MessageColumnName]?.ToString()?.Replace("\n", "<br>");
-            args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
+            if (args.Field.Name == _options.CreatedColumnName)
+            {
+                args.HtmlResult = new HtmlBuilder().AppendSpan(span =>
+                {
+                    var createdAt = (DateTime)args.DataRow[_options.CreatedColumnName]!;
+                    span.WithToolTip(dateService.GetPhrase(createdAt));
+                    span.AppendText(createdAt.ToString("dd/MM/yyyy HH:mm:ss"));
+                });
+            }
+            else if (args.Field.Name == _options.MessageColumnName)
+            {
+                args.HtmlResult = new HtmlBuilder().AppendDiv(div =>
+                {
+                    div.WithCssClass("fw-bold");
+                    div.AppendText(args.DataRow[_options.CategoryColumnName]?.ToString() ?? "");
+                }).AppendDiv(div =>
+                {
+                    var message = HttpUtility.HtmlEncode(args.DataRow[_options.MessageColumnName]?.ToString() ?? "")
+                        .Replace("\n", "<br>");
+                
+                    div.AppendText(message);
+                    div.WithCssClass("font-monospace");
+                });
+            }
 
             return ValueTask.CompletedTask;
         };

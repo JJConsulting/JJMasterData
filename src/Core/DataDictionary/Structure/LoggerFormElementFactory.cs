@@ -26,9 +26,9 @@ public class LoggerFormElementFactory(
         };
 
         formElement.Fields[_options.IdColumnName].VisibleExpression = "val:0";
-
-        formElement.Fields[_options.CategoryColumnName].VisibleExpression = "val:0";
-        formElement.Fields[_options.CategoryColumnName].CssClass = "col-sm-6";
+        
+        formElement.Fields[_options.CategoryColumnName].VisibleExpression = "val:{IsFilter}";
+        formElement.Fields[_options.CategoryColumnName].CssClass = "col-sm-10";
 
         formElement.Fields[_options.LevelColumnName].LineGroup = 1;
         formElement.Fields[_options.LevelColumnName].CssClass = "col-sm-6";
