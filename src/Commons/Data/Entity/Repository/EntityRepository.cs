@@ -53,11 +53,11 @@ internal sealed class EntityRepository(
         return dataAccess.SetCommand(commandList);
     }
     
-    public Task<int> InsertAsync(Element element, IEnumerable<Dictionary<string, object?>> valueList)
+    public Task<int> InsertAsync(Element element, IEnumerable<Dictionary<string, object?>> values)
     {
         var dataAccess = GetDataAccess(element.ConnectionId);
 
-        var commandList = GetInsertCommands(element, valueList);
+        var commandList = GetInsertCommands(element, values);
 
         return dataAccess.SetCommandListAsync(commandList);
     }
