@@ -1510,6 +1510,10 @@
     <value>Nome do Indice</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Apply User Id On" xml:space="preserve">
+    <value>Aplicar Id do Usuário Em </value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Indexes" xml:space="preserve">
     <value>Índices</value>
     <comment>JJMasterDataWeb</comment>

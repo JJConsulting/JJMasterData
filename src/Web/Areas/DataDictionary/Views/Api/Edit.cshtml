@@ -13,17 +13,13 @@
 }
 
 
-@{
-    var cancelLocation = Url.Action("Index", new { elementName = Model.ElementName })!;
-}
-
 @using (Html.BeginMasterDataForm("Edit", "Api"))
 {
     <input asp-for="ElementName" hidden="hidden"/>
     <div class="row">
         <div class="col-sm-12">
-            <link-button type="LinkButtonType.Submit" icon="Check" css-class="btn-small" text="Save"/>
-            <link-button icon="Times" css-class="btn-small" text="Cancel" on-client-click="location.href='@cancelLocation'"/>
+            <link-button type="LinkButtonType.Submit" icon="Check" css-class="btn-small" text="@StringLocalizer["Save"]"/>
+            <link-button icon="Times" css-class="btn-small" text="@StringLocalizer["Cancel"]" asp-action="Index" asp-route-elementName="@Model.ElementName"/>
         </div>
     </div>
     <br>

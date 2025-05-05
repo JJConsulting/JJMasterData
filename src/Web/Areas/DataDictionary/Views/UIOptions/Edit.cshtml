@@ -17,8 +17,8 @@
 {
     <div class="row">
         <div class="col-sm-12">
-            <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="Save"/>
-            <link-button icon="SolidXmark" asp-action="Index" asp-route-elementName="@ViewBag.ElementName" text="Cancel"/>
+            <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="@StringLocalizer["Save"]"/>
+            <link-button icon="SolidXmark" asp-action="Index" asp-route-elementName="@ViewData["ElementName"]" text="@StringLocalizer["Cancel"]"/>
         </div>
     </div>
 
