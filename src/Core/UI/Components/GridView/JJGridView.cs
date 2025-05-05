@@ -826,8 +826,12 @@ public class JJGridView : AsyncComponent
                     .Append(HtmlTag.Div)
                     .Append(HtmlTag.P, p =>
                     {
-                        p.WithCssClass("fs-9 text-muted m-0")
-                            .Append(HtmlTag.Strong, strong => strong.AppendText(TotalOfRecords))
+                        p.WithCssClass("small text-muted m-0")
+                            .Append(HtmlTag.Strong, strong =>
+                            {
+                                strong.WithId($"{Name}-total-of-records");
+                                strong.AppendText(TotalOfRecords);
+                            })
                             .AppendText($" {StringLocalizer["record(s)"]}");
                     });
                 html.Append(wrapper);

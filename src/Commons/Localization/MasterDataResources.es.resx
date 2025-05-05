@@ -200,8 +200,8 @@
 		<value>Redirección de URL</value>
     <comment>JJMasterDataWeb</comment>
 	</data>
-  <data name="A selected record" xml:space="preserve">
-		<value>Un registro seleccionado</value>
+  <data name="One selected record" xml:space="preserve">
+		<value>Uno registro seleccionado</value>
     <comment>JJMasterDataApi</comment>
 	</data>
   <data name="{0} at {1}" xml:space="preserve">

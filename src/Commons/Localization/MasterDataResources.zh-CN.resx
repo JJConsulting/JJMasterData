@@ -189,7 +189,7 @@
     <value>名称为 {0} 的文件已存在</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="A selected record" xml:space="preserve">
+  <data name="One selected record" xml:space="preserve">
     <value>选择一条记录</value>
     <comment>JJMasterDataApi</comment>
   </data>

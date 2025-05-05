@@ -159,7 +159,7 @@ class DataExportationHelper {
         const modalBody: HTMLElement = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         HTMLHelper.setInnerHTML(modalBody,html)
         
-        const qtdElement = document.querySelector("#" + componentName + "_totrows");
+        const qtdElement = document.querySelector("#" + componentName + "-total-of-records");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
             if (totRows > 50000) {

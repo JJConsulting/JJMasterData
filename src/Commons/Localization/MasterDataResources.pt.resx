@@ -212,8 +212,8 @@
     <value>Redirecionamento Url</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="A selected record" xml:space="preserve">
-    <value>Um registro selecionado</value>
+  <data name="One selected record" xml:space="preserve">
+    <value>1 registro selecionado</value>
     <comment>JJMasterDataApi</comment>
   </data>
   <data name="{0} at {1}" xml:space="preserve">
@@ -1346,8 +1346,8 @@
     <value>Visualização do formulário</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="From" xml:space="preserve">
-    <value>De</value>
+  <data name="from" xml:space="preserve">
+    <value>de</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="From:" xml:space="preserve">
