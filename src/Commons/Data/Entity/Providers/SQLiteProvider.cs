@@ -9,15 +9,17 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SQLiteProvider(
+    IConnectionRepository connectionRepository,
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
-    : EntityProviderBase(options, loggerFactory)
+    : EntityProviderBase(connectionRepository,options, loggerFactory)
 {
     private const char Tab = '\t';
     public override string VariablePrefix => "@";

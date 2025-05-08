@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Caching.Memory;
@@ -17,13 +18,14 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerProvider(
+    IConnectionRepository connectionRepository,
     SqlServerScripts sqlServerScripts,
     IMemoryCache memoryCache,
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
-    : EntityProviderBase(options, loggerFactory)
+    : EntityProviderBase(connectionRepository, options, loggerFactory)
 {
-    private readonly TimeSpan _cacheExpiration = new(4, 0, 0);
+    private static readonly TimeSpan CacheExpiration = new(4, 0, 0);
 
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
@@ -89,7 +91,7 @@ public class SqlServerProvider(
             else
             {
                 sql = sqlServerScripts.GetReadScript(element);
-                memoryCache.Set(cacheKey, sql, _cacheExpiration);
+                memoryCache.Set(cacheKey, sql, CacheExpiration);
             }
         }
 
@@ -186,7 +188,7 @@ public class SqlServerProvider(
             else
             {
                 sql = SqlServerScripts.GetWriteScript(element);
-                memoryCache.Set(cacheKey, sql, _cacheExpiration);
+                memoryCache.Set(cacheKey, sql, CacheExpiration);
             }
         }
 

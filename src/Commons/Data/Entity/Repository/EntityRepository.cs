@@ -15,10 +15,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-internal sealed class EntityRepository(
-    IConnectionRepository connectionRepository,
-    EntityProviderBase provider)
-    : IEntityRepository
+internal sealed class EntityRepository(EntityProviderBase provider) : IEntityRepository
 {
     public int Update(Element element, Dictionary<string, object?> values)
     {
@@ -47,7 +44,7 @@ internal sealed class EntityRepository(
     
     public int Insert(Element element, IEnumerable<Dictionary<string, object?>> values)
     {
-        var dataAccess = GetDataAccess(element.ConnectionId);
+        var dataAccess = provider.GetDataAccess(element.ConnectionId);
 
         var commandList = GetInsertCommands(element, values);
 
@@ -56,7 +53,7 @@ internal sealed class EntityRepository(
     
     public Task<int> InsertAsync(Element element, IEnumerable<Dictionary<string, object?>> values)
     {
-        var dataAccess = GetDataAccess(element.ConnectionId);
+        var dataAccess = provider.GetDataAccess(element.ConnectionId);
 
         var commandList = GetInsertCommands(element, values);
 
@@ -99,7 +96,7 @@ internal sealed class EntityRepository(
 
     public Task SetValuesAsync(Element element, IEnumerable<Dictionary<string, object?>> values)
     {
-        var dataAccess = GetDataAccess(element.ConnectionId);
+        var dataAccess = provider.GetDataAccess(element.ConnectionId);
 
         var commandList = GetSetValuesCommands(element, values);
 
@@ -118,7 +115,7 @@ internal sealed class EntityRepository(
     
     public Task<object?> GetResultAsync(DataAccessCommand command, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetResultAsync(command);
     }
 
@@ -139,13 +136,13 @@ internal sealed class EntityRepository(
 
     public async Task SetCommandAsync(DataAccessCommand command, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         await dataAccess.SetCommandAsync(command);
     }
 
     public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.SetCommandListAsync(commandList);
     }
 
@@ -156,13 +153,13 @@ internal sealed class EntityRepository(
 
     public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.ExecuteBatchAsync(script);
     }
 
     public Dictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys)
     {
-        var dataAccess = GetDataAccess(element.ConnectionId);
+        var dataAccess = provider.GetDataAccess(element.ConnectionId);
         if (primaryKeys.Count == 0)
             throw new ArgumentException(@"Your need at least one value at your primary keys.", nameof(primaryKeys));
 
@@ -178,13 +175,13 @@ internal sealed class EntityRepository(
 
     public Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
     }
 
     public Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetDictionaryAsync(command);
     }
 
@@ -201,7 +198,7 @@ internal sealed class EntityRepository(
             Filters = primaryKeys!
         }, totalOfRecords);
         
-        var dataAccess = GetDataAccess(element.ConnectionId);
+        var dataAccess = provider.GetDataAccess(element.ConnectionId);
 
         return dataAccess.GetDictionaryAsync(cmd);
     }
@@ -287,19 +284,19 @@ internal sealed class EntityRepository(
 
     public DataTable GetDataTable(DataAccessCommand dataAccessCommand, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetDataTable(dataAccessCommand);
     }
 
     public Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetDataTableAsync(dataAccessCommand);
     }
 
     public Task<DataTable> GetDataTableAsync(Element element, EntityParameters? parameters = null)
     {
-        var dataAccess = GetDataAccess(element.ConnectionId);
+        var dataAccess = provider.GetDataAccess(element.ConnectionId);
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var command = provider.GetReadCommand(element, parameters ?? new EntityParameters(), totalOfRecords);
@@ -329,7 +326,7 @@ internal sealed class EntityRepository(
 
     public Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetDictionaryListAsync(command);
     }
 
@@ -358,13 +355,13 @@ internal sealed class EntityRepository(
     
     public DataSet GetDataSet(DataAccessCommand command, Guid? connectionId = null)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetDataSet(command);
     }
     
     public Task<DataSet> GetDataSetAsync(DataAccessCommand command, Guid? connectionId = null, CancellationToken cancellationToken = default)
     {
-        var dataAccess = GetDataAccess(connectionId);
+        var dataAccess = provider.GetDataAccess(connectionId);
         return dataAccess.GetDataSetAsync(command, cancellationToken);
     }
     public Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
@@ -380,11 +377,5 @@ internal sealed class EntityRepository(
     public Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
     {
         return provider.GetStoredProcedureListAsync(connectionId);
-    }
-    
-    private DataAccess GetDataAccess(Guid? connectionId)
-    {
-        var connection = connectionRepository.Get(connectionId);
-        return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
 }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public abstract class EntityProviderBase(
+    IConnectionRepository connectionRepository,
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
 {
@@ -317,7 +319,7 @@ public abstract class EntityProviderBase(
     
     internal DataAccess GetDataAccess(Guid? connectionId)
     {
-        var connection = Options.GetConnectionString(connectionId);
+        var connection = connectionRepository.Get(connectionId);
         return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
 }
