@@ -502,7 +502,7 @@ public partial class DataAccess
     /// <summary>Executes a database script.</summary>
     /// <returns>Returns true if the execution is successful.</returns>
     /// <remarks>Lucio Pelinson 18-02-2013</remarks> 
-    public bool ExecuteBatch(string script)
+    public bool ExecuteBatch(string script, int? timeoutSeconds = null)
     {
         string markpar = "GO";
         if (_connectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
@@ -533,7 +533,10 @@ public partial class DataAccess
                 }
             }
 
-            SetCommand(sqlList);
+            SetCommand(sqlList.Select(sql=> new DataAccessCommand(sql)
+            {
+                TimeoutSeconds = timeoutSeconds
+            }));
         }
 
         return true;
