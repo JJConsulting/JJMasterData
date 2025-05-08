@@ -17,9 +17,7 @@ There are three ways to configure an application:
 {
   "AllowedHosts": "*",
   "JJMasterData": {
-    "ConnectionStrings": {
-      "ConnectionString": "data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True"
-    },
+    "ConnectionString": "data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True"
     "DataDictionaryTableName": "tb_masterdata",
     "LocalizationTableName": "tb_masterdata_localization",
     "ReadProcedurePattern": "{tablename}Get",
@@ -40,9 +38,11 @@ There are three ways to configure an application:
 
 **2)** Custom `Action<MasterDataWebOptions>` at application startup
 ```cs
-builder.Services.AddJJMasterDataWeb(options =>
+builder.Services.PostConfigure<MasterDataWebOptions>((webOptions) =>
 {
-    options.ConnectionString = "data source=localhost;initial catalog=JJMasterData;Integrated Security=True";
+    webOptions.CustomBootstrapPath = "/css/theme.min.css";
+    webOptions.LayoutPath = "_MenuLayout";
+    webOptions.ModalLayoutPath = "_ModalLayout";
 });
 ```
 

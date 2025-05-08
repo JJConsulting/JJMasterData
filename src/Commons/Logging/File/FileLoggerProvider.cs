@@ -86,9 +86,6 @@ public sealed class FileLoggerProvider : BatchingLoggerProvider
             case FileLoggerFormatting.Compact:
             {
                 log.Append(message.Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff zzz", CultureInfo.InvariantCulture));
-                log.Append(" [");
-                log.Append(message.LogLevel.ToString());
-                log.Append("] ");
                 log.Append(message.Category);
 
                 var scopeProvider = ScopeProvider;
@@ -110,7 +107,6 @@ public sealed class FileLoggerProvider : BatchingLoggerProvider
             default:
                 log.Append(DateTime.Now);
                 log.Append(' ');
-                log.Append($" [{message.Category}] ");
                 log.Append('(');
                 log.Append(message.LogLevel);
                 log.AppendLine(")");

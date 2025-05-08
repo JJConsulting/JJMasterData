@@ -21,5 +21,5 @@ public class ConnectionString()
     public string Connection { get; init; } = null!;
     
     [Display(Name = "Connection Provider")]
-    public string ConnectionProvider { get; set; } = null!;
+    public string ConnectionProvider { get; set; } = "Microsoft.Data.SqlClient";
 }

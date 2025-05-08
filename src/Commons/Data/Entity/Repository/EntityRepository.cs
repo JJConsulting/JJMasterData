@@ -10,12 +10,13 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security.Hashing;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
 internal sealed class EntityRepository(
-    IOptionsSnapshot<MasterDataCommonsOptions> commonsOptions,
+    IConnectionRepository connectionRepository,
     EntityProviderBase provider)
     : IEntityRepository
 {
@@ -383,7 +384,7 @@ internal sealed class EntityRepository(
     
     private DataAccess GetDataAccess(Guid? connectionId)
     {
-        var connection = commonsOptions.Value.GetConnectionString(connectionId);
+        var connection = connectionRepository.Get(connectionId);
         return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
 }

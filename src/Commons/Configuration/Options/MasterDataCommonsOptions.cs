@@ -46,7 +46,7 @@ public sealed class MasterDataCommonsOptions
     [JsonIgnore]
     public static bool IsNetFramework { get; } = RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 
-    public ConnectionString GetConnectionString(Guid? guid)
+    internal ConnectionString GetConnectionString(Guid? guid)
     {
         if (guid is null)
             return new ConnectionString(ConnectionString!, ConnectionProvider.GetAdoNetTypeName());

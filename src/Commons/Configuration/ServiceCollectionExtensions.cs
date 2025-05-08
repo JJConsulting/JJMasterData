@@ -69,7 +69,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<EntityProviderBase, SqlServerProvider>();
         services.AddTransient<IEntityRepository, EntityRepository>();
-
+        services.AddTransient<IConnectionRepository, ConnectionRepository>();
+        
         services.AddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
         services.AddTransient<IEncryptionService, EncryptionService>();
 

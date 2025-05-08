@@ -48,6 +48,12 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         return this;
     }
 
+    public MasterDataServiceBuilder WithConnectionRepository<T>() where T : IConnectionRepository
+    {
+        Services.Replace(ServiceDescriptor.Transient(typeof(IConnectionRepository), typeof(T)));
+        return this;
+    }
+
     public MasterDataServiceBuilder WithEntityProvider<T>() where T : EntityProviderBase
     {
         Services.Replace(ServiceDescriptor.Transient(typeof(EntityProviderBase),typeof(T)));

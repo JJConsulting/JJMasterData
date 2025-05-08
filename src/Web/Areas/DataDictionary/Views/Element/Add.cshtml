@@ -1,10 +1,14 @@
 ﻿@using JJMasterData.Commons.Configuration.Options
+@using JJMasterData.Commons.Data.Entity.Repository.Abstractions
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptionsSnapshot<MasterDataCommonsOptions> OptionsSnapshot
 @inject JJMasterDataLogo MasterDataLogo
+@inject IConnectionRepository ConnectionRepository
+
 @model JJMasterData.Core.DataDictionary.Models.ElementBean
 
 @{
@@ -53,9 +57,9 @@
             <div class="form-floating">
                 <select asp-for="ConnectionId" class="form-select">
                     <option value="">@StringLocalizer["Application Default"]</option>
-                    @foreach (var connection in OptionsSnapshot.Value.AdditionalConnectionStrings)
+                    @foreach (var connection in ConnectionRepository.GetAll())
                     {
-                    <option value="@connection.Guid">@connection.Name</option>
+                        <option value="@connection.Guid">@connection.Name</option>
                     }
                 </select>
                 <label asp-for="ConnectionId"></label>
