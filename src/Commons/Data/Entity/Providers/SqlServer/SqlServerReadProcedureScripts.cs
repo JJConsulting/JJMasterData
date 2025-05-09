@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerReadProcedureScripts(
     IOptionsSnapshot<MasterDataCommonsOptions> options,
-    SqlServerInfo sqlServerInfo)
+    IOptionsSnapshot<SqlServerOptions> sqlServerOptions)
     : SqlServerScriptsBase
 {
     public string GetReadProcedureScript(Element element)
@@ -28,7 +28,7 @@ public class SqlServerReadProcedureScripts(
 
         var procedureName = options.Value.GetReadProcedureName(element);
 
-        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
+        if (sqlServerOptions.Value.CompatibilityLevel >= 130)
         {
             sql.Append("CREATE OR ALTER PROCEDURE ");
         }
@@ -73,14 +73,14 @@ public class SqlServerReadProcedureScripts(
         }
 
         sql.AppendLine("DECLARE @count       INT");
-        sql.AppendLine("");
+        sql.AppendLine();
 
         sql.Append(Tab);
         sql.AppendLine("--COLUMNS");
         sql.Append(Tab);
         sql.AppendLine("SET @sqlColumn = '");
 
-        int index = 1;
+        var index = 1;
         foreach (var field in fields)
         {
             sql.Append(Tab).Append(Tab);
@@ -113,7 +113,7 @@ public class SqlServerReadProcedureScripts(
         sql.Append("SET @sqlTable = 'FROM ");
         sql.Append(GetTableName(element));
         sql.AppendLine(" WITH (NOLOCK)'");
-        sql.AppendLine("");
+        sql.AppendLine();
 
         sql.Append(Tab);
         sql.AppendLine("--CONDITIONALS");
@@ -126,7 +126,7 @@ public class SqlServerReadProcedureScripts(
             {
                 if (field.DataBehavior == FieldBehavior.ViewOnly)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab);
                     sql.AppendLine("/*");
                     sql.Append("TODO: FILTER ");
@@ -138,7 +138,7 @@ public class SqlServerReadProcedureScripts(
             {
                 case FilterMode.Range:
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
 
                     if (field.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2)
                     {
@@ -175,7 +175,7 @@ public class SqlServerReadProcedureScripts(
                     break;
                 }
                 case FilterMode.Contain:
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab);
                     sql.Append("IF @");
                     sql.Append(field.Name);
@@ -189,13 +189,13 @@ public class SqlServerReadProcedureScripts(
                     sql.Append(GetFilterMultValuesContains(element, field.Name));
                     break;
                 case FilterMode.MultValuesEqual:
-                    sql.Append(GetMultValuesEquals(element, field));
+                    sql.Append(GetMultValuesEquals(field));
                     break;
                 default:
                 {
                     if (field.Filter.Type == FilterMode.Equal || field.IsPk)
                     {
-                        sql.AppendLine("");
+                        sql.AppendLine();
                         sql.Append(Tab);
                         sql.Append("IF @");
                         sql.Append(field.Name);
@@ -218,7 +218,7 @@ public class SqlServerReadProcedureScripts(
             sql.AppendLine("*/");
         }
 
-        sql.AppendLine("");
+        sql.AppendLine();
         sql.Append(Tab);
         sql.AppendLine("--ORDER BY");
         sql.Append(Tab);
@@ -271,7 +271,7 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine("SET @sqlOffset = @sqlOffset + '@regporpag'");
         sql.Append(Tab);
         sql.AppendLine("SET @sqlOffset = @sqlOffset + ' ROWS ONLY '");
-        sql.AppendLine("");
+        sql.AppendLine();
 
 
         sql.Append(Tab);
@@ -327,12 +327,12 @@ public class SqlServerReadProcedureScripts(
         return sql.ToString();
     }
 
-    private string GetMultValuesEquals(Element element, ElementField field)
+    private string GetMultValuesEquals(ElementField field)
     {
         var sql = new StringBuilder();
-        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) < 130)
+        if (sqlServerOptions.Value.CompatibilityLevel < 130)
         {
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab);
             sql.Append("IF @");
             sql.Append(field.Name);
@@ -341,25 +341,25 @@ public class SqlServerReadProcedureScripts(
             sql.AppendLine("BEGIN");
             sql.Append(Tab, 2);
             sql.AppendFormat("SET @likein = ' AND {0} IN ('", field.Name);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", field.Name);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendLine("BEGIN");
             sql.Append(Tab, 3);
             sql.AppendFormat("SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", field.Name);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 3);
             sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", field.Name);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 3);
             sql.AppendLine("SET @likein = @likein + ', ';");
             sql.Append(Tab, 2);
             sql.AppendLine("END");
             sql.Append(Tab, 2);
             sql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", field.Name);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
             sql.Append(Tab);
@@ -532,7 +532,7 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine("BEGIN");
         
 
-        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
+        if (sqlServerOptions.Value.CompatibilityLevel >= 130)
         {
             sql.Append(Tab, 2);
             sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
@@ -552,22 +552,22 @@ public class SqlServerReadProcedureScripts(
             sql.AppendLine("SET @likein = ' AND ( '");
             sql.Append(Tab, 2);
             sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", fieldName);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendLine("BEGIN");
             sql.Append(Tab, 3);
             sql.AppendFormat("SET @likein = @likein + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);", fieldName);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 3);
             sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", fieldName);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 3);
             sql.AppendLine("SET @likein = @likein + ' OR ';");
             sql.Append(Tab, 2);
             sql.AppendLine("END");
             sql.Append(Tab, 2);
             sql.AppendFormat("SET @likein = @likein  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", fieldName);
-            sql.AppendLine("");
+            sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendLine("SET @sqlWhere = @sqlWhere + @likein");
         }

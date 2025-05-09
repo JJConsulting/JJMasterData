@@ -32,12 +32,12 @@ public class SQLiteProvider(
         if (element.Fields == null || element.Fields.Count == 0)
             throw new ArgumentNullException(nameof(element.Fields));
 
-        StringBuilder sSql = new StringBuilder();
+        StringBuilder sql = new StringBuilder();
 
-        sSql.AppendLine("-- TABLE");
-        sSql.Append("CREATE TABLE [");
-        sSql.Append(element.TableName);
-        sSql.AppendLine("] (");
+        sql.AppendLine("-- TABLE");
+        sql.Append("CREATE TABLE [");
+        sql.Append(element.TableName);
+        sql.AppendLine("] (");
         bool isFirst = true;
         var fields = element.Fields
             .ToList()
@@ -48,36 +48,36 @@ public class SQLiteProvider(
             if (isFirst)
                 isFirst = false;
             else
-                sSql.AppendLine(",");
+                sql.AppendLine(",");
 
-            sSql.Append(Tab);
-            sSql.Append('[');
-            sSql.Append(f.Name);
-            sSql.Append("] ");
+            sql.Append(Tab);
+            sql.Append('[');
+            sql.Append(f.Name);
+            sql.Append("] ");
 
             switch (f.DataType)
             {
                 case FieldType.Int:
-                    sSql.Append("INTEGER");
+                    sql.Append("INTEGER");
                     break;
                 case FieldType.Float:
-                    sSql.Append("Real");
+                    sql.Append("Real");
                     break;
                 case FieldType.NText:
                 case FieldType.NVarchar:
                 case FieldType.Varchar:
-                    sSql.Append("TEXT");
+                    sql.Append("TEXT");
                     break;
                 default:
-                    sSql.Append(f.DataType.ToString());
+                    sql.Append(f.DataType.ToString());
                     break;
             }
 
             if (f.IsRequired)
-                sSql.Append(" NOT NULL");
+                sql.Append(" NOT NULL");
 
             if (f.AutoNum && f.IsPk)
-                sSql.Append(" PRIMARY KEY AUTOINCREMENT ");
+                sql.Append(" PRIMARY KEY AUTOINCREMENT ");
         }
 
         isFirst = true;
@@ -86,78 +86,78 @@ public class SQLiteProvider(
             if (isFirst)
             {
                 isFirst = false;
-                sSql.AppendLine(",");
-                sSql.Append(Tab);
-                sSql.Append("PRIMARY KEY (");
+                sql.AppendLine(",");
+                sql.Append(Tab);
+                sql.Append("PRIMARY KEY (");
             }
             else
             {
-                sSql.Append(',');
+                sql.Append(',');
             }
 
-            sSql.Append('[');
-            sSql.Append(f.Name);
-            sSql.Append("] ");
+            sql.Append('[');
+            sql.Append(f.Name);
+            sql.Append("] ");
         }
 
         if (!isFirst)
-            sSql.Append(')');
+            sql.Append(')');
 
-        sSql.AppendLine("");
-        sSql.AppendLine(")");
-        sSql.AppendLine("GO");
-        sSql.AppendLine("");
+        sql.AppendLine();
+        sql.AppendLine(")");
+        sql.AppendLine("GO");
+        sql.AppendLine();
 
-        //sSql.AppendLine(DoSqlCreateRelation(element));
-        sSql.AppendLine("");
+        //sql.AppendLine(DoSqlCreateRelation(element));
+        sql.AppendLine();
 
         int nIndex = 1;
         if (element.Indexes.Count > 0)
         {
             foreach (var index in element.Indexes)
             {
-                sSql.Append("CREATE");
-                sSql.Append(index.IsUnique ? " UNIQUE" : "");
-                sSql.Append(index.IsClustered ? " CLUSTERED" : "");
-                sSql.Append(" INDEX [IX_");
-                sSql.Append(element.TableName);
-                sSql.Append('_');
-                sSql.Append(nIndex);
-                sSql.Append("] ON ");
-                sSql.AppendLine(element.TableName);
+                sql.Append("CREATE");
+                sql.Append(index.IsUnique ? " UNIQUE" : "");
+                sql.Append(index.IsClustered ? " CLUSTERED" : "");
+                sql.Append(" INDEX [IX_");
+                sql.Append(element.TableName);
+                sql.Append('_');
+                sql.Append(nIndex);
+                sql.Append("] ON ");
+                sql.AppendLine(element.TableName);
 
-                sSql.Append(Tab);
-                sSql.AppendLine("(");
+                sql.Append(Tab);
+                sql.AppendLine("(");
                 for (int i = 0; i < index.Columns.Count; i++)
                 {
                     if (i > 0)
-                        sSql.AppendLine(", ");
+                        sql.AppendLine(", ");
 
-                    sSql.Append(Tab);
-                    sSql.Append(index.Columns[i]);
+                    sql.Append(Tab);
+                    sql.Append(index.Columns[i]);
                 }
 
-                sSql.AppendLine("");
-                sSql.Append(Tab);
-                sSql.AppendLine(")");
-                sSql.AppendLine("GO");
+                sql.AppendLine();
+                sql.Append(Tab);
+                sql.AppendLine(")");
+                sql.AppendLine("GO");
                 nIndex++;
             }
         }
 
-        sSql.AppendLine("");
-        return sSql.ToString();
+        sql.AppendLine();
+        return sql.ToString();
     }
 
 
     // ReSharper disable once UnusedMember.Local
     private static string GetRelationshipsScript(Element element)
     {
-        StringBuilder sSql = new StringBuilder();
+        StringBuilder sql = new StringBuilder();
 
         if (element.Relationships.Count > 0)
         {
-            sSql.AppendLine("-- RELATIONSHIPS");
+            sql.AppendLine("-- RELATIONSHIPS");
             var listConstraint = new List<string>();
             foreach (var r in element.Relationships)
             {
@@ -180,61 +180,61 @@ public class SQLiteProvider(
                     }
                 }
 
-                sSql.Append("ALTER TABLE ");
-                sSql.AppendLine(r.ChildElement);
-                sSql.Append("ADD CONSTRAINT [");
-                sSql.Append(constraintName);
-                sSql.AppendLine("] ");
-                sSql.Append(Tab);
-                sSql.Append("FOREIGN KEY (");
+                sql.Append("ALTER TABLE ");
+                sql.AppendLine(r.ChildElement);
+                sql.Append("ADD CONSTRAINT [");
+                sql.Append(constraintName);
+                sql.AppendLine("] ");
+                sql.Append(Tab);
+                sql.Append("FOREIGN KEY (");
 
                 for (int rc = 0; rc < r.Columns.Count; rc++)
                 {
                     if (rc > 0)
-                        sSql.Append(", ");
+                        sql.Append(", ");
 
-                    sSql.Append('[');
-                    sSql.Append(r.Columns[rc].FkColumn);
-                    sSql.Append(']');
+                    sql.Append('[');
+                    sql.Append(r.Columns[rc].FkColumn);
+                    sql.Append(']');
                 }
 
-                sSql.AppendLine(")");
-                sSql.Append(Tab);
-                sSql.Append("REFERENCES ");
-                sSql.Append(element.TableName);
-                sSql.Append(" (");
+                sql.AppendLine(")");
+                sql.Append(Tab);
+                sql.Append("REFERENCES ");
+                sql.Append(element.TableName);
+                sql.Append(" (");
                 for (int rc = 0; rc < r.Columns.Count; rc++)
                 {
                     if (rc > 0)
-                        sSql.Append(", ");
+                        sql.Append(", ");
 
-                    sSql.Append('[');
-                    sSql.Append(r.Columns[rc].PkColumn);
-                    sSql.Append(']');
+                    sql.Append('[');
+                    sql.Append(r.Columns[rc].PkColumn);
+                    sql.Append(']');
                 }
 
-                sSql.Append(')');
+                sql.Append(')');
 
                 if (r.UpdateOnCascade)
                 {
-                    sSql.AppendLine("");
-                    sSql.Append(Tab).Append(Tab);
-                    sSql.Append("ON UPDATE CASCADE ");
+                    sql.AppendLine();
+                    sql.Append(Tab).Append(Tab);
+                    sql.Append("ON UPDATE CASCADE ");
                 }
 
                 if (r.DeleteOnCascade)
                 {
-                    sSql.AppendLine("");
-                    sSql.Append(Tab).Append(Tab);
-                    sSql.Append("ON DELETE CASCADE ");
+                    sql.AppendLine();
+                    sql.Append(Tab).Append(Tab);
+                    sql.Append("ON DELETE CASCADE ");
                 }
 
-                sSql.AppendLine("");
-                sSql.AppendLine("GO");
+                sql.AppendLine();
+                sql.AppendLine("GO");
             }
         }
 
-        return sSql.ToString();
+        return sql.ToString();
     }
 
     public override string GetWriteProcedureScript(Element element)
@@ -385,14 +385,14 @@ public class SQLiteProvider(
             .FindAll(x => x.DataBehavior == FieldBehavior.Real
                           && !x.AutoNum);
 
-        var sSql = new StringBuilder();
+        var sql = new StringBuilder();
         if (isReplace)
-            sSql.Append("REPLACE INTO ");
+            sql.Append("REPLACE INTO ");
         else
-            sSql.Append("INSERT INTO ");
+            sql.Append("INSERT INTO ");
 
-        sSql.Append(element.TableName);
-        sSql.Append(" (");
+        sql.Append(element.TableName);
+        sql.Append(" (");
 
         bool isFirst = true;
         foreach (var c in fields)
@@ -400,30 +400,30 @@ public class SQLiteProvider(
             if (isFirst)
                 isFirst = false;
             else
-                sSql.AppendLine(",");
+                sql.AppendLine(",");
 
-            sSql.Append(c.Name);
+            sql.Append(c.Name);
         }
 
-        sSql.Append(')');
-        sSql.Append(" VALUES (");
+        sql.Append(')');
+        sql.Append(" VALUES (");
         isFirst = true;
         foreach (var unused in fields)
         {
             if (isFirst)
                 isFirst = false;
             else
-                sSql.AppendLine(",");
+                sql.AppendLine(",");
 
-            sSql.Append('?');
+            sql.Append('?');
         }
 
-        sSql.Append(')');
+        sql.Append(')');
 
         var cmd = new DataAccessCommand
         {
             Type = CommandType.Text,
-            Sql = sSql.ToString()
+            Sql = sql.ToString()
         };
 
         foreach (var f in fields)
@@ -447,10 +447,10 @@ public class SQLiteProvider(
             .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
-        var sSql = new StringBuilder();
-        sSql.Append("UPDATE ");
-        sSql.Append(element.TableName);
-        sSql.Append(" SET ");
+        var sql = new StringBuilder();
+        sql.Append("UPDATE ");
+        sql.Append(element.TableName);
+        sql.Append(" SET ");
 
         bool isFirst = true;
         foreach (var c in fields)
@@ -460,11 +460,11 @@ public class SQLiteProvider(
                 if (isFirst)
                     isFirst = false;
                 else
-                    sSql.AppendLine(",");
+                    sql.AppendLine(",");
 
-                sSql.Append(c.Name);
-                sSql.Append(" = ");
-                sSql.Append(VariablePrefix + c.Name);
+                sql.Append(c.Name);
+                sql.Append(" = ");
+                sql.Append(VariablePrefix + c.Name);
             }
         }
 
@@ -473,20 +473,20 @@ public class SQLiteProvider(
         {
             if (f.IsPk)
             {
-                sSql.Append(Tab).Append(Tab);
+                sql.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
-                    sSql.Append(" WHERE ");
+                    sql.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append("AND ");
+                    sql.Append("AND ");
                 }
 
-                sSql.Append(f.Name);
-                sSql.Append(" = ");
-                sSql.AppendLine(VariablePrefix + f.Name);
+                sql.Append(f.Name);
+                sql.Append(" = ");
+                sql.AppendLine(VariablePrefix + f.Name);
             }
         }
 
@@ -494,7 +494,7 @@ public class SQLiteProvider(
         var cmd = new DataAccessCommand
         {
             Type = CommandType.Text,
-            Sql = sSql.ToString()
+            Sql = sql.ToString()
         };
 
         foreach (var f in fields)

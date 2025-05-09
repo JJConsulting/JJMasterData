@@ -16,23 +16,33 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// <summary>
 /// JJMasterData key/value configurations.
 /// They're populated from JJMasterData section on <see cref="IConfiguration"/>, following its implementations.
-/// On .NET Framework, add a IConfiguration builder to your application.
+/// On .NET Framework, add an <see cref="IConfiguration"/> builder to your application.
 /// </summary>
 public sealed class MasterDataCommonsOptions
 {
     public required string ConnectionString { get; set; }
     public DataAccessProvider ConnectionProvider { get; set; }
 
+    /// <summary>
+    /// A collection of additional connection string definitions used for database connections.
+    /// Each connection string includes provider-specific information and is identified by a unique GUID.
+    /// This property can be used to define and manage multiple database connections within a single application.
+    /// Default value: an empty list.
+    /// </summary>
     public List<ConnectionString> AdditionalConnectionStrings { get; set; } = [];
 
     /// <summary>
-    /// Default value: {tablename}Get <br></br>
+    /// Pattern used to generate the names of stored procedures for reading data.
+    /// The placeholder {tablename} will be replaced with the name of the table being accessed.
+    /// Default value: {tablename}Get
     /// </summary>
     [Display(Name = "Read Procedure Pattern")]
     public string ReadProcedurePattern { get; set; } = "{tablename}Get";
 
     /// <summary>
-    /// Default value: {tablename}Set <br></br>
+    /// Pattern used to generate the names of stored procedures for writing data.
+    /// The placeholder {tablename} will be replaced with the name of the table being accessed.
+    /// Default value: {tablename}Set
     /// </summary>
     [Display(Name = "Write Procedure Pattern")]
     public string WriteProcedurePattern { get; set; } = "{tablename}Set";

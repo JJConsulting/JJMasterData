@@ -58,13 +58,13 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
             sql.Append(')');
         }
 
-        sql.AppendLine("");
+        sql.AppendLine();
         sql.AppendLine(")");
 
-        sql.AppendLine("");
+        sql.AppendLine();
 
         sql.AppendLine(GetRelationshipsScript(element, relationships));
-        sql.AppendLine("");
+        sql.AppendLine();
 
         int counter = 1;
         if (element.Indexes.Count > 0)
@@ -92,7 +92,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                     sql.Append(index.Columns[i]);
                 }
 
-                sql.AppendLine("");
+                sql.AppendLine();
                 sql.Append(Tab);
                 sql.AppendLine(")");
                 sql.AppendLine("GO");
@@ -175,19 +175,19 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
 
                 if (relationship.UpdateOnCascade)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab).Append(Tab);
                     sql.Append("ON UPDATE CASCADE ");
                 }
 
                 if (relationship.DeleteOnCascade)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab).Append(Tab);
                     sql.Append("ON DELETE CASCADE ");
                 }
 
-                sql.AppendLine("");
+                sql.AppendLine();
                 sql.AppendLine("GO");
             }
         }

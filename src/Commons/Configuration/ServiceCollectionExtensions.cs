@@ -61,8 +61,8 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
         
         services.AddScoped<DataAccess>();
-        services.AddScoped<SqlServerInfo>();
 
+        services.AddOptions<SqlServerOptions>().BindConfiguration("JJMasterData");
         services.AddTransient<SqlServerReadProcedureScripts>();
         services.AddTransient<SqlServerWriteProcedureScripts>();
         services.AddTransient<SqlServerScripts>();

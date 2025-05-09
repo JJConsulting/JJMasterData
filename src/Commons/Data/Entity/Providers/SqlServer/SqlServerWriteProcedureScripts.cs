@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerWriteProcedureScripts(
     IOptionsSnapshot<MasterDataCommonsOptions> options,
-    SqlServerInfo sqlServerInfo)
+    IOptionsSnapshot<SqlServerOptions> sqlServerOptions)
     : SqlServerScriptsBase
 {
     private const string InsertInitial = "I";
@@ -28,7 +28,7 @@ public class SqlServerWriteProcedureScripts(
         var sql = new StringBuilder();
         var procedureName = options.Value.GetWriteProcedureName(element);
 
-        if (sqlServerInfo.GetCompatibilityLevel(element.ConnectionId) >= 130)
+        if (sqlServerOptions.Value.CompatibilityLevel >= 130)
         {
             sql.Append("CREATE OR ALTER PROCEDURE ");
         }
@@ -246,7 +246,7 @@ public class SqlServerWriteProcedureScripts(
                 sql.Append(field.Name);
             }
 
-            sql.AppendLine("");
+            sql.AppendLine();
 
             isFirst = true;
             foreach (var f in fields.Where(f => f.IsPk))

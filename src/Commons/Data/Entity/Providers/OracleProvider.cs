@@ -212,19 +212,19 @@ public class OracleProvider(
 
                 if (r.UpdateOnCascade)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab).Append(Tab);
                     sql.Append("ON UPDATE CASCADE ");
                 }
 
                 if (r.DeleteOnCascade)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab).Append(Tab);
                     sql.Append("ON DELETE CASCADE ");
                 }
 
-                sql.AppendLine("");
+                sql.AppendLine();
                 sql.AppendLine("/");
             }
         }
@@ -295,7 +295,7 @@ public class OracleProvider(
             {
                 if (f.IsPk)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab).Append(Tab);
                     if (isFirst)
                     {
@@ -403,7 +403,7 @@ public class OracleProvider(
             {
                 if (f.IsPk)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab).Append(Tab);
                     if (isFirst)
                     {
@@ -444,7 +444,7 @@ public class OracleProvider(
         {
             if (f.IsPk)
             {
-                sql.AppendLine("");
+                sql.AppendLine();
                 sql.Append(Tab).Append(Tab);
                 if (isFirst)
                 {
@@ -549,7 +549,7 @@ public class OracleProvider(
         sql.Append(Tab);
         sql.AppendLine("v_Cursor       SYS_REFCURSOR;");
         sql.AppendLine("BEGIN");
-        sql.AppendLine("");
+        sql.AppendLine();
 
         sql.Append(Tab);
         sql.AppendLine("--COLUMNS");
@@ -576,13 +576,13 @@ public class OracleProvider(
             if (f.DataBehavior == FieldBehavior.ViewOnly)
                 sql.Append(" --TODO: ");
 
-            sql.AppendLine("");
+            sql.AppendLine();
 
             nAux++;
         }
 
-        sql.AppendLine("");
-        sql.AppendLine("");
+        sql.AppendLine();
+        sql.AppendLine();
 
         sql.Append(Tab);
         sql.AppendLine("--TABLES");
@@ -591,8 +591,8 @@ public class OracleProvider(
         sql.Append("v_sqltable := 'FROM ");
         sql.Append(element.TableName);
         sql.AppendLine("';");
-        sql.AppendLine("");
-        sql.AppendLine("");
+        sql.AppendLine();
+        sql.AppendLine();
 
         sql.Append(Tab);
         sql.AppendLine("--CONDITIONALS");
@@ -605,7 +605,7 @@ public class OracleProvider(
             {
                 if (f.DataBehavior == FieldBehavior.ViewOnly)
                 {
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab);
                     sql.AppendLine("/*");
                     sql.Append(Tab);
@@ -616,7 +616,7 @@ public class OracleProvider(
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                sql.AppendLine("");
+                sql.AppendLine();
                 sql.Append(Tab);
                 sql.Append("IF ");
                 sql.Append(VariablePrefix);
@@ -643,7 +643,7 @@ public class OracleProvider(
             }
             else if (f.Filter.Type == FilterMode.Contain)
             {
-                sql.AppendLine("");
+                sql.AppendLine();
                 sql.Append(Tab);
                 sql.Append("IF ");
                 sql.Append(VariablePrefix);
@@ -661,7 +661,7 @@ public class OracleProvider(
             }
             else if (f.Filter.Type == FilterMode.Equal || f.IsPk)
             {
-                sql.AppendLine("");
+                sql.AppendLine();
                 sql.Append(Tab);
                 sql.Append("IF ");
                 sql.Append(VariablePrefix);
@@ -688,8 +688,8 @@ public class OracleProvider(
             }
         }
 
-        sql.AppendLine("");
-        sql.AppendLine("");
+        sql.AppendLine();
+        sql.AppendLine();
         sql.Append(Tab);
         sql.AppendLine("--ORDER");
         sql.Append(Tab);
@@ -704,8 +704,8 @@ public class OracleProvider(
         sql.AppendLine("orderby;");
         sql.Append(Tab);
         sql.Append("END IF; ");
-        sql.AppendLine("");
-        sql.AppendLine("");
+        sql.AppendLine();
+        sql.AppendLine();
 
 
         sql.Append(Tab);
@@ -721,7 +721,7 @@ public class OracleProvider(
         sql.AppendLine("qtdtotal := 0;");
         sql.Append(Tab).Append(Tab);
         sql.AppendLine("v_query := N'SELECT COUNT(*) ' || v_sqltable || v_sqlcond;");
-        sql.AppendLine("");
+        sql.AppendLine();
         sql.Append(Tab).Append(Tab);
         sql.AppendLine("EXECUTE IMMEDIATE v_query");
         sql.Append(Tab).Append(Tab);
@@ -730,8 +730,8 @@ public class OracleProvider(
         sql.AppendLine("qtdtotal; ");
         sql.Append(Tab);
         sql.AppendLine("END IF;");
-        sql.AppendLine("");
-        sql.AppendLine("");
+        sql.AppendLine();
+        sql.AppendLine();
 
 
         sql.Append(Tab);
@@ -766,19 +766,19 @@ public class OracleProvider(
         sql.Append("pag * ");
         sql.Append(VariablePrefix);
         sql.AppendLine("regporpag); ");
-        sql.AppendLine("");
+        sql.AppendLine();
         sql.Append(Tab);
         sql.AppendLine("OPEN v_Cursor FOR v_query;");
         sql.Append(Tab);
         sql.Append(VariablePrefix);
         sql.AppendLine("cur_OUT := v_Cursor;");
 
-        sql.AppendLine("");
-        sql.AppendLine("");
+        sql.AppendLine();
+        sql.AppendLine();
         sql.Append(Tab);
         sql.AppendLine("--DBMS_OUTPUT.PUT_LINE(v_query);");
 
-        sql.AppendLine("");
+        sql.AppendLine();
         sql.AppendLine("END;");
 
         return sql.ToString();
