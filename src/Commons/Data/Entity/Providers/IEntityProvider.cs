@@ -23,7 +23,7 @@ public interface IEntityProvider
     string? GetReadProcedureScript(Element element);
     string? GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null);
-    Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid);
+    Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId);
     DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values);
     DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object?> values);
     DataAccessCommand GetDeleteCommand(Element element, Dictionary<string, object> primaryKeys);

@@ -12,7 +12,6 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
@@ -31,7 +30,7 @@ public class SqlServerProvider(
     private const string DeleteInitial = "E";
     public string VariablePrefix => "@";
 
-    private readonly MasterDataCommonsOptions Options = options.Value;
+    private readonly MasterDataCommonsOptions _options = options.Value;
     
     public string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
     {
@@ -80,7 +79,7 @@ public class SqlServerProvider(
 
         if (element.UseReadProcedure)
         {
-            sql = Options.GetReadProcedureName(element);
+            sql = _options.GetReadProcedureName(element);
         }
         else
         {
@@ -177,7 +176,7 @@ public class SqlServerProvider(
 
         if (element.UseWriteProcedure)
         {
-            sql = Options.GetWriteProcedureName(element);
+            sql = _options.GetWriteProcedureName(element);
         }
         else
         {
@@ -306,9 +305,9 @@ public class SqlServerProvider(
         };
     }
 
-    public Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    public Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId)
     {
-        return GetElementFromTableAsyncCore(schemaName, connectionId, guid);
+        return GetElementFromTableAsyncCore(schemaName, tableName, connectionId);
     }
 
     public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
