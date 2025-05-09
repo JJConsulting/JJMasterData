@@ -15,19 +15,18 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class OracleProvider(
-    IConnectionRepository connectionRepository,
-    IOptionsSnapshot<MasterDataCommonsOptions> options,
-    ILoggerFactory loggerFactory)
-    : EntityProviderBase(connectionRepository, options, loggerFactory)
+public class OracleProvider(IOptionsSnapshot<MasterDataCommonsOptions> options)
+    : IEntityProvider
 {
+    private readonly MasterDataCommonsOptions _options = options.Value;
+    
     private const string InsertKeyword = "I";
     private const string UpdateKeyword = "A";
     private const string DeleteKeyword = "E";
     private const char Tab = '\t';
-    public override string VariablePrefix => "p_";
+    public string VariablePrefix => "p_";
 
-    public override string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
+    public string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -232,7 +231,7 @@ public class OracleProvider(
         return sql.ToString();
     }
 
-    public override string GetWriteProcedureScript(Element element)
+    public string GetWriteProcedureScript(Element element)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -244,7 +243,7 @@ public class OracleProvider(
         var isFirst = true;
         var hasPk = HasPk(element);
         var hasUpd = HasUpdateFields(element);
-        var procedureFinalName = Options.GetWriteProcedureName(element);
+        var procedureFinalName = _options.GetWriteProcedureName(element);
 
         sql.AppendLine("-- PROC SET");
 
@@ -475,7 +474,7 @@ public class OracleProvider(
         return sql.ToString();
     }
 
-    public override string GetReadProcedureScript(Element element)
+    public string GetReadProcedureScript(Element element)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -491,7 +490,7 @@ public class OracleProvider(
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         var sql = new StringBuilder();
-        var procedureFinalName = Options.GetReadProcedureName(element);
+        var procedureFinalName = _options.GetReadProcedureName(element);
 
         sql.AppendLine("-- PROC GET");
 
@@ -785,69 +784,69 @@ public class OracleProvider(
     }
 
 
-    public override Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    public Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
     {
         throw new NotImplementedException();
     }
 
-    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
+    public DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
     {
         return GetCommandWrite(InsertKeyword, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values)
+    public DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values)
     {
         return GetCommandWrite(UpdateKeyword, element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> filters)
+    public DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> filters)
     {
         return GetCommandWrite(DeleteKeyword, element, filters!);
     }
 
-    protected internal override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
+    public DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
 
-    public override bool TableExists(string tableName, Guid? connectionId = null)
+    public bool TableExists(string tableName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null,
+    public Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null,
         CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+    public Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
+    public Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
         CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
+    public Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
+    public Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
+    public Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
     
-    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    public string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         return "Not implemented";
     }
@@ -858,7 +857,7 @@ public class OracleProvider(
         {
             Type = CommandType.StoredProcedure
         };
-        cmd.Sql = Options.GetWriteProcedureName(element);
+        cmd.Sql = _options.GetWriteProcedureName(element);
         cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.AnsiString, 1));
 
         var fields = element.Fields
@@ -888,7 +887,7 @@ public class OracleProvider(
         return cmd;
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters, DataAccessParameter totalOfRecordsParameter)
+    public DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters, DataAccessParameter totalOfRecordsParameter)
     {
         
         var (filters, orderBy, currentPage, recordsPerPage) = entityParameters;
@@ -896,7 +895,7 @@ public class OracleProvider(
         var cmd = new DataAccessCommand
         {
             Type = CommandType.StoredProcedure,
-            Sql = Options.GetReadProcedureName(element),
+            Sql = _options.GetReadProcedureName(element),
             Parameters =
             {
                 new($"{VariablePrefix}orderby", orderBy.ToQueryParameter()),
@@ -1055,7 +1054,7 @@ public class OracleProvider(
         return ret;
     }
     
-    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
+    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }

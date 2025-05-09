@@ -67,7 +67,10 @@ public static class ServiceCollectionExtensions
         services.AddTransient<SqlServerWriteProcedureScripts>();
         services.AddTransient<SqlServerScripts>();
 
-        services.AddTransient<EntityProviderBase, SqlServerProvider>();
+#pragma warning disable CS0618 // Type or member is obsolete
+        services.AddTransient<EntityProviderBase>();
+#pragma warning restore CS0618 // Type or member is obsolete
+        services.AddTransient<IEntityProvider, SqlServerProvider>();
         services.AddTransient<IEntityRepository, EntityRepository>();
         services.AddTransient<IConnectionRepository, ConnectionRepository>();
         

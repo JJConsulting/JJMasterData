@@ -7,13 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReader> logger)
+public class PlainTextReader(
+    IEntityProvider provider,
+    IConnectionRepository connectionRepository,
+    ILogger<PlainTextReader> logger
+    )
 {
     public bool ShowLogInfo { get; init; }
     public string Delimiter { get; init; } = "|";
@@ -23,7 +28,6 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
         var sRet = new StringBuilder();
         var dStart = DateTime.Now;
         var culture = CultureInfo.CreateSpecificCulture("en-US");
-        var dataAccess = provider.GetDataAccess(element.ConnectionId);
         string currentField = null;
         DbConnection conn = null;
 
@@ -39,7 +43,7 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
             if (conn == null)
                 throw new JJMasterDataException("Error on create connection object");
 
-            conn.ConnectionString = provider.Options.GetConnectionString(element.ConnectionId).Connection;
+            conn.ConnectionString = connectionRepository.Get(element.ConnectionId).Connection;
             await conn.OpenAsync();
 
 #if NET

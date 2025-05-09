@@ -2,7 +2,7 @@
 @inject IOptionsSnapshot<MasterDataCommonsOptions> OptionsSnapshot
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IConnectionRepository ConnectionRepository
-@inject EntityProviderBase Provider
+@inject IEntityProvider Provider
 
 @using JJMasterData.Commons.Configuration.Options
 @using JJMasterData.Commons.Data.Entity.Providers
@@ -15,7 +15,7 @@
     var connections = ConnectionRepository.GetAll();
         
     var hasConnections = connections.Count > 0;
-    var isSqlServer = Provider is SqlServerProvider;
+    var isSqlServer = Provider.VariablePrefix ==  "@";
 }
 
 <div class="row mb-3">

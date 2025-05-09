@@ -15,16 +15,12 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SQLiteProvider(
-    IConnectionRepository connectionRepository,
-    IOptionsSnapshot<MasterDataCommonsOptions> options,
-    ILoggerFactory loggerFactory)
-    : EntityProviderBase(connectionRepository,options, loggerFactory)
+public class SQLiteProvider : IEntityProvider
 {
     private const char Tab = '\t';
-    public override string VariablePrefix => "@";
+    public string VariablePrefix => "@";
 
-    public override string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
+    public string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -237,84 +233,84 @@ public class SQLiteProvider(
         return sql.ToString();
     }
 
-    public override string GetWriteProcedureScript(Element element)
+    public string GetWriteProcedureScript(Element element)
     {
         return string.Empty;
     }
 
-    public override string GetReadProcedureScript(Element element)
+    public string GetReadProcedureScript(Element element)
     {
         return string.Empty;
     }
 
-    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
+    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    public Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
     {
         throw new NotImplementedException();
     }
 
-    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values)
+    public DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values)
     {
         return GetScriptInsert(element, values, false);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object?> values)
+    public DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object?> values)
     {
         return GetScriptUpdate(element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, Dictionary<string, object> filters)
+    public DataAccessCommand GetDeleteCommand(Element element, Dictionary<string, object> filters)
     {
         return GetScriptDelete(element, filters);
     }
 
-    protected internal override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
+    public DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
     {
         return GetScriptInsert(element, values, true);
     }
 
-    public override bool TableExists(string tableName, Guid? connectionId = null)
+    public bool TableExists(string tableName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null,
+    public Task<bool> TableExistsAsync(string schema, string tableName, Guid? connectionId = null,
         CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
+    public Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
+    public Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
         CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
+    public Task<string?> GetStoredProcedureDefinitionAsync(string procedureName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
+    public Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
+    public Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
     {
         throw new NotImplementedException();
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters,
+    public DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters,
         DataAccessParameter totalOfRecordsParameter)
     {
         var (filters, orderBy, currentPage, recordsPerPage) = entityParameters;
@@ -666,7 +662,7 @@ public class SQLiteProvider(
         return cmd;
     }
 
-    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    public string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         throw new NotImplementedException();
     }

@@ -54,9 +54,9 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         return this;
     }
 
-    public MasterDataServiceBuilder WithEntityProvider<T>() where T : EntityProviderBase
+    public MasterDataServiceBuilder WithEntityProvider<T>() where T : IEntityProvider
     {
-        Services.Replace(ServiceDescriptor.Transient(typeof(EntityProviderBase),typeof(T)));
+        Services.Replace(ServiceDescriptor.Transient(typeof(IEntityProvider),typeof(T)));
         return this;
     }
     

@@ -21,58 +21,59 @@ public class SqlServerProvider(
     IConnectionRepository connectionRepository,
     SqlServerScripts sqlServerScripts,
     IMemoryCache memoryCache,
-    IOptionsSnapshot<MasterDataCommonsOptions> options,
-    ILoggerFactory loggerFactory)
-    : EntityProviderBase(connectionRepository, options, loggerFactory)
+    IOptionsSnapshot<MasterDataCommonsOptions> options)
+    : IEntityProvider
 {
     private static readonly TimeSpan CacheExpiration = new(4, 0, 0);
 
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
-    public override string VariablePrefix => "@";
+    public string VariablePrefix => "@";
 
-    public override string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
+    private readonly MasterDataCommonsOptions Options = options.Value;
+    
+    public string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
     {
         return SqlServerScripts.GetCreateTableScript(element, relationships ?? []);
     }
 
-    public override string GetWriteProcedureScript(Element element)
+    public string GetWriteProcedureScript(Element element)
     {
         return sqlServerScripts.GetWriteProcedureScript(element);
     }
 
-    public override string GetReadProcedureScript(Element element)
+    public string GetReadProcedureScript(Element element)
     {
         return sqlServerScripts.GetReadProcedureScript(element);
     }
 
-    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values)
+    public DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values)
     {
         return GetWriteCommand(InsertInitial, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object?> values)
+    public DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object?> values)
     {
         return GetWriteCommand(UpdateInitial, element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, Dictionary<string, object> filters)
+    public DataAccessCommand GetDeleteCommand(Element element, Dictionary<string, object> filters)
     {
         return GetWriteCommand(DeleteInitial, element, filters!);
     }
 
-    protected internal override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
+    public DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
     {
         return GetWriteCommand(string.Empty, element, values);
     }
 
-    public override string? GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    public string? GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         return SqlServerScripts.GetAlterTableScript(element, fields);
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, EntityParameters parameters,
+    public DataAccessCommand GetReadCommand(Element element, EntityParameters parameters,
         DataAccessParameter totalOfRecordsParameter)
     {
         string sql;
@@ -305,12 +306,12 @@ public class SqlServerProvider(
         };
     }
 
-    public override Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    public Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
     {
         return GetElementFromTableAsyncCore(schemaName, connectionId, guid);
     }
 
-    public override Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
+    public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)
     {
         return GetElementFromTableAsyncCore("dbo", tableName, connectionId);
     }
@@ -381,14 +382,14 @@ public class SqlServerProvider(
     /// <summary>
     /// Check if table exists in the database
     /// </summary>
-    public override bool TableExists(string tableName, Guid? connectionId = null)
+    public bool TableExists(string tableName, Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         var result = dataAccess.GetResult(GetTableExistsCommand("dbo", tableName));
         return result as int? == 1;
     }
 
-    public override async Task<bool> TableExistsAsync(
+    public async Task<bool> TableExistsAsync(
         string schema,
         string tableName,
         Guid? connectionId = null,
@@ -401,7 +402,7 @@ public class SqlServerProvider(
     }
 
     /// <inheritdoc cref="TableExists"/>
-    public override async Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null,
+    public async Task<bool> TableExistsAsync(string tableName, Guid? connectionId = null,
         CancellationToken cancellationToken = default)
     {
         var dataAccess = GetDataAccess(connectionId);
@@ -410,7 +411,7 @@ public class SqlServerProvider(
         return result as int? == 1;
     }
 
-    public override async Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
+    public async Task<bool> ColumnExistsAsync(string tableName, string columnName, Guid? connectionId = null,
         CancellationToken cancellationToken = default)
     {
         var dataAccess = GetDataAccess(connectionId);
@@ -444,7 +445,7 @@ public class SqlServerProvider(
         return command;
     }
 
-    public override async Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
+    public async Task DropStoredProcedureAsync(string procedureName, Guid? connectionId = null)
     {
         if (string.IsNullOrEmpty(procedureName))
             throw new ArgumentNullException(nameof(procedureName));
@@ -462,7 +463,7 @@ public class SqlServerProvider(
         await dataAccess.SetCommandAsync(command);
     }
 
-    public override async Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
+    public async Task<List<string>> GetStoredProcedureListAsync(Guid? connectionId = null)
     {
         var dataAccess = GetDataAccess(connectionId);
         var command = new DataAccessCommand
@@ -485,7 +486,7 @@ public class SqlServerProvider(
         return procedureList;
     }
 
-    public override async Task<string?> GetStoredProcedureDefinitionAsync(string procedureName,
+    public async Task<string?> GetStoredProcedureDefinitionAsync(string procedureName,
         Guid? connectionId = null)
     {
         if (string.IsNullOrEmpty(procedureName))
@@ -518,5 +519,11 @@ public class SqlServerProvider(
         command.AddParameter("@ColumnName", columnName, DbType.AnsiString);
 
         return command;
+    }
+    
+    private DataAccess GetDataAccess(Guid? connectionId)
+    {
+        var connection = connectionRepository.Get(connectionId);
+        return new DataAccess(connection.Connection, connection.ConnectionProvider);
     }
 }
