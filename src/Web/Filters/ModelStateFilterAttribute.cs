@@ -1,13 +1,15 @@
 ﻿using System.Text.Json;
+using JJMasterData.Web.Models;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
+namespace JJMasterData.Web.Filters;
 
-
-namespace JJMasterData.Web.Models;
-
-public static class ModelStateHelpers
+public abstract class ModelStateFilterAttribute : ActionFilterAttribute
 {
-    public static string SerialiseModelState(ModelStateDictionary modelState)
+    protected const string Key = "ModelStateErrors";
+    
+    protected static string SerialiseModelState(ModelStateDictionary modelState)
     {
         var errorList = modelState
             .Select(kvp => new ModelStateTransferValue
@@ -21,7 +23,7 @@ public static class ModelStateHelpers
         return JsonSerializer.Serialize(errorList);
     }
 
-    public static ModelStateDictionary DeserialiseModelState(string serialisedErrorList)
+    protected static ModelStateDictionary DeserializeModelState(string serialisedErrorList)
     {
         var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
         var modelState = new ModelStateDictionary();
