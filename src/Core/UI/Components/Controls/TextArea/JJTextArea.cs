@@ -31,6 +31,7 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
 
     public HtmlBuilder GetHtmlBuilder()
     {
+        var hasMaxLength = MaxLength > 0;
         var textArea = new HtmlBuilder(HtmlTag.TextArea)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
@@ -39,9 +40,9 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
             .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
             .WithAttribute("cols", "20")
             .WithAttribute("rows", Rows)
-            .WithAttribute("maximum-limit-of-characters-label", StringLocalizer["Maximum limit of {0} characters!"])
-            .WithAttribute("characters-remaining-label", StringLocalizer["({0} characters remaining)"])
-            .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
+            .WithAttributeIf(hasMaxLength,"maximum-limit-of-characters-label", StringLocalizer["Maximum limit of {0} characters!"])
+            .WithAttributeIf(hasMaxLength,"characters-remaining-label", StringLocalizer["({0} characters remaining)"])
+            .WithAttributeIf(hasMaxLength, "maxlength", MaxLength.ToString())
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .AppendText(Text);
