@@ -25,6 +25,9 @@ public sealed class CodeEditorTagHelper(IControlFactory<JJCodeEditor> codeEditor
     [HtmlAttributeName("height")]
     public int Height { get; set; } = 500;
     
+    [HtmlAttributeName("disabled")]
+    public bool Disabled { get; set; }
+    
     /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -36,6 +39,7 @@ public sealed class CodeEditorTagHelper(IControlFactory<JJCodeEditor> codeEditor
         codeEditor.Height = Height;
         codeEditor.Language = Language;
         codeEditor.Text = value?.ToString();
+        codeEditor.Enabled = !Disabled;
         
         output.TagName = null;
         output.Content.SetHtmlContent(codeEditor.GetHtmlBuilder().ToString());
