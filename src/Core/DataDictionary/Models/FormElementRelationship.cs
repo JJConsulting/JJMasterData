@@ -32,7 +32,6 @@ public class FormElementRelationship
     [JsonConstructor]
     private FormElementRelationship()
     {
-        
     }
     
     public FormElementRelationship(bool isParent = false)

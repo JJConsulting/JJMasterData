@@ -642,6 +642,7 @@ public class JJFormView : AsyncComponent
 
             if (visibleRelationships.Count > 0)
             {
+                DataPanel.PageState = PageState.View;
                 PageState = PageState.Update;
                 return await GetFormResult(values, PageState.View, false);
             }
