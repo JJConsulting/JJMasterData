@@ -11,36 +11,34 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class GridPagination(JJGridView gridView)
 {
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = gridView.StringLocalizer;
-    private int _totalPages;
-    private int _totalButtons;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer = gridView.StringLocalizer;
+    private int _totalOfPages;
+    private int _totalOfButtons;
     private int _startButtonIndex;
     private int _endButtonIndex;
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        _totalPages = gridView.TotalOfPages;
-        _totalButtons = gridView.CurrentSettings.TotalPaginationButtons;
-        _startButtonIndex = (int)Math.Floor((gridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
-        _endButtonIndex = _startButtonIndex + _totalButtons;
+        _totalOfPages = gridView.TotalOfPages;
+        _totalOfButtons = gridView.CurrentSettings.TotalPaginationButtons;
+        _startButtonIndex = (int)Math.Floor((gridView.CurrentPage - 1) / (double)_totalOfButtons) * _totalOfButtons + 1;
+        _endButtonIndex = _startButtonIndex + _totalOfButtons;
+
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClassIf(BootstrapHelper.Version > 3, "container-fluid p-0")
-            .Append(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, this, static (grid, div) =>
             {
                 div.WithCssClass("row justify-content-between");
-                div.AppendDiv(div =>
+                div.AppendDiv(grid, static (grid, div) =>
                 {
                     div.WithCssClass("col-sm-9");
-                    div.AppendDiv(div =>
+                    div.AppendDiv(grid, static (grid, div) =>
                     {
                         div.WithCssClass("d-flex");
-                        div.AppendDiv(div =>
-                        {
-                            div.Append(GetPaginationHtmlBuilder());
-                        });
+                        div.AppendDiv(grid, static (grid, div) => div.Append(grid.GetPaginationHtmlBuilder()));
                     });
                 });
-                div.Append(GetTotalRecordsHtmlBuilder());
+                div.Append(grid.GetTotalRecordsHtmlBuilder());
             });
 
         return html;
@@ -51,7 +49,7 @@ internal sealed class GridPagination(JJGridView gridView)
         var ul = new HtmlBuilder(HtmlTag.Ul);
         ul.WithCssClass("pagination");
 
-        if (_startButtonIndex > _totalButtons)
+        if (_startButtonIndex > _totalOfButtons)
         {
             ul.Append(GetPageButton(1, IconType.AngleDoubleLeft, _stringLocalizer["First page"]));
             ul.Append(GetPageButton(_startButtonIndex - 1, IconType.AngleLeft, _stringLocalizer["Previous page"]));
@@ -59,20 +57,19 @@ internal sealed class GridPagination(JJGridView gridView)
 
         for (int i = _startButtonIndex; i < _endButtonIndex; i++)
         {
-            if (i > _totalPages || _totalPages <= 1)
+            if (i > _totalOfPages || _totalOfPages <= 1)
                 break;
             ul.Append(GetPageButton(i));
         }
 
-
-        if (_endButtonIndex <= _totalPages)
+        if (_endButtonIndex <= _totalOfPages)
         {
             ul.Append(GetPageButton(_endButtonIndex, IconType.AngleRight,
                 _stringLocalizer["Next page"]));
-            ul.Append(GetPageButton(_totalPages, IconType.AngleDoubleRight, _stringLocalizer["Last page"]));
+            ul.Append(GetPageButton(_totalOfPages, IconType.AngleDoubleRight, _stringLocalizer["Last page"]));
         }
 
-        var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
+        var showJumpToPage = _endButtonIndex <= _totalOfPages || _startButtonIndex > _totalOfButtons;
 
         if (showJumpToPage && BootstrapHelper.Version >= 5)
         {
@@ -89,7 +86,7 @@ internal sealed class GridPagination(JJGridView gridView)
 
         textBox.Name = jumpToPageName;
         textBox.MinValue = 1;
-        textBox.MaxValue = _totalPages;
+        textBox.MaxValue = _totalOfPages;
         textBox.InputType = InputType.Number;
 
         textBox.Attributes["style"] = "display:none;width:150px";
@@ -105,7 +102,7 @@ internal sealed class GridPagination(JJGridView gridView)
             {
                 div.WithId(jumpToPageName + "-invalid-feedback");
                 div.WithCssClass("invalid-feedback");
-                div.AppendText(_stringLocalizer["Page must be between 1 and {0}.", _totalPages]);
+                div.AppendText(_stringLocalizer["Page must be between 1 and {0}.", _totalOfPages]);
             });
 
         yield return new HtmlBuilder(HtmlTag.Li)
@@ -127,9 +124,9 @@ internal sealed class GridPagination(JJGridView gridView)
             .Append(HtmlTag.A, a =>
             {
                 a.WithCssClass("page-link");
-                a.WithStyle( "cursor:pointer; cursor:hand;");
+                a.WithStyle("cursor:pointer; cursor:hand;");
                 a.WithToolTip(tooltip);
-                a.WithOnClick( $"javascript:{gridView.Scripts.GetPaginationScript(page)}");
+                a.WithOnClick($"javascript:{gridView.Scripts.GetPaginationScript(page)}");
                 if (icon != null)
                 {
                     a.AppendComponent(new JJIcon(icon.Value));
@@ -147,48 +144,62 @@ internal sealed class GridPagination(JJGridView gridView)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight} text-muted m-0");
-        div.Append(HtmlTag.Span, span =>
+
+        var span = new HtmlBuilder(HtmlTag.Span);
+        span.WithAttribute("id", $"infotext_{gridView.Name}");
+        span.WithCssClass("small d-block");
+        span.AppendText(_stringLocalizer["Showing"]);
+        span.AppendText(" ");
+
+        var totalOfRecords = gridView.TotalOfRecords;
+
+        if (_totalOfPages <= 1)
         {
-            span.WithAttribute("id", $"infotext_{gridView.Name}");
-            span.WithCssClass("small d-block");
-            span.AppendText(_stringLocalizer["Showing"]);
-            span.AppendText(" ");
+            var totalOfRecordsHtml = new HtmlBuilder(HtmlTag.Strong);
+            totalOfRecordsHtml.WithId($"{gridView.Name}-total-of-records");
+            totalOfRecordsHtml.AppendText(totalOfRecords);
 
-            var totalOfRecords = gridView.TotalOfRecords;
-            
-            if (_totalPages <= 1)
-            {
-                span.Append(HtmlTag.Strong, strong =>
-                    {
-                        strong.WithId($"{gridView.Name}-total-of-records");
-                        strong.AppendText(totalOfRecords);
-                    }).AppendText($" {_stringLocalizer["record(s)"]}");
-            }
-            else
-            {
-                var firstPageNumber = gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage -
-                    gridView.CurrentSettings.RecordsPerPage + 1;
+            span.Append(totalOfRecordsHtml);
+            span.AppendText($" {_stringLocalizer["record(s)"]}");
+        }
+        else
+        {
+            var firstPageNumber = gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage -
+                gridView.CurrentSettings.RecordsPerPage + 1;
 
-                var lastPageNumber =
-                    gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage > gridView.TotalOfRecords
-                        ? gridView.TotalOfRecords
-                        : gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage;
+            var lastPageNumber =
+                gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage > gridView.TotalOfRecords
+                    ? gridView.TotalOfRecords
+                    : gridView.CurrentSettings.RecordsPerPage * gridView.CurrentPage;
 
-                span.Append(HtmlTag.Strong, strong => strong.AppendText($"{firstPageNumber}-{lastPageNumber}"))
-                    .AppendText($" {_stringLocalizer["from"]}");
+            var pagesHtml = new HtmlBuilder(HtmlTag.Strong);
+            pagesHtml.AppendText($"{firstPageNumber}-{lastPageNumber}");
 
-                span.Append(HtmlTag.Strong, strong =>
-                    {
-                        strong.WithId($"{gridView.Name}-total-of-records");
-                        strong.AppendText(totalOfRecords);
-                    })
-                    .AppendText($" {_stringLocalizer["records"]}");
-            }
-            if (_endButtonIndex <= _totalPages)
-                span.AppendText(_stringLocalizer["{0} pages", _totalPages]);
-        });
-        
-        div.AppendIf(gridView.EnableMultiSelect, GetEnableMultSelectTotalRecords);
+            span.Append(pagesHtml).AppendText($" {_stringLocalizer["from"]}");
+
+            var recordsHtml = new HtmlBuilder(HtmlTag.Strong);
+            recordsHtml.WithId($"{gridView.Name}-total-of-records");
+            recordsHtml.AppendText(totalOfRecords);
+
+            span.Append(recordsHtml).AppendText($" {_stringLocalizer["records"]}");
+        }
+
+        if (_endButtonIndex <= _totalOfPages)
+        {
+            span.AppendBr();
+
+            var totalOfPagesHtml = new HtmlBuilder(HtmlTag.Strong);
+            totalOfPagesHtml.AppendText(_totalOfPages);
+
+            span.Append(totalOfPagesHtml);
+
+            span.AppendText($" {_stringLocalizer["pages"]}");
+        }
+
+        div.Append(span);
+
+        if (gridView.EnableMultiSelect)
+            div.Append(GetEnableMultSelectTotalRecords());
 
         return div;
     }
