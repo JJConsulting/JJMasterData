@@ -291,11 +291,14 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendScriptIf(bool condition, [LanguageInjection("javascript")] string rawScript)
     {
+        if (!condition)
+            return this;
+        
         var child = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")
             .AppendText(rawScript);
-
-        return condition ? Append(child) : this;
+            
+        return Append(child);
     }
 
     /// <summary>
