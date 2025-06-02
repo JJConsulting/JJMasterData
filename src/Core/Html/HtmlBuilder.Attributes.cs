@@ -10,7 +10,7 @@ namespace JJMasterData.Core.UI.Html;
 public partial class HtmlBuilder
 {
     /// <summary>
-    /// Set HTML builder name and ID.
+    /// Set the HTML builder name and id.
     /// </summary>
     public HtmlBuilder WithNameAndId(string? id)
     {

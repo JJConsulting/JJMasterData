@@ -26,7 +26,7 @@ public static class DataExtensions
         dataTable.EndLoadData();
     }
     
-    public static async Task FillAsync(this DbDataReader dataReader,DataSet dataSet, CancellationToken cancellationToken = default)
+    public static async Task FillAsync(this DbDataReader dataReader, DataSet dataSet, CancellationToken cancellationToken = default)
     {
         var index = 1;
         do

@@ -800,7 +800,8 @@ public class JJFormView : AsyncComponent
 
         if (result is HtmlComponentResult htmlComponentResult)
         {
-            htmlComponentResult.HtmlBuilder.AppendComponentIf(messageBox is not null, () => messageBox);
+            if (messageBox is not null)
+                htmlComponentResult.HtmlBuilder.AppendComponent(messageBox);
         }
 
         return result;

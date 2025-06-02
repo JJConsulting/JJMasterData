@@ -35,13 +35,14 @@ public partial class DataAccess
     }
 
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
-    public async Task<DataTable> GetDataTableAsync(DataAccessCommand command,
-        CancellationToken cancellationToken = default)
-
+    public async Task<DataTable> GetDataTableAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         var dataTable = new DataTable();
-        await ExecuteDataCommandAsync(command,
-            dataReader => dataReader.FillAsync(dataTable, cancellationToken: cancellationToken), cancellationToken);
+        await ExecuteDataCommandAsync(
+            command,
+            dataTable,
+            static (dataAdapter, dataSet, cancellationToken) => dataAdapter.FillAsync(dataSet, cancellationToken),
+            cancellationToken);
         return dataTable;
     }
 
@@ -55,12 +56,18 @@ public partial class DataAccess
     public async Task<DataSet> GetDataSetAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         var dataSet = new DataSet();
-        await ExecuteDataCommandAsync(command,
-            dataAdapter => dataAdapter.FillAsync(dataSet, cancellationToken: cancellationToken), cancellationToken);
+        await ExecuteDataCommandAsync(
+            command,
+            dataSet,
+            static (dataAdapter, dataSet, cancellationToken) => dataAdapter.FillAsync(dataSet, cancellationToken),
+            cancellationToken);
         return dataSet;
     }
 
-    public async Task ExecuteDataCommandAsync(DataAccessCommand command, Func<DbDataReader, Task> readerAction,
+    private async Task ExecuteDataCommandAsync<TState>(
+        DataAccessCommand command,
+        TState state,
+        [RequireStaticDelegate] Func<DbDataReader, TState, CancellationToken, Task> readerAction,
         CancellationToken cancellationToken = default)
     {
         try
@@ -72,7 +79,7 @@ public partial class DataAccess
             {
                 using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
-                    await readerAction(reader);
+                    await readerAction(reader, state, cancellationToken);
 
                     SetOutputParameters(command, dbCommand);
                 }
@@ -144,7 +151,7 @@ public partial class DataAccess
         DataAccessCommand? currentCommand = null;
 
         using var connection = await CreateConnectionAsync(cancellationToken);
-        
+
 #if NET48
         using var transaction = connection.BeginTransaction();
 #else
@@ -206,7 +213,7 @@ public partial class DataAccess
     public Task<Dictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
-        var result = new Dictionary<string,object?>(StringComparer.InvariantCultureIgnoreCase);
+        var result = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         return GetDataAsync(result, command, cancellationToken);
     }
 
@@ -214,7 +221,7 @@ public partial class DataAccess
         CancellationToken cancellationToken = default)
     {
         var result = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        
+
         var data = await GetDataAsync(result, command, cancellationToken);
 
         return data.Count == 0 ? null : data;
@@ -258,7 +265,7 @@ public partial class DataAccess
 
         return result;
     }
-    
+
     public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {

@@ -95,10 +95,10 @@ public class JJComboBox(
         {
             return new HtmlBuilder(HtmlTag.Div).WithCssClass("form-floating")
                 .Append(select)
-                .AppendLabel(label =>
+                .AppendLabel(this, static (comboBox, label) =>
                 {
-                    label.AppendText(FloatingLabel);
-                    label.WithAttribute("for", Name);
+                    label.AppendText(comboBox.FloatingLabel);
+                    label.WithAttribute("for", comboBox.Name);
                 });
         }
 
@@ -124,7 +124,9 @@ public class JJComboBox(
         if (DataItem.FirstOption != FirstOptionMode.None)
             yield return firstOption;
 
-        var groupedValues = values.Where(v => v.Group != null).GroupBy(v => v.Group);
+        var groupedValues = values
+            .Where(v => v.Group != null)
+            .GroupBy(v => v.Group);
 
         foreach (var group in groupedValues)
         {
@@ -164,18 +166,28 @@ public class JJComboBox(
         }
 
         var content = new HtmlBuilder();
-        content.AppendComponentIf(DataItem.ShowIcon, () => new JJIcon(value.Icon, value.IconColor));
-        content.Append(HtmlTag.Span, span =>
-        {
-            span.AppendText(label);
-            span.WithCssClassIf(DataItem.ShowIcon, $"{BootstrapHelper.MarginLeft}-1");
-        });
+        if (DataItem.ShowIcon)
+            content.AppendComponent(new JJIcon(value.Icon, value.IconColor));
+        
+        var span = new HtmlBuilder(HtmlTag.Span);
+        span.AppendText(label);
+        
+        if(DataItem.ShowIcon)
+            span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
+        
+        content.Append(span);
 
         var option = new HtmlBuilder(HtmlTag.Option)
-            .WithValue(value.Id)
-            .WithAttributeIf(isSelected, "selected")
-            .WithAttributeIf(DataItem.ShowIcon, "data-content", HttpUtility.HtmlAttributeEncode(content.ToString()))
-            .AppendTextIf(!DataItem.ShowIcon, label);
+            .WithValue(value.Id);
+            
+        if (isSelected)
+            option.WithAttribute("selected");
+            
+        if (DataItem.ShowIcon)
+            option.WithAttribute("data-content", HttpUtility.HtmlAttributeEncode(content.ToString()));
+            
+        if (!DataItem.ShowIcon)
+            option.AppendText(label);
 
         return option;
     }
@@ -204,8 +216,7 @@ public class JJComboBox(
 
         yield return readonlyInput;
     }
-
-
+    
     private string GetSelectedText(IEnumerable<DataItemValue> list)
     {
         string selectedText = string.Empty;
@@ -219,7 +230,8 @@ public class JJComboBox(
             {
                 selectedText = item.Description;
 
-                if (IsManualValues()) selectedText = stringLocalizer[selectedText];
+                if (IsManualValues()) 
+                    selectedText = stringLocalizer[selectedText];
 
                 break;
             }
@@ -271,8 +283,7 @@ public class JJComboBox(
 
         return description;
     }
-
-
+    
     public async Task<DataItemValue?> GetValueAsync(string? searchId)
     {
         var dataQuery = new DataQuery(FormStateData, ConnectionId)

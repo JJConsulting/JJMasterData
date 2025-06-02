@@ -6,13 +6,12 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTitle : HtmlComponent
+public sealed class JJTitle : HtmlComponent
 {
     public string? Title { get; set; }
     public string? SubTitle { get; set; }
     public HeadingSize Size { get; set; }
     public IconType? Icon { get; set; }
-
     public List<TitleAction>? Actions { get; set; }
 
     private HtmlTag Tag => Size switch
@@ -40,66 +39,82 @@ public class JJTitle : HtmlComponent
 
     internal override HtmlBuilder BuildHtml()
     {
-        if (string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(SubTitle))
-            return new HtmlBuilder();
-
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
             .WithCssClass(BootstrapHelper.PageHeader)
-            .WithCssClass("d-flex justify-content-between")
-            .Append(Tag, tag =>
+            .WithCssClass("d-flex justify-content-between");
+
+        if (!string.IsNullOrEmpty(Title))
+        {
+            div.Append(Tag, tag =>
             {
-                tag.AppendIf(Icon.HasValue,HtmlTag.Span,span =>
+                if (Icon.HasValue)
                 {
-                    span.AppendComponent(new JJIcon(Icon!.Value));
-                });
+                    tag.Append(HtmlTag.Span, Icon.Value, static (icon,span) =>
+                    {
+                        span.AppendComponent(new JJIcon(icon));
+                    });
+                }
                 tag.AppendText(Title);
-                tag.Append(HtmlTag.Small, small =>
+                tag.Append(HtmlTag.Small, SubTitle, static (subTitle,small) =>
                 {
                     small.WithCssClass("sub-title");
-                    small.AppendText($" {SubTitle}");
+                    small.AppendText($" {subTitle}");
                 });
             });
-
+        }
+        
         if (Actions == null)
             return div;
 
-        div.AppendDiv(div =>
+        div.AppendDiv(Actions, static (actions, div) =>
         {
-            foreach (var action in Actions)
+            foreach (var action in actions)
             {
-                div.Append(HtmlTag.A, a =>
+                div.Append(HtmlTag.A, action, static (action,a) =>
                 {
                     a.WithCssClass("btn btn-secondary");
                     a.WithHref(action.Url);
-                    a.AppendComponentIf(action.Icon.HasValue, () => new JJIcon(action.Icon!.Value));
-                    a.AppendTextIf(!string.IsNullOrEmpty(action.Text), "&nbsp;" + action.Text!);
+                    
+                    if (action.Icon.HasValue)
+                        a.AppendComponent(new JJIcon(action.Icon!.Value));
+                    
+                    if (!string.IsNullOrEmpty(action.Text))
+                        a.AppendText("&nbsp;" + action.Text!);
+                    
                     a.WithToolTip(action.Tooltip);
                 });
             }
         });
-
-
+        
         return div;
     }
-
-
+    
     internal HtmlBuilder GetHtmlBlockquote()
     {
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
-            .Append(HtmlTag.Blockquote, block =>
+            .Append(HtmlTag.Blockquote,this, static (state, block) =>
             {
                 block.WithCssClass("blockquote mb-1");
-                block.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.P, p => { p.AppendText(Title); });
-                block.AppendIf(!string.IsNullOrEmpty(SubTitle), HtmlTag.Footer, p =>
+                if (!string.IsNullOrEmpty(state.Title))
                 {
-                    p.WithCssClass("blockquote-footer");
-                    p.WithCssClassIf(string.IsNullOrEmpty(Title), "mt-1");
-                    p.AppendText(SubTitle);
-                });
+                    block.Append(HtmlTag.P, state.Title, static (title, p) =>
+                    {
+                        p.AppendText(title);
+                    });
+                }
+                if (!string.IsNullOrEmpty(state.SubTitle))
+                {
+                    block.Append(HtmlTag.Footer, state, static (state,p) =>
+                    {
+                        p.WithCssClass("blockquote-footer");
+                        p.WithCssClassIf(string.IsNullOrEmpty(state.Title), "mt-1");
+                        p.AppendText(state.SubTitle);
+                    });
+                }
             });
 
         return row;

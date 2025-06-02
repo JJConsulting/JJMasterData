@@ -43,17 +43,17 @@ internal sealed class GridTableBody(JJGridView gridView)
 
     private static IEnumerable<HtmlBuilder> GetPlaceholderRows()
     {
-        for (int row = 0; row < 5; row++)
+        for (var row = 0; row < 5; row++)
         {
             var glow = row % 2 == 0;
             var tr = new HtmlBuilder(HtmlTag.Tr);
             
             tr.WithCssClass($"d-none md-tr-placeholder {(glow ? "placeholder-glow" : "placeholder-wave")}");
        
-            tr.Append(HtmlTag.Td, td =>
+            tr.Append(HtmlTag.Td, glow, static (glow, td) =>
             {
                 td.WithAttribute("colspan", "100%");
-                td.Append(HtmlTag.Span, span =>
+                td.Append(HtmlTag.Span, glow, static (glow, span) =>
                 {
                     span.WithCssClass("placeholder w-100")
                         .WithCssClassIf(glow, "placeholder-sm");

@@ -36,16 +36,19 @@ internal sealed class DataImportationHelp
         };
 
         var html = panel.BuildHtml()
-            .AppendHiddenInput("filename", "")
-            .AppendComponentIf(!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText), ()=>new JJAlert
+            .AppendHiddenInput("filename", "");
+            if (!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText))
             {
-                Title = StringLocalizer["Information"],
-                Icon = IconType.InfoCircle,
-                Color = BootstrapColor.Info,
-                InnerHtml = new(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
-                                string.Empty)
-            })
-            .AppendComponent(GetBackButton())
+                html.AppendComponent(new JJAlert 
+                {
+                    Title = StringLocalizer["Information"],
+                    Icon = IconType.InfoCircle,
+                    Color = BootstrapColor.Info,
+                    InnerHtml = new(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
+                                    string.Empty)
+                });
+            }
+            html.AppendComponent(GetBackButton())
             .AppendDiv(div =>
             {
                 div.WithCssClass(BootstrapHelper.PullRight);

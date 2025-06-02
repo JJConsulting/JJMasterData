@@ -23,8 +23,7 @@ public sealed class JJTextGroup(
     /// Text info on left of component
     /// </summary>
     public InputAddons Addons { get; set; }
-
-
+    
     public string GroupCssClass { get; set; }
 
     protected override ValueTask<ComponentResult> BuildResultAsync()
@@ -57,10 +56,10 @@ public sealed class JJTextGroup(
                 input.WithAttribute("placeholder");
                 return new HtmlBuilder(HtmlTag.Div).WithCssClass("form-floating")
                     .Append(input)
-                    .AppendLabel(label =>
+                    .AppendLabel(this, static (state,label) =>
                     {
-                        label.AppendText(FloatingLabel);
-                        label.WithAttribute("for", Name);
+                        label.AppendText(state.FloatingLabel);
+                        label.WithAttribute("for", state.Name);
                     });
             }
 
@@ -76,21 +75,21 @@ public sealed class JJTextGroup(
         var inputGroup = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("input-group jjform-action ")
             .WithCssClass(GroupCssClass);
-
+        
         if (hasAddons)
             inputGroup.Append(GetHtmlAddons());
 
         if (UseFloatingLabel)
         {
             input.WithAttribute("placeholder");
-            inputGroup.AppendDiv(div =>
+            inputGroup.AppendDiv((Input:input, TextGroup:this), static (state, div) =>
             {
                 div.WithCssClass("form-floating");
-                div.Append(input);
-                div.AppendLabel(label =>
+                div.Append(state.Input);
+                div.AppendLabel(state.TextGroup, static (state,label) =>
                 {
-                    label.AppendText(FloatingLabel);
-                    label.WithAttribute("for", Name);
+                    label.AppendText(state.FloatingLabel);
+                    label.WithAttribute("for", state.Name);
                 });
             });
         }
@@ -131,8 +130,7 @@ public sealed class JJTextGroup(
         //Add builder Actions
         btnGroup.AddActionsAt(builderGroup);
     }
-
-
+    
     private HtmlBuilder GetHtmlAddons()
     {
         var html = new HtmlBuilder(HtmlTag.Span)

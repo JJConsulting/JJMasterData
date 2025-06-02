@@ -184,5 +184,4 @@ public class JJLinkButton : HtmlComponent
         
         return icon;
     }
-
 }
