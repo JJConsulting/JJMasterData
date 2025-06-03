@@ -65,6 +65,10 @@ public sealed class JJTitle : HtmlComponent
                 });
             });
         }
+        else
+        {
+            div.Append(new HtmlBuilder(HtmlTag.Div));
+        }
         
         if (Actions == null)
             return div;
