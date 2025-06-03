@@ -14,13 +14,13 @@ public abstract class BasicAction
     private string _name = null!;
 
     ///  <summary>
-    ///  Identifier of the component
+    ///  Identifier of the action.
     ///  </summary>
-    ///  <exception cref="ArgumentNullException"></exception>
+    ///  <exception cref="ArgumentException"></exception>
     ///  <remarks>
     ///  <div class="IMPORTANT">
     /// <h5>IMPORTANT</h5>
-    /// <p>Don't try to create a action with a repeated name. This can cause unforessen consequences.</p>
+    /// <p>Don't try to create an action with a repeated name. This can cause unforeseen consequences.</p>
     /// </div>
     ///  </remarks>
     [JsonPropertyName("name")]
