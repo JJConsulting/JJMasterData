@@ -313,9 +313,10 @@ public partial class DataAccess
     }
 
     /// <inheritdoc cref="TryConnection"/>
+    /// <remarks>Author: Gustavo Barros 21/08/2023</remarks>
     public async Task<ConnectionResult> TryConnectionAsync(CancellationToken cancellationToken = default)
     {
-        bool result;
+        bool success;
         DbConnection? connection = null;
         string? errorMessage = null;
         try
@@ -323,11 +324,11 @@ public partial class DataAccess
             connection = _dbProviderFactory.CreateConnection();
             connection!.ConnectionString = _connectionString;
             await connection.OpenAsync(cancellationToken);
-            result = true;
+            success = true;
         }
         catch (Exception ex)
         {
-            result = false;
+            success = false;
             var error = new StringBuilder();
             error.AppendLine(ex.Message);
             if (ex.InnerException is { Message: not null })
@@ -348,7 +349,10 @@ public partial class DataAccess
             }
         }
 
-        return new(result, errorMessage);
+        if (success)
+            return ConnectionResult.Success;
+        
+        return ConnectionResult.Error(errorMessage);
     }
 
     /// <inheritdoc cref="ExecuteBatch(string)"/>

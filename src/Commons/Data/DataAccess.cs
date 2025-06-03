@@ -458,8 +458,7 @@ public partial class DataAccess
         return retCollection;
     }
 
-    /// <summary>Verify the database connection</summary>
-    /// <returns>True if the connection is successful.</returns>
+    /// <summary>Verify the database connection.</summary>
     /// <remarks>Author: Lucio Pelinson 28-04-2014</remarks>
     public bool TryConnection(out string? errorMessage)
     {

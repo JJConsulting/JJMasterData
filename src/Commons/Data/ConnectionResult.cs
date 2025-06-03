@@ -2,8 +2,18 @@
 
 namespace JJMasterData.Commons.Data;
 
-public class ConnectionResult(bool isConnectionSuccessful, string? errorMessage)
+public sealed class ConnectionResult
 {
-    public bool? IsConnectionSuccessful { get; } = isConnectionSuccessful;
-    public string? ErrorMessage { get; } = errorMessage;
+    public bool IsSuccess { get; }
+    public string? ErrorMessage { get; } 
+    
+    private ConnectionResult(bool isSuccess, string? errorMessage = null)
+    {
+        IsSuccess = isSuccess;
+        ErrorMessage = errorMessage;
+    }
+    
+    public static ConnectionResult Success => new(isSuccess: true);
+    
+    public static ConnectionResult Error(string? message) => new(isSuccess: false, message);
 }

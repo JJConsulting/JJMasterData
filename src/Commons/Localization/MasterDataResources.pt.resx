@@ -3359,7 +3359,7 @@
   <data name="Test Connection" xml:space="preserve">
     <value>Testar Conexão</value>
   </data>
-  <data name="Connection successfully estabilished. " xml:space="preserve">
+  <data name="Connection successfully established." xml:space="preserve">
     <value>Conexão estabelecida com sucesso.</value>
   </data>
   <data name="Inner Exception" xml:space="preserve">
