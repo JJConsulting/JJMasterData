@@ -1521,37 +1521,39 @@ public class JJFormView : AsyncComponent
         {
             CssClass = "mb-3"
         };
-
-
+        
         var formStateData = await GetFormStateDataAsync();
 
-        foreach (var action in actions.Where(a => !a.IsGroup))
+        List<JJLinkButton> groupedActions = [];
+        var actionButtonFactory = ComponentFactory.ActionButton;
+        
+        foreach (var action in actions)
         {
-            if (action is SaveAction saveAction)
+            var linkButton = actionButtonFactory.CreateFormToolbarButton(action, formStateData, this);
+
+            if (!action.IsGroup)
             {
-                saveAction.EnterKeyBehavior = DataPanel.FormUI.EnterKey;
+                if (action is SaveAction saveAction)
+                {
+                    saveAction.EnterKeyBehavior = DataPanel.FormUI.EnterKey;
+                }
+
+                toolbar.Items.Add(linkButton.GetHtmlBuilder());
             }
-
-            var factory = ComponentFactory.ActionButton;
-
-            var linkButton = factory.CreateFormToolbarButton(action, formStateData, this);
-            toolbar.Items.Add(linkButton.GetHtmlBuilder());
+            else
+            {
+                groupedActions.Add(linkButton);
+            }
         }
 
-        if (actions.Any(a => a.IsGroup))
+        if (groupedActions.Count > 0)
         {
             var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
             btnGroup.CaretText = _stringLocalizer["More"];
             btnGroup.CssClass += "float-end";
-
-            foreach (var groupedAction in actions.Where(a => a.IsGroup))
-            {
-                btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-                var factory = ComponentFactory.ActionButton;
-                var linkButton = factory.CreateFormToolbarButton(groupedAction, formStateData, this);
-                btnGroup.Actions.Add(linkButton);
-            }
-
+            btnGroup.Actions = groupedActions;
+            btnGroup.ShowAsButton = true;
+            
             toolbar.Items.Add(btnGroup.GetHtmlBuilder());
         }
 

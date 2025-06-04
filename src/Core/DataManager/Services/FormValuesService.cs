@@ -200,9 +200,6 @@ public class FormValuesService(
         bool autoReloadFormFields,
         string? prefix = null)
     {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-        
         if (!autoReloadFormFields || formStateData.Values.Count == 0 )
         {
             var dbValues = await GetDbValues(formElement);

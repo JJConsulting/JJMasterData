@@ -96,8 +96,8 @@ internal sealed class GridSortingConfig(JJGridView gridView)
 
         foreach (var item in _formElement.Fields)
         {
-            var f = fieldsList.Find(x => x.Name.Equals(item.Name));
-            if (f == null)
+            var field = fieldsList.Find(x => x.Name.Equals(item.Name));
+            if (field == null)
                 fieldsList.Add(item);
         }
 
@@ -133,10 +133,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
                     tr.WithCssClass("ui-sortable-handle");
                     tr.Append(HtmlTag.Td, td => td.AppendComponent(new JJIcon("fa fa-arrows")));
                     tr.Append(HtmlTag.Td, td => td.AppendText(_stringLocalizer[field.LabelOrName]));
-                    tr.Append(HtmlTag.Td, td =>
-                    {
-                        td.Append(comboHtml);
-                    });
+                    tr.Append(HtmlTag.Td, td => td.Append(comboHtml));
                 });
             }
         }
@@ -167,7 +164,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         return sortList;
     }
 
-    private class SortItem(string fieldName, bool isAsc)
+    private sealed class SortItem(string fieldName, bool isAsc)
     {
         public string FieldName { get; } = fieldName;
         public bool IsAsc { get; } = isAsc;

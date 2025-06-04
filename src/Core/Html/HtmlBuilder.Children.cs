@@ -258,12 +258,12 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendHiddenInput(string name, string value)
     {
-        return Append(HtmlTag.Input, (name, value), static (state, input) =>
-        {
-            input.WithAttribute("hidden", "hidden");
-            input.WithNameAndId(state.name);
-            input.WithValue(state.value);
-        });
+        var input = new HtmlBuilder(HtmlTag.Input);
+        input.WithAttribute("hidden", "hidden");
+        input.WithNameAndId(name);
+        input.WithValue(value);
+        
+        return Append(input);
     }
 
     /// <summary>

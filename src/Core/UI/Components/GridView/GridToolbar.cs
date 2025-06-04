@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
@@ -22,16 +23,14 @@ internal sealed class GridToolbar(JJGridView gridView)
 
     private async ValueTask AddActionsToToolbar(JJToolbar toolbar)
     {
-        var actions = gridView.ToolbarActions
+        var actions = gridView
+            .ToolbarActions
             .OrderBy(a => a.Order);
         
         var actionButtonFactory = gridView.ComponentFactory.ActionButton;
         var formStateData = await gridView.GetFormStateDataAsync();
-        
-        var groupedAction = gridView.ComponentFactory.Html.LinkButtonGroup.Create();
-        groupedAction.ShowAsButton = true;
-        groupedAction.CaretText = gridView.StringLocalizer["More"];
-        groupedAction.CssClass = BootstrapHelper.PullRight;
+
+        var groupedActions = new List<JJLinkButton>();
         
         foreach (var action in actions)
         {
@@ -78,12 +77,17 @@ internal sealed class GridToolbar(JJGridView gridView)
             if(!action.IsGroup)
                 toolbar.Items.Add(linkButton.GetHtmlBuilder());
             else
-                groupedAction.Actions.Add(linkButton);
+                groupedActions.Add(linkButton);
         }
 
-        if (groupedAction.Actions.Count > 0)
+        if (groupedActions.Count > 0)
+        {
+            var groupedAction = gridView.ComponentFactory.Html.LinkButtonGroup.Create();
+            groupedAction.ShowAsButton = true;
+            groupedAction.CaretText = gridView.StringLocalizer["More"];
+            groupedAction.CssClass = BootstrapHelper.PullRight;
+
             toolbar.Items.Add(groupedAction.GetHtmlBuilder());
-        
+        }
     }
-    
 }

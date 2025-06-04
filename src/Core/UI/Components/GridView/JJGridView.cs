@@ -157,18 +157,18 @@ public class JJGridView : AsyncComponent
 
     internal async ValueTask<List<FormElementField>> GetVisibleFieldsAsync()
     {
-        if (FormElement == null)
-            throw new ArgumentNullException(nameof(FormElement));
-
         var defaultValues = await GetDefaultValuesAsync();
         var formStateData = new FormStateData(defaultValues, UserValues, PageState.List);
-        List<FormElementField> fields = [];
-        
-        foreach (var field in FormElement.Fields.Where(VisibleAtGrid))
+        var fields = new List<FormElementField>();
+
+        foreach (var field in FormElement.Fields)
         {
-            var isVisible =  ExpressionsService.GetBoolValue(field.VisibleExpression, formStateData);
-            if (isVisible)
-                fields.Add(field);
+            if (VisibleAtGrid(field))
+            {
+                var isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, formStateData);
+                if (isVisible) 
+                    fields.Add(field);
+            }
         }
 
         return fields;
@@ -975,8 +975,8 @@ public class JJGridView : AsyncComponent
         return alert.GetHtmlBuilder();
     }
 
-    internal async ValueTask<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
-        await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
+    private async ValueTask<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
+        await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(), UserValues, PageState.List));
 
     internal async ValueTask<FormStateData> GetFormStateDataAsync()
     {

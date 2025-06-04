@@ -21,13 +21,14 @@ internal sealed class GridTableHeader(JJGridView gridView)
             return html;
 
         var visibleFieldsThList = await GetVisibleFieldsThList();
+
+        var tr = new HtmlBuilder(HtmlTag.Tr);
         
-        html.Append(HtmlTag.Tr, tr =>
-        {
-            tr.AppendIf(gridView.EnableMultiSelect, GetMultSelectThHtmlElement);
-            tr.AppendRange(visibleFieldsThList);
-            tr.AppendRange(GetActionsThList());
-        });
+        tr.AppendIf(gridView.EnableMultiSelect, GetMultSelectThHtmlElement);
+        tr.AppendRange(visibleFieldsThList);
+        tr.AppendRange(GetActionsThList());
+        
+        html.Append(tr);
 
         return html;
     }
@@ -53,8 +54,9 @@ internal sealed class GridTableHeader(JJGridView gridView)
 
     private async Task<List<HtmlBuilder>> GetVisibleFieldsThList()
     {
-        List<HtmlBuilder> thList = [];
-        bool hasIcon = false;
+        var thList = new List<HtmlBuilder>();
+        var hasIcon = false;
+        
         foreach (var field in await gridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
@@ -65,25 +67,30 @@ internal sealed class GridTableHeader(JJGridView gridView)
             {
                 if (gridView.EnableSorting && field.DataBehavior is FieldBehavior.Real)
                 {
-                    SetSortAttributes(span, field);
+                    span.WithCssClass("jjenable-sorting");
+                    span.WithOnClick(gridView.Scripts.GetSortingScript(field.Name));
                 }
-                span.Append(HtmlTag.Span, s =>
+                span.Append(HtmlTag.Span,(localizer: _stringLocalizer,field), static (state, span) =>
                 {
+                    var field = state.field;
+                    
                     if (string.IsNullOrEmpty(field.Label)) 
                     {
-                        s.AppendText(field.Name);
+                        span.AppendText(field.Name);
                     }
                     else
                     {
-                        s.AppendText(_stringLocalizer[field.Label]);
+                        span.AppendText(state.localizer[field.Label]);
                     }
                     
-                    var tooltip = field.HelpDescription;
-                    s.AppendIf(!string.IsNullOrEmpty(tooltip), HtmlTag.Span, circle =>
+                    if (!string.IsNullOrEmpty(field.HelpDescription))
                     {
-                        circle.WithCssClass("fa fa-question-circle help-description");
-                        circle.WithToolTip(_stringLocalizer[tooltip!]);
-                    });
+                        span.Append(HtmlTag.Span, state, static (state, circle) =>
+                        {
+                            circle.WithCssClass("fa fa-question-circle help-description");
+                            circle.WithToolTip(state.localizer[state.field.HelpDescription!]);
+                        });
+                    }
                 });
             });
 
@@ -158,12 +165,6 @@ internal sealed class GridTableHeader(JJGridView gridView)
         var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");
 
         return hasFieldOrFromKey;
-    }
-
-    private void SetSortAttributes(HtmlBuilder span, ElementField field)
-    {
-        span.WithCssClass("jjenable-sorting");
-        span.WithOnClick( gridView.Scripts.GetSortingScript(field.Name));
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc text-info").GetHtmlBuilder()

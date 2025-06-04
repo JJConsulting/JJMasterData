@@ -169,7 +169,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         Dictionary<string, object?> values,
         string onClickScript)
     {
-        List<HtmlBuilder> result = [];
+        var result = new List<HtmlBuilder>();
         var formStateData = new FormStateData(values, gridView.UserValues, PageState.List);
         foreach (var field in await gridView.GetVisibleFieldsAsync())
         {
@@ -478,7 +478,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     private async ValueTask<JJCheckBox> GetMultiSelectCheckbox(Dictionary<string, object?> row, int index,
         Dictionary<string, object?> values)
     {
-        string pkValues = DataHelper.ParsePkValues(gridView.FormElement, values, ';');
+        var pkValues = DataHelper.ParsePkValues(gridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jj-checkbox");
 
@@ -545,10 +545,10 @@ internal sealed class GridTableBody(JJGridView gridView)
         return string.Empty;
     }
 
-    private async ValueTask<Dictionary<string, object?>> GetValues(Dictionary<string, object?> row)
+    private ValueTask<Dictionary<string, object?>> GetValues(Dictionary<string, object?> row)
     {
         if (!gridView.EnableEditMode)
-            return row;
+            return new(row);
 
         var autoReloadFormFields = gridView is
                                    {
@@ -557,7 +557,7 @@ internal sealed class GridTableBody(JJGridView gridView)
                                    gridView.ComponentContext is ComponentContext.GridViewRow;
         
         var prefixName = gridView.GetFieldName(string.Empty, row);
-        return await gridView.FormValuesService.GetFormValuesWithMergedValuesAsync(gridView.FormElement,
+        return gridView.FormValuesService.GetFormValuesWithMergedValuesAsync(gridView.FormElement,
             new FormStateData(row, gridView.UserValues, PageState.List), autoReloadFormFields, prefixName);
     }
 }
