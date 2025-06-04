@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <OutputType>Library</OutputType>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Product>JJMasterData.Web - Sun Version</Product>
+        <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
+        <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
+        <AssemblyName>JJMasterData.Web</AssemblyName>
+        <RootNamespace>JJMasterData.Web</RootNamespace>
+        <PackageId>JJMasterData.Web</PackageId>
+        <LangVersion>12</LangVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <SassCompilerEnableWatcher>false</SassCompilerEnableWatcher>
+        <TypescriptOutDir>wwwroot</TypescriptOutDir>
+        <ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
+            CompileTypeScript;
+            $(ResolveCurrentProjectStaticWebAssetsInputs)
+        </ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="AspNetCore.SassCompiler" Version="1.77.4" ReferenceOutputAssembly="false" />
+        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\MasterData.Core\MasterData.Core.csproj" />
+    </ItemGroup>
+    
+	<ItemGroup>
+      <Content Update="Scripts\tsconfig.json" Pack="false">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
+        <Content Update="package.json" Pack="false">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Content>
+        <Content Update="package-lock.json" Pack="false">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+</Project>

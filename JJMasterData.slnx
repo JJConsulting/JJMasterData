@@ -1,0 +1,41 @@
+<Solution>
+  <Folder Name="/AppSettings/">
+    <File Path="appsettings.json" />
+  </Folder>
+  <Folder Name="/CI/">
+    <File Path="Directory.Build.props" />
+    <File Path=".github/workflows/docs.yml" />
+    <File Path=".github/workflows/dotnet.yml" />
+    <File Path=".github/workflows/nuget.yml" />
+    <File Path="README.NuGet.md" />
+    <File Path="README.md" />
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/ConsoleApps/">
+    <Project Path="src\ConsoleApps\MasterData.FormElementImporter\MasterData.FormElementImporter.csproj" Type="Classic C#" />
+    <Project Path="src\ConsoleApps\MasterData.LegacyMetadataMigrator\MasterData.LegacyMetadataMigrator.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Docs/">
+    <File Path="README.md" />
+    <Project Path="doc\MasterData.Docs\MasterData.Docs.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Plugins/">
+    <Project Path="src\Plugins\MasterData.Brasil\MasterData.Brasil.csproj" Type="Classic C#" />
+    <Project Path="src\Plugins\MasterData.Hangfire\MasterData.Hangfire.csproj" Type="Classic C#" />
+    <Project Path="src\Plugins\MasterData.MongoDB\MasterData.MongoDB.csproj" Type="Classic C#" />
+    <Project Path="src\Plugins\MasterData.Pdf\MasterData.Pdf.csproj" Type="Classic C#" />
+    <Project Path="src\Plugins\MasterData.Python\MasterData.Python.csproj" Type="Classic C#" />
+    <File Path="src\Plugins\Directory.Build.props" />
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="test\MasterData.Commons.Test\MasterData.Commons.Test.csproj" Type="Classic C#" />
+    <Project Path="test\MasterData.Core.Test\MasterData.Core.Test.csproj" Type="Classic C#" />
+    <Project Path="test\MasterData.WebApi.Test\MasterData.WebApi.Test.csproj" Type="Classic C#" />
+    <Project Path="test\Plugins\MasterData.Brasil.Test\MasterData.Brasil.Test.csproj" Type="Classic C#" />
+  </Folder>
+  <Project Path="example\MasterData.WebEntryPoint\MasterData.WebEntryPoint.csproj" Type="Classic C#" />
+  <Project Path="src\MasterData.Commons\MasterData.Commons.csproj" Type="Classic C#" />
+  <Project Path="src\MasterData.Core\MasterData.Core.csproj" Type="Classic C#" />
+  <Project Path="src\MasterData.WebApi\MasterData.WebApi.csproj" Type="Classic C#" />
+  <Project Path="src\MasterData.Web\MasterData.Web.csproj" Type="Classic C#" />
+</Solution>

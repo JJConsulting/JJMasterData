@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net4.8;net8.0</TargetFrameworks>
+        <LangVersion>12</LangVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>JJMasterData.Brasil</RootNamespace>
+        <AssemblyName>JJMasterData.Brasil</AssemblyName>
+        <Version>1.0.0</Version>
+        <PackageVersion>$(Version)</PackageVersion>
+        <AssemblyVersion>$(Version)</AssemblyVersion>
+        <FileVersion>$(Version)</FileVersion>
+  </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\MasterData.Commons\MasterData.Commons.csproj" />
+      <ProjectReference Include="..\..\MasterData.Core\MasterData.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="PolySharp" Version="1.13.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+</Project>
