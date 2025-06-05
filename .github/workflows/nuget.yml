@@ -27,18 +27,18 @@ jobs:
     strategy:
       matrix:
         project:
-          - src/Commons
-          - src/Core
-          - src/Web
-          - src/WebApi
-          - src/Plugins/Hangfire
-          - src/Plugins/Pdf
-          - src/Plugins/Brasil
+          - src/MasterData.Commons
+          - src/MasterData.Core
+          - src/MasterData.Web
+          - src/MasterData.WebApi
+          - src/Plugins/MasterData.Hangfire
+          - src/Plugins/MasterData.Pdf
+          - src/Plugins/MasterData.Brasil
     steps:
       - uses: actions/checkout@v4
       - name: Build and publish NuGet package
         run: |
-          npm install --prefix src/Web
+          npm install --prefix src/MasterData.Web
           cd ${{ matrix.project }}
           dotnet build -c release
           dotnet pack -c release --output="nuget"

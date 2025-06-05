@@ -22,7 +22,7 @@ jobs:
 
     - name: Restore TypeScript dependencies
       run: |
-          cd src/Web
+          cd src/MasterData.Web
           npm install
           cd ../../..
           
