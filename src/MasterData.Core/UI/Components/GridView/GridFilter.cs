@@ -175,7 +175,7 @@ internal sealed class GridFilter(JJGridView gridView)
         if (OnFilterLoadAsync != null)
             await OnFilterLoadAsync(gridView, new GridFilterLoadEventArgs { Filters = values });
 
-        var dataPanelControl = new DataPanelControl(gridView, values)
+        var dataPanelControl = new DataPanelForm(gridView, values)
         {
             FieldNamePrefix = FilterFieldPrefix
         };

@@ -5,9 +5,9 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class DataPanelScripts(DataPanelControl dataPanelControl)
+internal sealed class DataPanelScripts(DataPanelForm dataPanelForm)
 {
-    private IEncryptionService EncryptionService => dataPanelControl.EncryptionService;
+    private IEncryptionService EncryptionService => dataPanelForm.EncryptionService;
 
     public string GetReloadPanelScript(string elementFieldName, string fieldNameWithPrefix)
     {
@@ -24,9 +24,9 @@ internal sealed class DataPanelScripts(DataPanelControl dataPanelControl)
         string fieldNameWithPrefix,
         [LanguageInjection("javascript")] string methodName)
     {
-        var componentName = dataPanelControl.Name;
+        var componentName = dataPanelForm.Name;
         var routeContext =
-            EncryptionService.EncryptObject(RouteContext.FromFormElement(dataPanelControl.FormElement,
+            EncryptionService.EncryptObject(RouteContext.FromFormElement(dataPanelForm.FormElement,
                 ComponentContext.DataPanelReload));
 
 

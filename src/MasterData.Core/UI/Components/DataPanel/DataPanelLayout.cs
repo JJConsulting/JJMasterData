@@ -18,7 +18,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     private readonly string _name = dataPanel.Name;
     private readonly bool _renderPanelGroup = dataPanel.RenderPanelGroup;
     private readonly FormElement _formElement = dataPanel.FormElement;
-    private readonly DataPanelControl _dataPanelControl = new(dataPanel);
+    private readonly DataPanelForm _dataPanelForm = new(dataPanel);
     private readonly IFormValues _formValues = dataPanel.CurrentContext.Request.Form;
     private readonly PageState _pageState = dataPanel.PageState;
     private readonly ExpressionsService _expressionsService= dataPanel.ExpressionsService;
@@ -64,7 +64,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     private async Task<List<HtmlBuilder>> GetFieldsWithoutPanel()
     {
         List<HtmlBuilder> htmlList = [];
-        bool dontContainsVisibleFields = !_formElement.Fields.Exists(x => x.PanelId == 0 && _expressionsService.GetBoolValue(x.VisibleExpression, _dataPanelControl.FormStateData));
+        bool dontContainsVisibleFields = !_formElement.Fields.Exists(x => x.PanelId == 0 && _expressionsService.GetBoolValue(x.VisibleExpression, _dataPanelForm.FormStateData));
     
         if (dontContainsVisibleFields)
             return htmlList;
@@ -112,7 +112,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     {
         return dataPanel
             .ExpressionsService
-            .GetExpressionValue(expression, _dataPanelControl.FormStateData)
+            .GetExpressionValue(expression, _dataPanelForm.FormStateData)
             ?.ToString() ?? string.Empty;
     }
 
@@ -168,7 +168,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
                 field.EnableExpression = "val:0";
         }
 
-        var formContent = await _dataPanelControl.GetHtmlForm(fields);
+        var formContent = await _dataPanelForm.GetHtmlForm(fields);
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("container-fluid")
             .Append(formContent);
@@ -178,14 +178,14 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
     private bool IsEnabled(FormElementPanel panel)
     {
-        return _dataPanelControl.ExpressionsService.GetBoolValue(
-            panel.EnableExpression, _dataPanelControl.FormStateData);
+        return _dataPanelForm.ExpressionsService.GetBoolValue(
+            panel.EnableExpression, _dataPanelForm.FormStateData);
     }
 
     private bool IsVisible(FormElementPanel panel)
     {
-        return _dataPanelControl.ExpressionsService.GetBoolValue(
-            panel.VisibleExpression, _dataPanelControl.FormStateData);
+        return _dataPanelForm.ExpressionsService.GetBoolValue(
+            panel.VisibleExpression, _dataPanelForm.FormStateData);
     }
 
 }

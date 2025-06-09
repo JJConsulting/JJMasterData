@@ -19,80 +19,75 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Render components fields in a div
 /// </summary>
-internal sealed class DataPanelControl
+internal sealed class DataPanelForm
 {
-    private DataPanelScripts? _panelScripts;
-    private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
+    private readonly FieldFormattingService _fieldFormattingService;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
+    private readonly IComponentFactory _componentFactory;
 
-    public string ParentComponentName { get; }
-
-    public string Name { get; }
-
-    public FormElement FormElement { get; }
-
-    public FormUI FormUI { get; }
-
-    public IComponentFactory ComponentFactory { get; }
+    private readonly Dictionary<string, string> _errors;
+    private readonly string _parentComponentName;
+    private readonly FormUI _formUI;
+    private readonly bool _isGridViewFilter;
     
-    public Dictionary<string, string> Errors { get; }
-
-    public PageState PageState => FormStateData.PageState;
-
-    public Dictionary<string, object?>? UserValues => FormStateData.UserValues;
-
-    public Dictionary<string, object?> Values => FormStateData.Values;
-
-    public FormStateData FormStateData { get; }
-
-    public string? FieldNamePrefix { get; init; }
-
-    private bool IsGridViewFilter { get; }
-
-    private FieldFormattingService FieldFormattingService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private DataPanelScripts? _panelScripts;
+    
+    private bool IsViewModeAsStatic => PageState == PageState.View && _formUI.ShowViewModeAsStatic;
+    private PageState PageState => FormStateData.PageState;
+    private Dictionary<string, object?>? UserValues => FormStateData.UserValues;
+    private Dictionary<string, object?> Values => FormStateData.Values;
+    private DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
+    
     internal ExpressionsService ExpressionsService { get; }
     internal IEncryptionService EncryptionService { get; }
-    private DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
-
-    public DataPanelControl(JJDataPanel dataPanel)
+    
+    public string Name { get; }
+    public FormElement FormElement { get; }
+    public FormStateData FormStateData { get; }
+    public string? FieldNamePrefix { get; init; }
+    
+    public DataPanelForm(JJDataPanel dataPanel)
     {
-        FormElement = dataPanel.FormElement;
-        ParentComponentName = dataPanel.ParentComponentName ?? dataPanel.Name;
-        FormUI = dataPanel.FormUI;
-        ComponentFactory = dataPanel.ComponentFactory;
-        Errors = dataPanel.Errors;
+        _parentComponentName = dataPanel.ParentComponentName ?? dataPanel.Name;
+        _componentFactory = dataPanel.ComponentFactory;
+        _errors = dataPanel.Errors;
+        _fieldFormattingService = dataPanel.FieldFormattingService;
+        _stringLocalizer = dataPanel.StringLocalizer;
+        _formUI = dataPanel.FormUI;
+        _isGridViewFilter = false;
+        
         EncryptionService = dataPanel.EncryptionService;
-        FieldFormattingService = dataPanel.FieldFormattingService;
-        Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
-        StringLocalizer = dataPanel.StringLocalizer;
+        FormElement = dataPanel.FormElement;
+
+        Name = dataPanel.Name;
         FormStateData = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
-        IsGridViewFilter = false;
     }
 
-    public DataPanelControl(JJGridView gridView, Dictionary<string, object?> values)
+    public DataPanelForm(JJGridView gridView, Dictionary<string, object?> values)
     {
-        ParentComponentName = gridView.ParentComponentName ?? gridView.Name;
-        FormElement = gridView.FormElement;
-        FormUI = new FormUI
+        _parentComponentName = gridView.ParentComponentName ?? gridView.Name;
+        _componentFactory = gridView.ComponentFactory;
+        _errors = new Dictionary<string, string>();
+        _fieldFormattingService = gridView.FieldFormattingService;
+        _stringLocalizer = gridView.StringLocalizer;
+        _formUI = new FormUI
         {
             IsVerticalLayout = gridView.FormElement.Options.Grid.UseVerticalLayoutAtFilter
         };
+        _isGridViewFilter = true;
+        
         EncryptionService = gridView.EncryptionService;
-        Errors = new Dictionary<string, string>();
-        Name = gridView.Name;
-        ComponentFactory = gridView.ComponentFactory;
         ExpressionsService = gridView.ExpressionsService;
-        FieldFormattingService = gridView.FieldFormattingService;
-        StringLocalizer = gridView.StringLocalizer;
+        FormElement = gridView.FormElement;
+        Name = gridView.Name;
         FormStateData = new FormStateData(values, gridView.UserValues, PageState.Filter);
-        IsGridViewFilter = true;
     }
-
+    
     public Task<HtmlBuilder> GetHtmlForm(List<FormElementField> fields)
     {
-        if (FormUI.IsVerticalLayout)
+        if (_formUI.IsVerticalLayout)
             return GetHtmlFormVertical(fields);
 
         return GetHtmlFormHorizontal(fields);
@@ -101,7 +96,7 @@ internal sealed class DataPanelControl
     private async Task<HtmlBuilder> GetHtmlFormVertical(List<FormElementField> fields)
     {
         string colClass = "";
-        int cols = FormUI.FormCols;
+        int cols = _formUI.FormCols;
         if (cols > 12)
             cols = 12;
 
@@ -150,10 +145,10 @@ internal sealed class DataPanelControl
             }
             formGroup.WithCssClass(fieldClass);
 
-            if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(field.Name))
+            if (BootstrapHelper.Version == 3 && _errors != null && _errors.ContainsKey(field.Name))
                 formGroup.WithCssClass("has-error");
 
-            if (PageState == PageState.View && FormUI.ShowViewModeAsStatic)
+            if (PageState == PageState.View && _formUI.ShowViewModeAsStatic)
                 formGroup.WithCssClass("jjborder-static");
 
             var useFloatingLabel = FormElement.Options.UseFloatingLabels && field.SupportsFloatingLabel();
@@ -178,7 +173,7 @@ internal sealed class DataPanelControl
     
     private async Task<HtmlBuilder> GetHtmlFormHorizontal(List<FormElementField> fields)
     {
-        var cols = FormUI.FormCols;
+        var cols = _formUI.FormCols;
         if (cols >= 4)
             cols = 4;
         
@@ -208,7 +203,7 @@ internal sealed class DataPanelControl
             var label = CreateLabel(field, isRange);
             var cssClass = string.Empty;
             
-            if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(field.Name))
+            if (BootstrapHelper.Version == 3 && _errors != null && _errors.ContainsKey(field.Name))
                 cssClass += " has-error";
 
             if (colCount == 1 || colCount >= cols)
@@ -298,8 +293,8 @@ internal sealed class DataPanelControl
 
     private JJLabel CreateLabel(FormElementField field, bool isRange)
     {
-        var label = ComponentFactory.Html.Label.Create(field);
-        label.LabelFor =GetFieldNameWithPrefix(field);
+        var label = _componentFactory.Html.Label.Create(field);
+        label.LabelFor = GetFieldNameWithPrefix(field);
 
         if (IsViewModeAsStatic)
             label.LabelFor = null;
@@ -312,7 +307,7 @@ internal sealed class DataPanelControl
     private async ValueTask<HtmlBuilder> GetStaticField(FormElementField field)
     {
         var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
-        var staticValue = await FieldFormattingService.FormatGridValueAsync(fieldSelector, FormStateData);
+        var staticValue = await _fieldFormattingService.FormatGridValueAsync(fieldSelector, FormStateData);
         var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
             .AppendText(staticValue);
@@ -323,17 +318,17 @@ internal sealed class DataPanelControl
     private ValueTask<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
-        var control = ComponentFactory.Controls.Create(FormElement, field, formStateData, ParentComponentName, value);
+        var control = _componentFactory.Controls.Create(FormElement, field, formStateData, _parentComponentName, value);
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = GetFieldNameWithPrefix(field);
 
         control.Enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formStateData);
 
-        if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
+        if (BootstrapHelper.Version > 3 && _errors.ContainsKey(field.Name))
             control.CssClass = "is-invalid";
 
-        if (field.AutoPostBack && !IsGridViewFilter &&
+        if (field.AutoPostBack && !_isGridViewFilter &&
             PageState is PageState.Insert or PageState.Update or PageState.Filter)
         {
             control.SetAttr("onchange", GetScriptReload(field));
@@ -346,11 +341,11 @@ internal sealed class DataPanelControl
         if(control is JJTextFile file)
             file.ParentName = FormElement.Name;
 
-        var useFloatingLabels = FormUI.IsVerticalLayout && FormElement.Options.UseFloatingLabels;
+        var useFloatingLabels = _formUI.IsVerticalLayout && FormElement.Options.UseFloatingLabels;
         
         if (useFloatingLabels && control is IFloatingLabelControl floatingLabelControl)
         {
-            floatingLabelControl.FloatingLabel = string.IsNullOrEmpty(field.Label) ? field.Name : StringLocalizer[field.Label!];
+            floatingLabelControl.FloatingLabel = string.IsNullOrEmpty(field.Label) ? field.Name : _stringLocalizer[field.Label!];
             floatingLabelControl.UseFloatingLabel = field.SupportsFloatingLabel();
         }
         
@@ -358,23 +353,23 @@ internal sealed class DataPanelControl
             return control.GetHtmlBuilderAsync();
 
 
-        var isMultivalues = field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain;
+        var isMultValues = field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain;
         switch (control)
         {
             case JJTextRange range:
-                range.IsVerticalLayout = FormUI.IsVerticalLayout;
+                range.IsVerticalLayout = _formUI.IsVerticalLayout;
                 break;
-            case JJTextGroup when !isMultivalues:
-                return control.GetHtmlBuilderAsync();
+            case JJTextGroup when !isMultValues:
+                break;
             case JJTextGroup:
                 control.Attributes.Add("data-role", "tagsinput");
                 control.MaxLength = 0;
                 break;
             case JJComboBox comboBox:
             {
-                if ((field.Filter.IsRequired || isMultivalues) && IsGridViewFilter)
+                if ((field.Filter.IsRequired || isMultValues) && _isGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.None;
-                else if (IsGridViewFilter)
+                else if (_isGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.All;
 
                 if (field.Filter.Type == FilterMode.MultValuesEqual)

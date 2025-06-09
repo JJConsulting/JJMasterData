@@ -9,7 +9,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -96,9 +95,6 @@ public class FieldFormattingService(
                 var rowValue = searchBoxValues.Find(v =>
                     string.Equals(v.Id.Trim(), searchId, StringComparison.InvariantCultureIgnoreCase));
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
-            case FormComponent.Email:
-                stringValue = GetEmailLink(value?.ToString());
-                break;
             default:
                 stringValue = FormatValue(field, value);
                 break;
@@ -109,18 +105,7 @@ public class FieldFormattingService(
         
         return stringValue ?? string.Empty;
     }
-
-    private static string GetEmailLink(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-            return string.Empty;
-
-        var a = new HtmlBuilder(HtmlTag.A);
-        a.WithAttribute("href", $"mailto:{value}");
-        a.AppendText(value);
-
-        return a.ToString();
-    }
+    
 
     private static string GetCurrencyValueAsString(FormElementField field, object value)
     {
