@@ -30,6 +30,9 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder Append(HtmlBuilder? builder)
     {
+        if (builder == this)
+            throw new InvalidOperationException("Cannot append the same HtmlBuilder to itself.");
+        
         if (builder != null)
             _children.Add(builder);
 
