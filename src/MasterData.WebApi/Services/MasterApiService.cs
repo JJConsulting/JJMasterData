@@ -301,11 +301,10 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
 
-        var dictionary = await GetDataDictionary(elementName);
-        if (!dictionary.ApiOptions.EnableDel)
+        var formElement = await GetDataDictionary(elementName);
+        if (!formElement.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
 
-        var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
         var formResult = await formService.DeleteAsync(formElement, values, GetDataContext());
@@ -322,7 +321,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             };
         }
 
-        return CreateErrorResponseLetter(formResult.Errors, dictionary.ApiOptions);
+        return CreateErrorResponseLetter(formResult.Errors, formElement.ApiOptions);
     }
 
     /// <summary>
