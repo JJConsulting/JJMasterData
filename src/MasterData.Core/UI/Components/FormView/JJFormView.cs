@@ -145,7 +145,7 @@ public class JJFormView : AsyncComponent
     private Dictionary<string, object> _relationValues = new();
     private RouteContext? _routeContext;
     private FormStateData? _formStateData;
-    private bool _isCustomCurrentActionMap;
+    private bool _isCustomCurrentAction;
     private RelationshipType? _relationshipType;
 
     private readonly FormValuesService _formValuesService;
@@ -335,7 +335,7 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_currentActionMap != null || _isCustomCurrentActionMap)
+            if (_currentActionMap != null || _isCustomCurrentAction)
                 return _currentActionMap;
 
             var encryptedActionMap = CurrentContext.Request.Form[$"current-action-map-{Name}"];
@@ -348,7 +348,7 @@ public class JJFormView : AsyncComponent
         }
         set
         {
-            _isCustomCurrentActionMap = true;
+            _isCustomCurrentAction = true;
             _currentActionMap = value;
         }
     }
@@ -357,7 +357,7 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_currentAction != null || _isCustomCurrentActionMap)
+            if (_currentAction != null || _isCustomCurrentAction)
                 return _currentAction;
 
             if (CurrentActionMap is null)
@@ -365,6 +365,11 @@ public class JJFormView : AsyncComponent
 
             _currentAction = CurrentActionMap.GetAction(FormElement);
             return _currentAction;
+        }
+        set
+        {
+            _isCustomCurrentAction = true;
+            _currentAction = value;
         }
     }
 
@@ -617,6 +622,8 @@ public class JJFormView : AsyncComponent
     private void SetGridErrors(Dictionary<string, string> errors)
     {
         GridView.Errors = errors;
+        CurrentAction = FormElement.Options.GridToolbarActions.GridEditAction;
+        
         SetEditMode();
     }
 
@@ -768,8 +775,7 @@ public class JJFormView : AsyncComponent
             html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
 
             html.AppendHiddenInput($"form-view-relationship-type-{Name}", ((int)RelationshipType).ToString());
-
-
+            
             html.AppendHiddenInput($"current-action-map-{Name}",
                 EncryptionService.EncryptObject(CurrentActionMap));
             html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
@@ -1310,8 +1316,7 @@ public class JJFormView : AsyncComponent
         {
             return result;
         }
-
-
+        
         return new RenderedComponentResult(html);
     }
 
@@ -1433,8 +1438,7 @@ public class JJFormView : AsyncComponent
     {
         var panelHtml = await GetDataPanelHtml();
         panelHtml.AppendScript($"setPageState('{Name}',{(int)PageState})");
-
-
+        
         if (ShowTitle && !IsInsertAtGridView)
             panelHtml.PrependComponent(GetTitle(new FormStateData(DataPanel.Values, UserValues, PageState)));
 
