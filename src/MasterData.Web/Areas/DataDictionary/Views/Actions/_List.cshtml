@@ -99,8 +99,11 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="list-group @sortableClass" id="sortable-@Model.Source.ToString()">
-            @foreach (var action in Model.Actions.Where(a=> !a.IsFrameworkDefined))
+            @foreach (var action in Model.Actions)
             {
+                if (action.IsSystemDefined)
+                    continue;
+
                 <div class="list-group-item" id="@action.Name">
                     <div style="height: 1.875rem;">
                         <div style="float: left; margin-top: 0.625rem;">
@@ -115,7 +118,7 @@
                                 {
                                     <span>@actionName</span>
                                 }
-                            }
+                            } 
                         </div>
                         <div class="@BootstrapHelper.PullRight d-flex align-content-center">
                             <button class="@BootstrapHelper.BtnDefault btn-small" type="button" onclick="@GetEditScript(action)">
@@ -128,20 +131,23 @@
                                     <span class="fa fa-trash"></span>
                                 </button>
                             }
-                            else if (action is not FormToolbarAction or AuditLogFormToolbarAction)
+                            else
                             {
-                                <div class="form-check form-switch form-switch-md" style="padding-left:0px">
-                                    <input type="checkbox"
-                                           @(action.IsVisible ? "checked=\"checked\"" : "")
-                                           style="margin-left:10px;"
-                                           data-toggle="toggle"
-                                           data-size="small"
-                                           data-on="On"
-                                           role="switch"
-                                           data-off="Off"
-                                           class="form-check-input align-self-center"
-                                           onchange="DataDictionaryUtils.toggleActionEnabled($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
-                                </div>
+                                if (action is not FormToolbarAction or AuditLogFormToolbarAction)
+                                {
+                                    <div class="form-check form-switch form-switch-md" style="padding-left:0px">
+                                        <input type="checkbox"
+                                               @(action.IsVisible ? "checked=\"checked\"" : "")
+                                               style="margin-left:10px;"
+                                               data-toggle="toggle"
+                                               data-size="small"
+                                               data-on="On"
+                                               role="switch"
+                                               data-off="Off"
+                                               class="form-check-input align-self-center"
+                                               onchange="DataDictionaryUtils.toggleActionEnabled($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
+                                    </div>
+                                }
                             }
                         </div>
                     </div>

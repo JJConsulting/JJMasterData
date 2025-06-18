@@ -366,11 +366,6 @@ public class JJFormView : AsyncComponent
             _currentAction = CurrentActionMap.GetAction(FormElement);
             return _currentAction;
         }
-        set
-        {
-            _isCustomCurrentAction = true;
-            _currentAction = value;
-        }
     }
 
     public RouteContext RouteContext
@@ -622,9 +617,21 @@ public class JJFormView : AsyncComponent
     private void SetGridErrors(Dictionary<string, string> errors)
     {
         GridView.Errors = errors;
-        CurrentAction = FormElement.Options.GridToolbarActions.GridEditAction;
-        
+
+        SetCurrentActionAsEditMode();
+
         SetEditMode();
+    }
+
+    private void SetCurrentActionAsEditMode()
+    {
+        var gridEditAction = FormElement.Options.GridToolbarActions.GridEditAction;
+        CurrentActionMap = new ActionMap
+        {
+            ElementName = FormElement.Name,
+            ActionName = gridEditAction.Name,
+            ActionSource = ActionSource.GridToolbar
+        };
     }
 
     private async Task<ComponentResult> GetSaveActionResult()

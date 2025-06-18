@@ -141,7 +141,7 @@ public abstract class BasicAction
     public abstract bool IsUserDefined { get; }
 
     [JsonIgnore]
-    public virtual bool IsFrameworkDefined => false;
+    public virtual bool IsSystemDefined => false;
 
     [JsonPropertyName("formToolbarActionLocation")]
     public FormToolbarActionLocation? Location { get; set; }

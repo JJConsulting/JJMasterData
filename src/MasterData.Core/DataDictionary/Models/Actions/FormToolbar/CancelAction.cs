@@ -9,7 +9,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 public sealed class CancelAction : FormToolbarAction
 {
     public const string ActionName = "cancel";
-    public override bool IsFrameworkDefined => true;
+    public override bool IsSystemDefined => true;
 
     public CancelAction()
     {

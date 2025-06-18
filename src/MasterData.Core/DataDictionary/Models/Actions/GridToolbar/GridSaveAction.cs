@@ -2,7 +2,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridSaveAction : GridToolbarAction
 {
-    public override bool IsFrameworkDefined => true;
+    public override bool IsSystemDefined => true;
     
     public GridSaveAction()
     {

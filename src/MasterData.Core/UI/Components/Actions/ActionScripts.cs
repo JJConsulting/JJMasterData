@@ -138,6 +138,7 @@ public class ActionScripts(
         bool encode = true, 
         bool isAtModal = false)
     {
+        
         var formElement = actionContext.FormElement;
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
