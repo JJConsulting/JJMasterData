@@ -51,7 +51,7 @@ public class ActionButtonFactory(
         var actionContext = gridView.GetActionContext(action, formStateData);
         var button = Create(action, actionContext.FormStateData);
 
-        if (action.IsCustomAction)
+        if (action.IsUserDefined)
             button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
         else if (action is GridTableAction)
             button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
@@ -66,7 +66,7 @@ public class ActionButtonFactory(
         var actionContext = gridView.GetActionContext(action, formStateData);
         var button = Create(action, formStateData);
 
-        if (action.IsCustomAction)
+        if (action.IsUserDefined)
         {
             button.OnClientClick =  actionScripts.GetUserActionScript(actionContext, ActionSource.GridToolbar);
             return button;
@@ -101,6 +101,9 @@ public class ActionButtonFactory(
                     BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-filter-modal");
                 break;
             case InsertAction:
+            case GridSaveAction:
+            case GridCancelAction:
+            case GridEditAction:
                 button.OnClientClick = actionScripts.GetFormActionScript(actionContext,
                     ActionSource.GridToolbar);
                 break;
@@ -116,7 +119,7 @@ public class ActionButtonFactory(
                     BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-sort-modal");
                 break;
             default:
-                throw new JJMasterDataException("Invalid GridToolBarAction.");
+                throw new JJMasterDataException("Invalid GridToolbarAction.");
         }
 
         return button;
@@ -130,7 +133,7 @@ public class ActionButtonFactory(
         var actionContext = formView.GetActionContext(action,formStateData);
         var button = Create(action, actionContext.FormStateData);
     
-        if (action.IsCustomAction)
+        if (action.IsUserDefined)
         {
             button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
         }
@@ -202,7 +205,7 @@ public class ActionButtonFactory(
     {
         var button = Create(action, actionContext.FormStateData);
 
-        if (action.IsCustomAction)
+        if (action.IsUserDefined)
         {
             button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.Field);
         }

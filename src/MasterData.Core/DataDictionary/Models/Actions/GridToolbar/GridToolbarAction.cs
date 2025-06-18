@@ -5,5 +5,5 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 public abstract class GridToolbarAction : BasicAction
 {
     [JsonIgnore]
-    public override bool IsCustomAction => false;
+    public override bool IsUserDefined => false;
 }

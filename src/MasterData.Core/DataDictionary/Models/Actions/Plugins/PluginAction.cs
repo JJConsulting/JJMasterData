@@ -24,7 +24,7 @@ public class PluginAction : BasicAction
         Icon = IconType.Plug;
     }
 
-    public override bool IsCustomAction => true;
+    public override bool IsUserDefined => true;
 
     public override BasicAction DeepCopy()
     {

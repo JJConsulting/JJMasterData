@@ -136,9 +136,12 @@ public abstract class BasicAction
     /// </summary>
     [JsonPropertyName("cssClass")]
     public string? CssClass { get; set; }
+    
+    [JsonIgnore]
+    public abstract bool IsUserDefined { get; }
 
     [JsonIgnore]
-    public abstract bool IsCustomAction { get; }
+    public virtual bool IsFrameworkDefined => false;
 
     [JsonPropertyName("formToolbarActionLocation")]
     public FormToolbarActionLocation? Location { get; set; }

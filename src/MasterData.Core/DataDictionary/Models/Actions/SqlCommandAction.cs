@@ -40,6 +40,6 @@ public sealed class SqlCommandAction : BasicAction, ISubmittableAction
         Icon = IconType.Play;
     }
     [JsonIgnore]
-    public override bool IsCustomAction => true;
+    public override bool IsUserDefined => true;
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

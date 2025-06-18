@@ -23,7 +23,7 @@ public sealed class HtmlTemplateAction : BasicAction
 
     
     [JsonIgnore]
-    public override bool IsCustomAction => true;
+    public override bool IsUserDefined => true;
     
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

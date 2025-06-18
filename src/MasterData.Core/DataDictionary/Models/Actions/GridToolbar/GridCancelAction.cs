@@ -1,25 +1,17 @@
-#nullable enable
-
-
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-/// <summary>
-/// Action to cancel a DataPanel update at a FormView.
-/// </summary>
-public sealed class CancelAction : FormToolbarAction
+public sealed class GridCancelAction : GridToolbarAction
 {
-    public const string ActionName = "cancel";
     public override bool IsFrameworkDefined => true;
-
-    public CancelAction()
+    public GridCancelAction()
     {
-        Name = ActionName;
+        Name = "grid-cancel";
         Icon = IconType.SolidXmark;
-        VisibleExpression = "exp: '{PageState}' = 'Insert' OR '{PageState}' = 'Update'";
         Order = 0;
         Location = FormToolbarActionLocation.Panel;
         ShowAsButton = true;
         Text = "Cancel";
+        VisibleExpression = "val:0";
     }
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

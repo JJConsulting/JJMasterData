@@ -38,7 +38,8 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
                     gridToolbarActionList.SortAction = actionElement.Deserialize<SortAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.AuditLogGridToolbarAction, JJMasterData.Core":
-                    gridToolbarActionList.AuditLogGridToolbarAction = actionElement.Deserialize<AuditLogGridToolbarAction>();
+                    gridToolbarActionList.AuditLogGridToolbarAction =
+                        actionElement.Deserialize<AuditLogGridToolbarAction>();
                     break;
                 case "JJMasterData.Core.DataDictionary.Models.Actions.PluginAction, JJMasterData.Core":
                     gridToolbarActionList.Set(actionElement.Deserialize<PluginAction>());
@@ -69,6 +70,15 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
         var gridToolbarActionList = new GridToolbarActionList
         {
             InsertAction = rootElement.GetProperty("insertAction").Deserialize<InsertAction>(options),
+            GridSaveAction = rootElement.TryGetProperty("gridSaveAction", out var gridSaveAction)
+                ? gridSaveAction.Deserialize<GridSaveAction>(options)
+                : new(),
+            GridCancelAction = rootElement.TryGetProperty("gridCancelAction", out var gridCancelAction)
+                ? gridCancelAction.Deserialize<GridCancelAction>(options)
+                : new(),
+            GridEditAction = rootElement.TryGetProperty("gridEditAction", out var gridEditAction)
+                ? gridEditAction.Deserialize<GridEditAction>(options)
+                : new(),
             LegendAction = rootElement.GetProperty("legendAction").Deserialize<LegendAction>(options),
             RefreshAction = rootElement.GetProperty("refreshAction").Deserialize<RefreshAction>(options),
             FilterAction = rootElement.GetProperty("filterAction").Deserialize<FilterAction>(options),
@@ -76,7 +86,8 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
             ExportAction = rootElement.GetProperty("exportAction").Deserialize<ExportAction>(options),
             ConfigAction = rootElement.GetProperty("configAction").Deserialize<ConfigAction>(options),
             SortAction = rootElement.GetProperty("sortAction").Deserialize<SortAction>(options),
-            AuditLogGridToolbarAction = rootElement.GetProperty("auditLogGridToolbarAction").Deserialize<AuditLogGridToolbarAction>(options)
+            AuditLogGridToolbarAction = rootElement.GetProperty("auditLogGridToolbarAction")
+                .Deserialize<AuditLogGridToolbarAction>(options)
         };
         return gridToolbarActionList;
     }
@@ -84,6 +95,10 @@ internal sealed class GridToolbarActionListConverter : ActionListConverterBase<G
     protected override void WriteActions(Utf8JsonWriter writer, GridToolbarActionList actionListToWrite,
         JsonSerializerOptions options)
     {
+        WriteProperty(writer, "gridEditAction", actionListToWrite.GridEditAction, options);
+        WriteProperty(writer, "gridSaveAction", actionListToWrite.GridSaveAction, options);
+        WriteProperty(writer, "gridCancelAction", actionListToWrite.GridCancelAction, options);
+
         WriteProperty(writer, "insertAction", actionListToWrite.InsertAction, options);
         WriteProperty(writer, "legendAction", actionListToWrite.LegendAction, options);
         WriteProperty(writer, "refreshAction", actionListToWrite.RefreshAction, options);

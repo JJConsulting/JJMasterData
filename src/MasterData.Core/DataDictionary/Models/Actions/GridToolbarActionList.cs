@@ -68,6 +68,27 @@ public sealed class GridToolbarActionList : FormElementActionList
         set => SetOfType(value);
     }
 
+    [JsonPropertyName("gridEditAction")]
+    public GridEditAction GridEditAction
+    {
+        get => GetOrAdd<GridEditAction>();
+        set => SetOfType(value);
+    }
+    
+    [JsonPropertyName("gridCancelAction")]
+    public GridCancelAction GridCancelAction
+    {
+        get => GetOrAdd<GridCancelAction>();
+        set => SetOfType(value);
+    }
+
+    [JsonPropertyName("gridSaveAction")]
+    public GridSaveAction GridSaveAction
+    {
+        get => GetOrAdd<GridSaveAction>();
+        set => SetOfType(value);
+    }
+    
     public GridToolbarActionList()
     {
         Add(new InsertAction());
@@ -79,6 +100,9 @@ public sealed class GridToolbarActionList : FormElementActionList
         Add(new ConfigAction());
         Add(new SortAction());
         Add(new AuditLogGridToolbarAction());
+        Add(new GridEditAction());
+        Add(new GridSaveAction());
+        Add(new GridCancelAction());
     }
 
     public GridToolbarActionList(List<BasicAction> list) : base(list)

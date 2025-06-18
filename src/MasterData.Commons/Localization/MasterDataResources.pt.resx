@@ -1710,6 +1710,10 @@
     <value>Está agrupado</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Bulk Edit" xml:space="preserve">
+    <value>Editar em Massa</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="IsUnique" xml:space="preserve">
     <value>É único</value>
     <comment>JJMasterDataWeb</comment>

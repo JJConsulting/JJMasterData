@@ -527,7 +527,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.GridViewScrollPagination:
             case ComponentContext.GridViewFilterReload:
             case ComponentContext.SearchBoxFilter:
-                return await GridView.GetResultAsync();
+                return await GetGridViewResult();
             case ComponentContext.DownloadFile:
                 return ComponentFactory.Downloader.Create().GetDownloadResult();
             case ComponentContext.AuditLogView:
@@ -588,6 +588,37 @@ public class JJFormView : AsyncComponent
         return dataPanelResult;
     }
 
+    private async Task<ComponentResult> GetGridSaveActionResult()
+    {
+        var gridValues = await GridView.GetGridValuesAsync();
+        
+        var errors = GridView.ValidateGridFields(gridValues!);
+
+        if (errors.Count > 0)
+        {
+            SetGridErrors(errors);
+
+            return await GridView.GetResultAsync();
+        }
+        
+        foreach (var values in gridValues!)
+        {
+            var updateErrors = await UpdateFormValuesAsync(values);
+
+            if (updateErrors.Count > 0)
+            {
+                SetGridErrors(errors);
+            }
+        }
+
+        return await GridView.GetResultAsync();
+    }
+
+    private void SetGridErrors(Dictionary<string, string> errors)
+    {
+        GridView.Errors = errors;
+        SetEditMode();
+    }
 
     private async Task<ComponentResult> GetSaveActionResult()
     {
@@ -704,6 +735,7 @@ public class JJFormView : AsyncComponent
             AuditLogFormToolbarAction or AuditLogGridToolbarAction => await GetAuditLogResult(),
             DeleteAction => await GetDeleteResult(),
             SaveAction => await GetSaveActionResult(),
+            GridSaveAction => await GetGridSaveActionResult(),
             BackAction => await GetBackActionResult(),
             CancelAction => await GetCancelActionResult(),
             SqlCommandAction => await GetSqlCommandActionResult(),
@@ -887,7 +919,22 @@ public class JJFormView : AsyncComponent
 
     private Task<ComponentResult> GetGridViewResult()
     {
+        if (CurrentAction is GridEditAction)
+            SetEditMode();
+        
         return GridView.GetResultAsync();
+    }
+
+    private void SetEditMode()
+    {
+        GridView.EnableEditMode = true;
+        GridView.EnableSorting = false;
+        GridView.EnableFilter = false;
+        GridView.ShowPaging = false;
+        GridView.ToolbarActions.InsertAction.SetVisible(false);
+        GridView.ToolbarActions.GridEditAction.SetVisible(false);
+        GridView.ToolbarActions.GridSaveAction.SetVisible(true);
+        GridView.ToolbarActions.GridCancelAction.SetVisible(true);
     }
 
     private bool ContainsHiddenPkValues()
@@ -965,7 +1012,7 @@ public class JJFormView : AsyncComponent
         {
             containsGridAction = !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);
         }
-
+        
         if (PageState is PageState.List || containsGridAction)
             return await GetGridViewResult();
 
@@ -1527,7 +1574,7 @@ public class JJFormView : AsyncComponent
         List<JJLinkButton> groupedActions = [];
         var actionButtonFactory = ComponentFactory.ActionButton;
         
-        foreach (var action in actions)
+        foreach (var action in actions.OrderBy(a=>a.Order))
         {
             var linkButton = actionButtonFactory.CreateFormToolbarButton(action, formStateData, this);
 
@@ -1611,8 +1658,7 @@ public class JJFormView : AsyncComponent
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
-
-
+    
     public async Task<Dictionary<string, object?>> GetFormValuesAsync()
     {
         var values = await DataPanel.GetFormValuesAsync();

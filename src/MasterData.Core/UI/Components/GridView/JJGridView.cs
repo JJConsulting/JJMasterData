@@ -480,7 +480,7 @@ public class JJGridView : AsyncComponent
     /// Key-Value pairs with the errors.
     /// </summary>
     // ReSharper disable once CollectionNeverUpdated.Global
-    public Dictionary<string, string> Errors { get; } = new Dictionary<string, string>();
+    public Dictionary<string, string> Errors { get; set; } = new Dictionary<string, string>();
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -713,10 +713,12 @@ public class JJGridView : AsyncComponent
         {
             return await _urlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
         }
-
+        
         HtmlBuilder? sqlActionError = null;
-
-        if (TryGetSqlAction(out var sqlCommandAction))
+        
+        var currentAction = CurrentActionMap?.GetAction(FormElement);
+        
+        if (currentAction is SqlCommandAction sqlCommandAction)
         {
             var sqlResult = await ExecuteSqlCommand(sqlCommandAction);
             if (sqlResult == EmptyComponentResult.Value)
@@ -733,6 +735,9 @@ public class JJGridView : AsyncComponent
 
         var gridHtml = await GetHtmlBuilderAsync();
 
+        if (Errors.Count > 0)
+            gridHtml.PrependComponent(ComponentFactory.Html.ValidationSummary.Create(Errors));
+        
         if (sqlActionError is not null)
         {
             gridHtml.Append(sqlActionError);
@@ -809,11 +814,7 @@ public class JJGridView : AsyncComponent
         
         html.AppendRange(GetHiddenInputs());
 
-        if (CurrentPage <= 0)
-        {
-            html.AppendComponent(GetPaginationWarningAlert(totalOfPages));
-        }
-        else if (CurrentPage > totalOfPages && totalOfPages != 0)
+        if (CurrentPage <= 0 || (CurrentPage > totalOfPages && totalOfPages != 0))
         {
             html.AppendComponent(GetPaginationWarningAlert(totalOfPages));
         }
@@ -848,7 +849,7 @@ public class JJGridView : AsyncComponent
                 html.Append(gridPagination.GetHtmlBuilder());
             }
         }
-        
+
         if (ShowToolbar)
         {
             html.Append(await GetSettingsHtml());
@@ -919,20 +920,6 @@ public class JJGridView : AsyncComponent
     public ValueTask<HtmlBuilder> GetToolbarHtmlAsync() => GetToolbarHtmlBuilder();
 
     private Task<HtmlBuilder> GetSortingConfigAsync() => new GridSortingConfig(this).GetHtmlBuilderAsync();
-
-    private bool TryGetSqlAction(out SqlCommandAction? sqlCommandAction)
-    {
-        var action = CurrentActionMap?.GetAction(FormElement);
-        if (action is SqlCommandAction sqlAction)
-        {
-            sqlCommandAction = sqlAction;
-            return true;
-        }
-
-        sqlCommandAction = null;
-        
-        return false;
-    }
 
     private Task<ComponentResult> ExecuteSqlCommand(SqlCommandAction? action)
     {
@@ -1359,41 +1346,38 @@ public class JJGridView : AsyncComponent
 
         return selectedKeys.ToString();
     }
-
+    
     /// <summary>
-    /// Validate the field and returns a Hashtable with the errors.
+    /// Validate the values and returns a <see cref="Dictionary{TKey,TValue}"/> with the errors.
     /// </summary>
     /// <returns>
-    /// Key = Field name
-    /// Value = Message
+    /// TKey = Field name with the line.
+    /// TValue = Error message.
     /// </returns>
     public Dictionary<string, string> ValidateGridFields(List<Dictionary<string, object?>> values)
     {
-        if (values == null)
-            throw new ArgumentNullException(nameof(values));
-
         var errors = new Dictionary<string, string>();
-        int line = 0;
+        var line = 0;
         foreach (var row in values)
         {
             line++;
             var formData = new FormStateData(row, UserValues, PageState.List);
             foreach (var field in FormElement.Fields)
             {
-                bool enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formData);
-                bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
+                var enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formData);
+                var visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
                     string? val = string.Empty;
                     if (row[field.Name] != null)
                         val = row[field.Name]?.ToString();
 
-                    string objname = GetFieldName(field.Name, row);
-                    string err = _fieldValidationService.ValidateField(field, objname, val);
+                    var fieldName = GetFieldName(field.Name, row);
+                    var err = _fieldValidationService.ValidateField(field, fieldName, val);
                     if (!string.IsNullOrEmpty(err))
                     {
-                        string errMsg = $"{StringLocalizer["Line"]} {line}: {err}";
-                        errors.Add(objname, errMsg);
+                        var errorMessage = $"{StringLocalizer["Line"]} {line}: {err}";
+                        errors.Add(fieldName, errorMessage);
                     }
                 }
             }
@@ -1520,7 +1504,7 @@ public class JJGridView : AsyncComponent
     }
 
     /// <summary>
-    /// Verify if a action is valid, else, throws an exception.
+    /// Verify if an action is valid, else, throws an exception.
     /// </summary>
     private static void ValidateAction(BasicAction action)
     {

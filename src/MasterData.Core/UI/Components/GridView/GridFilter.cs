@@ -151,7 +151,7 @@ internal sealed class GridFilter(JJGridView gridView)
     private async ValueTask<HtmlBuilder> GetDefaultFilter()
     {
         var action = gridView.FilterAction;
-        var fields = gridView.FormElement.Fields.FindAll(
+        var fields = gridView.FormElement.Fields.DeepCopy().FindAll(
             field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"));
 
         foreach (var field in fields)

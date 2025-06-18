@@ -1,6 +1,4 @@
-﻿@using System.Reflection
-@using System.Text
-@using JJMasterData.Core.DataDictionary.Models
+﻿@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IEnumerable<IPluginHandler> ActionPluginHandlers
@@ -10,7 +8,7 @@
 @{
     var sortableClass = string.Empty;
 }
-@if (Model.Actions?.Count > 1)
+@if (Model.Actions.Count > 1)
 {
     sortableClass = "jjsortable";
     <script lang="javascript" type="text/javascript">
@@ -101,7 +99,7 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="list-group @sortableClass" id="sortable-@Model.Source.ToString()">
-            @foreach (var action in Model.Actions!)
+            @foreach (var action in Model.Actions.Where(a=> !a.IsFrameworkDefined))
             {
                 <div class="list-group-item" id="@action.Name">
                     <div style="height: 1.875rem;">
@@ -109,7 +107,7 @@
                             <span class="@action.Icon.GetCssClass() fa-fw"></span>&nbsp;
                             @{
                                 var actionName = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
-                                if (action.IsCustomAction)
+                                if (action.IsUserDefined)
                                 {
                                     <span title="@action.GetType().Name" data-bs-toggle="tooltip">@actionName</span>
                                 }
@@ -123,14 +121,14 @@
                             <button class="@BootstrapHelper.BtnDefault btn-small" type="button" onclick="@GetEditScript(action)">
                                 <span class="fa fa-pencil"></span>
                             </button>
-                            @if (action.IsCustomAction)
+                            @if (action.IsUserDefined)
                             {
                                 <button class="@BootstrapHelper.BtnDefault btn-small" style="margin-left:10px;" type="button"
                                         onclick="@GetDeleteScript(action)">
                                     <span class="fa fa-trash"></span>
                                 </button>
                             }
-                            else if (action is not FormToolbarAction || action is AuditLogFormToolbarAction)
+                            else if (action is not FormToolbarAction or AuditLogFormToolbarAction)
                             {
                                 <div class="form-check form-switch form-switch-md" style="padding-left:0px">
                                     <input type="checkbox"

@@ -15,7 +15,7 @@ public sealed class InternalAction : BasicAction
     }
 
     [JsonIgnore]
-    public override bool IsCustomAction => true;
+    public override bool IsUserDefined => true;
 
     public override BasicAction DeepCopy()
     { 

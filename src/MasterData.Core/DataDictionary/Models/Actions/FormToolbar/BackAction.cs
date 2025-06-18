@@ -14,7 +14,9 @@ public sealed class BackAction : FormToolbarAction, ISubmittableAction
 
     [JsonPropertyName("isSubmit")]
     public bool IsSubmit { get; set; }
-    
+
+    public override bool IsFrameworkDefined => true;
+
     public BackAction()
     {
         Name = ActionName;

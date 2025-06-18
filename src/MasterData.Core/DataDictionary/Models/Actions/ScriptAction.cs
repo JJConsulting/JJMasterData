@@ -16,6 +16,7 @@ public sealed class ScriptAction : BasicAction
     public string OnClientClick { get; set; }
     
     [JsonIgnore]
-    public override bool IsCustomAction => true;
+    public override bool IsUserDefined => true;
+    
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

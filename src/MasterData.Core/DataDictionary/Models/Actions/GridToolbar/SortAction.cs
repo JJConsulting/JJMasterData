@@ -7,7 +7,7 @@ public sealed class SortAction : GridToolbarAction
     public const string ActionName = "sort";
     
     [JsonIgnore]
-    public override bool IsCustomAction => false;
+    public override bool IsUserDefined => false;
     public SortAction()
     {
         Name = ActionName;

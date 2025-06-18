@@ -7,7 +7,7 @@
 @model JJMasterData.Core.DataDictionary.Models.Actions.BasicAction
 
 
-@if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsCustomAction) || Model is AuditLogFormToolbarAction)
+@if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserDefined) || Model is AuditLogFormToolbarAction)
 {
     <div class="row">
         <div class="mb-3 col-sm-12 required">

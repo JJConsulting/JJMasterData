@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 public sealed class FormEditAction : FormToolbarAction
 {
     public const string ActionName = "form-edit";
-
+    public override bool IsFrameworkDefined => true;
     public FormEditAction()
     {
         Name = ActionName;

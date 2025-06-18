@@ -40,6 +40,7 @@ public sealed class UrlRedirectAction : BasicAction
         Icon = IconType.ExternalLink;
     }
     [JsonIgnore]
-    public override bool IsCustomAction => true;
+    public override bool IsUserDefined => true;
+    
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();
 }

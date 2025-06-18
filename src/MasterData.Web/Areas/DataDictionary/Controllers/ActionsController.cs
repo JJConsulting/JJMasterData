@@ -250,7 +250,14 @@ public class ActionsController(ActionsService actionsService,
     {
         return EditActionResult(elementName, filterAction, context, isActionSave, originalName);
     }
-
+    
+    [HttpPost]
+    public Task<IActionResult> GridEditAction(string elementName, GridEditAction gridEditAction, ActionSource context,
+        string? originalName, bool isActionSave)
+    {
+        return EditActionResult(elementName, gridEditAction, context, isActionSave, originalName);
+    }
+    
     [HttpPost]
     public Task<IActionResult> UrlRedirectAction(string elementName, UrlRedirectAction urlAction,
         ActionSource context,
