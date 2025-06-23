@@ -155,10 +155,8 @@ internal sealed class EntityRepository(
         {
             if (!int.TryParse(retParameter.Value.ToString(), out var result))
             {
-                string err = "Element";
-                err += $" {element.Name}";
-                err += ": Invalid return of @RET variable in procedure";
-                throw new JJMasterDataException(err);
+                var errorMessage = $"Element {element.Name}: Invalid return of @RET variable in procedure";
+                throw new JJMasterDataException(errorMessage);
             }
 
             ret = (CommandOperation)result;

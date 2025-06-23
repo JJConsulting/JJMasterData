@@ -259,8 +259,7 @@ public abstract class DataExportationWriterBase(
         var filePath = GetFolderPath(field, row) + value;
         return JJFileDownloader.GetExternalDownloadLink(EncryptionService, AbsoluteUri, filePath);
     }
-
-
+    
     private string GetFilePath()
     {
         string fileName;
