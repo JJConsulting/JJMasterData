@@ -86,7 +86,8 @@ internal sealed class GridToolbar(JJGridView gridView)
             groupedAction.ShowAsButton = true;
             groupedAction.CaretText = gridView.StringLocalizer["More"];
             groupedAction.CssClass = BootstrapHelper.PullRight;
-
+            groupedAction.Actions = groupedActions;
+            
             toolbar.Items.Add(groupedAction.GetHtmlBuilder());
         }
     }

@@ -3,7 +3,7 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJToolbar : HtmlComponent
+public sealed class JJToolbar : HtmlComponent
 {
     public List<HtmlBuilder> Items { get; set; }
     internal JJToolbar()
@@ -17,10 +17,10 @@ public class JJToolbar : HtmlComponent
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
-            .Append(HtmlTag.Div, row =>
+            .Append(HtmlTag.Div,this, static (toolbar, row) =>
             {
                 row.WithCssClass("row");
-                row.Append(GetHtmlCol());
+                row.Append(toolbar.GetHtmlCol());
             });
 
         return html;
@@ -30,23 +30,19 @@ public class JJToolbar : HtmlComponent
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("col-sm-12");
-
-        int totElement = Items.Count;
-        for (int i = 0; i < totElement; i++)
+        
+        for (var i = 0; i < Items.Count; i++)
         {
-            var element = Items[i];
-            if (element == null)
+            var htmlBuilder = Items[i];
+            if (htmlBuilder == null)
                 continue;
 
             if (i != 0)
-                element.WithStyle( "margin-right: 3px;");
+                htmlBuilder.WithStyle("margin-right: 3px;");
 
-            div.Append(element);
+            div.Append(htmlBuilder);
         }
 
         return div;
     }
-
-
-
 }
