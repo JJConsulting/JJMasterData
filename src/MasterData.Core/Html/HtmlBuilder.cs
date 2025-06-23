@@ -96,8 +96,10 @@ public sealed partial class HtmlBuilder
             return html;
         }
 
+        var tagName = _tag.GetTagName();
+        
         htmlBuilder.Append('<');
-        htmlBuilder.Append(_tag.GetTagName());
+        htmlBuilder.Append(tagName);
         htmlBuilder.Append(GetAttributesHtml());
 
         if (!_tag.HasClosingTag)
@@ -126,7 +128,7 @@ public sealed partial class HtmlBuilder
         }
        
         htmlBuilder.Append("</");
-        htmlBuilder.Append(_tag.GetTagName());
+        htmlBuilder.Append(tagName);
         htmlBuilder.Append('>');
 
         html = htmlBuilder.ToString();
