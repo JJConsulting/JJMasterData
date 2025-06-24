@@ -48,6 +48,8 @@ public class ElementService(
         {
             var element = await entityRepository.GetElementFromTableAsync(schema, tableName, connectionId);
             element.Name = MasterDataCommonsOptions.RemoveTbPrefix(tableName);
+            element.Schema = schema;
+            element.ConnectionId = connectionId;
             formElement = new FormElement(element);
         }
         else

@@ -71,7 +71,8 @@ public abstract class DataDictionaryServiceBase(
             AddError(nameof(name), StringLocalizer["The [Name] field cannot contain more than 64 characters."]);
 
         string[] chars = ["&", "?", "=", ",", "'", "[", "]", "/", "\\", "+", "!", " "];
-        foreach (string c in chars)
+        
+        foreach (var c in chars)
         {
             if (name.Contains(c))
                 AddError(nameof(name), StringLocalizer[$"The [Name] field contains an invalid character({c})"]);
