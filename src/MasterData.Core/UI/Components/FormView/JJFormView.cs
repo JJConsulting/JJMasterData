@@ -945,6 +945,10 @@ public class JJFormView : AsyncComponent
         GridView.EnableFilter = false;
         GridView.ShowPaging = false;
         GridView.ToolbarActions.InsertAction.SetVisible(false);
+        GridView.ToolbarActions.RefreshAction.SetVisible(false);
+        GridView.ToolbarActions.ImportAction.SetVisible(false);
+        GridView.ToolbarActions.ExportAction.SetVisible(false);
+        GridView.ToolbarActions.ConfigAction.SetVisible(false);
         GridView.ToolbarActions.GridEditAction.SetVisible(false);
         GridView.ToolbarActions.GridSaveAction.SetVisible(true);
         GridView.ToolbarActions.GridCancelAction.SetVisible(true);
