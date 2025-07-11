@@ -242,13 +242,13 @@
 
         switch (procType) {
             case "read":
-                message = '@Html.Raw(StringLocalizer["Do you want to recreate the read procedure? Any modifications made to the procedure will be lost."])';
+                message = '@Html.Raw(StringLocalizer["Do you want to recreate the read procedure? Any changes made to the procedure will be lost."])';
                 break;
             case "write":
                 message = '@Html.Raw(StringLocalizer["Do you want to recreate the write procedure? Any changes made to the procedure will be lost."])';
                 break;
             case "all":
-                message = '@Html.Raw(StringLocalizer["Do you want to recreate all procedures? Any modifications made to the procedures will be lost."])';
+                message = '@Html.Raw(StringLocalizer["Do you want to recreate all procedures? Any changes made to the procedures will be lost."])';
                 break;
         }
         
