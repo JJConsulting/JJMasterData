@@ -4259,4 +4259,13 @@
     <value>Abrir em uma Nova Aba</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Do you want to recreate the read procedure? Any modifications made to the procedure will be lost." xml:space="preserve">
+    <value>Deseja recriar a procedure de leitura? Quaisquer modificações feitas na procedure serão perdidas.</value>
+  </data>
+  <data name="Do you want to recreate the write procedure? Any changes made to the procedure will be lost." xml:space="preserve">
+    <value>Deseja recriar a procedure de escrita? Quaisquer modificações feitas na procedure serão perdidas.</value>
+  </data>
+  <data name="Do you want to recreate all procedures? Any modifications made to the procedures will be lost." xml:space="preserve">
+    <value>Deseja recriar todas as procedures? Quaisquer modificações feitas na procedure serão perdidas.</value>
+  </data>
 </root>
