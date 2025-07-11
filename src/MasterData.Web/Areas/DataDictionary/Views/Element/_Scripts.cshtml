@@ -36,20 +36,33 @@
     <div class="col-sm-12">
         @if (Model.Scripts.UseReadProcedure || Model.Scripts.UseWriteProcedure)
         {
-            <button class="btn btn-secondary" type="button" value="ExecuteProcedures" onclick="confirmAndExecuteScripts(this)">
+            var procType = (Model.Scripts.UseReadProcedure, Model.Scripts.UseWriteProcedure) switch
+            {
+                (true, false) => "read",
+                (false, true) => "write",
+                _ => "all"
+            };
+
+            <button class="btn btn-secondary"
+                    type="button"
+                    value="ExecuteProcedures"
+                    data-proc-type="@procType"
+                    onclick="confirmAndExecuteScripts(this)">
                 <span class="fa-solid fa-scroll"></span>
-                @switch (Model)
-                {
-                    case { Scripts: { UseReadProcedure: true, UseWriteProcedure: false } }:
-                        <span>&nbsp; @StringLocalizer["Create or Alter Read Procedure"]</span>
-                        break;
-                    case { Scripts: { UseWriteProcedure: true, UseReadProcedure: false } }:
-                        <span>&nbsp; @StringLocalizer["Create or Alter Write Procedure"]</span>
-                        break;
-                    default:
-                        <span>&nbsp; @StringLocalizer["Create or Alter All Stored Procedures"]</span>
-                        break;
-                }
+                <span>&nbsp;
+                    @switch (procType)
+                    {
+                        case "read":
+                            @StringLocalizer["Create or Alter Read Procedure"]
+                            break;
+                        case "write":
+                            @StringLocalizer["Create or Alter Write Procedure"]
+                            break;
+                        default:
+                            @StringLocalizer["Create or Alter All Stored Procedures"]
+                            break;
+                    }
+                </span>
             </button>
         }
 
@@ -223,22 +236,22 @@
     }
 
     function confirmAndExecuteScripts(btn) {
-        let value = btn.value;
+        const value = btn.value;
+        const procType = btn.dataset.procType;
         let message = null;
-        switch (value) {
-            case "ExecuteProcedures":
-                let label = btn.innerText.trim();
-                if (label.includes("Read Procedure")) {
-                    message = '@StringLocalizer["Do you want to recreate the read procedure? Any modifications made to the procedure will be lost."]';
-                } else if (label.includes("Write Procedure")) {
-                    message = '@StringLocalizer["Do you want to recreate the write procedure? Any changes made to the procedure will be lost."]';
-                } else {
-                    message = '@StringLocalizer["Do you want to recreate all procedures? Any modifications made to the procedures will be lost."]';
-                }
+
+        switch (procType) {
+            case "read":
+                message = '@Html.Raw(StringLocalizer["Do you want to recreate the read procedure? Any modifications made to the procedure will be lost."])';
                 break;
-            default:
+            case "write":
+                message = '@Html.Raw(StringLocalizer["Do you want to recreate the write procedure? Any changes made to the procedure will be lost."])';
+                break;
+            case "all":
+                message = '@Html.Raw(StringLocalizer["Do you want to recreate all procedures? Any modifications made to the procedures will be lost."])';
                 break;
         }
+        
         if (message) {
             if (confirm(message)) {
                 executeScripts(value);
