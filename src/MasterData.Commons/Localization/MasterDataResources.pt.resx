@@ -4260,12 +4260,12 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Do you want to recreate the read procedure? Any modifications made to the procedure will be lost." xml:space="preserve">
-    <value>Deseja recriar o procedimento de leitura? Quaisquer modificações feitas no procedimento serão perdidas.</value>
+    <value>Deseja recriar a procedure de leitura? Quaisquer modificações feitas na procedure serão perdidas.</value>
   </data>
   <data name="Do you want to recreate the write procedure? Any changes made to the procedure will be lost." xml:space="preserve">
-    <value>Deseja recriar o procedimento de escrita? Quaisquer modificações feitas no procedimento serão perdidas.</value>
+    <value>Deseja recriar a procedure de escrita? Quaisquer modificações feitas na procedure serão perdidas.</value>
   </data>
   <data name="Do you want to recreate all procedures? Any modifications made to the procedures will be lost." xml:space="preserve">
-    <value>Deseja recriar todos os procedimentos? Quaisquer modificações feitas nos procedimentos serão perdidas.</value>
+    <value>Deseja recriar todas as procedures? Quaisquer modificações feitas na procedure serão perdidas.</value>
   </data>
 </root>
