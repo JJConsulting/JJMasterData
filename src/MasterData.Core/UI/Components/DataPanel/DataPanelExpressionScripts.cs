@@ -90,7 +90,7 @@ internal sealed class DataPanelExpressionScripts(JJDataPanel dataPanel)
             {
                 val = $"'{value}'";
             }
-            else if (dataPanel.CurrentContext.Session[fieldName] != null)
+            else if (dataPanel.CurrentContext.Session.HasKey(fieldName))
             {
                 val = $"'{dataPanel.CurrentContext.Session[fieldName]}'";
             }

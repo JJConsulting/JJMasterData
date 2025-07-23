@@ -94,8 +94,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
                     else
                         parsedValue = objValue;
                 }
-                
-                else if (httpContext.Session.HasSession() && httpContext.Session[field] != null)
+                else if (httpContext.Session.HasSession() && httpContext.Session.HasKey(field))
                     parsedValue = httpContext.Session[field];
                 else if (httpContext.User?.HasClaim(c => c.Type == field) ?? false)
                     parsedValue = httpContext.User.Claims.First(c => c.Type == field).Value;

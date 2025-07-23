@@ -18,6 +18,20 @@ internal sealed class SystemWebHttpSessionWrapper : IHttpSession
     public void SetSessionValue(string key, object value) => Session[key] = value;
 
     public T GetSessionValue<T>(string key) => (T)Session[key];
+    public bool HasKey(string key)
+    {
+        foreach (var existingKey in Session.Keys)
+        {
+            if(string.IsNullOrEmpty(existingKey?.ToString()))
+                continue;
+            
+            if(string.Equals(existingKey.ToString(), key))
+                return true;
+        }
+
+        return false;
+    }
+
     public bool HasSession()
     {
         try

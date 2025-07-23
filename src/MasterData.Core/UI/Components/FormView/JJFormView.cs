@@ -1699,7 +1699,7 @@ public class JJFormView : AsyncComponent
         foreach (var field in uploadFields)
         {
             string sessionName = $"{field.Name}-upload-view_jjfiles";
-            if (CurrentContext?.Session[sessionName] != null)
+            if (CurrentContext.Session.HasKey(sessionName))
                 CurrentContext.Session[sessionName] = null;
         }
     }
