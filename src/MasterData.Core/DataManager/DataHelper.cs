@@ -80,15 +80,52 @@ public static class DataHelper
 
         var elementPks = element.Fields.FindAll(x => x.IsPk);
         if (values.Length != elementPks.Count)
-            throw new JJMasterDataException("Invalid primary key");
+            throw new JJMasterDataException($"Primary key not defined for dictionary {element.Name} or invalid number of values provided");
 
-        for (int i = 0; i < values.Length; i++)
+        for (var i = 0; i < values.Length; i++)
         {
-            object value = values[i];
-            if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None,out var invariantDateValue))
+            var field = elementPks[i];
+            
+            object? value = null;
+
+            var stringValue = values[i];
+            
+            switch (field.DataType)
             {
-                value = invariantDateValue;
+                case FieldType.Date or FieldType.DateTime or FieldType.DateTime2:
+                {
+                    if (DateTime.TryParse(stringValue, out var dateValue))
+                    {
+                        value = dateValue;
+                    }
+
+                    break;
+                }
+                case FieldType.Int:
+                {
+                    if(int.TryParse(stringValue, out var intValue))
+                    {
+                        value = intValue;
+                    }
+
+                    break;
+                }
+                case FieldType.UniqueIdentifier:
+                {
+                    if(Guid.TryParse(stringValue, out var guidValue))
+                    {
+                        value = guidValue;
+                    }
+                    break;
+                }
+                default:
+                    value = stringValue;
+                    break;
             }
+            
+            if(value is null)
+                throw new JJMasterDataException($"Invalid value for primary key {field.Name}: {stringValue}");
+            
             primaryKeys.Add(elementPks[i].Name, value);
         }
 
