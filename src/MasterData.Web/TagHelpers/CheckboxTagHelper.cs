@@ -56,7 +56,7 @@ public sealed class CheckboxTagHelper(
         
         checkBox.Enabled = Enabled;
         var displayName = Label ?? For?.ModelExplorer.Metadata.GetDisplayName();
-        if (For is not null)
+        if (For is not null && !IsChecked)
         {
             checkBox.IsChecked = For?.Model is true;
         }
