@@ -11,7 +11,8 @@ public static class ActionsServiceExtensions
     {
         services.AddSingleton(_=>new FluidParser(new FluidParserOptions
         {
-            AllowFunctions = true
+            AllowFunctions = true,
+            AllowParentheses = true
         }));
 
         services.AddScoped<HtmlTemplateService>();

@@ -13,7 +13,7 @@ namespace JJMasterData.Commons.Security.Cryptography;
 /// <summary>
 /// AES is more secure than the DES cipher and is the de facto world standard. DES can be broken easily as it has known vulnerabilities.
 /// </summary>
-public class AesEncryptionAlgorithm : IEncryptionAlgorithm
+public sealed class AesEncryptionAlgorithm : IEncryptionAlgorithm
 {
     private readonly ConcurrentDictionary<string, (byte[] Key, byte[] IV)> _aesCache = new();
 
