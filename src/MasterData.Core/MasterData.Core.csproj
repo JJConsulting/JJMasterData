@@ -46,6 +46,7 @@
     <ItemGroup>
         <ProjectReference Include="..\MasterData.Commons\MasterData.Commons.csproj" />
         <InternalsVisibleTo Include="JJMasterData.ConsoleApp" />
+        <InternalsVisibleTo Include="JJMasterData.Web" />
     </ItemGroup>
     
     <ItemGroup>

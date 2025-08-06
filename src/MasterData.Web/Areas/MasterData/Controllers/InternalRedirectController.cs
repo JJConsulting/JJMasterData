@@ -57,60 +57,60 @@ public class InternalRedirectController(
             }
             case RelationshipViewType.View:
             {
-                var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
-                panel.PageState = PageState.View;
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                formView.PageState = PageState.View;
                 
                 if (userId != null)
-                    panel.SetUserValues("USERID", userId);
+                    formView.SetUserValues("USERID", userId);
 
-                await panel.LoadValuesFromPkAsync(state.RelationValues);
+                await formView.DataPanel.LoadValuesFromPkAsync(state.RelationValues);
                 
-                DataHelper.CopyIntoDictionary(panel.Values, state.RelationValues!);
+                DataHelper.CopyIntoDictionary(formView.DataPanel.Values, state.RelationValues!);
                 
-                var result = await panel.GetResultAsync();
+                var result = await formView.GetResultAsync();
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.View))?.ToString();
+                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.View))?.ToString();
                 model = new()
                 {
                     HtmlContent =  result.Content,
                     ShowToolbar = false,
-                    Title = title ?? panel.Name
+                    Title = title ?? formView.Name
                 };
                 break;
             }
             case RelationshipViewType.Insert:
             case RelationshipViewType.Update:
             {
-                var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
 
                 var pageState = state.RelationshipType is RelationshipViewType.Update
                     ? PageState.Update
                     : PageState.Insert;
                 
-                panel.PageState = pageState;
+                formView.PageState = pageState;
 
                 if (pageState is PageState.Update)
                 {
-                    await panel.LoadValuesFromPkAsync(state.RelationValues);
+                    await formView.DataPanel.LoadValuesFromPkAsync(state.RelationValues);
                 }
                 
-                DataHelper.CopyIntoDictionary(panel.Values, state.RelationValues!);
+                DataHelper.CopyIntoDictionary(formView.DataPanel.Values, state.RelationValues!);
                 
                 if (userId != null)
-                    panel.SetUserValues("USERID", userId);
+                    formView.SetUserValues("USERID", userId);
                 
-                var result = await panel.GetResultAsync();
+                var result = await formView.GetResultAsync();
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!,pageState))?.ToString();
+                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!,pageState))?.ToString();
                 model = new()
                 {
                     HtmlContent = result.Content,
                     ShowToolbar = true,
-                    Title = title ?? panel.Name
+                    Title = title ?? formView.Name
                 };
                 break;
             }
