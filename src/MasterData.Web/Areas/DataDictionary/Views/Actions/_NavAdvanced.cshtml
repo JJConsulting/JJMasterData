@@ -22,7 +22,7 @@
 <div class="row">
     <div class="mb-3 col-sm-3">
         <label class="form-label" asp-for="ConfirmationMessage"></label>
-        <tooltip title="@StringLocalizer["If not null or empty, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"]"/>
+        <tooltip title="@StringLocalizer["If filled, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"]" />
         <input asp-for="ConfirmationMessage" class="form-control"/>    </div>
     <div class="mb-3 col-sm-3">
         <label asp-for="CssClass" class="form-label">@StringLocalizer["CSS Class"]</label>
