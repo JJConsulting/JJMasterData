@@ -15,25 +15,25 @@ namespace JJMasterData.Core.Html.Templates;
 
 public class HtmlTemplateFunctions(
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    DateService dateService,
+    RelativeDateFormatter dateFormatter,
     IHttpContext httpContext)
 {
-    public FunctionValue GetDatePhraseFunction()
+    public FunctionValue GetDateAsText()
     {
-        var localize = new FunctionValue((args, _) =>
+        var formatter = new FunctionValue((args, _) =>
         {
             var dateArg = args.At(0).ToStringValue();
 
             if (DateTime.TryParse(dateArg, out var date))
             {
-                var phrase = dateService.GetPhrase(date);
+                var phrase = dateFormatter.ToRelativeString(date);
 
                 return StringValue.Create(phrase);
             }
 
             return StringValue.Empty;
         });
-        return localize;
+        return formatter;
     }
 
     public FunctionValue GetLocalizeFunction()

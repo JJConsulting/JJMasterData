@@ -60,7 +60,7 @@ public class HtmlTemplateHelper(
         context.SetValue("trimStart", TrimStart);
         context.SetValue("trimEnd", TrimEnd);
         context.SetValue("table", Table);
-        context.SetValue("dateAsText", functions.GetDatePhraseFunction());
+        context.SetValue("dateAsText", functions.GetDateAsText());
         context.SetValue("urlPath", functions.GetUrlPathFunction());
         context.SetValue("appUrl", functions.GetAppUrlFunction());
         context.SetValue("localize", functions.GetLocalizeFunction());

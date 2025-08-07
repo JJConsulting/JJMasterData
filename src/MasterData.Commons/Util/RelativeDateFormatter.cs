@@ -4,9 +4,9 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Util;
 
-public sealed class DateService(IStringLocalizer<MasterDataResources> localizer)
+public sealed class RelativeDateFormatter(IStringLocalizer<MasterDataResources> localizer)
 {
-    public string GetPhrase(DateTime date)
+    public string ToRelativeString(DateTime date)
     {
         var timeDifference = date.Kind == DateTimeKind.Utc ? 
             DateTime.UtcNow - date : DateTime.Now - date;

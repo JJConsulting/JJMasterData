@@ -27,7 +27,7 @@ public class ElementService(
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
-        DateService dateService,
+        RelativeDateFormatter relativeDateFormatter,
         IUrlHelper urlHelper)
     : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
@@ -189,7 +189,7 @@ public class ElementService(
                 var lastModified = (DateTime)args.DataRow[DataDictionaryStructure.LastModified]!;
                 args.HtmlResult = new HtmlBuilder(HtmlTag.Span)
                     .WithToolTip(lastModified.ToString(CultureInfo.CurrentCulture))
-                    .AppendText(dateService.GetPhrase(lastModified));
+                    .AppendText(relativeDateFormatter.ToRelativeString(lastModified));
             }
 
             return ValueTaskHelper.CompletedTask;

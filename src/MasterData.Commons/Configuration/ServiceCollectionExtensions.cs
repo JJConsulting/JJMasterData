@@ -79,7 +79,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
         
-        services.AddTransient<DateService>();
+        services.AddScoped<RelativeDateFormatter>();
 
         services.AddLocalizationServices();
     }

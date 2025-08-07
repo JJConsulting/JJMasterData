@@ -16,7 +16,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class LogController(
         IFormElementComponentFactory<JJFormView> formViewFactory,
         LoggerFormElementFactory loggerFormElementFactory,
-        DateService dateService,
+        RelativeDateFormatter formatter,
         IEntityRepository entityRepository,
         IOptionsSnapshot<DbLoggerOptions> options)
     : DataDictionaryController
@@ -41,7 +41,7 @@ public class LogController(
                 args.HtmlResult = new HtmlBuilder().AppendSpan(span =>
                 {
                     var createdAt = (DateTime)args.DataRow[_options.CreatedColumnName]!;
-                    span.WithToolTip(dateService.GetPhrase(createdAt));
+                    span.WithToolTip(formatter.ToRelativeString(createdAt));
                     span.AppendText(createdAt.ToString("dd/MM/yyyy HH:mm:ss"));
                 });
             }
