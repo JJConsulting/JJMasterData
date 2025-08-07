@@ -3568,8 +3568,8 @@
   <data name="Internationalization" xml:space="preserve">
     <value>Internacionalização</value>
   </data>
-  <data name="If not null or empty, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}" xml:space="preserve">
-    <value>Se vazio ou nulo, mostra uma mensagem de confirmação antes de executar a ação. Suporta valores do runtime, por exemplo: {PedidoId}</value>
+  <data name="If filled, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}" xml:space="preserve">
+    <value>Caso preenchido, mostra uma mensagem de confirmação antes de executar a ação. Suporta valores do runtime, por exemplo: {PedidoId}</value>
   </data>
   <data name="Supports runtime values. Example: Order {OrderId}" xml:space="preserve">
     <value>Suporta valores do runtime. Exemplo: Pedido {PedidoId}</value>
