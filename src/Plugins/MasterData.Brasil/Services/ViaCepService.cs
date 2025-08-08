@@ -5,19 +5,33 @@ using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Commons.Util;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Brasil.Services;
 
 public class ViaCepService(HttpClient httpClient) : ICepService
 {
     private const string ViaCepUrl = "https://viacep.com.br/ws/";
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<ViaCepService> _logger;
+
+    public ViaCepService(HttpClient httpClient, ILogger<ViaCepService> logger)
+        : this(httpClient)
+    {
+        _logger = logger;
+    }
 
     public async Task<CepResult> SearchCepAsync(string cep)
     {
+        _logger.LogInformation("Searching CEP: {Cep}", cep);
+
         try
         {
             if (string.IsNullOrEmpty(cep))
+            {
+                _logger.LogWarning("CEP is null or empty.");
                 throw new ArgumentNullException(nameof(cep));
+            }
 
             var url = $"{ViaCepUrl}{StringManager.ClearCpfCnpjChars(cep)}/json";
 
@@ -25,13 +39,20 @@ public class ViaCepService(HttpClient httpClient) : ICepService
             var content = await response.Content.ReadAsStringAsync();
             var result = CepResult.FromJson(content);
 
-            if (result.Erro)
-                throw new ViaCepException("CEP inválido.");
+            _logger.LogInformation("Returnerd by VIACEP for the: {Cep}: {Content}", cep, content);
 
+            if (result.Erro)
+            {
+                _logger.LogWarning("CEP {Cep} not found in the ViaCep database.", cep);
+                throw new ViaCepException("Invalid CEP.");
+            }
+
+            _logger.LogInformation("CEP {Cep} found successfully.", cep);
             return result;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error when checking CEP {cep}", cep);
             throw new ViaCepException(ex.Message, ex);
         }
     }
