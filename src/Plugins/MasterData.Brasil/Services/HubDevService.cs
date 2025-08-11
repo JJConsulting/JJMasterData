@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Brasil.Services;
 
-public class HubDevService(HttpClient _httpClient, IOptions<HubDevSettings> options, ILogger<HubDevService> _logger)
+public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> options, ILogger<HubDevService> logger)
     : IReceitaFederalService
 {
     private readonly HubDevSettings _settings = options.Value;
@@ -35,13 +35,13 @@ public class HubDevService(HttpClient _httpClient, IOptions<HubDevSettings> opti
 
     private async Task<T> Search<T>(string endpoint, string identifier, Dictionary<string, string>? additionalParameters = null)
     {
-        _logger.LogInformation("Searching search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
+        logger.LogInformation("Searching search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
 
         try
         {
             if (string.IsNullOrEmpty(identifier))
             {
-                _logger.LogWarning("Identifier is null or empty for endpoint {Endpoint}", endpoint);
+                logger.LogWarning("Identifier is null or empty for endpoint {Endpoint}", endpoint);
                 throw new ArgumentNullException(nameof(identifier));
             }
 
@@ -55,21 +55,21 @@ public class HubDevService(HttpClient _httpClient, IOptions<HubDevSettings> opti
                 url = $"{url}&{additionalQueryString}";
             }
 
-            var message = await _httpClient.GetAsync(url);
+            var message = await httpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);
+                logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);
 
             var apiResult = JsonSerializer.Deserialize<JsonObject>(content, JsonSerializerOptions);
 
             var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), JsonSerializerOptions)!;
 
-            _logger.LogInformation("{Enpoint} found successfully", endpoint);
+            logger.LogInformation("{Enpoint} found successfully", endpoint);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
+            logger.LogError(ex, "Error during search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
             throw new ReceitaFederalException(ex.Message, ex);
         }
     }
