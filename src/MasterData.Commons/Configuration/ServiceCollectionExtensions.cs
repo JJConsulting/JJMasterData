@@ -79,6 +79,10 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
         
+#pragma warning disable CS0618 // Type or member is obsolete
+        services.AddScoped<DateService>();
+#pragma warning restore CS0618 // Type or member is obsolete
+        
         services.AddScoped<RelativeDateFormatter>();
 
         services.AddLocalizationServices();

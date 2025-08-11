@@ -1,8 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections.Concurrent;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using JetBrains.Annotations;
@@ -15,73 +13,49 @@ namespace JJMasterData.Commons.Security.Cryptography;
 /// </summary>
 public sealed class AesEncryptionAlgorithm : IEncryptionAlgorithm
 {
-    private readonly ConcurrentDictionary<string, (byte[] Key, byte[] IV)> _aesCache = new();
-
     public string EncryptString(string plainText, string secretKey)
     {
         using var aes = CreateAes(secretKey);
-
-        using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
-        using var memoryStream = new MemoryStream();
-        using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
-        using (var streamWriter = new StreamWriter(cryptoStream))
-        {
-            streamWriter.Write(plainText);
-        }
-
-        return Convert.ToBase64String(memoryStream.ToArray());
+        using var encryptor = aes.CreateEncryptor();
+        
+        var plainBytes = Encoding.UTF8.GetBytes(plainText);
+        var cipherBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+        
+        return Convert.ToBase64String(cipherBytes);
     }
     
     public string DecryptString(string cipherText, string secretKey)
     {
-        try
-        {
-            using var aes = CreateAes(secretKey);
-            var buffer = Convert.FromBase64String(cipherText);
-            using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
-            using var memoryStream = new MemoryStream(buffer);
-            using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-            using var streamReader = new StreamReader(cryptoStream);
-
-            return streamReader.ReadToEnd();
-        }
-        catch
-        {
-            return string.Empty;
-        }
-    }
-    
-    [MustDisposeResource]
-    private Aes CreateAes(string secretKey)
-    {
-        if (_aesCache.TryGetValue(secretKey, out var aesEntry))
-        {
-            return CreateAes(aesEntry.Key, aesEntry.IV);
-        }
+        using var aes = CreateAes(secretKey);
+        using var decryptor = aes.CreateDecryptor();
         
+        var cipherBytes = Convert.FromBase64String(cipherText);
+        var plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+        
+        return Encoding.UTF8.GetString(plainBytes);
+    }
+        
+    [MustDisposeResource]
+    private static Aes CreateAes(string secretKey)
+    {
         var keyBytes = Encoding.UTF8.GetBytes(secretKey);
 
+#if !NET
         using var sha256 = SHA256.Create();
         var aesKey = sha256.ComputeHash(keyBytes);
+#else
+        var aesKey = SHA256.HashData(keyBytes);
+#endif
 
+#if !NET
         using var md5 = MD5.Create();
         var aesIv = md5.ComputeHash(keyBytes);
-
-        aesEntry = new(aesKey, aesIv);
-        
-        _aesCache.TryAdd(secretKey, aesEntry);
-
-        return CreateAes(aesEntry.Key, aesEntry.IV);
-    }
-
-    [MustDisposeResource]
-    private static Aes CreateAes(byte[] key, byte[] iv)
-    {
+#else
+        var aesIv = MD5.HashData(keyBytes);
+#endif
         var aes = Aes.Create();
-        aes.Key = key;
-        aes.IV = iv;
+        aes.Key = aesKey;
+        aes.IV = aesIv;
         return aes;
     }
 }
