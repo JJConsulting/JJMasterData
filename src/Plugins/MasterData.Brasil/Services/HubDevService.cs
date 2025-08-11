@@ -15,12 +15,10 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Brasil.Services;
 
-public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> options, ILogger<HubDevService> logger)
+public class HubDevService(HttpClient _httpClient, IOptions<HubDevSettings> options, ILogger<HubDevService> _logger)
     : IReceitaFederalService
 {
     private readonly HubDevSettings _settings = options.Value;
-    private readonly HttpClient httpClient = httpClient;
-    private readonly ILogger<HubDevService> _logger = logger;
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
@@ -57,7 +55,7 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
                 url = $"{url}&{additionalQueryString}";
             }
 
-            var message = await httpClient.GetAsync(url);
+            var message = await _httpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
 
             _logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);

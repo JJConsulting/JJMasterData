@@ -9,17 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Brasil.Services;
 
-public class ViaCepService(HttpClient httpClient) : ICepService
+public class ViaCepService(HttpClient _httpClient, ILogger<ViaCepService> _logger) : ICepService
 {
     private const string ViaCepUrl = "https://viacep.com.br/ws/";
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<ViaCepService> _logger;
-
-    public ViaCepService(HttpClient httpClient, ILogger<ViaCepService> logger)
-        : this(httpClient)
-    {
-        _logger = logger;
-    }
 
     public async Task<CepResult> SearchCepAsync(string cep)
     {
@@ -35,7 +27,7 @@ public class ViaCepService(HttpClient httpClient) : ICepService
 
             var url = $"{ViaCepUrl}{StringManager.ClearCpfCnpjChars(cep)}/json";
 
-            var response = await httpClient.GetAsync(url);
+            var response = await _httpClient.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
             var result = CepResult.FromJson(content);
 
