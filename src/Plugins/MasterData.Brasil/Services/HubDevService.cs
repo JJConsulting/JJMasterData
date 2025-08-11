@@ -15,22 +15,12 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Brasil.Services;
 
-public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> options)
+public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> options, ILogger<HubDevService> logger)
     : IReceitaFederalService
 {
     private readonly HubDevSettings _settings = options.Value;
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<HubDevService> _logger;
-
-    public HubDevService(HubDevSettings settings, HttpClient httpClient, ILogger<HubDevService> logger, bool isHttps, bool ignoreDb)
-        : this(httpClient, Options.Create(settings))
-    {
-        _settings = settings;
-        _httpClient = httpClient;
-        _logger = logger;
-        IsHttps = isHttps;
-        IgnoreDb = ignoreDb;
-    }
+    private readonly HttpClient httpClient = httpClient;
+    private readonly ILogger<HubDevService> _logger = logger;
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
