@@ -12,7 +12,7 @@ public class ViaCepServiceTest
         const string expectedLogradouro = "Alameda Professor Lucas Nogueira Garcez";
 
         var httpClient = new HttpClient();
-        var viaCepService = new ViaCepService(httpClient);
+        var viaCepService = new ViaCepService(httpClient, null);
 
         // Act
         var cepResult = await viaCepService.SearchCepAsync(expectedCep);

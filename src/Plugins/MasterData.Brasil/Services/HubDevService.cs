@@ -10,15 +10,16 @@ using JJMasterData.Brasil.Configuration;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Helpers;
 using JJMasterData.Brasil.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Brasil.Services;
 
-public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> options)
+public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> options, ILogger<HubDevService> logger)
     : IReceitaFederalService
 {
     private readonly HubDevSettings _settings = options.Value;
-    
+
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -27,39 +28,48 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
             new CustomDateConverter("dd/MM/yyyy")
         }
     };
-    
+
     public bool IsHttps { get; set; } = true;
-    
+
     public bool IgnoreDb { get; set; }
 
-    private async Task<T> Search<T>(string endpoint, string identifier, Dictionary<string,string>? additionalParameters = null)
+    private async Task<T> Search<T>(string endpoint, string identifier, Dictionary<string, string>? additionalParameters = null)
     {
+        logger.LogInformation("Searching search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
+
         try
         {
             if (string.IsNullOrEmpty(identifier))
+            {
+                logger.LogWarning("Identifier is null or empty for endpoint {Endpoint}", endpoint);
                 throw new ArgumentNullException(nameof(identifier));
-            
+            }
+
             var protocol = IsHttps ? "https://" : "http://";
             var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
             var url = $"{protocol}{_settings.Url}{endpoint}/?{endpoint}={identifier}&token={_settings.ApiKey}{ignoreDb}";
-            
+
             if (additionalParameters is { Count: > 0 })
             {
                 var additionalQueryString = string.Join("&", additionalParameters.Select(kv => $"{kv.Key}={kv.Value}"));
                 url = $"{url}&{additionalQueryString}";
             }
-            
+
             var message = await httpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
+
+                logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);
 
             var apiResult = JsonSerializer.Deserialize<JsonObject>(content, JsonSerializerOptions);
 
             var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), JsonSerializerOptions)!;
-            
+
+            logger.LogInformation("{Enpoint} found successfully", endpoint);
             return result;
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error during search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
             throw new ReceitaFederalException(ex.Message, ex);
         }
     }
