@@ -79,7 +79,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 sql.Append('_');
                 sql.Append(counter);
                 sql.Append("] ON ");
-                sql.AppendLine(element.TableName);
+                sql.AppendLine(GetTableName(element));
 
                 sql.Append(Tab);
                 sql.AppendLine("(");
