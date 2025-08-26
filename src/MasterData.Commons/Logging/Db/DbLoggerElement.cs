@@ -75,6 +75,13 @@ public static class DbLoggerElement
                         Type = FilterMode.Contain
                     }
                 }
+            },
+            Indexes =
+            {
+                new ElementIndex
+                {
+                    Columns = [options.CreatedColumnName + " DESC"]
+                }
             }
         };
         
