@@ -35,12 +35,8 @@
         <PackageReference Include="NCalc.MemoryCache" Version="5.6.0" />
         <PackageReference Include="NCalc.DependencyInjection" Version="5.6.0" />
     </ItemGroup>
-    
-    <!--Compile time dependencies-->
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2025.2.0">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.0"/>
     </ItemGroup>
     
     <ItemGroup>
