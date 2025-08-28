@@ -186,10 +186,10 @@ public class SqlServerReadProcedureScripts(
                     sql.Append($" LIKE  ''%'' + @{field.Name} + ''%'' '");
                     break;
                 case FilterMode.MultValuesContain:
-                    sql.Append(GetFilterMultValuesContains(element, field.Name));
+                    sql.Append(GetFilterMultValuesContains(field.Name));
                     break;
                 case FilterMode.MultValuesEqual:
-                    sql.Append(GetMultValuesEquals(field));
+                    sql.Append(GetMultValuesEquals(field.Name));
                     break;
                 default:
                 {
@@ -327,7 +327,7 @@ public class SqlServerReadProcedureScripts(
         return sql.ToString();
     }
 
-    private string GetMultValuesEquals(ElementField field)
+    private string GetMultValuesEquals(string fieldName)
     {
         var sql = new StringBuilder();
         if (sqlServerOptions.Value.CompatibilityLevel < 130)
@@ -335,30 +335,30 @@ public class SqlServerReadProcedureScripts(
             sql.AppendLine();
             sql.Append(Tab);
             sql.Append("IF @");
-            sql.Append(field.Name);
+            sql.Append(fieldName);
             sql.AppendLine(" IS NOT NULL");
             sql.Append(Tab);
             sql.AppendLine("BEGIN");
             sql.Append(Tab, 2);
-            sql.AppendFormat("SET @likein = ' AND {0} IN ('", field.Name);
+            sql.AppendFormat("SET @likein = ' AND {0} IN ('", fieldName);
             sql.AppendLine();
             sql.Append(Tab, 2);
-            sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", field.Name);
+            sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", fieldName);
             sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendLine("BEGIN");
             sql.Append(Tab, 3);
-            sql.AppendFormat("SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", field.Name);
+            sql.AppendFormat("SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", fieldName);
             sql.AppendLine();
             sql.Append(Tab, 3);
-            sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", field.Name);
+            sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", fieldName);
             sql.AppendLine();
             sql.Append(Tab, 3);
             sql.AppendLine("SET @likein = @likein + ', ';");
             sql.Append(Tab, 2);
             sql.AppendLine("END");
             sql.Append(Tab, 2);
-            sql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", field.Name);
+            sql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", fieldName);
             sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
@@ -369,13 +369,13 @@ public class SqlServerReadProcedureScripts(
         {
             sql.AppendLine();
             sql.Append(Tab);
-            sql.Append($"IF @{field.Name} IS NOT NULL");
+            sql.Append($"IF @{fieldName} IS NOT NULL");
             sql.AppendLine();
             sql.Append(Tab, 2);
             sql.Append("BEGIN");
             sql.AppendLine();
             sql.Append(Tab, 3);
-            sql.Append($"SET @sqlWhere = @sqlWhere + ' [{field.Name}] IN (SELECT value FROM STRING_SPLIT(@{field.Name}, '',''))");
+            sql.Append($"SET @sqlWhere = @sqlWhere + ' AND [{fieldName}] IN (SELECT value FROM STRING_SPLIT(@{fieldName}, '',''))'");
             sql.AppendLine();
             sql.Append(Tab, 2);
             sql.Append("END"); 
@@ -383,24 +383,27 @@ public class SqlServerReadProcedureScripts(
 
         return sql.ToString();
     }
-
-    private static string GetFilterParametersScript(IEnumerable<ElementField> fields, int tabCount = 1)
+    private static string GetFilterParametersScript(List<ElementField> fields, int tabCount = 1)
     {
-        var sql = new StringBuilder();
-        foreach (var field in fields.Where(IsFilter))
-        {
-            if (field.Filter.Type is FilterMode.Range)
-            {
-                sql.AppendLine($"@{field.Name}_from,");
-                sql.Append(Tab, tabCount);
-                sql.AppendLine($"@{field.Name}_to,");
-            }
-            else
-            {
-                sql.AppendLine($"@{field.Name},");
-            }
 
-            sql.Append(Tab, tabCount);
+        var sql = new StringBuilder();
+        foreach (var field in fields)
+        {
+            if (IsFilter(field))
+            {
+                if (field.Filter.Type is FilterMode.Range)
+                {
+                    sql.AppendLine($"@{field.Name}_from,");
+                    sql.Append(Tab, tabCount);
+                    sql.AppendLine($"@{field.Name}_to,");
+                }
+                else
+                {
+                    sql.AppendLine($"@{field.Name},");
+                }
+
+                sql.Append(Tab, tabCount);
+            }
         }
 
         return sql.ToString();
@@ -520,7 +523,7 @@ public class SqlServerReadProcedureScripts(
         return sql.ToString();
     }
 
-    private string GetFilterMultValuesContains(Element element, string fieldName)
+    private string GetFilterMultValuesContains(string fieldName)
     {
         var sql = new StringBuilder();
         sql.AppendLine();
