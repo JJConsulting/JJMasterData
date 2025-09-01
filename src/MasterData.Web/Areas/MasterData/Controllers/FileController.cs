@@ -11,7 +11,7 @@ public class FileController(ElementFileService service) : MasterDataController
         string elementName,
         string fieldName, 
         string id,
-        string fileName)
+        string? fileName = null)
     {
         var fileStream = await service.GetElementFileAsync(elementName, id, fieldName, fileName);
 

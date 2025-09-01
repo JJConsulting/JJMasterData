@@ -17,27 +17,32 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class ElementFileService(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
 {
-    public async Task<FileStream?> GetElementFileAsync(string elementName, string pkValues, string fieldName, string fileName)
+    public async Task<FileStream?> GetElementFileAsync(string elementName, string pkValues, string fieldName, string? fileName)
     {
         var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
 
         fileName = Path.GetFileName(fileName);
-        
+
         var field = formElement.Fields.First(f => f.Name == fieldName);
 
         var builder = new FormFilePathBuilder(formElement);
 
         var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
-        var file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
+        string? file;
+        if (string.IsNullOrEmpty(fileName))
+            file = Directory.GetFiles(path).FirstOrDefault();
+        else
+            file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
 
         if (file == null)
             return null;
 
-        var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
-        
+        var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+
         return fileStream;
     }
+
     
     public async Task SetElementFileAsync(
         string elementName,
