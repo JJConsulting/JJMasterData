@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
+﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
     var pathBase = Context.Request.PathBase;
@@ -12,7 +11,7 @@
 
 @if (Options.Value.UseCustomBootstrap)
 {
-    <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath"/>
+    <link rel="stylesheet" href="@(pathBase + Options.Value.CustomBootstrapPath)"/>
 }
 else
 {
@@ -37,7 +36,7 @@ else
     
 <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css" asp-append-version="true" />
 
-@foreach (var customScriptPath in Options.Value.CustomStylesheetsPaths)
+@foreach (var customStylesheetPath in Options.Value.CustomStylesheetsPaths)
 {
-    <link rel="stylesheet" href="@(pathBase + customScriptPath)"/>
+    <link rel="stylesheet" href="@(pathBase + customStylesheetPath)"/>
 }
