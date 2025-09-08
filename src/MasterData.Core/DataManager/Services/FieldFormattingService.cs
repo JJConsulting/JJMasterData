@@ -71,30 +71,7 @@ public class FieldFormattingService(
                 break;
             case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
-
-                var searchId = value.ToString()?.Trim();
-
-                var dataQuery = new DataQuery(formStateData, fieldSelector.FormElement.ConnectionId)
-                {
-                    SearchId = searchId
-                };
-
-                var searchBoxValues = await dataItemService.GetValuesAsync(field.DataItem, dataQuery);
-
-                if (field.DataItem.EnableMultiSelect)
-                {
-                    var searchIds = searchId.Split(',').Select(id => id.Trim());
-                    var rowValues = searchBoxValues
-                        .Where(v => searchIds.Contains(v.Id.Trim(), StringComparer.InvariantCultureIgnoreCase))
-                        .Select(v => v.Description ?? v.Id);
-                    
-                    return string.Join(", ", rowValues);
-                }
-
-                
-                var rowValue = searchBoxValues.Find(v =>
-                    string.Equals(v.Id.Trim(), searchId, StringComparison.InvariantCultureIgnoreCase));
-                return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
+                return await dataItemService.GetDescriptionAsync(fieldSelector.FormElement, field, formStateData, value);
             default:
                 stringValue = FormatValue(field, value);
                 break;

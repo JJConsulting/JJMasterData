@@ -26,6 +26,7 @@ namespace JJMasterData.Core.DataManager.Exportation;
 
 public class ExcelWriter(
         ExpressionsService expressionsService,
+        DataItemService dataItemService,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
@@ -161,7 +162,19 @@ public class ExcelWriter(
         {
             if (row.TryGetValue(field.Name, out var cellValue))
             {
-                value = FieldFormattingService.FormatValue(field, cellValue);
+                if (field.Component is FormComponent.ComboBox && field.DataItem?.HasItems() is true && field.DataItem.GridBehavior is not DataItemGridBehavior.Id)
+                {
+                    value = await dataItemService.GetDescriptionAsync(FormElement, field, new()
+                    {
+                        Values = row,
+                        PageState = PageState.List,
+                        UserValues = new()
+                    }, cellValue);
+                }
+                else
+                {
+                    value = FieldFormattingService.FormatValue(field, cellValue);
+                }
             }
         }
 
