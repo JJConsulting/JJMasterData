@@ -248,7 +248,7 @@ public class SQLiteProvider : IEntityProvider
         throw new NotImplementedException();
     }
 
-    public Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    public Task<Element> GetElementFromTableAsync(string? schemaName, string connectionId, Guid? guid)
     {
         throw new NotImplementedException();
     }

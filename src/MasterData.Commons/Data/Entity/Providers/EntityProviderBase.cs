@@ -23,7 +23,7 @@ public class EntityProviderBase(IEntityProvider provider) : IEntityProvider
         provider.GetAlterTableScript(element, addedFields);
     public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null) =>
         provider.GetElementFromTableAsync(tableName, connectionId);
-    public Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid) =>
+    public Task<Element> GetElementFromTableAsync(string? schemaName, string connectionId, Guid? guid) =>
         provider.GetElementFromTableAsync(schemaName, connectionId, guid);
     public DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values) =>
         provider.GetInsertCommand(element, values);

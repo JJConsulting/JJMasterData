@@ -784,7 +784,7 @@ public class OracleProvider(IOptionsSnapshot<MasterDataCommonsOptions> options)
     }
 
 
-    public Task<Element> GetElementFromTableAsync(string schemaName, string connectionId, Guid? guid)
+    public Task<Element> GetElementFromTableAsync(string? schemaName, string connectionId, Guid? guid)
     {
         throw new NotImplementedException();
     }

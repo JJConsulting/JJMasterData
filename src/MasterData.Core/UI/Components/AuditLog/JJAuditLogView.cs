@@ -292,7 +292,7 @@ public class JJAuditLogView : AsyncComponent
         {
             grid.CurrentOrder.AddOrReplace(AuditLogService.DicModified, OrderByDirection.Desc);
         }
-        grid.ExportAction.SetVisible(false);
+        grid.ExportAction.SetVisible(true);
 
         var fieldKey = grid.FormElement.Fields[AuditLogService.DicKey];
         int qtdPk = FormElement.Fields.Count(x => x.IsPk);

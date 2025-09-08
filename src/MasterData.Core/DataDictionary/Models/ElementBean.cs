@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace JJMasterData.Core.DataDictionary.Models;
@@ -6,7 +7,7 @@ namespace JJMasterData.Core.DataDictionary.Models;
 public sealed class ElementBean
 {
     [Display(Name = "Schema", Prompt = "Schema")]
-    public string Schema { get; set; } = "dbo";
+    public string? Schema { get; set; } 
     
     [Display(Name = "Table or View Name", Prompt = "Table or View Name")]
     public string Name { get; init; } = null!;

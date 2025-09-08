@@ -197,4 +197,39 @@ public class DataItemService(
         
         return ExpressionDataAccessCommandFactory.Create(sql, parsedValues);
     }
+
+    public async Task<string> GetDescriptionAsync(
+        FormElement formElement, 
+        FormElementField field, 
+        FormStateData formStateData,
+        object? value)
+    {
+        if(field.DataItem is null)
+            throw new JJMasterDataException($"Field [{field.Name}] does not have a DataItem defined.");
+        
+        var searchId = value?.ToString()?.Trim() ?? string.Empty;
+
+        var dataQuery = new DataQuery(formStateData, formElement.ConnectionId)
+        {
+            SearchId = searchId
+        };
+
+        var searchBoxValues = await GetValuesAsync(field.DataItem, dataQuery);
+
+        if (field.DataItem.EnableMultiSelect)
+        {
+            var searchIds = searchId.Split(',').Select(id => id.Trim());
+            var rowValues = searchBoxValues
+                .Where(v => searchIds.Contains(v.Id.Trim(), StringComparer.InvariantCultureIgnoreCase))
+                .Select(v => v.Description ?? v.Id);
+                    
+            return string.Join(", ", rowValues);
+        }
+
+                
+        var rowValue = searchBoxValues.Find(v =>
+            string.Equals(v.Id.Trim(), searchId, StringComparison.InvariantCultureIgnoreCase));
+        
+        return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
+    }
 }

@@ -305,9 +305,9 @@ public class SqlServerProvider(
         };
     }
 
-    public Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId)
+    public Task<Element> GetElementFromTableAsync(string? schemaName, string tableName, Guid? connectionId)
     {
-        return GetElementFromTableAsyncCore(schemaName, tableName, connectionId);
+        return GetElementFromTableAsyncCore(schemaName ?? "dbo", tableName, connectionId);
     }
 
     public Task<Element> GetElementFromTableAsync(string tableName, Guid? connectionId = null)

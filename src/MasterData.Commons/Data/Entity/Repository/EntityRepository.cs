@@ -184,7 +184,7 @@ internal sealed class EntityRepository(
         return dataAccess.SetCommandListAsync(commandList);
     }
 
-    public Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId = null)
+    public Task<Element> GetElementFromTableAsync(string? schemaName, string tableName, Guid? connectionId = null)
     {
         return provider.GetElementFromTableAsync(schemaName, tableName, connectionId);
     }

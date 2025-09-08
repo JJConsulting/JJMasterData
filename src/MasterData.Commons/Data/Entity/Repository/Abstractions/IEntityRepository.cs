@@ -150,7 +150,7 @@ public interface IEntityRepository
     /// <summary>
     /// Build an element from an existing table.
     /// </summary>
-    Task<Element> GetElementFromTableAsync(string schemaName, string tableName, Guid? connectionId = null);
+    Task<Element> GetElementFromTableAsync(string? schemaName, string tableName, Guid? connectionId = null);
 
         
     /// <summary>
