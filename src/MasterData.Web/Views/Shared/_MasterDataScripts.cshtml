@@ -43,7 +43,15 @@
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/spin/spin.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/inputmask/dist/inputmask.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/inputmask/dist/bindings/inputmask.binding.js"></script>
-<script type="text/javascript" src="~/_content/JJMasterData.Web/js/typeahead/typeahead.min.js"></script>
+@if (BootstrapHelper.Version == 3)
+{
+    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/typeahead/typeahead.min.js"></script>
+}
+else
+{
+    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap-search/bootstrap-search.min.js"></script>
+}
+
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/dropzone/dropzone.min.js"></script>
 

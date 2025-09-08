@@ -280,6 +280,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
             input.WithAttribute("type", "text");
             input.WithAttribute("query-string", GetQueryString());
             input.WithAttribute("autocomplete", "off");
+            input.WithAttribute("multiselect", DataItem.EnableMultiSelect ? "1" : "0");
             input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
@@ -288,8 +289,13 @@ public class JJSearchBox : ControlBase, IDataItemControl
             input.WithAttribute(NumberOfItemsAttribute, NumberOfItems);
             input.WithToolTip(Tooltip);
             input.WithCssClass("form-control jj-search-box");
-            input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");
-            input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");
+            
+            if (BootstrapHelper.Version == 3)
+            {
+                input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");
+                input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");
+            }
+
             input.WithCssClass(CssClass);
 
             input.WithAttributeIfNotEmpty("value", description);
@@ -333,6 +339,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     public async Task<string?> GetDescriptionAsync(string searchId)
     {
         string? description = null;
+
         if (OnSearchQuery != null)
         {
             var args = new SearchBoxItemEventArgs(searchId);
@@ -348,13 +355,28 @@ public class JJSearchBox : ControlBase, IDataItemControl
             _values ??= await DataItemService.GetValuesAsync(DataItem, dataQuery);
         }
 
-        var item = _values?.FirstOrDefault(x => x.Id.Equals(searchId));
-
-        if (item != null)
-            description = item.Description;
+        if (_values != null)
+        {
+            if (DataItem.EnableMultiSelect)
+            {
+                var ids = searchId.Split(',');
+                var descriptions = _values
+                    .Where(x => ids.Contains(x.Id))
+                    .Select(x => x.Description)
+                    .Where(d => !string.IsNullOrEmpty(d));
+                description = string.Join(", ", descriptions);
+            }
+            else
+            {
+                var item = _values.FirstOrDefault(x => x.Id.Equals(searchId));
+                if (item != null)
+                    description = item.Description;
+            }
+        }
 
         return description;
     }
+
 
     /// <summary>
     /// Recover values from the given text.
@@ -384,7 +406,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     private async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
-        var searchText = Request.Form[Name + "_text"];
+        var searchText = Request.QueryString["q"] ?? Request.Form[Name + "_text"];
         var values = await GetValuesAsync(searchId: null, searchText);
         return values.ConvertAll(v=>new DataItemResult
         {

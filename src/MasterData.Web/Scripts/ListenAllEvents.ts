@@ -13,7 +13,12 @@
     CodeEditor.setup(selectorPrefix);
     CalendarListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
-    SearchBoxListener.listenTypeahead(selectorPrefix);
+    
+    if(bootstrapVersion === 3)
+        LegacySearchBoxListener.listenTypeahead(selectorPrefix);
+    else
+        SearchBoxListener.listen(selectorPrefix);
+    
     LookupListener.listenChanges(selectorPrefix);
     SortableListener.listenSorting(selectorPrefix);
     UploadAreaListener.listenFileUpload(selectorPrefix);
