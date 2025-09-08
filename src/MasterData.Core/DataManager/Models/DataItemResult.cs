@@ -21,4 +21,7 @@ public class DataItemResult
     
     [JsonPropertyName("iconColor")] 
     public required string? IconColor { get; init; } 
+    
+    [JsonPropertyName("imageUrl")] 
+    public required string? ImageUrl { get; init; } 
 }

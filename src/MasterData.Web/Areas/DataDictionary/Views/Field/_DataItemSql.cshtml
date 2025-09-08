@@ -17,7 +17,7 @@
             <code-editor asp-for="DataItem!.Command!.Sql" language="sql" height="300"/>
         </div>
     </div>
-    <collapse-panel color="Info" title="@StringLocalizer["Data Item SQL Query"]" icon="InfoCircle" expanded-by-default="true">
+    <collapse-panel title="@StringLocalizer["Data Item SQL Query"]" icon="InfoCircle" expanded-by-default="true">
         <span>@StringLocalizer["The query result must contain these columns in the following order:"]</span>
         <ol>
             <li>@StringLocalizer["Id"]</li>
@@ -38,6 +38,12 @@
             var isDynamicAtGrid = Model.DataItem.GridBehavior is not DataItemGridBehavior.Id;
             var isSearch = Model.Component is FormComponent.Search;
         }
+        @if (isSearch && !showIcon)
+        {
+            <span>@StringLocalizer["You can also render an image alongside the result by returning a column called ImageUrl."]</span>
+        }
+        <br/>
+        <br/>
         @if(isDynamicAtGrid || isSearch)
         {
             <span>@StringLocalizer["We recommend using the following parameters in the query:"]</span><br/>

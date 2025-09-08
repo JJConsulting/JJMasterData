@@ -156,6 +156,10 @@
     <value>1) Para utilizar o upload o dicionário deve ter chave primária</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="You can also render an image alongside the result by returning a column called ImageUrl." xml:space="preserve">
+    <value>Você também pode renderizar uma imagem ao lado do resultado retornando uma coluna chamada ImageUrl.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="12 (twelve columns)" xml:space="preserve">
     <value>12 (doze colunas)</value>
     <comment>JJMasterDataWeb</comment>

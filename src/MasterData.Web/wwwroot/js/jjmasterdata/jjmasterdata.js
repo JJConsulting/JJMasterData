@@ -1193,12 +1193,12 @@ class GridViewFilterHelper {
                 currentObj.tagsinput('removeAll');
             }
             else if (inputType != "hidden") {
-                currentObj.val("");
+                currentObj.val(null);
                 if (currentObj.hasClass("selectpicker")) {
                     currentObj.selectpicker("render");
                 }
                 else if (currentObj.hasClass("jj-search-box")) {
-                    currentObj.blur();
+                    currentObj[0].bootstrapSearch.clear();
                 }
                 else if (currentObj.hasClass("jjlookup")) {
                     currentObj.blur();
@@ -2504,6 +2504,9 @@ class SearchBoxListener {
                 dropdownLabel: function (value) {
                     if (value.icon) {
                         return `<div><span class="fa ${value.icon}" style="color:${value.iconColor}"></span>&nbsp;${value.description}</div>`;
+                    }
+                    if (value.imageUrl) {
+                        return `<div class="search-box-image-label"><img src="${value.imageUrl}" alt="result"/>${value.description}</div>`;
                     }
                     return `<div>${value.description}</div>`;
                 },

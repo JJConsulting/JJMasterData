@@ -17,6 +17,10 @@ public class DataItemValue
     [CanBeNull] 
     public string Description { get; set; }
     
+    [CanBeNull]
+    [JsonPropertyName("imageUrl")]
+    public string ImageUrl { get; set; }
+    
     [JsonPropertyName("icon")]
     public IconType Icon { get; set; }
 

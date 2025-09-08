@@ -72,11 +72,12 @@ class GridViewFilterHelper {
             } else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
                 currentObj.tagsinput('removeAll');
             } else if (inputType != "hidden") {
-                currentObj.val("");
+                currentObj.val(null);
                 if (currentObj.hasClass("selectpicker")) {
                     currentObj.selectpicker("render");
                 } else if (currentObj.hasClass("jj-search-box")) {
-                    currentObj.blur();
+                    // @ts-ignore
+                    currentObj[0].bootstrapSearch.clear();
                 } else if (currentObj.hasClass("jjlookup")) {
                     currentObj.blur();
                 }

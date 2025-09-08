@@ -7,3 +7,16 @@
   width: 100%;
   min-width: 18.75rem !important;
 }
+
+
+.search-box-image-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-box-image-label img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}

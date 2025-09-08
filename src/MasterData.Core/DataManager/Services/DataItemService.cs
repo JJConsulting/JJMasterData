@@ -148,7 +148,7 @@ public class DataItemService(
             {
                 Id = row[0].ToString()
             };
-
+            
             if (row.Table.Columns.Count == 1)
             {
                 item.Description = item.Id;
@@ -168,13 +168,16 @@ public class DataItemService(
                 }
                 else
                 {
+                    if(row.Table.Columns.Contains("ImageUrl"))
+                        item.ImageUrl = row["ImageUrl"]?.ToString();
+                    
                     if (row.Table.Columns.Count >= 3)
                     {
                         item.Group = row[2]?.ToString();
                     }
                 }
             }
-
+            
             if (searchText == null || item.Description?.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) is true)
             {
                 result.Add(item);

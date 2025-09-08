@@ -412,8 +412,13 @@ public class JJSearchBox : ControlBase, IDataItemControl
         {
             Id = v.Id,
             Description = v.Description,
-            IconCssClass = DataItem.ShowIcon ? v.Icon.GetCssClass() : null,
-            IconColor =  DataItem.ShowIcon ? v.IconColor : null
+            IconCssClass = DataItem.ShowIcon
+                ? v.Icon.GetCssClass()
+                : null,
+            IconColor = DataItem.ShowIcon
+                ? v.IconColor
+                : null,
+            ImageUrl = v.ImageUrl
         });
     }
 }

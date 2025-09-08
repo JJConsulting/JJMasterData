@@ -27,6 +27,9 @@ class SearchBoxListener {
                     if(value.icon){
                         return `<div><span class="fa ${value.icon}" style="color:${value.iconColor}"></span>&nbsp;${value.description}</div>`
                     }
+                    if(value.imageUrl){
+                        return `<div class="search-box-image-label"><img src="${value.imageUrl}" alt="result"/>${value.description}</div>`;
+                    }
                     return `<div>${value.description}</div>`
                 },
                 value: "id",
