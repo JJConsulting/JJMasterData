@@ -208,7 +208,7 @@ public class JJAuditLogView : AsyncComponent
         DataPanel.Name = $"auditlogview-panel-{FormElement.ParentName}";
 
         var row = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass("row");
+            .WithCssClass("row mt-3");
 
         var logListGroupHtml = await GetLogListGroupHtml(recordsKey, logId);
 
@@ -390,7 +390,7 @@ public class JJAuditLogView : AsyncComponent
             else if (row["origin"].Equals((int)DataContextSource.Api))
                 source = nameof(DataContextSource.Upload);
 
-            string logId = row["id"].ToString();
+            var logId = row["id"].ToString();
             string message = StringLocalizer["{0} at {1}", action, source];
 
             html.Append(HtmlTag.A, a =>
