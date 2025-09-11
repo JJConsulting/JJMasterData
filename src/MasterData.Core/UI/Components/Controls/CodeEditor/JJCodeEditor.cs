@@ -10,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
 {
     public string Language { get; set; } = "html";
-    public int Height { get; set; } = 400;
+    public int Height { get; set; } = 300;
 
     protected override ValueTask<ComponentResult> BuildResultAsync()
     {
