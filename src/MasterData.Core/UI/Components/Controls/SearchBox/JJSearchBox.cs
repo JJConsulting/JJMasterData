@@ -309,6 +309,9 @@ public class JJSearchBox : ControlBase, IDataItemControl
             input.WithAttributeIfNotEmpty("value", selectedValue);
         });
 
+        if (BootstrapHelper.Version == 5)
+            div.WithCssClass("w-100");
+        
         if (ScrollBar)
             div.WithCssClass("scrollable-dropdown-menu");
         
