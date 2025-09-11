@@ -300,7 +300,9 @@ class AuditLogViewHelper {
         postFormValues({
             url: urlBuilder.build(),
             success: function (data) {
-                document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
+                const id = "auditlogview-panel-" + componentName;
+                document.getElementById(id).innerHTML = data;
+                listenAllEvents("#" + id);
             }
         });
     }
