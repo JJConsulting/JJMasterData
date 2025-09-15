@@ -9,7 +9,10 @@ function getRequestOptions() {
 
     return {
         method: "POST",
-        body: formData
+        body: formData,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
     };
 }
 
