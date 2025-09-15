@@ -2417,7 +2417,10 @@ function getRequestOptions() {
     const formData = new FormData(getMasterDataForm());
     return {
         method: "POST",
-        body: formData
+        body: formData,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
     };
 }
 function postFormValues(options) {
