@@ -279,36 +279,26 @@ public class JJGridView : AsyncComponent
 
             if (CurrentContext.Request.Form.ContainsFormValues())
             {
-                int currentPage = 1;
-                string tablePageId = $"grid-view-page-{Name}";
-                if (!string.IsNullOrEmpty(CurrentContext.Request[tablePageId]))
+                var currentPage = 1;
+                var tablePageId = $"grid-view-page-{Name}";
+                if (CurrentContext.Request.Form.TryGetValue(tablePageId, out var pageString))
                 {
-                    if (int.TryParse(CurrentContext.Request[tablePageId], out var page))
+                    if (int.TryParse(pageString, out var page))
                         currentPage = page;
                 }
-                else
+                else if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
                 {
-                    var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
-                    if (tablePage != null)
-                    {
-                        if (int.TryParse(tablePage, out var page))
-                            currentPage = page;
-                    }
+                    currentPage = GetPageFromPreferences();
                 }
 
                 CurrentPage = currentPage;
             }
             else
             {
-                int page = 1;
+                var page = 1;
                 if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
                 {
-                    var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
-                    if (tablePage != null)
-                    {
-                        if (int.TryParse(tablePage, out var nAuxPage))
-                            page = nAuxPage;
-                    }
+                    page = GetPageFromPreferences();
                 }
 
                 _currentPage = page;
@@ -318,11 +308,23 @@ public class JJGridView : AsyncComponent
         }
         set
         {
-            if (MaintainValuesOnLoad)
+            if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
                 CurrentContext.Session[$"jjcurrentpage_{Name}"] = value.ToString();
 
             _currentPage = value;
         }
+    }
+
+    private int GetPageFromPreferences()
+    {
+        var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
+        if (tablePage != null)
+        {
+            if (int.TryParse(tablePage, out var page))
+                return page;
+        }
+
+        return 1;
     }
 
     public int TotalOfPages
