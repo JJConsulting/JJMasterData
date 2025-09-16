@@ -2787,6 +2787,15 @@ class UploadAreaListener {
             parallelUploads: options.parallelUploads,
             url: options.url
         });
+        dropzone.on("sending", function (file, xhr, formData) {
+            let form = getMasterDataForm();
+            if (form) {
+                let formElements = new FormData(form);
+                for (let [key, value] of formElements.entries()) {
+                    formData.append(key, value);
+                }
+            }
+        });
         dropzone.on('sendingmultiple', function (data, xhr, formData) {
             $(getMasterDataForm()).find("input").each(function () {
                 formData.append($(this).attr("name"), $(this).val().toString());
