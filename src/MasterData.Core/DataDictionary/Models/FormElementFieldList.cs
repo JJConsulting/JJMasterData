@@ -84,7 +84,13 @@ public class FormElementFieldList : IList<FormElementField>
 
     public bool Contains(string? fieldName)
     {
-        return _formFields.Any(val => val.Name.Equals(fieldName));
+        foreach (var field in _formFields)
+        {
+            if (field.Name.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase)) 
+                return true;
+        }
+
+        return false;
     }
 
     public bool Contains(FormElementField item)

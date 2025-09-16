@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -154,7 +155,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
                 .ChildElement);
         childFormView.FormElement.ParentName = parentFormView.FormElement.ParentName ?? parentFormView.FormElement.Name;
 
-        var filter = new Dictionary<string, object?>();
+        var filter = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
                      parentPanel.Values.ContainsKey(col.PkColumn)))
         {

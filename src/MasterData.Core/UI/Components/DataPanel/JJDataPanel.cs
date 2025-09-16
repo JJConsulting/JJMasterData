@@ -368,7 +368,7 @@ public class JJDataPanel(
         if (pks.Length != primaryKeys.Count)
             throw new JJMasterDataException("Primary key not found");
         
-        var filter = new Dictionary<string, object>();
+        var filter = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         for (var index = 0; index < primaryKeys.Count; index++)
         {
             var field = primaryKeys[index];

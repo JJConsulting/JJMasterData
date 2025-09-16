@@ -230,8 +230,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
         DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, object?>();
-        FormStateData = new(defaultValues, UserValues, PageState.List);
+        FormStateData = new(new(), UserValues, PageState.List);
     }
 
     #endregion

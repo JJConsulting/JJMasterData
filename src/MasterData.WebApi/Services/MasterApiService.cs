@@ -32,7 +32,11 @@ public class MasterApiService(ExpressionsService expressionsService,
 
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    public async Task<string> GetListFieldAsTextAsync(string elementName, int pag, int regporpag, string? orderby)
+    public async Task<string> GetListFieldAsTextAsync(
+        string elementName,
+        int pag,
+        int regporpag,
+        string? orderby)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -56,7 +60,11 @@ public class MasterApiService(ExpressionsService expressionsService,
         return text;
     }
 
-    public async Task<MasterApiListResponse> GetListFieldsAsync(string elementName, int pag, int regporpag, string? orderby,
+    public async Task<MasterApiListResponse> GetListFieldsAsync(
+        string elementName, 
+        int pag,
+        int regporpag,
+        string? orderby,
         int total = 0)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -102,7 +110,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             throw new KeyNotFoundException("No records found");
 
         //We transform to dictionary to preserve the order of fields in parse
-        var result = new Dictionary<string, object?>();
+        var result = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var field in formElement.Fields)
         {
             var fieldName = formElement.ApiOptions.GetJsonFieldName(field.Name);
@@ -402,21 +410,19 @@ public class MasterApiService(ExpressionsService expressionsService,
         var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         if (loadQueryString)
         {
-            var qnvp = _httpContext.Request.Query.Keys;
-            foreach (string key in qnvp)
+            foreach (var (key, value) in _httpContext.Request.Query)
             {
                 if (!formElement.Fields.Contains(key))
                     continue;
 
-                string? value = _httpContext.Request.Query[key];
-                filters.Add(formElement.Fields[key].Name, value!);
+                filters.Add(formElement.Fields[key].Name, value);
             }
         }
 
         if (string.IsNullOrEmpty(formElement.ApiOptions.ApplyUserIdOn))
             return filters;
 
-        string userId = GetUserId();
+        var userId = GetUserId();
         if (!filters.TryGetValue(formElement.ApiOptions.ApplyUserIdOn, out var filter))
         {
             filters.Add(formElement.ApiOptions.ApplyUserIdOn, userId);
@@ -465,12 +471,12 @@ public class MasterApiService(ExpressionsService expressionsService,
         FormElementApiOptions apiOptions)
     {
         var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        
         foreach (var (key, entryVal) in result)
         {
             if (entryVal == null)
-            {
                 continue;
-            }
+            
             var fieldName = apiOptions.GetJsonFieldName(key);
             
             if (!original.TryGetValue(key, out var originalEntry))
@@ -509,7 +515,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         foreach (var entry in errors)
         {
-            string fieldName = apiOptions.GetJsonFieldName(entry.Key);
+            var fieldName = apiOptions.GetJsonFieldName(entry.Key);
             letter.ValidationList.Add(fieldName, entry.Value);
         }
 
