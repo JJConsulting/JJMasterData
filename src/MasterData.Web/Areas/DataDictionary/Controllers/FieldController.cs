@@ -233,7 +233,13 @@ public class FieldController(
             return;
         }
 
-        field.DataItem.ElementMap ??= new DataElementMap();
+        field.DataItem.ElementMap ??= new DataElementMap
+        {
+            ElementName = formElement.Name
+        };
+
+        if (field.Component is FormComponent.Lookup)
+            field.DataItem.DataItemType = DataItemType.ElementMap;
         
         ViewData["ElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName);
         if (field.DataItem.DataItemType is DataItemType.ElementMap)

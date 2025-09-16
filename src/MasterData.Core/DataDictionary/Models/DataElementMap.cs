@@ -10,7 +10,7 @@ public class DataElementMap
 {
     [JsonPropertyName("elementName")]
     [Required]
-    public string ElementName { get; set; } = null!;
+    public required string ElementName { get; set; } = null!;
 
     [JsonPropertyName("fieldKey")] 
     public string IdFieldName { get; set; } = null!;

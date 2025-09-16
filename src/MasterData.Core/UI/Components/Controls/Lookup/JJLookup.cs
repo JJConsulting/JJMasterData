@@ -100,8 +100,9 @@ public class JJLookup : ControlBase
     #region "Constructors"
 
     internal JJLookup(
-        FormElementField? field,
-        ControlContext? controlContext,
+        FormElement formElement,
+        FormElementField field,
+        ControlContext controlContext,
         IHttpRequest httpRequest,
         RouteContextFactory routeContextFactory,
         FormValuesService formValuesService,
@@ -111,8 +112,12 @@ public class JJLookup : ControlBase
         IComponentFactory componentFactory) : base(httpRequest.Form)
     {
         RouteContext = routeContextFactory.Create();
-        ElementMap = field?.DataItem?.ElementMap ?? new DataElementMap();
-        FieldName = field?.Name;
+        ElementMap = field.DataItem?.ElementMap ?? new DataElementMap
+        {
+            ElementName = formElement.Name
+        };
+        ElementName = formElement.ParentName;
+        FieldName = field.Name;
         HttpRequest = httpRequest;
         RouteContextFactory = routeContextFactory;
         FormValuesService = formValuesService;
@@ -125,9 +130,9 @@ public class JJLookup : ControlBase
         Name = field?.Name!;
         ModalSize = ModalSize.Large;
         ModalTitle = "Search";
-        FormStateData = controlContext?.FormStateData;
-        UserValues = controlContext?.FormStateData.UserValues ?? new(StringComparer.InvariantCultureIgnoreCase);
-        SelectedValue = controlContext?.Value?.ToString();
+        FormStateData = controlContext.FormStateData;
+        UserValues = controlContext.FormStateData.UserValues ?? new(StringComparer.InvariantCultureIgnoreCase);
+        SelectedValue = controlContext.Value?.ToString();
 
         if (field != null)
         {

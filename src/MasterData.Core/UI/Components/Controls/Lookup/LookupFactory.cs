@@ -18,12 +18,12 @@ internal sealed class LookupFactory(
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJLookup>
 {
-    
     public JJLookup Create()
     {
         return new JJLookup(
-            null,
-            null,
+            null!,
+            null!,
+            null!,
             httpRequest,
             routeContextFactory,
             formValuesService,
@@ -35,7 +35,8 @@ internal sealed class LookupFactory(
 
     public JJLookup Create(FormElement formElement, FormElementField field, ControlContext controlContext)
     {
-        var lookup = new JJLookup(
+        return new JJLookup(
+            formElement,
             field,
             controlContext,
             httpRequest,
@@ -45,12 +46,5 @@ internal sealed class LookupFactory(
             lookupService,
             stringLocalizer,
             componentFactory);
-
-        lookup.ElementName = formElement.Name;
-        lookup.ParentElementName = formElement.ParentName;
-        
-        return lookup;
     }
-
-    
 }
