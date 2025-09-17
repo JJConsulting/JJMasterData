@@ -9,8 +9,7 @@ namespace JJMasterData.Core.DataDictionary.Models;
 public class DataElementMap
 {
     [JsonPropertyName("elementName")]
-    [Required]
-    public required string ElementName { get; set; } = null!;
+    public string ElementName { get; set; } = null!;
 
     [JsonPropertyName("fieldKey")] 
     public string IdFieldName { get; set; } = null!;
