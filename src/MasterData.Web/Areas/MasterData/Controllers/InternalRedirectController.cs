@@ -84,7 +84,6 @@ public class InternalRedirectController(
             case RelationshipViewType.Update:
             {
                 var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
-
                 var pageState = state.RelationshipType is RelationshipViewType.Update
                     ? PageState.Update
                     : PageState.Insert;
@@ -100,6 +99,8 @@ public class InternalRedirectController(
                 
                 if (userId != null)
                     formView.SetUserValues("USERID", userId);
+
+                formView.FormElement.Options.FormToolbarActions.Clear();
                 
                 var result = await formView.GetResultAsync();
                 if (result is IActionResult actionResult)

@@ -18,8 +18,9 @@
     <input asp-for="ElementName" hidden="hidden"/>
     <div class="row">
         <div class="col-sm-12">
-            <link-button type="LinkButtonType.Submit" icon="Check" css-class="btn-small" text="@StringLocalizer["Save"]"/>
             <link-button icon="Times" css-class="btn-small" text="@StringLocalizer["Cancel"]" asp-action="Index" asp-route-elementName="@Model.ElementName"/>
+
+            <link-button type="LinkButtonType.Submit" icon="Check" css-class="btn-small" text="@StringLocalizer["Save"]"/>
         </div>
     </div>
     <br>
