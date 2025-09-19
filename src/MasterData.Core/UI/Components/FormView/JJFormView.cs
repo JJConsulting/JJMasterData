@@ -1751,7 +1751,7 @@ public class JJFormView : AsyncComponent
     {
         var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{FormElement.Name}"];
 
-        if (encryptedRelationValues is null)
+        if (string.IsNullOrEmpty(encryptedRelationValues))
             return new Dictionary<string, object>();
 
         return EncryptionService.DecryptDictionary(encryptedRelationValues);
