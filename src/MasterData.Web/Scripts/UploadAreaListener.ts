@@ -21,8 +21,8 @@
             parallelUploads: options.parallelUploads,
             url: options.url
         });
-
-        dropzone.on("sending", function(file, xhr, formData) {
+        
+        function appendFormValues(formData){
             let form = getMasterDataForm();
             if (form) {
                 let formElements = new FormData(form);
@@ -30,12 +30,16 @@
                     formData.append(key, value);
                 }
             }
+        }
+        
+        dropzone.on("sending", function(file, xhr, formData) {
+            if(!options.allowMultipleFiles){
+                appendFormValues(formData);
+            }
         });
         
         dropzone.on('sendingmultiple', function(data, xhr, formData) {
-            $(getMasterDataForm()).find("input").each(function(){
-                formData.append($(this).attr("name"), $(this).val().toString());
-            });
+            appendFormValues(formData);
         });
 
         const onSuccess = (files = null) => {
