@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
 
+[Obsolete("Please use Serilog sinks.")]
 public class LogMessage
 {
     public required DateTimeOffset Timestamp { get; init; }

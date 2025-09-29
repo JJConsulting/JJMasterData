@@ -3,6 +3,8 @@ using JetBrains.Annotations;
 
 namespace JJMasterData.Commons.Logging.Db;
 
+
+[Obsolete("Please use Serilog.")]
 public sealed class DbLoggerOptions : BatchingLoggerOptions
 {
     public Guid? ConnectionStringId { get; set; } 

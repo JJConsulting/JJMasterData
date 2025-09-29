@@ -7,6 +7,7 @@ using System.Text;
 
 namespace JJMasterData.Commons.Logging;
 
+[Obsolete("Please use Serilog.")]
 internal sealed class BatchingLogger(BatchingLoggerProvider loggerProvider, string categoryName) : ILogger
 {
     public IDisposable BeginScope<TState>(TState state)

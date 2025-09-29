@@ -2,6 +2,8 @@
 
 namespace JJMasterData.Commons.Logging.File;
 
+
+[Obsolete("Please use Serilog.")]
 public sealed class FileLoggerOptions : BatchingLoggerOptions
 {
     private int? _fileSizeLimit = 10 * 1024 * 1024;

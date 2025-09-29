@@ -7,6 +7,7 @@ namespace JJMasterData.Commons.Logging;
 /// <summary>
 /// Options for a logger which batches up log messages.
 /// </summary>
+[Obsolete("Please use Serilog.")]
 public class BatchingLoggerOptions
 {
     private int? _batchSize;

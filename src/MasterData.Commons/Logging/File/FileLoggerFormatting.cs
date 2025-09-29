@@ -1,5 +1,9 @@
+using System;
+
 namespace JJMasterData.Commons.Logging.File;
 
+
+[Obsolete("Please use Serilog.")]
 public enum FileLoggerFormatting
 {
     /// <summary>

@@ -1,7 +1,10 @@
+using System;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Logging.Db;
 
+
+[Obsolete("Please use Serilog.")]
 public static class DbLoggerElement
 {
     private static Element _element;

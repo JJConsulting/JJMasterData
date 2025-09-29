@@ -10,6 +10,8 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 
+
+[Obsolete("Please use Serilog.")]
 [ProviderAlias(ProviderAlias)]
 public sealed class DbLoggerProvider(IServiceProvider serviceProvider, IOptionsMonitor<DbLoggerOptions> options) : BatchingLoggerProvider(options)
 {

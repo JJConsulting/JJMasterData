@@ -1,3 +1,4 @@
+using System;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Logging.File;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,8 +8,10 @@ using Microsoft.Extensions.Logging.Configuration;
 
 namespace JJMasterData.Commons.Logging;
 
+[Obsolete("Please use Serilog.")]
 public static class LoggingBuilderExtensions
 {
+    [Obsolete("Please use Serilog SQL Server sink.")]
     public static ILoggingBuilder AddDbLoggerProvider(this ILoggingBuilder builder)
     {
         var services = builder.Services;
@@ -20,6 +23,7 @@ public static class LoggingBuilderExtensions
         return builder;
     }
     
+    [Obsolete("Please use Serilog file sink.")]
     public static ILoggingBuilder AddFileLoggerProvider(this ILoggingBuilder builder)
     {
         var services = builder.Services;

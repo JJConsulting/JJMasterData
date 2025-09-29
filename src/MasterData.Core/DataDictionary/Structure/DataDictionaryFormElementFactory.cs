@@ -183,21 +183,6 @@ public class DataDictionaryFormElementFactory(
                 CssClass = BootstrapHelper.PullRight,
                 OnClientClick =
                     $"DataDictionaryUtils.exportElement('{_options.DataDictionaryTableName.ToLowerInvariant()}', '{urlHelper.Action("Export", "Element", new{Area="DataDictionary"})}', '{stringLocalizer["Select one or more dictionaries"]}');"
-            },
-            
-            new UrlRedirectAction
-            {
-                Name = "btnLog",
-                Text = stringLocalizer["Log"],
-                Icon = IconType.Film,
-                ShowAsButton = true,
-                IsModal = true,
-                IsGroup = true,
-                ModalTitle = stringLocalizer["Log"],
-                ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = urlHelper.Action("Index", "Log", new {Area="DataDictionary", isModal = true}),
-                Order = 11,
-                CssClass = BootstrapHelper.PullRight
             }
         ];
         formElement.Options.GridToolbarActions.AddRange(actions);

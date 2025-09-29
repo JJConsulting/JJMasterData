@@ -15,6 +15,7 @@ namespace JJMasterData.Commons.Logging;
 /// <summary>
 /// A provider of <see cref="BatchingLogger"/> instances.
 /// </summary>
+[Obsolete("Please use Serilog sinks.")]
 public abstract class BatchingLoggerProvider : ILoggerProvider, ISupportExternalScope
 {
     private readonly List<LogMessage> _currentBatch = [];
