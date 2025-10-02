@@ -10,6 +10,7 @@ class CalendarListener {
                 allowInput: true,
                 altInput: false,
                 monthSelectorType: 'static',
+                disableMobile: true,
                 time_24hr: true,
                 mode: "single",
                 //@ts-ignore
@@ -32,6 +33,7 @@ class CalendarListener {
                 wrap: true,
                 allowInput: true,
                 altInput: false,
+                disableMobile: true,
                 monthSelectorType: 'static',
                 mode: "single",
                 //@ts-ignore
