@@ -52,7 +52,7 @@ public class BackgroundTaskManagerTest
     {
         const string key = "TestProgressTask";
         BackgroundTaskManager.Run(key, Worker);
-        ProgressReporter progress;
+        ProgressReporter? progress;
         do
         {
             progress = BackgroundTaskManager.GetProgress<ProgressReporter>(key);
