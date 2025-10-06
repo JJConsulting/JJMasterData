@@ -1,55 +1,20 @@
 ﻿using System.Reflection;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.Tasks;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace JJMasterData.WebApi.Swagger;
 
-public class DataDictionaryDocumentFilter(
-    IHttpContextAccessor httpContextAccessor,
-    IServiceProvider serviceProvider) : IDocumentFilter
+public class DataDictionaryDocumentTransformer(IServiceProvider serviceProvider) 
 {
-    protected IServiceProvider ServiceProvider { get; } = serviceProvider;
-
-    private static string Version { get; } =
-        Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
-
-    protected virtual bool IsAuthenticated(HttpContext httpContext)
+    public async Task AddDataDictionaryEndpoints(OpenApiDocument document, CancellationToken cancellationToken = default)
     {
-        return true;
-    }
-
-    protected virtual ValueTask<bool> IsElementAllowedAsync(string elementName)
-    {
-        return new(true);
-    }
-
-    //TODO: Swagger 6.8 not released
-    public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
-    {
-        AsyncHelper.RunSync(() => ApplyAsync(swaggerDoc));
-    }
-
-    private async Task ApplyAsync(OpenApiDocument document)
-    {
-        if (!IsAuthenticated(httpContextAccessor.HttpContext!))
-            return;
-
-        document.Info.Version = Version;
-
-        using var scope = ServiceProvider.CreateScope();
-
+        using var scope = serviceProvider.CreateScope();
         var dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
-
         var formElements = await dataDictionaryRepository.GetFormElementListAsync();
 
         foreach (var formElement in formElements)
         {
-            if (!await IsElementAllowedAsync(formElement.Name))
-                continue;
-
             var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
             var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
             var factory = new DataDictionaryOperationFactory(formElement, formElement.ApiOptions);
@@ -64,10 +29,10 @@ public class DataDictionaryDocumentFilter(
                 defaultPathItem.AddOperation(OperationType.Post, factory.Post());
 
             if (formElement.ApiOptions.EnableUpdate)
-                defaultPathItem.AddOperation(OperationType.Put, factory.Put());
+                detailPathItem.AddOperation(OperationType.Put, factory.Put());
 
             if (formElement.ApiOptions.EnableUpdatePart)
-                defaultPathItem.AddOperation(OperationType.Patch, factory.Patch());
+                detailPathItem.AddOperation(OperationType.Patch, factory.Patch());
 
             if (formElement.ApiOptions.EnableDel)
                 detailPathItem.AddOperation(OperationType.Delete, factory.Delete());
@@ -80,14 +45,13 @@ public class DataDictionaryDocumentFilter(
                 if (field.Component != FormComponent.File || field.DataFile == null)
                     continue;
 
-                var filePathItem =
-                    new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/{field.Name}/file");
+                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/{field.Name}/file");
                 var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
 
                 if (formElement.ApiOptions.EnableGetDetail)
                     fileDetailPathItem.AddOperation(OperationType.Get, factory.GetFile(field));
 
-                if (formElement.ApiOptions is { EnableAdd: true, EnableUpdate: true })
+                if (formElement.ApiOptions.EnableAdd && formElement.ApiOptions.EnableUpdate)
                     filePathItem.AddOperation(OperationType.Post, factory.PostFile(field));
 
                 if (formElement.ApiOptions.EnableUpdatePart)

@@ -43,7 +43,7 @@ public class FormElement : Element
     public new FormElementFieldList Fields
     {
         get => _fields ?? [];
-        private set
+        set
         {
             base.Fields = new ElementFieldList(value.GetElementFields());
             _fields = value;
@@ -57,7 +57,7 @@ public class FormElement : Element
     public new FormElementRelationshipList Relationships
     {
         get => _relationships ?? [];
-        private set
+        set
         {
             base.Relationships = value.GetElementRelationships();
             _relationships = value;

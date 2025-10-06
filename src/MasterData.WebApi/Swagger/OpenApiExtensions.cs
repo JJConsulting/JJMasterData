@@ -2,7 +2,7 @@
 
 namespace JJMasterData.WebApi.Swagger;
 
-internal static class SwaggerExtensions
+internal static class OpenApiExtensions
 {
     internal static void AddDataDictionaryPath(this OpenApiPaths paths, DataDictionaryPathItem pathItem)
     {
@@ -11,7 +11,6 @@ internal static class SwaggerExtensions
 
     internal static void AddDefaultValues(this OpenApiResponses responses)
     {
-
         responses.Add("207",
             new OpenApiResponse
             {
