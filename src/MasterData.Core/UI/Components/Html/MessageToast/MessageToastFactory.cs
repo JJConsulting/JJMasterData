@@ -24,19 +24,19 @@ public class MessageToastFactory(IStringLocalizer<MasterDataResources> stringLoc
         switch (color)
         {
             case BootstrapColor.Danger:
-                messageToast.Icon.IconClass = IconType.TimesCircle.GetCssClass();
+                messageToast.Icon.IconClass = "fa fa-times-circle";
                 messageToast.Title = stringLocalizer["Error"];
                 break;
             case BootstrapColor.Warning:
-                messageToast.Icon.IconClass = IconType.Warning.GetCssClass();
+                messageToast.Icon.IconClass = "fa fa-warning";
                 messageToast.Title = stringLocalizer["Warning"];
                 break;
             case BootstrapColor.Info:
-                messageToast.Icon.IconClass = IconType.SolidCircleInfo.GetCssClass();
+                messageToast.Icon.IconClass = "fa-solid fa-circle-info";
                 messageToast.Title = stringLocalizer["Operation Performed"];
                 break;
             default:
-                messageToast.Icon.IconClass = IconType.Check.GetCssClass();
+                messageToast.Icon.IconClass = "fa fa-check";
                 messageToast.Title = stringLocalizer["Operation Performed"];
                 break;
         }
