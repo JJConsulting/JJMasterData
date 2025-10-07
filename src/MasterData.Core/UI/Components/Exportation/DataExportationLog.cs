@@ -82,6 +82,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
                 div.Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("progress");
+                    div.WithStyle("height: 15px");
                     div.Append(HtmlTag.Div, div =>
                     {
                         div.WithCssClass("progress-bar");

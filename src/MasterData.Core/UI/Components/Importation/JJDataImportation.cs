@@ -248,6 +248,7 @@ public class JJDataImportation : ProcessComponent
                     .WithCssClass(BootstrapHelper.CenterBlock)
                     .Append(HtmlTag.Div, progress =>
                     {
+                        progress.WithStyle("height: 15px");
                         progress.WithCssClass("progress")
                             .Append(HtmlTag.Div, bar =>
                             {
