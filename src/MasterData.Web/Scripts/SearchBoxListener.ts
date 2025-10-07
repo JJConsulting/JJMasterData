@@ -22,6 +22,7 @@ class SearchBoxListener {
             // @ts-ignore
             new BootstrapSearch(input, {
                 remoteData: q => url + "&q=" + q,
+                remoteDataHttpMethod: 'POST',
                 inputLabel: "description",
                 dropdownLabel: function(value){
                     if(value.icon){

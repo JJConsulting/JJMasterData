@@ -2507,6 +2507,7 @@ class SearchBoxListener {
             const url = urlBuilder.build();
             new BootstrapSearch(input, {
                 remoteData: q => url + "&q=" + q,
+                remoteDataHttpMethod: 'POST',
                 inputLabel: "description",
                 dropdownLabel: function (value) {
                     if (value.icon) {
