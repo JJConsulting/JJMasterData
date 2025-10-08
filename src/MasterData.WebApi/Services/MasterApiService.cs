@@ -415,7 +415,7 @@ public class MasterApiService(ExpressionsService expressionsService,
                 if (!formElement.Fields.Contains(key))
                     continue;
 
-                filters.Add(formElement.Fields[key].Name, value);
+                filters.Add(formElement.Fields[key].Name, value.ToString());
             }
         }
 
