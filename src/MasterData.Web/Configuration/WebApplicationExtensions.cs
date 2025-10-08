@@ -98,7 +98,7 @@ public static partial class WebApplicationExtensions
         return app.MapAreaControllerRoute(
             name: "dataDictionary",
             areaName: "DataDictionary",
-            pattern: "DataDictionary/{controller}/{action=Index}/{elementName?}/{fieldName?}");
+            pattern: "DataDictionary/{controller=Element}/{action=Index}/{elementName?}/{fieldName?}");
     }
     
     public static ControllerActionEndpointConventionBuilder MapMasterData(this WebApplication app)
