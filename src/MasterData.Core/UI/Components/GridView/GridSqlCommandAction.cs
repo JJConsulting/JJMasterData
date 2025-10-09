@@ -43,7 +43,12 @@ internal sealed class GridSqlCommandAction(JJGridView gridView)
         }
 
         if (!string.IsNullOrEmpty(sqlCommandAction.RedirectUrl))
-            return new RedirectComponentResult(sqlCommandAction.RedirectUrl);
+        {
+            var formStateData = await gridView.GetFormStateDataAsync();
+            var parsedUrl =  gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.RedirectUrl, formStateData);
+            return new RedirectComponentResult(parsedUrl!);
+        }
+          
         
         return EmptyComponentResult.Value;
     }
