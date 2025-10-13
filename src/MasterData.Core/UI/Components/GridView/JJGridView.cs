@@ -973,10 +973,12 @@ public class JJGridView : AsyncComponent
         {
             var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(RelationValues!),UserValues, PageState.List));
             var userValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-
+            var filterValues = await GetCurrentFilterAsync();
+            
             DataHelper.CopyIntoDictionary(userValues, RelationValues!, true);
             DataHelper.CopyIntoDictionary(userValues, UserValues);
-
+            DataHelper.CopyIntoDictionary(userValues, filterValues);
+            
             _formStateData = new FormStateData(defaultValues, userValues, PageState.List);
         }
 
@@ -987,7 +989,8 @@ public class JJGridView : AsyncComponent
     {
         var action = ConfigAction;
         var formData = await GetFormStateDataAsync();
-        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
+        var isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
+        
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
