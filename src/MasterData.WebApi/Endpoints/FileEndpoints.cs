@@ -33,7 +33,7 @@ public static class FileEndpoints
         {
             await service.SetElementFileAsync(elementName, fieldName, id, file);
             return Results.Created(
-                $"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}",
+                $"api/file/{elementName}/{id}/{fieldName}/{file.FileName}",
                 "File successfully created.");
         });
 

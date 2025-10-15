@@ -47,7 +47,7 @@ public class DataDictionaryDocumentTransformer(IServiceProvider serviceProvider)
                 if (field.Component != FormComponent.File || field.DataFile == null)
                     continue;
 
-                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/{field.Name}/file");
+                var filePathItem = new DataDictionaryPathItem($"/api/masterdata/{formElement.Name}/{{id}}/{field.Name}/file");
                 var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
 
                 if (formElement.ApiOptions.EnableGetDetail)
