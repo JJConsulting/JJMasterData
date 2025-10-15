@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.WebApi.Attributes;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ public static class DictionariesEndpoints
     public static IEndpointRouteBuilder MapDictionaries(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/data-dictionary")
-            .WithTags("Dictionaries");
+            .WithTags("Dictionaries")
+            .WithMetadata(new MasterDataApiAttribute());
 
         group.MapGet("/", async (IDataDictionaryRepository dataDictionaryRepository) =>
             {

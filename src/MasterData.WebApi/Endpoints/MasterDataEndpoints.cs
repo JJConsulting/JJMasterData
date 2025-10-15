@@ -1,6 +1,7 @@
 using System.Net;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.WebApi.Attributes;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ public static class MasterDataApiEndpoints
     {
         var group = app.MapGroup("api/masterdata/{elementName}")
             .ExcludeFromDescription()
+            .WithMetadata(new MasterDataApiAttribute())
             .WithTags("MasterData");
 
         group.MapGet("/", async (
