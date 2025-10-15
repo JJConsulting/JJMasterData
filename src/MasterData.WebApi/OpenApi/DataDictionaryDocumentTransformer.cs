@@ -1,9 +1,8 @@
-﻿using System.Reflection;
-using JJMasterData.Core.DataDictionary.Models;
+﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.OpenApi.Models;
 
-namespace JJMasterData.WebApi.Swagger;
+namespace JJMasterData.WebApi.OpenApi;
 
 public class DataDictionaryDocumentTransformer(IServiceProvider serviceProvider) 
 {
@@ -11,11 +10,14 @@ public class DataDictionaryDocumentTransformer(IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
         var dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
+        
         var formElements = await dataDictionaryRepository.GetFormElementListAsync();
-
+        
         foreach (var formElement in formElements)
         {
-            var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            var defaultPathItem = new DataDictionaryPathItem($"/api/masterdata/{formElement.Name}");
             var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
             var factory = new DataDictionaryOperationFactory(formElement, formElement.ApiOptions);
 

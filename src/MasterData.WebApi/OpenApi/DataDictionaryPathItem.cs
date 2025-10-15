@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace JJMasterData.WebApi.Swagger;
+namespace JJMasterData.WebApi.OpenApi;
 
 internal sealed class DataDictionaryPathItem
 {

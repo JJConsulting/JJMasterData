@@ -4,9 +4,9 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
-using static JJMasterData.WebApi.Swagger.DataDictionarySchema;
+using static JJMasterData.WebApi.OpenApi.DataDictionarySchema;
 
-namespace JJMasterData.WebApi.Swagger;
+namespace JJMasterData.WebApi.OpenApi;
 
 internal sealed class DataDictionaryOperationFactory
 {

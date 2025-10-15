@@ -338,7 +338,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     public async Task<Dictionary<string, FormValues>> PostTriggerAsync(
         string elementName, Dictionary<string, object>? paramValues, 
         PageState pageState, 
-        string objname = "")
+        string? objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
