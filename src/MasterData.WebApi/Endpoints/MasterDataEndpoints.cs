@@ -17,20 +17,23 @@ public static class MasterDataApiEndpoints
 
         group.MapGet("/", async (
             string elementName,
-            [FromQuery] int pag,
-            [FromQuery] int regporpag,
+            [FromQuery] int? pag,
+            [FromQuery] int? regporpag,
             [FromQuery] string? orderby,
             [FromQuery] int? tot,
             HttpRequest request,
             MasterApiService service) =>
         {
+            var currentPage = pag ?? 1;
+            var recordsPerPage = regporpag ?? 5;
+            
             if (request.Headers.Accept.ToString().Contains("text/csv"))
             {
-                var text = await service.GetListFieldAsTextAsync(elementName, pag, regporpag, orderby);
+                var text = await service.GetListFieldAsTextAsync(elementName, currentPage, recordsPerPage, orderby);
                 return Results.Text(text, "text/csv");
             }
 
-            var response = await service.GetListFieldsAsync(elementName, pag, regporpag, orderby, tot ?? 0);
+            var response = await service.GetListFieldsAsync(elementName, currentPage, recordsPerPage, orderby, tot ?? 0);
             return Results.Ok(response);
         })
         .Produces<MasterApiListResponse>();
