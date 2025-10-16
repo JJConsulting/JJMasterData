@@ -4,8 +4,10 @@ namespace JJMasterData.Web.Areas.MasterData.Models;
 
 public class InternalRedirectState
 {
+    public string ParentElementName { get; set; } = null!;
     public string? ElementName { get; set; }
     public RelationshipViewType RelationshipType { get; set; } = RelationshipViewType.List;
     public Dictionary<string, object> RelationValues { get; } = new();
     public bool ShowTitle { get; set; }
+    public bool OpenInModal { get; set; }
 }

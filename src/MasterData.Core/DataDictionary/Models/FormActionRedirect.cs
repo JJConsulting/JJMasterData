@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data.Entity.Models;
 
@@ -21,6 +22,10 @@ public class FormActionRedirect
     [JsonPropertyName("popupSize")]
     public ModalSize ModalSize { get; set; }
 
+    [JsonPropertyName("showAsModal")]
+    [Display(Name = "Show as Modal")]
+    public bool ShowAsModal { get; set; } = true;
+    
     public FormActionRedirect DeepCopy()
     {
         var copy = (FormActionRedirect)MemberwiseClone();

@@ -69,7 +69,7 @@
         <div id="div-internal-redirect" class="tab-pane fade">
             <div class="row">
 
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-6 mb-3 required">
                     <label class="@BootstrapHelper.Label" asp-for="ElementRedirect.ElementNameRedirect">@StringLocalizer["Element Name"]</label>
                     @if (Model.ElementRedirect.RelationFields.Count == 0)
                     {
@@ -83,15 +83,20 @@
                     }
                 </div>
 
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label class="@BootstrapHelper.Label" asp-for="ElementRedirect.ViewType">@StringLocalizer["View Type"]</label>
                     <select asp-for="ElementRedirect.ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
                 </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " asp-for="ElementRedirect.ModalSize">@StringLocalizer["Popup Size"]</label>
-                     <select asp-for="ElementRedirect.ModalSize" class="form-control" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
+                
+                <div class="@BootstrapHelper.FormGroup col-sm-6 mb-3">
+                    <checkbox for="ElementRedirect.ShowAsModal" layout="Switch"/>
                 </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <label class="@BootstrapHelper.Label " asp-for="ElementRedirect.ModalSize">@StringLocalizer["Popup Size"]</label>
+                    <select asp-for="ElementRedirect.ViewType" class="form-control" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
+                </div>
+                
 
             </div>
             <collapse-panel title="@StringLocalizer["Relation"]" icon="SolidCodeBranch" expanded-by-default="true">

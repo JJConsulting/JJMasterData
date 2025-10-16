@@ -161,15 +161,18 @@ class ActionHelper {
             }
         });
     }
-    static executeInternalRedirect(url, modalSize, confirmationMessage) {
-        return __awaiter(this, void 0, void 0, function* () {
+    static executeInternalRedirect(url_1, modalSize_1, confirmationMessage_1) {
+        return __awaiter(this, arguments, void 0, function* (url, modalSize, confirmationMessage, isModal = true) {
             if (confirmationMessage) {
                 const confirmed = yield showConfirmationMessage(confirmationMessage);
                 if (!confirmed) {
                     return false;
                 }
             }
-            defaultModal.showIframe(url, "", modalSize);
+            if (isModal)
+                defaultModal.showIframe(url, "", modalSize);
+            else
+                window.location.href = url;
         });
     }
     static executeActionData(actionData) {

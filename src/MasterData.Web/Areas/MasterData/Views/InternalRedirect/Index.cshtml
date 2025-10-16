@@ -6,13 +6,18 @@
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = Model.IsModal ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
 @using (Html.BeginMasterDataForm())
 {
     <script lang="javascript" type="text/javascript">
-        window.parent.defaultModal.modalTitle = '@Html.Raw(Model.Title)';
+        @if (Model.IsModal)
+        {
+            <text>
+                window.parent.defaultModal.modalTitle = '@Html.Raw(Model.Title)';
+            </text>
+        }
         @if (Model.SubmitParentWindow)
         {
             <text>
@@ -26,7 +31,14 @@
     @if (Model.ShowToolbar)
     {
         <div id="divToolbar">
-            <link-button text="@StringLocalizer["Cancel"]" icon="SolidXmark" on-client-click="window.parent.defaultModal.hide();"/>
+            @if (Model.IsModal)
+            {
+                <link-button text="@StringLocalizer["Cancel"]" icon="SolidXmark" on-client-click="window.parent.defaultModal.hide()"/>
+            }
+            else
+            {
+                <link-button text="@StringLocalizer["Cancel"]" icon="SolidXmark" asp-controller="Form" asp-action="Render" asp-route-elementName="@Model.ParentElementName"/>
+            }
             <link-button text="@StringLocalizer["Save"]" type="LinkButtonType.Submit" icon="Check" color="Primary" asp-action="Save"
                          asp-route-parameters="@Context.Request.Query["parameters"]"/>
         </div>
@@ -34,5 +46,11 @@
         <br/>
 
         <validation-summary/>
+    }
+    else if (!Model.IsModal)
+    {
+        <div id="divToolbar">
+            <link-button text="@StringLocalizer["Cancel"]" icon="SolidXmark" asp-controller="Form" asp-action="Render" asp-route-elementName="@Model.ParentElementName"/>
+        </div>
     }
 }

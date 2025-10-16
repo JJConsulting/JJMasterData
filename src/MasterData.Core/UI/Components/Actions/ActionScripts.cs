@@ -38,7 +38,9 @@ public class ActionScripts(
         @params.Append(actionContext.FormElement.Name);
         @params.Append("&viewtype=");
         @params.Append((int)elementRedirect.ViewType);
-
+        @params.Append("&openInModal=");
+        @params.Append(elementRedirect.ShowAsModal ? '1' : '0');
+        
         foreach (var field in elementRedirect.RelationFields)
         {
             if (actionContext.FormStateData.Values.TryGetValue(field.InternalField, out var value))
@@ -58,7 +60,7 @@ public class ActionScripts(
             });
 
         return
-            $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}');";
+            $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}', {elementRedirect.ShowAsModal.ToString().ToLowerInvariant()});";
     }
 
     

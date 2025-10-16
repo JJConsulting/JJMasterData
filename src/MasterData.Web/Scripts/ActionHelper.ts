@@ -164,15 +164,18 @@ class ActionHelper {
         })
     }
 
-    private static async executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string) {
+    private static async executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string, isModal: boolean = true) {
         if (confirmationMessage) {
             const confirmed = await showConfirmationMessage(confirmationMessage);
             if (!confirmed) {
                 return false;
             }
         }
-
-        defaultModal.showIframe(url, "", modalSize);
+        
+        if(isModal)
+            defaultModal.showIframe(url, "", modalSize);
+        else
+            window.location.href = url;
     }
 
     static async executeActionData(actionData: ActionData) {

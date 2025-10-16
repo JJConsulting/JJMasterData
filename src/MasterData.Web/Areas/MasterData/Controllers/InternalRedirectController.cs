@@ -51,7 +51,9 @@ public class InternalRedirectController(
                 {
                     HtmlContent = result.Content,
                     ShowToolbar = false,
-                    Title = title ?? formView.Name
+                    Title = title ?? formView.Name,
+                    IsModal = state.OpenInModal,
+                    ParentElementName = state.ParentElementName
                 };
                 break;
             }
@@ -74,9 +76,11 @@ public class InternalRedirectController(
                 var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.View))?.ToString();
                 model = new()
                 {
-                    HtmlContent =  result.Content,
+                    HtmlContent = result.Content,
                     ShowToolbar = false,
-                    Title = title ?? formView.Name
+                    Title = title ?? formView.Name,
+                    IsModal = state.OpenInModal,
+                    ParentElementName = state.ParentElementName
                 };
                 break;
             }
@@ -111,7 +115,9 @@ public class InternalRedirectController(
                 {
                     HtmlContent = result.Content,
                     ShowToolbar = true,
-                    Title = title ?? formView.Name
+                    Title = title ?? formView.Name,
+                    IsModal = state.OpenInModal,
+                    ParentElementName = state.ParentElementName
                 };
                 break;
             }
@@ -161,10 +167,16 @@ public class InternalRedirectController(
             return actionResult;
 
         var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.Update))?.ToString();
+        
+        if(!hasErrors && state.OpenInModal)
+            return RedirectToAction("Render","Form", new {Area="MasterData", elementName = state.ElementName});
+        
         var model = new InternalRedirectViewModel
         {
             HtmlContent = result.Content,
             ShowToolbar = true,
+            IsModal = state.OpenInModal,
+            ParentElementName = state.ParentElementName,
             SubmitParentWindow = !hasErrors,
             Title = title ?? panel.Name
         };
@@ -197,6 +209,12 @@ public class InternalRedirectController(
                     break;
                 case "viewtype":
                     state.RelationshipType = (RelationshipViewType)int.Parse(@params.Get(key) ?? string.Empty);
+                    break;
+                case "parentelementname":
+                    state.ParentElementName = @params.Get(key)!;
+                    break;
+                case "openinmodal":
+                    state.OpenInModal = @params.Get(key) == "1";
                     break;
                 default:
                     state.RelationValues.Add(key, @params.Get(key)!);
