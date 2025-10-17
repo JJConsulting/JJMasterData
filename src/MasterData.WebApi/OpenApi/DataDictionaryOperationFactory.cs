@@ -107,7 +107,7 @@ internal sealed class DataDictionaryOperationFactory
                     Required = true,
                     Schema = new OpenApiSchema
                     {
-                        Type = "string"
+                        Type = "string",
                     }
                 },
                 AcceptLanguageParameter
@@ -248,7 +248,8 @@ internal sealed class DataDictionaryOperationFactory
                     Name = Options.GetJsonFieldName(fieldName),
                     Description = description,
                     In = ParameterLocation.Query,
-                    Required = false
+                    Required = false,
+                    Schema = schema
                 };
 
                 if (field is { Component: FormComponent.ComboBox, DataItem.Items.Count: > 0 })
@@ -271,17 +272,14 @@ internal sealed class DataDictionaryOperationFactory
                         Schema = new OpenApiSchema
                         {
                             Type = schema.Type,
-                            Default = null,
+                            Default = new OpenApiNull(),
                             Enum = enums,
                         }
                     });
 
                     parameter.Content = content;
                 }
-                else
-                {
-                    parameter.Schema = schema;
-                }
+ 
 
                 operation.Parameters.Add(parameter);
             }
@@ -662,6 +660,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
+                    Schema = GetResponseSchema(ModelName),
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
@@ -748,6 +747,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
+                    Schema = GetResponseSchema(ModelName),
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
@@ -810,6 +810,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
+                    Schema = GetResponseSchema(ModelName),
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
@@ -885,6 +886,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
+                    Schema = GetResponseSchema(ModelName),
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }

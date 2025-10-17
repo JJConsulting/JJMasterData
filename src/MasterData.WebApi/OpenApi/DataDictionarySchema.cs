@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Data.Entity.Models;
+﻿#nullable enable
+
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -36,7 +38,7 @@ internal static class DataDictionarySchema
         }
 
         if (modelSchema.Required.Count == 0)
-            modelSchema.Required = null;
+            modelSchema.Required.Clear();
 
         modelSchema.Example = example;
 
@@ -117,7 +119,7 @@ internal static class DataDictionarySchema
             itemSchema.Description += $"<br> {item.HelpDescription}";
 
         itemSchema.ReadOnly = item.DataBehavior == FieldBehavior.ViewOnly;
-
+        
         return itemSchema;
     }
 
