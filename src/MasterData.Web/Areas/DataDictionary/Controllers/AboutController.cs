@@ -1,6 +1,6 @@
 using System.Reflection;
 using JJMasterData.Web.Areas.DataDictionary.Models;
-using JJMasterData.Web.Areas.DataDictionary.Services;
+using JJMasterData.Web.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -13,11 +13,11 @@ public class AboutController : DataDictionaryController
         var executingAssembly = Assembly.GetExecutingAssembly();
         var model = new AboutViewModel
         {
-            ExecutingAssemblyProduct = AboutService.GetAssemblyProduct(executingAssembly),
+            ExecutingAssemblyProduct = AssemblyHelper.GetAssemblyProduct(executingAssembly),
             ExecutingAssemblyVersion = executingAssembly.GetName()
                 .Version!.ToString(),
-            ExecutingAssemblyCopyright = AboutService.GetAssemblyCopyright(executingAssembly),
-            ExecutingAssemblyLastWriteTime = AboutService.GetAssemblyDate(executingAssembly)
+            ExecutingAssemblyCopyright = AssemblyHelper.GetAssemblyCopyright(executingAssembly),
+            ExecutingAssemblyLastWriteTime = AssemblyHelper.GetLastWriteTimeUtc(executingAssembly)
         };
 
         return PartialView("Index", model);
