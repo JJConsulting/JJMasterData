@@ -21,10 +21,13 @@ internal sealed class EntityRepository(
     IConnectionRepository connectionRepository
     ) : IEntityRepository
 {
+    private readonly ILogger<EntityRepository> _logger = loggerFactory.CreateLogger<EntityRepository>();
+    
     public int Update(Element element, Dictionary<string, object?> values)
     {
         var dataAccess = GetDataAccess(element.ConnectionId);
         var cmd = provider.GetUpdateCommand(element, values);
+        
         int numberRowsAffected = dataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
@@ -494,6 +497,8 @@ internal sealed class EntityRepository(
         var command = provider.GetReadCommand(element, entityParameters, totalParameter);
 
         var dataAccess = GetDataAccess(element.ConnectionId);
+        
+        _logger.LogInformation("Executing DataAccess command: {@command}", command);
         
         var list =  await dataAccess.GetDictionaryListAsync(command);
 

@@ -12,19 +12,19 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="JetBrains.Annotations" Version="2025.2.0"/>
-		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.8" />
+		<PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.10" />
 		<PackageReference Update="Roslynator.Analyzers" Version="4.14.0" />
 		<PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="4.14.0" />
 		<PackageReference Update="Roslynator.Formatting.Analyzers" Version="4.14.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.8" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.10" />
 		<PackageReference Include="PolySharp" Version="1.14.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
