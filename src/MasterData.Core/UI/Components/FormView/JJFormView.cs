@@ -465,18 +465,21 @@ public class JJFormView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (!RouteContext.CanRender(FormElement))
-            return EmptyComponentResult.Value;
+        using (_logger.BeginFormElementScope(FormElement))
+        {
+            if (!RouteContext.CanRender(FormElement))
+                return EmptyComponentResult.Value;
 
-        if (RouteContext.IsCurrentFormElement(FormElement.Name))
-            return await GetFormResultAsync();
+            if (RouteContext.IsCurrentFormElement(FormElement.Name))
+                return await GetFormResultAsync();
 
-        if (RouteContext.ElementName == _options.AuditLogTableName)
-            return await AuditLogView.GetResultAsync();
+            if (RouteContext.ElementName == _options.AuditLogTableName)
+                return await AuditLogView.GetResultAsync();
 
-        var childFormView = await GetChildFormView();
+            var childFormView = await GetChildFormView();
 
-        return await childFormView.GetFormResultAsync();
+            return await childFormView.GetFormResultAsync();
+        }
     }
 
     private async Task<JJFormView> GetChildFormView()
