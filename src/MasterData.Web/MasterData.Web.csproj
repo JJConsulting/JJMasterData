@@ -25,6 +25,10 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <None Update="Styles\*.*" CopyToOutputDirectory="Always"/>
+    </ItemGroup>
+    
+    <ItemGroup>
         <PackageReference Include="AspNetCore.SassCompiler" Version="1.77.4" ReferenceOutputAssembly="false" />
         <PackageReference Include="JetBrains.Annotations" Version="2025.2.2"/>
         <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.8.3">
