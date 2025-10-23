@@ -4272,4 +4272,7 @@
   <data name="Do you want to recreate all procedures? Any changes made to the procedures will be lost." xml:space="preserve">
     <value>Deseja recriar todas as procedures? Quaisquer modificações feitas na procedure serão perdidas.</value>
   </data>
+  <data name="Test" xml:space="preserve">
+    <value>Teste</value>
+  </data>
 </root>
