@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Models;
+﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;

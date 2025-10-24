@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Web;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -25,7 +24,7 @@ public class ActionScripts(
     {
         var elementRedirect = action.ElementRedirect;
         string confirmationMessage =
-            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
         int popupSize = (int)elementRedirect.ModalSize;
 
         var @params = new StringBuilder();
@@ -78,10 +77,10 @@ public class ActionScripts(
                 ComponentContext.FormViewReload));
 
         var confirmationMessage =
-            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
 
         return
-            $"ActionHelper.executeHTMLTemplate('{actionContext.ParentComponentName}','{stringLocalizer[action.Text]}','{encryptedActionMap}','{encryptedRouteContext}',{(string.IsNullOrEmpty(confirmationMessage) ? "''" : $"'{confirmationMessage}'")});";
+            $"ActionHelper.executeHTMLTemplate('{actionContext.ParentComponentName}','{stringLocalizer[action.Text ?? string.Empty]}','{encryptedActionMap}','{encryptedRouteContext}',{(string.IsNullOrEmpty(confirmationMessage) ? "''" : $"'{confirmationMessage}'")});";
     }
 
     private string GetUrlRedirectScript(
@@ -91,7 +90,7 @@ public class ActionScripts(
     )
     {
         string confirmationMessage =
-            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
 
         string isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
         
@@ -128,7 +127,7 @@ public class ActionScripts(
         script.Append(',');
         script.Append(isOpenNewTabPage);
         script.Append(",'");
-        script.Append(stringLocalizer[action.ConfirmationMessage]);
+        script.Append(confirmationMessage);
         script.Append("');");
 
         return script.ToString();
@@ -146,7 +145,7 @@ public class ActionScripts(
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = encryptionService.EncryptObject(actionMap);
         var confirmationMessage =
-            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
         
         var actionData = new ActionData
         {
@@ -219,7 +218,7 @@ public class ActionScripts(
                 ComponentContext.FormViewReload));
 
         var confirmationMessage =
-            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
+            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
 
         return
             $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}', {(actionContext.IsSubmit ? "true" : "false")},{(string.IsNullOrEmpty(confirmationMessage) ? "''" : $"'{confirmationMessage}'")});";

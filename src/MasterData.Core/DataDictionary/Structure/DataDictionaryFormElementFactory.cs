@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;

@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;

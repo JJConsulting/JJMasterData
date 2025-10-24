@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Util;

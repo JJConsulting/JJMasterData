@@ -1,5 +1,4 @@
 using System;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.Extensions.Localization;
 

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;

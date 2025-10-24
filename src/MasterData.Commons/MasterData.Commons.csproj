@@ -10,6 +10,7 @@
 		<RootNamespace>JJMasterData.Commons</RootNamespace>
 		<AssemblyName>JJMasterData.Commons</AssemblyName>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
@@ -30,6 +31,10 @@
 		<PackageReference Include="System.Collections.Immutable" Version="9.0.5" />
 		<PackageReference Include="System.Text.Json" Version="9.0.4" />
 		<PackageReference Include="System.Threading.Channels" Version="9.0.4" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Using Include="JJMasterData.Commons.Resources"/>
 	</ItemGroup>
 	
 	<ItemGroup>

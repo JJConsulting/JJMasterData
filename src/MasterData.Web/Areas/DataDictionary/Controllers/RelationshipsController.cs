@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Localization;
+﻿using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;

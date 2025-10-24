@@ -24,4 +24,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="JJMasterData.Commons.Resources"/>
+  </ItemGroup>
 </Project>

@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;

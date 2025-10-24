@@ -1,5 +1,4 @@
 using System;
-using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Util;

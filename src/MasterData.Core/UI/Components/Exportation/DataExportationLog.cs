@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Html;

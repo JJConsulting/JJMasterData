@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Util;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;

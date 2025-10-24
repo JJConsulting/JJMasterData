@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 

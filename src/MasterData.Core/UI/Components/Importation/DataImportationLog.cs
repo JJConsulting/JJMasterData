@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;

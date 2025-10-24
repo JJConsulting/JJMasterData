@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks.Progress;
 using Microsoft.Extensions.Localization;
 

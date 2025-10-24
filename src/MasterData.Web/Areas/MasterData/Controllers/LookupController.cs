@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+﻿using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Extensions;

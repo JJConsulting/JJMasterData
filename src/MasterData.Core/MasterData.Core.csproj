@@ -92,4 +92,8 @@
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="JJMasterData.Commons.Resources"/>
+    </ItemGroup>
 </Project>

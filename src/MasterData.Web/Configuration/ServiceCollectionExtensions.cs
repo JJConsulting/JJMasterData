@@ -1,5 +1,4 @@
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Services;

@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Localization;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 

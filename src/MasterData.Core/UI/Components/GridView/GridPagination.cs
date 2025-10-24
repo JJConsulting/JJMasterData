@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;

@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using Fluid.Values;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
