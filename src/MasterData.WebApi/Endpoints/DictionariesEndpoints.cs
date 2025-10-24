@@ -10,7 +10,7 @@ namespace JJMasterData.WebApi.Endpoints;
 
 public static class DictionariesEndpoints
 {
-    public static IEndpointRouteBuilder MapDictionaries(this IEndpointRouteBuilder app)
+    public static RouteGroupBuilder MapDictionaries(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/data-dictionary")
             .WithTags("Dictionaries")
