@@ -12,6 +12,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\..\src\MasterData.Core\MasterData.Core.csproj" />
+      <ProjectReference Include="..\..\src\MasterData.WebApi\MasterData.WebApi.csproj" />
       <ProjectReference Include="..\..\src\Plugins\MasterData.Brasil\MasterData.Brasil.csproj" />
       <ProjectReference Include="..\..\src\Plugins\MasterData.Pdf\MasterData.Pdf.csproj" />
       <ProjectReference Include="..\..\src\MasterData.Web\MasterData.Web.csproj" />

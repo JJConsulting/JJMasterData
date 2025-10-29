@@ -51,7 +51,7 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
     {
         var values = context.Values;
         
-        var cpf = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
+        var cpf = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString()!);
 
         var birthDateFieldName = context.ConfigurationMap[BirthDateFieldKey]?.ToString();
         

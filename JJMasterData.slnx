@@ -16,8 +16,8 @@
     <Project Path="src\ConsoleApps\MasterData.LegacyMetadataMigrator\MasterData.LegacyMetadataMigrator.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Docs/">
-    <File Path="README.md" />
     <Project Path="doc\MasterData.Docs\MasterData.Docs.csproj" Type="Classic C#" />
+    <File Path="README.md" />
   </Folder>
   <Folder Name="/Plugins/">
     <Project Path="src\Plugins\MasterData.Brasil\MasterData.Brasil.csproj" Type="Classic C#" />
@@ -30,7 +30,6 @@
   <Folder Name="/Test/">
     <Project Path="test\MasterData.Commons.Test\MasterData.Commons.Test.csproj" Type="Classic C#" />
     <Project Path="test\MasterData.Core.Test\MasterData.Core.Test.csproj" Type="Classic C#" />
-    <Project Path="test\MasterData.WebApi.Test\MasterData.WebApi.Test.csproj" Type="Classic C#" />
     <Project Path="test\Plugins\MasterData.Brasil.Test\MasterData.Brasil.Test.csproj" Type="Classic C#" />
   </Folder>
   <Project Path="example\MasterData.WebEntryPoint\MasterData.WebEntryPoint.csproj" Type="Classic C#" />

@@ -33,7 +33,7 @@ public class CepPluginActionHandler(ICepService cepService, ExpressionsService e
     {
         var values = context.Values;
         
-        var cep = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
+        var cep = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString()!);
         
         var cepResult = await cepService.SearchCepAsync(cep);
         

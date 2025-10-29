@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,7 @@ namespace JJMasterData.WebApi.Test.Controllers;
 [CollectionDefinition("MasterApiController", DisableParallelization = true)]
 public class MasterApiControllerTest
 {
-    private readonly MasterApiController _controller = new(new Mock<MasterApiService>().Object);
+
 
     [Order(4)]
     [Theory]

@@ -10,7 +10,7 @@ internal sealed class CustomDateConverter(string dateFormat) : JsonConverter<Dat
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var dateString = reader.GetString();
-        return DateTime.ParseExact(dateString, dateFormat, CultureInfo.InvariantCulture);
+        return DateTime.ParseExact(dateString!, dateFormat, CultureInfo.InvariantCulture);
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
