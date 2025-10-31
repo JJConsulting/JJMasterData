@@ -26,9 +26,10 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
                 await using var jsonStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
 
                 var formElement = JsonSerializer.Deserialize<FormElement>(jsonStream);
+                if (formElement == null)
+                    throw new ArgumentNullException(nameof(formElement));
 
                 await dataDictionaryRepository.InsertOrReplaceAsync(formElement);
-                
                 Console.WriteLine($"Saving FormElement: {formElement.Name}");
 
                 folderDictionaries.Add(formElement);

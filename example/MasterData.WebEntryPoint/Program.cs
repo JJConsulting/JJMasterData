@@ -4,6 +4,8 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Web.Configuration;
 using Microsoft.AspNetCore.ResponseCompression;
 using JJMasterData.Pdf;
+using JJMasterData.WebApi.Configuration;
+using JJMasterData.WebApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +26,7 @@ builder.Services.Configure<HostOptions>(options =>
         BackgroundServiceExceptionBehavior.Ignore;
 });
 builder.Services.AddJJMasterDataWeb(builder.Configuration).WithPdfExportation();
-
+builder.Services.AddJJMasterDataWebApi();
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
@@ -47,7 +49,10 @@ app.UseStaticFiles();
 app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
-//Here you can also app.MapJJMasterData().RequireAuthorization();
-app.MapJJMasterData();
+await app.UseMasterDataSeedingAsync();
 
+//Here you can also app.MapDataDictionary().RequireAuthorization();
+app.MapDataDictionary();
+app.MapMasterData();
+app.MapMasterDataApi();
 app.Run();

@@ -23,7 +23,8 @@ public static class PythonEngineFactory
 
         var searchPaths = engine.GetSearchPaths();
 
-        var binPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase)?.Substring(6);
+        
+        var binPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         searchPaths.Add(Path.Combine(binPath!, "Lib"));
 
         foreach (var additionalPath in additionalPaths)

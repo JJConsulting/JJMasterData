@@ -141,10 +141,13 @@ public class ExpressionsMigrationService(
         }
     }
 
-    private static string FixQuotationMarks(string expression)
+    private static string FixQuotationMarks(string? expression)
     {
-        var quotedValues = StringManager.FindValuesByInterval(expression, '\'','\'');
-        var bracedValues = StringManager.FindValuesByInterval(expression, '{','}');
+        if (string.IsNullOrEmpty(expression))
+            return "val:1";
+        
+        var quotedValues = StringManager.FindValuesByInterval(expression, '\'','\'').ToList();
+        var bracedValues = StringManager.FindValuesByInterval(expression, '{','}').ToList();
 
         var newExpression = expression;
         

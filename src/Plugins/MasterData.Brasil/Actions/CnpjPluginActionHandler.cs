@@ -59,7 +59,7 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
     {
         var values = context.Values;
         
-        var cnpj = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
+        var cnpj = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString()!);
         
         receitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
         
