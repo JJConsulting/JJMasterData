@@ -29,13 +29,19 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
             var message = string.Empty;
 
             ValidateAllowedExtensions(formFile.FileName, allowedTypes);
-
+            
             var args = new FormUploadFileEventArgs(formFile);
             OnFileUploaded?.Invoke(this, args);
 
             if (OnFileUploadedAsync != null)
             {
                 await OnFileUploadedAsync.Invoke(this, args);
+            }
+
+            if (formFile.FileName.Contains(","))
+            {
+                dto.ErrorMessage = stringLocalizer["The filename cannot contain comma."];
+                return dto;
             }
 
             var errorMessage = args.ErrorMessage;
@@ -45,7 +51,10 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
             }
 
             if (!string.IsNullOrEmpty(errorMessage))
-                throw new JJMasterDataException(errorMessage);
+            {
+                dto.ErrorMessage = errorMessage;
+                return dto;
+            }
 
             dto.SuccessMessage = message;
         }

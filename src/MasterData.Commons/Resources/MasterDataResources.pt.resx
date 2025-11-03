@@ -33,6 +33,9 @@
     <value>--Selecione--</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="The filename cannot contain comma." xml:space="preserve">
+    <value>O nome do arquivo não pode conter vírgula.</value>
+  </data>
   <data name="None - The relationship is hidden and not rendered in any component." xml:space="preserve">
     <value>Nenhum - O relacionamento está oculto e não é renderizado em nenhum componente.</value>
   </data>
