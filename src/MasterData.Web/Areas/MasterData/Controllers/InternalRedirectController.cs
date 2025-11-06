@@ -168,7 +168,7 @@ public class InternalRedirectController(
 
         var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.Update))?.ToString();
         
-        if(!hasErrors && state.OpenInModal)
+        if(!hasErrors && !state.OpenInModal)
             return RedirectToAction("Render","Form", new {Area="MasterData", elementName = state.ElementName});
         
         var model = new InternalRedirectViewModel
