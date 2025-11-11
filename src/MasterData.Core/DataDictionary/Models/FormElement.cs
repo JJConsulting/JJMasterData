@@ -140,9 +140,10 @@ public class FormElement : Element
     {
         base.Fields = new ElementFieldList(fields.Cast<ElementField>().ToList());
         Fields = fields;
-        base.Relationships =
-            [..relationships.Where(r => r.ElementRelationship != null).
-                Select(r => r.ElementRelationship).ToList()!];
+        base.Relationships = relationships
+            .Where(r => r.ElementRelationship != null)
+            .Select(r => r.ElementRelationship)
+            .ToList()!;
         Relationships = relationships;
         Options = options ?? new FormElementOptions();
         ApiOptions = apiOptions ?? new FormElementApiOptions();
