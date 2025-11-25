@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -106,7 +109,7 @@ public class JJCollapsePanel : HtmlComponent
                 if (state.TitleIcon is not null)
                     div.AppendComponent(state.TitleIcon);
                 
-                div.AppendTextIf(state.TitleIcon != null, "&nbsp;");
+                div.AppendTextIf(state.TitleIcon != null, "\u00A0");
                 div.AppendText(state.Title);
             });
         });
@@ -159,7 +162,7 @@ public class JJCollapsePanel : HtmlComponent
                 div.Append(HtmlTag.A, a =>
                 {
                     a.AppendComponent(TitleIcon);
-                    a.AppendTextIf(TitleIcon != null, "&nbsp;");
+                    a.AppendTextIf(TitleIcon != null, "\u00A0");
                     a.AppendText(Title);
                 });
             });
@@ -181,8 +184,9 @@ public class JJCollapsePanel : HtmlComponent
             panelBody.Append(title.GetHtmlBlockquote());
         }
 
-        panelBody.AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent);
-        
+        if (!string.IsNullOrEmpty(HtmlContent))
+            panelBody.Append(new HtmlBuilder(HtmlContent, encode: false));
+
         if(HtmlBuilderContent is not null)
             panelBody.Append(HtmlBuilderContent);
 
@@ -207,7 +211,7 @@ public class JJCollapsePanel : HtmlComponent
 
                 foreach (var btn in state.Buttons)
                 {
-                    div.AppendText("&nbsp;");
+                    div.AppendText("\u00A0");
                     div.Append(btn.BuildHtml().WithCssClass("ms-1"));
                 }
             });

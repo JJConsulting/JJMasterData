@@ -136,7 +136,6 @@ public class ActionScripts(
     public string GetFormActionScript(
         ActionContext actionContext, 
         ActionSource actionSource, 
-        bool encode = true, 
         bool isAtModal = false)
     {
         
@@ -172,9 +171,6 @@ public class ActionScripts(
 
         var functionSignature = $"ActionHelper.executeAction('{actionDataJson}');";
 
-        if (encode)
-            return HttpUtility.HtmlAttributeEncode(functionSignature);
-
         return functionSignature;
     }
 
@@ -197,9 +193,9 @@ public class ActionScripts(
         {
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetSqlCommandScript(actionContext, actionSource),
-            ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(
+            ScriptAction jsAction => 
                 expressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ??
-                string.Empty),
+                string.Empty,
             InternalAction internalAction => GetInternalUrlScript(internalAction, actionContext),
             HtmlTemplateAction  => GetHtmlTemplateScript(actionContext, actionSource),
             _ => GetFormActionScript(actionContext, actionSource)

@@ -1,13 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Web;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;

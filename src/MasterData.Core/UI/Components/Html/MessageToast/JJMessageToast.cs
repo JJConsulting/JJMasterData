@@ -1,7 +1,9 @@
 ﻿#nullable enable
 
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Html;
+
 
 namespace JJMasterData.Core.UI.Components;
 

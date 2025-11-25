@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -252,7 +254,7 @@ public sealed class JJTextFile(IHttpRequest request,
         }
 
         var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
-        btnGroup.CaretText = $"{new JJIcon(IconType.CloudDownload).GetHtml()} {files.Length}&nbsp;{StringLocalizer["Files"]}";
+        btnGroup.CaretText = $"{new JJIcon(IconType.CloudDownload).GetHtml()} {files.Length} {StringLocalizer["Files"]}";
 
         btnGroup.Attributes.Add("onclick","event.stopPropagation()");
    

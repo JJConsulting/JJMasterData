@@ -7,7 +7,8 @@ using System.Web;
 using Fluid.Values;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Html.Templates;
@@ -180,7 +181,7 @@ public class HtmlTemplateFunctions(
                             {
                                 if (row.TryGetValue(header, out var value))
                                 {
-                                    td.AppendText(HttpUtility.HtmlEncode(value?.ToStringValue() ?? ""));
+                                    td.AppendText(value?.ToStringValue());
                                 }
                                 else
                                 {

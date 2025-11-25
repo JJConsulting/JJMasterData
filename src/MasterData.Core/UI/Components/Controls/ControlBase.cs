@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using JJConsulting.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 
 namespace JJMasterData.Core.UI.Components;
 

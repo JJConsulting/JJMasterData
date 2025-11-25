@@ -1,5 +1,7 @@
 ﻿#nullable enable
-using JJMasterData.Core.UI.Html;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
+
 
 namespace JJMasterData.Core.UI.Components;
 

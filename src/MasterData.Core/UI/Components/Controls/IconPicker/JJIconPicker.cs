@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using Microsoft.Extensions.Localization;
 
 

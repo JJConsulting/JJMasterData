@@ -2,9 +2,12 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.Html;
+
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -93,7 +96,8 @@ public class JJAlert : HtmlComponent
                     {
                         ul.Append(HtmlTag.Li, li =>
                         {
-                            li.AppendText(message);
+                            //TODO:
+                            li.Append(new HtmlBuilder(message, encode:false));
                         });
                     }
                 });

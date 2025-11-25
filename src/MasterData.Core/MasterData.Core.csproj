@@ -31,6 +31,7 @@
     
     <ItemGroup>
         <PackageReference Include="Fluid.Core" Version="2.25.0" />
+        <PackageReference Include="JJConsulting.Html" Version="1.0.0" />
         <PackageReference Include="NCalcSync" Version="5.7.0" />
         <PackageReference Include="NCalc.MemoryCache" Version="5.7.0" />
         <PackageReference Include="NCalc.DependencyInjection" Version="5.7.0" />

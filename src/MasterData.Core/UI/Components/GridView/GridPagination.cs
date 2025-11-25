@@ -2,8 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -156,7 +158,7 @@ internal sealed class GridPagination(JJGridView gridView)
         {
             var totalOfRecordsHtml = new HtmlBuilder(HtmlTag.Strong);
             totalOfRecordsHtml.WithId($"{gridView.Name}-total-of-records");
-            totalOfRecordsHtml.AppendText(totalOfRecords);
+            totalOfRecordsHtml.AppendText(totalOfRecords.ToString());
 
             span.Append(totalOfRecordsHtml);
             span.AppendText($" {_stringLocalizer["record(s)"]}");
@@ -178,7 +180,7 @@ internal sealed class GridPagination(JJGridView gridView)
 
             var recordsHtml = new HtmlBuilder(HtmlTag.Strong);
             recordsHtml.WithId($"{gridView.Name}-total-of-records");
-            recordsHtml.AppendText(totalOfRecords);
+            recordsHtml.AppendText(totalOfRecords.ToString());
 
             span.Append(recordsHtml).AppendText($" {_stringLocalizer["records"]}");
         }
@@ -188,7 +190,7 @@ internal sealed class GridPagination(JJGridView gridView)
             span.AppendBr();
 
             var totalOfPagesHtml = new HtmlBuilder(HtmlTag.Strong);
-            totalOfPagesHtml.AppendText(_totalOfPages);
+            totalOfPagesHtml.AppendText(_totalOfPages.ToString());
 
             span.Append(totalOfPagesHtml);
 

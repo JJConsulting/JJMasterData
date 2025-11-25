@@ -1,5 +1,6 @@
-﻿using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+﻿using JJConsulting.Html;
+using JJMasterData.Core.Http.Abstractions;
+
 
 namespace JJMasterData.Core.UI.Components;
 

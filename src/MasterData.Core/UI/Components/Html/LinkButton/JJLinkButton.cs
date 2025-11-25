@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
 using JetBrains.Annotations;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -127,7 +129,7 @@ public class JJLinkButton : HtmlComponent
         }
 
         if (!string.IsNullOrEmpty(Text)) 
-            html.AppendText("&nbsp;" + Text);
+            html.AppendText("\u00A0" + Text);
         
         html.Append(InnerHtml);
         

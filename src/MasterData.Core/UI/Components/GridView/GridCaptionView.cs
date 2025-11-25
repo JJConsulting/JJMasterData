@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -55,7 +57,7 @@ internal sealed class GridCaptionView(
                     {
                         CssClass = "fa-fw fa-2x"
                     });
-                    div.AppendText("&nbsp;&nbsp;");
+                    div.AppendText(" ");
                     div.AppendText(stringLocalizer[item.Description]);
                     div.Append(HtmlTag.Br);
                 });

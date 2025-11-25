@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -14,9 +16,10 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
-using JJMasterData.Core.UI.Html;
+
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 #if NET48

@@ -5,14 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
@@ -284,8 +287,8 @@ public class JJSearchBox : ControlBase, IDataItemControl
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
-            input.WithAttribute(TriggerLengthAttribute, TriggerLength);
-            input.WithAttribute(NumberOfItemsAttribute, NumberOfItems);
+            input.WithAttribute(TriggerLengthAttribute, TriggerLength.ToString());
+            input.WithAttribute(NumberOfItemsAttribute, NumberOfItems.ToString());
             input.WithToolTip(Tooltip);
             input.WithCssClass("form-control jj-search-box");
             

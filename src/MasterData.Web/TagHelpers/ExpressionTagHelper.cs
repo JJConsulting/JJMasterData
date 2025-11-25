@@ -1,11 +1,12 @@
 using System.ComponentModel;
 using System.Web;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using HtmlBuilder = JJMasterData.Core.UI.Html.HtmlBuilder;
 
 namespace JJMasterData.Web.TagHelpers;
 

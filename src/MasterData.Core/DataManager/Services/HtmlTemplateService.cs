@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -10,7 +12,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Html.Templates;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Html;
+
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -60,7 +62,7 @@ public class HtmlTemplateService(
         {
             iframe.WithCssClass("modal-iframe");
             iframe.WithId("jjmasterdata-template-iframe");
-            iframe.WithAttribute("srcdoc", HttpUtility.HtmlAttributeEncode(renderedTemplate));
+            iframe.WithAttribute("srcdoc", renderedTemplate);
         });
 
         return html;

@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -24,11 +26,12 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.UI.Events;
 using JJMasterData.Core.UI.Events.Args;
-using JJMasterData.Core.UI.Html;
+
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -832,7 +835,7 @@ public class JJGridView : AsyncComponent
                             .Append(HtmlTag.Strong, strong =>
                             {
                                 strong.WithId($"{Name}-total-of-records");
-                                strong.AppendText(TotalOfRecords);
+                                strong.AppendText(TotalOfRecords.ToString());
                             })
                             .AppendText($" {StringLocalizer["record(s)"]}");
                     });

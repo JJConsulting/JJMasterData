@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using JJConsulting.Html;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Html;
+
 
 namespace JJMasterData.Core.UI.Components;
 

@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
-using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -47,7 +49,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 
                 div.WithCssClass($"col-sm-12 {BootstrapHelper.TextRight}");
                 div.AppendComponent(btnOk);
-                div.AppendText("&nbsp;");
+                div.AppendText(" ");
                 div.AppendComponent(btnCancel);
             });
         });
@@ -84,7 +86,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                     IconClass = "text-info fa fa-info-circle"
                 });
                 label.AppendText(
-                    $"&nbsp;{_stringLocalizer["Filters performed in the previous screen will be considered in the export"]}");
+                    $" {_stringLocalizer["Filters performed in the previous screen will be considered in the export"]}");
             });
         });
 
@@ -306,7 +308,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");
             div.AppendComponent(icon);
-            div.AppendText("&nbsp;");
+            div.AppendText(" ");
             div.Append(HtmlTag.A, a =>
             {
                 a.WithAttribute("href", url);

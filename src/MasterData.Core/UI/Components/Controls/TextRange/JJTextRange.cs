@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
@@ -100,7 +103,7 @@ public class JJTextRange(IFormValues formValues,
             .WithAttribute("aria-haspopup", "true")
             .WithAttribute("aria-expanded", "true")
             .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
-            .AppendText($"{StringLocalizer["Periods"]}&nbsp;")
+            .AppendText($"{StringLocalizer["Periods"]} ")
             .Append(HtmlTag.Span, span => span.WithCssClass("caret"));
     }
 

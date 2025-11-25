@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Globalization;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -29,7 +32,7 @@ internal sealed class DataImportationLog
             .Append(GetSummaryHtml())
             .Append(HtmlTag.Div, div =>
             {
-                div.AppendText("&nbsp;");
+                div.AppendText("\u00A0");
             })
             .Append(GetLogDetailsHtml());
 
@@ -133,7 +136,7 @@ internal sealed class DataImportationLog
         {
             panel.HtmlBuilderContent.Append(HtmlTag.Br)
                 .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["UserId:"]))
-                .AppendText("&nbsp;")
+                .AppendText("\u00A0")
                 .AppendText(_reporter.UserId.ToString(CultureInfo.CurrentCulture));
         }
 

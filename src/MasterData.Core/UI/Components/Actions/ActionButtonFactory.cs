@@ -187,7 +187,7 @@ public class ActionButtonFactory(
                     else
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
                     
-                    button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar,true,isAtModal);
+                    button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar,isAtModal);
                     break;
             }
         }

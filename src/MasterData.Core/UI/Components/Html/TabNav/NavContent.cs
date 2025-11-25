@@ -1,5 +1,6 @@
-﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Html;
+﻿using JJConsulting.Html;
+using JJMasterData.Core.DataDictionary;
+
 
 namespace JJMasterData.Core.UI.Components;
 

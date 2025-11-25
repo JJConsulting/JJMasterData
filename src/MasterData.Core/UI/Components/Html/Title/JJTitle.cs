@@ -1,8 +1,11 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.Html;
+
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -58,11 +61,14 @@ public sealed class JJTitle : HtmlComponent
                     });
                 }
                 tag.AppendText(Title);
-                tag.Append(HtmlTag.Small, SubTitle, static (subTitle,small) =>
+                if (!string.IsNullOrEmpty(SubTitle))
                 {
-                    small.WithCssClass("sub-title");
-                    small.AppendText($" {subTitle}");
-                });
+                    tag.Append(HtmlTag.Small, SubTitle, static (subTitle,small) =>
+                    {
+                        small.WithCssClass("sub-title");
+                        small.AppendText($" {subTitle}");
+                    });
+                }
             });
         }
         else
@@ -86,7 +92,7 @@ public sealed class JJTitle : HtmlComponent
                         a.AppendComponent(new JJIcon(action.Icon!.Value));
                     
                     if (!string.IsNullOrEmpty(action.Text))
-                        a.AppendText("&nbsp;" + action.Text!);
+                        a.AppendText(" " + action.Text!);
                     
                     a.WithToolTip(action.Tooltip);
                 });

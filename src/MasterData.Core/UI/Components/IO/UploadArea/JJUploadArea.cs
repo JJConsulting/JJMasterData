@@ -5,14 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
-using JJMasterData.Core.UI.Html;
+
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -184,8 +187,8 @@ public class JJUploadArea : AsyncComponent
         div.WithAttribute("allow-copy-paste", EnableCopyPaste.ToString().ToLower());
         div.WithAttribute("show-file-size", ShowFileSize.ToString().ToLower());
         div.WithAttribute("allowed-types", GetAllowedTypes());     
-        div.WithAttribute("max-files", Multiple ? MaxFiles : 1);
-        div.WithAttribute("parallel-uploads", ParallelUploads);
+        div.WithAttribute("max-files", Multiple ? MaxFiles.ToString() : 1.ToString());
+        div.WithAttribute("parallel-uploads", ParallelUploads.ToString());
         div.WithAttribute("drag-drop-label", _stringLocalizer[GetUploadAreaLabel()]);
         div.WithAttribute("cancel-label", _stringLocalizer[CancelLabel]);
         div.WithAttribute("abort-label", _stringLocalizer[AbortLabel]);

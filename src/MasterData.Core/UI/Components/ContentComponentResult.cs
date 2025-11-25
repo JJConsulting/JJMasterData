@@ -1,7 +1,8 @@
 #nullable enable
 
 using System.Threading.Tasks;
-using JJMasterData.Core.UI.Html;
+using JJConsulting.Html;
+
 #if NET
 using Microsoft.AspNetCore.Mvc;
 #endif

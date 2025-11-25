@@ -1,9 +1,8 @@
-﻿#nullable enable
-
+﻿using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.UI.Html;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using JJMasterData.Web.Models;

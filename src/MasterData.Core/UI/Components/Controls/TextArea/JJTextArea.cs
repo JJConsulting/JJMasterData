@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -38,7 +41,7 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
             .WithToolTip(Tooltip)
             .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
             .WithAttribute("cols", "20")
-            .WithAttribute("rows", Rows)
+            .WithAttribute("rows", Rows.ToString())
             .WithAttributeIf(hasMaxLength,"maximum-limit-of-characters-label", StringLocalizer["Maximum limit of {0} characters!"])
             .WithAttributeIf(hasMaxLength,"characters-remaining-label", StringLocalizer["({0} characters remaining)"])
             .WithAttributeIf(hasMaxLength, "maxlength", MaxLength.ToString())

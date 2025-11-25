@@ -1,6 +1,8 @@
-﻿using JJMasterData.Commons.Util;
+﻿using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;

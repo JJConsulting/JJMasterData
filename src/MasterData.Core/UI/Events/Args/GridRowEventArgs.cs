@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using JJMasterData.Core.UI.Html;
+using JJConsulting.Html;
+
 
 namespace JJMasterData.Core.UI.Events.Args;
 

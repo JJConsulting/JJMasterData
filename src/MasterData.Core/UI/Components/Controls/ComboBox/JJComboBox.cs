@@ -5,11 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Html;
+
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -183,7 +186,7 @@ public class JJComboBox(
             option.WithAttribute("selected");
             
         if (DataItem.ShowIcon)
-            option.WithAttribute("data-content", HttpUtility.HtmlAttributeEncode(content.ToString()));
+            option.WithAttribute("data-content", content.ToString());
             
         if (!DataItem.ShowIcon)
             option.AppendText(label);
@@ -270,7 +273,7 @@ public class JJComboBox(
 
             div.Append(icon);
 
-            div.AppendText("&nbsp;");
+            div.AppendText(" ");
             div.AppendText(label);
 
             description = div.ToString();

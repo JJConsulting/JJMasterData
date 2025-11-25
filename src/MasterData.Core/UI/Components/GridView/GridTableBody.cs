@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
@@ -12,8 +14,9 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.UI.Events.Args;
-using JJMasterData.Core.UI.Html;
+
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
@@ -97,7 +100,7 @@ internal sealed class GridTableBody(JJGridView gridView)
             row.WithCssClass("grid-pagination-last-row");
                 
         row.WithAttribute("grid-name", gridView.Name);
-        row.WithAttribute("grid-pagination-next-page",gridView.CurrentPage + 1);
+        row.WithAttribute("grid-pagination-next-page",(gridView.CurrentPage + 1).ToString());
 
         var routeContext =
             RouteContext.FromFormElement(gridView.FormElement, ComponentContext.GridViewScrollPagination);
@@ -241,14 +244,14 @@ internal sealed class GridTableBody(JJGridView gridView)
         else if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
             var replacedTemplate = await gridView.HtmlTemplateService.RenderTemplate(field.GridRenderingTemplate!, formStateData.Values);
-            cell = new HtmlBuilder(replacedTemplate);
+            cell = new HtmlBuilder(replacedTemplate, encode:false);
         }
         else
         {
             var selector = new FormElementFieldSelector(gridView.FormElement, field.Name);
             var gridValue = await gridView.FieldFormattingService.FormatGridValueAsync(selector, formStateData);
             var gridStringValue = gridValue?.Trim() ?? string.Empty;
-            cell = new HtmlBuilder(gridStringValue);
+            cell = new HtmlBuilder(gridStringValue, encode:false);
         }
 
         if (OnRenderCellAsync == null) 

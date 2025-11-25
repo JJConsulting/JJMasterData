@@ -1,5 +1,5 @@
-﻿using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Html;
+﻿using JJConsulting.Html;
+using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
