@@ -49,9 +49,12 @@ public class JJModalDialog : HtmlComponent
                     
                     content.Append(HtmlTag.Div, body =>
                     {
-                        body.WithCssClass("modal-body")
-                            .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent!)
-                            .Append(HtmlBuilderContent);
+                        body.WithCssClass("modal-body");
+
+                        if (!string.IsNullOrEmpty(HtmlContent))
+                            body.Append(new HtmlBuilder(HtmlContent!, encode: false));
+
+                        body.Append(HtmlBuilderContent);
                     });
                     content.AppendIf(Buttons.Count > 0, HtmlTag.Div, footer =>
                     {

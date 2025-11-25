@@ -49,7 +49,7 @@ public class CardTagHelper(IComponentFactory<JJCard> cardFactory)
 
       
         var content = (await output.GetChildContentAsync()).GetContent();
-        card.HtmlBuilderContent = new HtmlBuilder(content);
+        card.HtmlBuilderContent = new HtmlBuilder(content, encode:false);
         
         
         Configure?.Invoke(card);

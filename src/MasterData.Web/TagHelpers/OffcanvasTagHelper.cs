@@ -26,7 +26,7 @@ public sealed class OffcanvasTagHelper(HtmlComponentFactory htmlComponentFactory
 
         var content = (await output.GetChildContentAsync()).GetContent();
 
-        offcanvas.Body = new HtmlBuilder(content);
+        offcanvas.Body = new HtmlBuilder(content, encode:false);
         
         output.TagName = null;
         output.Content.SetHtmlContent(offcanvas.GetHtml());

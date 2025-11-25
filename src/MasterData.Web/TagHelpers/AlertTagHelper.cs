@@ -54,7 +54,7 @@ public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
         var content = (await output.GetChildContentAsync()).GetContent();
 
         if (!string.IsNullOrEmpty(content))
-            alert.InnerHtml = new HtmlBuilder(content);
+            alert.InnerHtml = new HtmlBuilder(content, encode:false);
 
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(alert.GetHtml());
