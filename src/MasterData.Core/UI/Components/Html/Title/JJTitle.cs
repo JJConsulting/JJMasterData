@@ -114,7 +114,7 @@ public sealed class JJTitle : HtmlComponent
                 {
                     block.Append(HtmlTag.P, state.Title, static (title, p) =>
                     {
-                        p.AppendText(title);
+                        p.Append(new HtmlBuilder(title!, encode:false));
                     });
                 }
                 if (!string.IsNullOrEmpty(state.SubTitle))
@@ -123,7 +123,7 @@ public sealed class JJTitle : HtmlComponent
                     {
                         p.WithCssClass("blockquote-footer");
                         p.WithCssClassIf(string.IsNullOrEmpty(state.Title), "mt-1");
-                        p.AppendText(state.SubTitle);
+                        p.Append(new HtmlBuilder(state.SubTitle!, encode:false));
                     });
                 }
             });
