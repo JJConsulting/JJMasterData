@@ -2,15 +2,14 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @using JJMasterData.Core.UI.Components
-@using JJMasterData.Web.Extensions
+
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @{
     Layout = Model.IsModal ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
-@using (Html.BeginMasterDataForm())
-{
+<master-data-form method="POST">
     <script lang="javascript" type="text/javascript">
         @if (Model.IsModal)
         {
@@ -23,6 +22,12 @@
             <text>
                 submitParentWindow();
             </text>
+        }
+        
+        function submitForm(){
+            const form = $('#masterdata-form');
+            form.attr('action', '@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })');
+            form.trigger('submit');
         }
     </script>
 
@@ -39,8 +44,7 @@
             {
                 <link-button text="@StringLocalizer["Cancel"]" icon="SolidXmark" asp-controller="Form" asp-action="Render" asp-route-elementName="@Model.ParentElementName"/>
             }
-            <link-button text="@StringLocalizer["Save"]" type="LinkButtonType.Submit" icon="Check" color="Primary" asp-action="Save"
-                         asp-route-parameters="@Context.Request.Query["parameters"]"/>
+            <link-button text="@StringLocalizer["Save"]" type="LinkButtonType.Button" on-client-click="submitForm()" icon="Check" color="Primary"/>
         </div>
 
         <br/>
@@ -53,4 +57,4 @@
             <link-button text="@StringLocalizer["Cancel"]" icon="SolidXmark" asp-controller="Form" asp-action="Render" asp-route-elementName="@Model.ParentElementName"/>
         </div>
     }
-}
+</master-data-form>
