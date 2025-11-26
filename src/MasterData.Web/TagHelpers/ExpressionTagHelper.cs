@@ -111,7 +111,7 @@ public class ExpressionTagHelper : TagHelper
         if (value is null)
             return input;
         
-        input.WithValue(HttpUtility.HtmlEncode(value));
+        input.WithValue(value);
 
         if (!string.IsNullOrEmpty(Tooltip))
             input.WithToolTip(Tooltip);

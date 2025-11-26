@@ -1,12 +1,10 @@
 ﻿using System.Globalization;
 using System.Threading.Tasks;
-using System.Web;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -88,7 +86,7 @@ public class JJTextBox : ControlBase
             .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-group-separator",CultureInfo.NumberFormat.CurrencyGroupSeparator)
             
             .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-numeric")
-            .WithAttributeIfNotEmpty("value", HttpUtility.HtmlEncode(Text))
+            .WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");
         return html;
