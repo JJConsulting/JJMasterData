@@ -1,4 +1,5 @@
-﻿using JJConsulting.Html;
+﻿using JJConsulting.FontAwesome;
+using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -112,7 +113,7 @@ public class FieldController(
             {
                 Id = field.DataItem.Items.Count.ToString(),
                 Description = "",
-                Icon = IconType.Star,
+                Icon = FontAwesomeIcon.Star,
                 IconColor = "#ffffff"
             };
             field.DataItem.Items.Add(item);

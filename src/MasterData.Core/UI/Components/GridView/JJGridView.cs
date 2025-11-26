@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -879,7 +880,7 @@ public class JJGridView : AsyncComponent
                 .AppendText(StringLocalizer["Page must be between 1 and {0}.",totalPages])
                 .AppendLink("Click here to go to the first page.", $"javascript:{Scripts.GetPaginationScript(1)}"),
             Color = BootstrapColor.Warning,
-            Icon = IconType.SolidTriangleExclamation
+            Icon = FontAwesomeIcon.SolidTriangleExclamation
         };
     }
 
@@ -952,7 +953,7 @@ public class JJGridView : AsyncComponent
             ShowCloseButton = true,
             Color = BootstrapColor.Default,
             Title = StringLocalizer[EmptyDataText!],
-            Icon = IconType.InfoCircle
+            Icon = FontAwesomeIcon.InfoCircle
         };
 
         var hasFilter = await Filter.HasFilter();
@@ -961,7 +962,7 @@ public class JJGridView : AsyncComponent
             return alert.GetHtmlBuilder();
 
         alert.Messages.Add(StringLocalizer["There are filters applied for this query."]);
-        alert.Icon = IconType.Filter;
+        alert.Icon = FontAwesomeIcon.Filter;
 
         return alert.GetHtmlBuilder();
     }

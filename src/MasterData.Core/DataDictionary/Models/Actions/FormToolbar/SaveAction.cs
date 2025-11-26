@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -23,7 +24,7 @@ public sealed class SaveAction : FormToolbarAction, ISubmittableAction
     {
         Order = 1;
         Name = ActionName;
-        Icon = IconType.Check;
+        Icon = FontAwesomeIcon.Check;
         Text = "Save";
         Location = FormToolbarActionLocation.Panel;
         Color = BootstrapColor.Primary;

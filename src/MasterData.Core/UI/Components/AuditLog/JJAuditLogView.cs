@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -190,7 +191,7 @@ public class JJAuditLogView : AsyncComponent
             var alert = new JJAlert
             {
                 ShowIcon = true,
-                Icon = IconType.ExclamationTriangle,
+                Icon = FontAwesomeIcon.ExclamationTriangle,
                 Color = BootstrapColor.Warning,
                 Title = StringLocalizer["No records found."]
             };
@@ -316,7 +317,7 @@ public class JJAuditLogView : AsyncComponent
                 var alert = _componentFactory.Html.Alert.Create();
                 alert.Title = StringLocalizer["Warning"];
                 alert.Color = BootstrapColor.Warning;
-                alert.Icon = IconType.SolidTriangleExclamation;
+                alert.Icon = FontAwesomeIcon.SolidTriangleExclamation;
                 alert.Messages.Add(StringLocalizer["Audit Log is disabled. Please contact the administrator."]);
                 args.HtmlBuilder.AppendComponent(alert);
                 return ValueTaskHelper.CompletedTask;
@@ -332,7 +333,7 @@ public class JJAuditLogView : AsyncComponent
         btn.Type = LinkButtonType.Button;
         btn.CssClass = $"{BootstrapHelper.BtnDefault} btn-small";
         btn.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{FormElement.ParentName}','');";
-        btn.IconClass = IconType.ArrowLeft.GetCssClass();
+        btn.IconClass = "fa fa-arrow-left";
         btn.Text = StringLocalizer["Back"];
 
         var toolbar = new JJToolbar();
@@ -424,7 +425,7 @@ public class JJAuditLogView : AsyncComponent
                     div.Append(HtmlTag.Span, span =>
                     {
                         span.AppendText($"IP: {row["ip"]}");
-                        span.AppendComponent(new JJIcon(IconType.InfoCircle)
+                        span.AppendComponent(new JJIcon(FontAwesomeIcon.InfoCircle)
                         {
                             CssClass = "help-description",
                             Attributes =

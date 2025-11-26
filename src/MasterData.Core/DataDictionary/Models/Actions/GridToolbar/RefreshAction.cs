@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
+﻿using JJConsulting.FontAwesome;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class RefreshAction : GridToolbarAction
 {
@@ -7,7 +9,7 @@ public sealed class RefreshAction : GridToolbarAction
     {
         Name = ActionName;
         Tooltip = "Refresh";
-        Icon = IconType.Refresh;
+        Icon = FontAwesomeIcon.Refresh;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 6;

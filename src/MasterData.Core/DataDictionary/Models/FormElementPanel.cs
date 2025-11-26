@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data.Entity.Models;
 
 
@@ -30,7 +31,7 @@ public class FormElementPanel
 
     [JsonPropertyName("icon")]
     [Display(Name = "Icon")]
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
     
     [JsonPropertyName("expandedByDefault")]
     [Display(Name = "Expanded By Default")]

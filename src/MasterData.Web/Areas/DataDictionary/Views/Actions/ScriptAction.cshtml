@@ -1,5 +1,6 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
+@using JJConsulting.FontAwesome
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -33,7 +34,7 @@
   
             @if (ViewBag.ContextAction == ActionSource.Field)
             {
-                <alert title="@StringLocalizer["The script will be executed when the user clicks out of the component."]" color="Info" icon="IconType.InfoCircle"/>
+                <alert title="@StringLocalizer["The script will be executed when the user clicks out of the component."]" color="Info" icon="FontAwesomeIcon.InfoCircle"/>
             }
         </div>
 

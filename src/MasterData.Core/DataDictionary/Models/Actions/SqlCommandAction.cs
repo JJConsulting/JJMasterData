@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -37,7 +38,7 @@ public sealed class SqlCommandAction : BasicAction, ISubmittableAction
     
     public SqlCommandAction()
     {
-        Icon = IconType.Play;
+        Icon = FontAwesomeIcon.Play;
     }
     [JsonIgnore]
     public override bool IsUserDefined => true;

@@ -1,3 +1,4 @@
+using JJConsulting.FontAwesome;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 
@@ -14,7 +15,7 @@ public class IconTagHelper : TagHelper
     public string? Color { get; set; }
 
     [HtmlAttributeName("icon")]
-    public IconType Icon { get; set; }
+    public FontAwesomeIcon Icon { get; set; }
 
     
     [HtmlAttributeName("class")]

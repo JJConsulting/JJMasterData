@@ -1,3 +1,5 @@
+using JJConsulting.FontAwesome;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 internal sealed class InsertSelectionAction : GridTableAction
@@ -11,7 +13,7 @@ internal sealed class InsertSelectionAction : GridTableAction
     {
         Name = ActionName;
         IsDefaultOption = true;
-        Icon = IconType.CaretRight;
+        Icon = FontAwesomeIcon.CaretRight;
         Order = -1;
     }
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();

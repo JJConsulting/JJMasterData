@@ -1,5 +1,6 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 
+@using JJConsulting.FontAwesome
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -56,7 +57,7 @@
     </div>
 
     <div class="col-sm-9">
-        <alert color="Info" title="@StringLocalizer["Scope of execution of the process."]" icon="IconType.InfoCircle">
+        <alert color="Info" title="@StringLocalizer["Scope of execution of the process."]" icon="FontAwesomeIcon.InfoCircle">
             <b>@StringLocalizer["Global"]:</b>&nbsp;@StringLocalizer["Only one process from this element can be run at a time."]<br/>
             @StringLocalizer["and all users will be able to view the latest log and execution of an ongoing process."]
             <br/>

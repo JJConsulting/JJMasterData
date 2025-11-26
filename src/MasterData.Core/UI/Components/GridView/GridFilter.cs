@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -209,7 +210,7 @@ internal sealed class GridFilter(JJGridView gridView)
         if (action.ShowAsCollapse)
         {
             var hasFilter = await HasFilter();
-            var filterIcon = new JJIcon(IconType.Filter)
+            var filterIcon = new JJIcon(FontAwesomeIcon.Filter)
             {
                 CssClass = "text-info",
                 Name = gridView.Name + "-filter-icon",

@@ -1,4 +1,5 @@
-﻿using JJConsulting.Html;
+﻿using JJConsulting.FontAwesome;
+using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
@@ -23,7 +24,7 @@ public class JJSpinner : HtmlComponent
             .WithCssClass(CssClass)
             .WithAttributes(Attributes)
             .WithAttribute("role", "status")
-            .AppendIf(BootstrapHelper.Version == 3,()=> new JJIcon(IconType.Circle).BuildHtml())
+            .AppendIf(BootstrapHelper.Version == 3,()=> new JJIcon(FontAwesomeIcon.Circle).BuildHtml())
             .AppendIf(BootstrapHelper.Version != 3, HtmlTag.Span, s =>
             {
                 s.WithCssClass("visually-hidden");

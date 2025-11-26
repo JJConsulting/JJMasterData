@@ -1,3 +1,5 @@
+using JJConsulting.FontAwesome;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridSaveAction : GridToolbarAction
@@ -9,7 +11,7 @@ public sealed class GridSaveAction : GridToolbarAction
         Order = 1;
         Name = "grid-save";
         VisibleExpression = "val:0";
-        Icon = IconType.Check;
+        Icon = FontAwesomeIcon.Check;
         Text = "Save";
         Location = FormToolbarActionLocation.Panel;
         Color = BootstrapColor.Primary;

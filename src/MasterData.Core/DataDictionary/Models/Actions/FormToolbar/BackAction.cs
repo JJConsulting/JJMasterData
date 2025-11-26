@@ -2,6 +2,7 @@
 
 
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -21,7 +22,7 @@ public sealed class BackAction : FormToolbarAction, ISubmittableAction
     {
         Name = ActionName;
         VisibleExpression = "val:{IsView}";
-        Icon = IconType.ArrowLeft;
+        Icon = FontAwesomeIcon.ArrowLeft;
         ShowAsButton = true;
         Location = FormToolbarActionLocation.Bottom;
         Order = 0;

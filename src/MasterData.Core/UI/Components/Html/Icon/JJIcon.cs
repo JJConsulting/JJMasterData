@@ -1,4 +1,5 @@
-﻿using JJConsulting.Html;
+﻿using JJConsulting.FontAwesome;
+using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -21,17 +22,17 @@ public class JJIcon : HtmlComponent
     {
     }
     
-    public JJIcon(IconType icon)
+    public JJIcon(FontAwesomeIcon icon)
     {
         IconClass = icon.GetCssClass();
     }
 
-    public JJIcon(IconType icon, string color) : this(icon)
+    public JJIcon(FontAwesomeIcon icon, string color) : this(icon)
     {
         Color = color;
     }
 
-    public JJIcon(IconType icon, string color, string tooltip) : this(icon, color)
+    public JJIcon(FontAwesomeIcon icon, string color, string tooltip) : this(icon, color)
     {
         Tooltip = tooltip;
     }

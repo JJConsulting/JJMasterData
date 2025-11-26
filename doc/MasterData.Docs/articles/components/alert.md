@@ -30,7 +30,7 @@ quickly provide matching colored icons on any alert.
     alert.Messages.Add("A simple warning alert with icon - check it out!");
     alert.Color = PanelColor.Warning;
     alert.ShowIcon = true; 
-    alert.Icon = IconType.ExclamationTriangle;
+    alert.Icon = FontAwesomeIcon.ExclamationTriangle;
 ```
 
 <img alt="Importing" src="../../media/SimpleExampleIconJJAlert.png"/>
@@ -41,7 +41,7 @@ quickly provide matching colored icons on any alert.
     alert.Messages.Add("A simple info alert with icon and close button - check it out! - check it out!");
     alert.Color = PanelColor.Info;
     alert.ShowIcon = true;  
-    alert.Icon = IconType.InfoCircle;
+    alert.Icon = FontAwesomeIcon.InfoCircle;
     alert.ShowCloseButton = true;
 ```
 
@@ -55,7 +55,7 @@ JJAlert also have a TagHelper
     <jj-alert
         title="Success"
         message="Connection successfully estabilished."
-        icon="@IconType.CheckCircle"
+        icon="@FontAwesomeIcon.CheckCircle"
         color="@PanelColor.Success"/>
 ```
 

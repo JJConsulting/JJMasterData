@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -102,7 +103,7 @@ public class DataItemService(
             if (dataItem.ShowIcon)
             {
                 if (elementMap.IconIdFieldName != null)
-                    item.Icon = (IconType)int.Parse(value[elementMap.IconIdFieldName]?.ToString() ?? string.Empty);
+                    item.Icon = (FontAwesomeIcon)int.Parse(value[elementMap.IconIdFieldName]?.ToString() ?? string.Empty);
                 
                 if (elementMap.IconColorFieldName != null)
                     item.IconColor = value[elementMap.IconColorFieldName]?.ToString();
@@ -159,7 +160,7 @@ public class DataItemService(
                 
                 if (dataItem.ShowIcon)
                 {
-                    item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
+                    item.Icon = (FontAwesomeIcon)int.Parse(row[2].ToString() ?? string.Empty);
                     item.IconColor = row[3].ToString();
                     if (row.Table.Columns.Count >= 5)
                     {

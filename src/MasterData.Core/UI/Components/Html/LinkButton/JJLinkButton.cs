@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using JetBrains.Annotations;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
@@ -56,7 +57,7 @@ public class JJLinkButton : HtmlComponent
     
     public bool Enabled { get; set; } = true;
 
-    public IconType Icon
+    public FontAwesomeIcon Icon
     {
         set => IconClass = value.GetCssClass();
     }

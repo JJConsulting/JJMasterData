@@ -1,3 +1,4 @@
+using JJConsulting.FontAwesome;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 
@@ -18,7 +19,7 @@ public class TitleTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
     public HeadingSize? Size { get; set; }
 
     [HtmlAttributeName("icon")]
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
     
     [HtmlAttributeName("actions")]
     public List<TitleAction>? Actions {get; set; }

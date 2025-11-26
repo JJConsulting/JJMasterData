@@ -3,6 +3,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -73,7 +74,7 @@ public abstract class BasicAction
     /// Link/Button FontAwesome icon.
     /// </summary>
     [JsonPropertyName("icon")]
-    public IconType Icon { get; set; }
+    public FontAwesomeIcon Icon { get; set; }
 
     /// <summary>
     /// Display grid title

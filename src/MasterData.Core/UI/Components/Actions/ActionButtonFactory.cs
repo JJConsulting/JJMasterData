@@ -8,7 +8,7 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using Microsoft.Extensions.Localization;
-
+using JJConsulting.FontAwesome;
 namespace JJMasterData.Core.UI.Components;
 
 public class ActionButtonFactory(

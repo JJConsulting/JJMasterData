@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Serialization;
@@ -137,12 +138,12 @@ public class AuditLogService(
             Items = [],
             ShowIcon = true
         };
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, GetInsertColor()));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, GetUpdateColor()));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", IconType.Trash, GetDeleteColor()));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", FontAwesomeIcon.Plus, GetInsertColor()));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", FontAwesomeIcon.Pencil, GetUpdateColor()));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", FontAwesomeIcon.Trash, GetDeleteColor()));
         var btnViewLog = new ScriptAction
         {
-            Icon = IconType.Eye,
+            Icon = FontAwesomeIcon.Eye,
             Tooltip = "View"
         };
         btnViewLog.Name = nameof(btnViewLog);

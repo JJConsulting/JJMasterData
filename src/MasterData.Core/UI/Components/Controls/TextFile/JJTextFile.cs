@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -167,7 +168,7 @@ public sealed class JJTextFile(IHttpRequest request,
         button.ShowAsButton = true;
         button.OnClientClick = Scripts.GetShowScript();
         button.Tooltip = FormElementField.DataFile!.MultipleFile ? StringLocalizer["Manage Files"] : StringLocalizer["Manage File"];
-        button.IconClass = IconType.Paperclip.GetCssClass();
+        button.IconClass = "fa fa-paperclip";
 
         textGroup.Actions.Add(button);
 
@@ -254,7 +255,7 @@ public sealed class JJTextFile(IHttpRequest request,
         }
 
         var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
-        btnGroup.CaretText = $"{new JJIcon(IconType.CloudDownload).GetHtml()} {files.Length} {StringLocalizer["Files"]}";
+        btnGroup.CaretText = $"{new JJIcon(FontAwesomeIcon.CloudDownload).GetHtml()} {files.Length} {StringLocalizer["Files"]}";
 
         btnGroup.Attributes.Add("onclick","event.stopPropagation()");
    
@@ -269,7 +270,7 @@ public sealed class JJTextFile(IHttpRequest request,
     private JJLinkButton GetLinkButton(string filename)
     {
         var btn = ComponentFactory.Html.LinkButton.Create();
-        btn.IconClass = IconType.CloudDownload.GetCssClass();
+        btn.IconClass = "fa fa-cloud-download";
         btn.Text = filename;
         btn.Attributes.Add("onclick", "event.stopPropagation()");
         btn.UrlAction = GetDownloadLink(filename);

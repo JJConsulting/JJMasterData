@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
@@ -21,7 +22,7 @@ public class PluginAction : BasicAction
     {
         ShowAsButton = true;
         Text = "Plugin";
-        Icon = IconType.Plug;
+        Icon = FontAwesomeIcon.Plug;
     }
 
     public override bool IsUserDefined => true;

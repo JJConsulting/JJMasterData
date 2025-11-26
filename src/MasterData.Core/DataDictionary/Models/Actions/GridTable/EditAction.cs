@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -24,7 +25,7 @@ public sealed class EditAction : GridTableAction, IModalAction
         Name = ActionName;
         Tooltip = "Edit";
         ConfirmationMessage = "";
-        Icon = IconType.Pencil;
+        Icon = FontAwesomeIcon.Pencil;
         Order = 2;
     }
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();

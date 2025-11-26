@@ -1,3 +1,4 @@
+@using JJConsulting.FontAwesome
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.TagHelpers
 @model RelationshipsListViewModel
@@ -93,5 +94,5 @@
 
 @if (!Model.Relationships.Any())
 {
-    <alert icon="IconType.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default" show-close-button="false"/>
+    <alert icon="FontAwesomeIcon.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default" show-close-button="false"/>
 }

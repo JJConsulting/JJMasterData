@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -25,7 +26,7 @@ public sealed class ViewAction : GridTableAction, IModalAction
         Tooltip = "View";
         ConfirmationMessage = "";
         IsDefaultOption = true;
-        Icon = IconType.Eye;
+        Icon = FontAwesomeIcon.Eye;
         Order = 1;
     }
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();

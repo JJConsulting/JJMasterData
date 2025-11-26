@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Extensions;
@@ -274,7 +275,7 @@ public class JJDataImportation : ProcessComponent
         btnStop.ShowAsButton = true;
         btnStop.Visible = reporter.UserId == CurrentContext.User.GetUserId();
         btnStop.OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]);
-        btnStop.Icon = IconType.Stop;
+        btnStop.Icon = FontAwesomeIcon.Stop;
         btnStop.Text = StringLocalizer["Stop the importation"];
         html.AppendComponent(btnStop);
 
@@ -294,7 +295,7 @@ public class JJDataImportation : ProcessComponent
         
         var collapsePanel = new JJCollapsePanel(CurrentContext.Request.Form)
         {
-            TitleIcon = new JJIcon(IconType.Upload),
+            TitleIcon = new JJIcon(FontAwesomeIcon.Upload),
             Title = StringLocalizer["Upload File"],
             ExpandedByDefault = ExpandedByDefault,
             HtmlBuilderContent = UploadArea.GetUploadAreaHtmlBuilder()
@@ -417,7 +418,7 @@ public class JJDataImportation : ProcessComponent
     private JJLinkButton GetCloseButton()
     {
         var button = ComponentFactory.Html.LinkButton.Create();
-        button.Icon = IconType.SolidXmark;
+        button.Icon = FontAwesomeIcon.SolidXmark;
         button.Text = StringLocalizer["Close"];
         button.ShowAsButton = true;
         button.OnClientClick = DataImportationScripts.GetCloseModalScript();

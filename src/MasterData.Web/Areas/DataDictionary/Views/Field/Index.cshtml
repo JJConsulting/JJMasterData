@@ -1,4 +1,5 @@
 ﻿@using System.Text
+@using JJConsulting.FontAwesome
 @using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Core.DataDictionary.Models
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -39,36 +40,36 @@
     }
 
 
-    static IconType GetFontAwesomeIconClass(FormComponent component)
+    static FontAwesomeIcon GetFontAwesomeIconClass(FormComponent component)
     {
         return component switch
         {
-            FormComponent.Text => IconType.KeyboardO,
-            FormComponent.TextArea => IconType.AlignLeft,
-            FormComponent.Hour => IconType.ClockO,
-            FormComponent.Date => IconType.Calendar,
-            FormComponent.DateTime => IconType.Calendar,
-            FormComponent.Password => IconType.Lock,
-            FormComponent.Email => IconType.Envelope,
-            FormComponent.Number => IconType.Calculator,
-            FormComponent.ComboBox => IconType.CaretDown,
-            FormComponent.Search => IconType.Search,
-            FormComponent.RadioButtonGroup => IconType.RegularCircleDot,
-            FormComponent.CheckBox => IconType.CheckSquare,
-            FormComponent.Cnpj => IconType.SolidBuildingColumns,
-            FormComponent.Cpf => IconType.RegularIdCard,
-            FormComponent.CnpjCpf => IconType.RegularIdBadge,
-            FormComponent.Currency => IconType.Dollar,
-            FormComponent.Tel => IconType.Phone,
-            FormComponent.Cep => IconType.MapMarker,
-            FormComponent.Lookup => IconType.Binoculars,
-            FormComponent.File => IconType.File,
-            FormComponent.Slider => IconType.Sliders,
-            FormComponent.Color => IconType.SolidPaintbrush,
-            FormComponent.Icon => IconType.SolidIcons,
-            FormComponent.CodeEditor => IconType.Code,
-            FormComponent.Percentage => IconType.Percent,
-            _ => IconType.Question
+            FormComponent.Text => FontAwesomeIcon.KeyboardO,
+            FormComponent.TextArea => FontAwesomeIcon.AlignLeft,
+            FormComponent.Hour => FontAwesomeIcon.ClockO,
+            FormComponent.Date => FontAwesomeIcon.Calendar,
+            FormComponent.DateTime => FontAwesomeIcon.Calendar,
+            FormComponent.Password => FontAwesomeIcon.Lock,
+            FormComponent.Email => FontAwesomeIcon.Envelope,
+            FormComponent.Number => FontAwesomeIcon.Calculator,
+            FormComponent.ComboBox => FontAwesomeIcon.CaretDown,
+            FormComponent.Search => FontAwesomeIcon.Search,
+            FormComponent.RadioButtonGroup => FontAwesomeIcon.RegularCircleDot,
+            FormComponent.CheckBox => FontAwesomeIcon.CheckSquare,
+            FormComponent.Cnpj => FontAwesomeIcon.SolidBuildingColumns,
+            FormComponent.Cpf => FontAwesomeIcon.RegularIdCard,
+            FormComponent.CnpjCpf => FontAwesomeIcon.RegularIdBadge,
+            FormComponent.Currency => FontAwesomeIcon.Dollar,
+            FormComponent.Tel => FontAwesomeIcon.Phone,
+            FormComponent.Cep => FontAwesomeIcon.MapMarker,
+            FormComponent.Lookup => FontAwesomeIcon.Binoculars,
+            FormComponent.File => FontAwesomeIcon.File,
+            FormComponent.Slider => FontAwesomeIcon.Sliders,
+            FormComponent.Color => FontAwesomeIcon.SolidPaintbrush,
+            FormComponent.Icon => FontAwesomeIcon.SolidIcons,
+            FormComponent.CodeEditor => FontAwesomeIcon.Code,
+            FormComponent.Percentage => FontAwesomeIcon.Percent,
+            _ => FontAwesomeIcon.Question
         };
     }
 }
@@ -197,12 +198,12 @@
                                         }
                                         @if (field.Filter.Type is not FilterMode.None)
                                         {
-                                            <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip"
+                                            <span class="@FontAwesomeIcon.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip"
                                                   title="@field.Filter.Type.ToString()"></span>
                                         }
                                         @if (field.AutoPostBack)
                                         {
-                                            <span class="@IconType.SolidBoltLightning.GetCssClass() text-warning ms-1"
+                                            <span class="@FontAwesomeIcon.SolidBoltLightning.GetCssClass() text-warning ms-1"
                                                   data-bs-toggle="tooltip" title="AutoPostBack"></span>
                                         }
                                         <br>

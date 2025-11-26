@@ -2,6 +2,7 @@
 #nullable enable
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -23,7 +24,7 @@ public sealed class ExportAction : GridToolbarAction
     {
         Name = ActionName;
         Tooltip = "Export";
-        Icon = IconType.Download;
+        Icon = FontAwesomeIcon.Download;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 3;

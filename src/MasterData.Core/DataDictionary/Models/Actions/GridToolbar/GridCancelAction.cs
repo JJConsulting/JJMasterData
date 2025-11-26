@@ -1,3 +1,5 @@
+using JJConsulting.FontAwesome;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridCancelAction : GridToolbarAction
@@ -6,7 +8,7 @@ public sealed class GridCancelAction : GridToolbarAction
     public GridCancelAction()
     {
         Name = "grid-cancel";
-        Icon = IconType.SolidXmark;
+        Icon = FontAwesomeIcon.SolidXmark;
         Order = 0;
         Location = FormToolbarActionLocation.Panel;
         ShowAsButton = true;

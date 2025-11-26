@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -718,7 +719,7 @@ public class JJFormView : AsyncComponent
             Color = BootstrapColor.Success,
             Title = _stringLocalizer[GridView.InsertAction.SuccessMessage],
             ShowIcon = true,
-            Icon = IconType.CheckCircleO
+            Icon = FontAwesomeIcon.CheckCircleO
         };
 
         htmlBuilder.Append(HtmlTag.Div, div =>
@@ -1145,7 +1146,7 @@ public class JJFormView : AsyncComponent
         return new ScriptAction
         {
             Name = "back-action",
-            Icon = IconType.ArrowLeft,
+            Icon = FontAwesomeIcon.ArrowLeft,
             Text = _stringLocalizer["Back"],
             ShowAsButton = true,
             OnClientClick = Scripts.GetSetPageStateScript(PageState.List),
@@ -1278,7 +1279,7 @@ public class JJFormView : AsyncComponent
         var goBackAction = new ScriptAction
         {
             Name = "go-back-action",
-            Icon = IconType.Backward,
+            Icon = FontAwesomeIcon.Backward,
             ShowAsButton = true,
             Text = _stringLocalizer["Back"],
             OnClientClick = script.ToString()

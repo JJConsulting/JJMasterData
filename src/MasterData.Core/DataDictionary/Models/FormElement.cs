@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
 
@@ -33,7 +34,7 @@ public class FormElement : Element
     public string? SubTitle { get; set; }
     
     [JsonPropertyName("icon")]
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
 
     [JsonPropertyName("typeIdentifier")]
     public char TypeIdentifier { get; init; } = 'F';

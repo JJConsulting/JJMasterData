@@ -1,5 +1,6 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
+@using JJConsulting.FontAwesome
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.AuditLogFormToolbarAction
@@ -31,7 +32,7 @@
             title="@StringLocalizer["Warning"]" 
             message="@StringLocalizer["AuditLog is disabled at Options."]"
             color="Warning"
-            icon="IconType.SolidTriangleExclamation"
+            icon="FontAwesomeIcon.SolidTriangleExclamation"
         />
     }
     <partial name="_Toolbar"/>

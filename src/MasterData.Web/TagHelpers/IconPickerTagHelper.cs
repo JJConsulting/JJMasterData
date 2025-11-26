@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿using JJConsulting.FontAwesome;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -21,7 +22,7 @@ public class IconPickerTagHelper(
     public string? Name { get; set; }
 
     [HtmlAttributeName("value")] 
-    public IconType? Value { get; set; }
+    public FontAwesomeIcon? Value { get; set; }
 
     [HtmlAttributeName("enabled")]
     public bool Enabled { get; set; } = true;
@@ -38,11 +39,11 @@ public class IconPickerTagHelper(
 
         var id = Id ?? htmlHelper.Id(For?.Name) ?? name;
         
-        IconType? modelValue = null;
+        FontAwesomeIcon? modelValue = null;
 
         if (For is { Model: not null })
         {
-            modelValue = (IconType)For.Model;
+            modelValue = (FontAwesomeIcon)For.Model;
         }
         else if (Value is not null)
         {

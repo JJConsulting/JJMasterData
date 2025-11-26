@@ -1,3 +1,5 @@
+using JJConsulting.FontAwesome;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
@@ -11,7 +13,7 @@ public sealed class AuditLogFormToolbarAction : FormToolbarAction
     {
         Name = ActionName;
         Text = "View Audit Log";
-        Icon = IconType.Film;
+        Icon = FontAwesomeIcon.Film;
         ShowAsButton = true;
         VisibleExpression = "val:0";
         Order = 2;

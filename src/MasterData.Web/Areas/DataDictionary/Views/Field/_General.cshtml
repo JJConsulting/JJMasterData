@@ -1,4 +1,5 @@
-﻿@using JJMasterData.Commons.Data.Entity.Models
+﻿@using JJConsulting.FontAwesome
+@using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Commons.Extensions
 @using JJMasterData.Commons.Validations
 @using JJMasterData.Web.TagHelpers
@@ -16,14 +17,14 @@
     {
         <alert title="@StringLocalizer["Warning"]"
                color="Warning"
-               icon="IconType.Warning"
+               icon="FontAwesomeIcon.Warning"
                message="@StringLocalizer["This field uses a reserved keyword of the database in its name."]"/>
     }
     @if (Model.DataType is FieldType.NText or FieldType.Text or FieldType.DateTime)
     {
     <alert title="@StringLocalizer["Warning"]"
            color="Warning"
-           icon="IconType.Warning"
+           icon="FontAwesomeIcon.Warning"
            message="@StringLocalizer["The data type ({0}) is not recommended by modern database providers.", Model.DataType.ToString()]"/>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">

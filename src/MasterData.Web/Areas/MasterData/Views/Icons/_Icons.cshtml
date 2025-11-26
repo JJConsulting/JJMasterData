@@ -1,4 +1,5 @@
-﻿@model IconViewModel
+﻿@using JJConsulting.FontAwesome
+@model IconViewModel
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 <style>
     .icon {
@@ -59,7 +60,7 @@ function saveIcon(selectedIcon) {
     </div>
 </div>
 <div id="icon-container" class="row">
-    @foreach (var icon in IconHelper.GetIconList())
+    @foreach (var icon in FontAwesomeIconExtensions.GetAll())
     {
         <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.GetId().ToString()');">
             <span class="@icon.GetCssClass() fa-3x"></span>

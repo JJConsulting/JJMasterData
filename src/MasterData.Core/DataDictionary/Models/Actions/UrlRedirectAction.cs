@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -37,7 +38,7 @@ public sealed class UrlRedirectAction : BasicAction
     
     public UrlRedirectAction()
     {
-        Icon = IconType.ExternalLink;
+        Icon = FontAwesomeIcon.ExternalLink;
     }
     [JsonIgnore]
     public override bool IsUserDefined => true;

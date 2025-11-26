@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -28,7 +29,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
 
         var btnSort = _componentFactory.Html.LinkButton.Create();
         btnSort.Name = $"btnsort_{gridView.Name}";
-        btnSort.IconClass = IconType.Check.GetCssClass();
+        btnSort.IconClass = "fa fa-check";
         btnSort.ShowAsButton = true;
         btnSort.Text = _stringLocalizer["Sort"];
         btnSort.OnClientClick = gridView.Scripts.GetSortMultItemsScript();
@@ -36,7 +37,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
 
         var btnCancel = _componentFactory.Html.LinkButton.Create();
         btnCancel.Text = _stringLocalizer["Cancel"];
-        btnCancel.IconClass = IconType.Times.GetCssClass();
+        btnCancel.IconClass = "fa fa-times";
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = BootstrapHelper.GetCloseModalScript($"{gridView.Name}-sort-modal");
         dialog.Buttons.Add(btnCancel);
@@ -45,7 +46,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
             .AppendComponent(new JJAlert
             {
                 Title = _stringLocalizer["Drag and drop to change order."],
-                Icon = IconType.SolidCircleInfo,
+                Icon = FontAwesomeIcon.SolidCircleInfo,
                 Color = BootstrapColor.Info,
                 ShowIcon = true,
                 ShowCloseButton = false
@@ -115,9 +116,9 @@ internal sealed class GridSortingConfig(JJGridView gridView)
                 comboBox.DataItem.ShowIcon = true;
                 comboBox.DataItem.Items =
                 [
-                    new("A", _stringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
-                    new("D", _stringLocalizer["Descendant"], IconType.SortAmountDesc, null),
-                    new("N", _stringLocalizer["No Order"], IconType.Genderless, null)
+                    new("A", _stringLocalizer["Ascendant"], FontAwesomeIcon.SortAmountAsc, null),
+                    new("D", _stringLocalizer["Descendant"], FontAwesomeIcon.SortAmountDesc, null),
+                    new("N", _stringLocalizer["No Order"], FontAwesomeIcon.Genderless, null)
                 ];
 
                 var sort = sortList.Find(x => x.FieldName.Equals(field.Name));

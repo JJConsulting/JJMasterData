@@ -1,4 +1,5 @@
 
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -22,7 +23,7 @@ public class CardTagHelper(IComponentFactory<JJCard> cardFactory)
     public object? Model { get; set; }
     
     [HtmlAttributeName("icon")]
-    public IconType Icon { get; set; }
+    public FontAwesomeIcon Icon { get; set; }
     
     [HtmlAttributeName("configure")]
     public Action<JJCard>? Configure { get; set; }

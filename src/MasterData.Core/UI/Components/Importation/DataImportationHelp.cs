@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -31,7 +32,7 @@ internal sealed class DataImportationHelp
         var panel = new JJCollapsePanel(DataImportation.CurrentContext.Request.Form)
         {
             Title = StringLocalizer["Help"],
-            TitleIcon = new JJIcon(IconType.QuestionCircle),
+            TitleIcon = new JJIcon(FontAwesomeIcon.QuestionCircle),
             ExpandedByDefault = true,
             HtmlBuilderContent = await GetHtmlContent()
         };
@@ -43,7 +44,7 @@ internal sealed class DataImportationHelp
                 html.AppendComponent(new JJAlert 
                 {
                     Title = StringLocalizer["Information"],
-                    Icon = IconType.InfoCircle,
+                    Icon = FontAwesomeIcon.InfoCircle,
                     Color = BootstrapColor.Info,
                     InnerHtml = new(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
                                     string.Empty)

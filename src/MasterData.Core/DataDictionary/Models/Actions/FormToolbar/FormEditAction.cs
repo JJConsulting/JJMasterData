@@ -1,5 +1,7 @@
 
 
+using JJConsulting.FontAwesome;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
@@ -13,7 +15,7 @@ public sealed class FormEditAction : FormToolbarAction
     {
         Name = ActionName;
         VisibleExpression = "val:0";
-        Icon = IconType.Pencil;
+        Icon = FontAwesomeIcon.Pencil;
         ShowAsButton = true;
         EnableExpression = "val:1";
         Location = FormToolbarActionLocation.Panel;

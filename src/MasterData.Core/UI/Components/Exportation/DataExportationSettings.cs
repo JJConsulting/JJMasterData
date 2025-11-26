@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
@@ -260,7 +261,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             Name = $"data-exportation-warning{name}",
             ShowCloseButton = true,
             Title = _stringLocalizer["Warning!"],
-            Icon = IconType.ExclamationTriangle,
+            Icon = FontAwesomeIcon.ExclamationTriangle,
             Color = BootstrapColor.Warning,
             Messages =
             {
@@ -282,7 +283,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         {
             Name = "exportCollapse",
             ExpandedByDefault = false,
-            TitleIcon = new JJIcon(IconType.FolderOpenO),
+            TitleIcon = new JJIcon(FontAwesomeIcon.FolderOpenO),
             Visible = filesCount  > 0,
             Title = @$"{_stringLocalizer["Recently generated files"]} ({filesCount})",
             HtmlBuilderContent = GetLastFilesHtml(files)

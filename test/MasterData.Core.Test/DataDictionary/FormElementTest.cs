@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Text.Json;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary;
@@ -69,7 +70,7 @@ public class FormElementTest
                         [
                             new DataItemValue
                             {
-                                Icon = IconType.Adjust,
+                                Icon = FontAwesomeIcon.Adjust,
                                 Description = "Example",
                                 Group = "Example",
                                 Id = "Example",
@@ -169,7 +170,7 @@ public class FormElementTest
                         IsDefaultOption = true,
                         IsGroup = true,
                         DividerLine = true,
-                        Icon = IconType.CircleONotch,
+                        Icon = FontAwesomeIcon.CircleONotch,
                         ShowTitle = true,
                         ConfirmationMessage = "a",
                         EnableExpression = "val:1",

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -233,13 +234,13 @@ internal sealed class GridTableBody(JJGridView gridView)
         }
         else if (field.Component is FormComponent.Color && !string.IsNullOrEmpty(stringValue))
         {
-            cell = GetIconCell(IconType.Circle, stringValue, stringValue);
+            cell = GetIconCell(FontAwesomeIcon.Circle, stringValue, stringValue);
         }
         else if (field.Component is FormComponent.Icon && !string.IsNullOrEmpty(stringValue))
         {
-            var iconType = IconHelper.GetIconTypeFromField(field, stringValue);
+            var FontAwesomeIcon = FontAwesomeIconHelper.GetFontAwesomeIconFromField(field, stringValue);
 
-            cell = GetIconCell(iconType, null, iconType.ToString());
+            cell = GetIconCell(FontAwesomeIcon, null, FontAwesomeIcon.ToString());
         }
         else if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
@@ -302,10 +303,10 @@ internal sealed class GridTableBody(JJGridView gridView)
         return cell;
     }
 
-    private static HtmlBuilder GetIconCell(IconType iconType, string? color = null, string? tooltip = null)
+    private static HtmlBuilder GetIconCell(FontAwesomeIcon FontAwesomeIcon, string? color = null, string? tooltip = null)
     {
         var cell = new HtmlBuilder(HtmlTag.Div);
-        var icon = new JJIcon(iconType, color);
+        var icon = new JJIcon(FontAwesomeIcon, color);
         if (tooltip is not null)
         {
             icon.Tooltip = tooltip;

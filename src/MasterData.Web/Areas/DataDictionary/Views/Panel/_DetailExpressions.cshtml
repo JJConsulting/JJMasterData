@@ -1,13 +1,14 @@
 
+@using JJConsulting.FontAwesome
 @using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementPanel
 
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <expression for="VisibleExpression" icon="IconType.Eye" use-floating-label="false"/>
+        <expression for="VisibleExpression" icon="FontAwesomeIcon.Eye" use-floating-label="false"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <expression for="EnableExpression" icon="IconType.Pencil" use-floating-label="false" />
+        <expression for="EnableExpression" icon="FontAwesomeIcon.Pencil" use-floating-label="false" />
     </div>
 </div>

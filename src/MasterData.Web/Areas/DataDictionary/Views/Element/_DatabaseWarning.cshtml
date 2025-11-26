@@ -1,9 +1,10 @@
+@using JJConsulting.FontAwesome
 @using JJMasterData.Web.TagHelpers
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 <div class="row">
     <div class="col-sm-12" id="div-warning" style="display: none;">
-        <alert title="@StringLocalizer["Atention!"]" icon="IconType.InfoCircle">
+        <alert title="@StringLocalizer["Atention!"]" icon="FontAwesomeIcon.InfoCircle">
             @StringLocalizer["Some databases have limitation on object names,"]
             @StringLocalizer["for example Oracle with version less than 12c is limited to 30 characters."]<br/>
             @StringLocalizer["We recommend checking your database documentation before proceeding."]

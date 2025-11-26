@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -12,7 +13,7 @@ public sealed class SortAction : GridToolbarAction
     {
         Name = ActionName;
         Tooltip = "Sort";
-        Icon = IconType.SortAlphaAsc;
+        Icon = FontAwesomeIcon.SortAlphaAsc;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 7;

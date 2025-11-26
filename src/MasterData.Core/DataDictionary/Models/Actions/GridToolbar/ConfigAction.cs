@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
+﻿using JJConsulting.FontAwesome;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
 /// Represents the settings menu of a data dictionary.
@@ -11,7 +13,7 @@ public sealed class ConfigAction : GridToolbarAction
     {
         Name = ActionName;
         Tooltip = "Options";
-        Icon = IconType.Cog;
+        Icon = FontAwesomeIcon.Cog;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 2;

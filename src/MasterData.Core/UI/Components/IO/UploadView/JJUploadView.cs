@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Exceptions;
@@ -65,7 +66,7 @@ public class JJUploadView : AsyncComponent
     public string Title { get; set; }
     public string SubTitle { get; set; }
     public HeadingSize TitleSize { get; set; } = HeadingSize.H3;
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
     
     public bool ViewGallery { get; set; }
 
@@ -192,7 +193,7 @@ public class JJUploadView : AsyncComponent
     public UrlRedirectAction DownloadAction =>
         _downloadAction ??= new UrlRedirectAction
         {
-            Icon = IconType.CloudDownload,
+            Icon = FontAwesomeIcon.CloudDownload,
             Tooltip = "Download File",
             Name = "download-file"
         };
@@ -206,7 +207,7 @@ public class JJUploadView : AsyncComponent
             
             _deleteAction = new ScriptAction
             {
-                Icon = IconType.Trash,
+                Icon = FontAwesomeIcon.Trash,
                 Tooltip = "Delete File",
                 OnClientClick = Scripts.GetDeleteFileScript(),
                 Name = "delete-file"
@@ -224,7 +225,7 @@ public class JJUploadView : AsyncComponent
             
             _renameAction = new ScriptAction
             {
-                Icon = IconType.PencilSquareO,
+                Icon = FontAwesomeIcon.PencilSquareO,
                 Tooltip = "Rename File",
                 OnClientClick = Scripts.GetRenameFileScript(),
                 Name = "rename-file"
@@ -386,7 +387,7 @@ public class JJUploadView : AsyncComponent
             alert.Title = ex.Message;
             alert.Color = BootstrapColor.Warning;
             alert.ShowCloseButton = true;
-            alert.Icon = IconType.SolidTriangleExclamation;
+            alert.Icon = FontAwesomeIcon.SolidTriangleExclamation;
         
             return new RenderedComponentResult(alert.GetHtmlBuilder());
         }
@@ -736,7 +737,7 @@ public class JJUploadView : AsyncComponent
         alert.Title = text;
         alert.ShowCloseButton = true;
         alert.Color = BootstrapColor.Info;
-        alert.Icon = IconType.SolidCircleInfo;
+        alert.Icon = FontAwesomeIcon.SolidCircleInfo;
         
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
@@ -755,7 +756,7 @@ public class JJUploadView : AsyncComponent
         alert.Title = text;
         alert.ShowCloseButton = true;
         alert.Color = BootstrapColor.Info;
-        alert.Icon = IconType.SolidCircleInfo;
+        alert.Icon = FontAwesomeIcon.SolidCircleInfo;
         
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }

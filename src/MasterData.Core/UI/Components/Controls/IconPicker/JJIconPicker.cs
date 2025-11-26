@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
@@ -20,14 +21,14 @@ public class JJIconPicker(
     IControlFactory<JJComboBox> comboBoxFactory,
     IFormValues formValues) : ControlBase(formValues)
 {
-    public IconType? SelectedIcon { get; set; }
+    public FontAwesomeIcon? SelectedIcon { get; set; }
     public string? Id { get; set; }
 
     private static readonly List<DataItemValue> Items;
     
     static JJIconPicker()
     {
-        Items = IconHelper.GetIconList().Select(icon => new DataItemValue
+        Items = FontAwesomeIconExtensions.GetAll().Select(icon => new DataItemValue
         {
             Id = ((int)icon).ToString(),
             Description = icon.ToString(),
@@ -69,7 +70,7 @@ public class JJIconPicker(
             var tooltip = stringLocalizer["Search Icon"];
             div.WithCssClass(BootstrapHelper.BtnDefault);
             div.WithToolTip(tooltip);
-            div.AppendComponent(new JJIcon(IconType.Search));
+            div.AppendComponent(new JJIcon(FontAwesomeIcon.Search));
             var url = urlHelper.Action("Index", "Icons", new { inputId = id, Area="MasterData" });
             div.WithOnClick( $"iconsModal.showUrl('{url}', '{tooltip}', '{(int)ModalSize.ExtraLarge}')");
         });

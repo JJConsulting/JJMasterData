@@ -1,6 +1,8 @@
 #nullable enable
 
 
+using JJConsulting.FontAwesome;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
@@ -14,7 +16,7 @@ public sealed class CancelAction : FormToolbarAction
     public CancelAction()
     {
         Name = ActionName;
-        Icon = IconType.SolidXmark;
+        Icon = FontAwesomeIcon.SolidXmark;
         VisibleExpression = "exp: '{PageState}' = 'Insert' OR '{PageState}' = 'Update'";
         Order = 0;
         Location = FormToolbarActionLocation.Panel;

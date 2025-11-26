@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
@@ -14,7 +15,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJAlert : HtmlComponent
 {
     public BootstrapColor Color { get; set; }
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
     
     [LocalizationRequired]
     public string? Title { get; set; }

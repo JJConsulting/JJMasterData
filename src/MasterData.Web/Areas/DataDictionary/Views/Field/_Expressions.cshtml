@@ -1,19 +1,20 @@
-﻿@using JJMasterData.Web.TagHelpers
+﻿@using JJConsulting.FontAwesome
+@using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-12">
-        <expression for="DefaultValue" icon="IconType.Check"/>
+        <expression for="DefaultValue" icon="FontAwesomeIcon.Check"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <expression for="VisibleExpression" icon="IconType.Eye"/>
+        <expression for="VisibleExpression" icon="FontAwesomeIcon.Eye"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <expression for="EnableExpression" icon="IconType.Pencil"/>
+        <expression for="EnableExpression" icon="FontAwesomeIcon.Pencil"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-12">
-        <expression for="TriggerExpression" icon="IconType.Bolt" />
+        <expression for="TriggerExpression" icon="FontAwesomeIcon.Bolt" />
     </div>
 </div>
 <div class="row">

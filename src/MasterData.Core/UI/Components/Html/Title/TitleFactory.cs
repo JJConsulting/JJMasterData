@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using JJConsulting.FontAwesome;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -15,7 +16,7 @@ public class TitleFactory(ExpressionsService expressionsService) : IComponentFac
         return new JJTitle();
     }
     
-    public JJTitle Create(string title, string subtitle, IconType? icon = null, List<TitleAction>? actions = null)
+    public JJTitle Create(string title, string subtitle, FontAwesomeIcon? icon = null, List<TitleAction>? actions = null)
     {
         var htmlTitle = Create();
         htmlTitle.Title = title;

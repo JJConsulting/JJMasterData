@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JJConsulting.FontAwesome;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Pdf;
@@ -702,5 +703,5 @@ public static class IconUnicodeMapper
         { 692, '\uf166' }
     };
 
-    public static char GetUnicode(this IconType icon) => Icons[(int)icon];
+    public static char GetUnicode(this FontAwesomeIcon icon) => Icons[(int)icon];
 }

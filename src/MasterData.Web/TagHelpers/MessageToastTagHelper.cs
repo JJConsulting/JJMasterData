@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿using JJConsulting.FontAwesome;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -20,7 +21,7 @@ public class MessageToastTagHelper(HtmlComponentFactory htmlComponentFactory) : 
     public BootstrapColor Color { get; set; }
     
     [HtmlAttributeName("icon")]
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
     
     [HtmlAttributeName("message")]
     public string? Message { get; set; }

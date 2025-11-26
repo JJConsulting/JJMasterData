@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -55,7 +56,7 @@ public sealed class FilterAction : GridToolbarAction, ISubmittableAction
         Name = ActionName;
         Tooltip = "Filter";
         Text = "Detailed Filters";
-        Icon = IconType.Filter;
+        Icon = FontAwesomeIcon.Filter;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 10;

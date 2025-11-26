@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿using JJConsulting.FontAwesome;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,7 @@ public class FormController(
                 {
                     Url = Url.Action("Index", "Entity",
                         new { Area = "DataDictionary", elementName = formView.FormElement.Name })!,
-                    Icon = IconType.Pencil,
+                    Icon = FontAwesomeIcon.Pencil,
                     Text = stringLocalizer["Edit Element"]
                 }
             ];

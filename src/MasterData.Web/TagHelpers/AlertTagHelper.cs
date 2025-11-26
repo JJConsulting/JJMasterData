@@ -1,3 +1,4 @@
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -25,7 +26,7 @@ public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelp
     public BootstrapColor Color { get; set; }
     
     [HtmlAttributeName("icon")]
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
 
     [HtmlAttributeName("show-close-button")]
     public bool ShowCloseButton { get; set; }

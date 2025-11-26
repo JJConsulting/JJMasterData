@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -15,7 +16,7 @@ public class IconPickerFactory(IStringLocalizer<MasterDataResources> stringLocal
         picker.Visible = true;
         if (!string.IsNullOrEmpty(context.Value?.ToString()))
         {
-            picker.SelectedIcon = IconHelper.GetIconTypeFromField(field, context.Value);
+            picker.SelectedIcon = FontAwesomeIconHelper.GetFontAwesomeIconFromField(field, context.Value);
         }
 
         return picker;

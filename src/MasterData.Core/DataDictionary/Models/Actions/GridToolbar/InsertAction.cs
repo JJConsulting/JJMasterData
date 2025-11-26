@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -47,7 +48,7 @@ public sealed class InsertAction : GridToolbarAction, IModalAction
         Name = ActionName;
         Text = "New";
         SuccessMessage = "Record added successfully.";
-        Icon = IconType.PlusCircle;
+        Icon = FontAwesomeIcon.PlusCircle;
         ShowAsButton = true;
         Order = 1;
     }

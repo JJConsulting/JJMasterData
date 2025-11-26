@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
+﻿using JJConsulting.FontAwesome;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class LegendAction : GridToolbarAction
 {
@@ -7,7 +9,7 @@ public sealed class LegendAction : GridToolbarAction
     {
         Name = ActionName;
         Tooltip = "Caption";
-        Icon = IconType.Info;
+        Icon = FontAwesomeIcon.Info;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 7;

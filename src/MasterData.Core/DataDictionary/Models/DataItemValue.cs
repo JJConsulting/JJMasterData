@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using JJConsulting.FontAwesome;
 
 
 namespace JJMasterData.Core.DataDictionary.Models;
@@ -22,7 +23,7 @@ public class DataItemValue
     public string ImageUrl { get; set; }
     
     [JsonPropertyName("icon")]
-    public IconType Icon { get; set; }
+    public FontAwesomeIcon Icon { get; set; }
 
     /// <summary>
     /// Image color in hexadecimal.
@@ -44,7 +45,7 @@ public class DataItemValue
         Id = id;
         Description = description;
     }
-    public DataItemValue(string id, string description, IconType icon, string iconColor)
+    public DataItemValue(string id, string description, FontAwesomeIcon icon, string iconColor)
     {
         Id = id;
         Description = description;

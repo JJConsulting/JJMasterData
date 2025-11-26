@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
@@ -14,7 +15,7 @@ public sealed class JJTitle : HtmlComponent
     public string? Title { get; set; }
     public string? SubTitle { get; set; }
     public HeadingSize Size { get; set; }
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
     public List<TitleAction>? Actions { get; set; }
 
     private HtmlTag Tag => Size switch

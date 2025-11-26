@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
@@ -52,8 +53,8 @@ internal sealed class GridPagination(JJGridView gridView)
 
         if (_startButtonIndex > _totalOfButtons)
         {
-            ul.Append(GetPageButton(1, IconType.AngleDoubleLeft, _stringLocalizer["First page"]));
-            ul.Append(GetPageButton(_startButtonIndex - 1, IconType.AngleLeft, _stringLocalizer["Previous page"]));
+            ul.Append(GetPageButton(1, FontAwesomeIcon.AngleDoubleLeft, _stringLocalizer["First page"]));
+            ul.Append(GetPageButton(_startButtonIndex - 1, FontAwesomeIcon.AngleLeft, _stringLocalizer["Previous page"]));
         }
 
         for (int i = _startButtonIndex; i < _endButtonIndex; i++)
@@ -65,9 +66,9 @@ internal sealed class GridPagination(JJGridView gridView)
 
         if (_endButtonIndex <= _totalOfPages)
         {
-            ul.Append(GetPageButton(_endButtonIndex, IconType.AngleRight,
+            ul.Append(GetPageButton(_endButtonIndex, FontAwesomeIcon.AngleRight,
                 _stringLocalizer["Next page"]));
-            ul.Append(GetPageButton(_totalOfPages, IconType.AngleDoubleRight, _stringLocalizer["Last page"]));
+            ul.Append(GetPageButton(_totalOfPages, FontAwesomeIcon.AngleDoubleRight, _stringLocalizer["Last page"]));
         }
 
         var showJumpToPage = _endButtonIndex <= _totalOfPages || _startButtonIndex > _totalOfButtons;
@@ -111,13 +112,13 @@ internal sealed class GridPagination(JJGridView gridView)
             .Append(new JJLinkButton
             {
                 ShowAsButton = false,
-                Icon = IconType.SolidMagnifyingGlassArrowRight,
+                Icon = FontAwesomeIcon.SolidMagnifyingGlassArrowRight,
                 CssClass = "btn pagination-jump-to-page-button",
                 OnClientClick = $"GridViewHelper.showJumpToPage('{jumpToPageName}')"
             }.GetHtmlBuilder());
     }
 
-    private HtmlBuilder GetPageButton(int page, IconType? icon = null, string? tooltip = null)
+    private HtmlBuilder GetPageButton(int page, FontAwesomeIcon? icon = null, string? tooltip = null)
     {
         var li = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")

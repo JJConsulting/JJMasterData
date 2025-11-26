@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -18,7 +19,7 @@ public sealed class ImportAction : GridToolbarAction
     {
         Name = ActionName;
         Tooltip = "Import";
-        Icon = IconType.Upload;
+        Icon = FontAwesomeIcon.Upload;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 4;

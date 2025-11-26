@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -52,7 +53,7 @@ public class JJValidationSummary : HtmlComponent
         var alert = new JJAlert
         {
             Color = BootstrapColor.Danger,
-            Icon = IconType.ExclamationTriangle,
+            Icon = FontAwesomeIcon.ExclamationTriangle,
             Title = MessageTitle,
             ShowCloseButton = ShowCloseButton,
         };

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
@@ -122,7 +123,7 @@ internal sealed class DataImportationLog
         var panel = new JJCollapsePanel(_currentContext.Request.Form)
         {
             Title = _stringLocalizer["Importation Details"],
-            TitleIcon = new JJIcon(IconType.Film),
+            TitleIcon = new JJIcon(FontAwesomeIcon.Film),
             ExpandedByDefault = true,
             HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
                 .Append(HtmlTag.B,b=>b.AppendText(_stringLocalizer["Start:"]))
@@ -157,20 +158,20 @@ internal sealed class DataImportationLog
 
         if (_reporter.HasError || _reporter.TotalProcessed == _reporter.Error)
         {
-            alert.Icon = IconType.ExclamationTriangle;
+            alert.Icon = FontAwesomeIcon.ExclamationTriangle;
             alert.Color = BootstrapColor.Danger;
             alert.Title = _stringLocalizer["Error importing file!"];
             alert.Messages.Add(_stringLocalizer[_reporter.Message]);
         }
         else if (_reporter.Error > 0)
         {
-            alert.Icon = IconType.InfoCircle;
+            alert.Icon = FontAwesomeIcon.InfoCircle;
             alert.Color = BootstrapColor.Info;
             alert.Title =_stringLocalizer[_reporter.Message];
         }
         else
         {
-            alert.Icon = IconType.Check;
+            alert.Icon = FontAwesomeIcon.Check;
             alert.Color = BootstrapColor.Success;
             alert.Title = _stringLocalizer[_reporter.Message];
         }

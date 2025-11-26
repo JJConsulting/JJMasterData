@@ -1,4 +1,5 @@
-﻿using JJConsulting.Html;
+﻿using JJConsulting.FontAwesome;
+using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -26,7 +27,7 @@ public class JJCard : HtmlComponent
 
     private bool HasTitle => !string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(SubTitle);
     
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
 
     internal JJCard()
     {
@@ -72,7 +73,7 @@ public class JJCard : HtmlComponent
 
             if (Tooltip is not null)
             {
-                var icon = new JJIcon(IconType.QuestionCircle);
+                var icon = new JJIcon(FontAwesomeIcon.QuestionCircle);
                 icon.CssClass += " help-description";
                 icon.Attributes["title"] = Tooltip;
                 icon.Attributes[BootstrapHelper.DataToggle] = "tooltip";

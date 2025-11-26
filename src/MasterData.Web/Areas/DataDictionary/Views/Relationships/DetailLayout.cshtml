@@ -1,3 +1,4 @@
+@using JJConsulting.FontAwesome
 @using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -81,7 +82,7 @@
                 @if (!Model.IsParent)
                 {
                     <div style="margin-top: 5px" class="col-sm-12">
-                        <alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
+                        <alert color="Info" title="@StringLocalizer["Help"]" icon="FontAwesomeIcon.InfoCircle">
                             <ul>
                                 <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
                                 <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using JJConsulting.FontAwesome;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.UI.Components;
@@ -12,17 +13,17 @@ public class IconFactory : IComponentFactory<JJIcon>
     }
 
     // ReSharper disable once MemberCanBeMadeStatic.Global
-    public JJIcon Create(IconType icon)
+    public JJIcon Create(FontAwesomeIcon icon)
     {
         return new JJIcon(icon);
     }
 
-    public JJIcon Create(IconType icon, string color) 
+    public JJIcon Create(FontAwesomeIcon icon, string color) 
     {
         return new JJIcon(icon, color);
     }
 
-    public JJIcon Create(IconType icon, string color, string title) 
+    public JJIcon Create(FontAwesomeIcon icon, string color, string title) 
     {
         return new JJIcon(icon, color, title);
     }

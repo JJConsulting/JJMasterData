@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Web;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
@@ -38,7 +39,7 @@ public class ExpressionTagHelper : TagHelper
     public bool UseFloatingLabel { get; set; } = true;
 
     [HtmlAttributeName("icon")]
-    public IconType? Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {

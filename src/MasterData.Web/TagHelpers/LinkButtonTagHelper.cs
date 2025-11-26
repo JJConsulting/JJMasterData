@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using JetBrains.Annotations;
+using JJConsulting.FontAwesome;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
@@ -22,7 +23,7 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory, IUrl
     public Dictionary<string, string> RouteValues { get; set; } = new ();
     
     [HtmlAttributeName("icon")]
-    public IconType Icon { get; set; }
+    public FontAwesomeIcon Icon { get; set; }
         
     [LanguageInjection("Javascript")]
     [HtmlAttributeName("on-client-click")]

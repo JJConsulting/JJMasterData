@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Security.Cryptography.Abstractions;
+﻿using JJConsulting.FontAwesome;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Extensions;
@@ -65,7 +66,7 @@ public class LookupController(
         var selAction = new ScriptAction
         {
             Name = "jjselLookup",
-            Icon = IconType.ChevronRight,
+            Icon = FontAwesomeIcon.ChevronRight,
             Tooltip = stringLocalizer["Select"],
             OnClientClick = script,
             IsDefaultOption = true,

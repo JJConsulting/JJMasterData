@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
@@ -91,7 +92,7 @@ internal sealed class GridCaptionView(
                 new JJLinkButton
                 {
                     Name = $"{Name}-caption-modal-close-btn",
-                    Icon = IconType.SolidXmark,
+                    Icon = FontAwesomeIcon.SolidXmark,
                     Text = stringLocalizer["Close"],
                     ShowAsButton = true,
                     OnClientClick = BootstrapHelper.GetCloseModalScript($"{Name}-caption-modal")

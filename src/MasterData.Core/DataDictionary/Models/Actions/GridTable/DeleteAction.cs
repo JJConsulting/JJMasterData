@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -22,7 +23,7 @@ public sealed class DeleteAction : GridTableAction, ISubmittableAction
         Name = ActionName;
         Tooltip = "Delete";
         ConfirmationMessage = "Would you like to delete this record?";
-        Icon = IconType.SolidTrashCan;
+        Icon = FontAwesomeIcon.SolidTrashCan;
         Order = 3;
     }
     public override BasicAction DeepCopy() => (BasicAction)MemberwiseClone();

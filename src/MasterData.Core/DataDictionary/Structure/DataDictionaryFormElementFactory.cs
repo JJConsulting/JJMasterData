@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -84,7 +85,7 @@ public class DataDictionaryFormElementFactory(
         [
             new UrlRedirectAction
             {
-                Icon = IconType.Pencil,
+                Icon = FontAwesomeIcon.Pencil,
                 Name = "tools",
                 Tooltip = stringLocalizer["Edit"],
                 EnableExpression = "exp:'T' <> '{type}'",
@@ -92,7 +93,7 @@ public class DataDictionaryFormElementFactory(
             },
             new UrlRedirectAction
             {
-                Icon = IconType.FilesO,
+                Icon = FontAwesomeIcon.FilesO,
                 Name = "duplicate",
                 Tooltip = stringLocalizer["Duplicate"],
                 EnableExpression = "exp:'T' <> '{type}'",
@@ -100,7 +101,7 @@ public class DataDictionaryFormElementFactory(
             },
             new ScriptAction
             {
-                Icon = IconType.SolidCirclePlay,
+                Icon = FontAwesomeIcon.SolidCirclePlay,
                 Name = "render",
                 Tooltip = stringLocalizer["Render"],
                 EnableExpression = "exp:'T' <> '{type}'",
@@ -119,7 +120,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Name = "btnAdd",
                 Text = stringLocalizer["New"],
-                Icon = IconType.Plus,
+                Icon = FontAwesomeIcon.Plus,
                 ShowAsButton = true,
                 UrlRedirect = urlHelper.Action("Add", "Element", new {Area="DataDictionary"})
             },
@@ -127,7 +128,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Name = "btnDeleteSelected",
                 Order = 0,
-                Icon = IconType.Trash,
+                Icon = FontAwesomeIcon.Trash,
                 Text = stringLocalizer["Delete Selected"],
                 IsGroup = false,
                 ConfirmationMessage = stringLocalizer["Do you want to delete ALL selected records?"],
@@ -138,7 +139,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Name = "btnAbout",
                 Text = stringLocalizer["About"],
-                Icon = IconType.InfoCircle,
+                Icon = FontAwesomeIcon.InfoCircle,
                 ShowAsButton = false,
                 IsGroup = true,
                 OnClientClick = $"DataDictionaryUtils.showAbout('{urlHelper.Action("Index", "About", new {Area="DataDictionary"})}')",
@@ -150,7 +151,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Name = "btnHelp",
                 Text = stringLocalizer["Help"],
-                Icon = IconType.QuestionCircle,
+                Icon = FontAwesomeIcon.QuestionCircle,
                 IsGroup = true,
                 ShowAsButton = true,
                 OnClientClick = "window.open('https://md.jjconsulting.tech', '_blank');",
@@ -162,7 +163,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Name = "btnImport",
                 Tooltip = stringLocalizer["Import"],
-                Icon = IconType.Upload,
+                Icon = FontAwesomeIcon.Upload,
                 ShowAsButton = true,
                 IsModal = true,
                 IsIframe = false,
@@ -176,7 +177,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Name = "btnExport",
                 Tooltip = stringLocalizer["Export Selected"],
-                Icon = IconType.Download,
+                Icon = FontAwesomeIcon.Download,
                 ShowAsButton = true,
                 Order = 10,
                 CssClass = BootstrapHelper.PullRight,

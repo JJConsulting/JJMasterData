@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
+﻿using JJConsulting.FontAwesome;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class AuditLogGridToolbarAction : GridToolbarAction
 {
@@ -7,7 +9,7 @@ public sealed class AuditLogGridToolbarAction : GridToolbarAction
     {
         Name = ActionName;
         Tooltip = "Audit Log";
-        Icon = IconType.Film;
+        Icon = FontAwesomeIcon.Film;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 20;

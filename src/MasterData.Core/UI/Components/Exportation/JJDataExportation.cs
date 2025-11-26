@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -101,10 +102,10 @@ public class JJDataExportation : ProcessComponent
     internal static JJIcon GetFileIcon(string ext)
     {
         if (ext.EndsWith("xls"))
-            return new JJIcon(IconType.FileExcelO);
+            return new JJIcon(FontAwesomeIcon.FileExcelO);
         if (ext.EndsWith("pdf"))
-            return new JJIcon(IconType.FilePdfO);
-        return new JJIcon(IconType.FileTextO);
+            return new JJIcon(FontAwesomeIcon.FilePdfO);
+        return new JJIcon(FontAwesomeIcon.FileTextO);
     }
 
     internal string GetDownloadUrl(string filePath)
@@ -204,7 +205,7 @@ public class JJDataExportation : ProcessComponent
         var alert = new JJAlert
         {
             Title = reporter.Message,
-            Icon = IconType.Warning,
+            Icon = FontAwesomeIcon.Warning,
             Color = BootstrapColor.Danger
         };
 

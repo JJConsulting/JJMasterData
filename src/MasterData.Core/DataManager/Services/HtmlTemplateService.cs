@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -52,7 +53,7 @@ public class HtmlTemplateService(
         {
             div.WithCssClass("text-end").AppendComponent(new JJLinkButton
             {
-                Icon = IconType.Print,
+                Icon = FontAwesomeIcon.Print,
                 ShowAsButton = true,
                 Tooltip = stringLocalizer["Print"],
                 OnClientClick = "printTemplateIframe()"

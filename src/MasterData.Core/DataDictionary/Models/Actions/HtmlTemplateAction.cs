@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -16,7 +17,7 @@ public sealed class HtmlTemplateAction : BasicAction
     public HtmlTemplateAction()
     {
         Name = "html-template";
-        Icon = IconType.RegularFileLines;
+        Icon = FontAwesomeIcon.RegularFileLines;
         Text = "Template";
         ShowAsButton = false;
     }

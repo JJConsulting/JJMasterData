@@ -1,4 +1,5 @@
-﻿@using JJMasterData.Web.TagHelpers
+﻿@using JJConsulting.FontAwesome
+@using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.DataElementMapFilter
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
@@ -13,7 +14,7 @@
                    </div>
                </div>
                <div class="@BootstrapHelper.FormGroup col-sm-10">
-                   <expression for="ExpressionValue" label="Expression" icon="IconType.Filter"/>
+                   <expression for="ExpressionValue" label="Expression" icon="FontAwesomeIcon.Filter"/>
                </div>
                <div class="col-sm-12">
                    <link-button css-class="btn-small" text="Add" icon="CheckSquareO" on-client-click="addElementMapFilter();"/>

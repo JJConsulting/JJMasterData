@@ -1,3 +1,5 @@
+using JJConsulting.FontAwesome;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public sealed class GridEditAction : GridToolbarAction
@@ -8,7 +10,7 @@ public sealed class GridEditAction : GridToolbarAction
     {
         Name = ActionName;
         Text = "Bulk Edit";
-        Icon = IconType.SolidPenToSquare;
+        Icon = FontAwesomeIcon.SolidPenToSquare;
         ShowAsButton = true;
         Order = 10;
         VisibleExpression = "val:0";

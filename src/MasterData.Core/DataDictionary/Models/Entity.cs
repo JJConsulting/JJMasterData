@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
 
@@ -42,7 +43,7 @@ public sealed class Entity
     public required string? Info { get; set; }
     
     [Display(Name = "Icon")]
-    public required IconType? Icon { get; set; }
+    public required FontAwesomeIcon? Icon { get; set; }
     
     [Display(Name = "Connection String")]
     public required Guid? ConnectionId { get; set; }
