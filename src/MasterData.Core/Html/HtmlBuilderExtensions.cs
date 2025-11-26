@@ -46,15 +46,6 @@ public static class HtmlBuilderExtensions
         return htmlBuilder;
     }
     
-    public static HtmlBuilder WithAttributes(
-        this HtmlBuilder htmlBuilder,
-        Dictionary<string, string> attributes)
-    {
-        foreach (var attribute in attributes)
-            htmlBuilder.WithAttribute(attribute.Key, attribute.Value);
-        return htmlBuilder;
-    }
-    
     /// <summary>
     /// Sets a tooltip to the HTML Tag
     /// </summary>

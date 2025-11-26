@@ -56,7 +56,7 @@ public class ExpressionTagHelper : TagHelper
 
         var isInvalid = ViewContext.ModelState[name]?.Errors.Count > 0;
         
-        var fieldSet = new HtmlBuilder(HtmlTag.FieldSet);
+        var fieldSet = new HtmlBuilder(HtmlTag.Fieldset);
         fieldSet.WithAttributeIf(Disabled, "disabled");
 
         var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;

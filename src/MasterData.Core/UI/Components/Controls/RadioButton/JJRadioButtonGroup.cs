@@ -40,7 +40,7 @@ public class JJRadioButtonGroup(
     {
         var values = await GetValuesAsync();
 
-        var fieldSet = new HtmlBuilder(HtmlTag.FieldSet);
+        var fieldSet = new HtmlBuilder(HtmlTag.Fieldset);
 
         foreach (var value in values)
         {
