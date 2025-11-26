@@ -178,16 +178,17 @@ class ActionHelper {
             window.location.href = url;
     }
 
-    static async executeActionData(actionData: ActionData) {
-        const {
-            componentName,
-            actionMap,
-            gridViewRouteContext,
-            modalTitle,
-            isModal,
-            isSubmit,
-            confirmationMessage
-        } = actionData;
+    static async executeAction(actionName) {
+        
+        const element = document.getElementById(actionName);
+        
+        const componentName = element.dataset.componentName;
+        const actionMap = element.dataset.actionMap;
+        const gridViewRouteContext = element.dataset.gridViewRouteContext;
+        const modalTitle = element.dataset.modalTitle;
+        const isModal = element.dataset.isModal === "true";
+        const isSubmit = element.dataset.isSubmit === "true";
+        const confirmationMessage = element.dataset.confirmationMessage;
 
         if (confirmationMessage) {
             const confirm = await showConfirmationMessage(confirmationMessage);
@@ -271,12 +272,6 @@ class ActionHelper {
                 ActionHelper.submitWithScrollPosition();
             }
         }
-    }
-
-    static executeAction(actionDataJson: string) {
-        const actionData = JSON.parse(actionDataJson);
-
-        return this.executeActionData(actionData);
     }
 
     static hideActionModal(componentName: string) {

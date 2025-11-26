@@ -29,9 +29,4 @@ internal class ActionData
 
     [JsonPropertyName("isModal")]
     public bool IsModal { get; set; }
-
-    public string ToJson()
-    {
-        return JsonSerializer.Serialize(this);
-    }
 }

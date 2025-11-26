@@ -15,7 +15,8 @@ public record ActionContext
     public required string ParentComponentName { get; init; }
     public bool IsSubmit => Action is ISubmittableAction { IsSubmit: true };
     public string? FieldName { get; init; }
-    
+    public string Id => FormElement.Name + "-" + Action.Name;
+
     internal ActionMap ToActionMap(ActionSource actionSource)
     {
         var actionMap = new ActionMap

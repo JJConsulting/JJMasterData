@@ -51,4 +51,3 @@ public class HtmlComponentFactory(
     public ValidationSummaryFactory ValidationSummary =>  new(stringLocalizer);
     public LinkButtonGroupFactory LinkButtonGroup => new(stringLocalizer);
 }
-

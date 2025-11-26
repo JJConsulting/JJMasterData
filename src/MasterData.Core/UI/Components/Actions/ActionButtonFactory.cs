@@ -20,9 +20,11 @@ public class ActionButtonFactory(
 {
     public JJLinkButton Create() => linkButtonFactory.Create();
 
-    public JJLinkButton Create(BasicAction action, bool visible, bool enabled)
+    public JJLinkButton Create(ActionContext actionContext, bool visible, bool enabled)
     {
+        var action = actionContext.Action;
         var button = linkButtonFactory.Create();
+        button.Name = actionContext.Id;
         button.Tooltip = string.IsNullOrEmpty(action.Tooltip) ? action.Tooltip : stringLocalizer[action.Tooltip!];
         button.Text = string.IsNullOrEmpty(action.Text) ? action.Text : stringLocalizer[action.Text!];
         button.Color = action.Color;
@@ -38,24 +40,31 @@ public class ActionButtonFactory(
         return button;
     }
 
-    private JJLinkButton Create(BasicAction action, FormStateData formStateData)
+    private JJLinkButton Create(ActionContext actionContext, FormStateData formStateData)
     {
+        var action = actionContext.Action;
         var isVisible = expressionsService.GetBoolValue(action.VisibleExpression, formStateData);
         var isEnabled = expressionsService.GetBoolValue(action.EnableExpression, formStateData);
-        return Create(action, isVisible, isEnabled);
+        return Create(actionContext, isVisible, isEnabled);
     }
 
     public JJLinkButton CreateGridTableButton(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
         var actionContext = gridView.GetActionContext(action, formStateData);
-        var button = Create(action, actionContext.FormStateData);
+        var button = Create(actionContext, actionContext.FormStateData);
 
         if (action.IsUserDefined)
-            button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
+        {
+            actionScripts.AddUserAction(button, actionContext, ActionSource.GridTable);
+        }
         else if (action is GridTableAction)
-            button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
+        {
+            actionScripts.AddFormAction(button, actionContext, ActionSource.GridTable);
+        }
         else
+        {
             throw new JJMasterDataException("Action is not user created or a GridTableAction.");
+        }
 
         return button;
     }
@@ -63,11 +72,11 @@ public class ActionButtonFactory(
     public JJLinkButton CreateGridToolbarButton(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
         var actionContext = gridView.GetActionContext(action, formStateData);
-        var button = Create(action, formStateData);
+        var button = Create(actionContext, formStateData);
 
         if (action.IsUserDefined)
         {
-            button.OnClientClick =  actionScripts.GetUserActionScript(actionContext, ActionSource.GridToolbar);
+            actionScripts.AddUserAction(button,actionContext, ActionSource.GridToolbar);
             return button;
         }
 
@@ -77,10 +86,8 @@ public class ActionButtonFactory(
                 button.OnClientClick = BootstrapHelper.GetModalScript($"config-modal-{actionContext.ParentComponentName}");
                 break;
             case AuditLogGridToolbarAction:
-                button.OnClientClick =
-                    actionScripts.GetFormActionScript(actionContext, ActionSource.GridToolbar);
+                actionScripts.AddFormAction(button, actionContext, ActionSource.GridToolbar);
                 break;
-            
             case ImportAction:
                 var importationScripts = new DataImportationScripts($"{actionContext.ParentComponentName}-importation", actionContext.FormElement,stringLocalizer, encryptionService);
                 button.OnClientClick =
@@ -103,8 +110,7 @@ public class ActionButtonFactory(
             case GridSaveAction:
             case GridCancelAction:
             case GridEditAction:
-                button.OnClientClick = actionScripts.GetFormActionScript(actionContext,
-                    ActionSource.GridToolbar);
+                actionScripts.AddFormAction(button, actionContext, ActionSource.GridToolbar);
                 break;
             case LegendAction:
                 button.OnClientClick =
@@ -130,11 +136,11 @@ public class ActionButtonFactory(
         JJFormView formView)
     {
         var actionContext = formView.GetActionContext(action,formStateData);
-        var button = Create(action, actionContext.FormStateData);
+        var button = Create(actionContext, actionContext.FormStateData);
     
         if (action.IsUserDefined)
         {
-            button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
+            actionScripts.AddUserAction(button,actionContext, ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
@@ -157,7 +163,7 @@ public class ActionButtonFactory(
                         }
                         else
                         {
-                            button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                            actionScripts.AddFormAction(button, actionContext, ActionSource.FormToolbar);
                         }        
                     }
                     break;
@@ -170,7 +176,7 @@ public class ActionButtonFactory(
                     }
                     else
                     {
-                         button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                        actionScripts.AddFormAction(button, actionContext, ActionSource.FormToolbar);
                     }
                     break;
 
@@ -178,7 +184,7 @@ public class ActionButtonFactory(
                     button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.Update);
                     break;
                 case AuditLogFormToolbarAction:
-                    button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                    actionScripts.AddFormAction(button, actionContext, ActionSource.FormToolbar);
                     break;
                 case SaveAction saveAction:
                     var isAtModal = formView.DataPanel.IsAtModal;
@@ -187,7 +193,7 @@ public class ActionButtonFactory(
                     else
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
                     
-                    button.OnClientClick = actionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar,isAtModal);
+                    actionScripts.AddFormAction(button, actionContext, ActionSource.FormToolbar, isAtModal);
                     break;
             }
         }
@@ -202,12 +208,11 @@ public class ActionButtonFactory(
 
     public JJLinkButton CreateFieldButton(BasicAction action, ActionContext actionContext)
     {
-        var button = Create(action, actionContext.FormStateData);
+        var button = Create(actionContext, actionContext.FormStateData);
 
         if (action.IsUserDefined)
         {
-            button.OnClientClick = actionScripts.GetUserActionScript(actionContext, ActionSource.Field);
-        }
+            actionScripts.AddUserAction(button,actionContext, ActionSource.Field);        }
 
         button.Enabled = button.Enabled && actionContext.FormStateData.PageState is not PageState.View;
 

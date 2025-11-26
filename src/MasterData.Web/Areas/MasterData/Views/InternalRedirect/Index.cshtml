@@ -9,7 +9,7 @@
     Layout = Model.IsModal ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
 }
 
-<master-data-form method="POST">
+<master-data-form method="POST" asp-action="Index" asp-route-parameters="@Context.Request.Query["parameters"]">
     <script lang="javascript" type="text/javascript">
         @if (Model.IsModal)
         {

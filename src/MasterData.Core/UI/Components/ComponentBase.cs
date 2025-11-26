@@ -79,7 +79,6 @@ public abstract class ComponentBase
         }
     }
 
-
     /// <summary>
     /// Add or update a value in UserValues.<br></br>
     /// If exists, insert it, else, update it.

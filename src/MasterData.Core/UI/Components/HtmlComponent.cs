@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using JJConsulting.Html;
 
 
@@ -24,7 +25,7 @@ public abstract class HtmlComponent : ComponentBase
     public string GetHtml()
     {
         if (Visible)
-            return BuildHtml()?.ToString(true);
+            return BuildHtml()?.ToString(indented:Debugger.IsAttached);
         
         return string.Empty;
     }

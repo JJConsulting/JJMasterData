@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Web;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
@@ -133,19 +135,30 @@ public class ActionScripts(
         return script.ToString();
     }
 
-    public string GetFormActionScript(
+    public void AddFormAction(JJLinkButton button, ActionContext actionContext, ActionSource actionSource, bool isAtModal = false)
+    {
+        var attributes = GetFormActionAttributes(actionContext, actionSource, isAtModal);
+        
+        foreach (var attr in attributes)
+        {
+            button.Attributes[attr.Key] = attr.Value;
+        }
+        
+        button.OnClientClick = $"ActionHelper.executeAction('{actionContext.Id}')";
+    }
+    
+    public Dictionary<string,string> GetFormActionAttributes(
         ActionContext actionContext, 
         ActionSource actionSource, 
         bool isAtModal = false)
     {
-        
         var formElement = actionContext.FormElement;
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = encryptionService.EncryptObject(actionMap);
         var confirmationMessage =
             GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
-        
+    
         var actionData = new ActionData
         {
             ComponentName = actionContext.ParentComponentName,
@@ -153,7 +166,7 @@ public class ActionScripts(
             IsSubmit = actionContext.IsSubmit,
             ConfirmationMessage = string.IsNullOrEmpty(confirmationMessage) ? null : confirmationMessage
         };
-        
+    
         if (action is IModalAction { ShowAsModal: true } modalAction)
         {
             actionData.ModalTitle = modalAction.ModalTitle ?? string.Empty;
@@ -166,12 +179,25 @@ public class ActionScripts(
 
         if (actionData.IsModal && !actionData.IsSubmit)
             actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
-        
-        var actionDataJson = actionData.ToJson();
 
-        var functionSignature = $"ActionHelper.executeAction('{actionDataJson}');";
+        var attributes = new Dictionary<string,string>
+        {
+            ["data-component-name"] = actionData.ComponentName,
+            ["data-action-map"] = actionData.EncryptedActionMap,
+            ["data-is-submit"] = actionData.IsSubmit ? "true" : "false",
+            ["data-is-modal"] = actionData.IsModal ? "true" : "false"
+        };
 
-        return functionSignature;
+        if (actionData.ModalTitle != null)
+            attributes["data-modal-title"] = actionData.ModalTitle;
+
+        if (actionData.EncryptedGridViewRouteContext != null)
+            attributes["data-grid-view-route-context"] = actionData.EncryptedGridViewRouteContext;
+
+        if (actionData.ConfirmationMessage != null)
+            attributes["data-confirmation-message"] = actionData.ConfirmationMessage;
+
+        return attributes;
     }
 
     private string GetGridRouteContext(FormElement formElement)
@@ -181,7 +207,8 @@ public class ActionScripts(
         return encryptedRouteContext;
     }
 
-    internal string GetUserActionScript(
+    internal void AddUserAction(
+        JJLinkButton button,
         ActionContext actionContext,
         ActionSource actionSource)
     {
@@ -189,19 +216,21 @@ public class ActionScripts(
 
         var action = actionContext.Action;
 
-        return action switch
-        {
-            UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
-            SqlCommandAction => GetSqlCommandScript(actionContext, actionSource),
-            ScriptAction jsAction => 
-                expressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ??
-                string.Empty,
-            InternalAction internalAction => GetInternalUrlScript(internalAction, actionContext),
-            HtmlTemplateAction  => GetHtmlTemplateScript(actionContext, actionSource),
-            _ => GetFormActionScript(actionContext, actionSource)
-        };
+        //todo: esses caras poderiam seguir o mesmo padrão do AddFormAction pra despoluir o JS
+        if (action is UrlRedirectAction urlRedirectAction)
+            button.OnClientClick= GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource);
+        else if (action is SqlCommandAction)
+            button.OnClientClick= GetSqlCommandScript(actionContext, actionSource);
+        else if (action is ScriptAction jsAction)
+            button.OnClientClick= expressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ??
+                                  string.Empty;
+        else if (action is InternalAction internalAction)
+            button.OnClientClick= GetInternalUrlScript(internalAction, actionContext);
+        else if (action is HtmlTemplateAction)
+            button.OnClientClick= GetHtmlTemplateScript(actionContext, actionSource);
+        else
+            AddFormAction(button, actionContext, actionSource);
     }
-
 
     private string GetSqlCommandScript(ActionContext actionContext, ActionSource actionSource)
     {
