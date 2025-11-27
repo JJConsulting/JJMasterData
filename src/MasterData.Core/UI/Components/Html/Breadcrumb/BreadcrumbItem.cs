@@ -3,14 +3,13 @@
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 
-
 namespace JJMasterData.Core.UI.Components;
 
 public class BreadcrumbItem
 {
     public string? Url { get; set; }
     
-    public HtmlBuilder HtmlContent { get; }
+    public HtmlBuilder HtmlContent { get; init; }
 
     public string Content
     {
@@ -20,7 +19,7 @@ public class BreadcrumbItem
     public BreadcrumbItem() : this(new HtmlBuilder())
     {
     }
-
+    
     public BreadcrumbItem(string text) : this()
     {
         HtmlContent.AppendText(text);
