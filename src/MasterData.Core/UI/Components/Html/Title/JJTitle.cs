@@ -61,13 +61,13 @@ public sealed class JJTitle : HtmlComponent
                         span.AppendComponent(new JJIcon(icon));
                     });
                 }
-                tag.AppendText(Title);
+                tag.Append(new HtmlBuilder(Title, encode:false));
                 if (!string.IsNullOrEmpty(SubTitle))
                 {
-                    tag.Append(HtmlTag.Small, SubTitle, static (subTitle,small) =>
+                    tag.Append(HtmlTag.Small,small =>
                     {
-                        small.WithCssClass("sub-title");
-                        small.AppendText($" {subTitle}");
+                        small.WithCssClass("sub-title me-1");
+                        small.Append(new HtmlBuilder(SubTitle, encode:false));
                     });
                 }
             });
