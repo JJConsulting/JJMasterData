@@ -28,19 +28,19 @@ internal sealed class GridPagination(JJGridView gridView)
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClassIf(BootstrapHelper.Version > 3, "container-fluid p-0")
-            .Append(HtmlTag.Div, this, static (grid, div) =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("row justify-content-between");
-                div.AppendDiv(grid, static (grid, div) =>
+                div.AppendDiv(div =>
                 {
                     div.WithCssClass("col-sm-9");
-                    div.AppendDiv(grid, static (grid, div) =>
+                    div.AppendDiv(div =>
                     {
                         div.WithCssClass("d-flex");
-                        div.AppendDiv(grid, static (grid, div) => div.Append(grid.GetPaginationHtmlBuilder()));
+                        div.AppendDiv(div => div.Append(GetPaginationHtmlBuilder()));
                     });
                 });
-                div.Append(grid.GetTotalRecordsHtmlBuilder());
+                div.Append(GetTotalRecordsHtmlBuilder());
             });
 
         return html;

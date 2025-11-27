@@ -20,10 +20,10 @@ public sealed class JJToolbar : HtmlComponent
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
-            .Append(HtmlTag.Div,this, static (toolbar, row) =>
+            .Append(HtmlTag.Div,  row =>
             {
                 row.WithCssClass("row");
-                row.Append(toolbar.GetHtmlCol());
+                row.Append(GetHtmlCol());
             });
 
         return html;

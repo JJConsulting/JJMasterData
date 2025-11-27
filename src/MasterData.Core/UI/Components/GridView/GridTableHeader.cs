@@ -71,25 +71,23 @@ internal sealed class GridTableHeader(JJGridView gridView)
                     span.WithCssClass("jjenable-sorting");
                     span.WithOnClick(gridView.Scripts.GetSortingScript(field.Name));
                 }
-                span.Append(HtmlTag.Span,(localizer: _stringLocalizer,field), static (state, span) =>
+                span.AppendSpan(span=>
                 {
-                    var field = state.field;
-                    
                     if (string.IsNullOrEmpty(field.Label)) 
                     {
                         span.AppendText(field.Name);
                     }
                     else
                     {
-                        span.AppendText(state.localizer[field.Label]);
+                        span.AppendText(_stringLocalizer[field.Label]);
                     }
                     
                     if (!string.IsNullOrEmpty(field.HelpDescription))
                     {
-                        span.Append(HtmlTag.Span, state, static (state, circle) =>
+                        span.AppendSpan(circle =>
                         {
                             circle.WithCssClass("fa fa-question-circle help-description");
-                            circle.WithToolTip(state.localizer[state.field.HelpDescription!]);
+                            circle.WithToolTip(_stringLocalizer[field.HelpDescription!]);
                         });
                     }
                 });

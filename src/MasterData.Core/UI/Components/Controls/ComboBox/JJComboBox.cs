@@ -97,10 +97,10 @@ public class JJComboBox(
         {
             return new HtmlBuilder(HtmlTag.Div).WithCssClass("form-floating")
                 .Append(select)
-                .AppendLabel(this, static (comboBox, label) =>
+                .AppendLabel(label =>
                 {
-                    label.AppendText(comboBox.FloatingLabel);
-                    label.WithAttribute("for", comboBox.Name);
+                    label.AppendText(FloatingLabel);
+                    label.WithAttribute("for", Name);
                 });
         }
 

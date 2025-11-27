@@ -59,10 +59,10 @@ public sealed class JJTextGroup(
                 input.WithAttribute("placeholder");
                 return new HtmlBuilder(HtmlTag.Div).WithCssClass("form-floating")
                     .Append(input)
-                    .AppendLabel(this, static (state,label) =>
+                    .AppendLabel(label =>
                     {
-                        label.AppendText(state.FloatingLabel);
-                        label.WithAttribute("for", state.Name);
+                        label.AppendText(FloatingLabel);
+                        label.WithAttribute("for", Name);
                     });
             }
 
@@ -85,14 +85,14 @@ public sealed class JJTextGroup(
         if (UseFloatingLabel)
         {
             input.WithAttribute("placeholder");
-            inputGroup.AppendDiv((Input:input, TextGroup:this), static (state, div) =>
+            inputGroup.AppendDiv(div =>
             {
                 div.WithCssClass("form-floating");
-                div.Append(state.Input);
-                div.AppendLabel(state.TextGroup, static (state,label) =>
+                div.Append(input);
+                div.AppendLabel(label=>
                 {
-                    label.AppendText(state.FloatingLabel);
-                    label.WithAttribute("for", state.Name);
+                    label.AppendText(FloatingLabel);
+                    label.WithAttribute("for", Name);
                 });
             });
         }

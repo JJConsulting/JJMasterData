@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
-
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -56,18 +54,18 @@ public sealed class JJTitle : HtmlComponent
             {
                 if (Icon.HasValue)
                 {
-                    tag.Append(HtmlTag.Span, Icon.Value, static (icon,span) =>
+                    tag.AppendSpan( span =>
                     {
-                        span.AppendComponent(new JJIcon(icon));
+                        span.AppendComponent(new JJIcon(Icon.Value));
                     });
                 }
-                tag.Append(new HtmlBuilder(Title, encode:false));
+                tag.Append(new HtmlBuilder(Title!, encode:false));
                 if (!string.IsNullOrEmpty(SubTitle))
                 {
                     tag.Append(HtmlTag.Small,small =>
                     {
                         small.WithCssClass("sub-title me-1");
-                        small.Append(new HtmlBuilder(SubTitle, encode:false));
+                        small.Append(new HtmlBuilder(SubTitle!, encode:false));
                     });
                 }
             });
@@ -79,12 +77,12 @@ public sealed class JJTitle : HtmlComponent
         
         if (Actions == null)
             return div;
-
-        div.AppendDiv(Actions, static (actions, div) =>
+        
+        div.AppendDiv(div =>
         {
-            foreach (var action in actions)
+            foreach (var action in Actions)
             {
-                div.Append(HtmlTag.A, action, static (action,a) =>
+                div.AppendA(a =>
                 {
                     a.WithCssClass("btn btn-secondary");
                     a.WithHref(action.Url);
@@ -107,23 +105,23 @@ public sealed class JJTitle : HtmlComponent
     {
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
-            .Append(HtmlTag.Blockquote,this, static (state, block) =>
+            .AppendBlockquote(block=>
             {
                 block.WithCssClass("blockquote mb-1");
-                if (!string.IsNullOrEmpty(state.Title))
+                if (!string.IsNullOrEmpty(Title))
                 {
-                    block.Append(HtmlTag.P, state.Title, static (title, p) =>
+                    block.AppendP(p =>
                     {
-                        p.Append(new HtmlBuilder(title!, encode:false));
+                        p.Append(new HtmlBuilder(Title!, encode:false));
                     });
                 }
-                if (!string.IsNullOrEmpty(state.SubTitle))
+                if (!string.IsNullOrEmpty(SubTitle))
                 {
-                    block.Append(HtmlTag.Footer, state, static (state,p) =>
+                    block.AppendFooter( f =>
                     {
-                        p.WithCssClass("blockquote-footer");
-                        p.WithCssClassIf(string.IsNullOrEmpty(state.Title), "mt-1");
-                        p.Append(new HtmlBuilder(state.SubTitle!, encode:false));
+                        f.WithCssClass("blockquote-footer");
+                        f.WithCssClassIf(string.IsNullOrEmpty(Title), "mt-1");
+                        f.Append(new HtmlBuilder(SubTitle!, encode:false));
                     });
                 }
             });

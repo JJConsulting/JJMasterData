@@ -38,14 +38,14 @@ public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
             .WithAttribute("data-editor-name",Name)
             .WithAttribute("data-readonly", (!Enabled).ToString().ToLowerInvariant())
             .WithAttribute("data-language", Language)
-            .Append(HtmlTag.TextArea, this, static (state, textArea) =>
+            .AppendTextArea(textArea =>
             {
                 textArea.WithAttribute("hidden", "hidden")
-                    .WithName(state.Name)
-                    .WithId(state.Name)
-                    .AppendText(state.Text);
+                    .WithName(Name)
+                    .WithId(Name)
+                    .AppendText(Text);
             })
-            .Append(HtmlTag.Div, editorId, static (editorId, div) => div.WithId(editorId));
+            .AppendDiv(div => div.WithId(editorId));
 
         var html = new HtmlBuilder()
             .Append(style)

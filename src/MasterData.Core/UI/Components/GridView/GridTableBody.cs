@@ -54,10 +54,10 @@ internal sealed class GridTableBody(JJGridView gridView)
             
             tr.WithCssClass($"d-none md-tr-placeholder {(glow ? "placeholder-glow" : "placeholder-wave")}");
        
-            tr.Append(HtmlTag.Td, glow, static (glow, td) =>
+            tr.AppendTd(td =>
             {
                 td.WithAttribute("colspan", "100%");
-                td.Append(HtmlTag.Span, glow, static (glow, span) =>
+                td.AppendSpan(span =>
                 {
                     span.WithCssClass("placeholder w-100")
                         .WithCssClassIf(glow, "placeholder-sm");

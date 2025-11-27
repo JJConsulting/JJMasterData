@@ -878,7 +878,11 @@ public class JJGridView : AsyncComponent
             Title = StringLocalizer["Warning"],
             InnerHtml = new HtmlBuilder(HtmlTag.Span)
                 .AppendText(StringLocalizer["Page must be between 1 and {0}.",totalPages])
-                .AppendLink("Click here to go to the first page.", $"javascript:{Scripts.GetPaginationScript(1)}"),
+                .AppendA(a =>
+                {
+                    a.AppendText("Click here to go to the first page.");
+                    a.WithHref($"javascript:{Scripts.GetPaginationScript(1)}");
+                }),
             Color = BootstrapColor.Warning,
             Icon = FontAwesomeIcon.SolidTriangleExclamation
         };

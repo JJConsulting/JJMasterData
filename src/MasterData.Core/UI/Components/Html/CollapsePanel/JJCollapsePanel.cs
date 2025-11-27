@@ -83,11 +83,11 @@ public class JJCollapsePanel : HtmlComponent
         var accordion = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass($"accordion accordion-{Color.ToColorString()} pb-1 mb-3")
                 .WithAttribute("id", $"{Name}")
-                .Append(HtmlTag.Div,this, static (state, div) =>
+                .Append(HtmlTag.Div,div=>
                 {
                     div.WithCssClass("accordion-item");
-                    div.Append(state.GetAccordionHeader());
-                    div.Append(state.GetAccordionBody());
+                    div.Append(GetAccordionHeader());
+                    div.Append(GetAccordionBody());
                 });
         return accordion;
     }
@@ -97,20 +97,20 @@ public class JJCollapsePanel : HtmlComponent
         var h2 = new HtmlBuilder(HtmlTag.H2)
         .WithCssClass("accordion-header ")
         .WithAttribute("id", $"{Name}-header")
-        .Append(HtmlTag.Button,this, static (state,button) =>
+        .Append(HtmlTag.Button, (button) =>
         {
-            button.WithCssClass($"accordion-button {(!state.IsCollapseOpen ? "collapsed" : "")}");
+            button.WithCssClass($"accordion-button {(!IsCollapseOpen ? "collapsed" : "")}");
             button.WithAttribute("type", "button");
             button.WithDataAttribute("toggle", "collapse");
-            button.WithDataAttribute("target", $"#{state.Name}-collapse");
-            button.AppendDiv(state, static (state, div) =>
+            button.WithDataAttribute("target", $"#{Name}-collapse");
+            button.AppendDiv(div =>
             {
-                div.WithId($"{state.Name}-title");
-                if (state.TitleIcon is not null)
-                    div.AppendComponent(state.TitleIcon);
+                div.WithId($"{Name}-title");
+                if (TitleIcon is not null)
+                    div.AppendComponent(TitleIcon);
                 
-                div.AppendTextIf(state.TitleIcon != null, "\u00A0");
-                div.AppendText(state.Title);
+                div.AppendTextIf(TitleIcon != null, "\u00A0");
+                div.AppendText(Title);
             });
         });
 
@@ -203,13 +203,13 @@ public class JJCollapsePanel : HtmlComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
-            .Append(HtmlTag.Div, this, static (state, div) =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("col-md-12");
-                div.WithCssClassIf(state.ButtonPosition == Position.Left, BootstrapHelper.TextLeft);
-                div.WithCssClassIf(state.ButtonPosition == Position.Right, BootstrapHelper.TextRight);
+                div.WithCssClassIf(ButtonPosition == Position.Left, BootstrapHelper.TextLeft);
+                div.WithCssClassIf(ButtonPosition == Position.Right, BootstrapHelper.TextRight);
 
-                foreach (var btn in state.Buttons)
+                foreach (var btn in Buttons)
                 {
                     div.AppendText("\u00A0");
                     div.Append(btn.BuildHtml().WithCssClass("ms-1"));
