@@ -25,7 +25,7 @@ public abstract class HtmlComponent : ComponentBase
     public string GetHtml()
     {
         if (Visible)
-            return BuildHtml()?.ToString(indented:Debugger.IsAttached);
+            return BuildHtml()?.ToString();
         
         return string.Empty;
     }
