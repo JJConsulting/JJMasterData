@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
@@ -269,7 +271,7 @@ public class JJComboBox(
             var icon = new JJIcon(item.Icon, item.IconColor, item.Description)
             {
                 CssClass = "fa-lg fa-fw"
-            }.BuildHtml();
+            }.GetHtmlBuilder();
 
             div.Append(icon);
 

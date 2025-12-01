@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Text.Json;
 using JJConsulting.FontAwesome;
+using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary;

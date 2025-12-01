@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;

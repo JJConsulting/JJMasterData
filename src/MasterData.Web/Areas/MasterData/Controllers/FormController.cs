@@ -1,4 +1,5 @@
 ﻿using JJConsulting.FontAwesome;
+using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;

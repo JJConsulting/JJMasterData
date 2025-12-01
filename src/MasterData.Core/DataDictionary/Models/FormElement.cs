@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 using JJConsulting.FontAwesome;
+using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
 

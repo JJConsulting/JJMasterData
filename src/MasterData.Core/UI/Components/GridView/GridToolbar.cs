@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -84,7 +85,7 @@ internal sealed class GridToolbar(JJGridView gridView)
 
         if (groupedActions.Count > 0)
         {
-            var groupedAction = gridView.ComponentFactory.Html.LinkButtonGroup.Create();
+            var groupedAction = new JJLinkButtonGroup();
             groupedAction.ShowAsButton = true;
             groupedAction.CaretText = gridView.StringLocalizer["More"];
             groupedAction.CssClass = BootstrapHelper.PullRight;

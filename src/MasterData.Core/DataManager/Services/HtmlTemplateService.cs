@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Util;

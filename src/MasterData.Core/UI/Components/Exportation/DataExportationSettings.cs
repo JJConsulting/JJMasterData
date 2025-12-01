@@ -3,6 +3,9 @@ using System.IO;
 using System.Linq;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -32,19 +35,22 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             div.WithCssClass("row");
             div.AppendDiv(div =>
             {
-                var linkFactory = dataExportation.ComponentFactory.Html.LinkButton;
                 string onClientClick = dataExportation.Scripts.GetStartExportationScript();
                 
-                var btnOk = linkFactory.Create();
-                btnOk.Text = _stringLocalizer["Export"];
-                btnOk.IconClass = "fa fa-check";
-                btnOk.ShowAsButton = true;
-                btnOk.OnClientClick = onClientClick;
+                var btnOk = new JJLinkButton
+                {
+                    Text = _stringLocalizer["Export"],
+                    IconClass = "fa fa-check",
+                    ShowAsButton = true,
+                    OnClientClick = onClientClick
+                };
 
-                var btnCancel = linkFactory.Create();
-                btnCancel.Text = _stringLocalizer["Cancel"];
-                btnCancel.IconClass = "fa fa-times";
-                btnCancel.ShowAsButton = true;
+                var btnCancel = new JJLinkButton
+                {
+                    Text = _stringLocalizer["Cancel"],
+                    IconClass = "fa fa-times",
+                    ShowAsButton = true
+                };
 
                 btnCancel.Attributes.Add(BootstrapHelper.DataDismiss, "modal");
 
@@ -271,7 +277,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                     "Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."]
             }
         };
-        alert.SetAttr("style", "display:none;");
+        alert.SetAttribute("style", "display:none;");
         return alert;
     }
 
@@ -279,14 +285,14 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     {
         var files = GetGeneratedFiles(exportationFolderPath);
         var filesCount = files.Count;
-        var panel = new JJCollapsePanel(dataExportation.CurrentContext.Request.Form)
+        var panel = new JJCollapsePanel
         {
             Name = "exportCollapse",
             ExpandedByDefault = false,
             TitleIcon = new JJIcon(FontAwesomeIcon.FolderOpenO),
             Visible = filesCount  > 0,
             Title = @$"{_stringLocalizer["Recently generated files"]} ({filesCount})",
-            HtmlBuilderContent = GetLastFilesHtml(files)
+            Content = GetLastFilesHtml(files)
         };
 
         return panel.GetHtmlBuilder()?.WithCssClass($"col-sm-12 {BootstrapHelper.FormGroup}");

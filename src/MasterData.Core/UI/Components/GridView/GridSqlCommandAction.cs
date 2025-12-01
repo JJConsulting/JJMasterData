@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
@@ -15,7 +16,7 @@ internal sealed class GridSqlCommandAction(JJGridView gridView)
 {
     public async Task<ComponentResult> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
     {
-        var messageFactory = gridView.ComponentFactory.Html.MessageBox;
+        var messageFactory = gridView.ComponentFactory.MessageBox;
         try
         {
             if (IsApplyOnList(map, sqlCommandAction))

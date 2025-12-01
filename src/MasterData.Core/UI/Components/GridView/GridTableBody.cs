@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Tasks;
@@ -306,7 +308,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     private static HtmlBuilder GetIconCell(FontAwesomeIcon FontAwesomeIcon, string? color = null, string? tooltip = null)
     {
         var cell = new HtmlBuilder(HtmlTag.Div);
-        var icon = new JJIcon(FontAwesomeIcon, color);
+        var icon = new JJIcon(FontAwesomeIcon, color ?? string.Empty);
         if (tooltip is not null)
         {
             icon.Tooltip = tooltip;
@@ -387,7 +389,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("table-action");
 
-        var btnGroup = gridView.ComponentFactory.Html.LinkButtonGroup.Create();
+        var btnGroup = new JJLinkButtonGroup();
 
         var factory = gridView.ComponentFactory.ActionButton;
 
@@ -542,7 +544,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         if (actionButton is { Visible: true })
         {
             if (!string.IsNullOrEmpty(actionButton.OnClientClick))
-                return actionButton.OnClientClick;
+                return actionButton.OnClientClick!;
 
             return !string.IsNullOrEmpty(actionButton.UrlAction)
                 ? $"window.location.href = '{actionButton.UrlAction}'"

@@ -5,19 +5,20 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Serialization;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
 
@@ -35,7 +36,8 @@ public class JJAuditLogView : AsyncComponent
     private string _userId;
     private RouteContext _routeContext;
 
-
+    public Dictionary<string, object> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
+    
     private RouteContext RouteContext
     {
         get
@@ -314,10 +316,12 @@ public class JJAuditLogView : AsyncComponent
         {
             grid.OnBeforeTableRenderAsync += (_, args) =>
             {
-                var alert = _componentFactory.Html.Alert.Create();
-                alert.Title = StringLocalizer["Warning"];
-                alert.Color = BootstrapColor.Warning;
-                alert.Icon = FontAwesomeIcon.SolidTriangleExclamation;
+                var alert = new JJAlert
+                {
+                    Title = StringLocalizer["Warning"],
+                    Color = BootstrapColor.Warning,
+                    Icon = FontAwesomeIcon.SolidTriangleExclamation
+                };
                 alert.Messages.Add(StringLocalizer["Audit Log is disabled. Please contact the administrator."]);
                 args.HtmlBuilder.AppendComponent(alert);
                 return ValueTaskHelper.CompletedTask;
@@ -329,12 +333,14 @@ public class JJAuditLogView : AsyncComponent
 
     private JJToolbar GetFormBottombar()
     {
-        var btn = _componentFactory.Html.LinkButton.Create();
-        btn.Type = LinkButtonType.Button;
-        btn.CssClass = $"{BootstrapHelper.BtnDefault} btn-small";
-        btn.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{FormElement.ParentName}','');";
-        btn.IconClass = "fa fa-arrow-left";
-        btn.Text = StringLocalizer["Back"];
+        var btn = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            CssClass = $"{BootstrapHelper.BtnDefault} btn-small",
+            OnClientClick = $"AuditLogViewHelper.viewAuditLog('{FormElement.ParentName}','');",
+            IconClass = "fa fa-arrow-left",
+            Text = StringLocalizer["Back"]
+        };
 
         var toolbar = new JJToolbar();
         toolbar.Items.Add(btn.GetHtmlBuilder());

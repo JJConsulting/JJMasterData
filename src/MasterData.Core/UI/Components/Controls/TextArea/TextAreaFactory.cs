@@ -21,7 +21,7 @@ internal sealed class TextAreaFactory(
             throw new ArgumentNullException(nameof(field));
 
         var text = Create();
-        text.SetAttr(field.Attributes);
+        text.SetAttributes(field.Attributes);
         text.Tooltip = field.HelpDescription;
         text.MaxLength = field.Size;
         var rows = field.GetAttr(FormElementField.RowsAttribute)?.ToString();

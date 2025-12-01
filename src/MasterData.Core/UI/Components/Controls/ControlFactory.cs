@@ -143,7 +143,7 @@ public class ControlFactory(IServiceProvider serviceProvider,
         }
 
         control.ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly && formStateData.PageState != PageState.Filter;
-        control.SetAttr(field.Attributes);
+        control.SetAttributes(field.Attributes);
         
         return control;
     }

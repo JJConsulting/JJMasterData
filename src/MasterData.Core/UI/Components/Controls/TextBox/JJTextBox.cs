@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Html;
@@ -20,24 +21,24 @@ public class JJTextBox : ControlBase
     {
         get
         {
-            if (double.TryParse(GetAttr(FormElementField.MinValueAttribute), out var minVal))
+            if (double.TryParse(GetAttribute(FormElementField.MinValueAttribute), out var minVal))
                 return minVal;
             
             return null;
         }
-        set => SetAttr(FormElementField.MinValueAttribute, value);
+        set => SetAttribute(FormElementField.MinValueAttribute, value.ToString());
     }
 
     public double? MaxValue
     {
         get
         {
-            if (double.TryParse(GetAttr(FormElementField.MaxValueAttribute), out var minVal))
+            if (double.TryParse(GetAttribute(FormElementField.MaxValueAttribute), out var minVal))
                 return minVal;
             
             return null;
         }
-        set => SetAttr(FormElementField.MaxValueAttribute, value);
+        set => SetAttribute(FormElementField.MaxValueAttribute, value.ToString());
     }
 
     public JJTextBox(IFormValues formValues) : base(formValues)

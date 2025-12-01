@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 
 
@@ -15,6 +17,8 @@ public abstract class ControlBase(IFormValues formValues) : ComponentBase
     /// </summary>
     public bool Enabled { get; set; } = true;
 
+    public Dictionary<string, object> UserValues { get; set; } = new();
+    
     /// <summary>
     /// Property to tell if the control is readonly, but the value is sent to the server.
     /// </summary>

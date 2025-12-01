@@ -5,6 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
@@ -124,9 +127,9 @@ public class JJDataExportation : ProcessComponent
 
             if (reporter.HasError)
             {
-                var panel = ComponentFactory.Html.ValidationSummary.Create();
+                var panel = new JJValidationSummary();
                 panel.ShowCloseButton = false;
-                panel.MessageTitle = reporter.Message;
+                panel.Title = reporter.Message;
                 html.AppendComponent(panel);
             }
             else
@@ -181,7 +184,7 @@ public class JJDataExportation : ProcessComponent
                 });
             }
 
-            var btnCancel = ComponentFactory.Html.LinkButton.Create();
+            var btnCancel = new JJLinkButton();
             btnCancel.Text = StringLocalizer["Close"];
             btnCancel.IconClass = "fa fa-times";
             btnCancel.ShowAsButton = true;

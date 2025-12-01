@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Repository;

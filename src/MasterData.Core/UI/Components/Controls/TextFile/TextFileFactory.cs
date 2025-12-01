@@ -40,7 +40,7 @@ internal sealed class TextFileFactory(
         textFile.UserValues = formStateData.UserValues;
         textFile.FormElement = formElement;
 
-        textFile.SetAttr(field.Attributes);
+        textFile.SetAttributes(field.Attributes);
 
         return textFile;
     }

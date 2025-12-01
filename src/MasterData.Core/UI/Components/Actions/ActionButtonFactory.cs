@@ -9,21 +9,21 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using Microsoft.Extensions.Localization;
 using JJConsulting.FontAwesome;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Models;
+
 namespace JJMasterData.Core.UI.Components;
 
 public class ActionButtonFactory(
-    IComponentFactory<JJLinkButton> linkButtonFactory,
     ActionScripts actionScripts,
     ExpressionsService expressionsService,
     IEncryptionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    public JJLinkButton Create() => linkButtonFactory.Create();
-
     public JJLinkButton Create(ActionContext actionContext, bool visible, bool enabled)
     {
         var action = actionContext.Action;
-        var button = linkButtonFactory.Create();
+        var button = new JJLinkButton();
         button.Name = actionContext.Id;
         button.Tooltip = string.IsNullOrEmpty(action.Tooltip) ? action.Tooltip : stringLocalizer[action.Tooltip!];
         button.Text = string.IsNullOrEmpty(action.Text) ? action.Text : stringLocalizer[action.Text!];

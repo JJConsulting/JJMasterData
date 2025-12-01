@@ -2,6 +2,9 @@
 using System.Globalization;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -120,32 +123,37 @@ internal sealed class DataImportationLog
 
     private HtmlBuilder GetLogDetailsHtml()
     {
-        var panel = new JJCollapsePanel(_currentContext.Request.Form)
-        {
-            Title = _stringLocalizer["Importation Details"],
-            TitleIcon = new JJIcon(FontAwesomeIcon.Film),
-            ExpandedByDefault = true,
-            HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-                .Append(HtmlTag.B,b=>b.AppendText(_stringLocalizer["Start:"]))
-                .AppendText(_reporter.StartDate.ToString(CultureInfo.CurrentCulture))
-                .Append(HtmlTag.Br)
-                .Append(HtmlTag.B,b=>b.AppendText(_stringLocalizer["End:"]))
-                .AppendText(_reporter.EndDate.ToString(CultureInfo.CurrentCulture))
-        };
 
+        var content = new HtmlBuilder(HtmlTag.Div)
+            .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["Start:"]))
+            .AppendText(_reporter.StartDate.ToString(CultureInfo.CurrentCulture))
+            .Append(HtmlTag.Br)
+            .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["End:"]))
+            .AppendText(_reporter.EndDate.ToString(CultureInfo.CurrentCulture));
+        
+            
         if (!string.IsNullOrEmpty(_reporter.UserId))
         {
-            panel.HtmlBuilderContent.Append(HtmlTag.Br)
+            content.Append(HtmlTag.Br)
                 .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["UserId:"]))
                 .AppendText("\u00A0")
                 .AppendText(_reporter.UserId.ToString(CultureInfo.CurrentCulture));
         }
+        
+        content
+            .Append(HtmlTag.Br)
+            .AppendText(_reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
 
-        panel.HtmlBuilderContent
-              .Append(HtmlTag.Br)
-              .AppendText(_reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
+            
+        var panel = new JJCollapsePanel
+        {
+            Title = _stringLocalizer["Importation Details"],
+            TitleIcon = new JJIcon(FontAwesomeIcon.Film),
+            ExpandedByDefault = true,
+            Content = content
+        };
 
-        return panel.BuildHtml();
+        return panel.GetHtmlBuilder();
     }
 
     private JJAlert GetAlertPanel()

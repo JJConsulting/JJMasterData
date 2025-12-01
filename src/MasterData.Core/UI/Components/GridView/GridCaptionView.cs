@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -86,7 +88,7 @@ internal sealed class GridCaptionView(
         {
             Name = $"{Name}-caption-modal",
             Title = stringLocalizer[title],
-            HtmlBuilderContent = form,
+            Content = form,
             Buttons = 
             [
                 new JJLinkButton
@@ -100,7 +102,7 @@ internal sealed class GridCaptionView(
             ]
         };
         
-        return dialog.BuildHtml();
+        return dialog.GetHtmlBuilder();
     }
     
     private FormElementField GetCaptionField()

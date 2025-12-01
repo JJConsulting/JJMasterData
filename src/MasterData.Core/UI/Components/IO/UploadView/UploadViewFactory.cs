@@ -5,12 +5,11 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class UploadViewFactory(IHttpContext currentContext,
+public sealed class UploadViewFactory(IHttpContext currentContext,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
-    : IComponentFactory<JJUploadView>
 {
     public JJUploadView Create()
     {

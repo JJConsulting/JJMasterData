@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using JJConsulting.FontAwesome;
+using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.UI.Components;
 

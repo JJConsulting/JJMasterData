@@ -26,7 +26,7 @@ public class JJTextBoxTests
         expected.Append("/>");
 
         var html = await text.GetHtmlBuilderAsync();
-        Assert.Equal(expected.ToString(), html.ToString(true));
+        Assert.Equal(expected.ToString(), html.ToString());
     }
 
     [Fact]

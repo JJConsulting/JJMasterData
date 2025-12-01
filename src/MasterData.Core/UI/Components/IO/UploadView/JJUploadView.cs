@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
@@ -70,6 +73,8 @@ public class JJUploadView : AsyncComponent
     
     public bool ViewGallery { get; set; }
 
+    public Dictionary<string, object> UserValues { get; set; } = new();
+    
     /// <summary>
     /// Always apply changes to the file system.
     /// If false, keep it in the memory.
@@ -334,8 +339,13 @@ public class JJUploadView : AsyncComponent
 
         if (!string.IsNullOrEmpty(Title))
         {
-            var title = ComponentFactory.Html.Title.Create(Title, SubTitle, Icon);
-            title.Size = TitleSize;
+            var title = new JJTitle
+            {
+                Title = Title,
+                SubTitle = SubTitle,
+                Icon = Icon,
+                Size = TitleSize
+            };
             html.AppendComponent(title);
         }
 
@@ -383,12 +393,14 @@ public class JJUploadView : AsyncComponent
         }
         catch (Exception ex)
         {
-            var alert = ComponentFactory.Html.Alert.Create();
-            alert.Title = ex.Message;
-            alert.Color = BootstrapColor.Warning;
-            alert.ShowCloseButton = true;
-            alert.Icon = FontAwesomeIcon.SolidTriangleExclamation;
-        
+            var alert = new JJAlert
+            {
+                Title = ex.Message,
+                Color = BootstrapColor.Warning,
+                ShowCloseButton = true,
+                Icon = FontAwesomeIcon.SolidTriangleExclamation
+            };
+
             return new RenderedComponentResult(alert.GetHtmlBuilder());
         }
 
@@ -404,11 +416,11 @@ public class JJUploadView : AsyncComponent
         if (!ShowAddFiles)
             return html;
 
-        html.AppendComponent(new JJCollapsePanel(CurrentContext.Request.Form)
+        html.AppendComponent(new JJCollapsePanel
         {
             Title = StringLocalizer["New File"],
             ExpandedByDefault = IsCollapseExpandedByDefault,
-            HtmlBuilderContent = GetHtmlFormPanel()
+            Content = GetHtmlFormPanel()
         });
 
         return html;
@@ -419,8 +431,10 @@ public class JJUploadView : AsyncComponent
         var panelContent = new HtmlBuilder();
         if (!UploadArea.AllowedTypes.Equals("*"))
         {
-            var label = ComponentFactory.Html.Label.Create();
-            label.Text = $"{StringLocalizer["File Type:"]}\u00A0<b>{UploadArea.AllowedTypes}</b>";
+            var label = new JJLabel
+            {
+                Text = $"{StringLocalizer["File Type:"]}\u00A0<b>{UploadArea.AllowedTypes}</b>"
+            };
             panelContent.AppendComponent(label);
         }
         
@@ -624,10 +638,12 @@ public class JJUploadView : AsyncComponent
     private async Task<JJModalDialog> GetPreviewModalHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        
-        var label = ComponentFactory.Html.Label.Create();
-        label.Text = "File name";
-        label.LabelFor = $"preview_filename-{UploadArea.Name}";
+
+        var label = new JJLabel
+        {
+            Text = "File name",
+            LabelFor = $"preview_filename-{UploadArea.Name}"
+        };
 
         var group = ComponentFactory.Controls.TextGroup.Create();
         group.Name = $"preview_filename-{UploadArea.Name}";
@@ -668,21 +684,27 @@ public class JJUploadView : AsyncComponent
             });
         });
 
-        var btnOk = ComponentFactory.Html.LinkButton.Create();
-        btnOk.Type = LinkButtonType.Button;
-        btnOk.Name = $"btnDoUpload_{UploadArea.Name}";
-        btnOk.CssClass = "btn btn-primary";
-        btnOk.Text = StringLocalizer["Save"];
+        var btnOk = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            Name = $"btnDoUpload_{UploadArea.Name}",
+            CssClass = "btn btn-primary",
+            Text = StringLocalizer["Save"]
+        };
 
-        var btnCancel = ComponentFactory.Html.LinkButton.Create();
-        btnCancel.Type = LinkButtonType.Button;
-        btnCancel.Text = StringLocalizer["Cancel"];
-        btnCancel.SetAttr(BootstrapHelper.DataDismiss, "modal");
+        var btnCancel = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            Text = StringLocalizer["Cancel"]
+        };
+        btnCancel.SetAttribute(BootstrapHelper.DataDismiss, "modal");
 
-        var modal = ComponentFactory.Html.ModalDialog.Create();
-        modal.Name = $"preview_modal_{UploadArea.Name}";
-        modal.Title = "Would you like to save the image below?";
-        modal.HtmlBuilderContent = html;
+        var modal = new JJModalDialog
+        {
+            Name = $"preview_modal_{UploadArea.Name}",
+            Title = "Would you like to save the image below?",
+            Content = html
+        };
         modal.Buttons.Add(btnOk);
         modal.Buttons.Add(btnCancel);
 
@@ -733,12 +755,14 @@ public class JJUploadView : AsyncComponent
         RenameFile(currentName, newName);
 
         var text = StringLocalizer["File successfully renamed."];
-        var alert = ComponentFactory.Html.Alert.Create();
-        alert.Title = text;
-        alert.ShowCloseButton = true;
-        alert.Color = BootstrapColor.Info;
-        alert.Icon = FontAwesomeIcon.SolidCircleInfo;
-        
+        var alert = new JJAlert
+        {
+            Title = text,
+            ShowCloseButton = true,
+            Color = BootstrapColor.Info,
+            Icon = FontAwesomeIcon.SolidCircleInfo
+        };
+
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
 
@@ -752,7 +776,7 @@ public class JJUploadView : AsyncComponent
     {
         FormFileManager.DeleteFile(fileName);
         var text = StringLocalizer["File successfully deleted."];
-        var alert = ComponentFactory.Html.Alert.Create();
+        var alert = new JJAlert();
         alert.Title = text;
         alert.ShowCloseButton = true;
         alert.Color = BootstrapColor.Info;

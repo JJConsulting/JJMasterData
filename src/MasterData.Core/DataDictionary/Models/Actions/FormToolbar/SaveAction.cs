@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJConsulting.FontAwesome;
+using JJConsulting.Html.Bootstrap.Models;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 

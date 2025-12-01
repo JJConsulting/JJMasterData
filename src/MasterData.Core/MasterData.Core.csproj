@@ -31,13 +31,13 @@
     <ItemGroup>
         <PackageReference Include="Fluid.Core" Version="2.25.0" />
         <PackageReference Include="JJConsulting.FontAwesome" Version="1.0.0" />
-        <PackageReference Include="JJConsulting.Html" Version="1.0.6" />
+        <PackageReference Include="JJConsulting.Html.Bootstrap" Version="1.0.10" />
         <PackageReference Include="NCalcSync" Version="5.7.0" />
         <PackageReference Include="NCalc.MemoryCache" Version="5.7.0" />
         <PackageReference Include="NCalc.DependencyInjection" Version="5.7.0" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
     </ItemGroup>
     
     <ItemGroup>
@@ -74,20 +74,8 @@
       <Compile Update="UI\Components\RedirectComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
-      <Compile Update="UI\Components\IComponentFactoryOfT.cs">
-        <DependentUpon>IComponentFactory.cs</DependentUpon>
-      </Compile>
       <Compile Update="UI\Components\HtmlComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\HtmlComponent.cs">
-        <DependentUpon>ComponentBase.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\AsyncComponent.cs">
-        <DependentUpon>ComponentBase.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\ProcessComponent.cs">
-        <DependentUpon>ComponentBase.cs</DependentUpon>
       </Compile>
       <Compile Update="UI\Components\FileComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>

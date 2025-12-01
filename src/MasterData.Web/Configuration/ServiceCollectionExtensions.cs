@@ -94,6 +94,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();
 
+        services.AddTransient<JJMasterDataLogo>();
+        
         services.AddHttpContextAccessor();
         services.AddSession(o =>
         {

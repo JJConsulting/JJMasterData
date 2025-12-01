@@ -54,7 +54,7 @@ public class JJDataPanel(
     #endregion
     #region "Properties"
 
-
+    public Dictionary<string, object> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
     /// <summary>
     /// Layout form settings
     /// </summary>
@@ -402,5 +402,10 @@ public class JJDataPanel(
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
         return urlRedirectService.GetUrlRedirectResult(this, actionMap);
+    }
+
+    public void SetUserValues(string key, string value)
+    {
+        UserValues[key] = value;
     }
 }

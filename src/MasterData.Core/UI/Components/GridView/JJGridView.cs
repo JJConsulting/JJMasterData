@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -36,6 +39,7 @@ using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+
 
 // ReSharper disable UnusedMember.Local
 
@@ -105,6 +109,8 @@ public class JJGridView : AsyncComponent
     
     private readonly FieldValidationService _fieldValidationService;
     private readonly UrlRedirectService _urlRedirectService;
+    
+    public Dictionary<string, object?> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
     
     internal JJDataImportation DataImportation
     {
@@ -741,7 +747,7 @@ public class JJGridView : AsyncComponent
         var gridHtml = await GetHtmlBuilderAsync();
 
         if (Errors.Count > 0)
-            gridHtml.PrependComponent(ComponentFactory.Html.ValidationSummary.Create(Errors));
+            gridHtml.PrependComponent(new JJValidationSummary(Errors));
         
         if (sqlActionError is not null)
         {
@@ -815,7 +821,6 @@ public class JJGridView : AsyncComponent
             var sortConfig = await GetSortingConfigAsync();
             html.Append(sortConfig);
         }
-    
         
         html.AppendRange(GetHiddenInputs());
 
@@ -876,7 +881,7 @@ public class JJGridView : AsyncComponent
         return new JJAlert
         {
             Title = StringLocalizer["Warning"],
-            InnerHtml = new HtmlBuilder(HtmlTag.Span)
+            Content = new HtmlBuilder(HtmlTag.Span)
                 .AppendText(StringLocalizer["Page must be between 1 and {0}.",totalPages])
                 .AppendA(a =>
                 {
@@ -919,7 +924,7 @@ public class JJGridView : AsyncComponent
     
     internal JJTitle GetTitle()
     {
-        return ComponentFactory.Html.Title.Create(FormElement, new FormStateData(RelationValues!,UserValues, PageState.List), TitleActions);
+        return ComponentFactory.Title.Create(FormElement, new FormStateData(RelationValues!,UserValues, PageState.List), TitleActions);
     }
 
     internal ValueTask<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
@@ -1008,20 +1013,20 @@ public class JJGridView : AsyncComponent
             Title = StringLocalizer["Configure Grid"]
         };
 
-        var btnOk = ComponentFactory.Html.LinkButton.Create();
+        var btnOk = new JJLinkButton();
         btnOk.Text = StringLocalizer["Ok"];
         btnOk.IconClass = "fa fa-check";
         btnOk.ShowAsButton = true;
         btnOk.OnClientClick = Scripts.GetGridSettingsScript(ConfigAction, RelationValues);
         modal.Buttons.Add(btnOk);
 
-        var btnCancel = ComponentFactory.Html.LinkButton.Create();
+        var btnCancel = new JJLinkButton();
         btnCancel.Text = StringLocalizer["Cancel"];
         btnCancel.IconClass = "fa fa-times";
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();
         modal.Buttons.Add(btnCancel);
-        modal.HtmlBuilderContent = GridSettingsForm.GetHtmlBuilder(CanCustomPaging(), CurrentSettings);
+        modal.Content = GridSettingsForm.GetHtmlBuilder(CanCustomPaging(), CurrentSettings);
 
         return modal.GetHtmlBuilder();
     }
@@ -1148,8 +1153,9 @@ public class JJGridView : AsyncComponent
                     {
                         Logger.LogError(ex, "Error executing DataExportation.");
                         var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
-                        var validationSummary =ComponentFactory.Html.ValidationSummary.Create(errorMessage);
-                        validationSummary.MessageTitle = StringLocalizer["Error"];
+                        var validationSummary =new JJValidationSummary();
+                        validationSummary.Errors.Add(errorMessage);
+                        validationSummary.Title = StringLocalizer["Error"];
                         return new ContentComponentResult(validationSummary.GetHtmlBuilder());
                     }
 
@@ -1532,6 +1538,11 @@ public class JJGridView : AsyncComponent
     public bool IsExportPost()
     {
         return "startProcess".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
+    }
+    
+    public void SetUserValues(string key, string value)
+    {
+        UserValues[key] = value;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

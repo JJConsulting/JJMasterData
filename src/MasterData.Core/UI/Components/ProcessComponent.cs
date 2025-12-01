@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
@@ -37,6 +38,8 @@ public abstract class ProcessComponent(
         }
     }
 
+    public Dictionary<string, object> UserValues { get; set; } = new();
+    
     /// <summary>
     /// Id do usuário Atual
     /// </summary>

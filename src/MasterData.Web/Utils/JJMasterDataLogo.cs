@@ -1,10 +1,11 @@
-﻿using JJConsulting.Html;
-using JJMasterData.Core.Http.Abstractions;
+using JJConsulting.Html.Bootstrap.Components;
+using Microsoft.AspNetCore.Http;
 
+namespace JJMasterData.Web.Utils;
 
-namespace JJMasterData.Core.UI.Components;
+using JJConsulting.Html;
 
-public class JJMasterDataLogo(IHttpContext httpContext)
+public class JJMasterDataLogo(IHttpContextAccessor httpContextAccessor)
 {
     public HtmlBuilder GetHtmlBuilder()
     {
@@ -21,8 +22,8 @@ public class JJMasterDataLogo(IHttpContext httpContext)
     
     private string GetMasterDataLogoSrc()
     {
-        var appPath = httpContext.Request.ApplicationPath;
-        var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath;
+        var appPath = httpContextAccessor.HttpContext?.Request.PathBase;
+        var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath.ToString() ?? "/";
 
         if (!baseUrl.EndsWith("/"))
             baseUrl += "/";

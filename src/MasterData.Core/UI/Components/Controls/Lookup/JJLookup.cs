@@ -3,10 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
@@ -44,18 +48,18 @@ public class JJLookup : ControlBase
     {
         get
         {
-            string val = GetAttr("modal-size");
+            string val = GetAttribute("modal-size");
             if (string.IsNullOrEmpty(val))
                 return ModalSize.ExtraLarge;
             return (ModalSize)int.Parse(val);
         }
-        set => SetAttr("modal-size", (int)value);
+        set => SetAttribute("modal-size", ((int)value).ToString());
     }
 
     public string ModalTitle
     {
-        get => GetAttr("modal-title");
-        set => SetAttr("modal-title", value);
+        get => GetAttribute("modal-title");
+        set => SetAttribute("modal-title", value);
     }
     
     public new string? Text
@@ -138,7 +142,7 @@ public class JJLookup : ControlBase
 
         if (field != null)
         {
-            SetAttr(field.Attributes);
+            SetAttributes(field.Attributes);
 
             if (field.DataType is FieldType.Int)
             {
@@ -205,6 +209,8 @@ public class JJLookup : ControlBase
         idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
         idTextBox.MaxLength = MaxLength;
         idTextBox.Text = SelectedValue?.ToString() ?? string.Empty;
+        
+        
         idTextBox.Attributes = new Dictionary<string, string>(Attributes);
         idTextBox.Tooltip = Tooltip;
         idTextBox.ReadOnly = ReadOnly;
@@ -242,7 +248,7 @@ public class JJLookup : ControlBase
 
         var formViewUrl = LookupService.GetFormViewUrl(ElementMap, FormStateData, Name);
         
-        var button = ComponentFactory.Html.LinkButton.Create();
+        var button = new JJLinkButton();
         button.Name = $"btn_{Name}";
         button.Enabled = Enabled;
         button.ShowAsButton = true;

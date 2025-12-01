@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -22,12 +22,12 @@ internal sealed class GridSortingConfig(JJGridView gridView)
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        var dialog = _componentFactory.Html.ModalDialog.Create();
+        var dialog = new JJModalDialog();
         dialog.Name = $"{gridView.Name}-sort-modal";
         dialog.Title = _stringLocalizer["Sort Fields"];
         dialog.Size = ModalSize.Small;
 
-        var btnSort = _componentFactory.Html.LinkButton.Create();
+        var btnSort = new JJLinkButton();
         btnSort.Name = $"btnsort_{gridView.Name}";
         btnSort.IconClass = "fa fa-check";
         btnSort.ShowAsButton = true;
@@ -35,7 +35,7 @@ internal sealed class GridSortingConfig(JJGridView gridView)
         btnSort.OnClientClick = gridView.Scripts.GetSortMultItemsScript();
         dialog.Buttons.Add(btnSort);
 
-        var btnCancel = _componentFactory.Html.LinkButton.Create();
+        var btnCancel = new JJLinkButton();
         btnCancel.Text = _stringLocalizer["Cancel"];
         btnCancel.IconClass = "fa fa-times";
         btnCancel.ShowAsButton = true;
@@ -61,9 +61,9 @@ internal sealed class GridSortingConfig(JJGridView gridView)
             table.Append(body);
         });
 
-        dialog.HtmlBuilderContent = htmlContent;
+        dialog.Content = htmlContent;
 
-        return dialog.BuildHtml();
+        return dialog.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetHtmlHeader()

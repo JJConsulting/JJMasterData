@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.UI.Components;
+﻿using JJConsulting.Html.Bootstrap.Components;
+
+namespace JJMasterData.Core.UI.Components;
 
 public class InputAddons
 {

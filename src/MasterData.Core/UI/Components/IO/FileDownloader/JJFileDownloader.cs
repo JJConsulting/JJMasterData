@@ -2,13 +2,15 @@
 using System.IO;
 using System.Web;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Abstractions;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 
 using JJMasterData.Core.UI.Routing;
@@ -35,8 +37,8 @@ public class JJFileDownloader(
     internal ILogger<JJFileDownloader> Logger { get; } = logger;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
     
-
-    internal override HtmlBuilder BuildHtml()
+    
+    protected override HtmlBuilder BuildHtml()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new JJMasterDataException(StringLocalizer["Invalid file path or badly formatted URL"]);

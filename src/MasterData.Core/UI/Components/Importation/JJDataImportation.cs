@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -270,13 +273,15 @@ public class JJDataImportation : ProcessComponent
                 div.WithCssClass("mb-2");
             });
 
-        var btnStop = ComponentFactory.Html.LinkButton.Create();
-        btnStop.Type = LinkButtonType.Button;
-        btnStop.ShowAsButton = true;
-        btnStop.Visible = reporter.UserId == CurrentContext.User.GetUserId();
-        btnStop.OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]);
-        btnStop.Icon = FontAwesomeIcon.Stop;
-        btnStop.Text = StringLocalizer["Stop the importation"];
+        var btnStop = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            ShowAsButton = true,
+            Visible = reporter.UserId == CurrentContext.User.GetUserId(),
+            OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
+            Icon = FontAwesomeIcon.Stop,
+            Text = StringLocalizer["Stop the importation"]
+        };
         html.AppendComponent(btnStop);
 
         return html;
@@ -293,12 +298,12 @@ public class JJDataImportation : ProcessComponent
                 area.WithStyle( "display:none");
             });
         
-        var collapsePanel = new JJCollapsePanel(CurrentContext.Request.Form)
+        var collapsePanel = new JJCollapsePanel
         {
             TitleIcon = new JJIcon(FontAwesomeIcon.Upload),
             Title = StringLocalizer["Upload File"],
             ExpandedByDefault = ExpandedByDefault,
-            HtmlBuilderContent = UploadArea.GetUploadAreaHtmlBuilder()
+            Content = UploadArea.GetUploadAreaHtmlBuilder()
         };
 
         html.AppendComponent(collapsePanel);
@@ -407,41 +412,49 @@ public class JJDataImportation : ProcessComponent
 
     private JJLinkButton GetBackButton()
     {
-        var button = ComponentFactory.Html.LinkButton.Create();
-        button.IconClass = "fa fa-arrow-left";
-        button.Text = StringLocalizer["Back"];
-        button.ShowAsButton = true;
-        button.OnClientClick = DataImportationScripts.GetBackScript();
+        var button = new JJLinkButton
+        {
+            IconClass = "fa fa-arrow-left",
+            Text = StringLocalizer["Back"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetBackScript()
+        };
         return button;
     }
     
     private JJLinkButton GetCloseButton()
     {
-        var button = ComponentFactory.Html.LinkButton.Create();
-        button.Icon = FontAwesomeIcon.SolidXmark;
-        button.Text = StringLocalizer["Close"];
-        button.ShowAsButton = true;
-        button.OnClientClick = DataImportationScripts.GetCloseModalScript();
+        var button = new JJLinkButton
+        {
+            Icon = FontAwesomeIcon.SolidXmark,
+            Text = StringLocalizer["Close"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetCloseModalScript()
+        };
         return button;
     }
 
     private JJLinkButton GetHelpButton()
     {
-        var button = ComponentFactory.Html.LinkButton.Create();
-        button.IconClass = "fa fa-question-circle";
-        button.Text = StringLocalizer["Help"];
-        button.ShowAsButton = true;
-        button.OnClientClick = DataImportationScripts.GetHelpScript();
+        var button = new JJLinkButton
+        {
+            IconClass = "fa fa-question-circle",
+            Text = StringLocalizer["Help"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetHelpScript()
+        };
         return button;
     }
 
     private JJLinkButton GetLogButton()
     {
-        var button = ComponentFactory.Html.LinkButton.Create();
-        button.IconClass = "fa fa-film";
-        button.Text = StringLocalizer["Last Importation"];
-        button.ShowAsButton = true;
-        button.OnClientClick = DataImportationScripts.GetLogScript();
+        var button = new JJLinkButton
+        {
+            IconClass = "fa fa-film",
+            Text = StringLocalizer["Last Importation"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetLogScript()
+        };
         return button;
     }
 

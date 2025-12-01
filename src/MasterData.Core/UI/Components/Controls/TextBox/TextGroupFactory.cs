@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -13,13 +14,12 @@ namespace JJMasterData.Core.UI.Components;
 public sealed class TextGroupFactory(
     IFormValues formValues,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory,
     ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>
 {
     public JJTextGroup Create()
     {
-        return new JJTextGroup(linkButtonGroupFactory, formValues);
+        return new JJTextGroup(formValues);
     }
 
     public JJTextGroup Create(FormElementField field, object value)
@@ -86,7 +86,7 @@ public sealed class TextGroupFactory(
             throw new ArgumentNullException(nameof(field));
 
         var textGroup = Create();
-        textGroup.SetAttr(field.Attributes);
+        textGroup.SetAttributes(field.Attributes);
         textGroup.MaxLength = field.Size;
         textGroup.NumberOfDecimalPlaces = field.NumberOfDecimalPlaces;
         textGroup.Name = field.Name;
@@ -97,7 +97,7 @@ public sealed class TextGroupFactory(
 
     public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup(linkButtonGroupFactory, formValues);
+        var textGroup = new JJTextGroup(formValues);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }
@@ -129,7 +129,7 @@ public sealed class TextGroupFactory(
                 }
 
                 textGroup.InputType = InputType.Currency;
-                textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
+                textGroup.SetAttribute("onkeypress", "return jjutil.justNumber(event);");
                 break;
             case FormComponent.Number:
                 cssClassList.Add(BootstrapHelper.TextRight);
@@ -137,10 +137,10 @@ public sealed class TextGroupFactory(
                 textGroup.InputType = InputType.Number;
 
                 if (textGroup.NumberOfDecimalPlaces == 0)
-                    textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
+                    textGroup.SetAttribute("onkeypress", "return jjutil.justNumber(event);");
 
-                textGroup.SetAttr("step", textGroup.Attributes.TryGetValue("step", out var stepValue) ? stepValue : 1);
-                textGroup.SetAttr("onclick", "this.select();");
+                textGroup.SetAttribute("step", textGroup.Attributes.TryGetValue("step", out var stepValue) ? stepValue : 1.ToString());
+                textGroup.SetAttribute("onclick", "this.select();");
 
                 textGroup.MinValue ??= int.MinValue;
                 textGroup.MaxValue ??= int.MaxValue;
@@ -149,15 +149,15 @@ public sealed class TextGroupFactory(
             case FormComponent.Cnpj:
                 textGroup.MaxLength = 18;
                 textGroup.InputType = InputType.Text;
-                textGroup.SetAttr("onclick", "this.select();");
-                textGroup.SetAttr("data-inputmask",
+                textGroup.SetAttribute("onclick", "this.select();");
+                textGroup.SetAttribute("data-inputmask",
                     "'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.Cpf:
                 textGroup.MaxLength = 14;
                 textGroup.InputType = InputType.Text;
-                textGroup.SetAttr("onclick", "this.select();");
-                textGroup.SetAttr("data-inputmask",
+                textGroup.SetAttribute("onclick", "this.select();");
+                textGroup.SetAttribute("data-inputmask",
                     "'mask': '[999.999.999-99]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.CnpjCpf:
@@ -167,7 +167,7 @@ public sealed class TextGroupFactory(
             case FormComponent.Cep:
                 textGroup.MaxLength = 9;
                 textGroup.InputType = InputType.Text;
-                textGroup.SetAttr("data-inputmask", "'mask': '[99999-999]', 'placeholder':'', 'greedy': 'false'");
+                textGroup.SetAttribute("data-inputmask", "'mask': '[99999-999]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.Password:
                 textGroup.InputType = InputType.Password;
@@ -180,18 +180,18 @@ public sealed class TextGroupFactory(
                 };
                 textGroup.MaxLength = 15;
                 textGroup.InputType = InputType.Tel;
-                textGroup.SetAttr("data-inputmask",
+                textGroup.SetAttribute("data-inputmask",
                     "'mask': '[(99) 9999[9]-9999]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.Hour:
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 5;
                 textGroup.GroupCssClass = "date";
-                textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-inputmask-inputFormat", "HH:MM");
-                textGroup.SetAttr("data-inputmask-displayFormat", "HH:MM");
-                textGroup.SetAttr("data-inputmask-placeholder", "");
-                textGroup.SetAttr("data-input", "date");
+                textGroup.SetAttribute("data-inputmask-alias", "datetime");
+                textGroup.SetAttribute("data-inputmask-inputFormat", "HH:MM");
+                textGroup.SetAttribute("data-inputmask-displayFormat", "HH:MM");
+                textGroup.SetAttribute("data-inputmask-placeholder", "");
+                textGroup.SetAttribute("data-input", "date");
                 break;
             case FormComponent.Date:
             {
@@ -202,12 +202,12 @@ public sealed class TextGroupFactory(
                 textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
-                textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-flatpickr-mask", GetFlatpickr(currentCulture));
-                textGroup.SetAttr("data-inputmask-inputFormat", inputmask);
-                textGroup.SetAttr("data-inputmask-displayFormat", inputmask);
-                textGroup.SetAttr("data-inputmask-placeholder", "");
-                textGroup.SetAttr("data-input", "date");
+                textGroup.SetAttribute("data-inputmask-alias", "datetime");
+                textGroup.SetAttribute("data-flatpickr-mask", GetFlatpickr(currentCulture));
+                textGroup.SetAttribute("data-inputmask-inputFormat", inputmask);
+                textGroup.SetAttribute("data-inputmask-displayFormat", inputmask);
+                textGroup.SetAttribute("data-inputmask-placeholder", "");
+                textGroup.SetAttribute("data-input", "date");
                 break;
             }
             case FormComponent.DateTime:
@@ -219,12 +219,12 @@ public sealed class TextGroupFactory(
                 textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
-                textGroup.SetAttr("data-inputmask-alias", "datetime");
-                textGroup.SetAttr("data-flatpickr-mask", GetFlatpickr(currentCulture, includeTime:true));
-                textGroup.SetAttr("data-inputmask-inputFormat", inputmask);
-                textGroup.SetAttr("data-inputmask-displayFormat", inputmask);
-                textGroup.SetAttr("data-inputmask-placeholder", "");
-                textGroup.SetAttr("data-input", "date");
+                textGroup.SetAttribute("data-inputmask-alias", "datetime");
+                textGroup.SetAttribute("data-flatpickr-mask", GetFlatpickr(currentCulture, includeTime:true));
+                textGroup.SetAttribute("data-inputmask-inputFormat", inputmask);
+                textGroup.SetAttribute("data-inputmask-displayFormat", inputmask);
+                textGroup.SetAttribute("data-inputmask-placeholder", "");
+                textGroup.SetAttribute("data-input", "date");
                 break;
             }
 
@@ -233,24 +233,24 @@ public sealed class TextGroupFactory(
                 textGroup.MaxLength = 18;
                 textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.PercentSymbol);
                 textGroup.InputType = InputType.Percentage;
-                textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
+                textGroup.SetAttribute("onkeypress", "return jjutil.justNumber(event);");
                 break;
             default:
                 textGroup.InputType = InputType.Text;
                 break;
         }
 
-        textGroup.SetAttr("class", string.Join(" ", cssClassList));
+        textGroup.SetAttribute("class", string.Join(" ", cssClassList));
     }
 
     private JJLinkButton GetDateAction(bool isEnabled)
     {
-        var btn = actionButtonFactory.Create();
+        var btn = new JJLinkButton();
         btn.IconClass = "fa fa-calendar";
         btn.Tooltip = stringLocalizer["Calendar"];
         btn.Enabled = isEnabled;
-        btn.SetAttr("data-toggle", "date");
-        btn.SetAttr("tabindex", "-1");
+        btn.SetAttribute("data-toggle", "date");
+        btn.SetAttribute("tabindex", "-1");
         return btn;
     }
 }

@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Html;
-
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -56,7 +57,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
 
     private async Task<ComponentResult> GetTabRelationshipsResult()
     {
-        var tabNav = new JJTabNav(parentFormView.CurrentContext.Request.Form)
+        var tabNav = new JJTabNav
         {
             Name = $"relationships-tab-nav-{parentFormView.DataPanel.Name}"
         };
@@ -71,7 +72,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
                 {
                     Title = GetExpressionValue(relationship.Panel.Title),
                     Icon = relationship.Panel.Icon,
-                    HtmlContent = renderedComponentResult.HtmlBuilder
+                    Content = renderedComponentResult.HtmlBuilder
                 });
             }
             else
@@ -98,12 +99,12 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse:
-                var collapse = new JJCollapsePanel(parentFormView.FormValues)
+                var collapse = new JJCollapsePanel
                 {
                     Name = $"{relationship.ElementRelationship?.ChildElement ?? parentFormView.Name}-collapse-panel",
                     Title = GetExpressionValue(relationship.Panel.Title),
                     SubTitle = GetExpressionValue(relationship.Panel.SubTitle),
-                    HtmlBuilderContent = content,
+                    Content = content,
                     Color = relationship.Panel.Color,
                     TitleIcon = relationship.Panel.Icon.HasValue ? new JJIcon(relationship.Panel.Icon.Value) : null,
                     ExpandedByDefault = relationship.Panel.ExpandedByDefault,
@@ -120,7 +121,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
                     Color = relationship.Panel.Color,
                     Layout = relationship.Panel.Layout,
                     Icon = relationship.Panel.Icon,
-                    HtmlBuilderContent = content,
+                    Content = content,
                     CssClass = relationship.Panel.CssClass
                 };
 

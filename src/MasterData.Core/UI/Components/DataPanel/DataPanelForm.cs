@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -295,11 +297,11 @@ internal sealed class DataPanelForm
 
     private JJLabel CreateLabel(FormElementField field, bool isRange)
     {
-        var label = _componentFactory.Html.Label.Create(field);
+        var label = _componentFactory.Label.Create(field);
         label.LabelFor = GetFieldNameWithPrefix(field);
 
         if (IsViewModeAsStatic)
-            label.LabelFor = null;
+            label.LabelFor = string.Empty;
         else if (isRange)
             label.LabelFor += "_from";
 
@@ -333,7 +335,7 @@ internal sealed class DataPanelForm
         if (field.AutoPostBack && !_isGridViewFilter &&
             PageState is PageState.Insert or PageState.Update or PageState.Filter)
         {
-            control.SetAttr("onchange", GetScriptReload(field));
+            control.SetAttribute("onchange", GetScriptReload(field));
         }
         
         if(control is JJTextGroup textGroup && PageState is PageState.View)

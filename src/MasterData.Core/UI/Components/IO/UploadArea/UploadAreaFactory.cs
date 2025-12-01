@@ -5,12 +5,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class UploadAreaFactory(IHttpContext httpContext,
+public sealed class UploadAreaFactory(IHttpContext httpContext,
         UploadAreaService uploadAreaService,
         IEncryptionService encryptionService,
         IRequestLengthService requestLengthService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : IComponentFactory<JJUploadArea>
+
 {
     public JJUploadArea Create()
     {

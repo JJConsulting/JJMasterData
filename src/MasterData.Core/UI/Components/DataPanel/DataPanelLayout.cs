@@ -3,12 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Http.Abstractions;
-
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -78,7 +79,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
             var card = new JJCard
             {
                 Layout = PanelLayout.Well,
-                HtmlBuilderContent = await GetHtmlForm(null)
+                Content = await GetHtmlForm(null)
             };
             htmlList.Add(card.GetHtmlBuilder());
         }
@@ -88,7 +89,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
     private async Task<JJTabNav> GetTabNav(List<FormElementPanel> tabs)
     {
-        var navTab = new JJTabNav(_formValues)
+        var navTab = new JJTabNav
         {
             Name = $"nav_{_name}"
         };
@@ -101,7 +102,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
                 {
                     Title = GetPanelExpression(panel.Title),
                     Icon = panel.Icon,
-                    HtmlContent = htmlPanel
+                    Content = htmlPanel
                 };
                 navTab.ListTab.Add(tabContent);
             }
@@ -126,14 +127,14 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
         if (panel.Layout == PanelLayout.Collapse)
         {
-            var collapse = new JJCollapsePanel(_formValues)
+            var collapse = new JJCollapsePanel
             {
                 Title = GetPanelExpression(panel.Title),
                 SubTitle =GetPanelExpression(panel.SubTitle),
                 TitleIcon = panel.Icon.HasValue ? new JJIcon(panel.Icon.Value) : null,
                 Name = $"{_name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
                 CssClass = panel.CssClass,
-                HtmlBuilderContent = await GetHtmlForm(panel),
+                Content = await GetHtmlForm(panel),
                 ExpandedByDefault = panel.ExpandedByDefault,
                 Color = panel.Color
             };
@@ -146,7 +147,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
             SubTitle = GetPanelExpression(panel.SubTitle),
             Icon = panel.Icon,
             Layout = panel.Layout,
-            HtmlBuilderContent = await GetHtmlForm(panel)
+            Content = await GetHtmlForm(panel)
         };
         return card.GetHtmlBuilder();
     }

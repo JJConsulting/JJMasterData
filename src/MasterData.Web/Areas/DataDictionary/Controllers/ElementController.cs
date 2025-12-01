@@ -1,4 +1,5 @@
 using System.Net;
+using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
@@ -17,7 +18,7 @@ public class ElementController(
     ClassGenerationService classGenerationService,
     ScriptsService scriptsService,
     IEntityRepository entityRepository,
-    IComponentFactory<JJUploadArea> uploadAreaFactory,
+    UploadAreaFactory uploadAreaFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : DataDictionaryController
 {

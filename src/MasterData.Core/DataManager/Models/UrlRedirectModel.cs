@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Text.Json.Serialization;
+using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Models;

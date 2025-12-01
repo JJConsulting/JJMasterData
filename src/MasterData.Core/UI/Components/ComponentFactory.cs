@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
 using System;
+using JJConsulting.Html.Bootstrap.Components;
+using JJMasterData.Core.UI.Components.Factories;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +11,6 @@ namespace JJMasterData.Core.UI.Components;
 internal sealed class ComponentFactory(IServiceProvider serviceProvider) : IComponentFactory
 {
     private RouteContext? _routeContext;
-    private HtmlComponentFactory? _htmlComponentFactory;
 
     public IFormElementComponentFactory<JJAuditLogView> AuditLog =>
         GetFactory<IFormElementComponentFactory<JJAuditLogView>>();
@@ -29,21 +30,22 @@ internal sealed class ComponentFactory(IServiceProvider serviceProvider) : IComp
     public IFormElementComponentFactory<JJGridView> GridView =>
         GetFactory<IFormElementComponentFactory<JJGridView>>();
 
-    public IComponentFactory<JJUploadView> UploadView =>
-        GetFactory<IComponentFactory<JJUploadView>>();
+    public UploadViewFactory UploadView =>
+        GetFactory<UploadViewFactory>();
 
-    public IComponentFactory<JJFileDownloader> Downloader =>
-        GetFactory<IComponentFactory<JJFileDownloader>>();
+    public FileDownloaderFactory Downloader =>
+        GetFactory<FileDownloaderFactory>();
 
-    public IComponentFactory<JJUploadArea> UploadArea =>
-        GetFactory<IComponentFactory<JJUploadArea>>();
+    public UploadAreaFactory UploadArea =>
+        GetFactory<UploadAreaFactory>();
+
+    public TitleFactory Title => GetFactory<TitleFactory>();
+    public MessageBoxFactory MessageBox => GetFactory<MessageBoxFactory>();
+    public LabelFactory Label => GetFactory<LabelFactory>();
 
     public ControlFactory Controls =>
         GetFactory<ControlFactory>();
-
-    public HtmlComponentFactory Html  =>
-        _htmlComponentFactory ??= serviceProvider.GetRequiredService<HtmlComponentFactory>();
-
+    
     public ActionButtonFactory ActionButton => GetFactory<ActionButtonFactory>();
     public TextGroupFactory TextGroup  => GetFactory<TextGroupFactory>();
 

@@ -1,4 +1,6 @@
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.Extensions;

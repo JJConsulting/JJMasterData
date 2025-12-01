@@ -5,11 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class FileDownloaderFactory(IHttpContext httpContext,
+public sealed class FileDownloaderFactory(IHttpContext httpContext,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
-    : IComponentFactory<JJFileDownloader>
 {
     public JJFileDownloader Create()
     {

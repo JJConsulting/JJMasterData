@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
@@ -177,7 +179,7 @@ internal sealed class GridPagination(JJGridView gridView)
             var pagesHtml = new HtmlBuilder(HtmlTag.Strong);
             pagesHtml.AppendText($"{firstPageNumber}-{lastPageNumber}");
 
-            span.Append(pagesHtml).AppendText($" {_stringLocalizer["from"]}");
+            span.Append(pagesHtml).AppendText($" {_stringLocalizer["from"]} ");
 
             var recordsHtml = new HtmlBuilder(HtmlTag.Strong);
             recordsHtml.WithId($"{gridView.Name}-total-of-records");

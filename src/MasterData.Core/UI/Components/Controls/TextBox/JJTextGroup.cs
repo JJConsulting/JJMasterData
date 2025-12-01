@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
@@ -8,9 +10,7 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-public sealed class JJTextGroup(
-    IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory,
-    IFormValues formValues)
+public sealed class JJTextGroup(IFormValues formValues)
     : JJTextBox(formValues), IFloatingLabelControl
 {
     public string FloatingLabel { get; set; }
@@ -122,8 +122,10 @@ public sealed class JJTextGroup(
             inputGroup.Append(builderGroup);
         }
 
-        var btnGroup = linkButtonGroupFactory.Create();
-        btnGroup.Actions = Actions;
+        var btnGroup = new JJLinkButtonGroup
+        {
+            Actions = Actions
+        };
 
         if (UseFloatingLabel)
             Actions.ForEach(a => a.CssClass += "btn-floating-action");
@@ -139,7 +141,7 @@ public sealed class JJTextGroup(
         var html = new HtmlBuilder(HtmlTag.Span)
             .WithCssClass(BootstrapHelper.InputGroupAddon)
             .WithToolTip(Addons.Tooltip)
-            .AppendIf(Addons.Icon != null, () => Addons.Icon.BuildHtml())
+            .AppendIf(Addons.Icon != null, () => Addons.Icon.GetHtmlBuilder())
             .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;

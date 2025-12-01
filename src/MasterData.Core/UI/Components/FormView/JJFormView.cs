@@ -11,6 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -18,7 +21,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -29,7 +31,6 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.Tasks;
@@ -165,6 +166,8 @@ public class JJFormView : AsyncComponent
 
     #region "Properties"
 
+    public Dictionary<string, object?> UserValues { get; set; } = new(StringComparer.InvariantCulture);
+    
     private JJAuditLogView AuditLogView
     {
         get
@@ -832,7 +835,7 @@ public class JJFormView : AsyncComponent
         {
             _logger.LogSqlActionException(ex, sqlCommand.Sql);
             var message = _stringLocalizer[ExceptionManager.GetMessage(ex)];
-            messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
+            messageBox = ComponentFactory.MessageBox.Create(message, MessageIcon.Error);
         }
 
         //When the action is from the form toolbar
@@ -996,7 +999,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<RenderedComponentResult> GetGridResultWithErrors(Dictionary<string, string> errors)
     {
-        var messageFactory = ComponentFactory.Html.MessageBox;
+        var messageFactory = ComponentFactory.MessageBox;
         var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendComponent(messageFactory.Create(errors, MessageIcon.Warning));
         html.Append(await GridView.GetHtmlBuilderAsync());
@@ -1174,7 +1177,7 @@ public class JJFormView : AsyncComponent
 
         if (errors.Count > 0)
         {
-            html.AppendComponent(ComponentFactory.Html.MessageBox.Create(errors, MessageIcon.Warning));
+            html.AppendComponent(ComponentFactory.MessageBox.Create(errors, MessageIcon.Warning));
             var insertSelectionResult = await GetInsertSelectionListResult();
 
             if (insertSelectionResult is RenderedComponentResult renderedComponentResult)
@@ -1242,7 +1245,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetDeleteResult()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        var messageFactory = ComponentFactory.Html.MessageBox;
+        var messageFactory = ComponentFactory.MessageBox;
 
         var filters = await GetFiltersWithDefaultValues(PageState.Delete);
 
@@ -1511,7 +1514,7 @@ public class JJFormView : AsyncComponent
         formHtml.AppendComponent(toolbar);
 
         if (DataPanel.Errors.Count > 0)
-            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
+            formHtml.AppendComponent(new JJValidationSummary(DataPanel.Errors));
 
         return formHtml;
     }
@@ -1540,7 +1543,7 @@ public class JJFormView : AsyncComponent
         formHtml.AppendComponent(toolbar);
 
         if (DataPanel.Errors.Count > 0)
-            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
+            formHtml.AppendComponent(new JJValidationSummary(DataPanel.Errors));
 
         return formHtml;
     }
@@ -1617,12 +1620,14 @@ public class JJFormView : AsyncComponent
 
         if (groupedActions.Count > 0)
         {
-            var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
-            btnGroup.CaretText = _stringLocalizer["More"];
+            var btnGroup = new JJLinkButtonGroup
+            {
+                CaretText = _stringLocalizer["More"],
+                Actions = groupedActions,
+                ShowAsButton = true
+            };
+
             btnGroup.CssClass += "float-end";
-            btnGroup.Actions = groupedActions;
-            btnGroup.ShowAsButton = true;
-            
             toolbar.Items.Add(btnGroup.GetHtmlBuilder());
         }
 
@@ -1812,9 +1817,14 @@ public class JJFormView : AsyncComponent
 
     private JJTitle GetTitle(FormStateData formStateData)
     {
-        return ComponentFactory.Html.Title.Create(FormElement, formStateData, TitleActions);
+        return ComponentFactory.Title.Create(FormElement, formStateData, TitleActions);
     }
 
+    public void SetUserValues(string key, string value)
+    {
+        UserValues[key] = value;
+    }
+    
     public static implicit operator JJGridView(JJFormView formView) => formView.GridView;
     public static implicit operator JJDataPanel(JJFormView formView) => formView.DataPanel;
 }

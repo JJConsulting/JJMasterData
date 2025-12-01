@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Util;
 using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models;
@@ -30,8 +31,14 @@ public abstract class DataDictionaryServiceBase(
     
     public JJValidationSummary GetValidationSummary()
     {
-        var factory = new ValidationSummaryFactory(StringLocalizer);
-        return factory.Create(validationDictionary.Errors);
+        var validationSummary = new JJValidationSummary
+        {
+            Title = StringLocalizer["Invalid data."]
+        };
+        
+        validationSummary.Errors.AddRange(validationDictionary.Errors);
+        
+        return validationSummary;
     }
 
     public bool IsValid => validationDictionary.IsValid;

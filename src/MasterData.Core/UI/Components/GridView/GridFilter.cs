@@ -4,6 +4,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Serialization;
@@ -191,21 +194,25 @@ internal sealed class GridFilter(JJGridView gridView)
             .AppendHiddenInput($"grid-view-filter-action-{gridView.Name}")
             .Append(htmlPanel);
 
-        var btnFilter = gridView.ComponentFactory.Html.LinkButton.Create();
-        btnFilter.Enabled = gridView.EnableFilter;
-        btnFilter.Text = _stringLocalizer["Filter"];
-        btnFilter.IconClass = "fa fa-search";
-        btnFilter.ShowAsButton = true;
-        btnFilter.Type = LinkButtonType.Submit;
-        btnFilter.OnClientClick = $"{gridView.Scripts.GetFilterScript()};";
+        var btnFilter = new JJLinkButton
+        {
+            Enabled = gridView.EnableFilter,
+            Text = _stringLocalizer["Filter"],
+            IconClass = "fa fa-search",
+            ShowAsButton = true,
+            Type = LinkButtonType.Submit,
+            OnClientClick = $"{gridView.Scripts.GetFilterScript()};"
+        };
 
-        var btnCancel = gridView.ComponentFactory.Html.LinkButton.Create();
-        btnCancel.Enabled = gridView.EnableFilter;
-        btnCancel.Text = _stringLocalizer["Clear Filter"];
-        btnCancel.IconClass = "fa fa-trash";
-        btnCancel.ShowAsButton = true;
-        btnCancel.Type = LinkButtonType.Button;
-        btnCancel.OnClientClick = $"{gridView.Scripts.GetClearFilterScript()};";
+        var btnCancel = new JJLinkButton
+        {
+            Enabled = gridView.EnableFilter,
+            Text = _stringLocalizer["Clear Filter"],
+            IconClass = "fa fa-trash",
+            ShowAsButton = true,
+            Type = LinkButtonType.Button,
+            OnClientClick = $"{gridView.Scripts.GetClearFilterScript()};"
+        };
 
         if (action.ShowAsCollapse)
         {
@@ -225,10 +232,10 @@ internal sealed class GridFilter(JJGridView gridView)
                 filterIcon.CssClass += " d-none";
             }
             
-            var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
+            var panel = new JJCollapsePanel
             {
                 Name = $"filter-collapse-{gridView.Name}",
-                HtmlBuilderContent = html,
+                Content = html,
                 TitleIcon = filterIcon,
                 Title = _stringLocalizer[action.Text]
             };
@@ -251,7 +258,7 @@ internal sealed class GridFilter(JJGridView gridView)
             btnFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
             btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss", "modal");
 
-            modal.HtmlBuilderContent = html;
+            modal.Content = html;
             modal.Title = _stringLocalizer["Detailed Filters"];
             modal.Buttons.Add(btnFilter);
             modal.Buttons.Add(btnCancel);
@@ -270,10 +277,10 @@ internal sealed class GridFilter(JJGridView gridView)
         body.WithCssClass("col-sm-12");
         body.Append(GetHtmlToolBarSearch(isToolBar: false));
 
-        var panel = new JJCollapsePanel(gridView.CurrentContext.Request.Form)
+        var panel = new JJCollapsePanel
         {
             Name = $"filter-collapse-{gridView.Name}",
-            HtmlBuilderContent = body,
+            Content = body,
             Title = _stringLocalizer["Filter"],
             ExpandedByDefault = gridView.FilterAction.ExpandedByDefault
         };

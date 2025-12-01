@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
@@ -29,15 +32,15 @@ internal sealed class DataImportationHelp
 
     public async Task<HtmlBuilder> GetHtmlHelpAsync()
     {
-        var panel = new JJCollapsePanel(DataImportation.CurrentContext.Request.Form)
+        var panel = new JJCollapsePanel
         {
             Title = StringLocalizer["Help"],
             TitleIcon = new JJIcon(FontAwesomeIcon.QuestionCircle),
             ExpandedByDefault = true,
-            HtmlBuilderContent = await GetHtmlContent()
+            Content = await GetHtmlContent()
         };
 
-        var html = panel.BuildHtml()
+        var html = panel.GetHtmlBuilder()
             .AppendHiddenInput("filename", "");
             if (!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText))
             {
@@ -46,8 +49,8 @@ internal sealed class DataImportationHelp
                     Title = StringLocalizer["Information"],
                     Icon = FontAwesomeIcon.InfoCircle,
                     Color = BootstrapColor.Info,
-                    InnerHtml = new(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
-                                    string.Empty)
+                    Content = new HtmlBuilder(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
+                                              string.Empty, encode:false)
                 });
             }
             html.AppendComponent(GetBackButton())
@@ -306,11 +309,13 @@ internal sealed class DataImportationHelp
 
     private JJLinkButton GetBackButton()
     {
-        var btnBack = DataImportation.ComponentFactory.Html.LinkButton.Create();
-        btnBack.IconClass = "fa fa-arrow-left";
-        btnBack.Text = StringLocalizer["Back"];
-        btnBack.ShowAsButton = true;
-        btnBack.OnClientClick = DataImportation.DataImportationScripts.GetBackScript();
+        var btnBack = new JJLinkButton
+        {
+            IconClass = "fa fa-arrow-left",
+            Text = StringLocalizer["Back"],
+            ShowAsButton = true,
+            OnClientClick = DataImportation.DataImportationScripts.GetBackScript()
+        };
 
         return btnBack;
     }

@@ -1,8 +1,10 @@
+using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.ColorPicker;
+using JJMasterData.Core.UI.Components.Factories;
 using JJMasterData.Core.UI.Components.TextRange;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,27 +39,16 @@ public static class FactoriesServiceExtensions
         services.AddControlsFactories();
         services.AddFormElementComponentsFactories();
 
-        services.AddScoped<IComponentFactory<JJUploadView>, UploadViewFactory>();
-        services.AddScoped<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();
-        services.AddScoped<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
-        services.AddScoped<IComponentFactory<JJCollapsePanel>, CollapsePanelFactory>();
-        services.AddScoped<IComponentFactory<JJLinkButton>,LinkButtonFactory>();
-        services.AddScoped<IComponentFactory<JJLinkButtonGroup>, LinkButtonGroupFactory>();
-        services.AddScoped<IComponentFactory<JJCard>, CardFactory>();
-        services.AddScoped<IComponentFactory<JJBreadcrumb>, BreadcrumbFactory>();
-        services.AddScoped<IComponentFactory<JJImage>, ImageFactory>();
-        services.AddScoped<IComponentFactory<JJOffcanvas>, OffcanvasFactory>();
-        
-        services.AddScoped<JJMasterDataLogo>();
-        
+        services.AddScoped<UploadViewFactory>();
+        services.AddScoped<FileDownloaderFactory>();
+        services.AddScoped<UploadAreaFactory>();
+        services.AddScoped<TitleFactory>();
+        services.AddScoped<LabelFactory>();
+        services.AddScoped<MessageBoxFactory>();
         services.AddScoped<RouteContextFactory>();
-        services.AddScoped<ValidationSummaryFactory>();
-        services.AddScoped<HtmlComponentFactory>();
         services.AddScoped<TextGroupFactory>();
         services.AddScoped<IComponentFactory, ComponentFactory>();
-        services.AddScoped<LinkButtonFactory>();
         services.AddScoped<ActionButtonFactory>();
-        services.AddScoped<TextGroupFactory>();
         
         return services;
     }
