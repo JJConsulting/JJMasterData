@@ -69,7 +69,15 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     public string HtmlId
     {
-        get => _htmlId ??= Name;
+        get
+        {
+            if (string.IsNullOrEmpty(_htmlId))
+            {
+                _htmlId = Name;
+            }
+
+            return _htmlId ?? Name; 
+        }
         set => _htmlId = value;
     }
 
