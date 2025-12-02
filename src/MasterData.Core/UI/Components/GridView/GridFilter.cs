@@ -20,6 +20,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Components.CollapsePanel;
 using JJMasterData.Core.UI.Events.Args;
 
 using Microsoft.Extensions.Localization;
@@ -232,12 +233,13 @@ internal sealed class GridFilter(JJGridView gridView)
                 filterIcon.CssClass += " d-none";
             }
             
-            var panel = new JJCollapsePanel
+            var panel = new JJMasterDataCollapsePanel(_currentContext.Request.Form)
             {
                 Name = $"filter-collapse-{gridView.Name}",
                 Content = html,
                 TitleIcon = filterIcon,
-                Title = _stringLocalizer[action.Text]
+                Title = _stringLocalizer[action.Text],
+                IsOpen = _currentContext.Request.Form.ContainsFormValues()
             };
             
             panel.Buttons.Add(btnFilter);
@@ -277,7 +279,7 @@ internal sealed class GridFilter(JJGridView gridView)
         body.WithCssClass("col-sm-12");
         body.Append(GetHtmlToolBarSearch(isToolBar: false));
 
-        var panel = new JJCollapsePanel
+        var panel = new JJMasterDataCollapsePanel(_currentContext.Request.Form)
         {
             Name = $"filter-collapse-{gridView.Name}",
             Content = body,

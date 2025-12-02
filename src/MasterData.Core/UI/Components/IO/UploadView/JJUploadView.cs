@@ -24,6 +24,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
+using JJMasterData.Core.UI.Components.CollapsePanel;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
@@ -416,7 +417,7 @@ public class JJUploadView : AsyncComponent
         if (!ShowAddFiles)
             return html;
 
-        html.AppendComponent(new JJCollapsePanel
+        html.AppendComponent(new JJMasterDataCollapsePanel(CurrentContext.Request.Form)
         {
             Title = StringLocalizer["New File"],
             ExpandedByDefault = IsCollapseExpandedByDefault,

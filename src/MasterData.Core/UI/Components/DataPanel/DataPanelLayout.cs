@@ -10,6 +10,7 @@ using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Components.CollapsePanel;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -127,7 +128,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
         if (panel.Layout == PanelLayout.Collapse)
         {
-            var collapse = new JJCollapsePanel
+            var collapse = new JJMasterDataCollapsePanel(_formValues)
             {
                 Title = GetPanelExpression(panel.Title),
                 SubTitle =GetPanelExpression(panel.SubTitle),
