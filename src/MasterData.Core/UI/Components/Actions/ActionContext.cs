@@ -1,5 +1,6 @@
 #nullable enable
 
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -15,8 +16,27 @@ public record ActionContext
     public required string ParentComponentName { get; init; }
     public bool IsSubmit => Action is ISubmittableAction { IsSubmit: true };
     public string? FieldName { get; init; }
-    public string Id => FormElement.Name + "-" + Action.Name + "-" + FormStateData.GetHashCode();
+    
+    public string Id
+    {
+        get
+        {
+            var values = FormStateData.Values;
 
+
+            if (DataHelper.ContainsPkValues(FormElement, values))
+            {
+                var pkValues = DataHelper.GetPkValues(FormElement, values);
+                
+                var pkHash = DictionaryHash.ComputeHash(pkValues);
+        
+                return FormElement.Name + "-" + Action.Name + "-" + pkHash;
+            }
+
+            return FormElement.Name + "-" + Action.Name;
+        }
+    }
+    
     internal ActionMap ToActionMap(ActionSource actionSource)
     {
         var actionMap = new ActionMap
