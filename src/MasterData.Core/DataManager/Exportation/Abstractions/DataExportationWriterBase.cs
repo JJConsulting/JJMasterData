@@ -74,11 +74,11 @@ public abstract class DataExportationWriterBase(
                 var formData = new FormStateData(defaultValues, PageState.List);
                 _fields = [];
 
-                foreach (var field in FormElement.Fields)
+                foreach (var @field in FormElement.Fields)
                 {
-                    if (field.Export && ExpressionsService.GetBoolValue(field.VisibleExpression, formData))
+                    if (@field.Export && ExpressionsService.GetBoolValue(@field.VisibleExpression, formData))
                     {
-                        _fields.Add(field);
+                        _fields.Add(@field);
                     }
                 }
             }

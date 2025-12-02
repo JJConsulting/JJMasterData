@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Text;
+using System.Text.Json.Nodes;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using static JJMasterData.WebApi.OpenApi.DataDictionarySchema;
 
 namespace JJMasterData.WebApi.OpenApi;
@@ -18,8 +18,8 @@ internal sealed class DataDictionaryOperationFactory
         Required = true,
         Schema = new OpenApiSchema
         {
-            Type = "string",
-            Default = new OpenApiString(CultureInfo.CurrentCulture.ToString())
+            Type = JsonSchemaType.String,
+            Default = JsonValue.Create(CultureInfo.CurrentCulture.ToString())
         }
     };
 
@@ -36,12 +36,12 @@ internal sealed class DataDictionaryOperationFactory
                 return _primaryKeyNames;
 
             _primaryKeyNames = string.Empty;
-            foreach (var field in PrimaryKeyFields)
+            foreach (var @field in PrimaryKeyFields)
             {
                 if (_primaryKeyNames.Length > 0)
                     _primaryKeyNames += ", ";
 
-                _primaryKeyNames += field.Name.ToLower();
+                _primaryKeyNames += @field.Name.ToLower();
             }
 
             return _primaryKeyNames;
@@ -67,13 +67,6 @@ internal sealed class DataDictionaryOperationFactory
             Summary = "Get a specific record",
             Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
             OperationId = $"{ModelName}_Get",
-            Tags = new List<OpenApiTag>
-            {
-                new()
-                {
-                    Name = FormElement.Name
-                }
-            },
             Responses = new OpenApiResponses
             {
                 {
@@ -97,9 +90,9 @@ internal sealed class DataDictionaryOperationFactory
                     }
                 },
             },
-            Parameters = new List<OpenApiParameter>
+            Parameters = new List<IOpenApiParameter>
             {
-                new()
+                new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("id"),
                     Description = $"Primary Key Value.<br>{nameFields}",
@@ -107,14 +100,14 @@ internal sealed class DataDictionaryOperationFactory
                     Required = true,
                     Schema = new OpenApiSchema
                     {
-                        Type = "string",
+                        Type = JsonSchemaType.String,
                     }
                 },
                 AcceptLanguageParameter
             }
         };
 
-        operation.Responses.AddDefaultValues();
+        operation.Responses?.AddDefaultValues();
 
         return operation;
     }
@@ -124,13 +117,6 @@ internal sealed class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = "Get all records",
-            Tags = new List<OpenApiTag>
-            {
-                new()
-                {
-                    Name = FormElement.Name
-                }
-            },
             Responses = new OpenApiResponses
             {
                 {
@@ -152,9 +138,9 @@ internal sealed class DataDictionaryOperationFactory
             },
             Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
             OperationId = $"{ModelName}_GetAll",
-            Parameters = new List<OpenApiParameter>
+            Parameters = new List<IOpenApiParameter>
             {
-                new()
+                new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("pag"),
                     Description = "Current page",
@@ -162,12 +148,12 @@ internal sealed class DataDictionaryOperationFactory
                     Required = true,
                     Schema = new OpenApiSchema
                     {
-                        Type = "integer",
+                        Type = JsonSchemaType.Integer,
                         Format = "int32",
-                        Default = new OpenApiInteger(1)
+                        Default = JsonValue.Create(1)
                     }
                 },
-                new()
+                new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("regporpag"),
                     Description = "Number of records per page",
@@ -175,12 +161,12 @@ internal sealed class DataDictionaryOperationFactory
                     Required = true,
                     Schema = new OpenApiSchema
                     {
-                        Type = "integer",
+                        Type = JsonSchemaType.Integer,
                         Format = "int32",
-                        Default = new OpenApiInteger(5)
+                        Default = JsonValue.Create(5)
                     }
                 },
-                new()
+                new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("orderby"),
                     Description = "Order of records (default is pk ASC). Attention, this field is case sensitive.",
@@ -188,10 +174,10 @@ internal sealed class DataDictionaryOperationFactory
                     Required = false,
                     Schema = new OpenApiSchema
                     {
-                        Type = "string"
+                        Type = JsonSchemaType.String
                     }
                 },
-                new()
+                new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("tot"),
                     Description =
@@ -200,7 +186,7 @@ internal sealed class DataDictionaryOperationFactory
                     Required = false,
                     Schema = new OpenApiSchema
                     {
-                        Type = "integer",
+                        Type = JsonSchemaType.Integer,
                         Format = "int32"
                     }
                 },
@@ -256,7 +242,8 @@ internal sealed class DataDictionaryOperationFactory
                 {
                     var enums = (
                         from DataItemValue dataItem in field.DataItem.Items
-                        select new OpenApiString(dataItem.Id)).ToList<IOpenApiAny>();
+                        select JsonValue.Create(dataItem.Id)
+                    ).ToList<JsonNode>();
 
                     var example = new StringBuilder();
 
@@ -272,7 +259,6 @@ internal sealed class DataDictionaryOperationFactory
                         Schema = new OpenApiSchema
                         {
                             Type = schema.Type,
-                            Default = new OpenApiNull(),
                             Enum = enums,
                         }
                     });
@@ -310,7 +296,7 @@ internal sealed class DataDictionaryOperationFactory
         OpenApiSchema listSchema = new()
         {
             Title = $"{ModelName}List",
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = items,
             Description = "List of records"
         };
@@ -318,7 +304,7 @@ internal sealed class DataDictionaryOperationFactory
         var responseSchema = new OpenApiSchema
         {
             Title = $"{ModelName}Status",
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"
         };
@@ -327,13 +313,7 @@ internal sealed class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = "Add new records",
-            Tags = new List<OpenApiTag>
-            {
-                new()
-                {
-                    Name = FormElement.Name
-                }
-            },
+            
             Responses = new OpenApiResponses
             {
                 {
@@ -357,7 +337,7 @@ internal sealed class DataDictionaryOperationFactory
             OperationId = $"{ModelName}_Post",
             RequestBody = new OpenApiRequestBody
             {
-                Content =
+                Content = new Dictionary<string, OpenApiMediaType>
                 {
                     {
                         "application/json",
@@ -369,9 +349,9 @@ internal sealed class DataDictionaryOperationFactory
                 },
                 Description = "Array with the objects.",
             },
-            Parameters = new List<OpenApiParameter>
+            Parameters = new List<IOpenApiParameter>
             {
-                new()
+                new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("replace"),
                     Description = "If record exists updates it, otherwise insert. (default false)",
@@ -379,7 +359,7 @@ internal sealed class DataDictionaryOperationFactory
                     Required = false,
                     Schema = new OpenApiSchema
                     {
-                        Type = "boolean"
+                        Type = JsonSchemaType.Boolean
                     }
                 }
             }
@@ -407,7 +387,7 @@ internal sealed class DataDictionaryOperationFactory
         OpenApiSchema listSchema = new()
         {
             Title = id,
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = items,
             Description = "List of records"
         };
@@ -415,7 +395,7 @@ internal sealed class DataDictionaryOperationFactory
         OpenApiSchema responseSchema = new()
         {
             Title = $"{ModelName}Status",
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"
         };
@@ -423,13 +403,6 @@ internal sealed class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = "Update records",
-            Tags = new List<OpenApiTag>
-            {
-                new()
-                {
-                    Name = FormElement.Name
-                }
-            },
             Responses = new OpenApiResponses
             {
                 {
@@ -453,7 +426,7 @@ internal sealed class DataDictionaryOperationFactory
             OperationId = $"{ModelName}_Put",
             RequestBody = new OpenApiRequestBody
             {
-                Content =
+                Content = new Dictionary<string, OpenApiMediaType>
                 {
                     {
                         "application/json",
@@ -490,7 +463,7 @@ internal sealed class DataDictionaryOperationFactory
         OpenApiSchema listSchema = new()
         {
             Title = id,
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = items,
             Description = "List of records"
         };
@@ -498,7 +471,7 @@ internal sealed class DataDictionaryOperationFactory
         OpenApiSchema responseSchema = new()
         {
             Title = $"{ModelName}Status",
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"
         };
@@ -507,13 +480,6 @@ internal sealed class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = "Update some especific fields",
-            Tags = new List<OpenApiTag>
-            {
-                new()
-                {
-                    Name = FormElement.Name
-                }
-            },
             Responses = new OpenApiResponses
             {
                 {
@@ -537,7 +503,7 @@ internal sealed class DataDictionaryOperationFactory
             OperationId = $"{ModelName}_Patch",
             RequestBody = new OpenApiRequestBody
             {
-                Content =
+                Content = new Dictionary<string, OpenApiMediaType>
                 {
                     {
                         "application/json",
@@ -571,13 +537,6 @@ internal sealed class DataDictionaryOperationFactory
             Summary = "Delete a specific record",
             Description = description.ToString(),
             OperationId = $"{ModelName}_Del",
-            Tags = new List<OpenApiTag>
-            {
-                new()
-                {
-                    Name = FormElement.Name
-                }
-            },
             Responses = new OpenApiResponses
             {
                 {
@@ -597,9 +556,9 @@ internal sealed class DataDictionaryOperationFactory
                     }
                 },
             },
-            Parameters = new List<OpenApiParameter>
+            Parameters = new List<IOpenApiParameter>
             {
-                new()
+                new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("id"),
                     Description = $"Primary Key Value.<br>{PrimaryKeysNames}",
@@ -607,14 +566,14 @@ internal sealed class DataDictionaryOperationFactory
                     Required = true,
                     Schema = new OpenApiSchema
                     {
-                        Type = "string"
+                        Type = JsonSchemaType.String
                     }
                 },
                 AcceptLanguageParameter
             }
         };
 
-        operation.Responses.AddDefaultValues();
+        operation.Responses?.AddDefaultValues();
 
         return operation;
     }
@@ -628,9 +587,8 @@ internal sealed class DataDictionaryOperationFactory
             Summary = $"Download specified file from the field {field.Name}",
             Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
             OperationId = $"{ModelName}_GetFile",
-            Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
-            Parameters = new List<OpenApiParameter>()
+            Parameters = new List<IOpenApiParameter>()
         };
         operation.Parameters.Add(new OpenApiParameter
         {
@@ -640,7 +598,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
         operation.Parameters.Add(new OpenApiParameter
@@ -651,7 +609,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
 
@@ -675,10 +633,6 @@ internal sealed class DataDictionaryOperationFactory
             Description = "Success",
             Content = content
         });
-        operation.Tags.Add(new()
-        {
-            Name = FormElement.Name
-        });
 
         operation.Responses.AddDefaultValues();
         return operation;
@@ -691,9 +645,8 @@ internal sealed class DataDictionaryOperationFactory
             Summary = $"Post a file to the field {field.Name}",
             Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
             OperationId = $"{ModelName}_PostFile",
-            Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
-            Parameters = new List<OpenApiParameter>()
+            Parameters = new List<IOpenApiParameter>()
         };
         operation.Parameters.Add(new OpenApiParameter
         {
@@ -703,7 +656,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
 
@@ -716,19 +669,19 @@ internal sealed class DataDictionaryOperationFactory
                     {
                         Schema = new OpenApiSchema
                         {
-                            Type = "object",
-                            Properties =
+                            Type = JsonSchemaType.Object,
+                            Properties = new Dictionary<string,IOpenApiSchema>
                             {
                                 {
                                     "file", new OpenApiSchema
                                     {
-                                        Type = "string",
+                                        Type = JsonSchemaType.String,
                                         Format = "binary"
                                     }
                                 }
                             }
                         },
-                        Encoding =
+                        Encoding = new Dictionary<string,OpenApiEncoding>
                         {
                             {
                                 "file", new OpenApiEncoding
@@ -762,10 +715,7 @@ internal sealed class DataDictionaryOperationFactory
             Description = "Success",
             Content = content
         });
-        operation.Tags.Add(new OpenApiTag
-        {
-            Name = FormElement.Name
-        });
+
 
         operation.Responses.AddDefaultValues();
         return operation;
@@ -778,9 +728,8 @@ internal sealed class DataDictionaryOperationFactory
             Summary = $"Deletes the specified file from the field {field.Name}",
             Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
             OperationId = $"{ModelName}_DeleteFile",
-            Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
-            Parameters = new List<OpenApiParameter>()
+            Parameters = new List<IOpenApiParameter>()
         };
         operation.Parameters.Add(new OpenApiParameter
         {
@@ -790,7 +739,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
         operation.Parameters.Add(new OpenApiParameter
@@ -801,7 +750,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
 
@@ -825,10 +774,7 @@ internal sealed class DataDictionaryOperationFactory
             Description = "Success",
             Content = content
         });
-        operation.Tags.Add(new OpenApiTag
-        {
-            Name = FormElement.Name
-        });
+
 
         operation.Responses.AddDefaultValues();
         return operation;
@@ -841,9 +787,8 @@ internal sealed class DataDictionaryOperationFactory
             Summary = $"Rename the specified file from the field {field.Name}",
             Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
             OperationId = $"{ModelName}_RenameFile",
-            Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
-            Parameters = new List<OpenApiParameter>()
+            Parameters = new List<IOpenApiParameter>()
         };
         operation.Parameters.Add(new OpenApiParameter
         {
@@ -853,7 +798,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
 
@@ -865,7 +810,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
 
@@ -877,7 +822,7 @@ internal sealed class DataDictionaryOperationFactory
             Required = true,
             Schema = new OpenApiSchema
             {
-                Type = "string"
+                Type = JsonSchemaType.String
             }
         });
 
@@ -900,10 +845,6 @@ internal sealed class DataDictionaryOperationFactory
         {
             Description = "Success",
             Content = content
-        });
-        operation.Tags.Add(new OpenApiTag
-        {
-            Name = FormElement.Name
         });
 
         operation.Responses.AddDefaultValues();

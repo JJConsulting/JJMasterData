@@ -21,11 +21,15 @@ public static class HttpServiceExtensions
         services.AddScoped<IHttpRequest, Http.AspNetCore.HttpRequestWrapper>();
         services.AddScoped<IQueryString, Http.AspNetCore.QueryStringWrapper>();  
         services.AddScoped<IFormValues, Http.AspNetCore.FormValuesWrapper>();  
-        services.AddScoped<IClaimsPrincipalAccessor, Http.AspNetCore.ClaimsPrincipalWrapper>();  
+        services.AddScoped<IClaimsPrincipalAccessor, Http.AspNetCore.ClaimsPrincipalWrapper>();
+
+#pragma warning disable ASPDEPR006
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         
         services.AddScoped(serviceProvider =>
         {
             var actionContextAccessor = serviceProvider.GetRequiredService<IActionContextAccessor>();
+#pragma warning restore ASPDEPR006
             var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
             return urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
         });

@@ -1,9 +1,11 @@
 ﻿#nullable enable
 
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
+
 
 namespace JJMasterData.WebApi.OpenApi;
 
@@ -13,17 +15,17 @@ internal static class DataDictionarySchema
     {
         var modelSchema = new OpenApiSchema
         {
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Title = $"{modelName}List",
 
             Items = new OpenApiSchema()
         };
 
-        var example = new OpenApiObject();
+        var example = new JsonObject();
 
         foreach (var field in formElement.Fields)
         {
-            example[field.Name] = GetFieldExample(field);
+            example[field.Name] = JsonSerializer.SerializeToNode(GetFieldExample(field));
 
             if (ignoreIdentity && field is { IsPk: true, AutoNum: true })
                 continue;
@@ -31,32 +33,33 @@ internal static class DataDictionarySchema
             var fieldName = apiOptions.GetJsonFieldName(field.Name);
             var itemSchema = GetFieldSchema(field);
 
-            modelSchema.Properties.Add(fieldName, itemSchema);
+            modelSchema.Properties?.Add(fieldName, itemSchema);
 
             if (field.IsRequired || field.IsPk)
-                modelSchema.Required.Add(fieldName);
+                modelSchema.Required?.Add(fieldName);
         }
 
-        if (modelSchema.Required.Count == 0)
+        if (modelSchema.Required?.Count == 0)
             modelSchema.Required.Clear();
 
         modelSchema.Example = example;
 
+
         return modelSchema;
     }
 
-    private static IOpenApiAny GetFieldExample(ElementField field)
+    private static JsonValue GetFieldExample(ElementField field)
     {
         return field.DataType switch
         {
-            FieldType.Int => new OpenApiInteger(0),
-            FieldType.Float => new OpenApiDouble(0),
-            FieldType.Decimal => new OpenApiDouble(0),
-            FieldType.Date => new OpenApiDate(DateTime.Now),
-            FieldType.DateTime => new OpenApiDateTime(DateTime.Now),
-            _ => new OpenApiString("string"),
+            FieldType.Int => JsonValue.Create(0),
+            FieldType.Float or FieldType.Decimal => JsonValue.Create(0d),
+            FieldType.Date => JsonValue.Create(DateTime.Now.Date),
+            FieldType.DateTime => JsonValue.Create(DateTime.Now),
+            _ => JsonValue.Create("string"),
         };
     }
+
 
     internal static OpenApiSchema GetFieldSchema(FormElementField item)
     {
@@ -67,7 +70,7 @@ internal static class DataDictionarySchema
             case FieldType.Int:
                 itemSchema = new OpenApiSchema
                 {
-                    Type = "integer",
+                    Type = JsonSchemaType.Integer,
                     Format = "int32"
                 };
                 break;
@@ -75,28 +78,28 @@ internal static class DataDictionarySchema
             case FieldType.Float:
                 itemSchema = new OpenApiSchema
                 {
-                    Type = "number",
+                    Type = JsonSchemaType.Number,
                     Format = "double"
                 };
                 break;
             case FieldType.Date:
                 itemSchema = new OpenApiSchema
                 {
-                    Type = "string",
+                    Type = JsonSchemaType.String,
                     Format = "date"
                 };
                 break;
             case FieldType.DateTime:
                 itemSchema = new OpenApiSchema
                 {
-                    Type = "string",
+                    Type = JsonSchemaType.String,
                     Format = "datetime"
                 };
                 break;
             default:
                 itemSchema = new OpenApiSchema
                 {
-                    Type = "string"
+                    Type = JsonSchemaType.String
                 };
                 if (item.Size > 0)
                     itemSchema.MaxLength = item.Size;
@@ -128,7 +131,7 @@ internal static class DataDictionarySchema
         return new OpenApiSchema
         {
             Title = $"{modelName}Status",
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"
         };
@@ -139,38 +142,38 @@ internal static class DataDictionarySchema
         var modelSchema = new OpenApiSchema
         {
             Title = "validationLetter",
-            Type = "object",
-            Properties = new Dictionary<string, OpenApiSchema>()
+            Type = JsonSchemaType.Object,
+            Properties = new Dictionary<string, IOpenApiSchema>()
         };
         modelSchema.Properties.Add("status", new OpenApiSchema
         {
             Description = "Http Response Code",
-            Type = "integer",
+            Type = JsonSchemaType.Integer,
             Format = "int32"
         });
 
         modelSchema.Properties.Add("message", new OpenApiSchema
         {
             Description = "Error Message",
-            Type = "string"
+            Type = JsonSchemaType.String
         });
 
         modelSchema.Properties.Add("validationList", new OpenApiSchema
         {
             Description = "Detailed error list",
-            Type = "array",
+            Type = JsonSchemaType.Array,
             Items = new OpenApiSchema
             {
-                Type = "object",
+                Type = JsonSchemaType.Object,
                 Description = "Field, Value"
             },
-            Properties = new Dictionary<string, OpenApiSchema>
+            Properties = new Dictionary<string, IOpenApiSchema>
             {
                 {
                     "errorList", 
                     new OpenApiSchema
                     {
-                        Type = "object",
+                        Type = JsonSchemaType.Object,
                         Description = "Field, Value"
                     }
                 }
@@ -182,17 +185,17 @@ internal static class DataDictionarySchema
             modelSchema.Properties.Add("data", new OpenApiSchema
             {
                 Description = "Return of fields, identity for example",
-                Type = "array",
+                Type = JsonSchemaType.Array,
                 Items = new OpenApiSchema
                 {
                     Description = "Field, Value",
-                    Type = "object"
+                    Type = JsonSchemaType.Object
                 }
             });
         }
 
-        modelSchema.Required.Add("status");
-        modelSchema.Required.Add("message");
+        modelSchema.Required?.Add("status");
+        modelSchema.Required?.Add("message");
 
         return modelSchema;
     }

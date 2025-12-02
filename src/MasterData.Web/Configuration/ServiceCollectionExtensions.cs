@@ -90,7 +90,6 @@ public static class ServiceCollectionExtensions
         services.AddMemoryCache();
         
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
-        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();
 
         services.AddTransient<JJMasterDataLogo>();

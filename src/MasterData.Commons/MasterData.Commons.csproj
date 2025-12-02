@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net4.8;net8.0</TargetFrameworks>
+		<TargetFrameworks>net4.8;net10.0</TargetFrameworks>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<LangVersion>12</LangVersion>
+		<LangVersion>latest</LangVersion>
 		<Nullable>disable</Nullable>
 		<Product>JJMasterData.Commons - Sun Version</Product>
 		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
@@ -14,23 +14,23 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.3" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0" />
 		<PackageReference Include="PolySharp" Version="1.14.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.Collections.Immutable" Version="9.0.5" />
-		<PackageReference Include="System.Text.Json" Version="9.0.4" />
-		<PackageReference Include="System.Threading.Channels" Version="9.0.4" />
+		<PackageReference Include="System.Collections.Immutable" Version="10.0.0" />
+		<PackageReference Include="System.Text.Json" Version="10.0.0" />
+		<PackageReference Include="System.Threading.Channels" Version="10.0.0" />
 	</ItemGroup>
 	
 	<ItemGroup>

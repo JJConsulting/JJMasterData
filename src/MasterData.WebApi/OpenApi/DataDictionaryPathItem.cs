@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi;
 
 namespace JJMasterData.WebApi.OpenApi;
 
@@ -10,10 +10,13 @@ internal sealed class DataDictionaryPathItem
     internal DataDictionaryPathItem(string key)
     {
         Key = key;
-        PathItem = new OpenApiPathItem();
+        PathItem = new OpenApiPathItem
+        {
+            Summary = key
+        };
     }
 
-    internal void AddOperation(OperationType type,OpenApiOperation operation)
+    internal void AddOperation(HttpMethod type,OpenApiOperation operation)
     {
         PathItem.AddOperation(type, operation);
     }

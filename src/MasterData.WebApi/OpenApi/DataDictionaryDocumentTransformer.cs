@@ -1,7 +1,7 @@
 ﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace JJMasterData.WebApi.OpenApi;
 
@@ -15,6 +15,9 @@ public class DataDictionaryDocumentTransformer(
     {
         var formElements = await dataDictionaryRepository.GetFormElementListAsync();
 
+        document.Tags ??= new HashSet<OpenApiTag>();
+
+        
         foreach (var formElement in formElements)
         {
             try
@@ -35,24 +38,26 @@ public class DataDictionaryDocumentTransformer(
         var defaultPathItem = new DataDictionaryPathItem($"/api/masterdata/{formElement.Name}");
         var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
         var factory = new DataDictionaryOperationFactory(formElement, formElement.ApiOptions);
-
+        
+        document.Tags!.Add(new OpenApiTag { Name = formElement.Name });
+        
         if (formElement.ApiOptions.EnableGetAll)
-            defaultPathItem.AddOperation(OperationType.Get, factory.GetAll());
+            defaultPathItem.AddOperation(HttpMethod.Get, factory.GetAll());
 
         if (formElement.ApiOptions.EnableGetDetail)
-            detailPathItem.AddOperation(OperationType.Get, factory.Get());
+            detailPathItem.AddOperation(HttpMethod.Get, factory.Get());
         
         if (formElement.ApiOptions.EnableAdd)
-            defaultPathItem.AddOperation(OperationType.Post, factory.Post());
+            defaultPathItem.AddOperation(HttpMethod.Post, factory.Post());
         
         if (formElement.ApiOptions.EnableUpdate)
-            detailPathItem.AddOperation(OperationType.Put, factory.Put());
+            detailPathItem.AddOperation(HttpMethod.Put, factory.Put());
         
         if (formElement.ApiOptions.EnableUpdatePart)
-            detailPathItem.AddOperation(OperationType.Patch, factory.Patch());
+            detailPathItem.AddOperation(HttpMethod.Patch, factory.Patch());
         
         if (formElement.ApiOptions.EnableDel)
-            detailPathItem.AddOperation(OperationType.Delete, factory.Delete());
+            detailPathItem.AddOperation(HttpMethod.Delete, factory.Delete());
         
         document.Paths.AddDataDictionaryPath(defaultPathItem);
         document.Paths.AddDataDictionaryPath(detailPathItem);
@@ -67,16 +72,16 @@ public class DataDictionaryDocumentTransformer(
             var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
         
             if (formElement.ApiOptions.EnableGetDetail)
-                fileDetailPathItem.AddOperation(OperationType.Get, factory.GetFile(field));
+                fileDetailPathItem.AddOperation(HttpMethod.Get, factory.GetFile(field));
         
             if (formElement.ApiOptions is { EnableAdd: true, EnableUpdate: true })
-                filePathItem.AddOperation(OperationType.Post, factory.PostFile(field));
+                filePathItem.AddOperation(HttpMethod.Post, factory.PostFile(field));
         
             if (formElement.ApiOptions.EnableUpdatePart)
-                fileDetailPathItem.AddOperation(OperationType.Patch, factory.RenameFile(field));
+                fileDetailPathItem.AddOperation(HttpMethod.Patch, factory.RenameFile(field));
         
             if (formElement.ApiOptions.EnableDel)
-                fileDetailPathItem.AddOperation(OperationType.Delete, factory.DeleteFile(field));
+                fileDetailPathItem.AddOperation(HttpMethod.Delete, factory.DeleteFile(field));
         
             document.Paths.AddDataDictionaryPath(filePathItem);
             document.Paths.AddDataDictionaryPath(fileDetailPathItem);

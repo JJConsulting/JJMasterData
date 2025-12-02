@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net4.8;net8.0</TargetFrameworks>
+      <TargetFrameworks>net4.8;net10.0</TargetFrameworks>
 	  <LangVersion>12</LangVersion>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <Description>JJMasterData Pdf generation support.</Description>
@@ -19,9 +19,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="itext7" Version="8.0.3" />
-    <PackageReference Include="itext7.bouncy-castle-fips-adapter" Version="8.0.3" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
+    <PackageReference Include="itext7" Version="9.4.0" />
+    <PackageReference Include="itext7.bouncy-castle-fips-adapter" Version="9.4.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>

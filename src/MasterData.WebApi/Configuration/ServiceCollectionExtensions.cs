@@ -14,7 +14,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<MasterApiService>();
         services.AddScoped<DictionariesService>();
+#pragma warning disable ASPDEPR006
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+#pragma warning restore ASPDEPR006
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();
 
         services.Configure<JsonOptions>(options =>

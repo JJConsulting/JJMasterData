@@ -76,8 +76,7 @@ public class PdfWriter(
         {
             var header = new Paragraph(title)
                 .SetTextAlignment(TextAlignment.LEFT)
-                .SetFontSize(16)
-                .SetBold();
+                .SetFontSize(16);
             document.Add(header);
         }
 
@@ -110,7 +109,7 @@ public class PdfWriter(
         foreach (var field in fields)
         {
             Cell cell = new();
-            cell.Add(new Paragraph(new Text(field.LabelOrName).SetBold()));
+            cell.Add(new Paragraph(new Text(field.LabelOrName)));
             SetHeaderCellStyle(field, ref cell);
             table.AddHeaderCell(cell);
         }

@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace JJMasterData.Web.Models;
 
-internal sealed class ModelStateWrapper(IActionContextAccessor actionContextAccessor) : IValidationDictionary
+#pragma warning disable ASPDEPR006
+internal sealed class ModelStateWrapper(
+    IActionContextAccessor actionContextAccessor) : IValidationDictionary
+#pragma warning restore ASPDEPR006
 {
     private ModelStateDictionary ModelState =>
         actionContextAccessor.ActionContext?.ModelState ?? new ModelStateDictionary();
