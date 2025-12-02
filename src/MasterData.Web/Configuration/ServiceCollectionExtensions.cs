@@ -89,7 +89,6 @@ public static class ServiceCollectionExtensions
         
         services.AddMemoryCache();
         
-        services.AddComponentServices();
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IValidationDictionary, ModelStateWrapper>();
@@ -104,12 +103,6 @@ public static class ServiceCollectionExtensions
         });
         services.AddMemoryCache();
         services.AddActionFilters();
-    }
-
-    private static void AddComponentServices(this IServiceCollection services)
-    {
-        services.AddScoped<HtmlRenderer>();
-        services.AddTransient<ComponentRenderer>();
     }
     
     private static void AddMvcServices(
