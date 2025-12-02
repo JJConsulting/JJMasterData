@@ -273,7 +273,7 @@ internal sealed class GridFilter(JJGridView gridView)
     }
 
 
-    private JJCollapsePanel GetFilterScreenCollapse()
+    private JJMasterDataCollapsePanel GetFilterScreenCollapse()
     {
         var body = new HtmlBuilder(HtmlTag.Div);
         body.WithCssClass("col-sm-12");
