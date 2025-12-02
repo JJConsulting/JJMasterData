@@ -21,6 +21,7 @@ public class ElementImportService(IDataDictionaryRepository dataDictionaryReposi
         return true;
     }
 
+#if NET
     public async Task ImportZipFile(MemoryStream ms)
     {
         using var zip = new ZipArchive(ms, ZipArchiveMode.Read, leaveOpen: true);
@@ -44,4 +45,5 @@ public class ElementImportService(IDataDictionaryRepository dataDictionaryReposi
             yield return formElement;
         }
     }
+#endif
 }

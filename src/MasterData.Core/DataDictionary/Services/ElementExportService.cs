@@ -33,6 +33,7 @@ public class ElementExportService(IDataDictionaryRepository dataDictionaryReposi
         return memoryStream;
     }
 
+#if NET
     public async Task<MemoryStream> ExportMultipleRowsAsync(List<Dictionary<string, object>> selectedRows)
     {
         var memoryStream = new MemoryStream();
@@ -53,4 +54,5 @@ public class ElementExportService(IDataDictionaryRepository dataDictionaryReposi
         memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
+#endif
 }
