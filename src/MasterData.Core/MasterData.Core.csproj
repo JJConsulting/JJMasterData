@@ -29,7 +29,7 @@
     
     <ItemGroup>
         <PackageReference Include="Fluid.Core" Version="2.31.0" />
-        <PackageReference Include="JJConsulting.Html.Bootstrap" Version="1.0.12" />
+        <PackageReference Include="JJConsulting.Html.Bootstrap" Version="1.0.13" />
         <PackageReference Include="NCalcSync" Version="5.9.0" />
         <PackageReference Include="NCalc.MemoryCache" Version="5.9.0" />
         <PackageReference Include="NCalc.DependencyInjection" Version="5.9.0" />
