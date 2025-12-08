@@ -13,7 +13,6 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components.CollapsePanel;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -58,7 +57,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
 
     private async Task<ComponentResult> GetTabRelationshipsResult()
     {
-        var tabNav = new JJTabNav
+        var tabNav = new JJMasterDataTabNav(parentFormView.FormValues)
         {
             Name = $"relationships-tab-nav-{parentFormView.DataPanel.Name}"
         };

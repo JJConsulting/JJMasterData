@@ -12,15 +12,12 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Serialization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components.CollapsePanel;
 using JJMasterData.Core.UI.Events.Args;
 
 using Microsoft.Extensions.Localization;

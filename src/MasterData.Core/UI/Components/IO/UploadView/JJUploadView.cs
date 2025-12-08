@@ -16,15 +16,12 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
-using JJMasterData.Core.UI.Components.CollapsePanel;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;

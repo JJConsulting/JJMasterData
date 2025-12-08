@@ -24,7 +24,6 @@ using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components.CollapsePanel;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;

@@ -10,7 +10,6 @@ using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components.CollapsePanel;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -90,7 +89,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
     private async Task<JJTabNav> GetTabNav(List<FormElementPanel> tabs)
     {
-        var navTab = new JJTabNav
+        var navTab = new JJMasterDataTabNav(_formValues)
         {
             Name = $"nav_{_name}"
         };

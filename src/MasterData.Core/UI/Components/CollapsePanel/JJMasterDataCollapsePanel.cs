@@ -1,7 +1,7 @@
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Core.Http.Abstractions;
 
-namespace JJMasterData.Core.UI.Components.CollapsePanel;
+namespace JJMasterData.Core.UI.Components;
 
 internal sealed class JJMasterDataCollapsePanel : JJCollapsePanel
 {
