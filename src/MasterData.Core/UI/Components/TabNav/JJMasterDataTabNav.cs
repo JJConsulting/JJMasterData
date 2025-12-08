@@ -1,14 +1,20 @@
 using JJConsulting.Html.Bootstrap.Components;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJMasterDataTabNav : JJTabNav
+internal sealed class JJMasterDataTabNav : JJTabNav
 {
     public JJMasterDataTabNav(IFormValues formValues)
     {
-        var tabIndex = formValues["selected_tab_" + Name];
-
-        SelectedTabIndex = int.TryParse(tabIndex, out var intIndex) ? intIndex : 0;
+        if (formValues.TryGetValue("selected_tab_" + Name, out var value))
+        {
+            SelectedTabIndex = int.TryParse(value, out var intIndex) ? intIndex : 0;
+        }
+        else
+        {
+            SelectedTabIndex = 0;
+        }
     }
 }
