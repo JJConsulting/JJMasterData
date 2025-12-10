@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="itext7" Version="9.4.0" />
     <PackageReference Include="itext7.bouncy-castle-fips-adapter" Version="9.4.0" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
