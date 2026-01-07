@@ -46,7 +46,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             {
                 IconClass = "fa fa-stop",
                 OnClientClick = stopExportationScript,
-                Visible = reporter?.UserId == dataExportation.CurrentContext.User.GetUserId(),
+                Visible = reporter?.UserId == dataExportation.UserId,
                 Text = _stringLocalizer["Stop the exportation"],
                 ShowAsButton = true
             });

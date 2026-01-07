@@ -6,6 +6,7 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
@@ -20,6 +21,7 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class FormViewFactory(
     IHttpContext currentContext,
+    IMasterDataUser masterDataUser,
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
     FormService formService,
@@ -41,6 +43,7 @@ internal sealed class FormViewFactory(
         var formView = new JJFormView(
             formElement,
             currentContext,
+            masterDataUser,
             entityRepository,
             dataDictionaryRepository,
             formService,

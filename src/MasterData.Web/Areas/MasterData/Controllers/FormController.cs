@@ -1,6 +1,7 @@
 ﻿using JJConsulting.FontAwesome;
 using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FormController(
     IFormElementComponentFactory<JJFormView> formViewFactory,
+    IMasterDataUser masterDataUser,
     IStringLocalizer<MasterDataResources> stringLocalizer) : MasterDataController
 {
     public async Task<IActionResult> Render(string elementName)
@@ -51,7 +53,7 @@ public class FormController(
     private void ConfigureFormView(JJFormView formView)
     {
         var user = HttpContext.User;
-        var userId = user.GetUserId();
+        var userId = masterDataUser.Id;
 
         if (userId == null)
             return;

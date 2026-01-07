@@ -13,7 +13,10 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
-public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser> logger)
+public class ExpressionParser(
+    IHttpContext httpContext, 
+    IMasterDataUser masterDataUser,
+    ILogger<ExpressionParser> logger)
 {
     public Dictionary<string, object?> ParseExpression(
         string? expression,
@@ -73,7 +76,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
                 parsedValue = $"{httpContext.Request.QueryString["fieldName"]}";
                 break;
             case "userid":
-                parsedValue = DataHelper.GetCurrentUserId(httpContext, userValues!);
+                parsedValue = masterDataUser.Id;
                 break;
             case "useremail":
                 parsedValue = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;

@@ -17,6 +17,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
@@ -36,9 +37,6 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 public class JJDataExportation : ProcessComponent
 {
-    private DataExportationScripts _dataExportationScripts;
-
-
     #region "Events"
 
     /// <summary>
@@ -62,7 +60,7 @@ public class JJDataExportation : ProcessComponent
     public bool ShowRowStriped { get; set; }
     internal MasterDataCoreOptions MasterDataOptions { get; }
 
-    internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(this);
+    internal DataExportationScripts Scripts => field ??= new DataExportationScripts(this);
     internal IComponentFactory ComponentFactory { get; }
     public DataExportationWriterFactory DataExportationWriterFactory { get; }
 
@@ -71,6 +69,7 @@ public class JJDataExportation : ProcessComponent
     #region "Constructors"
     internal JJDataExportation(
         FormElement formElement,
+        IMasterDataUser masterDataUser,
         ExpressionsService expressionsService,
         IOptionsSnapshot<MasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
@@ -80,7 +79,7 @@ public class JJDataExportation : ProcessComponent
         IHttpContext currentContext, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
+        base(currentContext, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         DataExportationWriterFactory = dataExportationWriterFactory;
         ComponentFactory = componentFactory;

@@ -14,10 +14,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.WebApi.Services;
 
-public class DictionariesService(IDataDictionaryRepository dataDictionaryRepository,
+public class DictionariesService(
+    IMasterDataUser masterDataUser,
+    IDataDictionaryRepository dataDictionaryRepository,
     IEntityRepository entityRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IHttpContext httpContext,
     ILogger<DictionariesService> logger)
 {
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -34,7 +35,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
     /// </param>
     public async Task<DicSyncInfo> GetSyncInfoAsync(DicSyncParam[] listSync, bool showLogInfo, long maxRecordsAllowed = 0)
     {
-        var userId = DataHelper.GetCurrentUserId(httpContext, null!);
+        var userId = masterDataUser.Id;
         if (listSync == null)
             throw new ArgumentNullException(nameof(listSync));
 

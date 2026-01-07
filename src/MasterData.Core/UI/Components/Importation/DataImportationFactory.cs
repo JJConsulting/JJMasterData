@@ -25,6 +25,7 @@ internal sealed class DataImportationFactory(
     FormService formService,
     IBackgroundTaskManager backgroundTaskManager,
     IHttpContext httpContext,
+    IMasterDataUser masterDataUser,
     IComponentFactory componentFactory,
     DataItemService dataItemService,
     DataImportationWorkerFactory dataImportationWorkerFactory,
@@ -37,6 +38,7 @@ internal sealed class DataImportationFactory(
     {
         return new JJDataImportation(
             formElement, 
+            masterDataUser,
             expressionsService, 
             formService, 
             fieldValuesService,
@@ -57,8 +59,7 @@ internal sealed class DataImportationFactory(
 
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
-        var dataContext = new DataContext(httpContext.Request, DataContextSource.Upload,
-            DataHelper.GetCurrentUserId(httpContext, null));
+        var dataContext = new DataContext(httpContext.Request, DataContextSource.Upload, masterDataUser.Id);
 
         var formEvent = formEventHandlerResolver.GetFormEventHandler(elementName);
 

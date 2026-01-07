@@ -5,12 +5,12 @@ namespace JJMasterData.Core.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static string? GetUserId(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetUserId(this ClaimsPrincipal claimsPrincipal, string userIdClaimName)
     {
         string? userId = null;
         foreach (var claim in claimsPrincipal.Claims)
         {
-            if (claim.Type == ClaimTypes.NameIdentifier)
+            if (claim.Type == userIdClaimName)
             {
                 userId = claim.Value;
                 break;

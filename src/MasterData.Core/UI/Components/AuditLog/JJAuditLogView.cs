@@ -30,11 +30,8 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJAuditLogView : AsyncComponent
 {
+    private readonly IMasterDataUser _masterDataUser;
     private readonly IComponentFactory _componentFactory;
-    private JJGridView _gridView;
-    private JJDataPanel _dataPainel;
-    private string _userId;
-    private RouteContext _routeContext;
 
     public Dictionary<string, object> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
     
@@ -42,13 +39,13 @@ public class JJAuditLogView : AsyncComponent
     {
         get
         {
-            if (_routeContext != null)
-                return _routeContext;
+            if (field != null)
+                return field;
 
             var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
-            _routeContext = factory.Create();
+            field = factory.Create();
 
-            return _routeContext;
+            return field;
         }
     }
 
@@ -61,26 +58,26 @@ public class JJAuditLogView : AsyncComponent
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    internal string UserId => _masterDataUser.Id;
 
     private IHttpContext CurrentContext { get; }
 
     private AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
 
-    public JJGridView GridView => _gridView ??= CreateGridViewLog();
+    public JJGridView GridView => field ??= CreateGridViewLog();
 
     private JJDataPanel DataPanel
     {
         get
         {
-            if (_dataPainel == null)
+            if (field == null)
             {
-                _dataPainel = _componentFactory.DataPanel.Create(FormElement);
-                _dataPainel.Name = $"auditlogview-panel-{FormElement.ParentName}";
+                field = _componentFactory.DataPanel.Create(FormElement);
+                field.Name = $"auditlogview-panel-{FormElement.ParentName}";
             }
 
-            return _dataPainel;
+            return field;
         }
     }
 
@@ -92,6 +89,7 @@ public class JJAuditLogView : AsyncComponent
     public JJAuditLogView(
         FormElement formElement,
         IHttpContext currentContext,
+        IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
         IComponentFactory componentFactory,
@@ -99,6 +97,7 @@ public class JJAuditLogView : AsyncComponent
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         Name = $"{formElement.Name.ToLowerInvariant()}-audit-log-view";
+        _masterDataUser = masterDataUser;
         _componentFactory = componentFactory;
         FormElement = formElement;
         CurrentContext = currentContext;

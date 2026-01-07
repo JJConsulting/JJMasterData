@@ -7,23 +7,11 @@ using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpContext context, Dictionary<string, object?>? userValues)
-    {
-        if (userValues != null && userValues.TryGetValue("USERID", out var value))
-        {
-            return value?.ToString();
-        }
-
-        return context.User.GetUserId();
-    }
-
     public static Dictionary<string, object?> GetElementValues(Element element, Dictionary<string, object?> values)
     {
         var elementValues = new Dictionary<string, object?>();

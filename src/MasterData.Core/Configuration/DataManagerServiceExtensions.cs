@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ public static class DataManagerServiceExtensions
 {
     public static IServiceCollection AddDataManagerServices(this IServiceCollection services)
     {
+        services.AddScoped<IMasterDataUser, MasterDataUser>();
         services.AddScoped<AuditLogService>();
         services.AddScoped<DataItemService>();
         services.AddScoped<LookupService>();

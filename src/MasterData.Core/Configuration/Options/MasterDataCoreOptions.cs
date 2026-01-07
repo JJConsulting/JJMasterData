@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using JJMasterData.Commons.Util;
 using NCalc;
 using NCalc.Exceptions;
@@ -49,6 +50,8 @@ public sealed class MasterDataCoreOptions
     [Display(Name = "Exportation Folder Path")]
     public string ExportationFolderPath { get; set; } = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
 
+    public string UserIdClaimType { get; set; } = ClaimTypes.NameIdentifier;
+    
     /// <summary>
     /// Context of expressions starting with "exp:". Declare here custom parameters and functions.
     /// </summary>

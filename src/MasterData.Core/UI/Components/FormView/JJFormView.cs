@@ -137,17 +137,9 @@ public class JJFormView : AsyncComponent
     #region "Fields"
 
     private JJDataPanel? _dataPanel;
-    private JJGridView? _gridView;
     private JJFormView? _insertSelectionFormView;
-    private FormViewScripts? _scripts;
     private ActionMap? _currentActionMap;
-    private BasicAction? _currentAction;
-    private JJAuditLogView? _auditLogView;
-    private JJDataImportation? _dataImportation;
-    private string? _userId;
     private PageState? _pageState;
-    private Dictionary<string, object> _relationValues = new();
-    private RouteContext? _routeContext;
     private FormStateData? _formStateData;
     private bool _isCustomCurrentAction;
     private RelationshipType? _relationshipType;
@@ -160,6 +152,7 @@ public class JJFormView : AsyncComponent
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
     private readonly ILogger<JJFormView> _logger;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
+    private readonly IMasterDataUser _masterDataUser;
     private readonly FormService _formService;
 
     #endregion
@@ -172,14 +165,14 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_auditLogView != null)
-                return _auditLogView;
+            if (field != null)
+                return field;
 
-            _auditLogView = ComponentFactory.AuditLog.Create(FormElement);
-            _auditLogView.FormElement.ParentName =
+            field = ComponentFactory.AuditLog.Create(FormElement);
+            field.FormElement.ParentName =
                 RouteContext.ParentElementName ?? FormElement.ParentName ?? FormElement.Name;
 
-            return _auditLogView;
+            return field;
         }
     }
 
@@ -195,7 +188,7 @@ public class JJFormView : AsyncComponent
     /// <remarks>
     /// If the value is null, the value is recovered at UserValues or HttpContext.
     /// </remarks>
-    private string? UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    private string? UserId => _masterDataUser.Id;
 
     /// <summary>
     /// Configurações de importação
@@ -204,13 +197,13 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_dataImportation != null)
-                return _dataImportation;
+            if (field != null)
+                return field;
 
-            _dataImportation = GridView.DataImportation;
-            _dataImportation.RelationValues = RelationValues;
+            field = GridView.DataImportation;
+            field.RelationValues = RelationValues;
 
-            return _dataImportation;
+            return field;
         }
     }
 
@@ -255,19 +248,19 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_relationValues.Count == 0)
+            if (field.Count == 0)
             {
-                _relationValues = GetRelationValuesFromForm();
+                field = GetRelationValuesFromForm();
             }
 
-            return _relationValues;
+            return field;
         }
         set
         {
-            _relationValues = value;
-            GridView.RelationValues = _relationValues;
+            field = value;
+            GridView.RelationValues = field;
         }
-    }
+    } = new();
 
     public FormElement FormElement { get; }
 
@@ -275,24 +268,24 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_gridView is not null)
-                return _gridView;
+            if (field is not null)
+                return field;
 
-            _gridView = ComponentFactory.GridView.Create(FormElement);
-            _gridView.Name = Name;
-            _gridView.ParentComponentName = Name;
-            _gridView.FormElement = FormElement;
-            _gridView.UserValues = UserValues;
-            _gridView.ShowTitle = ShowTitle;
-            _gridView.TitleActions = TitleActions;
+            field = ComponentFactory.GridView.Create(FormElement);
+            field.Name = Name;
+            field.ParentComponentName = Name;
+            field.FormElement = FormElement;
+            field.UserValues = UserValues;
+            field.ShowTitle = ShowTitle;
+            field.TitleActions = TitleActions;
 
-            if (_gridView.InsertAction.InsertActionLocation is InsertActionLocation.AboveGrid)
-                _gridView.OnBeforeTableRenderAsync += RenderInsertActionAtGrid;
+            if (field.InsertAction.InsertActionLocation is InsertActionLocation.AboveGrid)
+                field.OnBeforeTableRenderAsync += RenderInsertActionAtGrid;
 
-            if (_gridView.InsertAction.InsertActionLocation is InsertActionLocation.BelowGrid)
-                _gridView.OnAfterTableRenderAsync += RenderInsertActionAtGrid;
+            if (field.InsertAction.InsertActionLocation is InsertActionLocation.BelowGrid)
+                field.OnAfterTableRenderAsync += RenderInsertActionAtGrid;
 
-            return _gridView;
+            return field;
         }
     }
 
@@ -363,14 +356,14 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_currentAction != null || _isCustomCurrentAction)
-                return _currentAction;
+            if (field != null || _isCustomCurrentAction)
+                return field;
 
             if (CurrentActionMap is null)
                 return null;
 
-            _currentAction = CurrentActionMap.GetAction(FormElement);
-            return _currentAction;
+            field = CurrentActionMap.GetAction(FormElement);
+            return field;
         }
     }
 
@@ -378,13 +371,13 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_routeContext != null)
-                return _routeContext;
+            if (field != null)
+                return field;
 
             var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
-            _routeContext = factory.Create();
+            field = factory.Create();
 
-            return _routeContext;
+            return field;
         }
     }
 
@@ -396,7 +389,7 @@ public class JJFormView : AsyncComponent
         ? RouteContext.ComponentContext
         : default;
 
-    internal FormViewScripts Scripts => _scripts ??= new(this);
+    internal FormViewScripts Scripts => field ??= new(this);
 
     internal bool IsChildFormView => RelationshipType is not RelationshipType.Parent;
 
@@ -432,6 +425,7 @@ public class JJFormView : AsyncComponent
     public JJFormView(
         FormElement formElement,
         IHttpContext currentContext,
+        IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         FormService formService,
@@ -456,6 +450,7 @@ public class JJFormView : AsyncComponent
         ExpressionsService = expressionsService;
         ComponentFactory = componentFactory;
 
+        _masterDataUser = masterDataUser;
         _formService = formService;
         _formValuesService = formValuesService;
         _fieldValuesService = fieldValuesService;

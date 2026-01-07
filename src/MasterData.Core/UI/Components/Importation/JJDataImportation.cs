@@ -16,6 +16,7 @@ using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.DataManager.Models;
@@ -110,6 +111,7 @@ public class JJDataImportation : ProcessComponent
 
     public JJDataImportation(
         FormElement formElement,
+        IMasterDataUser masterDataUser,
         ExpressionsService expressionsService,
         FormService formService,
         FieldValuesService fieldValuesService,
@@ -121,7 +123,7 @@ public class JJDataImportation : ProcessComponent
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(currentContext, expressionsService, backgroundTaskManager,
+        : base(currentContext,masterDataUser, expressionsService, backgroundTaskManager,
             loggerFactory.CreateLogger<ProcessComponent>(), encryptionService, stringLocalizer)
     {
         CurrentContext = currentContext;
@@ -277,7 +279,7 @@ public class JJDataImportation : ProcessComponent
         {
             Type = LinkButtonType.Button,
             ShowAsButton = true,
-            Visible = reporter.UserId == CurrentContext.User.GetUserId(),
+            Visible = reporter.UserId == UserId,
             OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
             Icon = FontAwesomeIcon.Stop,
             Text = StringLocalizer["Stop the importation"]

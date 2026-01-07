@@ -14,6 +14,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public abstract class ProcessComponent(
         IHttpContext currentContext,
+        IMasterDataUser masterDataUser,
         ExpressionsService expressionsService,
         IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
@@ -39,7 +40,7 @@ public abstract class ProcessComponent(
     }
 
     public Dictionary<string, object> UserValues { get; set; } = new();
-    
+
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
@@ -47,7 +48,7 @@ public abstract class ProcessComponent(
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    internal string UserId => _userId ??= masterDataUser.Id;
 
     public IHttpContext CurrentContext { get; init; } = currentContext;
 

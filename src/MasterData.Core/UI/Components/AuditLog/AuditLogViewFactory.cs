@@ -3,13 +3,16 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class AuditLogViewFactory(IHttpContext httpContext,
+internal sealed class AuditLogViewFactory(
+        IHttpContext httpContext,
+        IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -20,7 +23,7 @@ internal sealed class AuditLogViewFactory(IHttpContext httpContext,
 {
     public JJAuditLogView Create(FormElement formElement)
     {
-        return new JJAuditLogView(formElement, httpContext, entityRepository, auditLogService, componentFactory,
+        return new JJAuditLogView(formElement, httpContext,masterDataUser, entityRepository, auditLogService, componentFactory,
             encryptionService, stringLocalizer);
     }
     

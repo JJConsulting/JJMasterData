@@ -19,6 +19,7 @@ namespace JJMasterData.WebApi.Services;
 public class MasterApiService(ExpressionsService expressionsService,
     IHttpContextAccessor httpContextAccessor,
     IHttpContext httpContext,
+    IMasterDataUser masterDataUser,
     DataItemService dataItemService,
     FieldValuesService fieldValuesService,
     FormService formService,
@@ -440,7 +441,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
     private string GetUserId()
     {
-        return DataHelper.GetCurrentUserId(httpContext, null)!;
+        return masterDataUser.Id;
     }
 
     private DataContext GetDataContext()

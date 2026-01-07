@@ -19,12 +19,13 @@ public class InternalRedirectController(
     IComponentFactory componentFactory, 
     FormService formService,
     IHttpRequest request,
+    IMasterDataUser masterDataUser,
     IEncryptionService encryptionService) : MasterDataController
 {
     public async Task<IActionResult> Index(string parameters)
     {
         var state = GetInternalRedirectState(parameters);
-        var userId = HttpContext.User.GetUserId();
+        var userId = masterDataUser.Id;
         InternalRedirectViewModel model;
 
         switch (state.RelationshipType)
@@ -132,7 +133,7 @@ public class InternalRedirectController(
     public async Task<IActionResult> Save(string parameters)
     {
         var state = GetInternalRedirectState(parameters);
-        var userId = HttpContext.User.GetUserId();
+        var userId = masterDataUser.Id;
         var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
 
         if (panel.PageState is PageState.Update)

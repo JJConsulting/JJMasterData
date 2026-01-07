@@ -4,6 +4,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Http.Abstractions;
@@ -15,6 +16,7 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class DataExportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
+    IMasterDataUser masterDataUser,
     ExpressionsService expressionsService,
     IOptionsSnapshot<MasterDataCoreOptions> options,
     IBackgroundTaskManager backgroundTaskManager,
@@ -36,6 +38,7 @@ internal class DataExportationFactory(
     {
         return new JJDataExportation(
             formElement,
+            masterDataUser,
             expressionsService,
             options, 
             backgroundTaskManager,
