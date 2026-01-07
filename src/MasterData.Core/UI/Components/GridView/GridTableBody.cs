@@ -240,9 +240,9 @@ internal sealed class GridTableBody(JJGridView gridView)
         }
         else if (field.Component is FormComponent.Icon && !string.IsNullOrEmpty(stringValue))
         {
-            var FontAwesomeIcon = FontAwesomeIconHelper.GetFontAwesomeIconFromField(field, stringValue);
+            var fontAwesomeIcon = FontAwesomeIconHelper.GetFontAwesomeIconFromField(field, stringValue);
 
-            cell = GetIconCell(FontAwesomeIcon, null, FontAwesomeIcon.ToString());
+            cell = GetIconCell(fontAwesomeIcon, null, fontAwesomeIcon.ToString());
         }
         else if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
@@ -468,7 +468,6 @@ internal sealed class GridTableBody(JJGridView gridView)
 
                 break;
             case FormComponent.CheckBox:
-                return "text-align:center";
             case FormComponent.Icon:
                 return "text-align:center";
             default:

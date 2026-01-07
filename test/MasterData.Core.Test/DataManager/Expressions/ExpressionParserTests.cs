@@ -1,4 +1,5 @@
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
@@ -13,7 +14,7 @@ public class ExpressionParserTests
     public void ParseExpression_WithNullExpression_ShouldReturnEmptyDictionary()
     {
         // Arrange
-        var parser = new ExpressionParser(MockHttpContext(), MockLogger());
+        var parser = new ExpressionParser(MockHttpContext(), MockMasterDataUser(),MockLogger());
 
         // Act
         var result = parser.ParseExpression(null, new FormStateData
@@ -34,7 +35,7 @@ public class ExpressionParserTests
         var httpContext = MockHttpContext();
         var userValues = new Dictionary<string, object?> { { "Name", "Gustavo" } };
         var formStateData = new FormStateData { UserValues = userValues,  Values = new Dictionary<string, object?>(), PageState = PageState.List };
-        var parser = new ExpressionParser(httpContext, MockLogger());
+        var parser = new ExpressionParser(httpContext, MockMasterDataUser(),MockLogger());
 
         // Act
         var result = parser.ParseExpression("{Name}", formStateData);
@@ -49,7 +50,7 @@ public class ExpressionParserTests
     public void ParseExpression_WithUnknownField_ShouldReturnEmptyValue()
     {
         // Arrange
-        var parser = new ExpressionParser(MockHttpContext(), MockLogger());
+        var parser = new ExpressionParser(MockHttpContext(), MockMasterDataUser(),MockLogger());
 
         // Act
         var result = parser.ParseExpression("{UnknownField}", new FormStateData
@@ -76,5 +77,10 @@ public class ExpressionParserTests
     private static ILogger<ExpressionParser> MockLogger()
     {
         return new Mock<ILogger<ExpressionParser>>().Object;
+    }
+    private static IMasterDataUser MockMasterDataUser()
+    {
+        var mockHttpContext = new Mock<IMasterDataUser>();
+        return mockHttpContext.Object;
     }
 }

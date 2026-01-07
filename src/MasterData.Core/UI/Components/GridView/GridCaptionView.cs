@@ -41,7 +41,7 @@ internal sealed class GridCaptionView(
         {
             var cbo = comboBoxFactory.Create();
             cbo.Name = field.Name;
-            
+            cbo.ConnectionId = FormElement.ConnectionId;
             if (field.DataItem != null)
                 cbo.DataItem = field.DataItem;
 

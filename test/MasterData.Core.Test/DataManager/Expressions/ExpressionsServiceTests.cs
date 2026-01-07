@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
@@ -22,6 +23,12 @@ public class ExpressionsServiceTests
         var mockHttpContext = new Mock<IHttpContext>();
         return mockHttpContext.Object;
     }
+    
+    private static IMasterDataUser MockMasterDataUser()
+    {
+        var mockHttpContext = new Mock<IMasterDataUser>();
+        return mockHttpContext.Object;
+    }
 
     private static ILogger<ExpressionParser> MockLogger()
     {
@@ -38,7 +45,7 @@ public class ExpressionsServiceTests
                 _expressionAsyncProviderMock.Object,
                 _expressionBooleanProviderMock.Object
             },
-             new ExpressionParser(MockHttpContext(), MockLogger()),
+             new ExpressionParser(MockHttpContext(), MockMasterDataUser(),MockLogger()),
             _encryptionServiceMock.Object,
             _loggerMock.Object
         );
