@@ -1775,10 +1775,12 @@ public class JJFormView : AsyncComponent
 
         foreach (var action in FormElement.Options.GridToolbarActions)
         {
-            if (action is not FilterAction &&
-                action is not RefreshAction &&
-                action is not LegendAction &&
-                action is not ConfigAction)
+            if (action 
+                is not FilterAction 
+                and not RefreshAction 
+                and not LegendAction 
+                and not ExportAction 
+                and not ConfigAction)
             {
                 action.SetVisible(false);
             }

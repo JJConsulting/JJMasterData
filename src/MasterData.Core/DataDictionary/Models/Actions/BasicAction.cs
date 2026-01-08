@@ -9,12 +9,10 @@ using JJConsulting.Html.Bootstrap.Models;
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
-/// Action basic info
+/// Represents a basic action that can be executed with customizable behavior.
 /// </summary>
 public abstract class BasicAction
 {
-    private string _name = null!;
-
     ///  <summary>
     ///  Identifier of the action.
     ///  </summary>
@@ -28,9 +26,9 @@ public abstract class BasicAction
     [JsonPropertyName("name")]
     public string Name
     {
-        get => _name;
-        set => _name = value ?? throw new ArgumentException("Action name cannot be null");
-    }
+        get;
+        set => field = value ?? throw new ArgumentException("Action name cannot be null");
+    } = null!;
 
     /// <summary>
     /// Action description
