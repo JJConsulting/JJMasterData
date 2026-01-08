@@ -313,8 +313,16 @@ internal sealed class DataPanelForm
         var fieldSelector = new FormElementFieldSelector(FormElement, field.Name);
         var staticValue = await _fieldFormattingService.FormatGridValueAsync(fieldSelector, FormStateData);
         var html = new HtmlBuilder(HtmlTag.P)
-            .WithCssClass("form-control-static")
-            .AppendText(staticValue);
+            .WithCssClass("form-control-static");
+        
+        if (field.EncodeHtml)
+        {
+            html.AppendText(staticValue);
+        }
+        else
+        {
+            html.Append(new HtmlBuilder(staticValue, encode: false));
+        }
 
         return html;
     }
