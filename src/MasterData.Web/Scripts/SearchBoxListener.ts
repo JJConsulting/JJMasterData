@@ -48,6 +48,7 @@ class SearchBoxListener {
                         hiddenInput.value = selected.map(s => s.value).join(",");
                     } else if (selected) {
                         hiddenInput.value = selected.value;
+                        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
                     } else {
                         hiddenInput.value = "";
                     }

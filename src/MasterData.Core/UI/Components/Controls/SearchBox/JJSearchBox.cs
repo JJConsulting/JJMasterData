@@ -296,7 +296,6 @@ public class JJSearchBox : ControlBase, IDataItemControl
             input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
-            input.WithAttributes(Attributes);
             input.WithAttribute(TriggerLengthAttribute, TriggerLength.ToString());
             input.WithAttribute(NumberOfItemsAttribute, NumberOfItems.ToString());
             input.WithToolTip(Tooltip);
@@ -315,6 +314,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         
         div.Append(HtmlTag.Input, input =>
         {
+            input.WithAttributes(Attributes);
             input.WithAttribute("hidden", "hidden");
             input.WithAttribute("id", HtmlId);
             input.WithAttribute("name", Name);
