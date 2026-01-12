@@ -681,7 +681,7 @@ public class JJGridView : AsyncComponent
             
             var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
 
-            return new ContentComponentResult(new HtmlBuilder(htmlResponse));
+            return new ContentComponentResult(new HtmlBuilder(htmlResponse, encode: false));
         }
         
         if (ComponentContext is ComponentContext.GridViewScrollPagination)
