@@ -81,8 +81,6 @@ public class ExpressionsService(
 
         try
         {
-            logger.LogExpression(expression);
-
             var parsedValues = expressionParser.ParseExpression(expression, formStateData);
 
             result = provider.Evaluate(expressionValue, parsedValues);

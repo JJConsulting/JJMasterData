@@ -30,9 +30,9 @@
     <ItemGroup>
         <PackageReference Include="Fluid.Core" Version="2.31.0" />
         <PackageReference Include="JJConsulting.Html.Bootstrap" Version="1.0.17" />
-        <PackageReference Include="NCalcSync" Version="5.9.0" />
-        <PackageReference Include="NCalc.MemoryCache" Version="5.9.0" />
-        <PackageReference Include="NCalc.DependencyInjection" Version="5.9.0" />
+        <PackageReference Include="NCalcSync" Version="5.11.0" />
+        <PackageReference Include="NCalc.MemoryCache" Version="5.11.0" />
+        <PackageReference Include="NCalc.DependencyInjection" Version="5.11.0" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />

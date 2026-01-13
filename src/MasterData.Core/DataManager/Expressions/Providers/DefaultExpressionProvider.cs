@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCalc;
 using NCalc.Factories;
@@ -14,7 +16,8 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 public sealed class DefaultExpressionProvider(
     IExpressionFactory expressionFactory,
     IServiceProvider serviceProvider,
-    IOptions<MasterDataCoreOptions> options)
+    IOptions<MasterDataCoreOptions> options,
+    ILogger<DefaultExpressionProvider> logger)
     : ISyncExpressionProvider, IAsyncExpressionProvider
 {
     private readonly ExpressionContext _expressionContext = options.Value.ExpressionContext with
@@ -35,6 +38,9 @@ public sealed class DefaultExpressionProvider(
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
         
         var ncalcExpression = expressionFactory.Create(replacedExpression, _expressionContext);
+        
+        logger.LogExpression(replacedExpression);
+        
         return ncalcExpression.Evaluate();
     }
 
