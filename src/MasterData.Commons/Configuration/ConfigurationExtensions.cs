@@ -4,12 +4,16 @@ namespace JJMasterData.Commons.Configuration;
 
 public static class ConfigurationExtensions
 {
-    public static IConfigurationSection GetJJMasterData(this IConfiguration configuration)
+    extension(IConfiguration configuration)
     {
-        return configuration.GetSection("JJMasterData");
-    }
-    public static string GetJJMasterData(this IConfiguration configuration, string key)
-    {
-        return configuration.GetJJMasterData().GetSection(key)?.Value;
+        public IConfigurationSection GetJJMasterData()
+        {
+            return configuration.GetSection("JJMasterData");
+        }
+
+        public string GetJJMasterData(string key)
+        {
+            return configuration.GetJJMasterData().GetSection(key)?.Value;
+        }
     }
 }
