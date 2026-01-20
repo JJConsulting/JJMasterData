@@ -508,7 +508,7 @@ class DataDictionaryUtils {
                     }
                 });
             }
-        }).disableSelection();
+        });
     }
     static toggleActionEnabled(visibility, url, errorMessage) {
         const formData = new FormData();

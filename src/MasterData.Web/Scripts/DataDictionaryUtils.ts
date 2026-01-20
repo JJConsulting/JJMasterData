@@ -34,7 +34,7 @@
                         }
                     });
             }
-        }).disableSelection();
+        });
     }
 
     static toggleActionEnabled(visibility: boolean, url: string, errorMessage: string): void {
