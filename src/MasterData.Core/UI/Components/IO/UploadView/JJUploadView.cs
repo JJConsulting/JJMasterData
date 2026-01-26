@@ -774,12 +774,14 @@ public class JJUploadView : AsyncComponent
     {
         FormFileManager.DeleteFile(fileName);
         var text = StringLocalizer["File successfully deleted."];
-        var alert = new JJAlert();
-        alert.Title = text;
-        alert.ShowCloseButton = true;
-        alert.Color = BootstrapColor.Info;
-        alert.Icon = FontAwesomeIcon.SolidCircleInfo;
-        
+        var alert = new JJAlert
+        {
+            Title = text,
+            ShowCloseButton = true,
+            Color = BootstrapColor.Info,
+            Icon = FontAwesomeIcon.SolidCircleInfo
+        };
+
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
     
