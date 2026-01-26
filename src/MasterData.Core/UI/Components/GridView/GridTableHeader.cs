@@ -263,6 +263,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 {
                     li.Append(HtmlTag.A, a =>
                     {
+                        a.WithId($"{gridView.Name}-unselect-all-button");
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithOnClick( $"GridViewSelectionHelper.unSelectAll('{gridView.Name}')");
@@ -273,6 +274,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 {
                     li.Append(HtmlTag.A, a =>
                     {
+                        a.WithId($"{gridView.Name}-select-all-button");
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithOnClick( gridView.Scripts.GetSelectAllScript());

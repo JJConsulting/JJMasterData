@@ -215,6 +215,7 @@ public class JJUploadView : AsyncComponent
                 OnClientClick = Scripts.GetDeleteFileScript(),
                 Name = "delete-file"
             };
+          
             return _deleteAction;
         }
     }
@@ -318,7 +319,7 @@ public class JJUploadView : AsyncComponent
 
     public async Task<ComponentResult> GetUploadViewResult()
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = HtmlBuilder.Div();
 
         var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
         if (!string.IsNullOrEmpty(uploadAction))
