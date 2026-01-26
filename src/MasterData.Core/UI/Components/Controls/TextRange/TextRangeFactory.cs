@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -24,27 +25,20 @@ internal sealed class TextRangeFactory(
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)
     {
         var values = context.FormStateData.Values;
-        string valueFrom = "";
-        if (values.ContainsKey($"{field.Name}_from"))
-        {
-            valueFrom = values[$"{field.Name}_from"].ToString();
-        }
+        
+        values.TryGetValue($"{field.Name}_to", out var fromValue);
 
         var range = Create();
         range.FieldType = field.DataType;
         range.FromField = TextGroupFactory.Create(field);
-        range.FromField.Text = valueFrom;
+        range.FromField.Text = fromValue?.ToString();
         range.FromField.Name = $"{field.Name}_from";
-        range.FromField.PlaceHolder = StringLocalizer["From"];
+        range.FromField.PlaceHolder = StringLocalizer["from"].Value.FirstCharToUpper(); //workaround devido a não ser possível ter 2 From no arquivo de resource.
 
-        string valueTo = "";
-        if (values.ContainsKey($"{field.Name}_to"))
-        {
-            valueTo = values[$"{field.Name}_to"].ToString();
-        }
+        values.TryGetValue($"{field.Name}_to", out var toValue);
 
         range.ToField = TextGroupFactory.Create(field);
-        range.ToField.Text = valueTo;
+        range.ToField.Text = toValue?.ToString();
         range.ToField.Name = $"{field.Name}_to";
         range.ToField.PlaceHolder = StringLocalizer["To"];
 
