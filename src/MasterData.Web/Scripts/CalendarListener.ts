@@ -1,50 +1,35 @@
 class CalendarListener {
-    static listen(prefixSelector = String()){
-        const datetimeInputs = document.querySelectorAll(prefixSelector + ".jjform-datetime");
+    static listen(prefixSelector = "") {
+        const init = (selector, enableTime) => {
+            document.querySelectorAll(prefixSelector + selector).forEach(div => {
+                const input = div.children[0];
 
-        datetimeInputs.forEach(function(div) {
-            //@ts-ignore
-            flatpickr(div, {
-                enableTime: true,
-                wrap: true,
-                allowInput: true,
-                altInput: false,
-                monthSelectorType: 'static',
-                disableMobile: true,
-                time_24hr: true,
-                mode: "single",
                 //@ts-ignore
-                dateFormat: div.children[0].dataset.flatpickrMask,
-                onOpen: function(selectedDates, dateStr, instance) {
-                    if (instance.input.getAttribute("autocompletePicker") === "True") {
-                        instance.setDate(Date.now());
-                    }
-                },
-                locale: localeCode,
-            });
-        });
-
-        const dateInputs = document.querySelectorAll(prefixSelector + ".jjform-date");
-
-        dateInputs.forEach(function(div) {
-            //@ts-ignore
-            flatpickr(div, {
-                enableTime: false,
-                wrap: true,
-                allowInput: true,
-                altInput: false,
-                disableMobile: true,
-                monthSelectorType: 'static',
-                mode: "single",
+                const mode = input.dataset.mode;
+                
                 //@ts-ignore
-                dateFormat: div.children[0].dataset.flatpickrMask,
-                onOpen: function(selectedDates, dateStr, instance) {
-                    if (instance.input.getAttribute("autocompletePicker") === "True") {
-                        instance.setDate(Date.now());
-                    }
-                },
-                locale: localeCode,
+                flatpickr(div, {
+                    enableTime,
+                    wrap: true,
+                    allowInput: mode !== "multiple",
+                    altInput: false,
+                    disableMobile: true,
+                    monthSelectorType: "static",
+                    time_24hr: enableTime,
+                    mode,
+                    //@ts-ignore
+                    dateFormat: mode !== "multiple" ? input.dataset.flatpickrMask : "Y-m-d",
+                    onOpen: (_, __, instance) => {
+                        if (instance.input.getAttribute("autocompletePicker") === "True") {
+                            instance.setDate(Date.now());
+                        }
+                    },
+                    locale: localeCode,
+                });
             });
-        });
+        };
+
+        init(".jjform-datetime", true);
+        init(".jjform-date", false);
     }
 }

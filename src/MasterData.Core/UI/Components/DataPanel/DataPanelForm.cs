@@ -33,14 +33,13 @@ internal sealed class DataPanelForm
     private readonly string _parentComponentName;
     private readonly FormUI _formUI;
     private readonly bool _isGridViewFilter;
-    
-    private DataPanelScripts? _panelScripts;
+    private readonly string? _fieldNamePrefix;
     
     private bool IsViewModeAsStatic => PageState == PageState.View && _formUI.ShowViewModeAsStatic;
     private PageState PageState => FormStateData.PageState;
     private Dictionary<string, object?>? UserValues => FormStateData.UserValues;
     private Dictionary<string, object?> Values => FormStateData.Values;
-    private DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
+    private DataPanelScripts Scripts => field ??= new DataPanelScripts(this);
     
     internal ExpressionsService ExpressionsService { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -48,7 +47,6 @@ internal sealed class DataPanelForm
     public string Name { get; }
     public FormElement FormElement { get; }
     public FormStateData FormStateData { get; }
-    public string? FieldNamePrefix { get; init; }
     
     public DataPanelForm(JJDataPanel dataPanel)
     {
@@ -59,10 +57,11 @@ internal sealed class DataPanelForm
         _stringLocalizer = dataPanel.StringLocalizer;
         _formUI = dataPanel.FormUI;
         _isGridViewFilter = false;
+        _fieldNamePrefix = dataPanel.FieldNamePrefix;
         
         EncryptionService = dataPanel.EncryptionService;
         ExpressionsService = dataPanel.ExpressionsService;
-        FieldNamePrefix = dataPanel.FieldNamePrefix;
+
         FormElement = dataPanel.FormElement;
 
         Name = dataPanel.Name;
@@ -107,7 +106,7 @@ internal sealed class DataPanelForm
         if (cols >= 1)
             colClass = $" col-sm-{12 / cols}";
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = HtmlBuilder.Div();
         int lineGroup = int.MinValue;
         HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
@@ -125,11 +124,11 @@ internal sealed class DataPanelForm
             if (lineGroup != field.LineGroup)
             {
                 lineGroup = field.LineGroup;
-                row = new HtmlBuilder(HtmlTag.Div).WithCssClass("row");
+                row = HtmlBuilder.Div().WithCssClass("row");
                 html.Append(row);
             }
 
-            var formGroup = new HtmlBuilder(HtmlTag.Div)
+            var formGroup = HtmlBuilder.Div()
                 .WithCssClass(BootstrapHelper.FormGroup);
             
             row?.Append(formGroup);
@@ -332,7 +331,7 @@ internal sealed class DataPanelForm
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var control = _componentFactory.Controls.Create(FormElement, field, formStateData, _parentComponentName, value);
 
-        if (!string.IsNullOrEmpty(FieldNamePrefix))
+        if (!string.IsNullOrEmpty(_fieldNamePrefix))
             control.Name = GetFieldNameWithPrefix(field);
 
         control.Enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formStateData);
@@ -364,22 +363,14 @@ internal sealed class DataPanelForm
         if (PageState is not PageState.Filter) 
             return control.GetHtmlBuilderAsync();
 
-
-        var isMultValues = field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain;
         switch (control)
         {
             case JJTextRange range:
                 range.IsVerticalLayout = _formUI.IsVerticalLayout;
                 break;
-            case JJTextGroup when !isMultValues:
-                break;
-            case JJTextGroup:
-                control.Attributes.Add("data-role", "tagsinput");
-                control.MaxLength = 0;
-                break;
             case JJComboBox comboBox:
             {
-                if ((field.Filter.IsRequired || isMultValues) && _isGridViewFilter)
+                if ((field.Filter.IsRequired || field.Filter.Type.IsMultiValues) && _isGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.None;
                 else if (_isGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.All;
@@ -405,5 +396,5 @@ internal sealed class DataPanelForm
         };
     }
     
-    private string GetFieldNameWithPrefix(FormElementField field) => FieldNamePrefix + field.Name;
+    private string GetFieldNameWithPrefix(FormElementField field) => _fieldNamePrefix + field.Name;
 }

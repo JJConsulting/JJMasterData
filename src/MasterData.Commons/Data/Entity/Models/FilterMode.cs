@@ -13,3 +13,11 @@ public enum FilterMode
     MultValuesContain = 5,
     MultValuesEqual = 6
 }
+
+public static class FilterModeExtensions
+{
+    extension(FilterMode mode)
+    {
+        public bool IsMultiValues => mode is FilterMode.MultValuesContain or FilterMode.MultValuesEqual;
+    }
+}

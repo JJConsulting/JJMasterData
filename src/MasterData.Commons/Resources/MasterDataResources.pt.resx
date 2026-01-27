@@ -1253,6 +1253,10 @@
     <value>Visualização do formulário</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="MultiValues filters must be a VARCHAR type." xml:space="preserve">
+    <value>Filtros MultiValues devem ser do tipo VARCHAR.</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="from" xml:space="preserve">
     <value>de</value>
     <comment>JJMasterDataCore</comment>

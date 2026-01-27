@@ -12,35 +12,31 @@ internal sealed class TextRangeFactory(
         )
     : IControlFactory<JJTextRange>
 {
-
-    private IHttpContext HttpContext { get; } = httpContext;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private TextGroupFactory TextGroupFactory { get; } = textGroupFactory;
-
     public JJTextRange Create()
     {
-        return new JJTextRange(HttpContext.Request.Form,StringLocalizer);
+        return new JJTextRange(httpContext.Request.Form,stringLocalizer);
     }
 
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)
     {
         var values = context.FormStateData.Values;
+        var pageState = context.FormStateData.PageState;
         
         values.TryGetValue($"{field.Name}_to", out var fromValue);
 
         var range = Create();
         range.FieldType = field.DataType;
-        range.FromField = TextGroupFactory.Create(field);
+        range.FromField = textGroupFactory.Create(field, pageState);
         range.FromField.Text = fromValue?.ToString();
         range.FromField.Name = $"{field.Name}_from";
-        range.FromField.PlaceHolder = StringLocalizer["from"].Value.FirstCharToUpper(); //workaround devido a não ser possível ter 2 From no arquivo de resource.
+        range.FromField.PlaceHolder = stringLocalizer["from"].Value.FirstCharToUpper(); //workaround devido a não ser possível ter 2 From no arquivo de resource.
 
         values.TryGetValue($"{field.Name}_to", out var toValue);
 
-        range.ToField = TextGroupFactory.Create(field);
+        range.ToField = textGroupFactory.Create(field, pageState);
         range.ToField.Text = toValue?.ToString();
         range.ToField.Name = $"{field.Name}_to";
-        range.ToField.PlaceHolder = StringLocalizer["To"];
+        range.ToField.PlaceHolder = stringLocalizer["To"];
 
         return range;
     }

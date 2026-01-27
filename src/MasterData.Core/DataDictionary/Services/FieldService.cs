@@ -26,10 +26,7 @@ public class FieldService(
 
         RemoveUnusedProperties(field);
 
-        if (field.DataFile != null)
-        {
-            field.DataFile.FolderPath = field.DataFile.FolderPath?.Trim();
-        }
+        field.DataFile?.FolderPath = field.DataFile.FolderPath?.Trim();
 
         var fieldIsValid =await ValidateFieldAsync(formElement, field, originalName);
 
@@ -106,6 +103,8 @@ public class FieldService(
                 AddError(nameof(field.Name), StringLocalizer["Name of field already exists"]);
         }
 
+        ValidateFilter(field);
+        
         ValidateExpressions(field);
         
         if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
@@ -193,10 +192,6 @@ public class FieldService(
                         StringLocalizer["The primary key field must not contain [NumberOfDecimalPlaces]"]);
                 }
             }
-            else
-            {
-                return IsValid;
-            }
         }
         else if (field.Component is FormComponent.Lookup or FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup)
         {
@@ -208,6 +203,17 @@ public class FieldService(
         }
 
         return IsValid;
+    }
+
+    private void ValidateFilter(FormElementField field)
+    {
+        if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
+        {
+            if (field.DataType is not (FieldType.Varchar or FieldType.NVarchar))
+            {
+                AddError(nameof(field.DataType), StringLocalizer["MultiValues filters must be a VarChar type."]);
+            }
+        }
     }
 
     private void ValidateExpressions(FormElementField field)
@@ -291,16 +297,18 @@ public class FieldService(
             AddError("DataItem", StringLocalizer["Item list not defined"]);
         }
 
-        if (items != null)
-            for (int i = 0; i < items.Count; i++)
-            {
-                var it = items[i];
-                if (string.IsNullOrEmpty(it.Id))
-                    AddError("DataItem", StringLocalizer["Item id {0} required", i]);
+        if (items == null) 
+            return;
+        
+        for (var i = 0; i < items.Count; i++)
+        {
+            var it = items[i];
+            if (string.IsNullOrEmpty(it.Id))
+                AddError("DataItem", StringLocalizer["Item id {0} required", i]);
 
-                if (string.IsNullOrEmpty(it.Description))
-                    AddError("DataItem", StringLocalizer["Item description {0} required", i]);
-            }
+            if (string.IsNullOrEmpty(it.Description))
+                AddError("DataItem", StringLocalizer["Item description {0} required", i]);
+        }
     }
 
     private async ValueTask ValidateDataElementMapAsync(FormElementField field)
