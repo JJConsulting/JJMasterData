@@ -33,8 +33,8 @@ internal sealed class DataPanelForm
     private readonly string _parentComponentName;
     private readonly FormUI _formUI;
     private readonly bool _isGridViewFilter;
-    private readonly string? _fieldNamePrefix;
-    
+
+
     private bool IsViewModeAsStatic => PageState == PageState.View && _formUI.ShowViewModeAsStatic;
     private PageState PageState => FormStateData.PageState;
     private Dictionary<string, object?>? UserValues => FormStateData.UserValues;
@@ -44,6 +44,7 @@ internal sealed class DataPanelForm
     internal ExpressionsService ExpressionsService { get; }
     internal IEncryptionService EncryptionService { get; }
     
+    internal string? FieldNamePrefix { get; init; }
     public string Name { get; }
     public FormElement FormElement { get; }
     public FormStateData FormStateData { get; }
@@ -57,7 +58,7 @@ internal sealed class DataPanelForm
         _stringLocalizer = dataPanel.StringLocalizer;
         _formUI = dataPanel.FormUI;
         _isGridViewFilter = false;
-        _fieldNamePrefix = dataPanel.FieldNamePrefix;
+        FieldNamePrefix = dataPanel.FieldNamePrefix;
         
         EncryptionService = dataPanel.EncryptionService;
         ExpressionsService = dataPanel.ExpressionsService;
@@ -331,7 +332,7 @@ internal sealed class DataPanelForm
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var control = _componentFactory.Controls.Create(FormElement, field, formStateData, _parentComponentName, value);
 
-        if (!string.IsNullOrEmpty(_fieldNamePrefix))
+        if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = GetFieldNameWithPrefix(field);
 
         control.Enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formStateData);
@@ -396,5 +397,5 @@ internal sealed class DataPanelForm
         };
     }
     
-    private string GetFieldNameWithPrefix(FormElementField field) => _fieldNamePrefix + field.Name;
+    private string GetFieldNameWithPrefix(FormElementField field) => FieldNamePrefix + field.Name;
 }
