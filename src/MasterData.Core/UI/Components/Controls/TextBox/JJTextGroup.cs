@@ -4,7 +4,7 @@ using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.Html;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 
@@ -29,11 +29,11 @@ public sealed class JJTextGroup(IFormValues formValues)
     
     public string GroupCssClass { get; set; }
 
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        var inputGroup = GetHtmlBuilder();
+        var html = GetHtmlBuilder();
 
-        return new ValueTask<ComponentResult>(new RenderedComponentResult(inputGroup));
+        return html.AsValueTask();
     }
 
     public override HtmlBuilder GetHtmlBuilder()

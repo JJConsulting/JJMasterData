@@ -22,26 +22,19 @@ public sealed class JJTextFile(IHttpRequest request,
         IEncryptionService encryptionService)
     : ControlBase(request.Form)
 {
-    private Dictionary<string, object> _formValues;
-    private FormFilePathBuilder _pathBuilder;
-    private RouteContext _routeContext;
-    private TextFileScripts _scripts;
-    private JJUploadView _uploadView;
-    private IHttpRequest Request { get; } = request;
-    private IComponentFactory ComponentFactory { get; } = componentFactory;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     internal string ParentName { get; set; }
     public string FieldName { get; set; }
-    
+
     public Dictionary<string, object> FormStateValues
     {
-        get => _formValues ??= new Dictionary<string, object>();
-        set => _formValues = value;
+        get => field ??= new Dictionary<string, object>();
+        set;
     }
 
-    private TextFileScripts Scripts => _scripts ??= new TextFileScripts(this);
+    private TextFileScripts Scripts => field ??= new TextFileScripts(this);
 
     public override string Tooltip
     {
@@ -56,19 +49,19 @@ public sealed class JJTextFile(IHttpRequest request,
 
     public FormElement FormElement { get; set; }
 
-    private FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
+    private FormFilePathBuilder PathBuilder => field ??= new FormFilePathBuilder(FormElement);
     
     private RouteContext RouteContext
     {
         get
         {
-            if (_routeContext != null)
-                return _routeContext;
+            if (field != null)
+                return field;
 
-            var factory = new RouteContextFactory(Request.QueryString, EncryptionService);
-            _routeContext = factory.Create();
+            var factory = new RouteContextFactory(request.QueryString, EncryptionService);
+            field = factory.Create();
             
-            return _routeContext;
+            return field;
         }
     }
 
@@ -76,39 +69,39 @@ public sealed class JJTextFile(IHttpRequest request,
     {
         get
         {
-            if (_uploadView is not null) 
-                return _uploadView;
+            if (field is not null) 
+                return field;
             
-            _uploadView = ComponentFactory.UploadView.Create();
-            _uploadView.Name = $"{FormElementField.Name}-upload-view";
-            _uploadView.ParentName = FormElement.ParentName ?? ParentName;
-            _uploadView.Title = string.Empty;
-            _uploadView.AutoSave = false;
-            _uploadView.JsCallback = Scripts.GetRefreshScript();
-            _uploadView.RenameAction.SetVisible(true);
+            field = componentFactory.UploadView.Create();
+            field.Name = $"{FormElementField.Name}-upload-view";
+            field.ParentName = FormElement.ParentName ?? ParentName;
+            field.Title = string.Empty;
+            field.AutoSave = false;
+            field.JsCallback = Scripts.GetRefreshScript();
+            field.RenameAction.SetVisible(true);
             
             if (HasPk())
-                _uploadView.FolderPath = GetFolderPath();
+                field.FolderPath = GetFolderPath();
             
             var dataFile = FormElementField.DataFile!;
-            _uploadView.UploadArea.Multiple = dataFile.MultipleFile;
-            _uploadView.UploadArea.MaxFileSize = dataFile.MaxFileSize;
-            _uploadView.UploadArea.ShowFileSize = dataFile.ExportAsLink;
-            _uploadView.UploadArea.AllowedTypes = dataFile.AllowedTypes;
-            _uploadView.UploadArea.EnableCopyPaste = dataFile.AllowPasting;
-            _uploadView.UploadArea.RouteContext.ElementName = FormElement.Name;
-            _uploadView.UploadArea.RouteContext.ParentElementName = FormElement.ParentName;
-            _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
-            _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
-            _uploadView.ViewGallery = dataFile.ViewGallery;
+            field.UploadArea.Multiple = dataFile.MultipleFile;
+            field.UploadArea.MaxFileSize = dataFile.MaxFileSize;
+            field.UploadArea.ShowFileSize = dataFile.ExportAsLink;
+            field.UploadArea.AllowedTypes = dataFile.AllowedTypes;
+            field.UploadArea.EnableCopyPaste = dataFile.AllowPasting;
+            field.UploadArea.RouteContext.ElementName = FormElement.Name;
+            field.UploadArea.RouteContext.ParentElementName = FormElement.ParentName;
+            field.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
+            field.UploadArea.QueryStringParams["fieldName"] = FieldName;
+            field.ViewGallery = dataFile.ViewGallery;
 
             if (dataFile.ShowAsUploadView)
-                _uploadView.GridView.EmptyDataText = null;
+                field.GridView.EmptyDataText = null;
             
             if (!Enabled || PageState is PageState.View)
-                _uploadView.Disable();
+                field.Disable();
 
-            return _uploadView;
+            return field;
         }
     }
 
@@ -128,8 +121,45 @@ public sealed class JJTextFile(IHttpRequest request,
             case ComponentContext.TextFileFileUpload:
                 return await UploadView.UploadArea.GetResultAsync();
             default:
-                return new RenderedComponentResult(await GetRenderedComponentHtml());
+                return new RenderedComponentResult(await GetHtmlBuilderAsync());
         }
+    }
+
+    protected internal override async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
+    {
+        if (FormElementField.DataFile!.ShowAsUploadView)
+        {
+            var uploadViewHtml = ((RenderedComponentResult)await GetUploadViewResultAsync()).HtmlBuilder;
+            uploadViewHtml.Append(GetHiddenInputHtml());
+            return uploadViewHtml;
+        }
+        
+        if (!Enabled)
+            UploadView.ClearMemoryFiles();
+
+        var textGroup = componentFactory.Controls.TextGroup.Create();
+        textGroup.CssClass = CssClass;
+        textGroup.Name = $"{Name}-presentation";
+        textGroup.ReadOnly = true;
+        textGroup.Tooltip = Tooltip;
+        textGroup.Attributes = Attributes;
+        textGroup.Text = GetPresentationText();
+
+        var button = new JJLinkButton
+        {
+            ShowAsButton = true,
+            OnClientClick = Scripts.GetShowScript(),
+            Tooltip = FormElementField.DataFile!.MultipleFile ? StringLocalizer["Manage Files"] : StringLocalizer["Manage File"],
+            IconClass = "fa fa-paperclip"
+        };
+
+        textGroup.Actions.Add(button);
+
+        var html = new HtmlBuilder();
+        html.Append(await textGroup.GetHtmlBuilderAsync());
+        html.Append(GetHiddenInputHtml());
+        
+        return html;
     }
 
     private async Task<ComponentResult> GetUploadViewResultAsync()
@@ -143,41 +173,6 @@ public sealed class JJTextFile(IHttpRequest request,
         html.Append(uploadViewResult.HtmlBuilder);
         html.AppendScript(Scripts.GetRefreshInputsScript());
         return new RenderedComponentResult(html);
-    }
-
-    private async Task<HtmlBuilder> GetRenderedComponentHtml()
-    {
-        if (FormElementField.DataFile!.ShowAsUploadView)
-        {
-            var uploadViewHtml = ((RenderedComponentResult)await GetUploadViewResultAsync()).HtmlBuilder;
-            uploadViewHtml.Append(GetHiddenInputHtml());
-            return uploadViewHtml;
-        }
-        
-        if (!Enabled)
-            UploadView.ClearMemoryFiles();
-
-        var textGroup = ComponentFactory.Controls.TextGroup.Create();
-        textGroup.CssClass = CssClass;
-        textGroup.Name = $"{Name}-presentation";
-        textGroup.ReadOnly = true;
-        textGroup.Tooltip = Tooltip;
-        textGroup.Attributes = Attributes;
-        textGroup.Text = GetPresentationText();
-
-        var button = new JJLinkButton();
-        button.ShowAsButton = true;
-        button.OnClientClick = Scripts.GetShowScript();
-        button.Tooltip = FormElementField.DataFile!.MultipleFile ? StringLocalizer["Manage Files"] : StringLocalizer["Manage File"];
-        button.IconClass = "fa fa-paperclip";
-
-        textGroup.Actions.Add(button);
-
-        var html = new HtmlBuilder();
-        html.Append(await textGroup.GetHtmlBuilderAsync());
-        html.Append(GetHiddenInputHtml());
-        
-        return html;
     }
 
     private HtmlBuilder GetHiddenInputHtml()
@@ -283,7 +278,7 @@ public sealed class JJTextFile(IHttpRequest request,
     private string GetDownloadLink(string fileName)
     {
         var filePath = GetFolderPath() + fileName;
-        var fileDownloader = ComponentFactory.Downloader.Create();
+        var fileDownloader = componentFactory.Downloader.Create();
         fileDownloader.FilePath = filePath;
         return fileDownloader.GetDownloadUrl();
     }

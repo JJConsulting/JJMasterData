@@ -22,93 +22,97 @@ namespace JJMasterData.Core.Configuration;
 
 public static class MasterDataServiceBuilderExtensions
 {
-    public static MasterDataServiceBuilder WithFormEventHandlerFactory(this MasterDataServiceBuilder builder,Func<IServiceProvider, IDataDictionaryRepository> implementationFactory)
+    extension(MasterDataServiceBuilder builder)
     {
-        builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
+        public MasterDataServiceBuilder WithFormEventHandlerFactory(Func<IServiceProvider, IDataDictionaryRepository> implementationFactory)
+        {
+            builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
 
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithFormEventHandlerFactory<T>(this MasterDataServiceBuilder builder) where  T: class, IFormEventHandlerResolver
-    {
-        builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerResolver, T>());
+            return builder;
+        }
 
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithPdfExportation<T>(this MasterDataServiceBuilder builder) where T : IPdfWriter
-    {
-        builder.Services.AddTransient(typeof(IPdfWriter), typeof(T));
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithDataDictionaryRepository<T>(this MasterDataServiceBuilder builder) where T : class, IDataDictionaryRepository 
-    {
-        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, T>());
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithDataDictionaryRepository(this MasterDataServiceBuilder builder, Func<IServiceProvider, IDataDictionaryRepository> implementationFactory) 
-    {
-        builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithDatabaseDataDictionary(this MasterDataServiceBuilder builder)
-    {
-        builder.Services.Replace(ServiceDescriptor.Scoped<IDataDictionaryRepository, SqlDataDictionaryRepository>());
-        return builder;
-    }
+        public MasterDataServiceBuilder WithFormEventHandlerFactory<T>() where  T: class, IFormEventHandlerResolver
+        {
+            builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerResolver, T>());
 
-    public static MasterDataServiceBuilder WithDatabaseDataDictionary(this MasterDataServiceBuilder builder, string connectionString, DataAccessProvider provider)
-    {
-        builder.WithEntityProvider(connectionString,provider);
-        return WithDataDictionaryRepository(builder,serviceProvider => new SqlDataDictionaryRepository(serviceProvider.GetRequiredService<IEntityRepository>(),
-            serviceProvider.GetRequiredService<IMemoryCache>(),serviceProvider.GetRequiredService<IOptionsSnapshot<MasterDataCoreOptions>>()));
-    }
-    
-    public static MasterDataServiceBuilder WithFileSystemDataDictionary(this MasterDataServiceBuilder builder)
-    {
-        builder.Services.AddOptions<FileSystemDataDictionaryOptions>().BindConfiguration("JJMasterData:DataDictionary");
-        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithFileSystemDataDictionary(this MasterDataServiceBuilder builder, Action<FileSystemDataDictionaryOptions> options)
-    {
-        builder.Services.Configure(options);
-        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
-        return builder;
-    }
+            return builder;
+        }
 
-    public static MasterDataServiceBuilder WithFileSystemDataDictionary(this MasterDataServiceBuilder builder, IConfiguration configuration)
-    {
-        builder.Services.AddOptions<FileSystemDataDictionaryOptions>().Bind(configuration);
-        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithExcelExportation<T>(this MasterDataServiceBuilder builder) where T : class, IExcelWriter
-    {
-        builder.Services.Replace(ServiceDescriptor.Transient<IExcelWriter, T>());
-        return builder;
-    }
+        public MasterDataServiceBuilder WithPdfExportation<T>() where T : IPdfWriter
+        {
+            builder.Services.AddTransient(typeof(IPdfWriter), typeof(T));
+            return builder;
+        }
 
-    public static MasterDataServiceBuilder WithTextExportation<T>(this MasterDataServiceBuilder builder) where T : class, ITextWriter
-    {
-        builder.Services.Replace(ServiceDescriptor.Transient<ITextWriter, T>());
-        return builder;
-    }
-    public static MasterDataServiceBuilder WithExpressionProvider<T>(this MasterDataServiceBuilder builder) where T : class, IExpressionProvider
-    {
-        builder.Services.AddScoped<IExpressionProvider, T>();
-        return builder;
-    }
-    
-    public static MasterDataServiceBuilder WithActionPlugin<TPlugin>(this MasterDataServiceBuilder builder) where TPlugin : class, IPluginHandler
-    {
-        builder.Services.AddScoped<IPluginHandler, TPlugin>();
+        public MasterDataServiceBuilder WithDataDictionaryRepository<T>() where T : class, IDataDictionaryRepository 
+        {
+            builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, T>());
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithDataDictionaryRepository(Func<IServiceProvider, IDataDictionaryRepository> implementationFactory) 
+        {
+            builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithDatabaseDataDictionary()
+        {
+            builder.Services.Replace(ServiceDescriptor.Scoped<IDataDictionaryRepository, SqlDataDictionaryRepository>());
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithDatabaseDataDictionary(string connectionString, DataAccessProvider provider)
+        {
+            builder.WithEntityProvider(connectionString,provider);
+            return builder.WithDataDictionaryRepository(serviceProvider => new SqlDataDictionaryRepository(serviceProvider.GetRequiredService<IEntityRepository>(),
+                serviceProvider.GetRequiredService<IMemoryCache>(),serviceProvider.GetRequiredService<IOptionsSnapshot<MasterDataCoreOptions>>()));
+        }
+
+        public MasterDataServiceBuilder WithFileSystemDataDictionary()
+        {
+            builder.Services.AddOptions<FileSystemDataDictionaryOptions>().BindConfiguration("JJMasterData:DataDictionary");
+            builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithFileSystemDataDictionary(Action<FileSystemDataDictionaryOptions> options)
+        {
+            builder.Services.Configure(options);
+            builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithFileSystemDataDictionary(IConfiguration configuration)
+        {
+            builder.Services.AddOptions<FileSystemDataDictionaryOptions>().Bind(configuration);
+            builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithExcelExportation<T>() where T : class, IExcelWriter
+        {
+            builder.Services.Replace(ServiceDescriptor.Transient<IExcelWriter, T>());
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithTextExportation<T>() where T : class, ITextWriter
+        {
+            builder.Services.Replace(ServiceDescriptor.Transient<ITextWriter, T>());
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithExpressionProvider<T>() where T : class, IExpressionProvider
+        {
+            builder.Services.AddScoped<IExpressionProvider, T>();
+            return builder;
+        }
+
+        public MasterDataServiceBuilder WithActionPlugin<TPlugin>() where TPlugin : class, IPluginHandler
+        {
+            builder.Services.AddScoped<IPluginHandler, TPlugin>();
         
-        return builder;
+            return builder;
+        }
     }
 }

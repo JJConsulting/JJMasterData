@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Core.Html;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 using Microsoft.Extensions.Localization;
@@ -26,7 +26,14 @@ public class JJTextRange(IFormValues formValues,
     
     public bool IsVerticalLayout { get; set; }
 
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
+    {
+        var html = GetHtmlBuilder();
+
+        return html.AsValueTask();
+    }
+
+    private HtmlBuilder GetHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("row");
@@ -60,8 +67,7 @@ public class JJTextRange(IFormValues formValues,
             div.WithCssClassIf(IsVerticalLayout, "text-end");
             div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
-        
-        return new(new RenderedComponentResult(div));
+        return div;
     }
 
     private HtmlBuilder GetDatePeriodsHtmlElement()

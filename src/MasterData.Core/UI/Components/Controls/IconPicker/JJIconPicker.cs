@@ -31,15 +31,15 @@ public class JJIconPicker(
     
     static JJIconPicker()
     {
-        Items = FontAwesomeIconExtensions.GetAll().Select(icon => new DataItemValue
+        Items = FontAwesomeIcon.GetAll().Select(icon => new DataItemValue
         {
             Id = ((int)icon).ToString(),
             Description = icon.ToString(),
             Icon = icon
         }).ToList();
     }
-    
-    protected override async ValueTask<ComponentResult> BuildResultAsync()
+
+    protected internal override async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var id = Id ?? Name;
         var comboBox = comboBoxFactory.Create();
@@ -77,7 +77,6 @@ public class JJIconPicker(
             var url = urlHelper.Action("Index", "Icons", new { inputId = id, Area="MasterData" });
             div.WithOnClick( $"iconsModal.showUrl('{url}', '{tooltip}', '{(int)ModalSize.ExtraLarge}')");
         });
-
-        return new RenderedComponentResult(div);
+        return div;
     }
 }

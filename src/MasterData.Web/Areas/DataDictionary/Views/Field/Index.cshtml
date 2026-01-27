@@ -47,8 +47,7 @@
             FormComponent.Text => FontAwesomeIcon.KeyboardO,
             FormComponent.TextArea => FontAwesomeIcon.AlignLeft,
             FormComponent.Hour => FontAwesomeIcon.ClockO,
-            FormComponent.Date => FontAwesomeIcon.Calendar,
-            FormComponent.DateTime => FontAwesomeIcon.Calendar,
+            FormComponent.Date or FormComponent.DateTime => FontAwesomeIcon.Calendar,
             FormComponent.Password => FontAwesomeIcon.Lock,
             FormComponent.Email => FontAwesomeIcon.Envelope,
             FormComponent.Number => FontAwesomeIcon.Calculator,
@@ -193,17 +192,17 @@
                                         }
                                         @if (field.Component is not FormComponent.Text)
                                         {
-                                            <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1"
+                                            <span class="@GetFontAwesomeIconClass(field.Component).CssClass ms-1"
                                                   data-bs-toggle="tooltip" title="@field.Component.ToString()"></span>
                                         }
                                         @if (field.Filter.Type is not FilterMode.None)
                                         {
-                                            <span class="@FontAwesomeIcon.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip"
+                                            <span class="@FontAwesomeIcon.Filter.CssClass ms-1" data-bs-toggle="tooltip"
                                                   title="@field.Filter.Type.ToString()"></span>
                                         }
                                         @if (field.AutoPostBack)
                                         {
-                                            <span class="@FontAwesomeIcon.SolidBoltLightning.GetCssClass() text-warning ms-1"
+                                            <span class="@FontAwesomeIcon.SolidBoltLightning.CssClass text-warning ms-1"
                                                   data-bs-toggle="tooltip" title="AutoPostBack"></span>
                                         }
                                         <br>

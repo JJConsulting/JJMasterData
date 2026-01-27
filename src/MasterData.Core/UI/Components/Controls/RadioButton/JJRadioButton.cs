@@ -2,7 +2,7 @@
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Html;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 
@@ -14,12 +14,13 @@ internal sealed class JJRadioButton(IFormValues formValues) : ControlBase(formVa
     public HtmlBuilder LabelHtml { get; } = new();
     public bool IsChecked { get; set; }
     public DataItemRadioLayout Layout { get; set; }
-    
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        return new ValueTask<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
+        var html = GetHtmlBuilder();
+
+        return html.AsValueTask();
     }
-    
 
     public HtmlBuilder GetHtmlBuilder()
     {

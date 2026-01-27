@@ -109,7 +109,7 @@
                 <div class="list-group-item" id="@action.Name">
                     <div style="height: 1.875rem;">
                         <div style="float: left; margin-top: 0.625rem;">
-                            <span class="@action.Icon.GetCssClass() fa-fw"></span>&nbsp;
+                            <span class="@action.Icon.CssClass fa-fw"></span>&nbsp;
                             @{
                                 var actionName = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
                                 if (action.IsUserDefined)

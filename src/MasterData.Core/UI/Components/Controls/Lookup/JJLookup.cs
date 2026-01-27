@@ -164,9 +164,9 @@ public class JJLookup : ControlBase
         {
             return await GetLookupDescription();
         }
-        return new RenderedComponentResult(await GetLookupHtml());
+        return new RenderedComponentResult(await GetHtmlBuilderAsync());
     }
-
+    
     public async Task<JsonComponentResult> GetLookupDescription()
     {
         var selectedValue = LookupService.GetSelectedValue(Name);
@@ -174,7 +174,7 @@ public class JJLookup : ControlBase
             return new JsonComponentResult(new LookupResultDto(selectedValue!, description!));
     }
 
-    private async Task<HtmlBuilder> GetLookupHtml()
+    protected internal override async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         if (ElementMap is null)
             throw new ArgumentNullException(nameof(ElementMap));

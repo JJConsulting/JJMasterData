@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 
@@ -19,7 +20,14 @@ public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBox
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
 
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
+    {
+        var html = GetHtmlBuilder();
+
+        return html.AsValueTask();
+    }
+
+    private HtmlBuilder GetHtmlBuilder()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
@@ -50,12 +58,10 @@ public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBox
                 row.Append(number.GetHtmlBuilder());
             });
         }
-        
-        var result = new RenderedComponentResult(html);
-        
-        return new ValueTask<ComponentResult>(result);
+
+        return html;
     }
-    
+
     private HtmlBuilder GetHtmlSlider()
     {
         var slider = new HtmlBuilder(HtmlTag.Input)

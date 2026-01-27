@@ -4,7 +4,7 @@ using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Html;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
@@ -48,13 +48,11 @@ public class JJTextBox : ControlBase
         Enabled = true;
     }
     
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = GetHtmlBuilder();
-
-        var result = new RenderedComponentResult(html);
-
-        return new ValueTask<ComponentResult>(result);
+        
+        return html.AsValueTask();
     }
 
     public virtual HtmlBuilder GetHtmlBuilder()

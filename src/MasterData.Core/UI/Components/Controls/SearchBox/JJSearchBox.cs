@@ -221,8 +221,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     }
     
     internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-
-
+    
     #endregion
 
     #region "Constructors"
@@ -248,31 +247,26 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     #endregion
 
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
         var fieldName = Request.QueryString["fieldName"];
         
         if (ComponentContext is ComponentContext.SearchBox or ComponentContext.SearchBoxFilter && FieldName == fieldName)
         {
-            return new(GetItemsResult());
+            return await GetItemsResult();
         }
 
-        return new(GetRenderedComponentResult());
-    }
-
-    internal async Task<ComponentResult> GetRenderedComponentResult()
-    {
-        var html = await GetSearchBoxHtml();
+        var html = await GetHtmlBuilderAsync();
 
         return new RenderedComponentResult(html);
     }
-
-    internal async Task<ComponentResult> GetItemsResult()
+    
+    internal async Task<JsonComponentResult> GetItemsResult()
     {
         return new JsonComponentResult(await GetSearchBoxItemsAsync());
     }
 
-    private async Task<HtmlBuilder> GetSearchBoxHtml()
+    protected internal override async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         if (DataItem == null)
             throw new ArgumentException("[DataItem] property not set");
@@ -428,7 +422,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
             Id = v.Id,
             Description = v.Description,
             IconCssClass = DataItem.ShowIcon
-                ? v.Icon.GetCssClass()
+                ? v.Icon.CssClass
                 : null,
             IconColor = DataItem.ShowIcon
                 ? v.IconColor

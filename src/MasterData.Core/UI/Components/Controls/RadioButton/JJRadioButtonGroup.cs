@@ -17,27 +17,25 @@ public class JJRadioButtonGroup(
     DataItemService dataItemService,
     IFormValues formValues) : ControlBase(formValues), IDataItemControl
 {
-    private DataItemService DataItemService { get; } = dataItemService;
-    private string? _selectedValue;
     public string? SelectedValue
     {
         get
         {
-            if (_selectedValue == null && FormValues.ContainsFormValues())
+            if (field == null && FormValues.ContainsFormValues())
             {
-                _selectedValue = FormValues[Name];
+                field = FormValues[Name];
             }
 
-            return _selectedValue;
+            return field;
         }
-        set => _selectedValue = value;
+        set;
     }
-    
+
     public FormElementDataItem DataItem { get; set; } = null!;
     public Guid? ConnectionId { get; set; }
     public FormStateData FormStateData { get; set; } = null!;
-
-    protected override async ValueTask<ComponentResult> BuildResultAsync()
+    
+    protected internal override async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var values = await GetValuesAsync();
 
@@ -49,13 +47,12 @@ public class JJRadioButtonGroup(
         }
         
         fieldSet.WithCssClass(CssClass);
-
-        return new RenderedComponentResult(fieldSet);
+        return fieldSet;
     }
-    
+
     public Task<List<DataItemValue>> GetValuesAsync()
     {
-        return DataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
+        return dataItemService.GetValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId));
     }
 
     private void AppendRadioButton(HtmlBuilder html, DataItemValue item)

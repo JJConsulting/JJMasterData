@@ -9,8 +9,6 @@ namespace JJMasterData.Core.UI.Components;
 
 public abstract class ControlBase(IFormValues formValues) : ComponentBase
 {
-    private string _text;
-
     /// <summary>
     /// Property to check if the control is enabled.
     /// (Default = true)
@@ -45,27 +43,16 @@ public abstract class ControlBase(IFormValues formValues) : ComponentBase
     {
         get
         {
-            if (_text == null && FormValues.ContainsFormValues())
+            if (field == null && FormValues.ContainsFormValues())
             {
-                _text = FormValues[Name];
+                field = FormValues[Name];
             }
-            return _text;
+
+            return field;
         }
-        set => _text = value;
+        set;
     }
 
-    public async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
-    {
-        var result = await GetResultAsync();
-
-        if (result is RenderedComponentResult renderedResult)
-        {
-            return renderedResult.HtmlBuilder;
-        }
-
-        return new HtmlBuilder();
-    }
-    
     public ValueTask<ComponentResult> GetResultAsync()
     {
         if (Visible)
@@ -74,5 +61,12 @@ public abstract class ControlBase(IFormValues formValues) : ComponentBase
         return new ValueTask<ComponentResult>(EmptyComponentResult.Value);
     }
 
-    protected abstract ValueTask<ComponentResult> BuildResultAsync();
+    protected virtual async ValueTask<ComponentResult> BuildResultAsync()
+    {
+        var html = await GetHtmlBuilderAsync();
+        
+        return new RenderedComponentResult(html);
+    }
+    
+    protected internal abstract ValueTask<HtmlBuilder> GetHtmlBuilderAsync();
 }

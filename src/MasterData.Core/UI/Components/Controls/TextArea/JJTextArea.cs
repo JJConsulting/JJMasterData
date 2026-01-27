@@ -2,6 +2,7 @@
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 
@@ -25,11 +26,11 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
         Rows = 5;
     }
 
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = GetHtmlBuilder();
 
-        return new ValueTask<ComponentResult>(new RenderedComponentResult(html));
+        return html.AsValueTask();
     }
 
     public HtmlBuilder GetHtmlBuilder()

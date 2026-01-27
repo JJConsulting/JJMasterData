@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 
@@ -13,12 +14,12 @@ public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
 {
     public string Language { get; set; } = "html";
     public int Height { get; set; } = 300;
-
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = GetHtmlBuilder();
-
-        return new ValueTask<ComponentResult>(new RenderedComponentResult(html));
+        
+        return html.AsValueTask();
     }
 
     public HtmlBuilder GetHtmlBuilder()

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
 
@@ -8,7 +9,6 @@ namespace JJMasterData.Core.UI.Components.ColorPicker;
 
 public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
 {
-    
     public string Title { get; set; }
 
     public HtmlBuilder GetHtmlBuilder()
@@ -22,9 +22,11 @@ public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .WithCssClass("form-control form-control-color");
     }
-    
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        return new ValueTask<ComponentResult>(new RenderedComponentResult(GetHtmlBuilder()));
+        var html = GetHtmlBuilder();
+
+        return html.AsValueTask();
     }
 }

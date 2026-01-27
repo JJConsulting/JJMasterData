@@ -60,14 +60,14 @@ function saveIcon(selectedIcon) {
     </div>
 </div>
 <div id="icon-container" class="row">
-    @foreach (var icon in FontAwesomeIconExtensions.GetAll())
+    @foreach (var icon in FontAwesomeIcon.GetAll())
     {
-        <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.GetId().ToString()');">
-            <span class="@icon.GetCssClass() fa-3x"></span>
+        <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.Id.ToString()');">
+            <span class="@icon.CssClass fa-3x"></span>
             <br/>
-            <span>@icon.GetId()</span>
+            <span>@icon.Id)</span>
             <br/>
-            <span>@icon.GetCssClass()</span>
+            <span>@icon.CssClass</span>
         </div>
     }
 </div>

@@ -25,8 +25,6 @@ public class JJComboBox(
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : ControlBase(formValues), IDataItemControl, IFloatingLabelControl
 {
-    private string? _selectedValue;
-
     public Guid? ConnectionId { get; set; }
 
     public FormStateData FormStateData { get; set; } = new(new Dictionary<string, object?>(), PageState.List);
@@ -44,14 +42,14 @@ public class JJComboBox(
     {
         get
         {
-            if (_selectedValue == null && FormValues.ContainsFormValues())
+            if (field == null && FormValues.ContainsFormValues())
             {
-                _selectedValue = FormValues[Name];
+                field = FormValues[Name];
             }
 
-            return _selectedValue;
+            return field;
         }
-        set => _selectedValue = value;
+        set;
     }
 
     public bool EnableLocalization { get; set; } = true;
@@ -59,22 +57,18 @@ public class JJComboBox(
     public string? FloatingLabel { get; set; }
     public bool UseFloatingLabel { get; set; }
 
-
-    protected override async ValueTask<ComponentResult> BuildResultAsync()
+    protected internal override async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        if (DataItem == null)
-            throw new ArgumentException($"FormElementDataItem property is null for JJComboBox {Name}");
-
         var values = await GetValuesAsync();
 
         if (ReadOnly && Enabled)
         {
             var combobox = new HtmlBuilder(HtmlTag.Div);
             combobox.AppendRange(GetReadOnlyInputs(values));
-            return new RenderedComponentResult(combobox);
+            return combobox;
         }
 
-        return new RenderedComponentResult(GetSelectHtml(values));
+        return GetSelectHtml(values);
     }
 
     private HtmlBuilder GetSelectHtml(List<DataItemValue> values)

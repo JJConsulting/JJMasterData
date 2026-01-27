@@ -33,7 +33,7 @@ public class ActionButtonFactory(
         button.DividerLine = action.DividerLine;
         button.ShowAsButton = action is { IsGroup: false, ShowAsButton: true };
         button.CssClass = action.CssClass;
-        button.IconClass = $"{action.Icon.GetCssClass()} fa-fw";
+        button.IconClass = $"{action.Icon.CssClass} fa-fw";
         button.Enabled = enabled;
         button.Visible = visible;
         

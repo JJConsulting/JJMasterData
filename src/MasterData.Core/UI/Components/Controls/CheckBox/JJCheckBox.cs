@@ -2,6 +2,7 @@
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 
@@ -45,15 +46,12 @@ public class JJCheckBox : ControlBase
         Enabled = true;
         Value = "true";
     }
-
-
-    protected override ValueTask<ComponentResult> BuildResultAsync()
+    
+    protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = GetHtmlBuilder();
-
-        var result = new RenderedComponentResult(html);
-
-        return new ValueTask<ComponentResult>(result);
+        
+        return html.AsValueTask();
     }
 
     public HtmlBuilder GetHtmlBuilder()

@@ -9,7 +9,7 @@
     private static string GetRelationshipIconCssClass(FormElementRelationship relationship)
     {
         if (relationship.Panel.Icon.HasValue)
-            return relationship.Panel.Icon.Value.GetCssClass();
+            return relationship.Panel.Icon.Value.CssClass;
 
         if (relationship.IsParent)
             return "fa-crown";
