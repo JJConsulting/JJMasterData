@@ -13,17 +13,20 @@ public enum InputType
 
 public static class InputTypeExtensions
 {
-    public static string GetInputType(this InputType inputType)
+    extension(InputType inputType)
     {
-        return inputType switch
+        public string GetHtmlInputType()
         {
-            InputType.Text => "text",
-            InputType.Password => "password",
-            InputType.Number => "number",
-            InputType.Tel => "tel",
-            InputType.Currency => "number",
-            InputType.Percentage => "number",
-            _ => "text"
-        };
+            return inputType switch
+            {
+                InputType.Text => "text",
+                InputType.Password => "password",
+                InputType.Number => "number",
+                InputType.Tel => "tel",
+                InputType.Currency => "number",
+                InputType.Percentage => "number",
+                _ => "text"
+            };
+        }
     }
 }

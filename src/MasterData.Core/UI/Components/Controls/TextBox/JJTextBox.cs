@@ -57,13 +57,16 @@ public class JJTextBox : ControlBase
 
     public virtual HtmlBuilder GetHtmlBuilder()
     {
-        var inputType = InputType.GetInputType();
+        var inputType = InputType.GetHtmlInputType();
+        
         if (NumberOfDecimalPlaces > 0)
         {
             inputType = "text";
             CssClass += " jj-numeric";
         }
 
+        var numberFormat = CultureInfo.NumberFormat;
+        
         var html = new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
@@ -78,11 +81,11 @@ public class JJTextBox : ControlBase
             .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-decimal-places",
                 NumberOfDecimalPlaces.ToString())
             
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-decimal-separator",CultureInfo.NumberFormat.NumberDecimalSeparator)
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-group-separator",CultureInfo.NumberFormat.NumberGroupSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-decimal-separator", numberFormat.NumberDecimalSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-group-separator", numberFormat.NumberGroupSeparator)
             
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-decimal-separator",CultureInfo.NumberFormat.CurrencyDecimalSeparator)
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-group-separator",CultureInfo.NumberFormat.CurrencyGroupSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-decimal-separator", numberFormat.CurrencyDecimalSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-group-separator", numberFormat.CurrencyGroupSeparator)
             
             .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-numeric")
             .WithAttributeIfNotEmpty("value", Text)

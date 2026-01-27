@@ -94,6 +94,77 @@ public sealed class TextGroupFactory(
 
         switch (component)
         {
+            case FormComponent.Currency:
+                cssClassList.Add(BootstrapHelper.TextRight);
+
+                textGroup.MaxLength = 18;
+
+                if (textGroup.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) &&
+                    !string.IsNullOrEmpty(cultureInfoName))
+                {
+                    var cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName);
+                    textGroup.CultureInfo = cultureInfo;
+                    textGroup.Addons = new InputAddons(cultureInfo.NumberFormat.CurrencySymbol);
+                }
+                else
+                {
+                    textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
+                }
+
+                textGroup.InputType = InputType.Currency;
+                textGroup.SetAttribute("onkeypress", "return jjutil.justNumber(event);");
+                break;
+            case FormComponent.Number:
+                cssClassList.Add(BootstrapHelper.TextRight);
+                textGroup.MaxLength = 22;
+                textGroup.InputType = InputType.Number;
+
+                if (textGroup.NumberOfDecimalPlaces == 0)
+                    textGroup.SetAttribute("onkeypress", "return jjutil.justNumber(event);");
+
+                textGroup.SetAttribute("step", textGroup.Attributes.TryGetValue("step", out var stepValue) ? stepValue : 1.ToString());
+                textGroup.SetAttribute("onclick", "this.select();");
+
+                textGroup.MinValue ??= int.MinValue;
+                textGroup.MaxValue ??= int.MaxValue;
+                break;
+            case FormComponent.Cnpj:
+                textGroup.MaxLength = 18;
+                textGroup.InputType = InputType.Text;
+                textGroup.SetAttribute("onclick", "this.select();");
+                textGroup.SetAttribute("data-inputmask",
+                    "'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'");
+                break;
+            case FormComponent.Cpf:
+                textGroup.MaxLength = 14;
+                textGroup.InputType = InputType.Text;
+                textGroup.SetAttribute("onclick", "this.select();");
+                textGroup.SetAttribute("data-inputmask",
+                    "'mask': '[999.999.999-99]', 'placeholder':'', 'greedy': 'false'");
+                break;
+            case FormComponent.CnpjCpf:
+                textGroup.MaxLength = 18;
+                textGroup.InputType = InputType.Text;
+                break;
+            case FormComponent.Cep:
+                textGroup.MaxLength = 9;
+                textGroup.InputType = InputType.Text;
+                textGroup.SetAttribute("data-inputmask", "'mask': '[99999-999]', 'placeholder':'', 'greedy': 'false'");
+                break;
+            case FormComponent.Password:
+                textGroup.InputType = InputType.Password;
+                break;
+            case FormComponent.Tel:
+                textGroup.Addons = new InputAddons
+                {
+                    Tooltip = stringLocalizer["Brazil Phone Number"],
+                    Text = "+55"
+                };
+                textGroup.MaxLength = 15;
+                textGroup.InputType = InputType.Tel;
+                textGroup.SetAttribute("data-inputmask",
+                    "'mask': '[(99) 9999[9]-9999]', 'placeholder':'', 'greedy': 'false'");
+                break;
             case FormComponent.Hour:
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 5;
@@ -170,7 +241,6 @@ public sealed class TextGroupFactory(
 
                 break;
             }
-
             case FormComponent.Percentage:
                 cssClassList.Add(BootstrapHelper.TextRight);
                 textGroup.MaxLength = 18;
