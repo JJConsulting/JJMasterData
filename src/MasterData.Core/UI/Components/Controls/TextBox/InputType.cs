@@ -15,6 +15,8 @@ public static class InputTypeExtensions
 {
     extension(InputType inputType)
     {
+        public bool IsNumeric => inputType is InputType.Number or InputType.Currency;
+        
         public string GetHtmlInputType()
         {
             return inputType switch

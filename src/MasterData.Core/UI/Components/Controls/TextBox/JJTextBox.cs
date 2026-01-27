@@ -16,14 +16,14 @@ public class JJTextBox : ControlBase
     public int NumberOfDecimalPlaces { get; set; }
 
     public CultureInfo CultureInfo { get; set; } = CultureInfo.CurrentCulture;
-    
+
     public double? MinValue
     {
         get
         {
             if (double.TryParse(GetAttribute(FormElementField.MinValueAttribute), out var minVal))
                 return minVal;
-            
+
             return null;
         }
         set => SetAttribute(FormElementField.MinValueAttribute, value.ToString());
@@ -35,7 +35,7 @@ public class JJTextBox : ControlBase
         {
             if (double.TryParse(GetAttribute(FormElementField.MaxValueAttribute), out var minVal))
                 return minVal;
-            
+
             return null;
         }
         set => SetAttribute(FormElementField.MaxValueAttribute, value.ToString());
@@ -47,50 +47,53 @@ public class JJTextBox : ControlBase
         Visible = true;
         Enabled = true;
     }
-    
+
     protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = GetHtmlBuilder();
-        
+
         return html.AsValueTask();
     }
 
     public virtual HtmlBuilder GetHtmlBuilder()
     {
-        var inputType = InputType.GetHtmlInputType();
-        
-        if (NumberOfDecimalPlaces > 0)
-        {
-            inputType = "text";
-            CssClass += " jj-numeric";
-        }
-
-        var numberFormat = CultureInfo.NumberFormat;
-        
-        var html = new HtmlBuilder(HtmlTag.Input)
+        var html = HtmlBuilder.Input()
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithAttributeIfNotEmpty("placeholder", PlaceHolder)
-            .WithAttribute("type", inputType)
             .WithCssClass("form-control")
             .WithCssClass(CssClass)
             .WithToolTip(Tooltip)
-            .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
+            .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
+
+        if (InputType.IsNumeric && NumberOfDecimalPlaces > 0)
+        {
+            var numberFormat = CultureInfo.NumberFormat;
+
+            html.WithAttribute("type", "text");
+            html.WithCssClass("jj-numeric");
+            html.WithAttribute("jj-decimal-places", NumberOfDecimalPlaces.ToString());
+
+            html.WithAttribute("jj-decimal-separator",
+                    InputType == InputType.Number
+                        ? numberFormat.NumberDecimalSeparator
+                        : numberFormat.CurrencyDecimalSeparator)
+                .WithAttribute("jj-group-separator",
+                    InputType == InputType.Number
+                        ? numberFormat.NumberGroupSeparator
+                        : numberFormat.CurrencyGroupSeparator);
+        }
+        else
+        {
+            html.WithAttribute("type", InputType.GetHtmlInputType());
+        }
+
+        html.WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType is InputType.Number, "onkeypress",
                 "return jjutil.justNumber(event);")
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-decimal-places",
-                NumberOfDecimalPlaces.ToString())
-            
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-decimal-separator", numberFormat.NumberDecimalSeparator)
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number, "jj-group-separator", numberFormat.NumberGroupSeparator)
-            
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-decimal-separator", numberFormat.CurrencyDecimalSeparator)
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Currency, "jj-group-separator", numberFormat.CurrencyGroupSeparator)
-            
-            .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-numeric")
-            .WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");
+
         return html;
     }
 }
