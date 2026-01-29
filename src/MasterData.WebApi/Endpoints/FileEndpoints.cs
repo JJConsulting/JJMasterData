@@ -8,7 +8,7 @@ public static class FileEndpoints
     internal static IEndpointRouteBuilder MapFileApi(this RouteGroupBuilder parentGroup)
     {
         var group = parentGroup.MapGroup("{id}/{fieldName}/file")
-            .WithTags("File");
+            .WithTags("File").DisableAntiforgery();
 
         group.MapGet("/{fileName}", async (
             string elementName,
