@@ -5,7 +5,7 @@ class CalendarListener {
                 const input = div.children[0];
 
                 //@ts-ignore
-                const mode = input.dataset.mode;
+                const mode = input.dataset.mode ?? "single";
                 
                 //@ts-ignore
                 flatpickr(div, {

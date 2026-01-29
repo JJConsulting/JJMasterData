@@ -315,8 +315,9 @@ class CalendarListener {
     static listen(prefixSelector = "") {
         const init = (selector, enableTime) => {
             document.querySelectorAll(prefixSelector + selector).forEach(div => {
+                var _a;
                 const input = div.children[0];
-                const mode = input.dataset.mode;
+                const mode = (_a = input.dataset.mode) !== null && _a !== void 0 ? _a : "single";
                 flatpickr(div, {
                     enableTime,
                     wrap: true,
