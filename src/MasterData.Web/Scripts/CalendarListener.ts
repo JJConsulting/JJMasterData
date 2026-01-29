@@ -11,14 +11,16 @@ class CalendarListener {
                 flatpickr(div, {
                     enableTime,
                     wrap: true,
-                    allowInput: mode !== "multiple",
+                    allowInput:true, //mode !== "multiple",
                     altInput: false,
                     disableMobile: true,
                     monthSelectorType: "static",
                     time_24hr: enableTime,
                     mode,
                     //@ts-ignore
-                    dateFormat: mode !== "multiple" ? input.dataset.flatpickrMask : "Y-m-d",
+                    dateFormat:input.dataset.flatpickrMask,
+                    //@ts-ignore
+                    //dateFormat: mode !== "multiple" ? input.dataset.flatpickrMask : "Y-m-d",
                     onOpen: (_, __, instance) => {
                         if (instance.input.getAttribute("autocompletePicker") === "True") {
                             instance.setDate(Date.now());

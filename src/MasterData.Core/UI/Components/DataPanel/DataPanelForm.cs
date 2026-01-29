@@ -149,7 +149,7 @@ internal sealed class DataPanelForm
             }
             formGroup.WithCssClass(fieldClass);
 
-            if (BootstrapHelper.Version == 3 && _errors != null && _errors.ContainsKey(field.Name))
+            if (BootstrapHelper.Version == 3 && _errors?.ContainsKey(field.Name) == true)
                 formGroup.WithCssClass("has-error");
 
             if (PageState == PageState.View && _formUI.ShowViewModeAsStatic)
@@ -207,7 +207,7 @@ internal sealed class DataPanelForm
             var label = CreateLabel(field, isRange);
             var cssClass = string.Empty;
             
-            if (BootstrapHelper.Version == 3 && _errors != null && _errors.ContainsKey(field.Name))
+            if (BootstrapHelper.Version == 3 && _errors?.ContainsKey(field.Name) == true)
                 cssClass += " has-error";
 
             if (colCount == 1 || colCount >= cols)
@@ -346,12 +346,18 @@ internal sealed class DataPanelForm
             control.SetAttribute("onchange", GetScriptReload(field));
         }
         
-        if(control is JJTextGroup textGroup && PageState is PageState.View)
-            foreach (var textGroupAction in textGroup.Actions)
-                textGroupAction.Enabled = false;
-        
-        if(control is JJTextFile file)
-            file.ParentName = FormElement.Name;
+        switch (control)
+        {
+            case JJTextGroup textGroup when PageState is PageState.View:
+            {
+                foreach (var textGroupAction in textGroup.Actions)
+                    textGroupAction.Enabled = false;
+                break;
+            }
+            case JJTextFile file:
+                file.ParentName = FormElement.Name;
+                break;
+        }
 
         var useFloatingLabels = _formUI.IsVerticalLayout && FormElement.Options.UseFloatingLabels;
         

@@ -22,7 +22,7 @@ internal sealed class TextRangeFactory(
         var values = context.FormStateData.Values;
         var pageState = context.FormStateData.PageState;
         
-        values.TryGetValue($"{field.Name}_to", out var fromValue);
+        values.TryGetValue($"{field.Name}_from", out var fromValue);
 
         var range = Create();
         range.FieldType = field.DataType;
