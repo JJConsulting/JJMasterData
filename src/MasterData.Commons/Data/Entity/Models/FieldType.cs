@@ -48,7 +48,25 @@ public enum FieldType
     Time = 12,
     
     [Display(GroupName = "2. Numeric")]
-    Decimal = 13
+    Decimal = 13,
+    
+    [Display(GroupName = "1. String")]
+    Char = 14,
+    
+    [Display(GroupName = "1. String")]
+    NChar = 15,
+}
+
+public static class FieldTypeExtensions
+{
+    extension(FieldType fieldType)
+    {
+        public bool IsString =>
+            fieldType is FieldType.Char or FieldType.NChar or FieldType.Varchar or FieldType.NVarchar;
+        
+        public bool SupportsSize =>
+            fieldType.IsString || fieldType is FieldType.DateTime2;
+    }
 }
 
 #if NET

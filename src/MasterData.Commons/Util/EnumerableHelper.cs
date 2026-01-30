@@ -125,6 +125,8 @@ public static class EnumerableHelper
                 return typeof(int);
             case FieldType.NText:
             case FieldType.NVarchar:
+            case FieldType.NChar:
+            case FieldType.Char:
             case FieldType.Text:
             case FieldType.Varchar:
                 return typeof(string);

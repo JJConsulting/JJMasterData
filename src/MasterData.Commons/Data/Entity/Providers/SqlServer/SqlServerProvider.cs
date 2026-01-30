@@ -243,7 +243,7 @@ public class SqlServerProvider(
                 string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
             FieldType.UniqueIdentifier => TryGetGuid(value),
             FieldType.Bit => StringManager.ParseBool(values[field.Name]),
-            FieldType.Varchar or FieldType.NVarchar => value.ToString()!,
+            FieldType.Varchar or FieldType.NVarchar or FieldType.Char or FieldType.NChar => value.ToString()!,
             _ => value!
         };
     }
@@ -273,6 +273,8 @@ public class SqlServerProvider(
             FieldType.Bit => DbType.Boolean,
             FieldType.UniqueIdentifier => DbType.Guid,
             FieldType.NVarchar => DbType.String,
+            FieldType.Char => DbType.AnsiStringFixedLength,
+            FieldType.NChar => DbType.StringFixedLength,
             FieldType.NText => DbType.String,
             FieldType.Varchar => DbType.AnsiString,
             _ => DbType.AnsiString
@@ -288,9 +290,11 @@ public class SqlServerProvider(
 
         return databaseType switch
         {
-            "varchar" or "char" => FieldType.Varchar,
+            "varchar" => FieldType.Varchar,
+            "char" => FieldType.Char,
+            "nchar" => FieldType.NChar,
             "bit" => FieldType.Bit,
-            "nvarchar" or "nchar" => FieldType.NVarchar,
+            "nvarchar" => FieldType.NVarchar,
             "int" or "int identity" or "bigint" or "tinyint" => FieldType.Int,
             "float" or "numeric" or "money" or "smallmoney" or "real" => FieldType.Float,
             "time" => FieldType.Time,

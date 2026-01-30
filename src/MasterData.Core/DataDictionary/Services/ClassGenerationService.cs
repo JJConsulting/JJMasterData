@@ -48,7 +48,7 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
             FieldType.Bit => "bool",
             FieldType.UniqueIdentifier => "Guid",
             FieldType.Time => "TimeSpan",
-            FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => "string",
+            FieldType.NText or FieldType.NVarchar or FieldType.Char or FieldType.NChar or FieldType.Text or FieldType.Varchar => "string",
             _ => "object"
         };
 

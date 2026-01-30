@@ -183,7 +183,7 @@ public class SqlServerReadProcedureScripts(
                     sql.Append(Tab, 2);
                     sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
                     sql.Append($"[{field.Name}]");
-                    sql.Append($" LIKE  ''%'' + @{field.Name} + ''%'' '");
+                    sql.Append($" LIKE  ''%'' + RTRIM(@{field.Name}) + ''%'' '");
                     break;
                 case FilterMode.MultValuesContain:
                     sql.Append(GetFilterMultValuesContains(field.Name));
@@ -428,7 +428,7 @@ public class SqlServerReadProcedureScripts(
                     sql.Append(field.Name);
                     sql.Append("_from ");
                     sql.Append(field.DataType.ToString());
-                    if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+                    if (field.DataType.IsString || field.DataType == FieldType.DateTime2)
                     {
                         sql.Append('(');
                         sql.Append(field.Size == -1 ? "MAX" : field.Size);
@@ -449,7 +449,7 @@ public class SqlServerReadProcedureScripts(
                     sql.Append(field.Name);
                     sql.Append("_to ");
                     sql.Append(field.DataType.ToString());
-                    if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+                    if (field.DataType.SupportsSize)
                     {
                         sql.Append('(');
                         sql.Append(field.Size == -1 ? "MAX" : field.Size);
@@ -484,7 +484,7 @@ public class SqlServerReadProcedureScripts(
                         sql.Append(field.Name);
                         sql.Append(' ');
                         sql.Append(field.DataType.ToString());
-                        if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+                        if (field.DataType.SupportsSize)
                         {
                             sql.Append('(');
                             sql.Append(field.Size == -1 ? "MAX" : field.Size);

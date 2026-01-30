@@ -34,7 +34,7 @@ public abstract class SqlServerScriptsBase
             sql.Append(" DEFAULT (newsequentialid())");
         }
 
-        if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
+        if (field.DataType.IsString)
         {
             sql.Append(" (");
             sql.Append(field.Size == -1 ? "MAX" : field.Size);

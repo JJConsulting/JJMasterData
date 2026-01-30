@@ -51,7 +51,7 @@ public class SqlServerWriteProcedureScripts(
             sql.Append(' ');
             sql.Append(field.DataType);
             
-            if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+            if (field.DataType.SupportsSize)
             {
                 sql.Append('(');
                 sql.Append(field.Size == -1 ? "MAX" : field.Size);
