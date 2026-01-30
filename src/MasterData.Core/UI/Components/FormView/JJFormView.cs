@@ -561,12 +561,7 @@ public class JJFormView : AsyncComponent
 
         var scripts = new HtmlBuilder();
 
-        var formStateData = new FormStateData
-        {
-            Values = values,
-            UserValues = UserValues,
-            PageState = PageState
-        };
+        var formStateData = new FormStateData(values, UserValues, PageState);
 
         foreach (var action in field.Actions)
         {
@@ -1006,12 +1001,7 @@ public class JJFormView : AsyncComponent
     {
         var fieldValuesService = GridView.FieldValuesService;
 
-        var formStateData = new FormStateData
-        {
-            Values = CurrentActionMap!.PkFieldValues!,
-            UserValues = UserValues,
-            PageState = pageState
-        };
+        var formStateData = new FormStateData(CurrentActionMap!.PkFieldValues!, UserValues, pageState);
 
         var filters = new Dictionary<string, object?>(formStateData.Values);
 

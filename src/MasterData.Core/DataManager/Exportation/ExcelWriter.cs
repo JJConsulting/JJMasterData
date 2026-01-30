@@ -164,12 +164,7 @@ public class ExcelWriter(
             {
                 if (field.Component is FormComponent.ComboBox && field.DataItem?.HasItems() is true && field.DataItem.GridBehavior is not DataItemGridBehavior.Id)
                 {
-                    value = await dataItemService.GetDescriptionAsync(FormElement, field, new()
-                    {
-                        Values = row,
-                        PageState = PageState.List,
-                        UserValues = new()
-                    }, cellValue);
+                    value = await dataItemService.GetDescriptionAsync(FormElement, field, new(row, PageState.List), cellValue);
                 }
                 else
                 {

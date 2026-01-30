@@ -1,38 +1,35 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Models;
 
-public class FormStateData
+public sealed class FormStateData
 {
-    public required Dictionary<string, object?> Values { get; init; }
-    public required Dictionary<string, object?>? UserValues { get; init; }
-    public required PageState PageState { get; init; }
-
-    public FormStateData()
+    public Dictionary<string, object?> Values { get; }
+    public Dictionary<string, object?>? UserValues { get; }
+    public PageState PageState { get; }
+    
+    public FormStateData(PageState pageState) 
     {
+        Values = new Dictionary<string, object?>();
+        PageState = pageState;
     }
-
-    [SetsRequiredMembers]
+    
     public FormStateData(
         Dictionary<string, object?> values,
         Dictionary<string, object?>? userValues,
-        PageState pageState)
+        PageState pageState) : this(values, pageState)
     {
         UserValues = userValues is null ? null : new Dictionary<string, object?>(userValues);
-        Values = values;
-        PageState = pageState;
     }
 
-    [SetsRequiredMembers]
     public FormStateData(
         Dictionary<string, object?> values,
         PageState pageState)
     {
-        Values = values;
+        Values = new Dictionary<string, object?>(values);
         PageState = pageState;
     }
 
@@ -48,11 +45,6 @@ public class FormStateData
 
     public FormStateData DeepCopy()
     {
-        return new FormStateData
-        {
-            Values = new Dictionary<string, object?>(Values),
-            UserValues = new Dictionary<string, object?>(UserValues ?? new()),
-            PageState = PageState
-        };
+        return new FormStateData(Values, UserValues, PageState);
     }
 }

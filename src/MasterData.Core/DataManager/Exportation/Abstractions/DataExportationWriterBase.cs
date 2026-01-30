@@ -270,12 +270,7 @@ public abstract class DataExportationWriterBase(
         }
         else if (!string.IsNullOrEmpty(FormElement.Title))
         {
-            fileName = ExpressionsService.GetExpressionValue(FormElement.Title, new FormStateData
-            {
-                Values = new Dictionary<string, object>(),
-                UserValues = new Dictionary<string, object>(),
-                PageState = PageState.List
-            })?.ToString() ?? string.Empty;
+            fileName = ExpressionsService.GetExpressionValue(FormElement.Title, new FormStateData(PageState.List))?.ToString() ?? string.Empty;
         }
         else if (!string.IsNullOrEmpty(FormElement.Name))
         {

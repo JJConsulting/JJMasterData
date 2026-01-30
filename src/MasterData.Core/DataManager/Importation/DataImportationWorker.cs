@@ -136,12 +136,7 @@ public class DataImportationWorker(
         currentProcess.Message =
             StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
 
-        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData
-        {
-            Values = new Dictionary<string, object>(),
-            PageState = PageState.Import,
-            UserValues = UserValues
-        });
+        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData(new(), UserValues,PageState.Import));
         var formStateData = new FormStateData(defaultValues, UserValues, PageState.Import);
         
         //Execute before process events
