@@ -68,6 +68,12 @@ public sealed class MasterDataCoreOptions
                 "now", _ => DateTime.Now
             },
             {
+                "utcNow", _ => DateTime.UtcNow
+            },
+            {
+                "empty", _ => string.Empty
+            },
+            {
                 "iif", args =>
                 {
                     if (args.Count() != 3)
