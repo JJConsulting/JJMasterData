@@ -126,3 +126,14 @@ At your expression:
 ```
 exp: myAwesomeFunction('{StringValue}',{IntValue})
 ```
+
+## Functions
+| Function | Expression / Example                                | Result / Description                              |
+| -------- | --------------------------------------------------- | ------------------------------------------------- |
+| now      | `now()`                                             | Returns the current date in the machine time zone |
+| utcNow   | `utcNow()`                                          | Returns the current date in UTC                   |
+| empty    | `''`                                                | Empty string                                      |
+| iif      | `iif(3 % 2 = 1, 'value is true', 'value is false')` | `value is true`                                   |
+| len      | `len('Claudio')`                                    | `7`                                               |
+| trim     | `' Gustavo '`                                       | `'Gustavo'`                                       |
+| in       | `in(1 + 1, 1, 2, 3)`                                | `true`                                            |
