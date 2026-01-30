@@ -596,7 +596,7 @@ public partial class DataAccess
         string sql,
         List<DataAccessParameter>? parameters = null)
     {
-        ex.Data.Add("DataAccess Query", sql);
+        ex.Data["DataAccess Query"] = sql;
 
         if (parameters == null || parameters.Count is 0) 
             return ex;
@@ -612,7 +612,7 @@ public partial class DataAccess
             error.AppendLine("]");
         }
 
-        ex.Data.Add("DataAccess Parameters", error.ToString());
+        ex.Data["DataAccess Parameters"] = error.ToString();
 
         return ex;
     }
