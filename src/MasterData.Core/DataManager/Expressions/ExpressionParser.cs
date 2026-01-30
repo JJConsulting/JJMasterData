@@ -13,8 +13,8 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
-public class ExpressionParser(
-    IHttpContext httpContext, 
+public sealed class ExpressionParser(
+    IHttpContext httpContext,
     IMasterDataUser masterDataUser,
     ILogger<ExpressionParser> logger)
 {
@@ -22,14 +22,19 @@ public class ExpressionParser(
         string? expression,
         FormStateData formStateData)
     {
-        var result = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        if (string.IsNullOrEmpty(expression))
+            return new(StringComparer.InvariantCultureIgnoreCase);
 
-        if (expression is null)
-            return result;
+        var fields = StringManager.FindValuesByInterval(
+            expression!,
+            ExpressionHelper.Begin,
+            ExpressionHelper.End).ToHashSet();
 
-        var valueList = StringManager.FindValuesByInterval(expression, ExpressionHelper.Begin, ExpressionHelper.End);
+        var result = new Dictionary<string, object?>(
+            fields.Count,
+            StringComparer.InvariantCultureIgnoreCase);
 
-        foreach (var field in valueList)
+        foreach (var field in fields)
         {
             var value = GetParsedValue(field, formStateData);
             result[field] = value;
@@ -38,75 +43,66 @@ public class ExpressionParser(
 
         return result;
     }
-    
+
     private object? GetParsedValue(string field, FormStateData formStateData)
     {
-        var loweredFieldName = field.ToLower();
-        object? parsedValue;
-            
         var (values, userValues, pageState) = formStateData;
-            
-        switch (loweredFieldName)
+
+        switch (field.ToLowerInvariant())
         {
             case "pagestate":
-                parsedValue = pageState.GetPageStateName();
-                break;
+                return pageState.GetPageStateName();
             case "islist":
-                parsedValue = pageState is PageState.List ? 1 : 0;
-                break;
+                return pageState is PageState.List ? 1 : 0;
             case "isview":
-                parsedValue = pageState is PageState.View ? 1 : 0;
-                break;
+                return pageState is PageState.View ? 1 : 0;
             case "isupdate":
-                parsedValue = pageState is PageState.Update ? 1 : 0;
-                break;
+                return pageState is PageState.Update ? 1 : 0;
             case "isinsert":
-                parsedValue = pageState is PageState.Insert ? 1 : 0;
-                break;
+                return pageState is PageState.Insert ? 1 : 0;
             case "isfilter":
-                parsedValue = pageState is PageState.Filter ? 1 : 0;
-                break;
+                return pageState is PageState.Filter ? 1 : 0;
             case "isimport":
-                parsedValue = pageState is PageState.Import ? 1 : 0;
-                break;
+                return pageState is PageState.Import ? 1 : 0;
             case "isdelete":
-                parsedValue = pageState is PageState.Delete ? 1 : 0;
-                break;
+                return pageState is PageState.Delete ? 1 : 0;
             case "fieldname":
-                parsedValue = $"{httpContext.Request.QueryString["fieldName"]}";
-                break;
+                return httpContext.Request.QueryString["fieldName"];
             case "userid":
-                parsedValue = masterDataUser.Id;
-                break;
+                return masterDataUser.Id;
             case "useremail":
-                parsedValue = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
-                break;
+                return GetClaimValue(ClaimTypes.Email);
             case "legacyid":
-                parsedValue = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == "LegacyId")?.Value;
-                break;
-            default:
-            {
-                if(userValues != null && userValues.TryGetValue(field, out var value))
-                    parsedValue = value;
-                    
-                else if (values.TryGetValue(field, out var objValue) && 
-                         !string.IsNullOrEmpty(objValue?.ToString()))
-                {
-                    if (objValue is bool boolValue)
-                        parsedValue = boolValue ? "1" : "0";
-                    else
-                        parsedValue = objValue;
-                }
-                else if (httpContext.Session.HasSession() && httpContext.Session.HasKey(field))
-                    parsedValue = httpContext.Session[field];
-                else if (httpContext.User?.HasClaim(c => c.Type == field) ?? false)
-                    parsedValue = httpContext.User.Claims.First(c => c.Type == field).Value;
-                else
-                    parsedValue = string.Empty;
-                break;
-            }
+                return GetClaimValue("LegacyId");
+        }
+
+        object? parsedValue;
+
+        if (userValues != null && userValues.TryGetValue(field, out var value))
+        {
+            parsedValue = value;
+        }
+        else if (values.TryGetValue(field, out var objValue) && !string.IsNullOrEmpty(objValue?.ToString()))
+        {
+            if (objValue is bool boolValue)
+                parsedValue = boolValue ? "1" : "0";
+            else
+                parsedValue = objValue;
+        }
+        else if (httpContext.Session.HasSession() && httpContext.Session.HasKey(field))
+        {
+            parsedValue = httpContext.Session[field];
+        }
+        else
+        {
+            parsedValue = GetClaimValue(field) ?? string.Empty;
         }
 
         return parsedValue;
+    }
+
+    private string? GetClaimValue(string claimType)
+    {
+        return httpContext.User?.FindFirst(claimType)?.Value;
     }
 }

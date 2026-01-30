@@ -49,18 +49,21 @@ public enum PageState
 
 internal static class PageStateExtensions
 {
-    internal static string GetPageStateName(this PageState state)
+    extension(PageState state)
     {
-        return state switch
+        internal string GetPageStateName()
         {
-            PageState.List => "List",
-            PageState.View => "View",
-            PageState.Insert => "Insert",
-            PageState.Update => "Update",
-            PageState.Filter => "Filter",
-            PageState.Import => "Import",
-            PageState.Delete => "Delete",
-            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
-        };
+            return state switch
+            {
+                PageState.List => "List",
+                PageState.View => "View",
+                PageState.Insert => "Insert",
+                PageState.Update => "Update",
+                PageState.Filter => "Filter",
+                PageState.Import => "Import",
+                PageState.Delete => "Delete",
+                _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+            };
+        }
     }
 }
