@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Configuration;
@@ -55,7 +56,9 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
                 url = $"{url}&{additionalQueryString}";
             }
 
-            var message = await httpClient.GetAsync(url);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(7));
+            var message = await httpClient.GetAsync(url, cts.Token);
+            
             var content = await message.Content.ReadAsStringAsync();
 
                 logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);

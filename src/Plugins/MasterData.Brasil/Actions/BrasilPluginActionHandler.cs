@@ -121,6 +121,10 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
         {
             result = await GetResultAsync(context);
         }
+        catch(OperationCanceledException)
+        {
+            return PluginActionResult.Error(message:"A integração com a Receita Federal levou mais tempo do que o esperado para retornar uma resposta.");
+        }
         catch
         {
             return OnResultNotFound(context);
