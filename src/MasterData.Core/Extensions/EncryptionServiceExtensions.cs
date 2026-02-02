@@ -10,50 +10,51 @@ namespace JJMasterData.Core.Extensions;
 
 public static class EncryptionServiceExtensions
 {
-    /// <summary>
-    /// Encrypts the string with URL escape to prevent errors in parsing, algorithms like AES generate characters like '/'
-    /// </summary>
-    /// <param name="service"></param>
-    /// <param name="plainText"></param>
-    /// <returns></returns>
-    public static string EncryptStringWithUrlEscape(this IEncryptionService service, string plainText)
+    extension(IEncryptionService service)
     {
-        return Uri.EscapeDataString(service.EncryptString(plainText));
-    }
-    
-    /// <summary>
-    /// Decrypts the string with URL unescape to prevent errors in parsing, algorithms like AES generate characters like '/'
-    /// </summary>
-    /// <param name="service"></param>
-    /// <param name="cipherText"></param>
-    /// <returns></returns>
-    public static string DecryptStringWithUrlUnescape(this IEncryptionService service, string cipherText)
-    {
-        return service.DecryptString(Uri.UnescapeDataString(cipherText));
-    }
-    
-    public static string EncryptObject<T>(this IEncryptionService service, T @object)
-    {
-        return service.EncryptStringWithUrlEscape(JsonSerializer.Serialize(@object, MasterDataJsonSerializerOptions.Default));
-    }
-    
-    public static T DecryptObject<T>(this IEncryptionService service, string encryptedObject)
-    {
-        return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, MasterDataJsonSerializerOptions.Default);
-    }
-    
-    public static Dictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)
-    {
-        return service.DecryptObject<Dictionary<string,object>>(encryptedDictionary);
-    }
-    
-    public static RouteContext DecryptRouteContext(this IEncryptionService service, string encryptedRouteContext)
-    {
-        return service.DecryptObject<RouteContext>(encryptedRouteContext);
-    }
-    
-    internal static ActionMap DecryptActionMap(this IEncryptionService service, string encryptedActionMap)
-    {
-        return service.DecryptObject<ActionMap>(encryptedActionMap);
+        /// <summary>
+        /// Encrypts the string with URL escape to prevent errors in parsing, algorithms like AES generate characters like '/'
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
+        public string EncryptStringWithUrlEscape(string plainText)
+        {
+            return Uri.EscapeDataString(service.EncryptString(plainText));
+        }
+
+        /// <summary>
+        /// Decrypts the string with URL unescape to prevent errors in parsing, algorithms like AES generate characters like '/'
+        /// </summary>
+        /// <param name="cipherText"></param>
+        /// <returns></returns>
+        public string DecryptStringWithUrlUnescape(string cipherText)
+        {
+            return service.DecryptString(Uri.UnescapeDataString(cipherText));
+        }
+
+        public string EncryptObject<T>(T @object)
+        {
+            return service.EncryptStringWithUrlEscape(JsonSerializer.Serialize(@object, MasterDataJsonSerializerOptions.Default));
+        }
+
+        public T DecryptObject<T>(string encryptedObject)
+        {
+            return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, MasterDataJsonSerializerOptions.Default);
+        }
+
+        public Dictionary<string,object> DecryptDictionary(string encryptedDictionary)
+        {
+            return service.DecryptObject<Dictionary<string,object>>(encryptedDictionary);
+        }
+
+        public RouteContext DecryptRouteContext(string encryptedRouteContext)
+        {
+            return service.DecryptObject<RouteContext>(encryptedRouteContext);
+        }
+
+        internal ActionMap DecryptActionMap(string encryptedActionMap)
+        {
+            return service.DecryptObject<ActionMap>(encryptedActionMap);
+        }
     }
 }
