@@ -18,6 +18,20 @@ public class FileController(ElementFileService service) : MasterDataController
         if(fileStream == null)
             return NotFound();
         
-        return File(fileStream, MimeTypeUtil.GetMimeType(Path.GetExtension(fileName)), fileName);
+        var extension = !string.IsNullOrWhiteSpace(fileName)
+            ? Path.GetExtension(fileName)
+            : null;
+        
+        //fallback
+        if (string.IsNullOrWhiteSpace(extension))
+            extension = ".bin";
+        
+        var downloadName = !string.IsNullOrWhiteSpace(fileName)
+            ? Path.GetFileName(fileName)
+            : $"{DateTime.Now:yyyyMMdd_HHmmss}{extension}";
+
+        var contentType = MimeTypeUtil.GetMimeType(extension);
+
+        return File(fileStream, contentType, downloadName);
     }
 }
