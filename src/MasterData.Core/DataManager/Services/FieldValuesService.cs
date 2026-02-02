@@ -73,15 +73,9 @@ public class FieldValuesService(ExpressionsService expressionsService)
     
     public async ValueTask<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
-        var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-  
-        foreach (var v in formStateData.Values)
-        {
-            values.Add(v.Key, v.Value);
-        }
-
         await ApplyDefaultValues(formElement, formStateData, false);
-        return values;
+        
+        return formStateData.Values;
     }
 
     private async ValueTask ApplyDefaultValues(FormElement formElement, FormStateData formStateData, bool replaceNullValues)
