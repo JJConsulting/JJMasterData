@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using JJMasterData.Commons.Util;
@@ -70,6 +71,8 @@ public sealed class ExpressionParser(
                 return httpContext.Request.QueryString["fieldName"];
             case "userid":
                 return masterDataUser.Id;
+            case "currentculture":
+                return CultureInfo.CurrentCulture.Name;
             case "useremail":
                 return GetClaimValue(ClaimTypes.Email);
             case "legacyid":
