@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Grid Toolbar -->
+  <data name="Add" xml:space="preserve">
+    <value>Agregar</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Add new record" xml:space="preserve">
+    <value>Agregar nuevo registro</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+    <data name="New" xml:space="preserve">
+    <value>Nuevo</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>    
+    <data name="Filters" xml:space="preserve">
+    <value>Filtros</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>    
+    <data name="More" xml:space="preserve">
+    <value>Más</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
+    <data name="Element" xml:space="preserve">
+    <value>Elemento</value>
+        <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Editar</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Eliminar</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Delete a record" xml:space="preserve">
+    <value>Eliminar un registro</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Limpiar</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+    <data name="Last Modified" xml:space="preserve">
+    <value>Última modificación</value>
+  </data>
+
+    <data name="Export Selected" xml:space="preserve">
+    <value>Exportar seleccionado</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>Limpiar Filtro</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+    <data name="Detailed Filters" xml:space="preserve">
+    <value>Filtros detallados</value>
+        <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filtrar</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportar</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importar</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copiar</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Copy All" xml:space="preserve">
+    <value>Copiar todo</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Copy to Clipboard" xml:space="preserve">
+    <value>Copiar al Portapapeles</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Duplicar</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Select All" xml:space="preserve">
+    <value>Seleccionar Todo</value>
+  </data>
+  <data name="Delete Selected" xml:space="preserve">
+    <value>Eliminar Seleccionados</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Atrás</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Siguiente</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Anterior</value>
+  </data>
+  <data name="First" xml:space="preserve">
+    <value>Primero</value>
+  </data>
+  <data name="Last" xml:space="preserve">
+    <value>Último</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detalles</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Acciones</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Acción</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Grid Template" xml:space="preserve">
+    <value>Plantilla de Cuadrícula</value>
+  </data>
+  <data name="Grid Settings" xml:space="preserve">
+    <value>Configuración de Cuadrícula</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Ordenar</value>
+  </data>
+  <data name="Sort Ascending" xml:space="preserve">
+    <value>Ordenar Ascendente</value>
+  </data>
+  <data name="Sort Descending" xml:space="preserve">
+    <value>Ordenar Descendente</value>
+  </data>
+  <data name="Ascending order" xml:space="preserve">
+    <value>Orden Ascendente</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Descending order" xml:space="preserve">
+    <value>Orden Descendente</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Columns" xml:space="preserve">
+    <value>Columnas</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Column" xml:space="preserve">
+    <value>Columna</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Rows" xml:space="preserve">
+    <value>Filas</value>
+  </data>
+  <data name="Row" xml:space="preserve">
+    <value>Fila</value>
+  </data>
+  <data name="No records found" xml:space="preserve">
+    <value>No se encontraron registros</value>
+  </data>
+  <data name="No elements found" xml:space="preserve">
+    <value>No se encontraron elementos</value>
+  </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>Cargando...</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Advertencia</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Información</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Éxito</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Sí</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>Aceptar</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Cerrar</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Aplicar</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Restablecer</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Ver</value>
+  </data>
+
+    <data name="Table" xml:space="preserve">
+    <value>Tabla</value>
+  </data>
+  
+  <!-- Form Toolbar -->
+  <data name="Form" xml:space="preserve">
+    <value>Formulario</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Form Title" xml:space="preserve">
+    <value>Título del Formulario</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Form Sub-Title" xml:space="preserve">
+    <value>Subtítulo del Formulario</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Form Settings" xml:space="preserve">
+    <value>Configuración de Formulario</value>
+  </data>
+  <data name="Form Layout" xml:space="preserve">
+    <value>Diseño de Formulario</value>
+  </data>
+  <data name="Form Validation" xml:space="preserve">
+    <value>Validación de Formulario</value>
+  </data>
+  <data name="Form Fields" xml:space="preserve">
+    <value>Campos de Formulario</value>
+  </data>
+  <data name="Field Settings" xml:space="preserve">
+    <value>Configuración de Campo</value>
+  </data>
+  <data name="Field Validation" xml:space="preserve">
+    <value>Validación de Campo</value>
+  </data>
+  <data name="Field Format" xml:space="preserve">
+    <value>Formato de Campo</value>
+  </data>
+  <data name="Field Type" xml:space="preserve">
+    <value>Tipo de Campo</value>
+  </data>
+  <data name="Field Size" xml:space="preserve">
+    <value>Tamaño de Campo</value>
+  </data>
+  <data name="Field Required" xml:space="preserve">
+    <value>Campo Obligatorio</value>
+  </data>
+  <data name="Field ReadOnly" xml:space="preserve">
+    <value>Campo Solo Lectura</value>
+  </data>
+  <data name="Field Visible" xml:space="preserve">
+    <value>Campo Visible</value>
+  </data>
+  <data name="Field Enabled" xml:space="preserve">
+    <value>Campo Habilitado</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>Imprimir</value>
+  </data>
+  <data name="Validate" xml:space="preserve">
+    <value>Validar</value>
+  </data>
+  <data name="Required Field" xml:space="preserve">
+    <value>Campo Obligatorio</value>
+  </data>
+  <data name="Invalid Format" xml:space="preserve">
+    <value>Formato Inválido</value>
+  </data>
+  <data name="Field must be filled" xml:space="preserve">
+    <value>El campo debe ser llenado</value>
+  </data>
+  <data name="Field is required" xml:space="preserve">
+    <value>El campo es obligatorio</value>
+  </data>
+  
+  <!-- Common UI elements -->
+  <data name="Configuration" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Opciones</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>Avanzado</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Basic" xml:space="preserve">
+    <value>Básico</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Properties" xml:space="preserve">
+    <value>Propiedades</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Security" xml:space="preserve">
+    <value>Seguridad</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Usuarios</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>Permisos</value>
+  </data>
+  <data name="Audit" xml:space="preserve">
+    <value>Auditoría</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Registro</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Historial</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Informes</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Panel</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Ayuda</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Acerca de</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Contacto</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Soporte</value>
+  </data>
+  <data name="Documentation" xml:space="preserve">
+    <value>Documentación</value>
+  </data>
+  
+  <!-- Data operations -->
+  <data name="Insert" xml:space="preserve">
+    <value>Insertar</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Seleccionar</value>
+  </data>
+  <data name="Move" xml:space="preserve">
+    <value>Mover</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Renombrar</value>
+  </data>
+  
+  <!-- Status messages -->
+  <data name="Loading" xml:space="preserve">
+    <value>Cargando</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Procesando</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completado</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Falló</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Confirmación</value>
+  </data>
+  <data name="Validation Error" xml:space="preserve">
+    <value>Error de Validación</value>
+  </data>
+  <data name="Access Denied" xml:space="preserve">
+    <value>Acceso Denegado</value>
+  </data>
+  <data name="Not Found" xml:space="preserve">
+    <value>No Encontrado</value>
+  </data>
+  <data name="Server Error" xml:space="preserve">
+    <value>Error del Servidor</value>
+  </data>
+  <data name="Network Error" xml:space="preserve">
+    <value>Error de Red</value>
+  </data>
+  <data name="Timeout" xml:space="preserve">
+    <value>Tiempo de Espera Agotado</value>
+  </data>
+  
+  <!-- Navigation -->
+  <data name="Home" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menú</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Navegación</value>
+  </data>
+  <data name="Toolbar" xml:space="preserve">
+    <value>Barra de Herramientas</value>
+  </data>
+  
+  <!-- Common phrases -->
+  <data name="Are you sure?" xml:space="preserve">
+    <value>¿Está seguro?</value>
+  </data>
+  <data name="Do you want to continue?" xml:space="preserve">
+    <value>¿Desea continuar?</value>
+  </data>
+  <data name="Operation completed successfully" xml:space="preserve">
+    <value>Operación completada con éxito</value>
+  </data>
+  <data name="An error occurred" xml:space="preserve">
+    <value>Ocurrió un error</value>
+  </data>
+  <data name="Please try again" xml:space="preserve">
+    <value>Por favor inténtelo de nuevo</value>
+  </data>
+  <data name="No data available" xml:space="preserve">
+    <value>No hay datos disponibles</value>
+  </data>
+  <data name="Select an option" xml:space="preserve">
+    <value>Seleccione una opción</value>
+  </data>
+  <data name="Choose a file" xml:space="preserve">
+    <value>Elija un archivo</value>
+  </data>
+  <data name="Drag and drop files here" xml:space="preserve">
+    <value>Arrastre y suelte archivos aquí</value>
+  </data>
+  <data name="Click to browse" xml:space="preserve">
+    <value>Haga clic para explorar</value>
+  </data>
+  <data name="Maximum file size" xml:space="preserve">
+    <value>Tamaño máximo de archivo</value>
+  </data>
+  <data name="Allowed file types" xml:space="preserve">
+    <value>Tipos de archivo permitidos</value>
+  </data>
+  <data name="Upload complete" xml:space="preserve">
+    <value>Carga completada</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Descargar</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Crear</value>
+  </data>
+  <data name="Save changes" xml:space="preserve">
+    <value>Guardar cambios</value>
+  </data>
+  <data name="Discard changes" xml:space="preserve">
+    <value>Descartar cambios</value>
+  </data>
+  <data name="Reset to default" xml:space="preserve">
+    <value>Restablecer al valor predeterminado</value>
+  </data>
+  
+  <!-- Basic elements -->
+  <data name="Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripción</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Tamaño</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Valor</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Fecha</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Hora</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactivo</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Habilitado</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Deshabilitado</value>
+  </data>
+  <data name="Visible" xml:space="preserve">
+    <value>Visible</value>
+  </data>
+  <data name="Hidden" xml:space="preserve">
+    <value>Oculto</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Obligatorio</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Opcional</value>
+  </data>
+  <data name="Public" xml:space="preserve">
+    <value>Público</value>
+  </data>
+  <data name="Private" xml:space="preserve">
+    <value>Privado</value>
+  </data>
+  <data name="Internal" xml:space="preserve">
+    <value>Interno</value>
+  </data>
+  <data name="External" xml:space="preserve">
+    <value>Externo</value>
+  </data>
+  
+  <!-- File operations -->
+  <data name="File" xml:space="preserve">
+    <value>Archivo</value>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>Archivos</value>
+  </data>
+  <data name="Folder" xml:space="preserve">
+    <value>Carpeta</value>
+  </data>
+  <data name="Folder Path" xml:space="preserve">
+    <value>Ruta de Carpeta</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>Cargar</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Descargar</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Explorar</value>
+  </data>
+  
+  <!-- Common UI controls -->
+  <data name="Button" xml:space="preserve">
+    <value>Botón</value>
+  </data>
+  <data name="Link" xml:space="preserve">
+    <value>Enlace</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Imagen</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>Texto</value>
+  </data>
+  <data name="Label" xml:space="preserve">
+    <value>Etiqueta</value>
+  </data>
+  <data name="Input" xml:space="preserve">
+    <value>Entrada</value>
+  </data>
+  <data name="Output" xml:space="preserve">
+    <value>Salida</value>
+  </data>
+  
+  <!-- Messages -->
+  <data name="Message" xml:space="preserve">
+    <value>Mensaje</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Información</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Advertencia</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Éxito</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>Alerta</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  
+  <!-- Common actions -->
+  <data name="Accept" xml:space="preserve">
+    <value>Aceptar</value>
+  </data>
+  <data name="Decline" xml:space="preserve">
+    <value>Declinar</value>
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>Aprobar</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>Rechazar</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Receive" xml:space="preserve">
+    <value>Recibir</value>
+  </data>
+  
+  <!-- Numbers and quantities -->
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>Contar</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Número</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Cantidad</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Precio</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Costo</value>
+  </data>
+  
+  <!-- Time and dates -->
+  <data name="Today" xml:space="preserve">
+    <value>Hoy</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>Ayer</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Mañana</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Semana</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Mes</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Año</value>
+  </data>
+</root>
