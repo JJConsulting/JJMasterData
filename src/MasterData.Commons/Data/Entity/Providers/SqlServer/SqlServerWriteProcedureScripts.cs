@@ -129,7 +129,7 @@ public class SqlServerWriteProcedureScripts(
                     sql.Append("AND ");
                 }
 
-                sql.AppendFormat("[{0}]",f.Name);
+                sql.Append($"[{f.Name}]");
                 sql.Append(" = @");
                 sql.AppendLine(f.Name);
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Configuration;
@@ -55,16 +56,21 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
                 url = $"{url}&{additionalQueryString}";
             }
 
-            var message = await httpClient.GetAsync(url);
-            var content = await message.Content.ReadAsStringAsync();
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var message = await httpClient.GetAsync(url, cts.Token);
 
-                logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);
+#if NET
+            var content = await message.Content.ReadAsStringAsync(cts.Token);
+#else
+            var content = await message.Content.ReadAsStringAsync();
+#endif
+            logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);
 
             var apiResult = JsonSerializer.Deserialize<JsonObject>(content, JsonSerializerOptions);
 
             var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), JsonSerializerOptions)!;
 
-            logger.LogInformation("{Enpoint} found successfully", endpoint);
+            logger.LogInformation("{Endpoint} found successfully", endpoint);
             return result;
         }
         catch (Exception ex)
