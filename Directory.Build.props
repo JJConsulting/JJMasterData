@@ -13,7 +13,7 @@
 		<WarningsAsErrors>CA1859;CS4014</WarningsAsErrors>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Company>JJ Consulting</Company>
-		<Copyright>© 2025 JJConsulting. All rights reserved.</Copyright>
+		<Copyright>©2026 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<ResourceLanguages>en</ResourceLanguages>
