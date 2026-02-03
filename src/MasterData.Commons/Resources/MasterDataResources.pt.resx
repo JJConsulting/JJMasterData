@@ -2629,8 +2629,8 @@
     <value>A senha deve conter pelo menos um caracter maiúsculo!</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="The primary key field must not contain [NumberOfDecimalPlaces]" xml:space="preserve">
-    <value>Campo chave primária não deve conter [NumberOfDecimalPlaces]</value>
+  <data name="The primary key field must be a decimal to contain [NumberOfDecimalPlaces]" xml:space="preserve">
+    <value>Campo chave primária deve ser decimal para utilizar [NumberOfDecimalPlaces]</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="The record cannot be deleted because it is being used as a dependency." xml:space="preserve">

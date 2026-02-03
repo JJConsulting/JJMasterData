@@ -187,10 +187,10 @@ public class FieldService(
                         field.DataType);
                 }
 
-                if (field.IsPk)
+                if (field.IsPk && field.DataType is not FieldType.Decimal)
                 {
                     AddError(nameof(field.DataType),
-                        StringLocalizer["The primary key field must not contain [NumberOfDecimalPlaces]"]);
+                        StringLocalizer["The primary key field must be a decimal to contain [NumberOfDecimalPlaces]"]);
                 }
             }
         }
