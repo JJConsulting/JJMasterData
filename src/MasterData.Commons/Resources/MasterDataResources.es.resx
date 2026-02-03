@@ -33,7 +33,15 @@
     <data name="Filters" xml:space="preserve">
     <value>Filtros</value>
         <comment>JJMasterDataWeb</comment>
-  </data>    
+  </data>
+    <data name="There is no record to display." xml:space="preserve">
+    <value>No hay ningún registro para mostrar.</value>
+        <comment>JJMasterData.Commons</comment>
+  </data>
+    <data name="There are filters applied for this query." xml:space="preserve">
+    <value>Hay filtros aplicados a esta consulta.</value>
+        <comment>JJMasterDataCore</comment>
+  </data>
     <data name="More" xml:space="preserve">
     <value>Más</value>
         <comment>JJMasterDataWeb</comment>
