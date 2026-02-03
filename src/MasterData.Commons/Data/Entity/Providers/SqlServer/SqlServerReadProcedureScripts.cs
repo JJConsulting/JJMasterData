@@ -424,79 +424,41 @@ public class SqlServerReadProcedureScripts(
             {
                 case FilterMode.Range:
                 {
-                    sql.Append('@');
-                    sql.Append(field.Name);
-                    sql.Append("_from ");
-                    sql.Append(field.DataType.ToString());
-                    if (field.DataType.IsString || field.DataType == FieldType.DateTime2)
-                    {
-                        sql.Append('(');
-                        sql.Append(field.Size == -1 ? "MAX" : field.Size);
-                        sql.Append(')');
-                    }
-                    else if (field.DataType is FieldType.Decimal)
-                    {
-                        sql.Append('(');
-                        sql.Append(field.Size);
-                        sql.Append(',');
-                        sql.Append(field.NumberOfDecimalPlaces);
-                        sql.Append(')');
-                    }
+                    var typeName = field.DataType.ToString();
+
+                    var size = string.Empty;
                     
-                    sql.AppendLine(",");
-                    sql.Append(Tab, tabLevel);
-                    sql.Append('@');
-                    sql.Append(field.Name);
-                    sql.Append("_to ");
-                    sql.Append(field.DataType.ToString());
                     if (field.DataType.SupportsSize)
                     {
-                        sql.Append('(');
-                        sql.Append(field.Size == -1 ? "MAX" : field.Size);
-                        sql.Append(") ");
+                        size = $"({(field.Size == -1 ? "MAX" : field.Size)})";
                     }
-                    else if (field.DataType is FieldType.Decimal)
+                    else if(field.DataType is FieldType.Decimal)
                     {
-                        sql.Append('(');
-                        sql.Append(field.Size);
-                        sql.Append(',');
-                        sql.Append(field.NumberOfDecimalPlaces);
-                        sql.Append(')');
+                        size = $"({field.Size},{field.NumberOfDecimalPlaces})";
                     }
-                    
-                    sql.AppendLine(",");
+                    sql.Append(Tab, tabLevel);
+                    sql.AppendLine($"@{field.Name}_from {typeName}{size},");
+                    sql.Append(Tab, tabLevel);
+                    sql.AppendLine($"@{field.Name}_to {typeName}{size},");
                     sql.Append(Tab, tabLevel);
                     break;
                 }
+
                 case FilterMode.MultValuesContain or FilterMode.MultValuesEqual:
-                    sql.Append('@');
-                    sql.Append(field.Name);
-                    sql.Append(' ');
-                    sql.Append("VARCHAR");
-                    sql.AppendLine("(MAX),");
-                    sql.Append(Tab, tabLevel);
+                    sql.AppendLine($"@{field.Name} VARCHAR(MAX),");
                     break;
                 default:
                 {
                     if (IsFilter(field))
                     {
-                        sql.Append('@');
-                        sql.Append(field.Name);
-                        sql.Append(' ');
-                        sql.Append(field.DataType.ToString());
+                        sql.Append($"@{field.Name} {field.DataType}");
                         if (field.DataType.SupportsSize)
                         {
-                            sql.Append('(');
-                            sql.Append(field.Size == -1 ? "MAX" : field.Size);
-                            sql.AppendLine("), ");
+                            sql.AppendLine($"({(field.Size == -1 ? "MAX" : field.Size)}), ");
                         }
                         else if (field.DataType is FieldType.Decimal)
                         {
-                            sql.Append('(');
-                            sql.Append(field.Size);
-                            sql.Append(',');
-                            sql.Append(field.NumberOfDecimalPlaces);
-                            sql.Append(')');
+                            sql.AppendLine($"({field.Size}, {field.NumberOfDecimalPlaces}), ");
                         }
                         else
                         {
@@ -554,7 +516,7 @@ public class SqlServerReadProcedureScripts(
             sql.Append(Tab, 2);
             sql.AppendLine("SET @likein = ' AND ( '");
             sql.Append(Tab, 2);
-            sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", fieldName);
+            sql.Append($"WHILE CHARINDEX(',', @{fieldName}) <> 0");
             sql.AppendLine();
             sql.Append(Tab, 2);
             sql.AppendLine("BEGIN");
