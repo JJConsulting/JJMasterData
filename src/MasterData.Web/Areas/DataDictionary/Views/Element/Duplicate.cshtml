@@ -11,9 +11,9 @@
 @{
     var backUrl = Url.Action("Index", "Element")!;
     List<BreadcrumbItem> breadcrumbs = [
-        new BreadcrumbItem(MasterDataLogo.GetHtmlBuilder(), backUrl),
-        new BreadcrumbItem(StringLocalizer["Data Dictionary"], backUrl), 
-        new BreadcrumbItem(StringLocalizer["Duplicate Element"])
+        new(MasterDataLogo.GetHtmlBuilder(), backUrl),
+        new(StringLocalizer["Data Dictionary"], backUrl), 
+        new(StringLocalizer["Duplicate Element"])
     ];
 }
 
@@ -48,7 +48,7 @@
 
     <div class="col-sm-12">
         <div id="divError">
-            @Html.Raw(ViewBag.Error)
+            @ViewBag.Error
         </div>
     </div>
 

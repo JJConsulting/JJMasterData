@@ -22,7 +22,7 @@ public class YourController(IComponentFactory componentFactory) : Controller
         if(result is IActionResult actionResult)
             return actionResult;
         
-        FormViewHtml = result.Content;
+        FormViewHtml = result.HtmlContent;
         
         return View();
     }
@@ -30,7 +30,7 @@ public class YourController(IComponentFactory componentFactory) : Controller
 
 ///At your view...
 <form asp-controller="YourController" asp-action="Index" method="POST">
-    @Html.Raw(ViewData["FormViewHtml"])
+    @ViewData["FormViewHtml"]
 </form>
 ```
 ## <xref:JJMasterData.Core.UI.Components.IFormElementComponentFactory`1>
@@ -53,7 +53,7 @@ public class YourController(IFormElementComponentFactory<JJFormView> formViewFac
         if(result is IActionResult actionResult)
             return actionResult;
         
-        FormViewHtml = result.Content;
+        FormViewHtml = result.HtmlContent;
         
         return View();
     }
@@ -61,7 +61,7 @@ public class YourController(IFormElementComponentFactory<JJFormView> formViewFac
 
 ///At your view...
 <form asp-controller="YourController" asp-action="Index" method="POST">
-    @Html.Raw(ViewData["FormViewHtml"])
+    @ViewData["FormViewHtml"]
 </form>
 ```
 
@@ -84,7 +84,7 @@ public class YourController(IControlFactory<JJSearchBox> searchBoxFactory) : Con
         if(result is IActionResult actionResult)
             return actionResult;
         
-        FormViewHtml = result.Content;
+        FormViewHtml = result.HtmlContent;
         
         return View();
     }
@@ -92,7 +92,7 @@ public class YourController(IControlFactory<JJSearchBox> searchBoxFactory) : Con
 
 ///At your view...
 <form asp-controller="YourController" asp-action="Index" method="POST">
-    @Html.Raw(ViewData["SearchBoxHtml"])
+    @ViewData["SearchBoxHtml"]
 </form>
 ```
 
@@ -110,5 +110,5 @@ Normally these components have [TagHelpers](taghelpers.md) that are more easy to
     card.Title = "Example";
 }
     
-@Html.Raw(card.GetHtml())
+@card.GetHtmlContent()
 ```

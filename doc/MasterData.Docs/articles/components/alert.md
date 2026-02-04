@@ -16,7 +16,7 @@ In your Controller, create a JJAlert instance and use it as a ViewBag or add it 
 In your view, just render the contents of GetHtml().
 
 ```csharp
-    @Html.Raw(ViewBag.Alert.GetHtml())
+    @ViewBag.Alert.GetHtmlContent()
 ```
 
 <img alt="Importing" src="../../media/SimpleExampleJJAlert.png"/>

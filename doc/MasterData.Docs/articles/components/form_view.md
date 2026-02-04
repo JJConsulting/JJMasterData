@@ -35,7 +35,7 @@ At your Controller, create a JJFormView instance and use the result as your Mode
         if (result is IActionResult actionResult)
             return actionResult;
         
-        FormViewHtml = result.Content;
+        FormViewHtml = result.HtmlContent;
         return View("YourView");
     }
 ```
@@ -44,7 +44,7 @@ At your Controller, create a JJFormView instance and use the result as your Mode
 
 ```html
     <h1>Hey, here is my dynamic form:</h1>
-    @Html.Raw(ViewData["FormViewHtml"])
+    @ViewData["FormViewHtml"]
 ```
 
 ## Customization

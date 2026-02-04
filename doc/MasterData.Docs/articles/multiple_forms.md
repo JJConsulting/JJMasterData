@@ -10,11 +10,11 @@ When you need multiple forms in your View alongside JJMasterData, you have two o
 
 ```html
 <master-data-form asp-controller="Form" asp-action="Render" asp-area="MasterData">
-    @Html.Raw(Model.FormViewHtml)
+    @Model.FormViewHtml
 </master-data-form>
 ```
 
 ## Using the id
 <form action="/MyAction" id="masterdata-form">
- @Html.Raw(Model.FormViewHtml)
+ @Model.FormViewHtml
 </form>

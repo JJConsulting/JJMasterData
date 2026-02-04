@@ -45,7 +45,7 @@ public class DataPanelExampleController : Controller
         if (result is IActionResult actionResult)
             return actionResult;
         
-        PanelViewHtml = result.Content;
+        PanelViewHtml = result.HtmlContent;
         
         return View();
 
@@ -78,10 +78,10 @@ public class DataPanelExampleController : Controller
             var alert = _componentFactory.Html.Alert.Create();
             alert.Color = PanelColor.Success;
             alert.Title = "Record updated";
-            ViewData["ReturnMessage"] = alert.GetHtml();
+            ViewData["ReturnMessage"] = alert.GetHtmlContent();
         }
         var result = await dataPanel.GetResultAsync();
-        PanelViewHtml = result.Content;
+        PanelViewHtml = result.HtmlContent;
         
         return View("Index");
     }
@@ -103,9 +103,9 @@ ViewBag.Title = "title";
 
 <form asp-action="Save">
 
-    @Html.Raw(ViewData["PanelViewHtml"])
+    @ViewData["PanelViewHtml"]
 
-    @Html.Raw(ViewData["ReturnMessage"])
+    @ViewData["ReturnMessage"]
 
     <button type="submit" class="btn btn-primary">Save</button>
 </form>

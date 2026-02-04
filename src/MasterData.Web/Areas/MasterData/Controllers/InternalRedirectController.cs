@@ -10,6 +10,7 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
@@ -50,7 +51,7 @@ public class InternalRedirectController(
                 var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.List))?.ToString();
                 model = new()
                 {
-                    HtmlContent = result.Content,
+                    HtmlContent = result.HtmlContent,
                     ShowToolbar = false,
                     Title = title ?? formView.Name,
                     IsModal = state.OpenInModal,
@@ -77,7 +78,7 @@ public class InternalRedirectController(
                 var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.View))?.ToString();
                 model = new()
                 {
-                    HtmlContent = result.Content,
+                    HtmlContent = result.HtmlContent,
                     ShowToolbar = false,
                     Title = title ?? formView.Name,
                     IsModal = state.OpenInModal,
@@ -114,7 +115,7 @@ public class InternalRedirectController(
                 var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!,pageState))?.ToString();
                 model = new()
                 {
-                    HtmlContent = result.Content,
+                    HtmlContent = result.HtmlContent,
                     ShowToolbar = true,
                     Title = title ?? formView.Name,
                     IsModal = state.OpenInModal,
@@ -174,7 +175,7 @@ public class InternalRedirectController(
         
         var model = new InternalRedirectViewModel
         {
-            HtmlContent = result.Content,
+            HtmlContent = result.HtmlContent,
             ShowToolbar = true,
             IsModal = state.OpenInModal,
             ParentElementName = state.ParentElementName,

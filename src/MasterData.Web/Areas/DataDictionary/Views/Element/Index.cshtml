@@ -1,6 +1,4 @@
 ﻿@using JJConsulting.Html.Bootstrap.Models
-@using JJMasterData.Core.UI.Components
-@using JJMasterData.Web.TagHelpers
 @using JJMasterData.Web.Utils
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject JJMasterDataLogo MasterDataLogo
@@ -14,7 +12,7 @@
 <breadcrumb items="breadcrumbs"/>
 
 <master-data-form asp-action="Index" asp-controller="Element" asp-area="DataDictionary">
-    @Html.Raw(ViewData["FormViewHtml"])
+    @ViewData["FormViewHtml"]
 </master-data-form>
 
 @section Scripts{

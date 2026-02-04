@@ -4,6 +4,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -27,7 +28,7 @@ public class FormController(
 
         SetTitle(formView.FormElement.Name);
         
-        ViewData["FormViewHtml"] = result.Content;
+        ViewData["FormViewHtml"] = result.HtmlContent;
 
         HttpContext.Items["ElementName"] = elementName;
 

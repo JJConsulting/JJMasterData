@@ -48,7 +48,7 @@ JJSearchBox is a searchable combobox.
         if (result is IActionResult actionResult)
             return actionResult;
         
-        var model = new Model(searchBox.Content);
+        var model = new Model(searchBox.HtmlContent);
         return View("YourView",model);
     }
 
@@ -57,7 +57,7 @@ JJSearchBox is a searchable combobox.
 
 ```html
     <h1>Hey, here is my dynamic searchBox:</h1>
-    @Html.Raw(Model.SearchBoxHtml)
+    @Model.SearchBoxHtml
 ```
 
 ## Customization

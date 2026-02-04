@@ -4,7 +4,9 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -17,7 +19,7 @@ public class LookupController(
     : MasterDataController
 {
     [ViewData]
-    public string? LookupFormViewHtml { get; set; } 
+    public IHtmlContent? LookupFormViewHtml { get; set; } 
     
     [ViewData]
     public string? EncryptedLookupParameters { get; set; }
@@ -34,7 +36,7 @@ public class LookupController(
         if (result is IActionResult actionResult)
             return actionResult;
         
-        LookupFormViewHtml = result.Content;
+        LookupFormViewHtml = result.HtmlContent;
         EncryptedLookupParameters = encryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString());
         
         return View();

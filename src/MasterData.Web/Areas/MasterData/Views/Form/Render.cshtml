@@ -1,6 +1,4 @@
-﻿@using JJMasterData.Web.TagHelpers
-
-<master-data-form asp-controller="Form" asp-action="Render" asp-area="MasterData">
+﻿<master-data-form asp-controller="Form" asp-action="Render" asp-area="MasterData">
     <input type="hidden" name="masterdata-title" value="@ViewData["Title"]"/>
-    @Html.Raw(ViewData["FormViewHtml"])
+    @ViewData["FormViewHtml"]
 </master-data-form>

@@ -1,8 +1,8 @@
-﻿@using JJMasterData.Core.DataDictionary.Models
+﻿@using JJConsulting.Html.Bootstrap.TagHelpers.Extensions
+@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI.Components
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Html
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IControlFactory<JJComboBox> ComboBoxFactory
@@ -13,12 +13,12 @@
 }
 
 @{
-    async Task<string> GetInsertSelectionComboBoxHtml()
+    async ValueTask<IHtmlContent> GetInsertSelectionComboBoxHtml()
     {
         var comboBox = ComboBoxFactory.Create();
         comboBox.Name = "ElementNameToSelect";
         comboBox.DataItem.FirstOption = FirstOptionMode.Choose;
-        comboBox.DataItem.Items = new List<DataItemValue>();
+        comboBox.DataItem.Items = [];
 
         FormElement formElement = ViewBag.FormElement;
 
@@ -30,7 +30,7 @@
         comboBox.SelectedValue = formElement.Options.GridToolbarActions.InsertAction.ElementNameToSelect;
 
         var result = await comboBox.GetHtmlBuilderAsync();
-        return result.ToString();
+        return result.ToHtmlContent();
     }
 }
 
@@ -64,7 +64,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <label asp-for="ElementNameToSelect" class="form-label"></label>
-                    @Html.Raw(await GetInsertSelectionComboBoxHtml())
+                    @await GetInsertSelectionComboBoxHtml()
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <checkbox for="ReopenForm" tooltip="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]" layout="Switch" />

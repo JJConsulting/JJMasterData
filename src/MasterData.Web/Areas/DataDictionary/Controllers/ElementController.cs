@@ -1,11 +1,13 @@
 using System.Net;
 using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Web.Areas.DataDictionary.Models;
+using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -30,7 +32,7 @@ public class ElementController(
         if (result is IActionResult actionResult)
             return actionResult;
 
-        ViewData["FormViewHtml"] = result.Content;
+        ViewData["FormViewHtml"] = result.HtmlContent;
         
         return View();
     }
@@ -72,7 +74,7 @@ public class ElementController(
         if (result is IActionResult actionResult)
             return actionResult;
         
-        return PartialView(new ImportViewModel(result.Content));
+        return PartialView(new ImportViewModel(result.HtmlContent));
     }
 
     private void ConfigureUploadArea(JJUploadArea upload)
@@ -146,7 +148,7 @@ public class ElementController(
         }
 
         var validationSummary = elementService.GetValidationSummary();
-        ViewBag.Error = validationSummary.GetHtml();
+        ViewBag.Error = validationSummary.GetHtmlContent();
         return View();
     }
 
@@ -157,14 +159,14 @@ public class ElementController(
         if (!ModelState.IsValid)
         {
             validationSummary = elementService.GetValidationSummary();
-            ViewBag.Error = validationSummary.GetHtml();
+            ViewBag.Error = validationSummary.GetHtmlContent();
         }
             
         if (await elementService.DuplicateEntityAsync(model.OriginalElementName!, model.NewElementName!))
             return RedirectToAction("Index", new { elementName = model.NewElementName });
 
         validationSummary = elementService.GetValidationSummary();
-        ViewBag.Error = validationSummary.GetHtml();
+        ViewBag.Error = validationSummary.GetHtmlContent();
         return View();
     }
 
