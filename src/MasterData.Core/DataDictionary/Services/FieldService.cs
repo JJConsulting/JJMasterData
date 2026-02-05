@@ -210,7 +210,7 @@ public class FieldService(
     {
         if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
         {
-            if (field.DataType.IsString)
+            if (!field.DataType.IsString)
             {
                 AddError(nameof(field.DataType), StringLocalizer["MultiValues filters must be a VarChar type."]);
             }
