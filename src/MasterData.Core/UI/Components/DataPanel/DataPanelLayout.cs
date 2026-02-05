@@ -113,10 +113,12 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     
     private string GetPanelExpression(string expression)
     {
-        return dataPanel
+        var value = dataPanel
             .ExpressionsService
             .GetExpressionValue(expression, _dataPanelForm.FormStateData)
             ?.ToString() ?? string.Empty;
+
+        return dataPanel.StringLocalizer[value];
     }
 
     private async Task<HtmlBuilder> GetHtmlPanelGroup(FormElementPanel panel)

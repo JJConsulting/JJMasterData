@@ -86,10 +86,12 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
 
     private string GetExpressionValue(string? expression)
     {
-        return parentFormView
+        var value = parentFormView
             .ExpressionsService.GetExpressionValue(expression,
             GetFormStateData()
             )?.ToString() ?? string.Empty;
+
+        return parentFormView.Localizer[value];
     }
 
     private FormStateData GetFormStateData() => new(parentFormView.DataPanel.Values, parentFormView.UserValues, parentFormView.PageState);

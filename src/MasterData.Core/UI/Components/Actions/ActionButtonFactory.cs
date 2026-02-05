@@ -23,20 +23,22 @@ public class ActionButtonFactory(
     public JJLinkButton Create(ActionContext actionContext, bool visible, bool enabled)
     {
         var action = actionContext.Action;
-        var button = new JJLinkButton();
-        button.Name = actionContext.Id;
-        button.Tooltip = string.IsNullOrEmpty(action.Tooltip) ? action.Tooltip : stringLocalizer[action.Tooltip!];
-        button.Text = string.IsNullOrEmpty(action.Text) ? action.Text : stringLocalizer[action.Text!];
-        button.Color = action.Color;
-        button.IsGroup = action.IsGroup;
-        button.IsDefaultOption = action.IsDefaultOption;
-        button.DividerLine = action.DividerLine;
-        button.ShowAsButton = action is { IsGroup: false, ShowAsButton: true };
-        button.CssClass = action.CssClass;
-        button.IconClass = $"{action.Icon.CssClass} fa-fw";
-        button.Enabled = enabled;
-        button.Visible = visible;
-        
+        var button = new JJLinkButton
+        {
+            Name = actionContext.Id,
+            Tooltip = string.IsNullOrEmpty(action.Tooltip) ? action.Tooltip : stringLocalizer[action.Tooltip!],
+            Text = string.IsNullOrEmpty(action.Text) ? action.Text : stringLocalizer[action.Text!],
+            Color = action.Color,
+            IsGroup = action.IsGroup,
+            IsDefaultOption = action.IsDefaultOption,
+            DividerLine = action.DividerLine,
+            ShowAsButton = action is { IsGroup: false, ShowAsButton: true },
+            CssClass = action.CssClass,
+            IconClass = $"{action.Icon.CssClass} fa-fw",
+            Enabled = enabled,
+            Visible = visible
+        };
+
         return button;
     }
 

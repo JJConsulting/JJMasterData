@@ -149,7 +149,6 @@ public class JJFormView : AsyncComponent
     private readonly HtmlTemplateService _htmlTemplateService;
     private readonly IEnumerable<IPluginHandler> _pluginHandlers;
     private readonly MasterDataCoreOptions _options;
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
     private readonly ILogger<JJFormView> _logger;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IMasterDataUser _masterDataUser;
@@ -417,6 +416,7 @@ public class JJFormView : AsyncComponent
     internal IEntityRepository EntityRepository { get; }
     internal ExpressionsService ExpressionsService { get; }
     
+    internal IStringLocalizer<MasterDataResources> Localizer { get; }
 
     #endregion
 
@@ -449,7 +449,8 @@ public class JJFormView : AsyncComponent
         EncryptionService = encryptionService;
         ExpressionsService = expressionsService;
         ComponentFactory = componentFactory;
-
+        Localizer = stringLocalizer;
+        
         _masterDataUser = masterDataUser;
         _formService = formService;
         _formValuesService = formValuesService;
@@ -457,7 +458,6 @@ public class JJFormView : AsyncComponent
         _htmlTemplateService = htmlTemplateService;
         _pluginHandlers = pluginHandlers;
         _options = options.Value;
-        _stringLocalizer = stringLocalizer;
         _logger = logger;
         _dataDictionaryRepository = dataDictionaryRepository;
     }
@@ -710,7 +710,7 @@ public class JJFormView : AsyncComponent
         {
             Name = $"insert-alert-{Name}",
             Color = BootstrapColor.Success,
-            Title = _stringLocalizer[GridView.InsertAction.SuccessMessage],
+            Title = Localizer[GridView.InsertAction.SuccessMessage],
             ShowIcon = true,
             Icon = FontAwesomeIcon.CheckCircleO
         };
@@ -824,7 +824,7 @@ public class JJFormView : AsyncComponent
         catch (Exception ex)
         {
             _logger.LogSqlActionException(ex, sqlCommand.Sql);
-            var message = _stringLocalizer[ExceptionManager.GetMessage(ex)];
+            var message = Localizer[ExceptionManager.GetMessage(ex)];
             messageBox = ComponentFactory.MessageBox.Create(message, MessageIcon.Error);
         }
 
@@ -866,7 +866,7 @@ public class JJFormView : AsyncComponent
         catch (Exception exception)
         {
             _logger.LogError(exception, "Error while executing Plugin Action.");
-            result = PluginActionResult.Error(_stringLocalizer["Error"], exception.Message);
+            result = PluginActionResult.Error(Localizer["Error"], exception.Message);
         }
 
         var formResult = await GetDefaultResult(formStateData.Values);
@@ -1061,7 +1061,7 @@ public class JJFormView : AsyncComponent
         var isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
 
         if (!isVisible)
-            throw new UnauthorizedAccessException(_stringLocalizer["Insert action is not enabled"]);
+            throw new UnauthorizedAccessException(Localizer["Insert action is not enabled"]);
 
         if (isInsertSelection)
         {
@@ -1135,7 +1135,7 @@ public class JJFormView : AsyncComponent
         {
             Name = "back-action",
             Icon = FontAwesomeIcon.ArrowLeft,
-            Text = _stringLocalizer["Back"],
+            Text = Localizer["Back"],
             ShowAsButton = true,
             OnClientClick = Scripts.GetSetPageStateScript(PageState.List),
             IsDefaultOption = true
@@ -1269,7 +1269,7 @@ public class JJFormView : AsyncComponent
             Name = "go-back-action",
             Icon = FontAwesomeIcon.Backward,
             ShowAsButton = true,
-            Text = _stringLocalizer["Back"],
+            Text = Localizer["Back"],
             OnClientClick = script.ToString()
         };
 
@@ -1298,7 +1298,7 @@ public class JJFormView : AsyncComponent
         var formStateData = await GridView.GetFormStateDataAsync();
         bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formStateData);
         if (!isVisible)
-            throw new UnauthorizedAccessException(_stringLocalizer["Import action not enabled"]);
+            throw new UnauthorizedAccessException(Localizer["Import action not enabled"]);
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -1607,7 +1607,7 @@ public class JJFormView : AsyncComponent
         {
             var btnGroup = new JJLinkButtonGroup
             {
-                CaretText = _stringLocalizer["More"],
+                CaretText = Localizer["More"],
                 Actions = groupedActions,
                 ShowAsButton = true
             };
@@ -1627,7 +1627,7 @@ public class JJFormView : AsyncComponent
         if (args.ActionName is not InsertSelectionAction.ActionName)
             return ValueTaskHelper.CompletedTask;
 
-        args.LinkButton.Tooltip = _stringLocalizer["Select"];
+        args.LinkButton.Tooltip = Localizer["Select"];
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
 
         return ValueTaskHelper.CompletedTask;
