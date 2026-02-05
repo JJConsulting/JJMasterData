@@ -45,11 +45,9 @@ public class JJDataPanel(
     : AsyncComponent
 {
     #region "Fields"
-    private RouteContext _routeContext;
+
     private PageState? _pageState;
-    private bool _isAtModal;
     private FormUI _formUI;
-    private Dictionary<string, object> _secretValues;
 
     #endregion
     #region "Properties"
@@ -113,11 +111,12 @@ public class JJDataPanel(
     {
         get
         {
-            if (_secretValues == null && CurrentContext.Request.Form.TryGetValue($"data-panel-secret-values-{Name}", out var secretValues))
-                _secretValues = EncryptionService.DecryptDictionary(secretValues);
-            return _secretValues;
+            if (field == null &&
+                CurrentContext.Request.Form.TryGetValue($"data-panel-secret-values-{Name}", out var secretValues))
+                field = EncryptionService.DecryptDictionary(secretValues);
+            return field;
         }
-        set => _secretValues = value;
+        set;
     }
 
     /// <summary>
@@ -142,13 +141,13 @@ public class JJDataPanel(
     {
         get
         {
-            if (_routeContext != null)
-                return _routeContext;
+            if (field != null)
+                return field;
 
             var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
-            _routeContext = factory.Create();
+            field = factory.Create();
             
-            return _routeContext;
+            return field;
         }
     }
 
@@ -159,13 +158,13 @@ public class JJDataPanel(
         get
         {
             if (CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"] != null)
-                _isAtModal = StringManager.ParseBool(CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"]);
+                field = StringManager.ParseBool(CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"]);
 
-            return _isAtModal;
+            return field;
         }
-        set => _isAtModal = value;
+        set;
     }
-    
+
     internal IHttpContext CurrentContext { get; } = currentContext;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
     internal FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;

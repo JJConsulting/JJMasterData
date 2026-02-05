@@ -12,7 +12,7 @@ public sealed class LabelFactory(IStringLocalizer<MasterDataResources> stringLoc
         {
             LabelFor = field.Name,
             Text = string.IsNullOrEmpty(field.Label) ? field.Name : stringLocalizer[field.Label],
-            Tooltip = field.HelpDescription,
+            Tooltip = string.IsNullOrEmpty(field.HelpDescription) ? field.HelpDescription : stringLocalizer[field.HelpDescription],
             IsRequired = field.IsRequired,
             RequiredText = stringLocalizer["Required"]
         };
