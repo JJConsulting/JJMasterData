@@ -10,15 +10,11 @@ using System.Text.Json.Serialization;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElement : Element
 {
-    private FormElementFieldList? _fields;
-    private FormElementRelationshipList? _relationships;
-
     [JsonIgnore]
     internal string? ParentName { get; set; }
 
@@ -39,34 +35,38 @@ public class FormElement : Element
 
     [JsonPropertyName("typeIdentifier")]
     public char TypeIdentifier { get; init; } = 'F';
-    
+
     [Required]
     [JsonPropertyName("fields")]
     public new FormElementFieldList Fields
     {
-        get => _fields ?? [];
+        get;
         set
         {
             base.Fields = new ElementFieldList(value.GetElementFields());
-            _fields = value;
+            field = value;
         }
     }
 
-    [Required] [JsonPropertyName("panels")] public List<FormElementPanel> Panels { get; set; }
+    [Required] 
+    [JsonPropertyName("panels")]
+    public List<FormElementPanel> Panels { get; set; }
 
     [Required]
     [JsonPropertyName("relations")]
     public new FormElementRelationshipList Relationships
     {
-        get => _relationships ?? [];
+        get;
         set
         {
             base.Relationships = value.GetElementRelationships();
-            _relationships = value;
+            field = value;
         }
     }
 
-    [Required] [JsonPropertyName("options")] public FormElementOptions Options { get; set; }
+    [Required] 
+    [JsonPropertyName("options")] 
+    public FormElementOptions Options { get; set; }
 
     [Required]
     [JsonPropertyName("apiOptions")]

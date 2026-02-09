@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
@@ -122,7 +123,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
         if (values == null)
         {
-            values = gridView.RelationValues;
+            values = new Dictionary<string, object>(gridView.RelationValues);
         }
         else
         {
@@ -155,8 +156,10 @@ internal sealed class GridFilter(JJGridView gridView)
     private async ValueTask<HtmlBuilder> GetDefaultFilter()
     {
         var action = gridView.FilterAction;
-        var fields = gridView.FormElement.Fields.DeepCopy().FindAll(
-            field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"));
+        var fields = gridView.FormElement.Fields
+            .Where(field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"))
+            .Select(f => f.DeepCopy())
+            .ToList();
 
         foreach (var field in fields)
         {
@@ -172,7 +175,7 @@ internal sealed class GridFilter(JJGridView gridView)
         }
 
         if (fields.Count == 0)
-            return new HtmlBuilder(string.Empty);
+            return new HtmlBuilder();
 
         var values = await GetCurrentFilterAsync();
 
@@ -272,7 +275,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
     private JJMasterDataCollapsePanel GetFilterScreenCollapse()
     {
-        var body = new HtmlBuilder(HtmlTag.Div);
+        var body = HtmlBuilder.Div();
         body.WithCssClass("col-sm-12");
         body.Append(GetHtmlToolBarSearch(isToolBar: false));
 
