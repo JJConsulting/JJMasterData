@@ -809,6 +809,10 @@
     <value>Expressão para Habilitar</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Enable Localization" xml:space="preserve">
+    <value>Habilitar Traduções</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Enable MultSelect" xml:space="preserve">
     <value>Habilitar seleção múltipla</value>
     <comment>JJMasterDataWeb</comment>

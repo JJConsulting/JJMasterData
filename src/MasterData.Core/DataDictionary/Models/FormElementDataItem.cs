@@ -44,6 +44,13 @@ public class FormElementDataItem
     [Display(Name = "Layout")]
     public DataItemRadioLayout? RadioLayout { get; set; }
     
+    /// <summary>
+    /// Enables localization of list item descriptions.
+    /// </summary>
+    [JsonPropertyName("enableLocalization")]
+    [Display(Name = "Enable Localization")]
+    public bool EnableLocalization { get; set; }
+
     /// <remarks>
     /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
     /// </remarks>

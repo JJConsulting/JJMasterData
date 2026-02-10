@@ -52,7 +52,11 @@ public class JJComboBox(
         set;
     }
 
-    public bool EnableLocalization { get; set; } = true;
+    public bool EnableLocalization
+    {
+        get => DataItem.EnableLocalization;
+        set => DataItem.EnableLocalization = value;
+    }
 
     public string? FloatingLabel { get; set; }
     public bool UseFloatingLabel { get; set; }
@@ -150,7 +154,7 @@ public class JJComboBox(
 
     private HtmlBuilder CreateOption(DataItemValue value)
     {
-        var label = IsManualValues() && EnableLocalization ? stringLocalizer[value.Description!] : value.Description;
+        var label = GetLocalizedDescription(value.Description);
 
         bool isSelected;
 
@@ -228,8 +232,7 @@ public class JJComboBox(
             {
                 selectedText = item.Description;
 
-                if (IsManualValues()) 
-                    selectedText = stringLocalizer[selectedText];
+                selectedText = GetLocalizedDescription(selectedText);
 
                 break;
             }
@@ -256,7 +259,7 @@ public class JJComboBox(
         if (item == null)
             return null;
 
-        var label = IsManualValues() ? stringLocalizer[item.Description] : item.Description;
+        var label = GetLocalizedDescription(item.Description);
 
         if (DataItem.ShowIcon)
         {
@@ -292,11 +295,11 @@ public class JJComboBox(
         return values.Find(v => string.Equals(v.Id, searchId, StringComparison.InvariantCultureIgnoreCase));
     }
 
-    private bool IsManualValues()
+    private string GetLocalizedDescription(string? description)
     {
-        if (DataItem.Items == null)
-            return false;
+        if (string.IsNullOrEmpty(description))
+            return string.Empty;
 
-        return DataItem.Items.Count > 0;
+        return DataItem.EnableLocalization ? stringLocalizer[description!] : description!;
     }
 }

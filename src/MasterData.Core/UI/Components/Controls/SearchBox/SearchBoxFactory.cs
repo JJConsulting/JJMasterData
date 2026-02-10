@@ -1,21 +1,24 @@
 #nullable enable
 using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class SearchBoxFactory(
         DataItemService dataItemService,
         IHttpRequest httpRequest,
-        IEncryptionService encryptionService)
+        IEncryptionService encryptionService,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJSearchBox>
 {
     public JJSearchBox Create()
     {
-        return new JJSearchBox(httpRequest, encryptionService, dataItemService);
+        return new JJSearchBox(httpRequest, encryptionService, dataItemService, stringLocalizer);
     }
 
     public JJSearchBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
@@ -23,7 +26,7 @@ internal sealed class SearchBoxFactory(
         if (field.DataItem == null)
             throw new ArgumentNullException(nameof(field.DataItem));
 
-        var search = new JJSearchBox(httpRequest, encryptionService, dataItemService)
+        var search = new JJSearchBox(httpRequest, encryptionService, dataItemService, stringLocalizer)
         {
             DataItem = field.DataItem,
             ConnectionId = formElement.ConnectionId,

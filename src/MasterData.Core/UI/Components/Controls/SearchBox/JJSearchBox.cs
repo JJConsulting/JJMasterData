@@ -9,6 +9,7 @@ using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
@@ -19,6 +20,7 @@ using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 
 using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -189,6 +191,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     private IHttpRequest Request { get; }
     private IEncryptionService EncryptionService { get; }
     private DataItemService DataItemService { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     
     public Guid? ConnectionId { get; set; }
     public FormElementDataItem DataItem { get; set; }
@@ -229,12 +232,14 @@ public class JJSearchBox : ControlBase, IDataItemControl
     public JJSearchBox(
         IHttpRequest request,
         IEncryptionService encryptionService,
-        DataItemService dataItemService) : base(request.Form)
+        DataItemService dataItemService,
+        IStringLocalizer<MasterDataResources> stringLocalizer) : base(request.Form)
     {
         HtmlId = Name;
         Request = request;
         EncryptionService = encryptionService;
         DataItemService = dataItemService;
+        StringLocalizer = stringLocalizer;
         Enabled = true;
         TriggerLength = 1;
         PlaceHolder = "Search...";
@@ -371,7 +376,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
                 var ids = searchId.Split(',');
                 var descriptions = _values
                     .Where(x => ids.Contains(x.Id))
-                    .Select(x => x.Description)
+                    .Select(x => LocalizeDescription(x.Description))
                     .Where(d => !string.IsNullOrEmpty(d));
                 description = string.Join(", ", descriptions);
             }
@@ -379,11 +384,11 @@ public class JJSearchBox : ControlBase, IDataItemControl
             {
                 var item = _values.FirstOrDefault(x => x.Id.Equals(searchId));
                 if (item != null)
-                    description = item.Description;
+                    description = LocalizeDescription(item.Description);
             }
         }
 
-        return description;
+        return LocalizeDescription(description);
     }
 
 
@@ -420,7 +425,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         return values.ConvertAll(v=>new DataItemResult
         {
             Id = v.Id,
-            Description = v.Description,
+            Description = LocalizeDescription(v.Description),
             IconCssClass = DataItem.ShowIcon
                 ? v.Icon.CssClass
                 : null,
@@ -429,5 +434,13 @@ public class JJSearchBox : ControlBase, IDataItemControl
                 : null,
             ImageUrl = v.ImageUrl
         });
+    }
+
+    private string? LocalizeDescription(string? description)
+    {
+        if (!DataItem.EnableLocalization || string.IsNullOrEmpty(description))
+            return description;
+
+        return StringLocalizer[description!];
     }
 }
