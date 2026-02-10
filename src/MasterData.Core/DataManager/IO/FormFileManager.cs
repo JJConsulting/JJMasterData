@@ -67,6 +67,9 @@ public class FormFileManager(string memoryFilesSessionName,
         if (string.IsNullOrWhiteSpace(newName))
             throw new ArgumentNullException(stringLocalizer["Required file name"]);
 
+        currentName = FileIO.SanitizeFileName(currentName);
+        newName = FileIO.SanitizeFileName(newName);
+
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
             throw new JJMasterDataException(stringLocalizer["The file extension must remain the same"]);
 
@@ -85,7 +88,7 @@ public class FormFileManager(string memoryFilesSessionName,
 
         if (AutoSave && !string.IsNullOrEmpty(FolderPath))
         {
-            File.Move(Path.Combine(FolderPath,currentName), Path.Combine(FolderPath, newName));
+            File.Move(FileIO.GetSafePath(FolderPath, currentName), FileIO.GetSafePath(FolderPath, newName));
         }
         else
         {
@@ -107,15 +110,17 @@ public class FormFileManager(string memoryFilesSessionName,
 
     public FormFileInfo GetFile(string fileName)
     {
+        var safeName = FileIO.SanitizeFileName(fileName);
         var files = GetFiles();
-        var file = files.Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
+        var file = files.Find(x => safeName.Equals(x.Content.FileName) || safeName.Equals(x.OldName));
         
         return file;
     }
 
     public string GetFilePath(string fileName)
     {
-        return Path.Combine(FolderPath, fileName);
+        var safeName = FileIO.SanitizeFileName(fileName);
+        return FileIO.GetSafePath(FolderPath, safeName);
     }
 
     public void CreateFile(FormFileContent fileContent, bool replaceIfExists)
@@ -143,9 +148,8 @@ public class FormFileManager(string memoryFilesSessionName,
         if (replaceIfExists && CountFiles() > 0)
             DeleteAll();
 
-        if (fileName?.LastIndexOf("\\") > 0)
-            // ReSharper disable once ReplaceSubstringWithRangeIndexer
-            fileName = fileName.Substring(fileName.LastIndexOf("\\", StringComparison.Ordinal) + 1);
+        fileName = FileIO.SanitizeFileName(fileName);
+        fileContent.FileName = fileName;
 
         if (AutoSave && !string.IsNullOrEmpty(FolderPath))
         {
@@ -175,6 +179,8 @@ public class FormFileManager(string memoryFilesSessionName,
 
     public void DeleteFile(string fileName)
     {
+        fileName = FileIO.SanitizeFileName(fileName);
+
         if (OnBeforeDeleteFile != null)
         {
             var args = new FormDeleteFileEventArgs(fileName);
@@ -190,7 +196,7 @@ public class FormFileManager(string memoryFilesSessionName,
 
         if (AutoSave && !string.IsNullOrEmpty(FolderPath))
         {
-            File.Delete(Path.Combine(FolderPath, fileName));
+            File.Delete(FileIO.GetSafePath(FolderPath, fileName));
         }
         else
         {
@@ -246,15 +252,16 @@ public class FormFileManager(string memoryFilesSessionName,
         
         foreach (var file in MemoryFiles)
         {
-            string fileName = file.Content.FileName;
+            var fileName = FileIO.SanitizeFileName(file.Content.FileName);
             if (file.Deleted)
             {
-                string filename = string.IsNullOrEmpty(file.OldName) ? fileName : file.OldName;
-                File.Delete(folderPath + filename);
+                var deletedName = string.IsNullOrEmpty(file.OldName) ? fileName : FileIO.SanitizeFileName(file.OldName);
+                File.Delete(FileIO.GetSafePath(folderPath, deletedName));
             }
             else if (!string.IsNullOrEmpty(file.OldName) && !file.IsInMemory)
             {
-                File.Move(folderPath + file.OldName, folderPath + fileName);
+                var oldName = FileIO.SanitizeFileName(file.OldName);
+                File.Move(FileIO.GetSafePath(folderPath, oldName), FileIO.GetSafePath(folderPath, fileName));
             }
             else if (file.Content.Bytes != null && file.IsInMemory)
             {
@@ -302,7 +309,8 @@ public class FormFileManager(string memoryFilesSessionName,
         if (!Directory.Exists(FolderPath))
             Directory.CreateDirectory(FolderPath);
 
-        var fileFullName = Path.Combine(FolderPath, file.FileName);
+        var safeName = FileIO.SanitizeFileName(file.FileName);
+        var fileFullName = FileIO.GetSafePath(FolderPath, safeName);
         using var ms = new MemoryStream(file.Bytes);
         using var fileStream = File.Create(fileFullName);
         ms.Seek(0, SeekOrigin.Begin);

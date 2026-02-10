@@ -385,7 +385,7 @@ public class JJUploadView : AsyncComponent
                 case "deleteFile":
                     return GetDeleteFileResult(fileName);
                 case "downloadFile":
-                    return GetDownloadFileResult(Path.Combine(FormFileManager.FolderPath, fileName));
+                    return GetDownloadFileResult(FormFileManager.GetFilePath(fileName));
                 case "renameFile":
                     return GetRenameFileResult(fileName);
             }

@@ -130,4 +130,40 @@ public static class FileIO
         //file is not locked
         return false;
     }
+
+    public static string SanitizeFileName(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentNullException(nameof(fileName));
+
+        var safeName = Path.GetFileName(fileName);
+
+        if (string.IsNullOrWhiteSpace(safeName))
+            throw new ArgumentException("Invalid file name.", nameof(fileName));
+
+        if (safeName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            throw new ArgumentException("Invalid file name.", nameof(fileName));
+
+        return safeName;
+    }
+
+    public static string GetSafePath(string basePath, string fileName)
+    {
+        if (string.IsNullOrEmpty(basePath))
+            throw new ArgumentNullException(nameof(basePath));
+
+        var baseFullPath = Path.GetFullPath(basePath);
+        if (!baseFullPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            baseFullPath += Path.DirectorySeparatorChar;
+        var fullPath = Path.GetFullPath(Path.Combine(baseFullPath, fileName));
+
+        var comparison = Path.DirectorySeparatorChar == '\\'
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+
+        if (!fullPath.StartsWith(baseFullPath, comparison))
+            throw new ArgumentException("Invalid file path.", nameof(fileName));
+
+        return fullPath;
+    }
 }
