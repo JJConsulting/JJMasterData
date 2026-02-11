@@ -27,6 +27,7 @@ builder.Services.Configure<HostOptions>(options =>
 });
 builder.Services.AddJJMasterDataWeb(builder.Configuration).WithPdfExportation();
 builder.Services.AddJJMasterDataWebApi();
+builder.Services.AddResponseCaching();
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
@@ -49,6 +50,7 @@ app.UseStaticFiles();
 app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseResponseCaching();
 await app.UseMasterDataSeedingAsync();
 
 //Here you can also app.MapDataDictionary().RequireAuthorization();
