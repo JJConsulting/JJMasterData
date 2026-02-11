@@ -12,4 +12,14 @@ public class FormatTest
 
         Assert.Equal(expected, text);
     }
+
+    [Theory]
+    [InlineData("19131243000197", "19.131.243/0001-97")]
+    [InlineData("AB.CDE.FGH/IJKL-52", "AB.CDE.FGH/IJKL-52")]
+    public void FormatCnpj_ShouldSupportNumericAndAlphanumeric(string input, string expected)
+    {
+        var result = Format.FormatCnpj(input);
+
+        Assert.Equal(expected, result);
+    }
 }

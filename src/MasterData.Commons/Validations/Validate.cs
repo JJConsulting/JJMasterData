@@ -17,43 +17,50 @@ public static class Validate
         int[] multiplicador1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
         int[] multiplicador2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
 
-        cnpj = cnpj.Trim();
+        cnpj = cnpj.Trim().ToUpperInvariant();
         cnpj = cnpj.Replace(".", "").Replace("-", "").Replace("/", "").Replace("_", "");
 
         if (cnpj.Length != 14)
             return false;
 
-        var tempCnpj = cnpj.Substring(0, 12);
-        var soma = 0; for (int i = 0; i < 12; i++) soma += int.Parse(tempCnpj[i].ToString()) * multiplicador1[i];
-        var resto = (soma % 11);
+        var raizCnpj = cnpj[..12];
+        if (!raizCnpj.All(char.IsLetterOrDigit))
+            return false;
 
-        if (resto < 2)
+        if (!char.IsDigit(cnpj[12]) || !char.IsDigit(cnpj[13]))
+            return false;
+
+        var primeiroDigito = CalcularDigitoCnpj(raizCnpj, multiplicador1);
+        var segundoDigito = CalcularDigitoCnpj($"{raizCnpj}{primeiroDigito}", multiplicador2);
+
+        return cnpj.EndsWith($"{primeiroDigito}{segundoDigito}");
+    }
+
+    private static int CalcularDigitoCnpj(string baseCnpj, int[] multiplicadores)
+    {
+        var soma = 0;
+        for (var i = 0; i < multiplicadores.Length; i++)
         {
-            resto = 0;
+            var valorCaractere = ToCnpjValue(baseCnpj[i]);
+            if (valorCaractere < 0)
+                return -1;
+
+            soma += valorCaractere * multiplicadores[i];
         }
-        else
-        {
-            resto = 11 - resto;
-        }
 
+        var resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
+    }
 
-        var digito = resto.ToString();
-        tempCnpj += digito;
-        soma = 0;
+    private static int ToCnpjValue(char caractere)
+    {
+        if (char.IsDigit(caractere))
+            return caractere - '0';
 
-        for (int i = 0; i < 13; i++)
-            soma += int.Parse(tempCnpj[i].ToString()) * multiplicador2[i];
+        if (char.IsLetter(caractere))
+            return char.ToUpperInvariant(caractere) - 48;
 
-        resto = (soma % 11);
-
-        if (resto < 2)
-            resto = 0;
-        else
-            resto = 11 - resto;
-
-        digito += resto;
-
-        return cnpj.EndsWith(digito);
+        return -1;
     }
 
     /// <summary>

@@ -133,7 +133,7 @@ public sealed class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 textGroup.Attributes["onclick"] = "this.select();";
                 textGroup.Attributes["data-inputmask"] =
-                    "'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'";
+                    "'mask': '[**.***.***/****-99]', 'placeholder':'', 'greedy': 'false'";
                 break;
             case FormComponent.Cpf:
                 textGroup.MaxLength = 14;

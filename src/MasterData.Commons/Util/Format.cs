@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace JJMasterData.Commons.Util;
@@ -135,14 +136,14 @@ public static class Format
     /// </summary>
     public static string FormatCnpj(string cnpj)
     {
-        string sRet = "";
-        double nCnpj;
-        if (double.TryParse(cnpj, out nCnpj))
-        {
-            sRet = nCnpj.ToString(@"#00\.000\.000\/0000\-00");
-        }
+        var cleanCnpj = StringManager.ClearCpfCnpjChars(cnpj).Trim().ToUpperInvariant();
+        if (cleanCnpj.Length != 14)
+            return string.Empty;
 
-        return sRet;
+        if (!cleanCnpj[..12].All(char.IsLetterOrDigit) || !cleanCnpj[12..].All(char.IsDigit))
+            return string.Empty;
+
+        return $"{cleanCnpj[..2]}.{cleanCnpj.Substring(2, 3)}.{cleanCnpj.Substring(5, 3)}/{cleanCnpj.Substring(8, 4)}-{cleanCnpj[12..]}";
     }
 
     /// <summary>
