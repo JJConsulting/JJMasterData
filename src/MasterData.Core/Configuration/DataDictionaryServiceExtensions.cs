@@ -20,6 +20,7 @@ public static class DataDictionaryServiceExtensions
         services.AddTransient<ClassGenerationService>();
         services.AddTransient<ScriptsService>();
         services.AddTransient<RelationshipsService>();
+        services.AddTransient<DataDictionaryLocalizationService>();
 
         return services;
     }
