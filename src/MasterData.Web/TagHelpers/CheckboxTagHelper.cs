@@ -1,3 +1,4 @@
+using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -79,7 +80,7 @@ public sealed class CheckboxTagHelper(
         output.TagMode = TagMode.StartTagAndEndTag;
 
         var htmlBuilder = checkBox.GetHtmlBuilder();
-        output.Content.SetHtmlContent(htmlBuilder.ToString());
+        output.Content.SetHtmlContent(htmlBuilder);
     }
 
     private void Contextualize(ViewContext viewContext)
