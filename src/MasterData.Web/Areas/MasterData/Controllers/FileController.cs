@@ -1,22 +1,18 @@
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.ResponseCaching;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FileController(ElementFileService service) : MasterDataController
 {
-    [ResponseCache(Duration = 14400)]
+    [ResponseCache(Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> Index(
         string elementName,
         string fieldName, 
         string id,
         string? fileName = null)
     {
-        var responseCachingFeature = HttpContext.Features.Get<IResponseCachingFeature>();
-        responseCachingFeature?.VaryByQueryKeys = ["fileName"];
-
         var fileStream = await service.GetElementFileAsync(elementName, id, fieldName, fileName);
 
         if(fileStream == null)
