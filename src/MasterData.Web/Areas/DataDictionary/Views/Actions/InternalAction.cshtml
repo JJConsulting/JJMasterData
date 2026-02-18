@@ -1,175 +1,158 @@
 ﻿@using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Commons.Data.Entity.Models
-@using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @model JJMasterData.Core.DataDictionary.Models.Actions.InternalAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "InternalAction";
+    ViewData["CopyAction"] = "CopyInternalAction";
+    ViewData["FormRouteValues"] = new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"], fieldName = ViewBag.FieldName };
 }
 
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", savePanelState);
+@section ActionTabs {
+    <li id="navInternalRedirect" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-internal-redirect">
+            @StringLocalizer["Internal Redirect"]
+        </a>
+    </li>
+}
 
-    function savePanelState() {
-        let currentTab = $("#selected-tab").val();
-        if (!currentTab) {
-            currentTab = "#div-general";
-        }
-        $(".nav a[href='" + currentTab + "']").tab("show");
+@section ActionTabContent {
+    <div id="div-internal-redirect" class="tab-pane fade">
+        <div class="row">
 
-        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function(e) {
-            var target = $(e.target).attr("href");
-            $("#selected-tab").val(target);
-            resizeContainer();
-        });
-    }
-
-
-    function addRelation() {
-        SpinnerOverlay.show();
-        const url = "@Html.Raw(Url.Action("AddRelation", "Actions", new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))";
-        $(getMasterDataForm()).attr("action", url).submit();
-    }
-
-    function removeRelation(relationIndex) {
-        SpinnerOverlay.show();
-        $("<input>").attr({
-            type: "hidden",
-            id: "relationIndex",
-            name: "relationIndex",
-            value: relationIndex
-        }).appendTo(getMasterDataForm());
-
-        const url = "@Url.Action("RemoveRelation", "Actions", new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName })";
-        $(getMasterDataForm()).attr("action", url).submit();
-    }
-
-
-</script>
-
-@using (Html.BeginMasterDataForm("InternalAction", "Actions",
-   new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
-{
-    <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab" />
-
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-        <li id="navInternalRedirect" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-internal-redirect">@StringLocalizer["Internal Redirect"]</a></li>
-        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
-    </ul>
-
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" Model="@Model"/>
-        </div>
-
-        <div id="div-internal-redirect" class="tab-pane fade">
-            <div class="row">
-
-                <div class="@BootstrapHelper.FormGroup col-sm-6 mb-3 required">
-                    <label class="@BootstrapHelper.Label" asp-for="ElementRedirect.ElementNameRedirect">@StringLocalizer["Element Name"]</label>
-                    @if (Model.ElementRedirect.RelationFields.Count == 0)
-                    {
-                        @Html.DropDownListFor(model => model.ElementRedirect.ElementNameRedirect,
-                            new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-                            new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
-                    }
-                    else
-                    {
-                        @Html.TextBoxFor(model => model.ElementRedirect.ElementNameRedirect, new { @class = "form-control", @readonly = "@readonly" })
-                    }
-                </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <label class="@BootstrapHelper.Label" asp-for="ElementRedirect.ViewType">@StringLocalizer["View Type"]</label>
-                    <select asp-for="ElementRedirect.ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
-                </div>
-                
-                <div class="@BootstrapHelper.FormGroup col-sm-6 mb-3">
-                    <checkbox for="ElementRedirect.ShowAsModal" layout="Switch"/>
-                </div>
-
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <label class="@BootstrapHelper.Label " asp-for="ElementRedirect.ModalSize">@StringLocalizer["Popup Size"]</label>
-                    <select asp-for="ElementRedirect.ModalSize" class="form-control" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
-                </div>
-                
-
+            <div class="@BootstrapHelper.FormGroup col-sm-6 mb-3 required">
+                <label class="@BootstrapHelper.Label" asp-for="ElementRedirect.ElementNameRedirect">@StringLocalizer["Element Name"]</label>
+                @if (Model.ElementRedirect.RelationFields.Count == 0)
+                {
+                    @Html.DropDownListFor(model => model.ElementRedirect.ElementNameRedirect,
+                        new SelectList(ViewBag.ElementNameList, "Key", "Value"),
+                        new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => model.ElementRedirect.ElementNameRedirect, new { @class = "form-control", @readonly = "@readonly" })
+                }
             </div>
-            <collapse-panel title="@StringLocalizer["Relation"]" icon="SolidCodeBranch" expanded-by-default="true">
-                <div class="row">
-                    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                        <label class="@BootstrapHelper.Label" >@StringLocalizer["Field"]</label>
-                        @Html.DropDownList("redirectField", new SelectList(ViewBag.RedirectFieldList, "Key", "Value"), new { @class = "form-control" })
-                    </div>
-                    <div class="@BootstrapHelper.FormGroup col-sm-5 required">
-                        <label class="@BootstrapHelper.Label">@StringLocalizer["Value"]</label>
-                        @Html.DropDownList("internalField", new SelectList(ViewBag.InternalFieldList, "Key", "Value"), new { @class = "form-control" })
-                    </div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-sm-4">
-                        <button type="button" class="@BootstrapHelper.BtnDefault" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Add Reference"]" OnClick="addRelation();">
-                            <span class="fa fa-plus-square-o"></span>&nbsp;@StringLocalizer["Add"]
-                        </button>
-                    </div>
-                </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-6">
+                <label class="@BootstrapHelper.Label" asp-for="ElementRedirect.ViewType">@StringLocalizer["View Type"]</label>
+                <select asp-for="ElementRedirect.ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
+            </div>
 
-                <div class="row">
-                    <div class="col-sm-12">
+            <div class="@BootstrapHelper.FormGroup col-sm-6 mb-3">
+                <checkbox for="ElementRedirect.ShowAsModal" layout="Switch"/>
+            </div>
 
-                        <table class="table table-striped table-bordered table-hover">
-                            <thead>
-                            <tr>
-                                <th style="width:70px;">@StringLocalizer["Id"]</th>
-                                <th>@StringLocalizer["Relationship"]</th>
-                                <th style="width:60px;">@StringLocalizer["Remove"]</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if (Model.ElementRedirect.RelationFields.Count == 0)
-                            {
-                            <tr>
-                                <td colspan="3">@StringLocalizer["No relationships found"]</td>
-                            </tr>
-                            }
-                            @for (int i = 0; i < Model.ElementRedirect.RelationFields.Count; i++)
-                            {
-                            <tr>
-                                <td>@i</td>
-                                <td>
-                                    @Model.ElementRedirect.RelationFields[i].RedirectField
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                    @Model.ElementRedirect.RelationFields[i].InternalField
-                                    @Html.HiddenFor(model => model.ElementRedirect.RelationFields[i].InternalField)
-                                    @Html.HiddenFor(model => model.ElementRedirect.RelationFields[i].RedirectField)
-                                </td>
-                                <td align="center" valign="middle">
-                                    <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Remove"]" onclick="removeRelation(@i);">
-                                        <span class="fa fa-trash"></span>
-                                    </a>
-                                </td>
-                            </tr>
-                            }
-                            </tbody>
-                        </table>
+            <div class="@BootstrapHelper.FormGroup col-sm-6">
+                <label class="@BootstrapHelper.Label " asp-for="ElementRedirect.ModalSize">@StringLocalizer["Popup Size"]</label>
+                <select asp-for="ElementRedirect.ModalSize" class="form-control" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
+            </div>
 
-                    </div>
-                </div>
-            </collapse-panel>
 
         </div>
+        <collapse-panel title="@StringLocalizer["Relation"]" icon="SolidCodeBranch" expanded-by-default="true">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <label class="@BootstrapHelper.Label" >@StringLocalizer["Field"]</label>
+                    @Html.DropDownList("redirectField", new SelectList(ViewBag.RedirectFieldList, "Key", "Value"), new { @class = "form-control" })
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-5 required">
+                    <label class="@BootstrapHelper.Label">@StringLocalizer["Value"]</label>
+                    @Html.DropDownList("internalField", new SelectList(ViewBag.InternalFieldList, "Key", "Value"), new { @class = "form-control" })
+                </div>
+            </div>
 
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" Model="@Model"/>
-        </div>
+            <div class="row mb-3">
+                <div class="col-sm-4">
+                    <button type="button" class="@BootstrapHelper.BtnDefault" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Add Reference"]" OnClick="addRelation();">
+                        <span class="fa fa-plus-square-o"></span>&nbsp;@StringLocalizer["Add"]
+                    </button>
+                </div>
+            </div>
+
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>@StringLocalizer["Field"]</th>
+                    <th>@StringLocalizer["Value"]</th>
+                    <th style="width: 70px">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                @for (var i = 0; i < Model.ElementRedirect.RelationFields.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model.ElementRedirect.RelationFields[i].RedirectField
+                            @Html.HiddenFor(model => model.ElementRedirect.RelationFields[i].RedirectField)
+                        </td>
+                        <td>
+                            @Model.ElementRedirect.RelationFields[i].InternalField
+                            @Html.HiddenFor(model => model.ElementRedirect.RelationFields[i].InternalField)
+                        </td>
+                        <td>
+                            <button type="button" class="@BootstrapHelper.BtnDefault btn-small" style="margin-left:10px;"
+                                    onclick="removeRelation(@i)">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </collapse-panel>
     </div>
-
-    <partial name="_Toolbar"/>
 }
 
+@section Scripts {
+    <script type="text/javascript">
+        function addRelation() {
+            const url = "@Html.Raw(Url.Action("AddRelation", "Actions", new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"], fieldName = ViewBag.FieldName }))";
+            submitRelationChange(url);
+        }
+
+        function removeRelation(relationIndex) {
+            const url = "@Url.Action("RemoveRelation", "Actions", new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"], fieldName = ViewBag.FieldName })";
+            const form = getMasterDataForm();
+            let relationInput = form.querySelector("#relationIndex");
+            if (!relationInput) {
+                relationInput = document.createElement("input");
+                relationInput.type = "hidden";
+                relationInput.id = "relationIndex";
+                relationInput.name = "relationIndex";
+                form.appendChild(relationInput);
+            }
+            relationInput.value = relationIndex.toString();
+            submitRelationChange(url);
+        }
+
+        function submitRelationChange(url) {
+            const source = "@ViewData["ActionSource"]";
+            const detailsId = "action-details-" + source;
+            const details = document.getElementById(detailsId);
+
+            if (!details) {
+                SpinnerOverlay.show();
+                $(getMasterDataForm()).attr("action", url).submit();
+                return;
+            }
+
+            postFormValues({
+                url: url,
+                success: html => {
+                    if (!html) {
+                        return;
+                    }
+                    HTMLHelper.setInnerHTML(detailsId, html);
+                    details.setAttribute("data-loaded", "true");
+                    listenAllEvents("#" + detailsId);
+                    if (typeof restoreActionTabState === "function") {
+                        restoreActionTabState();
+                    }
+                }
+            });
+        }
+    </script>
+}

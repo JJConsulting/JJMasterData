@@ -12,7 +12,19 @@
     var backUrl = Url.Action("Index", "Element")!;
     Layout = Options.Value.LayoutPath;
     var elementName = ViewData["ElementName"]!.ToString()!;
-    List<BreadcrumbItem> breadcrumbs = [new(MasterDataLogo.GetHtmlBuilder(), backUrl), new(StringLocalizer["Data Dictionary"], backUrl), new(elementName)];
+    var customBreadcrumbs = ViewData["Breadcrumbs"] as List<BreadcrumbItem>;
+    var currentMenuId = ViewData["MenuId"]?.ToString();
+    var breadcrumbs = customBreadcrumbs
+                      ?? [
+                          new(MasterDataLogo.GetHtmlBuilder(), backUrl), 
+                          new(StringLocalizer["Data Dictionary"], backUrl), 
+                          new(elementName)
+                      ];
+    
+    if (!string.IsNullOrEmpty(currentMenuId))
+    {
+        breadcrumbs.Add(new BreadcrumbItem(StringLocalizer[currentMenuId]));
+    }
 }
 
 @section Stylesheets{
@@ -62,16 +74,12 @@
     <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
 }
 
-@functions
-{
-    private string? _currentMenuId;
-
-    private string IsActive(string menuId)
+@{
+    string IsActive(string menuId)
     {
-        _currentMenuId ??= ViewData["MenuId"]!.ToString()!;
         var cssClass = string.Empty;
 
-        if (_currentMenuId.Equals(menuId))
+        if (currentMenuId?.Equals(menuId) is true)
         {
             cssClass += " active";
         }
@@ -79,7 +87,7 @@
         return cssClass;
     }
 
-    private void NavItem(
+    void NavItem(
         string label,
         string iconCssClass,
         string? url)
@@ -90,5 +98,4 @@
             </a>
         </li>
     }
-
 }

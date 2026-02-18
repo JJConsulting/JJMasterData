@@ -3,13 +3,15 @@
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI.Components
 @using Microsoft.AspNetCore.Html
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IControlFactory<JJComboBox> ComboBoxFactory
 @model  JJMasterData.Core.DataDictionary.Models.Actions.InsertAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "InsertAction";
+    ViewData["CopyAction"] = "CopyInsertAction";
+    ViewData["FormRouteValues"] = new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"] };
 }
 
 @{
@@ -34,93 +36,74 @@
     }
 }
 
-@using (Html.BeginMasterDataForm("InsertAction", "Actions",
-            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }))
-{
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active">
-            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
-        </li>
-        <li class="nav-item" id="navInsertAction">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-insert-action">@StringLocalizer["Insert Action"]</a>
-        </li>
-        <li class="nav-item" id="nav-advanced">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
-        </li>
-    </ul>
+@section ActionTabs {
+    <li class="nav-item" id="navInsertAction">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-insert-action">
+            @StringLocalizer["Insert Action"]
+        </a>
+    </li>
+}
 
-
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" Model="@Model"/>
+@section ActionTabContent {
+    <div id="div-insert-action" class="tab-pane fade">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-3">
+                <label asp-for="InsertActionLocation" class="form-label"></label>
+                <select asp-for="InsertActionLocation" class="form-select" asp-items="Html.GetEnumSelectList<InsertActionLocation>()"></select>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
+                <label asp-for="ElementNameToSelect" class="form-label"></label>
+                @await GetInsertSelectionComboBoxHtml()
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
+                <checkbox for="ReopenForm" tooltip="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]" layout="Switch" />
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-3">
+                <label asp-for="SuccessMessage" class="@BootstrapHelper.Label"></label>
+                <tooltip title="@StringLocalizer["It will be shown when the form is reopened or the form is next to the grid."]"/>
+                <input asp-for="SuccessMessage" class="form-control"/>
+            </div>
         </div>
-
-        <div id="div-insert-action" class="tab-pane fade">
-
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label asp-for="InsertActionLocation" class="form-label"></label>
-                    <select asp-for="InsertActionLocation" class="form-select" asp-items="Html.GetEnumSelectList<InsertActionLocation>()"></select>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <label asp-for="ElementNameToSelect" class="form-label"></label>
-                    @await GetInsertSelectionComboBoxHtml()
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <checkbox for="ReopenForm" tooltip="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]" layout="Switch" />
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label asp-for="SuccessMessage" class="@BootstrapHelper.Label"></label>
-                    <tooltip title="@StringLocalizer["It will be shown when the form is reopened or the form is next to the grid."]"/>
-                    <input asp-for="SuccessMessage" class="form-control"/>                
-                </div>
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
+                <checkbox for="ShowAsModal" layout="Switch" />
             </div>
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <checkbox for="ShowAsModal" layout="Switch" />
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
-                    <label asp-for="ModalTitle" class="form-label"></label>
-                    <input asp-for="ModalTitle" class="form-control"/>
-                </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
+                <label asp-for="ModalTitle" class="form-label"></label>
+                <input asp-for="ModalTitle" class="form-control"/>
             </div>
-            <div class="row not-shown-at-list">
-                <div class="col-sm-12">
-                    <collapse-panel icon="InfoCircle" color="Info" title="@Html.DisplayNameFor(m => m.ElementNameToSelect)">
-                        <ul>
-                            <li>@StringLocalizer["When this property is set, the system will display a list of records for selection."]</li>
-                            <li>@StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]</li>
-                            <li>@StringLocalizer["If the insert method is executed successfully, the parent element is opened again at editing mode."]</li>
-                            <li>@StringLocalizer["Only relationships are allowed, because you need to map the foreign keys to be used at saving."]</li>
-                        </ul>
-                    </collapse-panel>
-                </div>
-            </div>
-
         </div>
-
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" Model="@Model"/>
+        <div class="row not-shown-at-list">
+            <div class="col-sm-12">
+                <collapse-panel icon="InfoCircle" color="Info" title="@Html.DisplayNameFor(m => m.ElementNameToSelect)">
+                    <ul>
+                        <li>@StringLocalizer["When this property is set, the system will display a list of records for selection."]</li>
+                        <li>@StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]</li>
+                        <li>@StringLocalizer["If the insert method is executed successfully, the parent element is opened again at editing mode."]</li>
+                        <li>@StringLocalizer["Only relationships are allowed, because you need to map the foreign keys to be used at saving."]</li>
+                    </ul>
+                </collapse-panel>
+            </div>
         </div>
     </div>
+}
 
-    <partial name="_Toolbar"/>
-
+@section Scripts {
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
             const showOpenedAtListSelect = document.getElementById('@Html.IdFor(m => m.InsertActionLocation)');
-        
+
             const notShownAtList = document.getElementsByClassName('not-shown-at-list');
-        
-            function toggleShowOpenedAtList() {       
-                 for (const element of notShownAtList) {
-                     element.style.display = showOpenedAtListSelect.value === "0" ? "block" : "none";
-                 }
+
+            function toggleShowOpenedAtList() {
+                for (const element of notShownAtList) {
+                    element.style.display = showOpenedAtListSelect.value === "0" ? "block" : "none";
+                }
             }
-        
+
             toggleShowOpenedAtList();
-        
-            showOpenedAtListSelect.addEventListener("change", toggleShowOpenedAtList);
+
+            showOpenedAtListSelect.addEventListener('change', toggleShowOpenedAtList);
         });
     </script>
 }

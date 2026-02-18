@@ -1,31 +1,17 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJConsulting.FontAwesome
 @using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.AuditLogGridToolbarAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "AuditLogGridToolbarAction";
+    ViewData["CopyAction"] = "CopyAuditLogGridToolbarAction";
+    ViewData["FormRouteValues"] = new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"] };
     FormElement formElement = ViewBag.FormElement;
 }
 
-@using (Html.BeginMasterDataForm("AuditLogGridToolbarAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }))
-{
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
-    </ul>
-
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" Model="@Model"/>
-        </div>
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" Model="@Model"/>
-        </div>
-    </div>
+@section ActionExtraContent {
     @if (!formElement.Options.EnableAuditLog)
     {
         <alert 
@@ -35,7 +21,4 @@
             icon="FontAwesomeIcon.SolidTriangleExclamation"
         />
     }
-    <partial name="_Toolbar"/>
-
 }
-

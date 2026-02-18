@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
-using System.Text.Json;
+using System.Globalization;
+using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -8,7 +9,7 @@ using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -17,40 +18,63 @@ public class ActionsController(ActionsService actionsService,
         IEnumerable<IPluginHandler> pluginHandlers)
     : DataDictionaryController
 {
-    public async Task<ActionResult> Index(string elementName)
+    private bool IsAjaxRequest =>
+        Request.Headers.TryGetValue("X-Requested-With", out var header) &&
+        string.Equals(header, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
+    public async Task<ActionResult> Index(string elementName, string? actionName = null, ActionSource? source = null, string? fieldName = null)
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
+        var fieldActions = formElement.Fields
+            .Where(f => f.Component.SupportActions)
+            .SelectMany(f => f.Actions.GetAllSorted().Select(a => new ActionsListViewModel.FieldActionItem
+            {
+                FieldName = f.Name,
+                Action = a
+            }))
+            .ToList();
+        var gridTableActions = formElement.Options.GridTableActions.GetAllSorted().ToList();
+        var gridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted().ToList();
+        var formToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().ToList();
+
+        var selectedSource = source ?? ActionSource.GridTable;
+        var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName);
+        selectedAction ??= formElement.Options.GridTableActions.GetAllSorted().First();
+        
+        if (TryGetSelectedTabValue(out var selectedTab))
+        {
+            TempData["selectedTab"] = selectedTab;
+        }
+
         var model = new ActionsListViewModel
         {
             ElementName = elementName,
-            GridTableActions = formElement.Options.GridTableActions.GetAllSorted().ToList(),
-            GridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted().ToList(),
-            FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().ToList()
+            GridTableActions = gridTableActions,
+            GridToolbarActions = gridToolbarActions,
+            FormToolbarActions = formToolbarActions,
+            FieldActions = fieldActions,
         };
-
-        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab))
-            ViewBag.Tab = selectedTab;
-
+        
+        await PopulateViewData(formElement, selectedAction, selectedSource, fieldName);
+        
         return View(model);
     }
 
-    public async Task<IActionResult> Edit(string elementName, string actionName, ActionSource context, string fieldName)
+    public async Task<IActionResult> Edit(string elementName, string actionName, ActionSource source, string fieldName)
     {
         if (elementName is null)
             throw new ArgumentNullException(nameof(elementName));
         
         var formElement = await actionsService.GetFormElementAsync(elementName);
 
-        var action = context switch
+        var action = formElement.GetAction(actionName, source, fieldName);
+        
+        await PopulateViewData(formElement, action!, source, fieldName);
+        if (IsAjaxRequest)
         {
-            ActionSource.GridTable => formElement.Options.GridTableActions[actionName],
-            ActionSource.GridToolbar => formElement.Options.GridToolbarActions[actionName],
-            ActionSource.FormToolbar => formElement.Options.FormToolbarActions[actionName],
-            ActionSource.Field => formElement.Fields[fieldName].Actions[actionName],
-            _ => null
-        };
-
-        await PopulateViewBag(elementName, action!, context, fieldName);
+            ViewData["IsPartial"] = true;
+            return PartialView(action!.GetType().Name, action);
+        }
 
         return View(action!.GetType().Name, action);
     }
@@ -58,7 +82,7 @@ public class ActionsController(ActionsService actionsService,
     public async Task<IActionResult> Add(
         string elementName,
         string actionType, 
-        ActionSource context, 
+        ActionSource source, 
         string? fieldName = null,
         Guid? pluginId = null
         )
@@ -81,230 +105,486 @@ public class ActionsController(ActionsService actionsService,
             _ => throw new JJMasterDataException("Invalid Action")
         };
 
-        await PopulateViewBag(elementName, action, context, fieldName);
+        await PopulateViewData(elementName, action, source, fieldName);
+        if (IsAjaxRequest)
+        {
+            ViewData["IsPartial"] = true;
+            return PartialView(actionType, action);
+        }
+
         return View(actionType, action);
     }
 
     private async Task<IActionResult> EditActionResult<TAction>(
         string elementName,
         TAction action,
-        ActionSource context,
-        bool isActionSave,
+        ActionSource source,
         string? originalName = null,
         string? fieldName = null
     ) where TAction : BasicAction
     {
-        if (isActionSave)
+        fieldName = ResolveFieldName(source, fieldName);
+
+        await SaveAction(elementName, action, source, originalName, fieldName);
+
+        if (ModelState.IsValid)
         {
-            await SaveAction(elementName, action, context, originalName, fieldName);
+            await RemoveActionFromOriginalField(elementName, action, source, originalName, fieldName);
+            if (IsAjaxRequest)
+            {
+                await PopulateViewData(elementName, action, source, fieldName);
+                ViewData["ShowSaveSuccess"] = true;
+                ViewData["IsPartial"] = true;
+                return PartialView(action.GetType().Name, action);
+            }
+            return View(action.GetType().Name, action);
         }
         
-        await PopulateViewBag(elementName, action, context, fieldName);
-        
-        return View(action);
+        await PopulateViewData(elementName, action, source, fieldName);
+        if (IsAjaxRequest)
+        {
+            ViewData["IsPartial"] = true;
+            return PartialView(action.GetType().Name, action);
+        }
+
+        return View(action.GetType().Name, action);
+    }
+
+    private async Task<IActionResult> CopyActionResult<TAction>(
+        string elementName,
+        TAction action,
+        ActionSource source,
+        string? fieldName = null
+    ) where TAction : BasicAction
+    {
+        fieldName = ResolveFieldName(source, fieldName);
+
+        await SaveAction(elementName, action, source, null, fieldName);
+        if (ModelState.IsValid)
+        {
+            if (IsAjaxRequest)
+            {
+                await PopulateViewData(elementName, action, source, fieldName);
+                ViewData["ShowCopySuccess"] = true;
+                ViewData["IsPartial"] = true;
+                return PartialView(action.GetType().Name, action);
+            }
+            
+            return View(action.GetType().Name, action);
+        }
+
+        await PopulateViewData(elementName, action, source, fieldName);
+        if (IsAjaxRequest)
+        {
+            ViewData["IsPartial"] = true;
+            return PartialView(action.GetType().Name, action);
+        }
+
+        return View(action.GetType().Name, action);
+    }
+    
+
+    private string? GetOriginalFieldName()
+    {
+        if (Request.HasFormContentType && Request.Form.TryGetValue("originalFieldName", out var value))
+            return value.ToString();
+
+        return null;
+    }
+
+    private async Task RemoveActionFromOriginalField<TAction>(string elementName, TAction action, ActionSource source,
+        string? originalName, string? fieldName) where TAction : BasicAction
+    {
+        if (source != ActionSource.Field)
+            return;
+
+        var originalFieldName = GetOriginalFieldName();
+        if (string.IsNullOrWhiteSpace(originalFieldName) || string.IsNullOrWhiteSpace(fieldName))
+            return;
+
+        if (string.Equals(originalFieldName, fieldName, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var actionNameToRemove = !string.IsNullOrWhiteSpace(originalName) ? originalName : action.Name;
+        await actionsService.DeleteActionAsync(elementName, actionNameToRemove, ActionSource.Field, originalFieldName);
     }
 
 
     [HttpPost]
-    public async Task<ActionResult> Remove(string elementName, string actionName, ActionSource context,
+    public async Task<ActionResult> Remove(string elementName, string actionName, ActionSource source,
         string? fieldName)
     {
-        await actionsService.DeleteActionAsync(elementName, actionName, context, fieldName);
+        await actionsService.DeleteActionAsync(elementName, actionName, source, fieldName);
         return Json(new { success = true });
     }
 
 
     [HttpPost]
-    public async Task<ActionResult> Sort(string elementName, string fieldsOrder, ActionSource context,
+    public async Task<ActionResult> Sort(string elementName, string fieldsOrder, ActionSource source,
         string? fieldName)
     {
-        await actionsService.SortActionsAsync(elementName, fieldsOrder.Split(","), context, fieldName);
+        await actionsService.SortActionsAsync(elementName, fieldsOrder.Split(","), source, fieldName);
         return Json(new { success = true });
     }
 
     [HttpPost]
-    public async Task<ActionResult> EnableDisable(string elementName, string actionName, ActionSource context,
+    public async Task<ActionResult> EnableDisable(string elementName, string actionName, ActionSource source,
         bool visibility)
     {
-        await actionsService.EnableDisable(elementName, actionName, context, visibility);
+        await actionsService.EnableDisable(elementName, actionName, source, visibility);
         return Json(new { success = true });
     }
 
 
     [HttpPost]
-    public Task<IActionResult> InsertAction(string elementName, InsertAction insertAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> InsertAction(string elementName, InsertAction insertAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, insertAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, insertAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> ConfigAction(string elementName, ConfigAction configAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> ConfigAction(string elementName, ConfigAction configAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, configAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, configAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> ExportAction(string elementName, ExportAction exportAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> ExportAction(string elementName, ExportAction exportAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, exportAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, exportAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> ViewAction(string elementName, ViewAction viewAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> ViewAction(string elementName, ViewAction viewAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, viewAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, viewAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> EditAction(string elementName, EditAction editAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> EditAction(string elementName, EditAction editAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, editAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, editAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> DeleteAction(string elementName, DeleteAction deleteAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> DeleteAction(string elementName, DeleteAction deleteAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, deleteAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, deleteAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> ImportAction(string elementName, ImportAction importAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> ImportAction(string elementName, ImportAction importAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, importAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, importAction, source, originalName);
     }
 
     [HttpPost]
     public Task<IActionResult> RefreshAction(string elementName, RefreshAction refreshAction,
-        ActionSource context, string? originalName, bool isActionSave)
+        ActionSource source, string? originalName)
     {
-        return EditActionResult(elementName, refreshAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, refreshAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> LegendAction(string elementName, LegendAction legendAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> LegendAction(string elementName, LegendAction legendAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, legendAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, legendAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> SortAction(string elementName, SortAction sortAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> SortAction(string elementName, SortAction sortAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, sortAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, sortAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> SaveAction(string elementName, SaveAction saveAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> SaveAction(string elementName, SaveAction saveAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, saveAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, saveAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> CancelAction(string elementName, CancelAction cancelAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> CancelAction(string elementName, CancelAction cancelAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, cancelAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> BackAction(string elementName, BackAction cancelAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> BackAction(string elementName, BackAction cancelAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, cancelAction, source, originalName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyInsertAction(string elementName, InsertAction insertAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, insertAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyConfigAction(string elementName, ConfigAction configAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, configAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyExportAction(string elementName, ExportAction exportAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, exportAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyViewAction(string elementName, ViewAction viewAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, viewAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyEditAction(string elementName, EditAction editAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, editAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyDeleteAction(string elementName, DeleteAction deleteAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, deleteAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyImportAction(string elementName, ImportAction importAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, importAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyFilterAction(string elementName, FilterAction filterAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, filterAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyRefreshAction(string elementName, RefreshAction refreshAction,
+        ActionSource source, string? fieldName)
+    {
+        return CopyActionResult(elementName, refreshAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyLegendAction(string elementName, LegendAction legendAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, legendAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopySortAction(string elementName, SortAction sortAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, sortAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopySaveAction(string elementName, SaveAction saveAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, saveAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyCancelAction(string elementName, CancelAction cancelAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, cancelAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyBackAction(string elementName, BackAction backAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, backAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyUrlRedirectAction(string elementName, UrlRedirectAction urlRedirectAction,
+        ActionSource source, string? fieldName)
+    {
+        return CopyActionResult(elementName, urlRedirectAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyInternalAction(string elementName, InternalAction internalAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, internalAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopySqlCommandAction(string elementName, SqlCommandAction sqlCommandAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, sqlCommandAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyScriptAction(string elementName, ScriptAction scriptAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, scriptAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyHtmlTemplateAction(string elementName, HtmlTemplateAction htmlTemplateAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, htmlTemplateAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyPluginAction(string elementName, PluginAction pluginAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, pluginAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyPluginFieldAction(string elementName, PluginFieldAction pluginFieldAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, pluginFieldAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyFormEditAction(string elementName, FormEditAction formEditAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, formEditAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyGridEditAction(string elementName, GridEditAction gridEditAction, ActionSource source,
+        string? fieldName)
+    {
+        return CopyActionResult(elementName, gridEditAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyAuditLogFormToolbarAction(string elementName, AuditLogFormToolbarAction auditLogFormToolbarAction,
+        ActionSource source, string? fieldName)
+    {
+        return CopyActionResult(elementName, auditLogFormToolbarAction, source, fieldName);
+    }
+
+    [HttpPost]
+    public Task<IActionResult> CopyAuditLogGridToolbarAction(string elementName, AuditLogGridToolbarAction auditLogGridToolbarAction,
+        ActionSource source, string? fieldName)
+    {
+        return CopyActionResult(elementName, auditLogGridToolbarAction, source, fieldName);
     }
 
     [HttpPost]
     public Task<IActionResult> FormEditAction(string elementName, FormEditAction cancelAction,
-        ActionSource context, string? originalName, bool isActionSave)
+        ActionSource source, string? originalName)
     {
-        return EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, cancelAction, source, originalName);
     }
 
 
     [HttpPost]
     public Task<IActionResult> AuditLogGridToolbarAction(string elementName,
-        AuditLogGridToolbarAction auditLogAction, ActionSource context, string? originalName, bool isActionSave)
+        AuditLogGridToolbarAction auditLogAction, ActionSource source, string? originalName)
     {
-        return EditActionResult(elementName, auditLogAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, auditLogAction, source, originalName);
     }
 
     [HttpPost]
     public Task<IActionResult> AuditLogFormToolbarAction(string elementName,
-        AuditLogFormToolbarAction auditLogAction, ActionSource context, string? originalName, bool isActionSave)
+        AuditLogFormToolbarAction auditLogAction, ActionSource source, string? originalName)
     {
-        return EditActionResult(elementName, auditLogAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, auditLogAction, source, originalName);
     }
 
     [HttpPost]
-    public Task<IActionResult> FilterAction(string elementName, FilterAction filterAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> FilterAction(string elementName, FilterAction filterAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, filterAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, filterAction, source, originalName);
     }
     
     [HttpPost]
-    public Task<IActionResult> GridEditAction(string elementName, GridEditAction gridEditAction, ActionSource context,
-        string? originalName, bool isActionSave)
+    public Task<IActionResult> GridEditAction(string elementName, GridEditAction gridEditAction, ActionSource source,
+        string? originalName)
     {
-        return EditActionResult(elementName, gridEditAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, gridEditAction, source, originalName);
     }
     
     [HttpPost]
     public Task<IActionResult> UrlRedirectAction(string elementName, UrlRedirectAction urlAction,
-        ActionSource context,
-        string? fieldName, string? originalName, bool isActionSave)
+        ActionSource source,
+        string? fieldName, string? originalName)
     {
-        return EditActionResult(elementName, urlAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, urlAction, source, originalName, fieldName);
     }
 
     [HttpPost]
-    public Task<IActionResult> ScriptAction(string elementName, ScriptAction scriptAction, ActionSource context,
-        string? originalName, bool isActionSave, string? fieldName)
+    public Task<IActionResult> ScriptAction(string elementName, ScriptAction scriptAction, ActionSource source,
+        string? originalName, string? fieldName)
     {
-        return EditActionResult(elementName, scriptAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, scriptAction, source, originalName, fieldName);
     }
 
     [HttpPost]
     public Task<IActionResult> SqlCommandAction(
         string elementName, 
         SqlCommandAction sqlAction,
-        ActionSource context,
-        string? originalName, bool isActionSave, string? fieldName)
+        ActionSource source,
+        string? originalName, string? fieldName)
     {
-        return EditActionResult(elementName, sqlAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, sqlAction, source, originalName, fieldName);
     }
     
     [HttpPost]
     public Task<IActionResult> HtmlTemplateAction(
         string elementName,
         HtmlTemplateAction htmlTemplateAction,
-        ActionSource context,
-        string? originalName, bool isActionSave, string? fieldName)
+        ActionSource source,
+        string? originalName, string? fieldName)
     {
-        return EditActionResult(elementName, htmlTemplateAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, htmlTemplateAction, source, originalName, fieldName);
     }
 
 
     [HttpPost]
     public Task<IActionResult> InternalAction(string elementName, InternalAction internalAction,
-        ActionSource context,
-        string? originalName, bool isActionSave, string? fieldName)
+        ActionSource source,
+        string? originalName, string? fieldName)
     {
-        return EditActionResult(elementName, internalAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, internalAction, source, originalName, fieldName);
     }
 
     [HttpPost]
     public async Task<IActionResult> AddRelation(string elementName, InternalAction internalAction,
-        ActionSource context,
+        ActionSource source,
         string redirectField, string internalField, string? fieldName)
     {
         internalAction.ElementRedirect.RelationFields.Add(new FormActionRelationField
@@ -313,17 +593,29 @@ public class ActionsController(ActionsService actionsService,
             InternalField = internalField
         });
 
-        await PopulateViewBag(elementName, internalAction, context, fieldName);
+        await PopulateViewData(elementName, internalAction, source, fieldName);
+        if (IsAjaxRequest)
+        {
+            ViewData["IsPartial"] = true;
+            return PartialView(internalAction.GetType().Name, internalAction);
+        }
+
         return View(internalAction.GetType().Name, internalAction);
     }
 
     [HttpPost]
     public async Task<IActionResult> RemoveRelation(string elementName, InternalAction internalAction,
-        ActionSource context,
+        ActionSource source,
         int relationIndex, string? fieldName)
     {
         internalAction.ElementRedirect.RelationFields.RemoveAt(relationIndex);
-        await PopulateViewBag(elementName, internalAction, context, fieldName);
+        await PopulateViewData(elementName, internalAction, source, fieldName);
+        if (IsAjaxRequest)
+        {
+            ViewData["IsPartial"] = true;
+            return PartialView(internalAction.GetType().Name, internalAction);
+        }
+
         return View(internalAction.GetType().Name, internalAction);
     }
     
@@ -331,29 +623,27 @@ public class ActionsController(ActionsService actionsService,
     public Task<IActionResult> PluginAction(
         string elementName, 
         PluginAction pluginAction,
-        ActionSource context,
+        ActionSource source,
         string? originalName, 
-        bool isActionSave,
         string? fieldName)
     {
         SetPluginConfigurationMap(pluginAction.ConfigurationMap, pluginAction.PluginId);
         
-        return EditActionResult(elementName, pluginAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, pluginAction, source, originalName, fieldName);
     }
     [HttpPost]
     public Task<IActionResult> PluginFieldAction(
         string elementName, 
         PluginFieldAction pluginFieldAction,
-        ActionSource context,
+        ActionSource source,
         string? originalName, 
-        bool isActionSave,
         string? fieldName)
     {
         SetPluginConfigurationMap(pluginFieldAction.ConfigurationMap, pluginFieldAction.PluginId);
         
         SetPluginFieldMap(pluginFieldAction.FieldMap, pluginFieldAction.PluginId);
         
-        return EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, pluginFieldAction, source, originalName, fieldName);
     }
 
     private void SetPluginConfigurationMap(Dictionary<string, object?> configurationMap,
@@ -368,12 +658,12 @@ public class ActionsController(ActionsService actionsService,
         {
             if (Request.Form.TryGetValue(field.Name, out var value))
             {
-                var pluginField = pluginHandler.ConfigurationFields.First(f => f.Name == field.Name);
-
-                configurationMap[field.Name] = pluginField.Type switch
+                configurationMap[field.Name] = field.Type switch
                 {
                     PluginConfigurationFieldType.Boolean => value == "true",
-                    PluginConfigurationFieldType.Number => double.Parse(value.ToString()),
+                    PluginConfigurationFieldType.Number => double.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var numberValue)
+                        ? numberValue
+                        : null,
                     _ => value.ToString()
                 };
             }
@@ -393,36 +683,41 @@ public class ActionsController(ActionsService actionsService,
         }
     }
 
-    private async Task SaveAction(string elementName, BasicAction basicAction, ActionSource context,
+    private async Task SaveAction(string elementName, BasicAction basicAction, ActionSource source,
         string? originalName, string? fieldName = null)
     {
-        await actionsService.SaveAction(elementName, basicAction, context, originalName, fieldName);
+        await actionsService.SaveAction(elementName, basicAction, source, originalName, fieldName);
 
         if (ModelState.IsValid)
-            ViewData["Success"] = true;
-        else
-            ViewData["Error"] = actionsService.GetValidationSummary().GetHtml();
+            return;
+        
+        ViewData["Error"] = actionsService.GetValidationSummary().GetHtmlContent();
     }
 
-    private async Task PopulateViewBag(string elementName, BasicAction basicAction, ActionSource context,
+    private async Task PopulateViewData(string elementName, BasicAction basicAction, ActionSource source,
+        string? fieldName = null)
+    {
+        var formElement = await actionsService.GetFormElementAsync(elementName);
+
+        await PopulateViewData(formElement, basicAction, source, fieldName);
+    }
+    
+    private async Task PopulateViewData(FormElement formElement, BasicAction basicAction, ActionSource source,
         string? fieldName = null)
     {
         if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
             ViewData["OriginalName"] = originalName;
         else
             ViewData["OriginalName"] = basicAction.Name;
-
-        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
-            ViewData["Tab"] = selectedTab;
-
-        else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
-            ViewData["Tab"] = tempSelectedTab?.ToString()!;
         
-        ViewData["ElementName"] = elementName;
-        ViewData["ContextAction"] = context;
+        if (TryGetSelectedTabValue(out var selectedTab))
+            ViewData["Tab"] = selectedTab;
+        
+        ViewData["ElementName"] = formElement.Name;
+        ViewData["ActionSource"] = source;
         ViewData["MenuId"] = "Actions";
-        ViewData["FieldName"] = fieldName!;
-        var formElement = await actionsService.GetFormElementAsync(elementName);
+        ViewData["FieldName"] = fieldName;
+
         ViewData["FormElement"] = formElement;
         ViewData["CodeEditorHints"] = formElement.Fields.Select(f => new CodeEditorHint
         {
@@ -432,12 +727,69 @@ public class ActionsController(ActionsService actionsService,
             Details = "Form Element Field",
         }).ToList();
 
+        var actionFields = formElement.Fields
+            .Where(f => f.Component.SupportActions)
+            .Select(f => new SelectListItem(f.Name, f.Name, f.Name == fieldName))
+            .ToList();
+        ViewData["ActionFieldList"] = actionFields;
+
         if (basicAction is InternalAction internalAction)
         {
             ViewData["ElementNameList"] = (await actionsService.GetElementsDictionaryAsync()).OrderBy(n=>n.Key).ToList();
-            ViewData["InternalFieldList"] = await actionsService.GetFieldList(elementName);
+            ViewData["InternalFieldList"] = actionsService.GetFieldList(formElement);
             var elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
             ViewData["RedirectFieldList"] = await actionsService.GetFieldList(elementNameRedirect);
         }
+        
+        ViewData["InitialSource"] = source;
+        ViewData["InitialAction"] = basicAction;
+        ViewData["InitialFieldName"] = fieldName;
+        ViewData["InitialActionKey"] =source == ActionSource.Field && !string.IsNullOrWhiteSpace(fieldName)
+                ? $"{fieldName}__{basicAction.Name}"
+                : basicAction.Name;
+    }
+
+    private bool TryGetSelectedTabValue(out string selectedTab)
+    {
+        selectedTab = string.Empty;
+        if (!Request.HasFormContentType)
+            return false;
+
+        if (Request.Form.TryGetValue("selectedTab", out var selectedTabValue) &&
+            !string.IsNullOrWhiteSpace(selectedTabValue))
+        {
+            selectedTab = selectedTabValue.ToString();
+            return true;
+        }
+
+        if (Request.Form.TryGetValue("selected-tab", out var legacySelectedTabValue) &&
+            !string.IsNullOrWhiteSpace(legacySelectedTabValue))
+        {
+            selectedTab = legacySelectedTabValue.ToString();
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private string? ResolveFieldName(ActionSource source, string? fieldName)
+    {
+        if (source != ActionSource.Field || !Request.HasFormContentType)
+            return fieldName;
+
+        if (Request.Form.TryGetValue("fieldName", out var fieldValue) &&
+            !string.IsNullOrWhiteSpace(fieldValue))
+        {
+            return fieldValue.ToString();
+        }
+
+        if (Request.Form.TryGetValue("originalFieldName", out var originalFieldValue) &&
+            !string.IsNullOrWhiteSpace(originalFieldValue))
+        {
+            return originalFieldValue.ToString();
+        }
+
+        return fieldName;
     }
 }

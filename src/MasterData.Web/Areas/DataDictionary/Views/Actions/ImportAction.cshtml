@@ -1,38 +1,26 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.ImportAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "ImportAction";
+    ViewData["CopyAction"] = "CopyImportAction";
+    ViewData["FormRouteValues"] = new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"] };
 }
 
-@using (Html.BeginMasterDataForm("ImportAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }))
-{
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-        <li id="navImportAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divImportAction">@StringLocalizer["Import Action"]</a></li>
-        <li id="nav-advanced" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
-    </ul>
+@section ActionTabs {
+    <li id="navImportAction" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divImportAction">
+            @StringLocalizer["Import Action"]
+        </a>
+    </li>
+}
 
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" model="Model"/>
-        </div>
-
-        <div id="divImportAction" class="tab-pane fade">
-            <partial name="_ProcessOptions" for="ProcessOptions"/>
-            <label asp-for="HelpText" class="form-label"></label>
-            <tooltip title="@StringLocalizer["Help text that will be shown to the user."]"/>
-            <textarea asp-for="HelpText" class="form-control" rows="5"></textarea>
-        </div>
-
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" model="Model"/>
-        </div>
+@section ActionTabContent {
+    <div id="divImportAction" class="tab-pane fade">
+        <partial name="_ProcessOptions" for="ProcessOptions"/>
+        <label asp-for="HelpText" class="form-label"></label>
+        <tooltip title="@StringLocalizer["Help text that will be shown to the user."]"/>
+        <textarea asp-for="HelpText" class="form-control" rows="5"></textarea>
     </div>
-
-    <partial name="_Toolbar"/>
 }

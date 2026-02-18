@@ -17,7 +17,9 @@
     static sortAction(context: string, url: string, errorMessage: string): void {
         $("#sortable-" + context).sortable({
             update: function () {
-                const order = $(this).sortable('toArray');
+                const order = $(this)
+                    .sortable('toArray')
+                    .map((id) => id.startsWith(context + "_") ? id.substring((context + "_").length) : id);
                 const formData = new FormData();
                 formData.append('fieldsOrder', order);
                 formData.append('context', context);

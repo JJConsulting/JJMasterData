@@ -34,47 +34,15 @@
     <partial name="_Attributes" model="@Model"/>
 </div>
 
-@if (Model.Component is FormComponent.Text
-     or FormComponent.Email
-     or FormComponent.Number
-     or FormComponent.Cep
-     or FormComponent.Cnpj
-     or FormComponent.Cpf
-     or FormComponent.CnpjCpf && isForm)
+@switch (Model.Component)
 {
-    if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
-    {
-        <hr/>
-        <div class="col-sm-12">
-            <span class="text-info fa fa-info-circle"></span>
-            <span class="small">
-                <b>@StringLocalizer["Actions"]</b>
-                <br/>
-                <em>@StringLocalizer["This component allows you to add actions, but you must save it to add actions later."]</em>
-            </span>
-        </div>
-    }
-    else
-    {
-        <partial name="~/Areas/DataDictionary/Views/Actions/_List.cshtml" model="new ActionsListDetailsViewModel
-                 {
-                     Source = ActionSource.Field,
-                     ElementName = ViewBag.ElementName,
-                     Actions = Model.Actions.GetAllSorted().ToList(),
-                     FieldName = ViewBag.OriginalName
-                 }"/>
-
-    }
-}
-else if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup)
-{
-    <partial name="_DataItem" model="Model" />
-}
-else if (Model.Component is FormComponent.Lookup)
-{
-    <partial name="_Lookup" model="Model" />
-}
-else if (Model.Component is FormComponent.File)
-{
-    <partial name="_DataFile" model="Model" />
+    case FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup:
+        <partial name="_DataItem" model="Model" />
+        break;
+    case FormComponent.Lookup:
+        <partial name="_Lookup" model="Model" />
+        break;
+    case FormComponent.File:
+        <partial name="_DataFile" model="Model" />
+        break;
 }

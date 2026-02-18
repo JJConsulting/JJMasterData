@@ -8,4 +8,11 @@ public sealed class ActionsListViewModel
     public required List<BasicAction> GridTableActions { get; init; }
     public required List<BasicAction> GridToolbarActions { get;  init; }
     public required List<BasicAction> FormToolbarActions { get;  init; }
+    public required List<FieldActionItem> FieldActions { get; init; }
+    
+    public sealed class FieldActionItem
+    {
+        public required string FieldName { get; init; }
+        public required BasicAction Action { get; init; }
+    }
 }

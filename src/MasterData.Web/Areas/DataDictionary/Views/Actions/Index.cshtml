@@ -1,5 +1,4 @@
 ﻿@using JJMasterData.Core.DataDictionary.Models.Actions
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model ActionsListViewModel
@@ -9,74 +8,229 @@
     Layout = "_FormElementMenuLayout";
     ViewData["ElementName"] = Model.ElementName;
     ViewData["MenuId"] = "Actions";
+    var selectedSource = ViewData["InitialSource"] is ActionSource source ? source : ActionSource.GridTable;
+    var selectedAction = ViewData["InitialAction"] as BasicAction;
+    var selectedActionKey = ViewData["InitialActionKey"]?.ToString();
+    var selectedFieldName = ViewData["InitialFieldName"]?.ToString();
 }
 
-<script lang="javascript" type="text/javascript">
-    $(document).ready(function () {
-        savePanelState();
-    });
+<input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["selectedTab"]"/>
+<ul class="nav nav-underline">
+    <li id="navGrid" class="nav-item active">
+        <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab")
+           href="#divGrid">@StringLocalizer["Grid Table"]</a>
+    </li>
+    <li id="navGridToolbar" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
+           href="#div-grid-toolbar">@StringLocalizer["Grid Toolbar"]</a>
+    </li>
+    <li id="navFormFields" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
+           href="#div-form-fields">@StringLocalizer["Form Fields"]</a>
+    </li>
+    <li id="navFormToolbar" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
+           href="#div-form-toolbar">@StringLocalizer["Form Toolbar"]</a>
+    </li>
+</ul>
 
-    function savePanelState() {
-        let currentTab = $("#selectedTab").val();
-        if (!currentTab) {
-            currentTab = "#divGrid";
+<div class="tab-content mt-3">
+
+    <div id="divGrid" class="tab-pane fade in active show" data-action-source="@nameof(ActionSource.GridTable)">
+        @{
+            var gridTableViewData = new ViewDataDictionary(ViewData)
+            {
+                ["Source"] = ActionSource.GridTable,
+                ["InitialAction"] = selectedSource == ActionSource.GridTable ? selectedAction : null,
+                ["InitialActionName"] = selectedSource == ActionSource.GridTable ? selectedActionKey : null,
+                ["InitialFieldName"] = selectedSource == ActionSource.GridTable ? selectedFieldName : null
+            };
         }
-        $(".nav a[href='" + currentTab + "']").tab("show");
+        <partial name="_ActionList" model="Model" view-data="gridTableViewData"/>
+    </div>
 
-        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
-            const target = $(e.target).attr("href");
-            $("#selectedTab").val(target);
+    <div id="div-grid-toolbar" class="tab-pane fade" data-action-source="@nameof(ActionSource.GridToolbar)">
+        @{
+            var gridToolbarViewData = new ViewDataDictionary(ViewData)
+            {
+                ["Source"] = ActionSource.GridToolbar,
+                ["InitialAction"] = selectedSource == ActionSource.GridToolbar ? selectedAction : null,
+                ["InitialActionName"] = selectedSource == ActionSource.GridToolbar ? selectedActionKey : null,
+                ["InitialFieldName"] = selectedSource == ActionSource.GridToolbar ? selectedFieldName : null
+            };
+        }
+        <partial name="_ActionList" model="Model" view-data="gridToolbarViewData"/>
+    </div>
+
+    <div id="div-form-fields" class="tab-pane fade" data-action-source="@nameof(ActionSource.Field)">
+        @{
+            var fieldViewData = new ViewDataDictionary(ViewData)
+            {
+                ["Source"] = ActionSource.Field,
+                ["InitialAction"] = selectedSource == ActionSource.Field ? selectedAction : null,
+                ["InitialActionName"] = selectedSource == ActionSource.Field ? selectedActionKey : null,
+                ["InitialFieldName"] = selectedSource == ActionSource.Field ? selectedFieldName : null
+            };
+        }
+        <partial name="_ActionList" model="Model" view-data="fieldViewData"/>
+    </div>
+
+    <div id="div-form-toolbar" class="tab-pane fade" data-action-source="@nameof(ActionSource.FormToolbar)">
+        @{
+            var formToolbarViewData = new ViewDataDictionary(ViewData)
+            {
+                ["Source"] = ActionSource.FormToolbar,
+                ["InitialAction"] = selectedSource == ActionSource.FormToolbar ? selectedAction : null,
+                ["InitialActionName"] = selectedSource == ActionSource.FormToolbar ? selectedActionKey : null,
+                ["InitialFieldName"] = selectedSource == ActionSource.FormToolbar ? selectedFieldName : null
+            };
+        }
+        <partial name="_ActionList" model="Model" view-data="formToolbarViewData"/>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function mapSourceToTab(source) {
+        switch (source) {
+            case "GridToolbar":
+            case "1":
+                return "#div-grid-toolbar";
+            case "GridTable":
+            case "2":
+                return "#divGrid";
+            case "Field":
+            case "3":
+                return "#div-form-fields";
+            case "FormToolbar":
+            case "4":
+                return "#div-form-toolbar";
+            default:
+                return "";
+        }
+    }
+
+    function getActiveTabId() {
+        const selectedTabInput = document.getElementById("selectedTab");
+        if (selectedTabInput && selectedTabInput.value) {
+            return selectedTabInput.value;
+        }
+
+        const queryParams = new URLSearchParams(window.location.search);
+        const tabFromSource = mapSourceToTab(queryParams.get("source") || "");
+        return tabFromSource || "#divGrid";
+    }
+
+    function showTab(tabId) {
+        const tabLink = document.querySelector(".nav a[href='" + tabId + "']");
+        if (!tabLink) {
+            return;
+        }
+
+        if (window.bootstrap && bootstrap.Tab) {
+            bootstrap.Tab.getOrCreateInstance(tabLink).show();
+            return;
+        }
+
+        $(".nav a[href='" + tabId + "']").tab("show");
+    }
+
+    async function loadActionDetails(url, actionKey, source) {
+        const key = actionKey || "";
+        const safeKey = key.replace(/[^\w-]/g, "\\$&");
+        const listSelector = "#sortable-" + source;
+        const detailsId = "action-details-" + source;
+
+        document.querySelector(listSelector + " .active")?.classList?.remove("active");
+        if (safeKey) {
+            document.querySelector(listSelector + " #" + safeKey)?.classList?.add("active");
+        }
+
+        SpinnerOverlay.show();
+        try {
+            const response = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
+            const html = await response.text();
+            HTMLHelper.setInnerHTML(detailsId, html);
+            document.getElementById(detailsId)?.setAttribute("data-loaded", "true");
+            listenAllEvents("#" + detailsId);
+        } finally {
+            SpinnerOverlay.hide();
+        }
+    }
+
+    function ensureActionDetails(source) {
+        const details = document.getElementById("action-details-" + source);
+        if (!details || details.getAttribute("data-loaded") === "true") {
+            return;
+        }
+
+        const activeItem = document.querySelector("#sortable-" + source + " .list-group-item.active");
+        const firstItem = document.querySelector("#sortable-" + source + " .list-group-item");
+        const target = activeItem || firstItem;
+
+        if (target && target.dataset.editUrl) {
+            loadActionDetails(target.dataset.editUrl, target.dataset.actionKey || "", source);
+            return;
+        }
+
+        details.setAttribute("data-loaded", "true");
+    }
+
+    function clearInactiveActionDetails(activeSource) {
+        document.querySelectorAll("[data-action-source]").forEach(function (tabPane) {
+            const source = tabPane.getAttribute("data-action-source");
+            if (!source || source === activeSource) {
+                return;
+            }
+
+            const details = document.getElementById("action-details-" + source);
+            if (!details) {
+                return;
+            }
+
+            const emptyTemplate = document.getElementById("empty-action-alert-" + source);
+            if (emptyTemplate) {
+                details.innerHTML = emptyTemplate.innerHTML;
+            }
+            details.setAttribute("data-loaded", "false");
         });
     }
 
+    function searchActions(source, input) {
+        const value = (input.value || "").toLowerCase();
+        const listSelector = "#sortable-" + source;
+        $(listSelector + " a").filter(function () {
+            const textValues = $(this).clone().find(".bootstrap-select, .selectpicker, select").remove().end().text();
+            $(this).toggle(textValues.toLowerCase().indexOf(value) > -1);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("a[data-bs-toggle='tab'], a[data-toggle='tab']").forEach(function (tabLink) {
+            tabLink.addEventListener("shown.bs.tab", function (event) {
+                const tabId = event.target.getAttribute("href");
+                const selectedTabInput = document.getElementById("selectedTab");
+                if (selectedTabInput && tabId) {
+                    selectedTabInput.value = tabId;
+                }
+
+                const source = tabId ? document.querySelector(tabId)?.getAttribute("data-action-source") : null;
+                if (!source) {
+                    return;
+                }
+
+                clearInactiveActionDetails(source);
+                ensureActionDetails(source);
+            });
+        });
+
+        showTab(getActiveTabId());
+
+        const activeTab = document.querySelector(".tab-pane.active.show");
+        const activeSource = activeTab?.getAttribute("data-action-source");
+        if (activeSource) {
+            clearInactiveActionDetails(activeSource);
+            ensureActionDetails(activeSource);
+        }
+    });
 </script>
-
-
-@using (Html.BeginMasterDataForm())
-{
-    <input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["selectedTab"]"/>
-    <ul class="nav nav-underline">
-        <li id="navGrid" class="nav-item active">
-            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab")
-               href="#divGrid">@StringLocalizer["Grid Table"]</a>
-        </li>
-        <li id="navGridToolbar" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-               href="#div-grid-toolbar">@StringLocalizer["Grid Toolbar"]</a>
-        </li>
-        <li id="navFormToolbar" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-               href="#div-form-toolbar">@StringLocalizer["Form Toolbar"]</a>
-        </li>
-    </ul>
-
-    <div class="tab-content mt-3">
-
-        <div id="divGrid" class="tab-pane fade in active show">
-            <partial name="_List" model="new ActionsListDetailsViewModel
-            {
-                Source = ActionSource.GridTable,
-                ElementName = Model.ElementName,
-                Actions = Model.GridTableActions
-            }"/>
-        </div>
-
-        <div id="div-grid-toolbar" class="tab-pane fade">
-            <partial name="_List" model="new ActionsListDetailsViewModel
-            {
-                Source = ActionSource.GridToolbar,
-                ElementName = Model.ElementName,
-                Actions = Model.GridToolbarActions
-            }"/>
-        </div>
-
-        <div id="div-form-toolbar" class="tab-pane fade">
-            <partial name="_List" model="new ActionsListDetailsViewModel
-            {
-                Source = ActionSource.FormToolbar,
-                ElementName = Model.ElementName,
-                Actions = Model.FormToolbarActions
-            }"/>
-        </div>
-    </div>
-}

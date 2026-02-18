@@ -75,6 +75,10 @@
     <value> 2) A chave primária não pode conter caracters</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="Form Fields" xml:space="preserve">
+    <value>Campos do Formulário</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="3 (three columns)" xml:space="preserve">
     <value>3 (três colunas)</value>
     <comment>JJMasterDataWeb</comment>
@@ -2559,6 +2563,26 @@
   </data>
   <data name="Success!" xml:space="preserve">
     <value>Sucesso!</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Sucesso</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Action saved successfully." xml:space="preserve">
+    <value>Ação salva com sucesso.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Action copied successfully." xml:space="preserve">
+    <value>Ação copiada com sucesso.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field saved successfully." xml:space="preserve">
+    <value>Campo salvo com sucesso.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Please check the validation errors." xml:space="preserve">
+    <value>Por favor, verifique os erros de validação.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Sync" xml:space="preserve">

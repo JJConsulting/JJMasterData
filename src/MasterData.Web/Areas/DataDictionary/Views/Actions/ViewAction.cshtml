@@ -1,50 +1,31 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.ViewAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "ViewAction";
+    ViewData["CopyAction"] = "CopyViewAction";
+    ViewData["FormRouteValues"] = new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"] };
 }
-<master-data-form 
-    method="post"
-    asp-action="ViewAction" asp-controller="Actions"
-    asp-route-elementName="@ViewBag.ElementName"
-    asp-route-context="@ViewBag.ContextAction">
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active">
-            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
-        </li>
-        <li id="navView" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divViewAction">@StringLocalizer["View Action"]</a>
-        </li>
-        <li id="nav-advanced" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
-        </li>
-    </ul>
 
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" model="Model"/>
-        </div>
+@section ActionTabs {
+    <li id="navView" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divViewAction">
+            @StringLocalizer["View Action"]
+        </a>
+    </li>
+}
 
-        <div id="divViewAction" class="tab-pane fade">
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <checkbox for="ShowAsModal" layout="Switch"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <label asp-for="ModalTitle" class="form-label"></label>
-                    <input asp-for="ModalTitle" class="form-control"/>
-                </div>
+@section ActionTabContent {
+    <div id="divViewAction" class="tab-pane fade">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-6">
+                <checkbox for="ShowAsModal" layout="Switch"/>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-6">
+                <label asp-for="ModalTitle" class="form-label"></label>
+                <input asp-for="ModalTitle" class="form-control"/>
             </div>
         </div>
-
-
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" model="Model"/>
-        </div>
     </div>
-    <partial name="_Toolbar"/>
-</master-data-form>
+}

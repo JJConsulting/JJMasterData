@@ -81,8 +81,14 @@ public class FieldController(
         RecoverCustomAttributes(ref field);
 
         await fieldService.SaveFieldAsync(elementName, field, originalName);
-        
-        return RedirectToIndex(elementName, field);
+
+        if (!ModelState.IsValid)
+            return RedirectToIndex(elementName, field);
+
+        var formElement = await fieldService.GetFormElementAsync(elementName);
+        await PopulateViewData(formElement, field);
+        ViewData["ShowSaveSuccess"] = true;
+        return View("Index", field);
     }
 
 
