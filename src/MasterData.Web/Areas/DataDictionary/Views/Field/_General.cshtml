@@ -2,6 +2,7 @@
 @using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Commons.Extensions
 @using JJMasterData.Commons.Validations
+@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
@@ -83,51 +84,72 @@
             <label asp-for="DataType"></label>
         </div>
     </div>
+    @switch (Model.DataType)
+    {
+        case FieldType.Varchar or FieldType.NVarchar:
+            <div class="mb-3 col-sm-4">
+                <div class="form-floating">
+                    <input asp-for="Size" class="form-control" data-bs-toggle="tooltip"
+                           title="@StringLocalizer["Defines the field size. Use -1 to specify MAX keyword."]" />
+                    <label asp-for="Size"></label>
+                </div>
+            </div>
+            <div class="mb-3 col-sm-2">
+                <div class="form-floating">
+                    <select asp-for="TextCase" class="form-control form-select"
+                            data-bs-toggle="tooltip"
+                            title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]" 
+                            asp-items="Html.GetEnumSelectList<TextCase>()"></select>
+                    <label asp-for="TextCase"></label>
+                </div>
+            </div>
+            break;
 
-    @if (Model.DataType is FieldType.Varchar or FieldType.NVarchar)
-    {
-        <div class="mb-3 col-sm-6">
-            <div class="form-floating">
-                <input asp-for="Size" class="form-control" data-bs-toggle="tooltip"
-                       title="@StringLocalizer["Defines the field size. Use -1 to specify MAX keyword."]"/>
-                <label asp-for="Size"></label>
+        case FieldType.NChar or FieldType.Char:
+            <div class="mb-3 col-sm-4">
+                <div class="form-floating">
+                    <input asp-for="Size" class="form-control" />
+                    <label asp-for="Size"></label>
+                </div>
             </div>
-        </div>
+            <div class="mb-3 col-sm-2">
+                <div class="form-floating">
+                    <select asp-for="TextCase" class="form-control form-select"
+                            data-bs-toggle="tooltip"
+                            title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]" 
+                            asp-items="Html.GetEnumSelectList<TextCase>()"></select>
+                    <label asp-for="TextCase"></label>
+                </div>
+            </div>
+            break;
+
+        case FieldType.Float:
+            <div class="mb-3 col-sm-6">
+                <div class="form-floating">
+                    <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control" />
+                    <label asp-for="NumberOfDecimalPlaces"></label>
+                </div>
+            </div>
+            break;
+
+        case FieldType.Decimal:
+            <div class="mb-3 col-sm-4">
+                <div class="form-floating">
+                    <input asp-for="Size" min="1" max="38" class="form-control" data-bs-toggle="tooltip"
+                           title="@StringLocalizer["The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38."]" />
+                    <label asp-for="Size"></label>
+                </div>
+            </div>
+
+            <div class="mb-3 col-sm-4">
+                <div class="form-floating">
+                    <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control" />
+                    <label asp-for="NumberOfDecimalPlaces"></label>
+                </div>
+            </div>
+            break;
     }
-    else if (Model.DataType is FieldType.NChar or FieldType.Char)
-    {
-        <div class="mb-3 col-sm-6">
-            <div class="form-floating">
-                <input asp-for="Size" class="form-control">
-                <label asp-for="Size"></label>
-            </div>
-        </div>
-    }
-    else if (Model.DataType is FieldType.Float)
-    {
-        <div class="mb-3 col-sm-6">
-            <div class="form-floating">
-                <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control"/>
-                <label asp-for="NumberOfDecimalPlaces"></label>
-            </div>
-        </div>
-    }
-    else if (Model.DataType is FieldType.Decimal)
-    {
-        <div class="mb-3 col-sm-4">
-            <div class="form-floating">
-                <input asp-for="Size" min="1" max="38" class="form-control" data-bs-toggle="tooltip"
-                       title="@StringLocalizer["The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38."]"/>
-                <label asp-for="Size"></label>
-            </div>
-        </div>
-        <div class="mb-3 col-sm-4">
-            <div class="form-floating">
-                <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control"/>
-                <label asp-for="NumberOfDecimalPlaces"></label>
-            </div>
-        </div>
-    }
+
 
 </div>
 

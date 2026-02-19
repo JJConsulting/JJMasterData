@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -65,6 +66,7 @@ public class FormService(
     public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values,
         DataContext dataContext)
     {
+        ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
         var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
         var result = new FormLetter(errors);
@@ -114,6 +116,8 @@ public class FormService(
     public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object> values,
         DataContext dataContext, bool validateFields = true)
     {
+        ApplyTextCaseTransform(formElement, values);
+        
         var isForm = dataContext.Source is DataContextSource.Form;
         Dictionary<string, string> errors;
         if (validateFields)
@@ -170,6 +174,7 @@ public class FormService(
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,
         Dictionary<string, object> values, DataContext dataContext)
     {
+        ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
         var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
         var letter = new FormLetter<CommandOperation>(errors);
@@ -285,4 +290,26 @@ public class FormService(
     }
 
     #endregion
+
+    private static void ApplyTextCaseTransform(FormElement formElement, Dictionary<string, object> values)
+    {
+        foreach (var field in formElement.Fields)
+        {
+            if (field.DataType.IsString && field.TextCase is not TextCase.None
+                                        && values.TryGetValue(field.Name, out var value) 
+                                        && value is string textValue)
+            {
+                var currentCulture = CultureInfo.CurrentCulture;
+                
+                values[field.Name] = field.TextCase switch
+                {
+                    TextCase.Uppercase => currentCulture.TextInfo.ToUpper(textValue),
+                    TextCase.Lowercase => currentCulture.TextInfo.ToLower(textValue),
+                    TextCase.TitleCase => currentCulture.TextInfo.ToTitleCase(textValue.ToLower(currentCulture)),
+                    _ => textValue
+                };
+            }
+
+        }
+    }
 }

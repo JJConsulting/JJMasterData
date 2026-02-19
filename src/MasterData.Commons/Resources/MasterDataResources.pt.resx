@@ -4208,4 +4208,13 @@
   <data name="Test" xml:space="preserve">
     <value>Teste</value>
   </data>
+
+    <data name="Capitalization" xml:space="preserve">
+    <value>Capitalização</value>
+  </data>
+    
+    <data name="Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)." xml:space="preserve">
+    <value>Padroniza automaticamente o texto ao salvar, aplicando o formato escolhido. Útil para integrações case-sensitive (ex.: Protheus).</value>
+  </data>
+
 </root>

@@ -181,6 +181,10 @@ public class FormElementField : ElementField
     [JsonPropertyName("encodeHtml")]
     [Display(Name = "Encode HTML")]
     public bool EncodeHtml { get; set; } = true;
+    
+    [JsonPropertyName("textCase")]
+    [Display(Name = "Capitalization")]
+    public TextCase TextCase { get; set; }
 
     /// <summary>
     /// The field will be disabled but the value send to the server.
@@ -195,7 +199,8 @@ public class FormElementField : ElementField
         ValidateRequest = true;
         VisibleExpression = "val:1";
         EnableExpression = "val:1";
-        Actions = new();
+        TextCase = TextCase.None;
+        Actions = [];
     }
 
     public FormElementField(ElementField elementField)
@@ -245,6 +250,7 @@ public class FormElementField : ElementField
 
         Export = true;
         ValidateRequest = true;
+        TextCase = TextCase.None;
         Actions = new();
     }
 
