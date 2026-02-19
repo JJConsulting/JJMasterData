@@ -356,7 +356,7 @@ public partial class DataAccess
     }
 
     /// <inheritdoc cref="ExecuteBatch(string)"/>
-    public async Task<bool> ExecuteBatchAsync(string script, CancellationToken cancellationToken = default)
+    public async Task<bool> ExecuteBatchAsync(string script, int? timeoutSeconds = null, CancellationToken cancellationToken = default)
     {
         string markpar = "GO";
         if (_connectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
@@ -388,7 +388,13 @@ public partial class DataAccess
             }
         }
 
-        await SetCommandAsync(sqlList, cancellationToken);
+        var sqlCommands = sqlList.Select(sql => new DataAccessCommand(sql)
+        {
+            TimeoutSeconds = timeoutSeconds
+        });
+        
+        await SetCommandListAsync(sqlCommands, cancellationToken);
+        
         return true;
     }
 }
