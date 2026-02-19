@@ -61,25 +61,25 @@
     </div>
     <ul id="field-nav" class="nav nav-underline">
         <li class="nav-item" id="nav-general" @Active("#div-general")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-general"
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-general"
                href="#div-general">@StringLocalizer["General"]</a>
         </li>
         <li class="nav-item" id="nav-component" @Active("#div-component")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-component"
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-component"
                href="#div-component">@StringLocalizer["Component"]</a>
         </li>
         <li class="nav-item" id="nav-layout" @Active("#div-layout")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-layout"
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-layout"
                href="#div-layout">@StringLocalizer["Layout"]</a>
         </li>
         <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced"
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-advanced"
                href="#div-advanced">@StringLocalizer["Expressions"]</a>
         </li>
         @if (isForm)
         {
             <li class="nav-item" id="nav-template" @Active("#div-template")>
-                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-template"
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-template"
                    href="#div-template">@StringLocalizer["Grid Template"]</a>
             </li>
         }
@@ -101,7 +101,7 @@
         <div id="div-template" class="tab-pane fade @Active("#div-template")">
 
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                <div class="mb-3 col-sm-12 required">
                     <code-editor height="300" asp-for="GridRenderingTemplate" language="liquid"/>
                 </div>
             </div>

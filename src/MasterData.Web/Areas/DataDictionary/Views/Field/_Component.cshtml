@@ -8,7 +8,7 @@
 }
 
 <div class="row">
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+    <div class="mb-3 col-sm-4 required">
         @{
             var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
 
@@ -20,13 +20,11 @@
             foreach (var component in componentList)
                 component.Group.Name = StringLocalizer[component.Group.Name];
         }
-        <div class="form-floating">
-            <select asp-for="Component" 
-                    class="form-control form-select"
-                    onchange="this.form.submit();"
-                    asp-items="componentList.OrderBy(c => c.Group.Name).ThenBy(c => c.Text)"></select>
-            <label asp-for="Component"></label>
-        </div>
+        <label asp-for="Component" class="form-label"></label>
+        <select asp-for="Component" 
+                class="form-control form-select"
+                onchange="this.form.submit();"
+                asp-items="componentList.OrderBy(c => c.Group.Name).ThenBy(c => c.Text)"></select>
     </div>
 </div>
 

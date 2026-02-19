@@ -28,40 +28,32 @@
            icon="FontAwesomeIcon.Warning"
            message="@StringLocalizer["The data type ({0}) is not recommended by modern database providers.", Model.DataType.ToString()]"/>
     }
-    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <div class="form-floating">
-            <input asp-for="Name" placeholder="" maxlength="64" class="form-control" data-bs-toggle="tooltip"
-                   title="@StringLocalizer["Name of the field at the database."]"/>
-            <label asp-for="Name"></label>
-        </div>
+    <div class="mb-3 col-sm-6 required">
+        <label asp-for="Name" class="form-label"></label>
+        <tooltip title="@StringLocalizer["Name of the field at the database."]"/>
+        <input asp-for="Name" placeholder="" maxlength="64" class="form-control"/>
         <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <div class="form-floating">
-            <input asp-for="Label" class="form-control" placeholder="" data-bs-toggle="tooltip"
-                   title="@StringLocalizer["Name of the field displayed at the form."]"/>
-            <label asp-for="Label"></label>
-        </div>
+    <div class="mb-3 col-sm-6">
+        <label asp-for="Label" class="form-label"></label>
+        <tooltip title="@StringLocalizer["Name of the field displayed at the form."]"/>
+        <input asp-for="Label" class="form-control" placeholder=""/>
     </div>
 </div>
 <div class="row">
     @if (isForm)
     {
         <div class="mb-3 col-sm-6 required">
-            <div class="form-floating">
-                <select asp-for="Filter.Type" class="form-select"
-                        asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
-                <label asp-for="Filter.Type"></label>
-            </div>
+            <label asp-for="Filter.Type" class="form-label"></label>
+            <select asp-for="Filter.Type" class="form-select"
+                    asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
         </div>
 
         <div class="mb-3 col-sm-6 required">
-            <div class="form-floating">
-                <select asp-for="DataBehavior" class="form-control form-select"
-                        asp-items="Html.GetEnumSelectList<FieldBehavior>()" data-bs-html="true" data-bs-toggle="tooltip"
-                        title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"></select>
-                <label asp-for="DataBehavior"></label>
-            </div>
+            <label asp-for="DataBehavior" class="form-label"></label>
+            <tooltip title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"/>
+            <select asp-for="DataBehavior" class="form-control form-select"
+                    asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
         </div>
     }
 </div>
@@ -78,74 +70,56 @@
     }
 
     <div class="mb-3 @(Model.DataType == FieldType.Decimal ? "col-sm-4" : "col-sm-6") required">
-        <div class="form-floating">
-            <select asp-for="DataType" class="form-control form-select" onchange="this.form.submit();"
-                    asp-items="dataTypeList"></select>
-            <label asp-for="DataType"></label>
-        </div>
+        <label asp-for="DataType" class="form-label"></label>
+        <select asp-for="DataType" class="form-control form-select" onchange="this.form.submit();"
+                asp-items="dataTypeList"></select>
     </div>
     @switch (Model.DataType)
     {
         case FieldType.Varchar or FieldType.NVarchar:
             <div class="mb-3 col-sm-4">
-                <div class="form-floating">
-                    <input asp-for="Size" class="form-control" data-bs-toggle="tooltip"
-                           title="@StringLocalizer["Defines the field size. Use -1 to specify MAX keyword."]" />
-                    <label asp-for="Size"></label>
-                </div>
+                <label asp-for="Size" class="form-label"></label>
+                <tooltip title="@StringLocalizer["Defines the field size. Use -1 to specify MAX keyword."]"/>
+                <input asp-for="Size" class="form-control"/>
             </div>
             <div class="mb-3 col-sm-2">
-                <div class="form-floating">
-                    <select asp-for="TextCase" class="form-control form-select"
-                            data-bs-toggle="tooltip"
-                            title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]" 
-                            asp-items="Html.GetEnumSelectList<TextCase>()"></select>
-                    <label asp-for="TextCase"></label>
-                </div>
+                <label asp-for="TextCase" class="form-label"></label>
+                <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
+                <select asp-for="TextCase" class="form-control form-select"
+                        asp-items="Html.GetEnumSelectList<TextCase>()"></select>
             </div>
             break;
 
         case FieldType.NChar or FieldType.Char:
             <div class="mb-3 col-sm-4">
-                <div class="form-floating">
-                    <input asp-for="Size" class="form-control" />
-                    <label asp-for="Size"></label>
-                </div>
+                <label asp-for="Size" class="form-label"></label>
+                <input asp-for="Size" class="form-control"/>
             </div>
             <div class="mb-3 col-sm-2">
-                <div class="form-floating">
-                    <select asp-for="TextCase" class="form-control form-select"
-                            data-bs-toggle="tooltip"
-                            title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]" 
-                            asp-items="Html.GetEnumSelectList<TextCase>()"></select>
-                    <label asp-for="TextCase"></label>
-                </div>
+                <label asp-for="TextCase" class="form-label"></label>
+                <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
+                <select asp-for="TextCase" class="form-control form-select"
+                        asp-items="Html.GetEnumSelectList<TextCase>()"></select>
             </div>
             break;
 
         case FieldType.Float:
             <div class="mb-3 col-sm-6">
-                <div class="form-floating">
-                    <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control" />
-                    <label asp-for="NumberOfDecimalPlaces"></label>
-                </div>
+                <label asp-for="NumberOfDecimalPlaces" class="form-label"></label>
+                <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control"/>
             </div>
             break;
 
         case FieldType.Decimal:
             <div class="mb-3 col-sm-4">
-                <div class="form-floating">
-                    <input asp-for="Size" min="1" max="38" class="form-control" data-bs-toggle="tooltip"
-                           title="@StringLocalizer["The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38."]" />
-                    <label asp-for="Size"></label>
-                </div>
+                <label asp-for="Size" class="form-label"></label>
+                <tooltip title="@StringLocalizer["The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38."]"/>
+                <input asp-for="Size" min="1" max="38" class="form-control"/>
             </div>
 
             <div class="mb-3 col-sm-4">
-                <div class="form-floating">
-                    <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control" />
-                    <label asp-for="NumberOfDecimalPlaces"></label>
-                </div>
+                <label asp-for="NumberOfDecimalPlaces" class="form-label"></label>
+                <input asp-for="NumberOfDecimalPlaces" min="1" max="38" class="form-control"/>
             </div>
             break;
     }
@@ -154,24 +128,24 @@
 </div>
 
 <div class="row">
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+    <div class="mb-3 col-sm-4 required">
         <checkbox for="IsRequired" layout="Switch"/>
     </div>
 
     @if (isForm)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <div class="mb-3 col-sm-4 required">
             <checkbox for="IsPk" layout="Switch"/>
         </div>
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <div class="mb-3 col-sm-4 required">
             <checkbox for="AutoNum" layout="Switch"/>
         </div>
 
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <div class="mb-3 col-sm-4 required">
             <checkbox for="Export" layout="Switch"/>
         </div>
     }
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+    <div class="mb-3 col-sm-4 required">
         <checkbox
             tooltip="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]"
             for="AutoPostBack" layout="Switch"/>
@@ -179,7 +153,7 @@
 
     @if (isForm)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <div class="mb-3 col-sm-4 required">
             <checkbox
                 tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]"
                 for="EncodeHtml" layout="Switch"/>
@@ -188,7 +162,7 @@
 
     @if (Options.Value.SupportNetFramework)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <div class="mb-3 col-sm-4 required">
             <checkbox
                 tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]"
                 for="ValidateRequest" layout="Switch"/>

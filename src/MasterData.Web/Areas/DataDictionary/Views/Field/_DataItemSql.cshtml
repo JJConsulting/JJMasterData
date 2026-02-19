@@ -10,9 +10,9 @@
 }
 
 <div id="div-sql-command">
-    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+    <div class="mb-3 col-sm-12 required">
         <label asp-for="DataItem!.Command!.Sql" class="form-label"></label>
-        <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
+        <span class="small float-end text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
         <div class="well" style="margin-bottom: 0">
             <code-editor asp-for="DataItem!.Command!.Sql" language="sql" height="300"/>
         </div>

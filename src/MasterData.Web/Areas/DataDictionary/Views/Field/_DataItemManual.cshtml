@@ -110,7 +110,7 @@
             <td colspan="@(showImage ? 6 : 4)">
                 <div class="btn-group dropup">
                     <link-button text="Add" icon="PlusCircle" on-client-click="addDataItem(1)"/>
-                    <button type="button" class="@BootstrapHelper.BtnDefault btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-secondary btn-small dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="caret"></span>
                         <span class="sr-only">@StringLocalizer["Toggle Dropdown"]</span>
                     </button>
@@ -124,7 +124,7 @@
                     </ul>
                 </div>
 
-                <button class="@BootstrapHelper.BtnDefault btn-small" onclick="removeAllDataItem();">
+                <button class="btn btn-secondary btn-small" onclick="removeAllDataItem();">
                     <span class="fa fa-trash"></span>
                     <span>&nbsp;@StringLocalizer["Remove All"]</span>
                 </button>

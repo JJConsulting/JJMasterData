@@ -5,16 +5,14 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 <collapse-panel title="@StringLocalizer["Filters"]" expanded-by-default="false" icon="Filter">
            <div class="row">
-               <div class="@BootstrapHelper.FormGroup col-sm-2">
-                   <div class="form-floating">
-                       @Html.DropDownListFor(m => m.FieldName,
-                           new SelectList(ViewBag.FiltersElementFieldList, "Key", "Value"),
-                           new { @class = "form-control" })
-                       <label >@StringLocalizer["Field"]</label>
-                   </div>
+               <div class="mb-3 col-sm-2">
+                   <label class="form-label">@StringLocalizer["Field"]</label>
+                   @Html.DropDownListFor(m => m.FieldName,
+                       new SelectList(ViewBag.FiltersElementFieldList, "Key", "Value"),
+                       new { @class = "form-control" })
                </div>
-               <div class="@BootstrapHelper.FormGroup col-sm-10">
-                   <expression for="ExpressionValue" label="Expression" icon="FontAwesomeIcon.Filter"/>
+               <div class="mb-3 col-sm-10">
+                   <expression for="ExpressionValue" label="Expression" icon="FontAwesomeIcon.Filter" use-floating-label="false"/>
                </div>
                <div class="col-sm-12">
                    <link-button css-class="btn-small" text="Add" icon="CheckSquareO" on-client-click="addElementMapFilter();"/>
@@ -41,4 +39,3 @@
            }
        
        </script>
-

@@ -9,33 +9,24 @@
 
 <div class="row">
     <div class="mb-3 col-sm-6">
-        <div class="form-floating">
-            <input asp-for="CssClass" placeholder="" class="form-control" data-bs-toggle="tooltip"
-                   title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
-            <label asp-for="CssClass"></label>
-        </div>
+        <label asp-for="CssClass" class="form-label"></label>
+        <tooltip title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
+        <input asp-for="CssClass" placeholder="" class="form-control"/>
     </div>
 
     <div class="mb-3 col-sm-6">
-        <div class="form-floating">
-            <input asp-for="LineGroup" type="number" placeholder="" class="form-control" data-bs-toggle="tooltip"
-                   title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
-            <label asp-for="LineGroup"></label>
-        </div>
+        <label asp-for="LineGroup" class="form-label"></label>
+        <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
+        <input asp-for="LineGroup" type="number" placeholder="" class="form-control"/>
     </div>
     <div class="mb-3 col-sm-6">
-        <div class="form-floating">
-            <input asp-for="HelpDescription" placeholder="" class="form-control" data-bs-toggle="tooltip"
-                   title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
-            <label asp-for="HelpDescription">
-            </label>
-        </div>
+        <label asp-for="HelpDescription" class="form-label"></label>
+        <tooltip title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
+        <input asp-for="HelpDescription" placeholder="" class="form-control"/>
     </div>
     <div class="mb-3 col-sm-6">
-        <div class="form-floating">
-            <select asp-for="GridAlignment" class="form-select"
-                    asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
-            <label asp-for="GridAlignment"></label>
-        </div>
+        <label asp-for="GridAlignment" class="form-label"></label>
+        <select asp-for="GridAlignment" class="form-select"
+                asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
     </div>
 </div>

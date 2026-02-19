@@ -6,63 +6,51 @@
 
 <collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
     <div class="row">
-        <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-            <div class="form-floating">
-                <select asp-for="DataItem!.ElementMap!.ElementName"
-                        asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
-                        class="form-control form-select"
-                        onchange="getMasterDataForm().submit();"></select>
-                <label>@StringLocalizer["Element Name"]</label>
-            </div>
+        <div class="mb-3 col-sm-12 required">
+            <label class="form-label">@StringLocalizer["Element Name"]</label>
+            <select asp-for="DataItem!.ElementMap!.ElementName"
+                    asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
+                    class="form-control form-select"
+                    onchange="getMasterDataForm().submit();"></select>
          
 
         </div>
-        <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-            <div class="form-floating">
-                <select asp-for="DataItem!.ElementMap!.IdFieldName"
-                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                        class="form-control form-select"></select>
-                <label>@StringLocalizer["Id"]</label>
-            </div>
+        <div class="mb-3 col-sm-3 required">
+            <label class="form-label">@StringLocalizer["Id"]</label>
+            <select asp-for="DataItem!.ElementMap!.IdFieldName"
+                    asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                    class="form-control form-select"></select>
         </div>
-        <div class="@BootstrapHelper.FormGroup col-sm-3">
-            <div class="form-floating">
-                <select asp-for="DataItem!.ElementMap!.DescriptionFieldName"
-                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                        class="form-control form-select"></select>
-                <label>@StringLocalizer["Description"]</label>
-            </div>
+        <div class="mb-3 col-sm-3">
+            <label class="form-label">@StringLocalizer["Description"]</label>
+            <select asp-for="DataItem!.ElementMap!.DescriptionFieldName"
+                    asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                    class="form-control form-select"></select>
         </div>
 
         @if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup && Model.DataItem!.ShowIcon)
         {
-            <div class="@BootstrapHelper.FormGroup col-sm-2">
-                <div class="form-floating">
-                    <select asp-for="DataItem!.ElementMap!.IconIdFieldName"
-                            asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                            class="form-control form-select"></select>
-                    <label>@StringLocalizer["Icon"]</label>
-                </div>
+            <div class="mb-3 col-sm-2">
+                <label class="form-label">@StringLocalizer["Icon"]</label>
+                <select asp-for="DataItem!.ElementMap!.IconIdFieldName"
+                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                        class="form-control form-select"></select>
 
             </div>
-            <div class="@BootstrapHelper.FormGroup col-sm-2">
-                <div class="form-floating">
-                    <select asp-for="DataItem!.ElementMap!.IconColorFieldName"
-                            asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                            class="form-control form-select"></select>
-                    <label>@StringLocalizer["Icon Color"]</label>
-                </div>
+            <div class="mb-3 col-sm-2">
+                <label class="form-label">@StringLocalizer["Icon Color"]</label>
+                <select asp-for="DataItem!.ElementMap!.IconColorFieldName"
+                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                        class="form-control form-select"></select>
             </div>
         }
         @if (Model.Component is FormComponent.ComboBox)
         {
-            <div class="@BootstrapHelper.FormGroup col-sm-2">
-                <div class="form-floating">
-                    <select asp-for="DataItem!.ElementMap!.GroupFieldName"
-                            asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                            class="form-control form-select"></select>
-                    <label>@StringLocalizer["Group"]</label>
-                </div>
+            <div class="mb-3 col-sm-2">
+                <label class="form-label">@StringLocalizer["Group"]</label>
+                <select asp-for="DataItem!.ElementMap!.GroupFieldName"
+                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
+                        class="form-control form-select"></select>
             </div>
         }
     </div>
@@ -84,11 +72,11 @@
                         @mapFilter.FieldName<i class="fa-solid fa-arrow-right"></i>@mapFilter.ExpressionValue
                         @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[index].FieldName, mapFilter.FieldName)
                         <div style="display:none">
-                            <expression for="@Model.DataItem!.ElementMap!.MapFilters[index].ExpressionValue" value="mapFilter.ExpressionValue"/>
+                            <expression for="@Model.DataItem!.ElementMap!.MapFilters[index].ExpressionValue" value="mapFilter.ExpressionValue" use-floating-label="false"/>
                         </div>
                     </td>
                     <td style="width:80px;" align="center">
-                        <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">
+                        <a href="#" data-bs-toggle="tooltip" title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">
                             <span class="fa fa-trash"></span>
                         </a>
                     </td>
@@ -99,4 +87,3 @@
        
     </div>
 </div>
-

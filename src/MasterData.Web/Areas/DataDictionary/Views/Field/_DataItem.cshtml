@@ -11,64 +11,57 @@
         <jj-title title="@StringLocalizer["Data Item"]" size="HeadingSize.H4"/>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <div class="form-floating">
-            <select asp-for="DataItem!.DataItemType"
-                    asp-items="Enum.GetValues<DataItemType>().Select(d => new SelectListItem(d.ToString(), d.ToString()))" onchange="this.form.submit();" class="form-control form-select">
-            </select>
-            <label>@StringLocalizer["Type"]</label>
-        </div>
+    <div class="mb-3 col-sm-4 required">
+        <label class="form-label">@StringLocalizer["Type"]</label>
+        <select asp-for="DataItem!.DataItemType"
+                asp-items="Enum.GetValues<DataItemType>().Select(d => new SelectListItem(d.ToString(), d.ToString()))" onchange="this.form.submit();" class="form-control form-select">
+        </select>
     </div>
 
     @if (ViewBag.IsForm)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divReplaceTextOnGrid">
-            <div class="form-floating">
-                <select asp-for="DataItem!.GridBehavior" class="form-control form-select" data-bs-toggle="tooltip" title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]">
-                    <option value="0">@StringLocalizer["Id"]</option>
-                    <option value="1">@StringLocalizer["Description"]</option>
-                    @if (Model.DataItem!.ShowIcon)
-                    {
-                        <option value="2">@StringLocalizer["Icon"]</option>
-                        <option value="3">@StringLocalizer["Icon with Description"]</option>
-                    }
-                </select>
-                <label asp-for="DataItem!.GridBehavior"></label>
-            </div>
+        <div class="mb-3 col-sm-4 required" id="divReplaceTextOnGrid">
+            <label asp-for="DataItem!.GridBehavior" class="form-label"></label>
+            <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+            <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
+                <option value="0">@StringLocalizer["Id"]</option>
+                <option value="1">@StringLocalizer["Description"]</option>
+                @if (Model.DataItem!.ShowIcon)
+                {
+                    <option value="2">@StringLocalizer["Icon"]</option>
+                    <option value="3">@StringLocalizer["Icon with Description"]</option>
+                }
+            </select>
         </div>
 
     }
 
     @if (Model.Component is FormComponent.ComboBox)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divFirstOption">
-            <div class="form-floating">
-                <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
-                <label asp-for="DataItem!.FirstOption"></label>
-            </div>
+        <div class="mb-3 col-sm-4 required" id="divFirstOption">
+            <label asp-for="DataItem!.FirstOption" class="form-label"></label>
+            <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }
 
     @if (Model.Component is FormComponent.RadioButtonGroup)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <div class="form-floating">
-                <select asp-for="DataItem!.RadioLayout" class="form-control form-select" asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
-                <label asp-for="DataItem!.RadioLayout"></label>
-            </div>
+        <div class="mb-3 col-sm-4 required">
+            <label asp-for="DataItem!.RadioLayout" class="form-label"></label>
+            <select asp-for="DataItem!.RadioLayout" class="form-control form-select" asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
         </div>
     }
     
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+    <div class="mb-3 col-sm-4 required">
         <checkbox tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]" for="DataItem!.EnableMultiSelect" layout="Switch"/>
     </div>
     
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+    <div class="mb-3 col-sm-4 required">
         <checkbox for="DataItem!.EnableLocalization" layout="Switch"/>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+    <div class="mb-3 col-sm-4 required">
         <checkbox for="DataItem!.ShowIcon" layout="Switch" onchange="this.form.requestSubmit();"/>
     </div>
 

@@ -12,31 +12,28 @@
         <jj-title title="@StringLocalizer["DataItem"]" size="HeadingSize.H4"/>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-        <div class="form-floating">
-            <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
-                <option selected="selected" value="@((int)DataItemType.ElementMap)">@DataItemType.ElementMap.ToString()</option>
-            </select>
-            <label asp-for="DataItem!.DataItemType">@StringLocalizer["Type"]</label>
-        </div>
+    <div class="mb-3 col-sm-3 required">
+        <label asp-for="DataItem!.DataItemType" class="form-label">@StringLocalizer["Type"]</label>
+        <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
+            <option selected="selected" value="@((int)DataItemType.ElementMap)">@DataItemType.ElementMap.ToString()</option>
+        </select>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divReplaceTextOnGrid">
-        <div class="form-floating">
-            <select asp-for="DataItem!.GridBehavior" class="form-control form-select" data-bs-toggle="tooltip" title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]">
-                <option value="0">@StringLocalizer["Id"]</option>
-                <option value="1">@StringLocalizer["Description"]</option>
-                @if (Model.DataItem!.ShowIcon)
-                {
-                <option value="2">@StringLocalizer["Icon"]</option>
-                <option value="3">@StringLocalizer["Icon with Description"]</option>
-                }
-            </select>
-            <label asp-for="DataItem!.GridBehavior"></label>
-        </div>
+    <div class="mb-3 col-sm-3 required" id="divReplaceTextOnGrid">
+        <label asp-for="DataItem!.GridBehavior" class="form-label"></label>
+        <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+        <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
+            <option value="0">@StringLocalizer["Id"]</option>
+            <option value="1">@StringLocalizer["Description"]</option>
+            @if (Model.DataItem!.ShowIcon)
+            {
+            <option value="2">@StringLocalizer["Icon"]</option>
+            <option value="3">@StringLocalizer["Icon with Description"]</option>
+            }
+        </select>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+    <div class="mb-3 col-sm-2 required">
         <checkbox for="DataItem!.ElementMap!.EnableElementActions" layout="Switch"/>
     </div>
 
