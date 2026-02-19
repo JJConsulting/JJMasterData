@@ -11,7 +11,7 @@
     Layout = "_FormElementActionLayout";
     ViewData["FormAction"] = "InsertAction";
     ViewData["CopyAction"] = "CopyInsertAction";
-    ViewData["FormRouteValues"] = new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"] };
+    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString() };
 }
 
 @{

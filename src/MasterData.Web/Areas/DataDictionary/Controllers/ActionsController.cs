@@ -36,7 +36,7 @@ public class ActionsController(ActionsService actionsService,
 
         var selectedSource = source ?? ActionSource.GridTable;
         var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName);
-        selectedAction ??= formElement.Options.GridTableActions.GetAllSorted().First();
+        selectedAction ??= gridTableActions[0];
         
         if (TryGetSelectedTabValue(out var selectedTab))
         {

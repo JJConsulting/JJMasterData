@@ -104,34 +104,13 @@
 
 
 <script type="text/javascript">
-    function mapSourceToTab(source) {
-        switch (source) {
-            case "GridToolbar":
-            case "1":
-                return "#div-grid-toolbar";
-            case "GridTable":
-            case "2":
-                return "#divGrid";
-            case "Field":
-            case "3":
-                return "#div-form-fields";
-            case "FormToolbar":
-            case "4":
-                return "#div-form-toolbar";
-            default:
-                return "";
-        }
-    }
-
     function getActiveTabId() {
         const selectedTabInput = document.getElementById("selectedTab");
         if (selectedTabInput && selectedTabInput.value) {
             return selectedTabInput.value;
         }
-
-        const queryParams = new URLSearchParams(window.location.search);
-        const tabFromSource = mapSourceToTab(queryParams.get("source") || "");
-        return tabFromSource || "#divGrid";
+        
+        return "#divGrid";
     }
 
     function showTab(tabId) {
