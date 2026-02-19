@@ -201,7 +201,7 @@
                 }
                 else
                 {
-                    <partial name="@selectedAction.GetType().Name" model="selectedAction"/>
+                    <partial name="@($"_{selectedAction.GetType().Name}")" model="selectedAction"/>
                 }
                 
             </div>

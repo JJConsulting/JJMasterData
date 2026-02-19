@@ -43,7 +43,7 @@ public class ActionsController(ActionsService actionsService,
         
         await PopulateViewData(formElement, action!, source, fieldName);
  
-        return PartialView(action!.GetType().Name, action);
+        return PartialView("_" + action!.GetType().Name, action);
 
     }
 
@@ -59,7 +59,7 @@ public class ActionsController(ActionsService actionsService,
 
         await PopulateViewData(elementName, action, source, fieldName);
      
-        return PartialView(actionType, action);
+        return PartialView("_" + actionType, action);
      
     }
 
@@ -541,7 +541,7 @@ public class ActionsController(ActionsService actionsService,
 
         await PopulateViewData(elementName, internalAction, source, fieldName);
    
-        return PartialView(internalAction.GetType().Name, internalAction);
+        return PartialView("_" + internalAction.GetType().Name, internalAction);
     }
 
     [HttpPost]
@@ -552,7 +552,7 @@ public class ActionsController(ActionsService actionsService,
         internalAction.ElementRedirect.RelationFields.RemoveAt(relationIndex);
         await PopulateViewData(elementName, internalAction, source, fieldName);
  
-        return PartialView(internalAction.GetType().Name, internalAction);
+        return PartialView("_" + internalAction.GetType().Name, internalAction);
     }
     
     [HttpPost]
