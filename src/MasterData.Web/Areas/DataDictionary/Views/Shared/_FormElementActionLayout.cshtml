@@ -106,6 +106,7 @@
 
         @if (!ViewData.ModelState.IsValid)
         {
+            <input type="hidden" id="action-has-errors" value="true"/>
             <message-toast
                 title-color="Danger"
                 title="@StringLocalizer["Error"]"
@@ -405,6 +406,14 @@
                                 details.setAttribute("data-loaded", "true");
                                 listenAllEvents("#" + detailsId);
                                 restoreActionTabState();
+                                const loadedDetails = document.getElementById(detailsId);
+                                const hasValidationErrors = !!loadedDetails.querySelector("#action-has-errors");
+                                if (!hasValidationErrors) {
+                                    const modalEl = document.getElementById("actionDetailsModal");
+                                    if (modalEl && window.bootstrap && bootstrap.Modal) {
+                                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                                    }
+                                }
                             }
                         });
                         return;
@@ -436,6 +445,14 @@
                                 details.setAttribute("data-loaded", "true");
                                 listenAllEvents("#" + detailsId);
                                 restoreActionTabState();
+                                const loadedDetails = document.getElementById(detailsId);
+                                const hasValidationErrors = !!loadedDetails.querySelector("#action-has-errors");
+                                if (!hasValidationErrors) {
+                                    const modalEl = document.getElementById("actionDetailsModal");
+                                    if (modalEl && window.bootstrap && bootstrap.Modal) {
+                                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                                    }
+                                }
                             }
                         });
                         return;

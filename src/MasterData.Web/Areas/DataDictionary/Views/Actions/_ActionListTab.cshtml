@@ -189,9 +189,11 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-9" style="padding-left:0">
-        <div class="jjrelative" id="action-details-@source" data-loaded="true">
-            <partial name="@selectedAction.GetType().Name" model="selectedAction"/>
+    <div class="col-sm-9 d-none d-sm-block" style="padding-left:0" id="action-details-col-@source">
+        <div id="action-details-host-@source">
+            <div class="jjrelative" id="action-details-@source" data-loaded="true">
+                <partial name="@selectedAction.GetType().Name" model="selectedAction"/>
+            </div>
         </div>
     </div>
 </div>

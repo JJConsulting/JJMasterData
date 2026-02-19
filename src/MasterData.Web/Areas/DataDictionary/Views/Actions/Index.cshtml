@@ -66,8 +66,68 @@
     <partial name="_ActionListTab" model="currentTabModel"/>
 </div>
 
+<div class="modal fade" id="actionDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@StringLocalizer["Actions"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="action-details-modal-host"></div>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
+    const actionDetailsModalId = "actionDetailsModal";
+    const actionDetailsModalHostId = "action-details-modal-host";
+
+    function isActionDetailsMobile() {
+        return window.matchMedia("(max-width: 575.98px)").matches;
+    }
+
+    function ensureActionDetailsModal(source) {
+        const modalEl = document.getElementById(actionDetailsModalId);
+        if (!modalEl || !window.bootstrap || !bootstrap.Modal) {
+            return null;
+        }
+
+        modalEl.setAttribute("data-action-source", source);
+        if (!modalEl.dataset.listenerAttached) {
+            modalEl.addEventListener("hidden.bs.modal", function () {
+                const currentSource = modalEl.getAttribute("data-action-source");
+                if (currentSource) {
+                    restoreActionDetailsFromModal(currentSource);
+                }
+            });
+            modalEl.dataset.listenerAttached = "true";
+        }
+
+        return modalEl;
+    }
+
+    function moveActionDetailsToModal(detailsId, source) {
+        const details = document.getElementById(detailsId);
+        const modalHost = document.getElementById(actionDetailsModalHostId);
+        const detailsHost = document.getElementById("action-details-host-" + source);
+        if (!details || !modalHost || !detailsHost) {
+            return;
+        }
+
+        modalHost.appendChild(details);
+    }
+
+    function restoreActionDetailsFromModal(source) {
+        const modalHost = document.getElementById(actionDetailsModalHostId);
+        const detailsHost = document.getElementById("action-details-host-" + source);
+        const details = modalHost?.querySelector("#action-details-" + source);
+        if (!details || !detailsHost) {
+            return;
+        }
+
+        detailsHost.appendChild(details);
+    }
+
     async function loadActionDetails(url, actionKey, source) {
         const key = actionKey || "";
         const safeKey = key.replace(/[^\w-]/g, "\\$&");
@@ -77,6 +137,14 @@
         document.querySelector(listSelector + " .active")?.classList?.remove("active");
         if (safeKey) {
             document.querySelector(listSelector + " #" + safeKey)?.classList?.add("active");
+        }
+
+        if (isActionDetailsMobile()) {
+            const modalEl = ensureActionDetailsModal(source);
+            moveActionDetailsToModal(detailsId, source);
+            if (modalEl) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
         }
 
         SpinnerOverlay.show();
