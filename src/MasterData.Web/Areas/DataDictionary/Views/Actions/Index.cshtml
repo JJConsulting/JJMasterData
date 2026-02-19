@@ -22,146 +22,52 @@
     var selectedAction = ViewData["InitialAction"] as BasicAction;
     var selectedFieldName = ViewData["InitialFieldName"]?.ToString();
 
-    var gridTableTab = CreateTab(
-        Model.GridTableActions,
-        ActionSource.GridTable,
-        Model.GridTableActions.First());
-
-    var gridToolbarTab = CreateTab(
-        Model.GridToolbarActions,
-        ActionSource.GridToolbar,
-        Model.GridToolbarActions.First());
-
-    var formToolbarTab = CreateTab(
-        Model.FormToolbarActions,
-        ActionSource.FormToolbar,
-        Model.FormToolbarActions.First());
-
-    var fieldTab = CreateTab(
-        Model.FieldActions.ConvertAll(f => f.Action),
-        ActionSource.Field,
-        Model.FieldActions.First().Action);
-
     ViewData["FieldActions"] = Model.FieldActions;
-    
-    ActionListTabModel CreateTab(
-        List<BasicAction> actions,
-        ActionSource actionSource,
-        BasicAction fallbackAction)
+
+    List<BasicAction> sourceActions = selectedSource switch
     {
-        return new ActionListTabModel
-        {
-            Actions = actions,
-            ElementName = Model.ElementName,
-            Source = actionSource,
-            SelectedAction = selectedSource == actionSource
-                ? selectedAction!
-                : fallbackAction,
-            SelectedFieldName = selectedFieldName
-        };
-    }
+        ActionSource.GridToolbar => Model.GridToolbarActions,
+        ActionSource.FormToolbar => Model.FormToolbarActions,
+        ActionSource.Field => Model.FieldActions.ConvertAll(f => f.Action),
+        _ => Model.GridTableActions
+    };
+
+    var currentTabModel = new ActionListTabModel
+    {
+        Actions = sourceActions,
+        ElementName = Model.ElementName,
+        Source = selectedSource,
+        SelectedAction = selectedAction ?? sourceActions.First(),
+        SelectedFieldName = selectedFieldName
+    };
 
 }
 
-<input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["selectedTab"]"/>
 <ul class="nav nav-underline">
-    <li id="navGrid" class="nav-item active">
-        <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab")
-           href="#divGrid">@StringLocalizer["Grid Table"]</a>
+    <li id="navGrid" class="nav-item">
+        <a class="nav-link @(selectedSource == ActionSource.GridTable ? "active" : string.Empty)"
+           href="@Url.Action("Index", "Actions", new { elementName = Model.ElementName, source = ActionSource.GridTable })">@StringLocalizer["Grid Table"]</a>
     </li>
     <li id="navGridToolbar" class="nav-item">
-        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-           href="#div-grid-toolbar">@StringLocalizer["Grid Toolbar"]</a>
+        <a class="nav-link @(selectedSource == ActionSource.GridToolbar ? "active" : string.Empty)"
+           href="@Url.Action("Index", "Actions", new { elementName = Model.ElementName, source = ActionSource.GridToolbar })">@StringLocalizer["Grid Toolbar"]</a>
     </li>
     <li id="navFormFields" class="nav-item">
-        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-           href="#div-form-fields">@StringLocalizer["Form Fields"]</a>
+        <a class="nav-link @(selectedSource == ActionSource.Field ? "active" : string.Empty)"
+           href="@Url.Action("Index", "Actions", new { elementName = Model.ElementName, source = ActionSource.Field })">@StringLocalizer["Form Fields"]</a>
     </li>
     <li id="navFormToolbar" class="nav-item">
-        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-           href="#div-form-toolbar">@StringLocalizer["Form Toolbar"]</a>
+        <a class="nav-link @(selectedSource == ActionSource.FormToolbar ? "active" : string.Empty)"
+           href="@Url.Action("Index", "Actions", new { elementName = Model.ElementName, source = ActionSource.FormToolbar })">@StringLocalizer["Form Toolbar"]</a>
     </li>
 </ul>
 
-<div class="tab-content mt-3">
-
-    <div id="divGrid" class="tab-pane fade in active show" data-action-source="@nameof(ActionSource.GridTable)">
-        <partial name="_ActionListTab" model="gridTableTab"/>
-    </div>
-
-    <div id="div-grid-toolbar" class="tab-pane fade" data-action-source="@nameof(ActionSource.GridToolbar)">
-        <partial name="_ActionListTab" model="gridToolbarTab"/>
-    </div>
-
-    <div id="div-form-fields" class="tab-pane fade" data-action-source="@nameof(ActionSource.Field)">
-        <partial name="_ActionListTab" model="fieldTab"/>
-    </div>
-
-    <div id="div-form-toolbar" class="tab-pane fade" data-action-source="@nameof(ActionSource.FormToolbar)">
-        <partial name="_ActionListTab" model="formToolbarTab"/>
-    </div>
+<div class="mt-3">
+    <partial name="_ActionListTab" model="currentTabModel"/>
 </div>
 
 
 <script type="text/javascript">
-    function getActiveTabId() {
-        const selectedTabInput = document.getElementById("selectedTab");
-        if (selectedTabInput && selectedTabInput.value) {
-            return selectedTabInput.value;
-        }
-        
-        return "#divGrid";
-    }
-
-    function showTab(tabId) {
-        const tabLink = document.querySelector(".nav a[href='" + tabId + "']");
-        if (!tabLink) {
-            return;
-        }
-
-        if (window.bootstrap && bootstrap.Tab) {
-            bootstrap.Tab.getOrCreateInstance(tabLink).show();
-            return;
-        }
-
-        $(".nav a[href='" + tabId + "']").tab("show");
-    }
-
-    function loadInitialTabDetails(tabId) {
-        if (!tabId) {
-            return;
-        }
-
-        const tabPane = document.querySelector(tabId);
-        if (!tabPane) {
-            return;
-        }
-
-        const source = tabPane.getAttribute("data-action-source");
-        if (!source) {
-            return;
-        }
-
-        const detailsElement = document.getElementById("action-details-" + source);
-        if (!detailsElement || detailsElement.getAttribute("data-loaded") === "true") {
-            return;
-        }
-
-        const listSelector = "#sortable-" + source + " .list-group-item";
-        const activeItem = document.querySelector(listSelector + ".active") || document.querySelector(listSelector);
-        if (!activeItem) {
-            return;
-        }
-
-        const editUrl = activeItem.getAttribute("data-edit-url");
-        const actionKey = activeItem.getAttribute("data-action-key");
-        if (!editUrl) {
-            return;
-        }
-
-        loadActionDetails(editUrl, actionKey || "", source);
-    }
-
     async function loadActionDetails(url, actionKey, source) {
         const key = actionKey || "";
         const safeKey = key.replace(/[^\w-]/g, "\\$&");
@@ -193,20 +99,4 @@
             $(this).toggle(textValues.toLowerCase().indexOf(value) > -1);
         });
     }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll("a[data-bs-toggle='tab'], a[data-toggle='tab']").forEach(function (tabLink) {
-            tabLink.addEventListener("shown.bs.tab", function (event) {
-                const tabId = event.target.getAttribute("href");
-                const selectedTabInput = document.getElementById("selectedTab");
-                if (selectedTabInput && tabId) {
-                    selectedTabInput.value = tabId;
-                }
-
-                loadInitialTabDetails(tabId);
-            });
-        });
-
-        showTab(getActiveTabId());
-    });
 </script>

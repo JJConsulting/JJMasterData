@@ -35,13 +35,17 @@ public class ActionsController(ActionsService actionsService,
         var formToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList();
 
         var selectedSource = source ?? ActionSource.GridTable;
-        var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName);
-        selectedAction ??= gridTableActions[0];
-        
-        if (TryGetSelectedTabValue(out var selectedTab))
-        {
-            TempData["selectedTab"] = selectedTab;
-        }
+        var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName)
+                             ?? selectedSource switch
+                             {
+                                 ActionSource.GridTable => gridTableActions.FirstOrDefault(),
+                                 ActionSource.GridToolbar => gridToolbarActions.FirstOrDefault(),
+                                 ActionSource.FormToolbar => formToolbarActions.FirstOrDefault(),
+                                 ActionSource.Field => fieldActions.FirstOrDefault()?.Action,
+                                 _ => null
+                             }
+                             ?? gridTableActions[0];
+       
 
         var model = new ActionsIndexViewModel
         {
