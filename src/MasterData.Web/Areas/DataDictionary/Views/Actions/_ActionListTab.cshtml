@@ -3,45 +3,25 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IEnumerable<IPluginHandler> ActionPluginHandlers
 
-@model JJMasterData.Web.Areas.DataDictionary.Models.ActionsListViewModel
+@model ActionListTabModel
 
 @{
     var sortableClass = string.Empty;
-    var sourceType = ViewData["Source"] is ActionSource sourceValue ? sourceValue : ActionSource.GridTable;
+    var sourceType = Model.Source;
     var source = sourceType.ToString();
     var isFieldSource = sourceType == ActionSource.Field;
-    var initialAction = ViewData["InitialAction"] as BasicAction;
-    var fieldActions = isFieldSource ? Model.FieldActions : [];
-    var sourceActions = sourceType switch
+    var selectedAction = Model.SelectedAction;
+    var selectedActionKey = Model.SelectedActionKey;
+    List<FieldActionItem>? fieldActions = null;
+
+    if (isFieldSource)
     {
-        ActionSource.GridTable => Model.GridTableActions,
-        ActionSource.GridToolbar => Model.GridToolbarActions,
-        ActionSource.FormToolbar => Model.FormToolbarActions,
-        ActionSource.Field => Model.FieldActions.Select(x => x.Action).ToList(),
-        _ => []
-    };
-    var visibleFieldActions = isFieldSource
-        ? fieldActions.Where(f => !f.Action.IsSystemDefined).ToList()
-        : [];
-    var visibleActions = isFieldSource
-        ? visibleFieldActions.Select(f => f.Action).ToList()
-        : sourceActions.Where(a => !a.IsSystemDefined).ToList();
-    var defaultFieldName = isFieldSource
-        ? fieldActions.Select(f => f.FieldName).FirstOrDefault()
-        : null;
-    var selectedActionKey = ViewData["InitialActionName"]?.ToString();
+        fieldActions = ViewData["FieldActions"] as List<FieldActionItem>;
+    }
+    
     var selectedDomActionId = !string.IsNullOrWhiteSpace(selectedActionKey)
         ? $"{source}_{selectedActionKey}"
         : string.Empty;
-}
-@if (!isFieldSource && visibleActions.Count > 1)
-{
-    sortableClass = "jjsortable";
-    <script lang="javascript" type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function () {
-            DataDictionaryUtils.sortAction('@source', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
-        });
-    </script>
 }
 
 <div class="row mt-3">
@@ -66,31 +46,31 @@
                 <ul class="dropdown-menu">
                 <li>
                     <a class="dropdown-item dropdown-link"
-                       href="javascript:loadActionDetails('@GetAddUrl(nameof(UrlRedirectAction), null, defaultFieldName)','','@source');">
+                       href="javascript:loadActionDetails('@GetAddUrl(nameof(UrlRedirectAction))','','@source');">
                         @StringLocalizer["Url Redirect"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link"
-                       href="javascript:loadActionDetails('@GetAddUrl(nameof(InternalAction), null, defaultFieldName)','','@source');">
+                       href="javascript:loadActionDetails('@GetAddUrl(nameof(InternalAction))','','@source');">
                         @StringLocalizer["Internal Redirect"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link"
-                       href="javascript:loadActionDetails('@GetAddUrl(nameof(SqlCommandAction), null, defaultFieldName)','','@source');">
+                       href="javascript:loadActionDetails('@GetAddUrl(nameof(SqlCommandAction), null)','','@source');">
                         @StringLocalizer["Sql Command"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link"
-                       href="javascript:loadActionDetails('@GetAddUrl(nameof(ScriptAction), null, defaultFieldName)','','@source');">
+                       href="javascript:loadActionDetails('@GetAddUrl(nameof(ScriptAction), null)','','@source');">
                         @StringLocalizer["JavaScript Script"]
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link"
-                       href="javascript:loadActionDetails('@GetAddUrl(nameof(HtmlTemplateAction), null, defaultFieldName)','','@source');">
+                       href="javascript:loadActionDetails('@GetAddUrl(nameof(HtmlTemplateAction), null)','','@source');">
                         @StringLocalizer["HTML Template"]
                     </a>
                 </li>
@@ -106,14 +86,14 @@
                             @if (plugin is IPluginFieldActionHandler)
                             {
                                 <a class="dropdown-item dropdown-link"
-                                   href="javascript:loadActionDetails('@GetAddUrl(nameof(PluginFieldAction), plugin.Id, defaultFieldName)','','@source');">
+                                   href="javascript:loadActionDetails('@GetAddUrl(nameof(PluginFieldAction), plugin.Id)','','@source');">
                                     @StringLocalizer[plugin.Title]
                                 </a>
                             }
                             else
                             {
                                 <a class="dropdown-item dropdown-link"
-                                   href="javascript:loadActionDetails('@GetAddUrl(nameof(PluginAction), plugin.Id, defaultFieldName)','','@source');">
+                                   href="javascript:loadActionDetails('@GetAddUrl(nameof(PluginAction), plugin.Id)','','@source');">
                                     @StringLocalizer[plugin.Title]
                                 </a>
                             }
@@ -140,22 +120,30 @@
         <div class="jjrelative">
             <div id="action-list-@source">
                 <div class="list-group jj-list-group @sortableClass" id="sortable-@source">
-                @if (visibleActions.Count == 0)
+                @if (Model.Actions.Count == 0)
                 {
                     <div>@StringLocalizer["No record found"]</div>
                 }
-                @for (var i = 0; i < visibleActions.Count; i++)
+                @for (var i = 0; i < Model.Actions.Count; i++)
                 {
-                    var action = visibleActions[i];
-                    var actionFieldName = isFieldSource ? visibleFieldActions[i].FieldName : null;
+                    var action = Model.Actions[i];
+                    string? actionFieldName;
+                    if (isFieldSource)
+                    {
+                        actionFieldName = fieldActions![i].FieldName;
+                    }
+                    else
+                    {
+                        actionFieldName = null;
+                    }
+
                     var itemKey = isFieldSource && !string.IsNullOrWhiteSpace(actionFieldName)
                         ? $"{actionFieldName}__{action.Name}"
                         : action.Name;
                     var itemDomId = $"{source}_{itemKey}";
                     var actionLabel = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
- 
                     var editUrl = GetEditUrl(action, actionFieldName);
-
+ 
                     <a href="javascript:loadActionDetails('@editUrl','@itemDomId','@source');"
                        class="list-group-item list-group-item-action @(itemDomId == selectedDomActionId ? "active" : string.Empty)"
                        id="@itemDomId"
@@ -202,21 +190,9 @@
         </div>
     </div>
     <div class="col-sm-9" style="padding-left:0">
-        @if (initialAction is not null)
-        {
-            <div class="jjrelative" id="action-details-@source" data-loaded="true">
-                <partial name="@initialAction.GetType().Name" model="initialAction"/>
-            </div>
-        }
-        else
-        {
-            <div class="jjrelative" id="action-details-@source" data-loaded="false">
-                <alert title="@StringLocalizer["Select an action to edit."]"
-                       color="Info"
-                       icon="FontAwesomeIcon.InfoCircle"
-                       show-close-button="false" />
-            </div>
-        }
+        <div class="jjrelative" id="action-details-@source" data-loaded="true">
+            <partial name="@selectedAction.GetType().Name" model="selectedAction"/>
+        </div>
     </div>
 </div>
 
@@ -237,19 +213,19 @@
     private string GetEditUrl(BasicAction action, string? fieldName)
     {
         return Url.Action("Edit", "Actions",
-            new { elementName = Model.ElementName, actionName = action.Name, source = ViewData["Source"], fieldName, returnUrl = GetReturnUrl() })!;
+            new { elementName = Model.ElementName, actionName = action.Name, source = Model.Source, fieldName, returnUrl = GetReturnUrl() })!;
     }
 
-    private string GetAddUrl(string actionType, Guid? pluginId = null, string? fieldName = null)
+    private string GetAddUrl(string actionType, Guid? pluginId = null)
     {
         return Url.Action("Add", "Actions",
-            new { elementName = Model.ElementName, actionType, source = ViewData["Source"], fieldName, pluginId, returnUrl = GetReturnUrl() })!;
+            new { elementName = Model.ElementName, actionType, source = Model.Source, pluginId, returnUrl = GetReturnUrl() })!;
     }
 
     private string? GetUrlDisable(BasicAction action, string? fieldName)
     {
         return Url.Action("EnableDisable", "Actions",
-            new { elementName = Model.ElementName, actionName = action.Name, source = ViewData["Source"], fieldName });
+            new { elementName = Model.ElementName, actionName = action.Name, source = Model.Source, fieldName });
     }
 
     private string? GetUrlSort()

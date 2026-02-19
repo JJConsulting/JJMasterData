@@ -7,6 +7,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
+using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,24 +19,20 @@ public class ActionsController(ActionsService actionsService,
         IEnumerable<IPluginHandler> pluginHandlers)
     : DataDictionaryController
 {
-    private bool IsAjaxRequest =>
-        Request.Headers.TryGetValue("X-Requested-With", out var header) &&
-        string.Equals(header, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
-
     public async Task<ActionResult> Index(string elementName, string? actionName = null, ActionSource? source = null, string? fieldName = null)
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
         var fieldActions = formElement.Fields
             .Where(f => f.Component.SupportActions)
-            .SelectMany(f => f.Actions.GetAllSorted().Select(a => new ActionsListViewModel.FieldActionItem
+            .SelectMany(f => f.Actions.GetAllSorted().Select(a => new FieldActionItem
             {
                 FieldName = f.Name,
                 Action = a
             }))
             .ToList();
-        var gridTableActions = formElement.Options.GridTableActions.GetAllSorted().ToList();
-        var gridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted().ToList();
-        var formToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().ToList();
+        var gridTableActions = formElement.Options.GridTableActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList();
+        var gridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList();
+        var formToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList();
 
         var selectedSource = source ?? ActionSource.GridTable;
         var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName);
@@ -46,7 +43,7 @@ public class ActionsController(ActionsService actionsService,
             TempData["selectedTab"] = selectedTab;
         }
 
-        var model = new ActionsListViewModel
+        var model = new ActionsIndexViewModel
         {
             ElementName = elementName,
             GridTableActions = gridTableActions,
@@ -70,13 +67,9 @@ public class ActionsController(ActionsService actionsService,
         var action = formElement.GetAction(actionName, source, fieldName);
         
         await PopulateViewData(formElement, action!, source, fieldName);
-        if (IsAjaxRequest)
-        {
-            ViewData["IsPartial"] = true;
-            return PartialView(action!.GetType().Name, action);
-        }
+ 
+        return PartialView(action!.GetType().Name, action);
 
-        return View(action!.GetType().Name, action);
     }
 
     public async Task<IActionResult> Add(
@@ -87,7 +80,17 @@ public class ActionsController(ActionsService actionsService,
         Guid? pluginId = null
         )
     {
-        BasicAction action = actionType switch
+        var action = CreateActionFromType(actionType, pluginId);
+
+        await PopulateViewData(elementName, action, source, fieldName);
+     
+        return PartialView(actionType, action);
+     
+    }
+
+    private static BasicAction CreateActionFromType(string actionType, Guid? pluginId)
+    {
+        return actionType switch
         {
             nameof(ScriptAction) => new ScriptAction(),
             nameof(UrlRedirectAction) => new UrlRedirectAction(),
@@ -104,16 +107,8 @@ public class ActionsController(ActionsService actionsService,
             },
             _ => throw new JJMasterDataException("Invalid Action")
         };
-
-        await PopulateViewData(elementName, action, source, fieldName);
-        if (IsAjaxRequest)
-        {
-            ViewData["IsPartial"] = true;
-            return PartialView(actionType, action);
-        }
-
-        return View(actionType, action);
     }
+    
 
     private async Task<IActionResult> EditActionResult<TAction>(
         string elementName,
@@ -130,24 +125,17 @@ public class ActionsController(ActionsService actionsService,
         if (ModelState.IsValid)
         {
             await RemoveActionFromOriginalField(elementName, action, source, originalName, fieldName);
-            if (IsAjaxRequest)
-            {
-                await PopulateViewData(elementName, action, source, fieldName);
-                ViewData["ShowSaveSuccess"] = true;
-                ViewData["IsPartial"] = true;
-                return PartialView(action.GetType().Name, action);
-            }
-            return View(action.GetType().Name, action);
+      
+            await PopulateViewData(elementName, action, source, fieldName);
+            ViewData["ShowSaveSuccess"] = true;
+ 
+            return PartialView(action.GetType().Name, action);
+        
         }
         
         await PopulateViewData(elementName, action, source, fieldName);
-        if (IsAjaxRequest)
-        {
-            ViewData["IsPartial"] = true;
-            return PartialView(action.GetType().Name, action);
-        }
-
-        return View(action.GetType().Name, action);
+   
+        return PartialView(action.GetType().Name, action);
     }
 
     private async Task<IActionResult> CopyActionResult<TAction>(
@@ -162,25 +150,14 @@ public class ActionsController(ActionsService actionsService,
         await SaveAction(elementName, action, source, null, fieldName);
         if (ModelState.IsValid)
         {
-            if (IsAjaxRequest)
-            {
-                await PopulateViewData(elementName, action, source, fieldName);
-                ViewData["ShowCopySuccess"] = true;
-                ViewData["IsPartial"] = true;
-                return PartialView(action.GetType().Name, action);
-            }
-            
-            return View(action.GetType().Name, action);
-        }
-
-        await PopulateViewData(elementName, action, source, fieldName);
-        if (IsAjaxRequest)
-        {
-            ViewData["IsPartial"] = true;
+            await PopulateViewData(elementName, action, source, fieldName);
+            ViewData["ShowCopySuccess"] = true;
             return PartialView(action.GetType().Name, action);
         }
 
-        return View(action.GetType().Name, action);
+        await PopulateViewData(elementName, action, source, fieldName);
+      
+        return PartialView(action.GetType().Name, action);
     }
     
 
@@ -594,13 +571,8 @@ public class ActionsController(ActionsService actionsService,
         });
 
         await PopulateViewData(elementName, internalAction, source, fieldName);
-        if (IsAjaxRequest)
-        {
-            ViewData["IsPartial"] = true;
-            return PartialView(internalAction.GetType().Name, internalAction);
-        }
-
-        return View(internalAction.GetType().Name, internalAction);
+   
+        return PartialView(internalAction.GetType().Name, internalAction);
     }
 
     [HttpPost]
@@ -610,13 +582,8 @@ public class ActionsController(ActionsService actionsService,
     {
         internalAction.ElementRedirect.RelationFields.RemoveAt(relationIndex);
         await PopulateViewData(elementName, internalAction, source, fieldName);
-        if (IsAjaxRequest)
-        {
-            ViewData["IsPartial"] = true;
-            return PartialView(internalAction.GetType().Name, internalAction);
-        }
-
-        return View(internalAction.GetType().Name, internalAction);
+ 
+        return PartialView(internalAction.GetType().Name, internalAction);
     }
     
     [HttpPost]
@@ -744,9 +711,6 @@ public class ActionsController(ActionsService actionsService,
         ViewData["InitialSource"] = source;
         ViewData["InitialAction"] = basicAction;
         ViewData["InitialFieldName"] = fieldName;
-        ViewData["InitialActionKey"] =source == ActionSource.Field && !string.IsNullOrWhiteSpace(fieldName)
-                ? $"{fieldName}__{basicAction.Name}"
-                : basicAction.Name;
     }
 
     private bool TryGetSelectedTabValue(out string selectedTab)

@@ -9,30 +9,34 @@
 @model JJMasterData.Core.DataDictionary.Models.Actions.BasicAction
 
 @{
-    var isPartial = ViewData["IsPartial"] as bool? ?? false;
-    Layout = isPartial ? null : "_FormElementMenuLayout";
+    Layout = null;
     var backUrl = Url.Action("Index", "Element")!;
+    
     var elementName = ViewData["ElementName"]!.ToString()!;
+    
     var actionName = ViewData["OriginalName"]?.ToString();
-    ActionSource? sourceAction = ViewData["ActionSource"] is ActionSource actionSource ? actionSource : null;
+    var actionSource = ViewData.TryGetValue("ActionSource", out var actionSourceObject) ? actionSourceObject as ActionSource? : null;
+    
     var fieldName = ViewData["FieldName"] as string;
-    var isFieldSource = sourceAction == ActionSource.Field;
-    var actionFieldList = ViewData["ActionFieldList"] as IEnumerable<SelectListItem> ?? [];
-    var copyActionName = ViewData["CopyAction"] as string;
+    var isFieldSource = actionSource == ActionSource.Field;
+
     var actionNameForToolbar = !string.IsNullOrWhiteSpace(actionName) ? actionName : Model.Name;
+    
+    var copyActionName = ViewData["CopyAction"] as string;
+
     var canDelete = Model is { IsUserDefined: true } && !string.IsNullOrWhiteSpace(actionNameForToolbar);
     var canCopy = canDelete && !string.IsNullOrWhiteSpace(copyActionName);
     var copyUrl = canCopy
-        ? Url.Action(copyActionName, "Actions", new { elementName, source = sourceAction, fieldName })
+        ? Url.Action(copyActionName, "Actions", new { elementName, source = actionSource, fieldName })
         : null;
-    var deleteUrl = (sourceAction is not null && !string.IsNullOrWhiteSpace(actionNameForToolbar))
-        ? Url.Action("Remove", "Actions", new { elementName, actionName = actionNameForToolbar, source = sourceAction, fieldName })
+    var deleteUrl = !string.IsNullOrWhiteSpace(actionNameForToolbar)
+        ? Url.Action("Remove", "Actions", new { elementName, actionName = actionNameForToolbar, source = actionSource, fieldName })
         : null;
 
     if (string.IsNullOrWhiteSpace(actionName))
         actionName = StringLocalizer["New Action"];
 
-    TempData["selectedTab"] = sourceAction switch
+    TempData["selectedTab"] = actionSource switch
     {
         ActionSource.GridToolbar => "#div-grid-toolbar",
         ActionSource.FormToolbar => "#div-form-toolbar",
@@ -48,7 +52,7 @@
         new(StringLocalizer["Actions"])
     };
 
-    if (sourceAction is ActionSource.Field && !string.IsNullOrWhiteSpace(fieldName))
+    if (actionSource is ActionSource.Field && !string.IsNullOrWhiteSpace(fieldName))
     {
         var fieldUrl = Url.Action("Index", "Field", new { elementName, fieldName })!;
         breadcrumbs.Add(new BreadcrumbItem(fieldName, fieldUrl));
@@ -57,19 +61,15 @@
     breadcrumbs.Add(new BreadcrumbItem(actionName));
 
     ViewData["Breadcrumbs"] = breadcrumbs;
-}
 
-@{
     var formAction = ViewData["FormAction"]?.ToString();
     var formController = ViewData["FormController"]?.ToString() ?? "Actions";
-    var formRouteValues = ViewData["FormRouteValues"];
+    var formRouteValues = ViewData["FormRouteValues"] ?? new object();
 }
 
 @if (!string.IsNullOrWhiteSpace(formAction))
 {
-    using (formRouteValues == null
-               ? Html.BeginMasterDataForm(formAction!, formController)
-               : Html.BeginMasterDataForm(formAction!, formController, formRouteValues))
+    using (Html.BeginMasterDataForm(formAction, formController, formRouteValues))
     {
         @await RenderSectionAsync("ActionFormHeader", required: false)
         <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewData["Tab"]" />
@@ -138,7 +138,7 @@
                         </div>
                         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                             <label class="@BootstrapHelper.Label" for="fieldName">@StringLocalizer["Field"]</label>
-                            @Html.DropDownList("fieldName", actionFieldList, new { @class = "form-select" })
+                            @Html.DropDownList("fieldName", ViewData["ActionFieldList"] as IEnumerable<SelectListItem> ?? [], new { @class = "form-select" })
                             <input type="hidden" id="originalFieldName" name="originalFieldName" value="@fieldName"/>
                         </div>
                         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
@@ -222,7 +222,7 @@
                     <div class="mb-3 col-sm-2">
                         <checkbox tooltip="@StringLocalizer["Show a separator before this action."]" for="DividerLine" layout="Switch" />
                     </div>
-                    @if (ViewData["ActionSource"] is ActionSource.FormToolbar)
+                    @if (actionSource is ActionSource.FormToolbar)
                     {
                         <div class="mb-3 col-sm-2">
                             <label asp-for="Location" class="form-label">@StringLocalizer["Location"]</label>
@@ -279,7 +279,7 @@
             }
         </div>
 
-        @if (sourceAction is not null)
+        @if (actionSource is not null)
         {
             <script type="text/javascript">
                 function getActionTabLinks(form) {
@@ -448,7 +448,7 @@
                             url: deleteUrl,
                             success: function (data) {
                                 if (data.success) {
-                                    window.location.href = '@Url.Action("Index", "Actions", new { elementName, actionName, sourceAction })';
+                                    window.location.href = '@Url.Action("Index", "Actions", new { elementName, actionName, actionSource })';
                                 }
                             }
                         });
