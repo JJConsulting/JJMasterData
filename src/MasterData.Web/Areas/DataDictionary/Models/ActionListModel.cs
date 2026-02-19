@@ -4,10 +4,11 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public class ActionListModel
 {
-    public required string ElementName { get; set; }
-    public required ActionSource Source { get; set; }
-    public required List<BasicAction> Actions { get; set; }
-    public required BasicAction? SelectedAction { get; set; }
+    public required string ElementName { get; init; }
+    public required ActionSource Source { get; init; }
+    public required List<BasicAction> Actions { get; init; }
+    public required BasicAction? SelectedAction { get; init; }
+    public string? SelectedFieldName { get; init; }
     public string? SelectedActionKey
     {
         get
@@ -21,6 +22,4 @@ public class ActionListModel
             return SelectedFieldName + "__" + SelectedAction?.Name;
         }
     }
-
-    public string? SelectedFieldName { get; set; }
 }

@@ -1,13 +1,11 @@
 ﻿#nullable enable
 
 using System.Globalization;
-using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
-using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -32,18 +30,19 @@ public class ActionsController(ActionsService actionsService,
         return View(model);
     }
 
-    public async Task<IActionResult> Edit(string elementName, string actionName, ActionSource source, string fieldName)
+    public async Task<IActionResult> Edit(
+        string elementName, 
+        string actionName, 
+        ActionSource source, 
+        string fieldName)
     {
-        if (elementName is null)
-            throw new ArgumentNullException(nameof(elementName));
-        
         var formElement = await actionsService.GetFormElementAsync(elementName);
 
         var action = formElement.GetAction(actionName, source, fieldName);
         
-        await PopulateViewData(formElement, action!, source, fieldName);
+        await PopulateViewData(formElement, action, source, fieldName);
  
-        return PartialView("_" + action!.GetType().Name, action);
+        return PartialView($"_{action!.GetType().Name}", action);
 
     }
 
@@ -59,8 +58,7 @@ public class ActionsController(ActionsService actionsService,
 
         await PopulateViewData(elementName, action, source, fieldName);
      
-        return PartialView("_" + actionType, action);
-     
+        return PartialView($"_{actionType}", action);
     }
 
     private static BasicAction CreateActionFromType(string actionType, Guid? pluginId)
@@ -659,7 +657,7 @@ public class ActionsController(ActionsService actionsService,
             Source = source,
             Actions = selectedSourceActions,
             SelectedAction = selectedAction,
-            SelectedFieldName = fieldName
+            SelectedFieldName = fieldName ?? fieldActions?.FirstOrDefault()?.FieldName
         };
     }
 
