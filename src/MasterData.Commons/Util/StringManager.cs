@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Util;
 
@@ -16,25 +15,6 @@ public static class StringManager
     public static bool ParseBool(string? value)
     {
         return value?.Equals("true", StringComparison.OrdinalIgnoreCase) is true || value is ['1'];
-    }
-
-    /// <summary>
-    /// Clear the text, <b>This don't prevent SQL injection.</b>
-    /// </summary>
-    /// <remarks>
-    /// Author: Lucio Pelinson 21-05-2012
-    /// </remarks>
-    public static string ClearText(string? input)
-    {
-        if (input == null)
-            return string.Empty;
-
-        string result = input.Replace("'", "`");
-        result = result.Replace('<', '[');
-        result = result.Replace('>', ']');
-        result = result.Replace("--", "");
-
-        return result;
     }
     
     /// <summary>
@@ -67,26 +47,7 @@ public static class StringManager
         str = str.Replace("\\s+", " ");
         return str;
     }
-
-    /// <summary>
-    /// Function to return greeting
-    /// </summary>
-    /// <returns>
-    /// Good Morning, Good Afternoon or Good Night. i18n supported.
-    /// </returns>
-    public static string GetGreeting(IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        var now = DateTime.Now;
-        string greeting;
-        if (now.Hour > 0 && (DateTime.Now.Hour <= 12))
-            greeting = stringLocalizer["Good Morning"];
-        else if ((DateTime.Now.Hour > 12) && (DateTime.Now.Hour <= 18))
-            greeting = stringLocalizer["Good Afternoon"];
-        else
-            greeting = stringLocalizer["Good Night"];
-
-        return greeting;
-    }
+    
     
     public static string ClearCpfCnpjChars(string value)
     {
@@ -98,7 +59,7 @@ public static class StringManager
         return cnpf;
     }
     
-    public static string ClearTelChars(string value)
+    public static string ClearPhoneChars(string value)
     {
         string phone = value;
         phone = phone.Replace("(", "");

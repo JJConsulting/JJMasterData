@@ -14,7 +14,7 @@
 }
 
 <div class="row">
-    @if (Validate.IsDatabaseKeyword(Model.Name))
+    @if (Validations.IsDatabaseKeyword(Model.Name))
     {
         <alert title="@StringLocalizer["Warning"]"
                color="Warning"

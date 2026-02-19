@@ -87,7 +87,7 @@ public class FieldValidationService(
         switch (field.Component)
         {
             case FormComponent.Email:
-                if (!Validate.ValidEmail(valueString))
+                if (!Validations.ValidateEmail(valueString))
                     return localizer["{0} field has an invalid email", fieldName];
                 break;
             case FormComponent.Hour:
@@ -105,28 +105,28 @@ public class FieldValidationService(
 
                 break;
             case FormComponent.Cnpj:
-                if (!Validate.ValidCnpj(valueString))
+                if (!Validations.ValidateCnpj(valueString))
                 {
                     return localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.Cpf:
-                if (!Validate.ValidCpf(valueString))
+                if (!Validations.ValidateCpf(valueString))
                 {
                     return localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.CnpjCpf:
-                if (!Validate.ValidCpfCnpj(valueString))
+                if (!Validations.ValidateCpfCnpj(valueString))
                 {
                     return localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.Tel:
-                if (!Validate.ValidTel(valueString))
+                if (!Validations.ValidatePhone(valueString))
                 {
                     return localizer["{0} field has an invalid phone", fieldName];
                 }

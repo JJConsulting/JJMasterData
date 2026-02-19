@@ -175,6 +175,16 @@ public class FieldService(
             AddError(nameof(field.DataType),
                 StringLocalizer["Checkbox components can only be of type Int or Boolean"]);
         }
+        
+        if (field.Component is FormComponent.Cnpj or FormComponent.CnpjCpf or FormComponent.Cpf)
+        {
+            if (!field.DataType.IsString)
+            {
+                AddError(nameof(field.DataType),
+                    StringLocalizer["CPF/CNPJ components must be of type string."]);
+            }
+        }
+
 
         if (field.Component is FormComponent.Number or FormComponent.Currency)
         {

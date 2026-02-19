@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace JJMasterData.Commons.Util;
@@ -131,18 +132,25 @@ public static class Format
     }
 
     /// <summary>
-    /// Formata um CNPJ válido
+    /// Formata um CNPJ válido (alfanumérico)
     /// </summary>
     public static string FormatCnpj(string cnpj)
     {
-        string sRet = "";
-        double nCnpj;
-        if (double.TryParse(cnpj, out nCnpj))
-        {
-            sRet = nCnpj.ToString(@"#00\.000\.000\/0000\-00");
-        }
+        if (string.IsNullOrWhiteSpace(cnpj))
+            return string.Empty;
 
-        return sRet;
+        // Remove tudo que não for letra ou número
+        var cleaned = new string(cnpj
+            .Where(char.IsLetterOrDigit)
+            .ToArray());
+
+        // CNPJ deve ter 14 caracteres
+        if (cleaned.Length != 14)
+            return string.Empty;
+
+        // Aplica a máscara: 00.000.000/0000-00
+        return
+            $"{cleaned[..2]}.{cleaned.Substring(2, 3)}.{cleaned.Substring(5, 3)}/{cleaned.Substring(8, 4)}-{cleaned.Substring(12, 2)}";
     }
 
     /// <summary>
@@ -193,11 +201,11 @@ public static class Format
     public static string FormatPhone(string tel)
     {
         double nTel;
-        string sTel = StringManager.ClearTelChars(tel);
+        string sTel = StringManager.ClearPhoneChars(tel);
         
         if (sTel.Length > 9 && sTel.StartsWith("0"))
         {
-            sTel = sTel.Substring(1);
+            sTel = sTel[1..];
         }
 
         if (double.TryParse(sTel, out nTel))
@@ -230,17 +238,4 @@ public static class Format
 
         return sTel;
     }
-
-    public static string FormatDecBr2Usa(double value)
-    {
-        return FormatDecBr2Usa(value.ToString(CultureInfo.CurrentCulture));
-    }
-
-    public static string FormatDecBr2Usa(string text)
-    {
-        string result = text.Replace(".", "");
-        result = result.Replace(",", ".");
-        return result;
-    }
-
 }

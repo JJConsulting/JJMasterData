@@ -6,61 +6,22 @@ using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Validations;
 
-public static class Validate
+public static class Validations
 {
     /// <summary>
     /// Valida se o CNPJ é válido
     /// </summary>
     /// <returns>Retorna Verdadeiro caso o CNPJ seja valido</returns> 
-    public static bool ValidCnpj(string cnpj)
+    public static bool ValidateCnpj(string cnpj)
     {
-        int[] multiplicador1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-        int[] multiplicador2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-
-        cnpj = cnpj.Trim();
-        cnpj = cnpj.Replace(".", "").Replace("-", "").Replace("/", "").Replace("_", "");
-
-        if (cnpj.Length != 14)
-            return false;
-
-        var tempCnpj = cnpj.Substring(0, 12);
-        var soma = 0; for (int i = 0; i < 12; i++) soma += int.Parse(tempCnpj[i].ToString()) * multiplicador1[i];
-        var resto = (soma % 11);
-
-        if (resto < 2)
-        {
-            resto = 0;
-        }
-        else
-        {
-            resto = 11 - resto;
-        }
-
-
-        var digito = resto.ToString();
-        tempCnpj += digito;
-        soma = 0;
-
-        for (int i = 0; i < 13; i++)
-            soma += int.Parse(tempCnpj[i].ToString()) * multiplicador2[i];
-
-        resto = (soma % 11);
-
-        if (resto < 2)
-            resto = 0;
-        else
-            resto = 11 - resto;
-
-        digito += resto;
-
-        return cnpj.EndsWith(digito);
+        return BrazilValidations.ValidateCnpj(cnpj);
     }
 
     /// <summary>
     /// Verifica se o e-mail é valido
     /// </summary>
     /// <param name="email">E-Mail</param>
-    public static bool ValidEmail(string email)
+    public static bool ValidateEmail(string email)
     {
         if (email.Contains("'"))
             return false;
@@ -74,11 +35,11 @@ public static class Validate
     /// Verifica se o numero de telefone é valido 
     /// </summary>
     /// <param name="telNumber">Numero de Telefone</param>
-    public static bool ValidTel(string telNumber)
+    public static bool ValidatePhone(string telNumber)
     {
         bool validTel = false;
         double nTel;
-        string sTel = StringManager.ClearTelChars(telNumber);
+        string sTel = StringManager.ClearPhoneChars(telNumber);
             
         if (double.TryParse(sTel, out nTel))
         {
@@ -93,15 +54,15 @@ public static class Validate
     /// </summary>
     /// <param name="uf">Estado</param>
     /// <param name="inscr">Inscrição Estadual</param>
-    public static bool ValidIE(string uf, string inscr)
+    public static bool ValidateIE(string uf, string inscr)
     {
-        return ValidateBrazil.ValidIE(uf, inscr);
+        return BrazilValidations.ValidateIE(uf, inscr);
     }
 
     /// <summary>
     /// Valida Hora
     /// </summary>
-    public static bool ValidHour(string value)
+    public static bool ValidateHour(string value)
     {
         bool bRet = true;
         try
@@ -132,82 +93,16 @@ public static class Validate
     /// Valida se o CPF é valido
     /// </summary>
     /// <returns>Retorna Verdadeiro caso o CPF seja valido</returns> 
-    public static bool ValidCpf(string cpf)
+    public static bool ValidateCpf(string cpf)
     {
-        int[] multiplicador1 = [10, 9, 8, 7, 6, 5, 4, 3, 2];
-        int[] multiplicador2 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
-
-        cpf = cpf.Trim();
-        cpf = StringManager.ClearCpfCnpjChars(cpf);
-
-        // Se o tamanho for < 11 entao retorna como inválido
-        if (cpf.Length != 11)
-            return false;
-
-        // Caso coloque todos os numeros iguais
-        switch (cpf)
-        {
-            case "11111111111":
-                return false;
-            case "00000000000":
-                return false;
-            case "22222222222":
-                return false;
-            case "33333333333":
-                return false;
-            case "44444444444":
-                return false;
-            case "55555555555":
-                return false;
-            case "66666666666":
-                return false;
-            case "77777777777":
-                return false;
-            case "88888888888":
-                return false;
-            case "99999999999":
-                return false;
-        }
-
-        var tempCpf = cpf.Substring(0, 9);
-        var soma = 0;
-
-        for (int i = 0; i < 9; i++)
-            soma +=
-
-                int.Parse(tempCpf[i].ToString()) * multiplicador1[i];
-        var resto = soma % 11;
-
-        if (resto < 2)
-            resto = 0;
-        else
-            resto = 11 - resto;
-
-        var digito = resto.ToString();
-        tempCpf += digito;
-        soma = 0;
-
-        for (int i = 0; i < 10; i++)
-            soma +=
-                int.Parse(tempCpf[i].ToString()) * multiplicador2[i];
-
-        resto = soma % 11;
-        if (resto < 2)
-            resto = 0;
-        else
-            resto = 11 - resto;
-
-        digito += resto;
-
-        return cpf.EndsWith(digito);
-
+        return BrazilValidations.ValidateCpf(cpf);
     }
 
 
     /// <summary>
     /// Valida se o CPF ou CNPJ é valido
     /// </summary>
-    public static bool ValidCpfCnpj(string value)
+    public static bool ValidateCpfCnpj(string value)
     {
         bool bRet = false;
         if (!string.IsNullOrEmpty(value))
@@ -215,9 +110,9 @@ public static class Validate
             value = value.Replace(".", "");
             value = value.Replace("-", "");
             if (value.Trim().Length == 11)
-                bRet = ValidCpf(value);
+                bRet = ValidateCpf(value);
             else
-                bRet = ValidCnpj(value);
+                bRet = ValidateCnpj(value);
         }
 
         return bRet; 
@@ -226,7 +121,7 @@ public static class Validate
     /// <summary>
     /// Valida se a chave da NFe é valida
     /// </summary>
-    public static bool ValidNFe(string chaveNFe)
+    public static bool ValidateNFe(string chaveNFe)
     {
         string chave = chaveNFe.Substring(0, chaveNFe.Length - 1);
         int soma = 0;

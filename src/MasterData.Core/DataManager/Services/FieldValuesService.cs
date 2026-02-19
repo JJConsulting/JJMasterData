@@ -124,7 +124,7 @@ public class FieldValuesService(ExpressionsService expressionsService)
             case FormComponent.Cnpj or FormComponent.CnpjCpf:
                 return StringManager.ClearCpfCnpjChars(value.ToString()!);
             case FormComponent.Tel:
-                return StringManager.ClearTelChars(value.ToString()!);
+                return StringManager.ClearPhoneChars(value.ToString()!);
             case FormComponent.Cep:
                 return value.ToString()!.Replace("-", "");
             default:

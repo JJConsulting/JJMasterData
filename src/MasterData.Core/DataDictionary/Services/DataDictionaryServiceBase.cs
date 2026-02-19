@@ -67,7 +67,7 @@ public abstract class DataDictionaryServiceBase(
             return false;
         }
 
-        if (Validate.IsMasterDataKeyword(name))
+        if (Validations.IsMasterDataKeyword(name))
             AddError(nameof(name), StringLocalizer["The [Name] field contains a reserved word used in the api"]);
 
         if (name.Contains(" "))

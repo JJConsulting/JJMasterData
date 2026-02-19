@@ -1,10 +1,122 @@
 ﻿using System;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Validations;
 
-internal static class ValidateBrazil
+internal static class BrazilValidations
 {
-    public static bool ValidIE(string pUF, string pInscr)
+    public static bool ValidateCpf(string cpf)
+    {
+        int[] multiplicador1 = [10, 9, 8, 7, 6, 5, 4, 3, 2];
+        int[] multiplicador2 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
+
+        cpf = cpf.Trim();
+        cpf = StringManager.ClearCpfCnpjChars(cpf);
+
+        // Se o tamanho for < 11 entao retorna como inválido
+        if (cpf.Length != 11)
+            return false;
+
+        // Caso coloque todos os numeros iguais
+        switch (cpf)
+        {
+            case "11111111111":
+            case "00000000000":
+            case "22222222222":
+            case "33333333333":
+            case "44444444444":
+            case "55555555555":
+            case "66666666666":
+            case "77777777777":
+            case "88888888888":
+            case "99999999999":
+                return false;
+        }
+
+        var tempCpf = cpf[..9];
+        var soma = 0;
+
+        for (int i = 0; i < 9; i++)
+            soma +=
+
+                int.Parse(tempCpf[i].ToString()) * multiplicador1[i];
+        var resto = soma % 11;
+
+        if (resto < 2)
+            resto = 0;
+        else
+            resto = 11 - resto;
+
+        var digito = resto.ToString();
+        tempCpf += digito;
+        soma = 0;
+
+        for (int i = 0; i < 10; i++)
+        {
+            soma +=
+                int.Parse(tempCpf[i].ToString()) * multiplicador2[i];
+        }
+
+        resto = soma % 11;
+        if (resto < 2)
+            resto = 0;
+        else
+            resto = 11 - resto;
+
+        digito += resto;
+
+        return cpf.EndsWith(digito);
+    }
+    
+    public static bool ValidateCnpj(string cnpj)
+    {
+        //Deixa somente as posições do CNPJ sem barras, pontos, etc
+        cnpj =  !string.IsNullOrEmpty(cnpj) 
+            ? cnpj.Trim().ToUpper().Replace(".", "").Replace("-", "").Replace("/", "").Replace("\\", "") 
+            : "";
+
+        if (cnpj.Length != 14)
+        {
+            return false;
+        }
+
+        //Multiplicadores padrão para os dígitos verificadores
+        int[] multipDV1 = { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+        int[] multipDV2 = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+
+        //Pega as posições que serão utilizadas no cálculo dos dígitos verificadores
+        string calcDV1 = cnpj[..12];
+        string calcDV2 = cnpj[..13];
+
+        int soma = 0;
+        int resto = 0;
+
+        //Calculando o primeiro dígito verificador
+        for (int i = 0; i < multipDV1.Length; i++)
+        {
+            soma += (Convert.ToInt32(calcDV1[i]) - 48) * multipDV1[i];
+        }
+
+        resto = (soma % 11);
+
+        string digito1 = (resto <= 1 ? 0 : 11 - resto).ToString();
+
+        soma = 0;
+
+        //Calculando o segundo dígito verificador
+        for (int i = 0; i < multipDV2.Length; i++)
+        {
+            soma += (Convert.ToInt32(calcDV2[i]) - 48) * multipDV2[i];
+        }
+
+        resto = (soma % 11);
+
+        string digito2 = (resto <= 1 ? 0 : 11 - resto).ToString();
+
+        return cnpj.Equals($"{calcDV1}{digito1}{digito2}");
+    }
+    
+    public static bool ValidateIE(string pUF, string pInscr)
     {
         bool retorno = false;
         string strBase;
