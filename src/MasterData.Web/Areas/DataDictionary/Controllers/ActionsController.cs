@@ -19,49 +19,15 @@ public class ActionsController(ActionsService actionsService,
         IEnumerable<IPluginHandler> pluginHandlers)
     : DataDictionaryController
 {
-    public async Task<ActionResult> Index(string elementName, string? actionName = null, ActionSource? source = null, string? fieldName = null)
+    public async Task<ActionResult> Index(string elementName, string? actionName = null, ActionSource source = ActionSource.GridTable, string? fieldName = null)
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
-        
-        var selectedSource = source ?? ActionSource.GridTable;
 
-        List<BasicFieldAction>? fieldActions = null;
+        var selectedAction = formElement.GetAction(actionName, source, fieldName);
         
-        if (selectedSource is ActionSource.Field)
-        {
-            fieldActions = formElement.Fields
-                .Where(f => f.Component.SupportActions)
-                .SelectMany(f => f.Actions.GetAllSorted().Select(a => new BasicFieldAction
-                {
-                    FieldName = f.Name,
-                    Action = a
-                }))
-                .ToList();
-
-            ViewData["FieldActions"] = fieldActions;
-        }
+        var model = await BuildActionListModel(elementName, source, selectedAction, fieldName);
         
-        var selectedSourceActions = selectedSource switch
-        {
-            ActionSource.GridTable => formElement.Options.GridTableActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList(),
-            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList(),
-            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList(),
-            ActionSource.Field => fieldActions!.ConvertAll(f=>f.Action),
-            _ => []
-        };
-        
-        var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName) ?? selectedSourceActions.FirstOrDefault();
-        
-        var model = new ActionListModel
-        {
-            ElementName = elementName,
-            Source = selectedSource,
-            Actions = selectedSourceActions,
-            SelectedAction = selectedAction,
-            SelectedFieldName = fieldName
-        };
-        
-        await PopulateViewData(formElement, selectedAction, selectedSource, fieldName);
+        await PopulateViewData(formElement, selectedAction, source, fieldName);
         
         return View(model);
     }
@@ -129,22 +95,19 @@ public class ActionsController(ActionsService actionsService,
     {
         fieldName = ResolveFieldName(source, fieldName);
 
-        await SaveAction(elementName, action, source, originalName, fieldName);
+        await actionsService.SaveAction(elementName, action, source, originalName, fieldName);
 
         if (ModelState.IsValid)
         {
             await RemoveActionFromOriginalField(elementName, action, source, originalName, fieldName);
-      
-            await PopulateViewData(elementName, action, source, fieldName);
-            ViewData["ShowSaveSuccess"] = true;
- 
-            return PartialView(action.GetType().Name, action);
-        
         }
         
+        var model = await BuildActionListModel(elementName, source, action, fieldName);
         await PopulateViewData(elementName, action, source, fieldName);
-   
-        return PartialView(action.GetType().Name, action);
+        
+        ViewData["ShowSaveSuccess"] = ModelState.IsValid;
+        
+        return View("Index", model);
     }
 
     private async Task<IActionResult> CopyActionResult<TAction>(
@@ -155,18 +118,15 @@ public class ActionsController(ActionsService actionsService,
     ) where TAction : BasicAction
     {
         fieldName = ResolveFieldName(source, fieldName);
+        
+        await actionsService.SaveAction(elementName, action, source, null, fieldName);
 
-        await SaveAction(elementName, action, source, null, fieldName);
-        if (ModelState.IsValid)
-        {
-            await PopulateViewData(elementName, action, source, fieldName);
-            ViewData["ShowCopySuccess"] = true;
-            return PartialView(action.GetType().Name, action);
-        }
-
+        var model = await BuildActionListModel(elementName, source, action, fieldName);
         await PopulateViewData(elementName, action, source, fieldName);
-      
-        return PartialView(action.GetType().Name, action);
+        
+        ViewData["ShowCopySuccess"] = ModelState.IsValid;
+        
+        return View("Index", model);
     }
     
 
@@ -659,15 +619,48 @@ public class ActionsController(ActionsService actionsService,
         }
     }
 
-    private async Task SaveAction(string elementName, BasicAction basicAction, ActionSource source,
-        string? originalName, string? fieldName = null)
+    private async Task<ActionListModel> BuildActionListModel(
+        string elementName,
+        ActionSource source = ActionSource.GridTable,
+        BasicAction? selectedAction = null,
+        string? fieldName = null)
     {
-        await actionsService.SaveAction(elementName, basicAction, source, originalName, fieldName);
+        var formElement = await actionsService.GetFormElementAsync(elementName);
 
-        if (ModelState.IsValid)
-            return;
+        List<BasicFieldAction>? fieldActions = null;
+        if (source is ActionSource.Field)
+        {
+            fieldActions = formElement.Fields
+                .Where(f => f.Component.SupportActions)
+                .SelectMany(f => f.Actions.GetAllSorted().Select(a => new BasicFieldAction
+                {
+                    FieldName = f.Name,
+                    Action = a
+                }))
+                .ToList();
+
+            ViewData["FieldActions"] = fieldActions;
+        }
+
+        var selectedSourceActions = source switch
+        {
+            ActionSource.GridTable => formElement.Options.GridTableActions.GetAllSorted().Where(a => !a.IsSystemDefined).ToList(),
+            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetAllSorted().Where(a => !a.IsSystemDefined).ToList(),
+            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetAllSorted().Where(a => !a.IsSystemDefined).ToList(),
+            ActionSource.Field => fieldActions!.ConvertAll(f => f.Action),
+            _ => []
+        };
         
-        ViewData["Error"] = actionsService.GetValidationSummary().GetHtmlContent();
+        selectedAction ??= selectedSourceActions.FirstOrDefault();
+
+        return new ActionListModel
+        {
+            ElementName = elementName,
+            Source = source,
+            Actions = selectedSourceActions,
+            SelectedAction = selectedAction,
+            SelectedFieldName = fieldName
+        };
     }
 
     private async Task PopulateViewData(string elementName, BasicAction? basicAction, ActionSource source,

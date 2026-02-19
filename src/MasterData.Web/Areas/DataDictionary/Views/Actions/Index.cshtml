@@ -1,4 +1,5 @@
-﻿@using JJMasterData.Core.DataDictionary.Models.Actions
+﻿@using JJConsulting.FontAwesome
+@using JJMasterData.Core.DataDictionary.Models.Actions
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model ActionListModel
@@ -8,7 +9,7 @@
     Layout = "_FormElementMenuLayout";
     ViewData["ElementName"] = Model.ElementName;
     ViewData["MenuId"] = "Actions";
-
+    
     ActionSource selectedSource;
     if (ViewData["InitialSource"] is ActionSource source)
     {
@@ -18,6 +19,34 @@
     {
         selectedSource = ActionSource.GridTable;
     }
+}
+
+@if (ViewData["ShowSaveSuccess"] is true)
+{
+    <message-toast
+        title-color="Success"
+        title="@StringLocalizer["Success"]"
+        icon="@FontAwesomeIcon.CheckCircle"
+        name="action-save-success"
+        show-as-opened="false"
+        message="@StringLocalizer["Action saved successfully."]"/>
+    <script>
+                MessageToastHelper.show("action-save-success");
+            </script>
+}
+
+@if (ViewData["ShowCopySuccess"] is true)
+{
+    <message-toast
+        title-color="Success"
+        title="@StringLocalizer["Success"]"
+        icon="@FontAwesomeIcon.CheckCircle"
+        name="action-copy-success"
+        show-as-opened="false"
+        message="@StringLocalizer["Action copied successfully."]"/>
+    <script>
+                MessageToastHelper.show("action-copy-success");
+            </script>
 }
 
 <ul class="nav nav-underline">
@@ -145,3 +174,21 @@
         });
     }
 </script>
+
+@if (!ViewData.ModelState.IsValid && Model.SelectedAction is not null)
+{
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            if (!isActionDetailsMobile()) {
+                return;
+            }
+            const source = "@Model.Source";
+            const detailsId = "action-details-" + source;
+            const modalEl = ensureActionDetailsModal(source);
+            moveActionDetailsToModal(detailsId, source);
+            if (modalEl && window.bootstrap && bootstrap.Modal) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        });
+    </script>
+}

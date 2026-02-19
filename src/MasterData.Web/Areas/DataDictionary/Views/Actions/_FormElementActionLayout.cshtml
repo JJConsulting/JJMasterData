@@ -76,33 +76,6 @@
           id="action-form-@actionSource">
         @await RenderSectionAsync("ActionFormHeader", required: false)
         <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewData["Tab"]"/>
-        @if (ViewData["ShowSaveSuccess"] is true)
-        {
-            <message-toast
-                title-color="Success"
-                title="@StringLocalizer["Success"]"
-                icon="@FontAwesomeIcon.CheckCircle"
-                name="action-save-success"
-                show-as-opened="false"
-                message="@StringLocalizer["Action saved successfully."]"/>
-            <script>
-                MessageToastHelper.show("action-save-success");
-            </script>
-        }
-
-        @if (ViewData["ShowCopySuccess"] is true)
-        {
-            <message-toast
-                title-color="Success"
-                title="@StringLocalizer["Success"]"
-                icon="@FontAwesomeIcon.CheckCircle"
-                name="action-copy-success"
-                show-as-opened="false"
-                message="@StringLocalizer["Action copied successfully."]"/>
-            <script>
-                MessageToastHelper.show("action-copy-success");
-            </script>
-        }
 
         @if (!ViewData.ModelState.IsValid)
         {
@@ -264,7 +237,7 @@
 
         <div class="row">
             <div class="col-sm-12">
-                @ViewData["Error"]
+                <validation-summary/>
             </div>
         </div>
 
@@ -389,36 +362,7 @@
 
                 function saveAction() {
                     const form = getMasterDataForm();
-                    const source = "@ViewData["ActionSource"]";
-                    const detailsId = source ? "action-details-" + source : "";
-                    const details = detailsId ? document.getElementById(detailsId) : null;
-
                     syncSelectedActionTab();
-
-                    if (details) {
-                        postFormValues({
-                            url: form.action,
-                            success: html => {
-                                if (!html) {
-                                    return;
-                                }
-                                HTMLHelper.setInnerHTML(detailsId, html);
-                                details.setAttribute("data-loaded", "true");
-                                listenAllEvents("#" + detailsId);
-                                restoreActionTabState();
-                                const loadedDetails = document.getElementById(detailsId);
-                                const hasValidationErrors = !!loadedDetails.querySelector("#action-has-errors");
-                                if (!hasValidationErrors) {
-                                    const modalEl = document.getElementById("actionDetailsModal");
-                                    if (modalEl && window.bootstrap && bootstrap.Modal) {
-                                        bootstrap.Modal.getInstance(modalEl)?.hide();
-                                    }
-                                }
-                            }
-                        });
-                        return;
-                    }
-
                     form.requestSubmit();
                 }
 
@@ -428,36 +372,7 @@
                         return;
                     }
                     const form = getMasterDataForm();
-                    const source = "@ViewData["ActionSource"]";
-                    const detailsId = source ? "action-details-" + source : "";
-                    const details = detailsId ? document.getElementById(detailsId) : null;
-
                     syncSelectedActionTab();
-
-                    if (details) {
-                        postFormValues({
-                            url: copyUrl,
-                            success: html => {
-                                if (!html) {
-                                    return;
-                                }
-                                HTMLHelper.setInnerHTML(detailsId, html);
-                                details.setAttribute("data-loaded", "true");
-                                listenAllEvents("#" + detailsId);
-                                restoreActionTabState();
-                                const loadedDetails = document.getElementById(detailsId);
-                                const hasValidationErrors = !!loadedDetails.querySelector("#action-has-errors");
-                                if (!hasValidationErrors) {
-                                    const modalEl = document.getElementById("actionDetailsModal");
-                                    if (modalEl && window.bootstrap && bootstrap.Modal) {
-                                        bootstrap.Modal.getInstance(modalEl)?.hide();
-                                    }
-                                }
-                            }
-                        });
-                        return;
-                    }
-
                     form.action = copyUrl;
                     form.requestSubmit();
                 }
