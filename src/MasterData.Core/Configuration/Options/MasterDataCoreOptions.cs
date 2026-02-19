@@ -61,6 +61,7 @@ public sealed class MasterDataCoreOptions
                   | ExpressionOptions.AllowNullParameter
                   | ExpressionOptions.OrdinalStringComparer
                   | ExpressionOptions.AllowNullOrEmptyExpressions
+                  | ExpressionOptions.ArithmeticNullOrEmptyStringAsZero
                   | ExpressionOptions.CaseInsensitiveStringComparer,
         Functions = new Dictionary<string, ExpressionFunction>(StringComparer.InvariantCultureIgnoreCase)
         {

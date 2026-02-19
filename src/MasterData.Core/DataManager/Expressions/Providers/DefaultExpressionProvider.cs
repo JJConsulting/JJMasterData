@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -35,11 +36,15 @@ public sealed class DefaultExpressionProvider(
     
     public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
-        var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
+        var parameters = new Dictionary<string, object?>(parsedValues.Count, StringComparer.InvariantCultureIgnoreCase);
+        var preparedExpression = PrepareExpressionWithParameters(expression, parsedValues, parameters);
         
-        var ncalcExpression = expressionFactory.Create(replacedExpression, _expressionContext);
+        foreach (var parameter in parameters)
+            _expressionContext.StaticParameters[parameter.Key] = parameter.Value;
         
-        logger.LogExpression(replacedExpression);
+        var ncalcExpression = expressionFactory.Create(preparedExpression, _expressionContext);
+        
+        logger.LogExpression(preparedExpression);
         
         return ncalcExpression.Evaluate();
     }
@@ -47,5 +52,29 @@ public sealed class DefaultExpressionProvider(
     public ValueTask<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues)
     {
         return new ValueTask<object?>(Evaluate(expression, parsedValues));
+    }
+
+    private static string PrepareExpressionWithParameters(
+        string expression,
+        Dictionary<string, object?> parsedValues,
+        Dictionary<string, object?> parameters)
+    {
+        foreach (var kvp in parsedValues)
+        {
+            var token = $"{ExpressionHelper.Begin}{kvp.Key}{ExpressionHelper.End}";
+            var quotedToken = $"'{token}'";
+
+            if (expression.Contains(quotedToken, StringComparison.Ordinal))
+            {
+                expression = expression.Replace(quotedToken, kvp.Key);
+                parameters[kvp.Key] = kvp.Value?.ToString();
+            }
+            else
+            {
+                parameters[kvp.Key] = kvp.Value;
+            }
+        }
+
+        return expression;
     }
 }
