@@ -7,7 +7,6 @@
     Layout = "_FormElementActionLayout";
     ViewData["FormAction"] = "AuditLogFormToolbarAction";
     ViewData["CopyAction"] = "CopyAuditLogFormToolbarAction";
-    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString() };
     FormElement formElement = ViewBag.FormElement;
 }
 

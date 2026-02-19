@@ -64,7 +64,13 @@
     ViewData["Breadcrumbs"] = breadcrumbs;
 
     var formAction = ViewData["FormAction"]?.ToString();
-    var formRouteValues = ViewData["FormRouteValues"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+
+    var formRouteValues = new Dictionary<string, string?>
+    {
+        ["elementName"] = elementName,
+        ["source"] = actionSource?.Name,
+        ["fieldName"] = fieldName
+    };
 }
 
 @if (!string.IsNullOrWhiteSpace(formAction))
@@ -72,8 +78,7 @@
     <form asp-action="@formAction"
           asp-controller="Actions"
           method="post"
-          asp-all-route-data="@formRouteValues"
-          id="action-form-@actionSource">
+          asp-all-route-data="@formRouteValues">
         @await RenderSectionAsync("ActionFormHeader", required: false)
         <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewData["Tab"]"/>
 

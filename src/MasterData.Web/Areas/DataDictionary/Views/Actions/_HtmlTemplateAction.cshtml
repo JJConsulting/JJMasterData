@@ -5,7 +5,6 @@
     Layout = "_FormElementActionLayout";
     ViewData["FormAction"] = "HtmlTemplateAction";
     ViewData["CopyAction"] = "CopyHtmlTemplateAction";
-    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString(), ["fieldName"] = ViewBag.FieldName?.ToString() };
 }
 
 @section ActionTabs {

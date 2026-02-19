@@ -11,7 +11,6 @@
     FormElement formElement = ViewBag.FormElement;
     ViewData["FormAction"] = "InternalAction";
     ViewData["CopyAction"] = "CopyInternalAction";
-    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString(), ["fieldName"] = ViewBag.FieldName?.ToString() };
     
     var elementNameList = (await ActionsService.GetElementsDictionaryAsync()).OrderBy(n=>n.Key).ToList();
     var internalFieldList = ActionsService.GetFieldList(formElement);

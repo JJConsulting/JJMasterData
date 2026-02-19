@@ -10,7 +10,6 @@
     Layout = "_FormElementActionLayout";
     ViewData["FormAction"] = "PluginFieldAction";
     ViewData["CopyAction"] = "CopyPluginFieldAction";
-    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString(), ["fieldName"] = ViewBag.FieldName?.ToString() };
 
     FormElement formElement = ViewBag.FormElement;
 
