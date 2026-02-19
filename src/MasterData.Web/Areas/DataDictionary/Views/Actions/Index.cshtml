@@ -9,16 +9,8 @@
     Layout = "_FormElementMenuLayout";
     ViewData["ElementName"] = Model.ElementName;
     ViewData["MenuId"] = "Actions";
-    
-    ActionSource selectedSource;
-    if (ViewData["InitialSource"] is ActionSource source)
-    {
-        selectedSource = source;
-    }
-    else
-    {
-        selectedSource = ActionSource.GridTable;
-    }
+
+    ActionSource selectedSource = Model.Source;
 }
 
 @if (ViewData["ShowSaveSuccess"] is true)

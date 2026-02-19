@@ -1,5 +1,6 @@
 ﻿@using JJConsulting.FontAwesome
 @using JJConsulting.Html.Bootstrap.Models
+@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Web.Utils
 @using Microsoft.AspNetCore.Mvc.Rendering
@@ -63,14 +64,13 @@
     ViewData["Breadcrumbs"] = breadcrumbs;
 
     var formAction = ViewData["FormAction"]?.ToString();
-    var formController = ViewData["FormController"]?.ToString() ?? "Actions";
-    var formRouteValues = ViewData["FormRouteValues"] as Dictionary<string, string> ?? new();
+    var formRouteValues = ViewData["FormRouteValues"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 }
 
 @if (!string.IsNullOrWhiteSpace(formAction))
 {
     <form asp-action="@formAction"
-          asp-controller="@formController"
+          asp-controller="Actions"
           method="post"
           asp-all-route-data="@formRouteValues"
           id="action-form-@actionSource">
@@ -117,7 +117,13 @@
                         </div>
                         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                             <label class="@BootstrapHelper.Label" for="fieldName">@StringLocalizer["Field"]</label>
-                            @Html.DropDownList("fieldName", ViewData["ActionFieldList"] as IEnumerable<SelectListItem> ?? [], new { @class = "form-select" })
+                            @{
+                                var formElement = (FormElement)ViewData["FormElement"]!;
+                                var actionFieldList = formElement.Fields
+                                    .Where(f => f.Component.SupportActions)
+                                    .Select(f => new SelectListItem(f.Name, f.Name, f.Name == fieldName));
+                            }
+                            @Html.DropDownList("fieldName", actionFieldList, new { @class = "form-select" })
                             <input type="hidden" id="originalFieldName" name="originalFieldName" value="@fieldName"/>
                         </div>
                         <div class="@BootstrapHelper.FormGroup col-sm-4 required">

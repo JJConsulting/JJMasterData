@@ -6,7 +6,6 @@
 @model ActionListModel
 
 @{
-    var sortableClass = string.Empty;
     var sourceType = Model.Source;
     var source = sourceType.ToString();
     var isFieldSource = sourceType == ActionSource.Field;
@@ -127,7 +126,7 @@
 
         <div class="jjrelative">
             <div id="action-list-@source">
-                <div class="list-group jj-list-group @sortableClass" id="sortable-@source">
+                <div class="list-group jj-list-group @("jjsortable")" id="sortable-@source">
                     @if (Model.Actions.Count == 0)
                     {
                         <div>@StringLocalizer["No record found"]</div>
@@ -223,6 +222,16 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        DataDictionaryUtils.sortAction(
+            "@source",
+            "@(Url.Action("Sort", "Actions", new { elementName = Model.ElementName, source = Model.Source })!)",
+            "@StringLocalizer["Error while ordering actions."]"
+        );
+    });
+</script>
 
 
 @functions {

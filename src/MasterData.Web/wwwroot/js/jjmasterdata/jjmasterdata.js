@@ -461,20 +461,6 @@ class CollapsePanelListener {
     }
 }
 class DataDictionaryUtils {
-    static deleteAction(actionName, url, confirmationMessage) {
-        showConfirmationMessage(confirmationMessage).then(function (confirmed) {
-            if (confirmed) {
-                postFormValues({
-                    url: url,
-                    success: function (data) {
-                        if (data.success) {
-                            document.getElementById(actionName).remove();
-                        }
-                    }
-                });
-            }
-        });
-    }
     static sortAction(context, url, errorMessage) {
         $("#sortable-" + context).sortable({
             update: function () {
@@ -512,9 +498,6 @@ class DataDictionaryUtils {
                 messageBox.show("JJMasterData", errorMessage, 4);
             }
         });
-    }
-    static postAction(url) {
-        window.parent.getMasterDataForm().requestSubmit();
     }
     static exportElement(id, url, validationMessage) {
         const values = document.querySelector('#grid-view-selected-rows-' + id).value;

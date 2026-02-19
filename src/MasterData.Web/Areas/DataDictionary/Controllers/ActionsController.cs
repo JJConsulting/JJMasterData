@@ -25,7 +25,7 @@ public class ActionsController(ActionsService actionsService,
         
         var model = await BuildActionListModel(elementName, source, selectedAction, fieldName);
         
-        await PopulateViewData(formElement, selectedAction, source, fieldName);
+        PopulateViewData(formElement, selectedAction, source, fieldName);
         
         return View(model);
     }
@@ -40,7 +40,7 @@ public class ActionsController(ActionsService actionsService,
 
         var action = formElement.GetAction(actionName, source, fieldName);
         
-        await PopulateViewData(formElement, action, source, fieldName);
+        PopulateViewData(formElement, action, source, fieldName);
  
         return PartialView($"_{action!.GetType().Name}", action);
 
@@ -55,8 +55,10 @@ public class ActionsController(ActionsService actionsService,
         )
     {
         var action = CreateActionFromType(actionType, pluginId);
-
-        await PopulateViewData(elementName, action, source, fieldName);
+        
+        var formElement = await actionsService.GetFormElementAsync(elementName);
+        
+        PopulateViewData(formElement, action, source, fieldName);
      
         return PartialView($"_{actionType}", action);
     }
@@ -101,7 +103,10 @@ public class ActionsController(ActionsService actionsService,
         }
         
         var model = await BuildActionListModel(elementName, source, action, fieldName);
-        await PopulateViewData(elementName, action, source, fieldName);
+        
+        var formElement = await actionsService.GetFormElementAsync(elementName);
+        
+        PopulateViewData(formElement, action, source, fieldName);
         
         ViewData["ShowSaveSuccess"] = ModelState.IsValid;
         
@@ -120,7 +125,10 @@ public class ActionsController(ActionsService actionsService,
         await actionsService.SaveAction(elementName, action, source, null, fieldName);
 
         var model = await BuildActionListModel(elementName, source, action, fieldName);
-        await PopulateViewData(elementName, action, source, fieldName);
+        
+        var formElement = await actionsService.GetFormElementAsync(elementName);
+        
+        PopulateViewData(formElement, action, source, fieldName);
         
         ViewData["ShowCopySuccess"] = ModelState.IsValid;
         
@@ -536,8 +544,10 @@ public class ActionsController(ActionsService actionsService,
             RedirectField = redirectField,
             InternalField = internalField
         });
+        
+        var formElement = await actionsService.GetFormElementAsync(elementName);
 
-        await PopulateViewData(elementName, internalAction, source, fieldName);
+        PopulateViewData(formElement, internalAction, source, fieldName);
    
         return PartialView("_" + internalAction.GetType().Name, internalAction);
     }
@@ -548,7 +558,10 @@ public class ActionsController(ActionsService actionsService,
         int relationIndex, string? fieldName)
     {
         internalAction.ElementRedirect.RelationFields.RemoveAt(relationIndex);
-        await PopulateViewData(elementName, internalAction, source, fieldName);
+        
+        var formElement = await actionsService.GetFormElementAsync(elementName);
+        
+        PopulateViewData(formElement, internalAction, source, fieldName);
  
         return PartialView("_" + internalAction.GetType().Name, internalAction);
     }
@@ -660,16 +673,11 @@ public class ActionsController(ActionsService actionsService,
             SelectedFieldName = fieldName ?? fieldActions?.FirstOrDefault()?.FieldName
         };
     }
-
-    private async Task PopulateViewData(string elementName, BasicAction? basicAction, ActionSource source,
-        string? fieldName = null)
-    {
-        var formElement = await actionsService.GetFormElementAsync(elementName);
-
-        await PopulateViewData(formElement, basicAction, source, fieldName);
-    }
     
-    private async Task PopulateViewData(FormElement formElement, BasicAction? basicAction, ActionSource source,
+    private void PopulateViewData(
+        FormElement formElement, 
+        BasicAction? basicAction,
+        ActionSource source,
         string? fieldName = null)
     {
         if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
@@ -693,43 +701,19 @@ public class ActionsController(ActionsService actionsService,
             Label = f.Name,
             Details = "Form Element Field",
         }).ToList();
-
-        var actionFields = formElement.Fields
-            .Where(f => f.Component.SupportActions)
-            .Select(f => new SelectListItem(f.Name, f.Name, f.Name == fieldName))
-            .ToList();
-        ViewData["ActionFieldList"] = actionFields;
-
-        if (basicAction is InternalAction internalAction)
-        {
-            ViewData["ElementNameList"] = (await actionsService.GetElementsDictionaryAsync()).OrderBy(n=>n.Key).ToList();
-            ViewData["InternalFieldList"] = actionsService.GetFieldList(formElement);
-            var elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
-            ViewData["RedirectFieldList"] = await actionsService.GetFieldList(elementNameRedirect);
-        }
-        
-        ViewData["InitialSource"] = source;
-        ViewData["InitialAction"] = basicAction;
-        ViewData["InitialFieldName"] = fieldName;
     }
 
     private bool TryGetSelectedTabValue(out string selectedTab)
     {
         selectedTab = string.Empty;
+        
         if (!Request.HasFormContentType)
             return false;
-
-        if (Request.Form.TryGetValue("selectedTab", out var selectedTabValue) &&
+        
+        if (Request.Form.TryGetValue("selected-tab", out var selectedTabValue) &&
             !string.IsNullOrWhiteSpace(selectedTabValue))
         {
             selectedTab = selectedTabValue.ToString();
-            return true;
-        }
-
-        if (Request.Form.TryGetValue("selected-tab", out var legacySelectedTabValue) &&
-            !string.IsNullOrWhiteSpace(legacySelectedTabValue))
-        {
-            selectedTab = legacySelectedTabValue.ToString();
             return true;
         }
 

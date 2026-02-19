@@ -1,13 +1,22 @@
 ﻿@using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.DataDictionary.Services
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject ActionsService ActionsService
 @model JJMasterData.Core.DataDictionary.Models.Actions.InternalAction
 
 @{
     Layout = "_FormElementActionLayout";
+    FormElement formElement = ViewBag.FormElement;
     ViewData["FormAction"] = "InternalAction";
     ViewData["CopyAction"] = "CopyInternalAction";
     ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString(), ["fieldName"] = ViewBag.FieldName?.ToString() };
+    
+    var elementNameList = (await ActionsService.GetElementsDictionaryAsync()).OrderBy(n=>n.Key).ToList();
+    var internalFieldList = ActionsService.GetFieldList(formElement);
+    var elementNameRedirect = Model.ElementRedirect.ElementNameRedirect;
+    var redirectFieldList = await ActionsService.GetFieldList(elementNameRedirect);
 }
 
 @section ActionTabs {
@@ -27,7 +36,7 @@
                 @if (Model.ElementRedirect.RelationFields.Count == 0)
                 {
                     @Html.DropDownListFor(model => model.ElementRedirect.ElementNameRedirect,
-                        new SelectList(ViewBag.ElementNameList, "Key", "Value"),
+                        new SelectList(elementNameList, "Key", "Value"),
                         new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
                 }
                 else
@@ -56,11 +65,11 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label" >@StringLocalizer["Field"]</label>
-                    @Html.DropDownList("redirectField", new SelectList(ViewBag.RedirectFieldList, "Key", "Value"), new { @class = "form-control" })
+                    @Html.DropDownList("redirectField", new SelectList(redirectFieldList, "Key", "Value"), new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-5 required">
                     <label class="@BootstrapHelper.Label">@StringLocalizer["Value"]</label>
-                    @Html.DropDownList("internalField", new SelectList(ViewBag.InternalFieldList, "Key", "Value"), new { @class = "form-control" })
+                    @Html.DropDownList("internalField", new SelectList(internalFieldList, "Key", "Value"), new { @class = "form-control" })
                 </div>
             </div>
 

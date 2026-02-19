@@ -1,19 +1,4 @@
 ﻿class DataDictionaryUtils {
-    static deleteAction(actionName: string, url: string, confirmationMessage: string): void {
-        showConfirmationMessage(confirmationMessage).then(function(confirmed){
-            if(confirmed){
-                postFormValues({
-                    url:url,
-                    success:function(data){
-                        if (data.success) {
-                            document.getElementById(actionName).remove();
-                        }
-                    }
-                });
-            }
-        });
-    }
-
     static sortAction(context: string, url: string, errorMessage: string): void {
         $("#sortable-" + context).sortable({
             update: function () {
@@ -52,11 +37,6 @@
                     messageBox.show("JJMasterData", errorMessage, 4);
                 }
             })
-    }
-
-    static postAction(url: string): void {
-        // @ts-ignore
-        window.parent.getMasterDataForm().requestSubmit();
     }
 
     static exportElement(id, url, validationMessage) {
