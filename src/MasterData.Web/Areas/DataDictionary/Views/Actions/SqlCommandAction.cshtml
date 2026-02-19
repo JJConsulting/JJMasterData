@@ -1,67 +1,31 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
-@using JJMasterData.Core.DataDictionary.Models.Actions
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "SqlCommandAction";
+    ViewData["CopyAction"] = "CopySqlCommandAction";
+    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString(), ["fieldName"] = ViewBag.FieldName?.ToString() };
 }
 
-@using (Html.BeginMasterDataForm("SqlCommandAction", "Actions",
-            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
-{
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active">
-            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
-        </li>
-        <li id="nav-sql-command" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-sql-command">@StringLocalizer["Sql Command"]</a>
-        </li>
-        <li id="nav-advanced" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
-        </li>
-    </ul>
+@section ActionTabs {
+    <li id="nav-sql-command" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-sql-command">
+            @StringLocalizer["Sql Command"]
+        </a>
+    </li>
+}
 
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" Model="@Model"/>
-        </div>
-
-
-        <div id="div-sql-command" class="tab-pane fade">
-            <div class="row">
-
-                <div class="mb-3 col-sm-12 required">
-                    <label class="form-label">@StringLocalizer["Sql Command"]</label>
-                    <span class="small text-end text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
-                    <div class="well" style="margin-bottom: 0">
-                        <code-editor asp-for="SqlCommand" language="sql" height="300"/>
-                    </div>
-                </div>
-                @if (ViewBag.ContextAction is ActionSource.GridToolbar)
-                {
-                    <hr/>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="mb-3 col-sm-6">
-                                <checkbox tooltip="@StringLocalizer["When the command is triggered only the selected lines are affected."]" for="ApplyOnSelected" layout="Switch" />
-                            </div>
-                        </div>
-                    </div>
-                }
-                <div class="col-sm-12">
-                    <label asp-for="RedirectUrl" class="form-label"></label>
-                    <tooltip title="@StringLocalizer["Redirects to this URL after the command is executed successfully."]"></tooltip>
-                    <input asp-for="RedirectUrl" class="form-control font-monospace"/>
+@section ActionTabContent {
+    <div id="div-sql-command" class="tab-pane fade">
+        <div class="row">
+            <div class="mb-3 col-sm-12 required">
+                <label class="form-label">@StringLocalizer["Sql Command"]</label>
+                <span class="small text-end text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
+                <div class="well" style="margin-bottom: 0">
+                    <code-editor asp-for="SqlCommand" language="sql" height="300"/>
                 </div>
             </div>
         </div>
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" Model="@Model"/>
-        </div>
     </div>
-
-    <partial name="_Toolbar"/>
 }

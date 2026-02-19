@@ -1,29 +1,8 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model  JJMasterData.Core.DataDictionary.Models.Actions.DeleteAction
+﻿@model  JJMasterData.Core.DataDictionary.Models.Actions.DeleteAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "DeleteAction";
+    ViewData["CopyAction"] = "CopyDeleteAction";
+    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString() };
 }
-
-@using (Html.BeginMasterDataForm("DeleteAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }))
-{
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
-    </ul>
-
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" model="Model"/>
-        </div>
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" model="Model"/>
-        </div>
-    </div>
-
-    <partial name="_Toolbar"/>
-}
-

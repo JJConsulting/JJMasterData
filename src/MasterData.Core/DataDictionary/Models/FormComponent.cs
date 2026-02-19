@@ -58,3 +58,18 @@ public enum FormComponent
     [Display(Name = "Code Editor",GroupName = "8. Especial")]
     CodeEditor = 27
 }
+
+public static class FormComponentExtensions
+{
+    extension(FormComponent formComponent)
+    {
+        public bool SupportActions =>
+            formComponent is FormComponent.Text
+                or FormComponent.Email
+                or FormComponent.Number
+                or FormComponent.Cep
+                or FormComponent.Cnpj
+                or FormComponent.Cpf
+                or FormComponent.CnpjCpf;
+    }
+}

@@ -277,6 +277,22 @@
   <data name="Success" xml:space="preserve">
     <value>Éxito</value>
   </data>
+  <data name="Action saved successfully." xml:space="preserve">
+    <value>Acción guardada con éxito.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Action copied successfully." xml:space="preserve">
+    <value>Acción copiada con éxito.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field saved successfully." xml:space="preserve">
+    <value>Campo guardado con éxito.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Please check the validation errors." xml:space="preserve">
+    <value>Por favor, revise los errores de validación.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirmar</value>
   </data>

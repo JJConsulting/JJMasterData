@@ -1,79 +1,48 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
-
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.HtmlTemplateAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "HtmlTemplateAction";
+    ViewData["CopyAction"] = "CopyHtmlTemplateAction";
+    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString(), ["fieldName"] = ViewBag.FieldName?.ToString() };
 }
-<master-data-form method="post" asp-action="HtmlTemplateAction" asp-controller="Actions"
-                  asp-route-context="@ViewBag.ContextAction" asp-route-fieldName="@ViewBag.FieldName"
-                  asp-route-elementName="@ViewBag.ElementName">
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active">
-            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab")
-               href="#div-general">@StringLocalizer["General"]</a>
-        </li>
-        <li id="nav-sql-command" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-               href="#div-sql-command">@StringLocalizer["Data Source"]</a>
-        </li>
-        <li id="nav-html-template" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-               href="#div-html-template">@StringLocalizer["HTML Template"]</a>
-        </li>
-        <li id="nav-advanced" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab")
-               href="#div-advanced">@StringLocalizer["Advanced"]</a>
-        </li>
-    </ul>
 
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral"/>
-        </div>
+@section ActionTabs {
+    <li id="nav-sql-command" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-sql-command">
+            @StringLocalizer["Data Source"]
+        </a>
+    </li>
+    <li id="nav-html-template" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-html-template">
+            @StringLocalizer["HTML Template"]
+        </a>
+    </li>
+}
 
-        <div id="div-sql-command" class="tab-pane fade">
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label"
-                           @BootstrapHelper.GetDataToggle("tooltip")>@StringLocalizer["Sql Command"]</label>
-                    <span
-                        class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
-                    <div style="margin-bottom: 0">
-                        <code-editor asp-for="SqlCommand" height="400" language="sql"/>
-                    </div>
+@section ActionTabContent {
+    <div id="div-sql-command" class="tab-pane fade">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                <label class="@BootstrapHelper.Label" asp-for="SqlCommand">@StringLocalizer["Data Source"]</label>
+                <span class="small text-end text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
+                <div class="well" style="margin-bottom: 0">
+                    <code-editor asp-for="SqlCommand" language="sql" height="200"/>
                 </div>
             </div>
-        </div>
-
-        <div id="div-html-template" class="tab-pane fade">
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label"
-                           @BootstrapHelper.GetDataToggle("tooltip")>@StringLocalizer["HTML Template"]</label>
-                    <span
-                        class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["Here we use a Liquid template to render the HTML. Use the DataSource property to access your tables and columns."]</span>
-                    <div style="margin-bottom: 0">
-                        <code-editor asp-for="HtmlTemplate" height="400" language="sql"/>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <span> <span class="fa fa-info-circle"
-                             style="color:#005a86"></span> @StringLocalizer["Read more about HTML templates "]<a
-                        target="_blank"
-                        href="https://md.jjconsulting.tech/articles/html_templates.html">@StringLocalizer[" in this link."]</a></span>
-            </div>
-        </div>
-
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced"/>
         </div>
     </div>
-    <partial name="_Toolbar"/>
-</master-data-form>
 
-
+    <div id="div-html-template" class="tab-pane fade">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                <label class="@BootstrapHelper.Label" asp-for="HtmlTemplate">@StringLocalizer["HTML Template"]</label>
+                <span class="small text-end text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
+                <div class="well" style="margin-bottom: 0">
+                    <code-editor asp-for="HtmlTemplate" language="html" height="300"/>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model RelationshipsListViewModel
+﻿@model RelationshipsListViewModel
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 
@@ -9,6 +8,7 @@
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Relationships"]}";
     Layout = "_FormElementMenuLayout";
 }
+
 
 @section Scripts{
     
