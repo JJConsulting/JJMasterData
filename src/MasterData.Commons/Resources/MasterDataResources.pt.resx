@@ -4213,6 +4213,10 @@
     <value>Capitalização</value>
   </data>
 
+    <data name="Select or create an action." xml:space="preserve">
+    <value>Crie ou selecione uma ação.</value>
+  </data>
+
     <data name="CPF/CNPJ components must be of type string." xml:space="preserve">
   <value>Componentes CNPJ/CPF devem ser do tipo string.</value>
 </data>

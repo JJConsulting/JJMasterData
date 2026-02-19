@@ -3,7 +3,7 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IEnumerable<IPluginHandler> ActionPluginHandlers
 
-@model ActionListTabModel
+@model ActionListModel
 
 @{
     var sortableClass = string.Empty;
@@ -12,11 +12,11 @@
     var isFieldSource = sourceType == ActionSource.Field;
     var selectedAction = Model.SelectedAction;
     var selectedActionKey = Model.SelectedActionKey;
-    List<FieldActionItem>? fieldActions = null;
+    List<BasicFieldAction>? fieldActions = null;
 
     if (isFieldSource)
     {
-        fieldActions = ViewData["FieldActions"] as List<FieldActionItem>;
+        fieldActions = ViewData["FieldActions"] as List<BasicFieldAction>;
     }
     
     var selectedDomActionId = !string.IsNullOrWhiteSpace(selectedActionKey)
@@ -192,18 +192,23 @@
     <div class="col-sm-9 d-none d-sm-block" style="padding-left:0" id="action-details-col-@source">
         <div id="action-details-host-@source">
             <div class="jjrelative" id="action-details-@source" data-loaded="true">
-                <partial name="@selectedAction.GetType().Name" model="selectedAction"/>
+                @if (selectedAction is null)
+                {
+                    <alert title="@StringLocalizer["Select or create an action."]"
+                           color="Info"
+                           icon="FontAwesomeIcon.InfoCircle"
+                           show-close-button="false"/>
+                }
+                else
+                {
+                    <partial name="@selectedAction.GetType().Name" model="selectedAction"/>
+                }
+                
             </div>
         </div>
     </div>
 </div>
 
-<template id="empty-action-alert-@source">
-    <alert title="@StringLocalizer["Select an action to edit."]"
-           color="Info"
-           icon="FontAwesomeIcon.InfoCircle"
-           show-close-button="false" />
-</template>
 
 @functions {
 

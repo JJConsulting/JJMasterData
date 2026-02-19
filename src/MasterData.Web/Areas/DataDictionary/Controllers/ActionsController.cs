@@ -22,38 +22,43 @@ public class ActionsController(ActionsService actionsService,
     public async Task<ActionResult> Index(string elementName, string? actionName = null, ActionSource? source = null, string? fieldName = null)
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
-        var fieldActions = formElement.Fields
-            .Where(f => f.Component.SupportActions)
-            .SelectMany(f => f.Actions.GetAllSorted().Select(a => new FieldActionItem
-            {
-                FieldName = f.Name,
-                Action = a
-            }))
-            .ToList();
-        var gridTableActions = formElement.Options.GridTableActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList();
-        var gridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList();
-        var formToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList();
-
+        
         var selectedSource = source ?? ActionSource.GridTable;
-        var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName)
-                             ?? selectedSource switch
-                             {
-                                 ActionSource.GridTable => gridTableActions.FirstOrDefault(),
-                                 ActionSource.GridToolbar => gridToolbarActions.FirstOrDefault(),
-                                 ActionSource.FormToolbar => formToolbarActions.FirstOrDefault(),
-                                 ActionSource.Field => fieldActions.FirstOrDefault()?.Action,
-                                 _ => null
-                             }
-                             ?? gridTableActions[0];
-       
 
-        var model = new ActionsIndexViewModel
+        List<BasicFieldAction>? fieldActions = null;
+        
+        if (selectedSource is ActionSource.Field)
+        {
+            fieldActions = formElement.Fields
+                .Where(f => f.Component.SupportActions)
+                .SelectMany(f => f.Actions.GetAllSorted().Select(a => new BasicFieldAction
+                {
+                    FieldName = f.Name,
+                    Action = a
+                }))
+                .ToList();
+
+            ViewData["FieldActions"] = fieldActions;
+        }
+        
+        var selectedSourceActions = selectedSource switch
+        {
+            ActionSource.GridTable => formElement.Options.GridTableActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList(),
+            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList(),
+            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetAllSorted().Where(a=>!a.IsSystemDefined).ToList(),
+            ActionSource.Field => fieldActions!.ConvertAll(f=>f.Action),
+            _ => []
+        };
+        
+        var selectedAction = formElement.GetAction(actionName, selectedSource, fieldName) ?? selectedSourceActions.FirstOrDefault();
+        
+        var model = new ActionListModel
         {
             ElementName = elementName,
-            GridTableActions = gridTableActions,
-            GridToolbarActions = gridToolbarActions,
-            FormToolbarActions = formToolbarActions,
-            FieldActions = fieldActions,
+            Source = selectedSource,
+            Actions = selectedSourceActions,
+            SelectedAction = selectedAction,
+            SelectedFieldName = fieldName
         };
         
         await PopulateViewData(formElement, selectedAction, selectedSource, fieldName);
@@ -665,7 +670,7 @@ public class ActionsController(ActionsService actionsService,
         ViewData["Error"] = actionsService.GetValidationSummary().GetHtmlContent();
     }
 
-    private async Task PopulateViewData(string elementName, BasicAction basicAction, ActionSource source,
+    private async Task PopulateViewData(string elementName, BasicAction? basicAction, ActionSource source,
         string? fieldName = null)
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
@@ -673,13 +678,13 @@ public class ActionsController(ActionsService actionsService,
         await PopulateViewData(formElement, basicAction, source, fieldName);
     }
     
-    private async Task PopulateViewData(FormElement formElement, BasicAction basicAction, ActionSource source,
+    private async Task PopulateViewData(FormElement formElement, BasicAction? basicAction, ActionSource source,
         string? fieldName = null)
     {
         if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
             ViewData["OriginalName"] = originalName;
         else
-            ViewData["OriginalName"] = basicAction.Name;
+            ViewData["OriginalName"] = basicAction?.Name;
         
         if (TryGetSelectedTabValue(out var selectedTab))
             ViewData["Tab"] = selectedTab;
