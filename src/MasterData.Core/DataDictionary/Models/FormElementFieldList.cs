@@ -218,6 +218,11 @@ public class FormElementFieldList : IList<FormElementField>
         return _formFields.Exists(predicate);
     }
     
+    public List<T> ConvertAll<T>(Converter<FormElementField, T> converter)
+    {
+        return _formFields.ConvertAll(converter);
+    }
+    
     public FormElementFieldList DeepCopy()
     {
         return new FormElementFieldList(

@@ -1,73 +1,51 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @using JJConsulting.Html.Bootstrap.Models
-@using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "UrlRedirectAction";
+    ViewData["CopyAction"] = "CopyUrlRedirectAction";
+    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString(), ["fieldName"] = ViewBag.FieldName?.ToString() };
 }
 
-@using (Html.BeginMasterDataForm("UrlRedirectAction", "Actions",
-            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))
-{
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="nav-item active">
-            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
-        </li>
-        <li id="navUrlAction" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">@StringLocalizer["Url Redirect"]</a>
-        </li>
-        <li id="nav-advanced" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
-        </li>
-    </ul>
+@section ActionTabs {
+    <li id="navUrlAction" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">
+            @StringLocalizer["Url Redirect"]
+        </a>
+    </li>
+}
 
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" Model="@Model"/>
+@section ActionTabContent {
+    <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+                <label asp-for="UrlRedirect" class="form-label"></label>
+                <tooltip title="@StringLocalizer["This field support runtime values between {}. Use {AppPath} for the base path of the application."]"/>
+                <input asp-for="UrlRedirect" class="form-control font-monospace"/>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-6">
+                <div class="mb-3 col-sm-12">
+                    <checkbox for="OpenInNewTab" layout="Switch"/>
+                </div>
+            </div>
         </div>
 
-        <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
+        <collapse-panel title="@StringLocalizer["Modal"]" icon="SolidWindowMaximize" expanded-by-default="false">
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                    <label asp-for="UrlRedirect" class="form-label"></label>
-                    <tooltip title="@StringLocalizer["This field support runtime values between {}. Use {AppPath} for the base path of the application."]"/>
-                    <input asp-for="UrlRedirect" class="form-control font-monospace"/>
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <checkbox for="IsModal" layout="Switch"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <div class="mb-3 col-sm-12">
-                        <checkbox for="OpenInNewTab" layout="Switch"/>
-                    </div>
+                    <label class="form-label" asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
+                    <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
                 </div>
-                
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <label class="form-label" asp-for="ModalTitle"></label>
+                    <input asp-for="ModalTitle" class="form-control"/>
+                </div>
             </div>
-
-            <collapse-panel title="@StringLocalizer["Modal"]" icon="SolidWindowMaximize" expanded-by-default="false">
-                <div class="row">
-                    <div class="mb-3 col-sm-12">
-                        <checkbox for="IsModal" layout="Switch"/>
-                    </div>
-                    <div class="mb-3 col-sm-6">
-                        <label class="form-label" asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
-                        <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
-                    </div>
-                    <div class="mb-3 col-sm-6">
-                        <label class="form-label" asp-for="ModalTitle"></label>
-                        <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
-                        <input asp-for="ModalTitle" class="form-control"/>
-                    </div>
-                </div>
-            </collapse-panel>
-
-        </div>
-
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" model="Model"/>
-        </div>
+        </collapse-panel>
     </div>
-
-    <partial name="_Toolbar" model="Model"/>
 }

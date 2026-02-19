@@ -73,6 +73,27 @@
     }
 }
 
+@if (ViewData["ShowSaveSuccess"] is true)
+{
+    <message-toast
+        title-color="Success"
+        title="@StringLocalizer["Success"]"
+        icon="@FontAwesomeIcon.CheckCircle"
+        name="field-save-success"
+        show-as-opened="true"
+        message="@StringLocalizer["Field saved successfully."]" />
+}
+@if (!ViewData.ModelState.IsValid)
+{
+    <message-toast
+        title-color="Danger"
+        title="@StringLocalizer["Error"]"
+        icon="@FontAwesomeIcon.TimesCircle"
+        name="field-validation-error"
+        show-as-opened="true"
+        message="@StringLocalizer["Please check the validation errors."]" />
+}
+
 
 @if (isForm)
 {

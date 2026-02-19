@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -188,6 +189,23 @@ public class FormElement : Element
     public FormElementPanel GetPanelById(int id)
     {
         return Panels.First(x => x.PanelId == id);
+    }
+
+    public BasicAction? GetAction(string? name, ActionSource source, string? fieldName = null)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return null;
+
+        return source switch
+        {
+            ActionSource.GridTable => Options.GridTableActions.FirstOrDefault(a => a.Name == name),
+            ActionSource.GridToolbar => Options.GridToolbarActions.FirstOrDefault(a => a.Name == name),
+            ActionSource.FormToolbar => Options.FormToolbarActions.FirstOrDefault(a => a.Name == name),
+            ActionSource.Field => string.IsNullOrWhiteSpace(fieldName)
+                ? Fields.SelectMany(f => f.Actions).FirstOrDefault(a => a.Name == name)
+                : Fields.FirstOrDefault(f => f.Name == fieldName)?.Actions.FirstOrDefault(a => a.Name == name),
+            _ => null
+        };
     }
 
     public FormElement DeepCopy()

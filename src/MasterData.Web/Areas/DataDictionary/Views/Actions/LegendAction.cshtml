@@ -1,28 +1,8 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @model JJMasterData.Core.DataDictionary.Models.Actions.LegendAction
 
 @{
-    Layout = Options.Value.ModalLayoutPath;
+    Layout = "_FormElementActionLayout";
+    ViewData["FormAction"] = "LegendAction";
+    ViewData["CopyAction"] = "CopyLegendAction";
+    ViewData["FormRouteValues"] = new Dictionary<string, string?> { ["elementName"] = ViewData["ElementName"]?.ToString(), ["source"] = ViewData["ActionSource"]?.ToString() };
 }
-
-@using (Html.BeginMasterDataForm("LegendAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }))
-{
-    <ul class="nav nav-underline">
-        <li id="nav-general" class="active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-        <li id="nav-advanced"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
-    </ul>
-
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            <partial name="_NavGeneral" Model="@Model"/>
-        </div>
-        <div id="div-advanced" class="tab-pane fade">
-            <partial name="_NavAdvanced" Model="@Model"/>
-        </div>
-    </div>
-
-    <partial name="_Toolbar"/>
-}
-

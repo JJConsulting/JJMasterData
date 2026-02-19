@@ -135,7 +135,7 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
     public async Task<List<SelectListItem>> GetPrimaryKeysSelectList(string elementName)
     {
         var formElement = await relationshipsService.GetFormElementAsync(elementName);
-        var selectList = formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)).ToList();
+        var selectList = formElement.Fields.ConvertAll(field => new SelectListItem(field.Name, field.Name));
 
         return selectList;
     }

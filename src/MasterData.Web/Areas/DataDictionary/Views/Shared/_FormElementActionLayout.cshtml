@@ -1,0 +1,499 @@
+﻿@using JJConsulting.FontAwesome
+@using JJConsulting.Html.Bootstrap.Models
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Web.Utils
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject JJMasterDataLogo MasterDataLogo
+@model JJMasterData.Core.DataDictionary.Models.Actions.BasicAction
+
+@{
+    Layout = null;
+    var backUrl = Url.Action("Index", "Element")!;
+    
+    var elementName = ViewData["ElementName"]!.ToString()!;
+    
+    var actionName = ViewData["OriginalName"]?.ToString();
+    var actionSource = ViewData.TryGetValue("ActionSource", out var actionSourceObject) ? actionSourceObject as ActionSource? : null;
+    
+    var fieldName = ViewData["FieldName"] as string;
+    var isFieldSource = actionSource == ActionSource.Field;
+
+    var actionNameForToolbar = !string.IsNullOrWhiteSpace(actionName) ? actionName : Model.Name;
+    
+    var copyActionName = ViewData["CopyAction"] as string;
+
+    var canDelete = Model is { IsUserDefined: true } && !string.IsNullOrWhiteSpace(actionNameForToolbar);
+    var canCopy = canDelete && !string.IsNullOrWhiteSpace(copyActionName);
+    var copyUrl = canCopy
+        ? Url.Action(copyActionName, "Actions", new { elementName, source = actionSource, fieldName })
+        : null;
+    var deleteUrl = !string.IsNullOrWhiteSpace(actionNameForToolbar)
+        ? Url.Action("Remove", "Actions", new { elementName, actionName = actionNameForToolbar, source = actionSource, fieldName })
+        : null;
+
+    if (string.IsNullOrWhiteSpace(actionName))
+        actionName = StringLocalizer["New Action"];
+
+    TempData["selectedTab"] = actionSource switch
+    {
+        ActionSource.GridToolbar => "#div-grid-toolbar",
+        ActionSource.FormToolbar => "#div-form-toolbar",
+        ActionSource.Field => "#div-form-fields",
+        _ => "#divGrid"
+    };
+
+    var breadcrumbs = new List<BreadcrumbItem>
+    {
+        new(MasterDataLogo.GetHtmlBuilder(), backUrl),
+        new(StringLocalizer["Data Dictionary"], backUrl),
+        new(elementName),
+        new(StringLocalizer["Actions"])
+    };
+
+    if (actionSource is ActionSource.Field && !string.IsNullOrWhiteSpace(fieldName))
+    {
+        var fieldUrl = Url.Action("Index", "Field", new { elementName, fieldName })!;
+        breadcrumbs.Add(new BreadcrumbItem(fieldName, fieldUrl));
+    }
+
+    breadcrumbs.Add(new BreadcrumbItem(actionName));
+
+    ViewData["Breadcrumbs"] = breadcrumbs;
+
+    var formAction = ViewData["FormAction"]?.ToString();
+    var formController = ViewData["FormController"]?.ToString() ?? "Actions";
+    var formRouteValues = ViewData["FormRouteValues"] as Dictionary<string, string> ?? new();
+}
+
+@if (!string.IsNullOrWhiteSpace(formAction))
+{
+    <form asp-action="@formAction"
+          asp-controller="@formController"
+          method="post"
+          asp-all-route-data="@formRouteValues"
+          id="action-form-@actionSource">
+        @await RenderSectionAsync("ActionFormHeader", required: false)
+        <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewData["Tab"]"/>
+        @if (ViewData["ShowSaveSuccess"] is true)
+        {
+            <message-toast
+                title-color="Success"
+                title="@StringLocalizer["Success"]"
+                icon="@FontAwesomeIcon.CheckCircle"
+                name="action-save-success"
+                show-as-opened="false"
+                message="@StringLocalizer["Action saved successfully."]"/>
+            <script>
+                MessageToastHelper.show("action-save-success");
+            </script>
+        }
+
+        @if (ViewData["ShowCopySuccess"] is true)
+        {
+            <message-toast
+                title-color="Success"
+                title="@StringLocalizer["Success"]"
+                icon="@FontAwesomeIcon.CheckCircle"
+                name="action-copy-success"
+                show-as-opened="false"
+                message="@StringLocalizer["Action copied successfully."]"/>
+            <script>
+                MessageToastHelper.show("action-copy-success");
+            </script>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <input type="hidden" id="action-has-errors" value="true"/>
+            <message-toast
+                title-color="Danger"
+                title="@StringLocalizer["Error"]"
+                icon="@FontAwesomeIcon.TimesCircle"
+                name="action-validation-error"
+                show-as-opened="false"
+                message="@StringLocalizer["Please check the validation errors."]"/>
+            <script>
+                MessageToastHelper.show("action-validation-error");
+            </script>
+        }
+
+        <ul class="nav nav-underline">
+            <li id="nav-general" class="nav-item active">
+                <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">
+                    @StringLocalizer["General"]
+                </a>
+            </li>
+            @await RenderSectionAsync("ActionTabs", required: false)
+            <li id="nav-advanced" class="nav-item">
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">
+                    @StringLocalizer["Advanced"]
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content" style="margin-top: 1.25rem;">
+            <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+                <div class="row">
+                    @if (isFieldSource)
+                    {
+                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                            <label class="@BootstrapHelper.Label" asp-for="Name">@StringLocalizer["Name"]</label>
+                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                        </div>
+                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                            <label class="@BootstrapHelper.Label" for="fieldName">@StringLocalizer["Field"]</label>
+                            @Html.DropDownList("fieldName", ViewData["ActionFieldList"] as IEnumerable<SelectListItem> ?? [], new { @class = "form-select" })
+                            <input type="hidden" id="originalFieldName" name="originalFieldName" value="@fieldName"/>
+                        </div>
+                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                            <label asp-for="Icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
+                            <icon-picker for="Icon"/>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+                            <label class="@BootstrapHelper.Label" asp-for="Name">@StringLocalizer["Name"]</label>
+                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                        </div>
+                        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+                            <label asp-for="Icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
+                            <icon-picker for="Icon"/>
+                        </div>
+                    }
+                    <div class="@BootstrapHelper.FormGroup col-sm-6">
+                        <label class="@BootstrapHelper.Label" asp-for="Text">@StringLocalizer["Text"]</label>
+                        @Html.TextBoxFor(model => model.Text, new { @class = "form-control" })
+                        <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-6">
+                        <label class="@BootstrapHelper.Label " asp-for="Tooltip">@StringLocalizer["Tooltip"]</label>
+                        @Html.TextBoxFor(model => model.Tooltip, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            @await RenderSectionAsync("ActionTabContent", required: false)
+
+            <div id="div-advanced" class="tab-pane fade">
+                @if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserDefined) || Model is AuditLogFormToolbarAction)
+                {
+                    <div class="row">
+                        <div class="mb-3 col-sm-12 required">
+                            <expression use-floating-label="false" for="VisibleExpression" icon="FontAwesomeIcon.Eye"
+                                        tooltip="@StringLocalizer["Boolean expression to show the action. See the docs for more information."]"/>
+                        </div>
+                        <div class="mb-3 col-sm-12 required">
+                            <expression use-floating-label="false" for="EnableExpression" icon="FontAwesomeIcon.Pencil"
+                                        tooltip="@StringLocalizer["Boolean expression to enable the action. See the docs for more information."]"/>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="mb-3 col-sm-3">
+                        <label class="form-label" asp-for="ConfirmationMessage"></label>
+                        <tooltip
+                            title="@StringLocalizer["If filled, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"]"/>
+                        <input asp-for="ConfirmationMessage" class="form-control"/>
+                    </div>
+                    <div class="mb-3 col-sm-3">
+                        <label asp-for="CssClass" class="form-label">@StringLocalizer["CSS Class"]</label>
+                        <input asp-for="CssClass" class="form-control"/>
+                    </div>
+                    <div class="mb-3 col-sm-3">
+                        <label class="form-label" asp-for="Color"></label>
+                        <select asp-for="Color" class="form-select"
+                                asp-items="Html.GetEnumSelectList<BootstrapColor>()"></select>
+                    </div>
+                    <div class="mb-3 col-sm-3">
+                        <label asp-for="Order" class="form-label">@StringLocalizer["Order"]</label>
+                        <input asp-for="Order" class="form-control"/>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="mb-3 col-sm-2">
+                        <checkbox for="ShowTitle" layout="Switch"/>
+                    </div>
+
+                    <div class="mb-3 col-sm-2">
+                        <checkbox for="ShowAsButton" layout="Switch"/>
+                    </div>
+
+                    <div class="mb-3 col-sm-2">
+                        <checkbox for="IsDefaultOption" layout="Switch"/>
+                    </div>
+                    <div class="mb-3 col-sm-2">
+                        <checkbox for="IsGroup" layout="Switch"/>
+                    </div>
+                    <div class="mb-3 col-sm-2">
+                        <checkbox tooltip="@StringLocalizer["Show a separator before this action."]" for="DividerLine"
+                                  layout="Switch"/>
+                    </div>
+                    @if (actionSource is ActionSource.FormToolbar)
+                    {
+                        <div class="mb-3 col-sm-2">
+                            <label asp-for="Location" class="form-label">@StringLocalizer["Location"]</label>
+                            <tooltip
+                                title="@StringLocalizer["If not in a relationship, Panel is considered the same as Bottom."]"/>
+                            <div class="input-append">
+                                <select asp-for="Location" class="form-select"
+                                        asp-items="Html.GetEnumSelectList<FormToolbarActionLocation>()"></select>
+                            </div>
+                        </div>
+                    }
+                    @if (Model is ISubmittableAction submitAction)
+                    {
+                        <partial name="~/Areas/DataDictionary/Views/Actions/_SubmittableAction.cshtml"
+                                 model="@submitAction"/>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @await RenderSectionAsync("ActionExtraContent", required: false)
+
+        <input type="hidden" id="actionName" value="@actionNameForToolbar"/>
+        <input type="hidden" id="deleteUrl" value="@deleteUrl"/>
+        <input type="hidden" id="copyUrl" value="@copyUrl"/>
+        <input type="hidden" id="deleteConfirmTemplate"
+               value="@StringLocalizer["Are you sure you want to delete [{0}] action?"]"/>
+
+        <div class="row">
+            <div class="col-sm-12">
+                @ViewData["Error"]
+            </div>
+        </div>
+
+        <div class="jjtoolbar mb-1 col-sm-12 text-center">
+            <hr/>
+            <link-button
+                text="@StringLocalizer["Save"]"
+                color="Primary"
+                icon="Check"
+                type="LinkButtonType.Button"
+                on-client-click="saveAction();"/>
+            @if (canCopy)
+            {
+                <link-button
+                    text="@StringLocalizer["Copy"]"
+                    icon="FilesO"
+                    type="LinkButtonType.Button"
+                    on-client-click="copyCurrentAction();"/>
+            }
+            @if (canDelete)
+            {
+                <link-button
+                    text="@StringLocalizer["Delete"]"
+                    icon="SolidTrashCan"
+                    type="LinkButtonType.Button"
+                    on-client-click="deleteCurrentAction();"/>
+            }
+        </div>
+
+        @if (actionSource is not null)
+        {
+            <script type="text/javascript">
+                function getActionTabLinks(form) {
+                    if (!form) {
+                        return [];
+                    }
+                    return form.querySelectorAll("a[data-bs-toggle='tab'], a[data-toggle='tab']");
+                }
+
+                function applyActionTabClasses(form, currentTab) {
+                    if (!form || !currentTab) {
+                        return;
+                    }
+
+                    getActionTabLinks(form).forEach(function (link) {
+                        if (link.getAttribute("href") === currentTab) {
+                            link.classList.add("active");
+                            link.classList.add("show");
+                        } else {
+                            link.classList.remove("active");
+                            link.classList.remove("show");
+                        }
+                    });
+
+                    form.querySelectorAll(".tab-pane").forEach(function (tabPane) {
+                        if ("#" + tabPane.id === currentTab) {
+                            tabPane.classList.add("active");
+                            tabPane.classList.add("show");
+                        } else {
+                            tabPane.classList.remove("active");
+                            tabPane.classList.remove("show");
+                        }
+                    });
+                }
+
+                function restoreActionTabState() {
+                    const selectedTabInput = document.getElementById("selected-tab");
+                    if (!selectedTabInput) {
+                        return;
+                    }
+
+                    const form = getMasterDataForm();
+                    let currentTab = selectedTabInput.value;
+                    if (!currentTab) {
+                        currentTab = "#div-general";
+                        selectedTabInput.value = currentTab;
+                    }
+
+                    applyActionTabClasses(form, currentTab);
+
+                    const tabLink = form?.querySelector(".nav a[href='" + currentTab + "']");
+                    if (tabLink && window.bootstrap && bootstrap.Tab) {
+                        bootstrap.Tab.getOrCreateInstance(tabLink).show();
+                    }
+
+                    getActionTabLinks(form).forEach(function (tabLink) {
+                        tabLink.addEventListener("shown.bs.tab", function (event) {
+                            const tabId = event.target.getAttribute("href");
+                            if (tabId) {
+                                selectedTabInput.value = tabId;
+                            }
+                        });
+                        tabLink.addEventListener("click", function (event) {
+                            const tabId = event.currentTarget?.getAttribute("href");
+                            if (tabId) {
+                                selectedTabInput.value = tabId;
+                            }
+                        });
+                    });
+                }
+
+                document.addEventListener("DOMContentLoaded", restoreActionTabState);
+                if (document.readyState !== "loading") {
+                    restoreActionTabState();
+                }
+
+                function syncSelectedActionTab() {
+                    const selectedTabInput = document.getElementById("selected-tab");
+                    if (!selectedTabInput) {
+                        return;
+                    }
+
+                    const form = getMasterDataForm();
+                    const activeTabLink = form?.querySelector(".nav a.active[data-bs-toggle='tab'], .nav a.active[data-toggle='tab']");
+                    const tabId = activeTabLink?.getAttribute("href")
+                        || form?.querySelector(".tab-pane.active.show")?.getAttribute("id");
+
+                    if (tabId) {
+                        selectedTabInput.value = tabId.startsWith("#") ? tabId : "#" + tabId;
+                    }
+                }
+
+                function saveAction() {
+                    const form = getMasterDataForm();
+                    const source = "@ViewData["ActionSource"]";
+                    const detailsId = source ? "action-details-" + source : "";
+                    const details = detailsId ? document.getElementById(detailsId) : null;
+
+                    syncSelectedActionTab();
+
+                    if (details) {
+                        postFormValues({
+                            url: form.action,
+                            success: html => {
+                                if (!html) {
+                                    return;
+                                }
+                                HTMLHelper.setInnerHTML(detailsId, html);
+                                details.setAttribute("data-loaded", "true");
+                                listenAllEvents("#" + detailsId);
+                                restoreActionTabState();
+                                const loadedDetails = document.getElementById(detailsId);
+                                const hasValidationErrors = !!loadedDetails.querySelector("#action-has-errors");
+                                if (!hasValidationErrors) {
+                                    const modalEl = document.getElementById("actionDetailsModal");
+                                    if (modalEl && window.bootstrap && bootstrap.Modal) {
+                                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                                    }
+                                }
+                            }
+                        });
+                        return;
+                    }
+
+                    form.requestSubmit();
+                }
+
+                function copyCurrentAction() {
+                    const copyUrl = document.getElementById("copyUrl")?.value || "";
+                    if (!copyUrl) {
+                        return;
+                    }
+                    const form = getMasterDataForm();
+                    const source = "@ViewData["ActionSource"]";
+                    const detailsId = source ? "action-details-" + source : "";
+                    const details = detailsId ? document.getElementById(detailsId) : null;
+
+                    syncSelectedActionTab();
+
+                    if (details) {
+                        postFormValues({
+                            url: copyUrl,
+                            success: html => {
+                                if (!html) {
+                                    return;
+                                }
+                                HTMLHelper.setInnerHTML(detailsId, html);
+                                details.setAttribute("data-loaded", "true");
+                                listenAllEvents("#" + detailsId);
+                                restoreActionTabState();
+                                const loadedDetails = document.getElementById(detailsId);
+                                const hasValidationErrors = !!loadedDetails.querySelector("#action-has-errors");
+                                if (!hasValidationErrors) {
+                                    const modalEl = document.getElementById("actionDetailsModal");
+                                    if (modalEl && window.bootstrap && bootstrap.Modal) {
+                                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                                    }
+                                }
+                            }
+                        });
+                        return;
+                    }
+
+                    form.action = copyUrl;
+                    form.requestSubmit();
+                }
+
+                function deleteCurrentAction() {
+                    const actionName = document.getElementById("actionName")?.value || "";
+                    const deleteUrl = document.getElementById("deleteUrl")?.value || "";
+                    if (!actionName || !deleteUrl) {
+                        return;
+                    }
+                    const template = document.getElementById("deleteConfirmTemplate")?.value || "";
+                    const confirmationMessage = template.replace("{0}", actionName);
+                    showConfirmationMessage(confirmationMessage).then(function (confirmed) {
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        postFormValues({
+                            url: deleteUrl,
+                            success: function (data) {
+                                if (data.success) {
+                                    window.location.href = '@Url.Action("Index", "Actions", new { elementName, actionName, source = actionSource, fieldName })';
+                                }
+                            }
+                        });
+                    });
+                }
+            </script>
+        }
+    </form>
+
+    IgnoreBody();
+}
+else
+{
+    @RenderBody()
+}
+
+@await RenderSectionAsync("Scripts", required: false)

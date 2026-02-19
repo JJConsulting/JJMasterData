@@ -258,23 +258,29 @@ public class ActionsService(IValidationDictionary validationDictionary,
         return true;
     }
 
-    public async Task<Dictionary<string, string>> GetFieldList(string elementName)
+    public Dictionary<string, string> GetFieldList(FormElement formElement)
     {
-        var dicFields = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
+        var dicFields = new Dictionary<string, string>
+        {
+            { string.Empty, StringLocalizer["--Select--"] }
+        };
 
-        if (string.IsNullOrEmpty(elementName))
-            return dicFields;
-
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         if (formElement == null)
             return dicFields;
 
         foreach (var field in formElement.Fields)
-        {
             dicFields.Add(field.Name, field.Name);
-        }
 
         return dicFields;
+    }
+
+    public async Task<Dictionary<string, string>> GetFieldList(string elementName)
+    {
+        if (string.IsNullOrWhiteSpace(elementName))
+            return GetFieldList((FormElement)null);
+
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        return GetFieldList(formElement);
     }
 
 }
