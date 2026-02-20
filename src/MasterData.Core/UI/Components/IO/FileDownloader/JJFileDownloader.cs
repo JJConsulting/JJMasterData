@@ -65,28 +65,28 @@ public class JJFileDownloader(
             SubTitle = fileName.ToLower()
         };
 
-        var html = new HtmlBuilder(HtmlTag.Div)
+        var html = HtmlBuilder.Div()
             .AppendComponent(htmlTitle)
-            .Append(HtmlTag.Section, section =>
+            .AppendSection(section =>
             {
                 section.WithCssClass("container mt-3");
-                section.Append(HtmlTag.Div, div =>
+                section.AppendDiv(div =>
                 {
                     div.WithCssClass("jumbotron px-3 py-4 px-sm-4 py-sm-5 bg-light rounded-3 mb-3");
-                    div.Append(HtmlTag.Div, div =>
+                    div.AppendDiv(div =>
                     {
-                        div.Append(HtmlTag.H1, h1 =>
+                        div.AppendH1(h1 =>
                         {
                             h1.AppendComponent(new JJIcon("fa fa-cloud-download text-info"));
                             h1.AppendText(fileName);
                         });
-                        div.Append(HtmlTag.P, p =>
+                        div.Append(HtmlTag.P,p =>
                         {
                             p.AppendText($"{StringLocalizer["File Size:"]} {size}");
                             p.Append(HtmlTag.Br);
                             p.AppendText($"{StringLocalizer["Last write time:"]} {lastWriteTime}");
                         });
-                        div.Append(HtmlTag.Hr, hr =>
+                        div.AppendHr(hr =>
                         {
                             hr.WithCssClass("my-4");
                         });
