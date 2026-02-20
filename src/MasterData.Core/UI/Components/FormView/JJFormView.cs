@@ -1607,7 +1607,7 @@ public class JJFormView : AsyncComponent
         {
             var btnGroup = new JJLinkButtonGroup
             {
-                CaretText = Localizer["More"],
+                CaretHtml = new HtmlBuilder(Localizer["More"], encode:false),
                 Actions = groupedActions,
                 ShowAsButton = true
             };

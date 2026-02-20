@@ -218,44 +218,55 @@ internal sealed class GridTableBody(JJGridView gridView)
     {
         HtmlBuilder cell;
 
-        var isDataIconWithIcon = field.DataItem is { 
-            ShowIcon: true, 
-            GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription
-        };
-        
-        if (isDataIconWithIcon)
-        {
-            cell = await GetDataItemIconCell(field.DataItem!, formStateData, stringValue);
-        }
-        else if (field.DataFile is not null)
-        {
-            var controlContext = new ControlContext(formStateData, _name, stringValue);
-            var controlFactory = gridView.ComponentFactory.Controls;
-            var textFile = controlFactory.Create<JJTextFile>(gridView.FormElement, field,controlContext);
-            cell = textFile.GetButtonGroupHtml();
-        }
-        else if (field.Component is FormComponent.Color && !string.IsNullOrEmpty(stringValue))
-        {
-            cell = GetIconCell(FontAwesomeIcon.Circle, stringValue, stringValue);
-        }
-        else if (field.Component is FormComponent.Icon && !string.IsNullOrEmpty(stringValue))
-        {
-            var fontAwesomeIcon = FontAwesomeIconHelper.GetFontAwesomeIconFromField(field, stringValue);
-
-            cell = GetIconCell(fontAwesomeIcon, null, fontAwesomeIcon.ToString());
-        }
-        else if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
+        if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
             var replacedTemplate = await gridView.HtmlTemplateService.RenderTemplate(field.GridRenderingTemplate!, formStateData.Values);
             cell = new HtmlBuilder(replacedTemplate, encode:false);
         }
         else
         {
-            var selector = new FormElementFieldSelector(gridView.FormElement, field.Name);
-            var gridValue = await gridView.FieldFormattingService.FormatGridValueAsync(selector, formStateData);
-            var gridStringValue = gridValue?.Trim() ?? string.Empty;
-            cell = new HtmlBuilder(gridStringValue, encode:false);
+            var isDataIconWithIcon = field.DataItem is { 
+                ShowIcon: true, 
+                GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription
+            };
+            
+            if (isDataIconWithIcon)
+            {
+                cell = await GetDataItemIconCell(field.DataItem!, formStateData, stringValue);
+            }
+            else if (field.DataFile is not null)
+            {
+                var controlContext = new ControlContext(formStateData, _name, stringValue);
+                var controlFactory = gridView.ComponentFactory.Controls;
+                var textFile = controlFactory.Create<JJTextFile>(gridView.FormElement, field, controlContext);
+                cell = textFile.GetButtonGroupHtml();
+            }
+            else
+            {
+                switch (field.Component)
+                {
+                    case FormComponent.Color when !string.IsNullOrEmpty(stringValue):
+                        cell = GetIconCell(FontAwesomeIcon.Circle, stringValue, stringValue);
+                        break;
+                    case FormComponent.Icon when !string.IsNullOrEmpty(stringValue):
+                    {
+                        var fontAwesomeIcon = FontAwesomeIconHelper.GetFontAwesomeIconFromField(field, stringValue);
+
+                        cell = GetIconCell(fontAwesomeIcon, null, fontAwesomeIcon.ToString());
+                        break;
+                    }
+                    default:
+                    {
+                        var selector = new FormElementFieldSelector(gridView.FormElement, field.Name);
+                        var gridValue = await gridView.FieldFormattingService.FormatGridValueAsync(selector, formStateData);
+                        var gridStringValue = gridValue?.Trim() ?? string.Empty;
+                        cell = new HtmlBuilder(gridStringValue, encode: false);
+                        break;
+                    }
+                }
+            }
         }
+
 
         if (OnRenderCellAsync == null) 
             return cell;

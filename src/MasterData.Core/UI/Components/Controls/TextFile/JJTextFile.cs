@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.Http.Abstractions;
@@ -250,8 +250,13 @@ public sealed class JJTextFile(IHttpRequest request,
             return btn.GetHtmlBuilder();
         }
 
-        var btnGroup = new JJLinkButtonGroup();
-        btnGroup.CaretText = $"{new JJIcon(FontAwesomeIcon.CloudDownload).GetHtml()} {files.Length} {StringLocalizer["Files"]}";
+        var caretHtml = new HtmlBuilder();
+        caretHtml.AppendComponent(new JJIcon(FontAwesomeIcon.CloudDownload)).WithCssClass("me-1");
+        caretHtml.AppendText($"{files.Length} {StringLocalizer["Files"]}");
+        var btnGroup = new JJLinkButtonGroup
+        {
+            CaretHtml = caretHtml
+        };
 
         btnGroup.Attributes.Add("onclick","event.stopPropagation()");
    
