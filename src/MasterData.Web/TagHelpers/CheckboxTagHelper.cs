@@ -48,7 +48,7 @@ public sealed class CheckboxTagHelper(
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
-        Contextualize(ViewContext);
+        Contextualize();
         
         var checkBox = checkboxFactory.Create();
         checkBox.Name = Name ?? htmlHelper.Name(For!.Name) ??
@@ -83,11 +83,11 @@ public sealed class CheckboxTagHelper(
         output.Content.SetHtmlContent(htmlBuilder);
     }
 
-    private void Contextualize(ViewContext viewContext)
+    private void Contextualize()
     {
         if (htmlHelper is IViewContextAware aware)
         {
-            aware.Contextualize(viewContext);
+            aware.Contextualize(ViewContext);
         }
     }
 }
