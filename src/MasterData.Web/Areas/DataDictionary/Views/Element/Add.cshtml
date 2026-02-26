@@ -61,7 +61,10 @@
                     <option value="">@StringLocalizer["Application Default"]</option>
                     @foreach (var connection in ConnectionRepository.GetAll())
                     {
-                        <option value="@connection.Guid">@connection.Name</option>
+                        if (User.IsAdmin || User.IsInRole(connection.Roles))
+                        {
+                            <option value="@connection.Guid">@connection.Name</option>
+                        }
                     }
                 </select>
                 <label asp-for="ConnectionId"></label>

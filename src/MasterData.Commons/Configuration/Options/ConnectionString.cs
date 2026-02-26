@@ -22,4 +22,7 @@ public class ConnectionString()
     
     [Display(Name = "Connection Provider")]
     public string ConnectionProvider { get; set; } = "Microsoft.Data.SqlClient";
+
+    [Display(Name = "Roles")]
+    public string[] Roles { get; set; } = [];
 }

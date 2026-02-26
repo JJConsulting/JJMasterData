@@ -79,7 +79,10 @@
                 <option value="">@StringLocalizer["Application Default"]</option>
                 @foreach (var connection in connections)
                 {
-                <option value="@connection.Guid">@connection.Name</option>
+                    if (User.IsAdmin || User.IsInRole(connection.Roles))
+                    {
+                        <option value="@connection.Guid">@connection.Name</option>
+                    }
                 }
             </select>
         </div>
