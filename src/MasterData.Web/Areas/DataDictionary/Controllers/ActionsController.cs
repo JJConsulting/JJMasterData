@@ -548,8 +548,8 @@ public class ActionsController(ActionsService actionsService,
         var formElement = await actionsService.GetFormElementAsync(elementName);
 
         PopulateViewData(formElement, internalAction, source, fieldName);
-   
-        return PartialView("_" + internalAction.GetType().Name, internalAction);
+        
+        return PartialView("_InternalAction", internalAction);
     }
 
     [HttpPost]
@@ -563,7 +563,18 @@ public class ActionsController(ActionsService actionsService,
         
         PopulateViewData(formElement, internalAction, source, fieldName);
  
-        return PartialView("_" + internalAction.GetType().Name, internalAction);
+        return PartialView("_InternalAction", internalAction);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RefreshInternalRedirect(string elementName, InternalAction internalAction,
+        ActionSource source, string? fieldName)
+    {
+        var formElement = await actionsService.GetFormElementAsync(elementName);
+
+        PopulateViewData(formElement, internalAction, source, fieldName);
+
+        return PartialView("_InternalAction", internalAction);
     }
     
     [HttpPost]

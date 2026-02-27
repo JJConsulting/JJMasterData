@@ -36,7 +36,7 @@
                 {
                     @Html.DropDownListFor(model => model.ElementRedirect.ElementNameRedirect,
                         new SelectList(elementNameList, "Key", "Value"),
-                        new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
+                        new { @class = "form-control form-select", onchange = "refreshInternalRedirect();" })
                 }
                 else
                 {
@@ -161,6 +161,11 @@
                     }
                 }
             });
+        }
+
+        function refreshInternalRedirect() {
+            const url = "@Url.Action("RefreshInternalRedirect", "Actions", new { elementName = ViewData["ElementName"], source = ViewData["ActionSource"], fieldName = ViewBag.FieldName })";
+            submitRelationChange(url);
         }
     </script>
 }
