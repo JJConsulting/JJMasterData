@@ -2,7 +2,6 @@
 @using JJConsulting.FontAwesome
 @using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Core.DataDictionary.Models
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
@@ -155,7 +154,7 @@
     </div>
 }
 
-@using (Html.BeginMasterDataForm("Index", "Field"))
+@using (Html.BeginMasterDataForm("Index", "Field", new { elementName }))
 {
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
     <div class="row">
