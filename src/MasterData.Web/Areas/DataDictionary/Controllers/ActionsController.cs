@@ -705,13 +705,13 @@ public class ActionsController(ActionsService actionsService,
         ViewData["FieldName"] = fieldName;
 
         ViewData["FormElement"] = formElement;
-        ViewData["CodeEditorHints"] = formElement.Fields.Select(f => new CodeEditorHint
+        ViewData["CodeEditorHints"] = formElement.Fields.ConvertAll(f => new CodeEditorHint
         {
             Language = "sql",
             InsertText = f.Name,
             Label = f.Name,
             Details = "Form Element Field",
-        }).ToList();
+        });
     }
 
     private bool TryGetSelectedTabValue(out string selectedTab)
