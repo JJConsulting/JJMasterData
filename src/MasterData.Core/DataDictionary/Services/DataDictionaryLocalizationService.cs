@@ -14,12 +14,14 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class DataDictionaryLocalizationService(
     IDataDictionaryRepository dataDictionaryRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer,
+    ILogger<DataDictionaryLocalizationService> logger,
     DataItemService? dataItemService = null)
 {
     private static readonly ResourceManager ResourceManager = new(typeof(MasterDataResources));
@@ -55,7 +57,14 @@ public class DataDictionaryLocalizationService(
 
                 if (field.Component is FormComponent.ComboBox && field.DataItem?.EnableLocalization == true)
                 {
-                    await AddDataItemAsync(keys, field.DataItem, formElement.ConnectionId);
+                    try
+                    {
+                        await AddDataItemAsync(keys, field.DataItem, formElement.ConnectionId);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Error adding data item localization keys");
+                    }
                 }
                 
                 AddActionKeys(keys, field.Actions);
