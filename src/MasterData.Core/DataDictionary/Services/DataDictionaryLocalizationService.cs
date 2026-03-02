@@ -21,7 +21,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class DataDictionaryLocalizationService(
     IDataDictionaryRepository dataDictionaryRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    ILogger<DataDictionaryLocalizationService> logger,
+    ILogger<DataDictionaryLocalizationService>? logger = null,
     DataItemService? dataItemService = null)
 {
     private static readonly ResourceManager ResourceManager = new(typeof(MasterDataResources));
@@ -63,7 +63,7 @@ public class DataDictionaryLocalizationService(
                     }
                     catch (Exception e)
                     {
-                        logger.LogError(e, "Error adding data item localization keys");
+                        logger?.LogError(e, "Error adding data item localization keys");
                     }
                 }
                 
