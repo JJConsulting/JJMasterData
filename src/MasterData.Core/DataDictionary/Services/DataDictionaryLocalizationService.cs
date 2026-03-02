@@ -8,15 +8,19 @@ using System.IO;
 using System.Linq;
 using System.Resources;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class DataDictionaryLocalizationService(
     IDataDictionaryRepository dataDictionaryRepository,
-    IStringLocalizer<MasterDataResources> stringLocalizer)
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    DataItemService? dataItemService = null)
 {
     private static readonly ResourceManager ResourceManager = new(typeof(MasterDataResources));
     private static readonly string InvariantResourceName = $"{typeof(MasterDataResources).FullName}.resources";
@@ -48,6 +52,12 @@ public class DataDictionaryLocalizationService(
                 AddKey(keys, field.Name);
                 AddKey(keys, field.Label);
                 AddKey(keys, field.HelpDescription);
+
+                if (field.Component is FormComponent.ComboBox && field.DataItem?.EnableLocalization == true)
+                {
+                    await AddDataItemAsync(keys, field.DataItem, formElement.ConnectionId);
+                }
+                
                 AddActionKeys(keys, field.Actions);
             }
 
@@ -57,6 +67,31 @@ public class DataDictionaryLocalizationService(
         }
 
         return keys.OrderBy(static x => x, StringComparer.Ordinal).ToArray();
+    }
+
+    private async Task AddDataItemAsync(HashSet<string> keys, FormElementDataItem dataItem, Guid? connectionId)
+    {
+        if (dataItem.HasItems())
+        {
+            foreach (var item in dataItem.Items!)
+            {
+                AddKey(keys, item.Description);
+            }
+
+            return;
+        }
+
+        if (!dataItem.HasSqlCommand() || dataItemService is null)
+            return;
+
+        var values = await dataItemService.GetValuesAsync(
+            dataItem,
+            new DataQuery(new FormStateData(PageState.List), connectionId));
+
+        foreach (var item in values)
+        {
+            AddKey(keys, item.Description);
+        }
     }
 
     public static IReadOnlyCollection<string> GetCommonsResourceKeys()
