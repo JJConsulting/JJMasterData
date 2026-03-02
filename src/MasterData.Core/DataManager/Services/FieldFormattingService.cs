@@ -1,6 +1,6 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -33,7 +33,7 @@ public class FieldFormattingService(
         switch (field.Component)
         {
             case FormComponent.Percentage:
-                stringValue = GetNumericValueAsString(field, value);
+                stringValue = GetNumericValueAsString(field, value, $"N{field.NumberOfDecimalPlaces}");
                 if (!string.IsNullOrEmpty(stringValue))
                 {
                     stringValue += "%";
@@ -42,22 +42,10 @@ public class FieldFormattingService(
                 break;
             case FormComponent.Number:
             case FormComponent.Slider:
-                stringValue = GetNumericValueAsString(field, value);
+                stringValue = GetNumericValueAsString(field, value,$"N{field.NumberOfDecimalPlaces}");
                 break;
             case FormComponent.Currency:
-                CultureInfo cultureInfo;
-                if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName)
-                    && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
-                    cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString()!);
-                else
-                    cultureInfo = CultureInfo.CurrentUICulture;
-
-                if (value is double doubleValue || double.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out doubleValue))
-                    stringValue = doubleValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
-                else if (value is decimal decimalValue || decimal.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out decimalValue))
-                    stringValue = decimalValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
-                else
-                    stringValue = null;
+                stringValue = GetNumericValueAsString(field, value,$"C{field.NumberOfDecimalPlaces}");
                 break;
             case FormComponent.Lookup
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
@@ -82,61 +70,6 @@ public class FieldFormattingService(
         return stringValue ?? string.Empty;
     }
     
-
-    private static string GetCurrencyValueAsString(FormElementField field, object value)
-    {
-        CultureInfo cultureInfo;
-        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) &&
-            !string.IsNullOrEmpty(cultureInfoName?.ToString()))
-            cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString());
-        else
-            cultureInfo = CultureInfo.CurrentUICulture;
-
-        string stringValue = null;
-        if (field.DataType == FieldType.Float)
-        {
-            if (double.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out var floatValue))
-                stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}", cultureInfo);
-        }
-        else if (field.DataType == FieldType.Int)
-        {
-            if (int.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out var intVal))
-                stringValue = intVal.ToString("0", cultureInfo);
-        }
-        else
-        {
-            throw new JJMasterDataException($"Invalid FieldType for currency component [{field.Name}]");
-        }
-
-        return stringValue;
-    }
-
-    private static string GetNumericValueAsString(FormElementField field, object value)
-    {
-        string stringValue = null;
-        if (field.DataType == FieldType.Float)
-        {
-            if (value is double doubleValue || double.TryParse(value.ToString(), out doubleValue))
-                stringValue = doubleValue.ToString($"N{field.NumberOfDecimalPlaces}");
-        }
-        else if (field.DataType == FieldType.Int)
-        {
-            if (value is int intValue || int.TryParse(value.ToString(), out intValue))
-                stringValue = intValue.ToString("0");
-        }
-        else if (field.DataType == FieldType.Decimal)
-        {
-            if (value is decimal decimalValue || decimal.TryParse(value.ToString(), out decimalValue))
-                stringValue = decimalValue.ToString($"N{field.NumberOfDecimalPlaces}");
-        }
-        else
-        {
-            throw new JJMasterDataException($"Invalid FieldType for numeric component [{field.Name}]");
-        }
-
-        return stringValue;
-    }
-
     public static string FormatValue(FormElementField field, object value)
     {
         var stringValue = value?.ToString();
@@ -152,16 +85,6 @@ public class FieldFormattingService(
                 stringValue = Format.FormatCnpjCpf(stringValue);
                 break;
             case FormComponent.Currency:
-                switch (type)
-                {
-                    case FieldType.Int when !field.IsPk:
-                    case FieldType.Float:
-                    {
-                        return GetCurrencyValueAsString(field, value);
-                    }
-                }
-
-                break;
             case FormComponent.Slider:
             case FormComponent.Number:
                 switch (type)
@@ -169,10 +92,9 @@ public class FieldFormattingService(
                     case FieldType.Int when !field.IsPk:
                     case FieldType.Float:
                     {
-                        return GetNumericValueAsString(field, value);
+                        return GetNumericValueAsString(field, value, $"N{field.NumberOfDecimalPlaces}");
                     }
                 }
-
                 break;
             case FormComponent.Hour:
                 if (TimeSpan.TryParse(stringValue, out var timeSpan))
@@ -206,6 +128,43 @@ public class FieldFormattingService(
             case FormComponent.Tel:
                 stringValue = Format.FormatPhone(stringValue);
                 break;
+        }
+
+        return stringValue;
+    }
+
+    private static string GetNumericValueAsString(FormElementField field, object value, [StringSyntax("NumericFormat")] string decimalFormat)
+    {
+        CultureInfo cultureInfo;
+        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName)
+            && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
+            cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString()!);
+        else
+            cultureInfo = CultureInfo.CurrentUICulture;
+        
+        string stringValue = null;
+        switch (field.DataType)
+        {
+            case FieldType.Float:
+            {
+                if (value is double doubleValue || double.TryParse(value.ToString(), out doubleValue))
+                    stringValue = doubleValue.ToString(decimalFormat, cultureInfo);
+                break;
+            }
+            case FieldType.Int:
+            {
+                if (value is int intValue || int.TryParse(value.ToString(), out intValue))
+                    stringValue = intValue.ToString("0", cultureInfo);
+                break;
+            }
+            case FieldType.Decimal:
+            {
+                if (value is decimal decimalValue || decimal.TryParse(value.ToString(), out decimalValue))
+                    stringValue = decimalValue.ToString(decimalFormat, cultureInfo);
+                break;
+            }
+            default:
+                throw new JJMasterDataException($"Invalid FieldType for numeric component [{field.Name}]");
         }
 
         return stringValue;
