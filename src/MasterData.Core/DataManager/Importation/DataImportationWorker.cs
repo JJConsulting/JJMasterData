@@ -104,7 +104,7 @@ public class DataImportationWorker(
             {
                 currentProcess.Message = StringLocalizer["Unexpected error"];
                 currentProcess.Message += " ";
-                currentProcess.Message += StringLocalizer[ExceptionManager.GetMessage(ex)];
+                currentProcess.Message += StringLocalizer.GetExceptionMessage(ex);
                 currentProcess.AddError(currentProcess.Message);
                 Logger.LogError(ex, "Error while importing file");
                 throw;
@@ -211,7 +211,7 @@ public class DataImportationWorker(
             {
                 Logger.LogError(exception, "Error while processing line {Line} of {FormElement} at Data Importation.",index, FormElement.Name);
                 currentProcess.Error++;
-                currentProcess.AddError(StringLocalizer[ExceptionManager.GetMessage(exception)]);
+                currentProcess.AddError(StringLocalizer.GetExceptionMessage(exception));
             }
 
             Reporter(currentProcess);

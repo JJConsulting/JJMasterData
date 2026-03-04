@@ -51,7 +51,7 @@ public class FormService(
         catch (Exception e)
         {
             logger.LogFormServiceError(e, nameof(GetAsync));
-            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
+            errors.Add("DbException", localizer.GetExceptionMessage(e));
         }
 
         return formLetter;
@@ -89,7 +89,7 @@ public class FormService(
         catch (Exception e)
         {
             logger.LogFormServiceError(e, nameof(UpdateAsync));
-            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
+            errors.Add("DbException", localizer.GetExceptionMessage(e));
         }
 
         result.NumberOfRowsAffected = rowsAffected;
@@ -143,7 +143,7 @@ public class FormService(
         catch (Exception e)
         {
             logger.LogFormServiceError(e, nameof(InsertAsync));
-            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
+            errors.Add("DbException", localizer.GetExceptionMessage(e));
         }
 
         if (errors.Count > 0)
@@ -196,7 +196,7 @@ public class FormService(
         catch (Exception e)
         {
             logger.LogFormServiceError(e, nameof(InsertOrReplaceAsync));
-            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
+            errors.Add("DbException", localizer.GetExceptionMessage(e));
         }
 
         if (errors.Count > 0)
@@ -267,7 +267,7 @@ public class FormService(
         catch (Exception e)
         {
             logger.LogFormServiceError(e, nameof(DeleteAsync));
-            errors.Add("DbException", localizer[ExceptionManager.GetMessage(e)]);
+            errors.Add("DbException", localizer.GetExceptionMessage(e));
         }
 
         if (errors.Count > 0)

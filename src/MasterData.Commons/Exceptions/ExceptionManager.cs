@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Util;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Exceptions;
 
@@ -74,6 +77,7 @@ public static class ExceptionManager
         return message;
     }
     
+
     public static string GetMessage(Exception ex)
     {
         if (ex is SqlException exSql)
@@ -86,6 +90,23 @@ public static class ExceptionManager
         return UnexpectedErrorMessage;
 #endif
 
+    }
+    
+    public static string GetExceptionMessage(this IStringLocalizer localizer, Exception ex)
+    {
+        var message = GetMessage(ex);
+        
+        var args = StringManager.FindValuesByInterval(message, '{', '}').ToArray<object>();
+
+        if (args.Length == 0) 
+            return localizer[message];
+        
+        for (var i = 0; i < args.Length; i++)
+        {
+            message = message.Replace("{" + args[i] + "}", "{" + i + "}");
+        }
+            
+        return localizer[message, args].Value;
     }
 
 }

@@ -221,7 +221,7 @@ public abstract class DataExportationWriterBase(
                     break;
                 default:
                     ProcessReporter.Message = $"{StringLocalizer["Unexpected error"]}\n";
-                    ProcessReporter.Message += StringLocalizer[ExceptionManager.GetMessage(ex)];
+                    ProcessReporter.Message += StringLocalizer.GetExceptionMessage(ex);
                     Logger.LogError(ex, "Error at data exportation");
                     break;
             }

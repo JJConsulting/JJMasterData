@@ -39,7 +39,7 @@ internal sealed class GridSqlCommandAction(JJGridView gridView)
         catch (Exception ex)
         {
             gridView.Logger.LogSqlActionException(ex, sqlCommandAction.SqlCommand);
-            string msg = gridView.StringLocalizer[ExceptionManager.GetMessage(ex)];
+            string msg = gridView.StringLocalizer.GetExceptionMessage(ex);
             return new RenderedComponentResult(messageFactory.Create(msg, MessageIcon.Error).GetHtmlBuilder());
         }
 

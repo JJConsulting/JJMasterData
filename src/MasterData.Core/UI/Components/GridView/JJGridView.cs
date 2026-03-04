@@ -1152,7 +1152,7 @@ public class JJGridView : AsyncComponent
                     catch (Exception ex)
                     {
                         Logger.LogError(ex, "Error executing DataExportation.");
-                        var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
+                        var errorMessage = StringLocalizer.GetExceptionMessage(ex);
                         var validationSummary =new JJValidationSummary();
                         validationSummary.Errors.Add(errorMessage);
                         validationSummary.Title = StringLocalizer["Error"];
