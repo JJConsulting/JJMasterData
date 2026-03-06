@@ -10,7 +10,15 @@ internal sealed class JJMasterDataCollapsePanel : JJCollapsePanel
     {
         if (formValues.TryGetValue($"{Name}-is-open", out var value))
         {
-            IsOpen = "1".Equals(value);
+            IsOpen = "1".Equals(value) ? true : null;
+        }
+    }
+    public JJMasterDataCollapsePanel(IFormValues formValues, string name)
+    {
+        Name = name;
+        if (formValues.TryGetValue($"{Name}-is-open", out var value))
+        {
+            IsOpen = "1".Equals(value) ;
         }
     }
 }
