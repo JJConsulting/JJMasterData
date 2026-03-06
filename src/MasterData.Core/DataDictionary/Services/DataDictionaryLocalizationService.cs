@@ -13,14 +13,12 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class DataDictionaryLocalizationService(
     IDataDictionaryRepository dataDictionaryRepository,
-    IStringLocalizer<MasterDataResources> stringLocalizer,
     ILogger<DataDictionaryLocalizationService>? logger = null,
     DataItemService? dataItemService = null)
 {
@@ -145,19 +143,6 @@ public class DataDictionaryLocalizationService(
         return keys.OrderBy(static x => x, StringComparer.Ordinal).ToArray();
     }
 
-    public async Task<Dictionary<string, string>> GetLocalizationDictionaryAsync(CultureInfo culture)
-    {
-        var dictionary = new Dictionary<string, string>(StringComparer.Ordinal);
-        var keys = await GetAllLocalizationKeysAsync();
-
-        foreach (var key in keys)
-        {
-            dictionary[key] = TranslateKey(key, culture);
-        }
-
-        return dictionary;
-    }
-
     private static List<CultureInfo> GetResourceCultures()
     {
         var assembly = typeof(MasterDataResources).Assembly;
@@ -211,28 +196,5 @@ public class DataDictionaryLocalizationService(
     {
         if (!string.IsNullOrWhiteSpace(key))
             keys.Add(key!);
-    }
-
-    private string TranslateKey(string key, CultureInfo culture)
-    {
-        var originalUiCulture = CultureInfo.CurrentUICulture;
-        var originalCulture = CultureInfo.CurrentCulture;
-
-        try
-        {
-            CultureInfo.CurrentUICulture = culture;
-            CultureInfo.CurrentCulture = culture;
-
-            var localized = stringLocalizer[key];
-            if (localized.ResourceNotFound || string.IsNullOrWhiteSpace(localized.Value))
-                return key;
-
-            return localized.Value;
-        }
-        finally
-        {
-            CultureInfo.CurrentUICulture = originalUiCulture;
-            CultureInfo.CurrentCulture = originalCulture;
-        }
     }
 }
