@@ -233,20 +233,17 @@ internal sealed class GridFilter(JJGridView gridView)
                 filterIcon.CssClass += " d-none";
             }
             
-            var panel = new JJMasterDataCollapsePanel(_currentContext.Request.Form)
+            var panel = new JJMasterDataCollapsePanel(_currentContext.Request.Form, $"filter-collapse-{gridView.Name}")
             {
-                Name = $"filter-collapse-{gridView.Name}",
                 Content = html,
                 TitleIcon = filterIcon,
                 Title = _stringLocalizer[action.Text],
-                IsOpen = _currentContext.Request.Form.ContainsFormValues()
+                ExpandedByDefault = action.ExpandedByDefault
             };
             
             panel.Buttons.Add(btnFilter);
             panel.Buttons.Add(btnCancel);
             
-            panel.ExpandedByDefault = action.ExpandedByDefault;
-
             html = panel.GetHtmlBuilder();
             
             html.AppendScriptIf(hasFilter, $"GridViewFilterHelper.showFilterIcon('{gridView.Name}')");
