@@ -81,7 +81,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                     }
                     else
                     {
-                        span.AppendText(_stringLocalizer[field.Label]);
+                        span.Append(new HtmlBuilder(_stringLocalizer[field.Label].Name, encode:false)); //Pra permitir as obras de arte legadas que colocam HTML na label.
                     }
                     
                     if (!string.IsNullOrEmpty(field.HelpDescription))
