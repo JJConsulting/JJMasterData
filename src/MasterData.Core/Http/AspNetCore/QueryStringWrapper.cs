@@ -6,8 +6,8 @@ namespace JJMasterData.Core.Http.AspNetCore;
 
 internal sealed class QueryStringWrapper(IHttpContextAccessor httpContextAccessor) : IQueryString
 {
-    private IQueryCollection QueryCollection { get; } = httpContextAccessor.HttpContext!.Request.Query;
-    private QueryString QueryString { get; } = httpContextAccessor.HttpContext.Request.QueryString;
+    private IQueryCollection QueryCollection { get; } = httpContextAccessor.HttpContext?.Request.Query;
+    private QueryString QueryString { get; } = httpContextAccessor.HttpContext?.Request.QueryString ?? new();
 
     public string this[string key] => QueryCollection[key];
 

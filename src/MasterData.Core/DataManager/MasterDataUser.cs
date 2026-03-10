@@ -15,5 +15,5 @@ internal sealed class MasterDataUser(
     IOptionsSnapshot<MasterDataCoreOptions> coreOptions)
     : IMasterDataUser
 {
-    public string Id { get; set; } = httpContext.User.GetUserId(coreOptions.Value.UserIdClaimType);
-} 
+    public string Id { get; set; } = httpContext.User?.GetUserId(coreOptions.Value.UserIdClaimType);
+}

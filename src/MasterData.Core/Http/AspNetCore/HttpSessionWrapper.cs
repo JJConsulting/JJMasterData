@@ -9,7 +9,7 @@ namespace JJMasterData.Core.Http.AspNetCore;
 
 internal sealed class HttpSessionWrapper(IHttpContextAccessor contextAccessor) : IHttpSession
 {
-    private readonly ISession _session = contextAccessor.HttpContext.Session;
+    private readonly ISession _session = contextAccessor.HttpContext?.Session;
 
     public string this[string key]
     {
