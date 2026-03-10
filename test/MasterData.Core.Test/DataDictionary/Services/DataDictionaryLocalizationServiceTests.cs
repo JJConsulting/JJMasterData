@@ -82,9 +82,8 @@ public class DataDictionaryLocalizationServiceTests
         repositoryMock
             .Setup(x => x.GetFormElementListAsync(It.IsAny<bool?>()))
             .ReturnsAsync([formElement]);
-
-        var localizerMock = BuildLocalizerMock();
-        var service = new DataDictionaryLocalizationService(repositoryMock.Object, localizerMock.Object);
+        
+        var service = new DataDictionaryLocalizationService(repositoryMock.Object);
 
         var keys = await service.GetFormElementLocalizationKeysAsync();
 
@@ -130,36 +129,12 @@ public class DataDictionaryLocalizationServiceTests
             .Setup(x => x.GetFormElementListAsync(It.IsAny<bool?>()))
             .ReturnsAsync(new List<FormElement> { formElement });
 
-        var service = new DataDictionaryLocalizationService(repositoryMock.Object, localizerMock.Object);
+        var service = new DataDictionaryLocalizationService(repositoryMock.Object);
 
         var keys = await service.GetAllLocalizationKeysAsync();
 
         Assert.Contains("UniqueFormElementTitleKey", keys);
         Assert.Contains("Add", keys);
-    }
-
-    [Fact]
-    public async Task GetLocalizationDictionaryAsync_TranslatesKeysUsingRequestedCulture()
-    {
-        var formElement = new FormElement
-        {
-            Name = "test",
-            TableName = "TB_TEST",
-            Title = "UniqueFormElementTitleKey"
-        };
-
-        var repositoryMock = new Mock<IDataDictionaryRepository>();
-        repositoryMock
-            .Setup(x => x.GetFormElementListAsync(It.IsAny<bool?>()))
-            .ReturnsAsync(new List<FormElement> { formElement });
-
-        var localizerMock = BuildLocalizerMock();
-        var service = new DataDictionaryLocalizationService(repositoryMock.Object, localizerMock.Object);
-
-        var dictionary = await service.GetLocalizationDictionaryAsync(new CultureInfo("pt-BR"));
-
-        Assert.Equal("pt-BR:UniqueFormElementTitleKey", dictionary["UniqueFormElementTitleKey"]);
-        Assert.Equal("pt-BR:Add", dictionary["Add"]);
     }
 
     private static Mock<IStringLocalizer<MasterDataResources>> BuildLocalizerMock()
