@@ -116,7 +116,7 @@ internal sealed class DataPanelForm
         {
             var renderAsStatic = 
                 (PageState is PageState.View && field.RenderAsStatic) ||
-                (PageState is PageState.Update or PageState.Insert && field.RenderAsStatic && field.DataBehavior is FieldBehavior.ViewOnly);
+                (field.RenderAsStatic && field.EnableExpression is "val:0");
             var visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
