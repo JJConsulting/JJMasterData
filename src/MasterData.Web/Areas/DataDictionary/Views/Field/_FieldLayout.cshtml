@@ -29,4 +29,7 @@
         <select asp-for="GridAlignment" class="form-select"
                 asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
     </div>
+    <div class="mb-3 col-sm-6">
+        <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the value without the component or when the field is disabled, render static propagated to the others views."]" for="RenderAsStatic" layout="Switch"/>
+    </div>
 </div>
