@@ -29,4 +29,7 @@
         <select asp-for="GridAlignment" class="form-select"
                 asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
     </div>
+    <div class="mb-3 col-sm-6">
+        <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the value without the component. The same occurs when the new/edit page are being showed (note: Into new/edit page view the static render only works when the behavior ReadOnly is enabled)."]" for="RenderAsStatic" layout="Switch"/>
+    </div>
 </div>

@@ -114,6 +114,9 @@ internal sealed class DataPanelForm
         
         foreach (var field in fields)
         {
+            var renderAsStatic = 
+                (PageState is PageState.View && field.RenderAsStatic) ||
+                (PageState is PageState.Update or PageState.Insert && field.RenderAsStatic && field.DataBehavior is FieldBehavior.ViewOnly);
             var visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
@@ -152,7 +155,7 @@ internal sealed class DataPanelForm
             if (BootstrapHelper.Version == 3 && _errors?.ContainsKey(field.Name) == true)
                 formGroup.WithCssClass("has-error");
 
-            if (PageState == PageState.View && _formUI.ShowViewModeAsStatic)
+            if (IsViewModeAsStatic)
                 formGroup.WithCssClass("jjborder-static");
 
             var useFloatingLabel = FormElement.Options.UseFloatingLabels && field.SupportsFloatingLabel();
@@ -163,7 +166,7 @@ internal sealed class DataPanelForm
                 formGroup.AppendComponent(label);
             }
             
-            if (IsViewModeAsStatic)
+            if (IsViewModeAsStatic || renderAsStatic)
                 formGroup.Append(await GetStaticField(field));
             else
             {
@@ -189,6 +192,8 @@ internal sealed class DataPanelForm
         var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var field in fields)
         {
+            var renderAsStatic = PageState == PageState.View && field.RenderAsStatic;
+
             var labelClass = "col-sm-2";
             var fieldClass = GetHorizontalFieldClass(cols);
             var hasCssClass = !string.IsNullOrEmpty(field.CssClass);
@@ -239,7 +244,7 @@ internal sealed class DataPanelForm
             else if (field.Component is FormComponent.CheckBox)
             {
                 colCount = 1;
-                if (!IsViewModeAsStatic)
+                if (!IsViewModeAsStatic || !renderAsStatic)
                     label.Text = string.Empty;
             }
             else
@@ -259,7 +264,7 @@ internal sealed class DataPanelForm
              .AppendComponent(label);
 
             var controlHtml =
-                IsViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value);
+                IsViewModeAsStatic || renderAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value);
             
             row?.Append(HtmlTag.Div, col =>
             {
@@ -297,10 +302,12 @@ internal sealed class DataPanelForm
 
     private JJLabel CreateLabel(FormElementField field, bool isRange)
     {
+        var showFieldViewAsStatic = PageState == PageState.View && field.RenderAsStatic;
+        
         var label = _componentFactory.Label.Create(field);
         label.LabelFor = GetFieldNameWithPrefix(field);
 
-        if (IsViewModeAsStatic)
+        if (IsViewModeAsStatic || showFieldViewAsStatic)
             label.LabelFor = string.Empty;
         else if (isRange)
             label.LabelFor += "_from";

@@ -83,6 +83,10 @@ public class FormElementField : ElementField
     [JsonPropertyName("cssClass")]
     [Display(Name = "CSS Class")]
     public string? CssClass { get; set; }
+    
+    [JsonPropertyName("renderAsStatic")]
+    [Display(Name = "Render as Static")]
+    public bool RenderAsStatic { get; set; }
 
     /// <summary>
     /// Help text will be displayed next to the label
