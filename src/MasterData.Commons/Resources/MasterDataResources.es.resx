@@ -296,12 +296,6 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirmar</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Sí</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>No</value>
-  </data>
   <data name="OK" xml:space="preserve">
     <value>Aceptar</value>
   </data>
@@ -559,9 +553,6 @@
   <data name="Upload complete" xml:space="preserve">
     <value>Carga completada</value>
   </data>
-  <data name="Download" xml:space="preserve">
-    <value>Descargar</value>
-  </data>
   <data name="Create" xml:space="preserve">
     <value>Crear</value>
   </data>
@@ -680,18 +671,6 @@
   </data>
   <data name="Message" xml:space="preserve">
     <value>Mensaje</value>
-  </data>
-  <data name="Information" xml:space="preserve">
-    <value>Información</value>
-  </data>
-  <data name="Warning" xml:space="preserve">
-    <value>Advertencia</value>
-  </data>
-  <data name="Error" xml:space="preserve">
-    <value>Error</value>
-  </data>
-  <data name="Success" xml:space="preserve">
-    <value>Éxito</value>
   </data>
   <data name="Alert" xml:space="preserve">
     <value>Alerta</value>

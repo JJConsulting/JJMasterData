@@ -130,7 +130,7 @@ public class DataDictionaryLocalizationService(
         return keys.OrderBy(static x => x, StringComparer.Ordinal).ToArray();
     }
 
-    public async Task<IReadOnlyCollection<string>> GetAllLocalizationKeysAsync()
+    public async Task<List<string>> GetAllLocalizationKeysAsync()
     {
         var keys = new HashSet<string>(StringComparer.Ordinal);
 
@@ -140,7 +140,7 @@ public class DataDictionaryLocalizationService(
         foreach (var key in GetCommonsResourceKeys())
             keys.Add(key);
 
-        return keys.OrderBy(static x => x, StringComparer.Ordinal).ToArray();
+        return keys.OrderBy(static x => x, StringComparer.Ordinal).ToList();
     }
 
     private static List<CultureInfo> GetResourceCultures()

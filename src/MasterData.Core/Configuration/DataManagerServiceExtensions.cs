@@ -26,7 +26,7 @@ public static class DataManagerServiceExtensions
 #endif
         services.AddScoped<ElementMapService>();
         services.AddScoped<UrlRedirectService>();
-        
+
         return services;
     }
 }
