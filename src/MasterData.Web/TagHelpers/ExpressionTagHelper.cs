@@ -43,7 +43,9 @@ public class ExpressionTagHelper : TagHelper
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var name = For?.Name ?? Name ?? throw new ArgumentException("For or Name properties are required.");
+
         string? modelValue = null;
+
         if (For is { Model: not null } && !string.IsNullOrWhiteSpace(For.Model.ToString()))
         {
             modelValue = For.Model.ToString();
@@ -57,10 +59,30 @@ public class ExpressionTagHelper : TagHelper
 
         var fieldSet = new HtmlBuilder(HtmlTag.Fieldset);
         fieldSet.WithAttributeIf(Disabled, "disabled");
+
         var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
+
         var label = new HtmlBuilder(HtmlTag.Label);
         label.WithAttribute("for", name + "-ExpressionValue");
+        
+        if (Icon.HasValue)
+        {
+            label.Append(HtmlTag.I, i =>
+            {
+                i.WithCssClass($"{Icon.Value.CssClass} me-1");
+            });
+        }
+        
         label.AppendText(displayName);
+
+        if (!string.IsNullOrEmpty(Tooltip))
+        {
+            label.AppendSpan(span =>
+            {
+                span.WithCssClass("fa-solid fa-circle-question help-description ms-1");
+                span.WithToolTip(Tooltip);
+            });
+        }
 
         if (!UseFloatingLabel)
         {
@@ -71,6 +93,7 @@ public class ExpressionTagHelper : TagHelper
         fieldSet.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("mb-3");
+
             var editor = GetEditorHtml(name, modelValue);
 
             editor.WithAttributeIf(UseFloatingLabel, "placeholder", displayName!);
@@ -90,15 +113,15 @@ public class ExpressionTagHelper : TagHelper
                 div.Append(editor);
             }
         });
+
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(fieldSet.ToString());
     }
 
-    private HtmlBuilder GetEditorHtml(string name, string? value)
+    private static HtmlBuilder GetEditorHtml(string name, string? value)
     {
-        var input = new HtmlBuilder(HtmlTag.Input);
-        input.WithCssClass("font-monospace");
-        input.WithCssClass("form-control");
+        var input = HtmlBuilder.Input();
+        input.WithCssClass("font-monospace form-control");
         input.WithNameAndId(name);
         input.WithAttribute("placeholder", string.Empty);
 
@@ -106,8 +129,7 @@ public class ExpressionTagHelper : TagHelper
             return input;
 
         input.WithValue(value);
-        if (!string.IsNullOrEmpty(Tooltip))
-            input.WithToolTip(Tooltip);
+
         return input;
     }
 }

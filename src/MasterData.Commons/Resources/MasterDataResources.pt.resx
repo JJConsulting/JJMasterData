@@ -55,6 +55,14 @@
     <value>1 (uma coluna)</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="This expression is executed whenever a field with the 'Reload Fields' option enabled is edited." xml:space="preserve">
+    <value>Essa expressão é executada sempre que um campo com a opção 'Recarregar Campos' ativada é editado.</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
+    <data name="The expression is executed whenever the field has a null value." xml:space="preserve">
+    <value>Expressão executada sempre que o campo estiver com valor nulo</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="1) To use the upload, the dictionary must have a primary key" xml:space="preserve">
     <value>1) Para utilizar o upload o dicionário deve ter chave primária</value>
     <comment>JJMasterDataWeb</comment>
