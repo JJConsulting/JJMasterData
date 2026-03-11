@@ -17,9 +17,8 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <SassCompilerEnableWatcher>false</SassCompilerEnableWatcher>
         <TypescriptOutDir>wwwroot</TypescriptOutDir>
-        <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
-            CompileMasterDataJs;
+            CompileTypeScript;
             $(ResolveCurrentProjectStaticWebAssetsInputs)
         </ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
     </PropertyGroup>
@@ -58,9 +57,4 @@
         <Using Include="JJMasterData.Commons.Resources"/>
     </ItemGroup>
 
-    <Target Name="CompileMasterDataJs"
-            Condition="!Exists('$(MSBuildProjectDirectory)/wwwroot/js/jjmasterdata/jjmasterdata.js')">
-        <Exec Command="node &quot;$(TSJavaScriptFile)&quot; --project &quot;$(MSBuildProjectDirectory)/Scripts/tsconfig.json&quot;"
-              WorkingDirectory="$(MSBuildProjectDirectory)" />
-    </Target>
 </Project>
