@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
@@ -243,9 +244,10 @@ public class FormValuesService(
 
         if (result.Count == 0)
         {
-            logger.LogWarning(
-                "Nothing returned from the database. ElementName: {ElementName} Filters: {Filters}",
+            logger.LogError(
+                "No database values were returned during postback. Element: {ElementName}, AppliedFilters: {Filters}",
                 element.Name, filters);
+            throw new JJMasterDataException($"No database values were returned during postback. Element: {element.Name}.");
         }
 
         return result;
