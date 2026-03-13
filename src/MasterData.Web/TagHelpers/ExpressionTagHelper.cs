@@ -2,6 +2,7 @@ using System.ComponentModel;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJConsulting.Html.Extensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -115,7 +116,7 @@ public class ExpressionTagHelper : TagHelper
         });
 
         output.TagMode = TagMode.StartTagAndEndTag;
-        output.Content.SetHtmlContent(fieldSet.ToString());
+        output.Content.SetHtmlContent(fieldSet);
     }
 
     private static HtmlBuilder GetEditorHtml(string name, string? value)

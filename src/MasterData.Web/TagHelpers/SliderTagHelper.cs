@@ -1,3 +1,4 @@
+using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -19,6 +20,6 @@ public class SliderTagHelper(IControlFactory<JJSlider> sliderFactory) : TagHelpe
 
         var htmlBuilder = await slider.GetHtmlBuilderAsync();
         
-        output.Content.SetHtmlContent(htmlBuilder.ToString());
+        output.Content.SetHtmlContent(htmlBuilder);
     }
 }

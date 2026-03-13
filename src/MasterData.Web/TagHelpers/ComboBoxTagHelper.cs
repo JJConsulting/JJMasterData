@@ -1,3 +1,4 @@
+using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -33,6 +34,6 @@ public class ComboBoxTagHelper(IControlFactory<JJComboBox> comboBoxFactory) : Ta
 
         var htmlBuilder = await comboBox.GetHtmlBuilderAsync();
         
-        output.Content.SetHtmlContent(htmlBuilder.ToString());
+        output.Content.SetHtmlContent(htmlBuilder);
     }
 }
