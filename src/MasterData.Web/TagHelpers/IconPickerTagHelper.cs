@@ -1,5 +1,5 @@
 ﻿using JJConsulting.FontAwesome;
-using JJMasterData.Core.DataDictionary;
+using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -58,8 +58,10 @@ public class IconPickerTagHelper(
             iconPicker.SelectedIcon = modelValue.Value;
 
         output.TagMode = TagMode.StartTagAndEndTag;
+
+        var html = await iconPicker.GetHtmlBuilderAsync();
         
-        output.Content.SetHtmlContent((await iconPicker.GetHtmlBuilderAsync()).ToString());
+        output.Content.SetHtmlContent(html);
     }
     
     public void Contextualize(ViewContext viewContext)
