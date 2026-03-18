@@ -127,22 +127,22 @@ internal sealed class DataImportationLog
         var content = new HtmlBuilder(HtmlTag.Div)
             .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["Start:"]))
             .AppendText(_reporter.StartDate.ToString(CultureInfo.CurrentCulture))
-            .Append(HtmlTag.Br)
+            .AppendBr()
             .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["End:"]))
             .AppendText(_reporter.EndDate.ToString(CultureInfo.CurrentCulture));
         
             
         if (!string.IsNullOrEmpty(_reporter.UserId))
         {
-            content.Append(HtmlTag.Br)
+            content.AppendBr()
                 .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["UserId:"]))
                 .AppendText("\u00A0")
                 .AppendText(_reporter.UserId.ToString(CultureInfo.CurrentCulture));
         }
         
         content
-            .Append(HtmlTag.Br)
-            .AppendText(_reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
+            .AppendBr()
+            .Append(_reporter.ErrorLogHtml);
 
             
         var panel = new JJCollapsePanel
