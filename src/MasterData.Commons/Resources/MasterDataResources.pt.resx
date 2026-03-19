@@ -3839,6 +3839,9 @@
   <data name="Show Header When Empty" xml:space="preserve">
     <value>Mostrar Cabeçalho Sem Dados</value>
   </data>
+    <data name="Json Formatting" xml:space="preserve">
+    <value>Formatação do JSON</value>
+  </data>
   <data name="Filters, sorting and grid settings are saved." xml:space="preserve">
     <value>Filtros, ordenação e configurações da grid são salvos.</value>
   </data>
