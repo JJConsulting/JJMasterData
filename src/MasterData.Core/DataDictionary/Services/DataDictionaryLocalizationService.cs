@@ -46,7 +46,13 @@ public class DataDictionaryLocalizationService(
                 AddKey(keys, relationship.Panel?.Title);
                 AddKey(keys, relationship.Panel?.SubTitle);
             }
-
+            
+            foreach (var panel in formElement.Panels)
+            {
+                AddKey(keys, panel.Title);
+                AddKey(keys, panel.SubTitle);
+            }
+            
             foreach (var field in formElement.Fields)
             {
                 AddKey(keys, field.Name);
