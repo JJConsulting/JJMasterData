@@ -11,10 +11,9 @@ using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Html;
+using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -49,8 +48,7 @@ internal sealed class DataImportationHelp
                     Title = StringLocalizer["Information"],
                     Icon = FontAwesomeIcon.InfoCircle,
                     Color = BootstrapColor.Info,
-                    Content = new HtmlBuilder(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
-                                              string.Empty, encode:false)
+                    Content = new HtmlBuilder(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ?? string.Empty, encode:false)
                 });
             }
             html.AppendComponent(GetBackButton())
@@ -72,7 +70,7 @@ internal sealed class DataImportationHelp
                     .Append(HtmlTag.Div, col =>
                     {
                         col.WithCssClass("col-sm-12")
-                            .AppendText(GetInfoText(list.Count))
+                            .Append(GetInfoHtml(list.Count))
                             .Append(HtmlTag.Br)
                             .Append(HtmlTag.Br);
                     });
@@ -143,9 +141,9 @@ internal sealed class DataImportationHelp
             tr.Append(HtmlTag.Td,
                 td => td.AppendText(field.IsRequired ? StringLocalizer["Yes"] : StringLocalizer["No"]));
 
-            var formatDescription = await GetFormatDescription(field);
+            var formatDescription = await GetFormatDescriptionHtml(field);
             
-            tr.Append(HtmlTag.Td, td => td.AppendText(formatDescription));
+            tr.Append(HtmlTag.Td, td => td.Append(formatDescription));
 
             body.Append(tr);
             orderField++;
@@ -173,52 +171,52 @@ internal sealed class DataImportationHelp
         }
     }
 
-    private async Task<string> GetFormatDescription(FormElementField field)
+    private async Task<HtmlBuilder> GetFormatDescriptionHtml(FormElementField field)
     {
-        var text = new StringBuilder();
+        var text = new HtmlBuilder();
         switch (field.Component)
         {
             case FormComponent.Date:
-                text.Append(StringLocalizer[$"Format ({Format.DateFormat}) example:"]);
-                text.Append(' ');
-                text.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
-                text.Append('.');
+                text.AppendText(StringLocalizer[$"Format ({Format.DateFormat}) example:"]);
+                text.AppendText(' ');
+                text.AppendText(DateTime.Now.ToString($"{Format.DateFormat}"));
+                text.AppendText('.');
                 break;
             case FormComponent.DateTime:
-                text.Append(StringLocalizer[$"Format ({Format.DateTimeFormat}) example:"]);
-                text.Append(' ');
-                text.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
-                text.Append('.');
+                text.AppendText(StringLocalizer[$"Format ({Format.DateTimeFormat}) example:"]);
+                text.AppendText(' ');
+                text.AppendText(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
+                text.AppendText('.');
                 break;
             case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
-                text.Append(StringLocalizer["Inform the Id"]);
-                text.Append(' ');
+                text.AppendText(StringLocalizer["Inform the Id"]);
+                text.AppendText(' ');
                 text.Append(await GetHtmlComboHelp(field));
                 break;
             case FormComponent.CheckBox:
-                text.Append("(1, 0).");
+                text.AppendText("(1, 0).");
                 break;
             default:
             {
                 if (field.DataType == FieldType.Int)
                 {
-                    text.Append(StringLocalizer["No dot or comma."]);
+                    text.AppendText(StringLocalizer["No dot or comma."]);
                 }
                 else if (field.DataType is FieldType.Float or FieldType.Decimal)
                 {
                     if (field.Size > 0)
                     {
-                        text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
+                        text.AppendText(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
                     }
 
-                    text.Append(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.",
+                    text.AppendText(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.",
                         CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator, field.NumberOfDecimalPlaces]);
                 }
                 else
                 {
                     if (field.Size > 0)
                     {
-                        text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
+                        text.AppendText(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
                     }
                 }
 
@@ -228,41 +226,54 @@ internal sealed class DataImportationHelp
 
         if (!string.IsNullOrEmpty(field.HelpDescription))
         {
-            text.Append("<br>");
-            text.Append(field.HelpDescription);
+            text.AppendBr();
+            text.AppendText(field.HelpDescription);
         }
 
-        return text.ToString();
+        return text;
     }
 
-    private string GetInfoText(int columnsCount)
+    private HtmlBuilder GetInfoHtml(int columnsCount)
     {
         var upload = DataImportation.UploadArea;
-        var text = new StringBuilder();
-        text.Append(StringLocalizer["To bulk insert records, select a file of type"]);
-        text.Append("<b>");
-        text.Append(upload.AllowedTypes.Replace(",", $" {StringLocalizer["or"]} "));
-        text.Append("</b>");
-        text.Append(", ");
-        text.Append(StringLocalizer["with the maximum size of"]);
-        text.Append(" <b>");
-        text.Append(Format.FormatFileSize(upload.GetMaxRequestLength()));
-        text.Append("</b>");
-        text.Append(", ");
-        text.Append(StringLocalizer["do not include caption or description in the first line"]);
-        text.Append(", ");
-        text.Append(StringLocalizer["the file must contain"]);
-        text.Append(" <b>");
-        text.Append(columnsCount);
-        text.Append(' ');
-        text.Append(StringLocalizer["Columns"]);
-        text.Append(" </b> ");
-        text.Append(StringLocalizer["separated by semicolons (;), following the layout below:"]);
+        var infoHtml = new HtmlBuilder();
 
-        return text.ToString();
+        infoHtml.AppendText(StringLocalizer["To bulk insert records, select a file of type"]);
+
+        infoHtml.AppendB(b =>
+        {
+            b.AppendText(upload.AllowedTypes.Replace(",", $" {StringLocalizer["or"]} "));
+        });
+
+        infoHtml.AppendText(", ");
+        infoHtml.AppendText(StringLocalizer["with the maximum size of"]);
+
+        infoHtml.AppendText(" ");
+        infoHtml.AppendB(b =>
+        {
+            b.AppendText(Format.FormatFileSize(upload.GetMaxRequestLength()));
+        });
+
+        infoHtml.AppendText(", ");
+        infoHtml.AppendText(StringLocalizer["do not include caption or description in the first line"]);
+        infoHtml.AppendText(", ");
+        infoHtml.AppendText(StringLocalizer["the file must contain"]);
+
+        infoHtml.AppendText(" ");
+        infoHtml.AppendB(b =>
+        {
+            b.AppendText(columnsCount.ToString());
+            b.AppendText(" ");
+            b.AppendText(StringLocalizer["Columns"]);
+        });
+
+        infoHtml.AppendText(" ");
+        infoHtml.AppendText(StringLocalizer["separated by semicolons (;), following the layout below:"]);
+
+        return infoHtml;
     }
 
-    private async Task<string> GetHtmlComboHelp(FormElementField field)
+    private async Task<HtmlBuilder> GetHtmlComboHelp(FormElementField field)
     {
         var defaultValues = await DataImportation.FieldValuesService.GetDefaultValuesAsync(DataImportation.FormElement,
             new FormStateData(new Dictionary<string, object>(), DataImportation.UserValues, PageState.Import));
@@ -271,7 +282,7 @@ internal sealed class DataImportationHelp
         var items = await DataImportation.DataItemService.GetValuesAsync(field.DataItem!, dataQuery);
 
         if (items.Count == 0)
-            return string.Empty;
+            return new();
 
         var isFirst = true;
 
@@ -304,7 +315,7 @@ internal sealed class DataImportationHelp
         });
 
 
-        return span.ToString();
+        return span;
     }
 
     private JJLinkButton GetBackButton()
