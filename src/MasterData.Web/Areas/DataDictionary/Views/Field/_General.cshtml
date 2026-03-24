@@ -77,29 +77,17 @@
     @switch (Model.DataType)
     {
         case FieldType.Varchar or FieldType.NVarchar:
-            <div class="mb-3 col-sm-4">
+            <div class="mb-3 col-sm-6">
                 <label asp-for="Size" class="form-label"></label>
                 <tooltip title="@StringLocalizer["Defines the field size. Use -1 to specify MAX keyword."]"/>
                 <input asp-for="Size" class="form-control"/>
             </div>
-            <div class="mb-3 col-sm-2">
-                <label asp-for="TextCase" class="form-label"></label>
-                <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
-                <select asp-for="TextCase" class="form-control form-select"
-                        asp-items="Html.GetEnumSelectList<TextCase>()"></select>
-            </div>
             break;
 
         case FieldType.NChar or FieldType.Char:
-            <div class="mb-3 col-sm-4">
+            <div class="mb-3 col-sm-6">
                 <label asp-for="Size" class="form-label"></label>
                 <input asp-for="Size" class="form-control"/>
-            </div>
-            <div class="mb-3 col-sm-2">
-                <label asp-for="TextCase" class="form-label"></label>
-                <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
-                <select asp-for="TextCase" class="form-control form-select"
-                        asp-items="Html.GetEnumSelectList<TextCase>()"></select>
             </div>
             break;
 
@@ -123,8 +111,6 @@
             </div>
             break;
     }
-
-
 </div>
 
 <div class="row">

@@ -1,4 +1,5 @@
-﻿@using JJMasterData.Core.DataDictionary.Models
+﻿@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
@@ -29,7 +30,27 @@
         <select asp-for="GridAlignment" class="form-select"
                 asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
     </div>
-    <div class="mb-3 col-sm-6">
+    @switch (Model.DataType)
+    {
+        case FieldType.Varchar or FieldType.NVarchar:
+            <div class="mb-3 w-auto">
+                <label asp-for="TextCase" class="form-label"></label>
+                <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
+                <select asp-for="TextCase" class="form-control form-select"
+                        asp-items="Html.GetEnumSelectList<TextCase>()"></select>
+            </div>
+            break;
+
+        case FieldType.NChar or FieldType.Char:
+            <div class="mb-3 w-auto">
+                <label asp-for="TextCase" class="form-label"></label>
+                <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
+                <select asp-for="TextCase" class="form-control form-select"
+                        asp-items="Html.GetEnumSelectList<TextCase>()"></select>
+            </div>
+            break;
+    }
+    <div class="mb-3 col-sm-6 d-flex align-items-center pt-4">
         <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the value without the component or when the field is disabled, render static propagated to the others views."]" for="RenderAsStatic" layout="Switch"/>
     </div>
 </div>
