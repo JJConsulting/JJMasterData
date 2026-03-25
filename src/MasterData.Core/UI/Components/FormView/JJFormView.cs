@@ -685,7 +685,7 @@ public class JJFormView : AsyncComponent
         {
             var visibleRelationships = GetVisibleRelationships(values, PageState.Update);
 
-            if (visibleRelationships.Count > 0)
+            if (visibleRelationships.Count > 0 && visibleRelationships.Any(r => !r.IsParent))
             {
                 DataPanel.PageState = PageState.View;
                 PageState = PageState.Update;
