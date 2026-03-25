@@ -132,6 +132,13 @@ public class FieldValidationService(
                 }
 
                 break;
+            case FormComponent.Phone:
+                if (!Validations.ValidatePhone(valueString))
+                {
+                    return localizer["{0} field has an invalid phone", fieldName];
+                }
+
+                break;
             case FormComponent.Number:
             case FormComponent.Slider:
                 if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))

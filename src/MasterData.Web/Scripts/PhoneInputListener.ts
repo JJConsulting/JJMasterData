@@ -1,59 +1,85 @@
-class SearchBoxListener {
+class PhoneInputListener {
     static listen(selectorPrefix = "") {
-        const inputs = document.querySelectorAll<HTMLInputElement>(`${selectorPrefix}input.jj-search-box`);
-
-        inputs.forEach(input => {
-            const hiddenInputId = input.getAttribute("hidden-input-id");
-            let queryString = input.getAttribute("query-string") || "";
-            let triggerLength = Number(input.getAttribute("trigger-length") || "1");
-            let numberOfItems = Number(input.getAttribute("number-of-items") || "30");
-            let multiSelect = Number(input.getAttribute("multiselect")) == 1;
-            
-            const urlBuilder = new UrlBuilder();
-            
-            queryString.split("&").forEach(pair => {
-                const [key, value] = pair.split("=");
-                if (key && value)
-                    urlBuilder.addQueryParameter(key, value);
-            });
-            
-            const url = urlBuilder.build();
-
-            // @ts-ignore
-            new BootstrapSearch(input, {
-                remoteData: q => url + "&q=" + q,
-                remoteDataHttpMethod: 'POST',
-                inputLabel: "description",
-                dropdownLabel: function(value){
-                    if(value.icon){
-                        return `<div><span class="fa ${value.icon}" style="color:${value.iconColor}"></span>&nbsp;${value.description}</div>`
+        const selects = document.querySelectorAll<HTMLSelectElement>(`${selectorPrefix}select.jj-phone-select`);
+        selects.forEach(select => 
+        {
+            $(select).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) 
+            {
+                const options = [...select.options];
+                const previousOption = options.find(option => option.value === previousValue);
+                const previousDialCode = previousOption.getAttribute('dial-code');
+                if(isSelected){
+                    const selectedOption = options[clickedIndex];
+                    const selectedDialCode = selectedOption.getAttribute('dial-code');
+                    const input = $(select).closest('.input-group').find('.jj-phone-input')[0];
+                    //@ts-ignore
+                    if (input && input.inputmask) {
+                        //@ts-ignore
+                        input.inputmask.remove();
                     }
-                    if(value.imageUrl){
-                        return `<div class="search-box-image-label"><img src="${value.imageUrl}" alt="result"/>${value.description}</div>`;
-                    }
-                    return `<div>${value.description}</div>`
-                },
-                value: "id",
-                threshold: triggerLength,
-                maximumItems: numberOfItems,
-                multiSelect: multiSelect,
-                onSelectItem: selected => {
-                    if (!hiddenInputId) 
-                        return;
-                    const hiddenInput = document.getElementById(hiddenInputId) as HTMLInputElement;
-                    if (!hiddenInput)
-                        return;
-
-                    if (Array.isArray(selected)) {
-                        hiddenInput.value = selected.map(s => s.value).join(",");
-                    } else if (selected) {
-                        hiddenInput.value = selected.value;
-                        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-                    } else {
-                        hiddenInput.value = "";
-                    }
+                    
+                    $(input).val($(input).val().toString().replace(previousDialCode.replace(/\s/g, ''), selectedDialCode.replace(/\s/g, '')));
+                    //@ts-ignore
+                    Inputmask({
+                        mask: `+${'9'.repeat(selectedDialCode.replace('+', '').length)}999999[9]9999`,
+                        greedy: false,
+                        placeholder: " ",
+                        autoUnmask: false
+                    }).mask(input);
                 }
             });
-        });
+        })
+
+        const inputs = document.querySelectorAll<HTMLInputElement>(`${selectorPrefix}input.jj-phone-input`);
+        inputs.forEach(input =>
+        {
+            const select = $(input).closest('.input-group').find('select.jj-phone-select')[0] as HTMLSelectElement;
+            if (!select) return;
+            
+            const options = [...select.options];
+            const longestDialCode = options.reduce((longest, current) => {
+                const dialCode = current.getAttribute('dial-code');
+                return dialCode.length > longest ? dialCode.length : longest;
+            }, 0);
+
+            function getCountryFromInputValue(currentValue:string){
+                let countryFound: HTMLOptionElement | undefined;
+                let verifySubStrLen = longestDialCode;
+                while (!countryFound && verifySubStrLen > 0) {
+                    const val = currentValue.substring(0, verifySubStrLen);
+                    countryFound = options.find(option => {
+                        const dialCode = option.getAttribute('dial-code') || '';
+                        return val == dialCode.replace(/\s/g, '');
+                    });
+                    verifySubStrLen--;
+                }
+                return countryFound;
+            }
+
+            if(input.value.startsWith('+'))
+            {
+                const optionCountrySelected = getCountryFromInputValue(input.value);
+                if(optionCountrySelected)
+                    $(select).selectpicker('val', optionCountrySelected.value);
+            }
+            else
+            {
+                const optionCountrySelected = $(select).val();
+                const optionSelected = options.find(option => option.value === optionCountrySelected);
+                $(input).val(optionSelected.getAttribute('dial-code'));
+            }
+            
+            $(input).on('keyup', function (e)
+            {
+                const currentValue = (this as HTMLInputElement).value;
+                let countryFound: HTMLOptionElement | undefined;
+                countryFound = getCountryFromInputValue(currentValue);
+                if(countryFound)
+                    $(select).selectpicker('val', countryFound.value);
+                else
+                    if(input.value.length >= longestDialCode)
+                        $(input).val("+");
+            });
+        })
     }
 }

@@ -12,6 +12,7 @@
     
     CodeEditor.setup(selectorPrefix);
     CalendarListener.listen(selectorPrefix);
+    PhoneInputListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
     
     if(bootstrapVersion === 3)

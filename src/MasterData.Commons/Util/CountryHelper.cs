@@ -260,13 +260,13 @@ public sealed record CountryInfo(
     public int Index => (int)Id;
 }
 
-public static class CountryService
+public static class CountryHelper
 {
     public static readonly IReadOnlyList<CountryInfo> All;
     private static readonly FrozenDictionary<CountryCode, CountryInfo> ByEnum;
     private static readonly FrozenDictionary<string, CountryInfo> ByCode;
 
-    static CountryService()
+    static CountryHelper()
     {
         var items = new List<CountryInfo>
         {

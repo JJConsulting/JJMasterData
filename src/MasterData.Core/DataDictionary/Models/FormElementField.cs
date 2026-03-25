@@ -19,6 +19,7 @@ namespace JJMasterData.Core.DataDictionary.Models;
 public class FormElementField : ElementField
 {
     public const string PlaceholderAttribute = "placeholder";
+    public const string DefaultFormatAttribute = "defaultformat";
     public const string RowsAttribute = "rows";
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
@@ -304,6 +305,7 @@ public class FormElementField : ElementField
             or FormComponent.CnpjCpf
             or FormComponent.Tel
             or FormComponent.ComboBox
+            or FormComponent.Phone
         && DataItem?.SupportsFloatingLabels() != false;
 
     /// <summary>

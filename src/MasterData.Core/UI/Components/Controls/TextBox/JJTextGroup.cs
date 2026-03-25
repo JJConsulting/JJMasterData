@@ -4,6 +4,8 @@ using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 
@@ -51,9 +53,42 @@ public sealed class JJTextGroup(IFormValues formValues)
         var input = base.GetHtmlBuilder();
         var hasAction = Actions.Exists(x => x.Visible);
         var hasAddons = Addons != null;
-
+        if (InputType == InputType.Phone)
+        {
+            Attributes.TryGetValue(FormElementField.DefaultFormatAttribute,  out var defaultCountry);
+            var optContentTpl = "<span class='fi fi-{0}'></span><span>&nbsp;{1}</span>";
+            var dropDownGroup = new HtmlBuilder(HtmlTag.Div)
+                .WithCssClass("input-group jjform-action ")
+                .WithCssClass(GroupCssClass)
+                // .AppendButton(button =>
+                // {
+                //     button.WithCssClass("btn btn-secondary dropdown-toggle ");
+                //     button.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
+                //     button.WithAttribute("type", "button");
+                // })
+                .AppendSelect(select =>
+                {
+                    select.WithCssClass("selectpicker w-auto jj-phone-select");
+                    select.WithAttribute("data-live-search", "true");
+                    select.WithAttribute("data-style-base", "form-select form-dropdown");
+                    foreach (CountryInfo countryInfo in CountryHelper.All)
+                    {
+                        select.AppendOption(opt =>
+                        {
+                            opt.WithAttributeIf(defaultCountry == countryInfo.Code, "selected", true.ToString());
+                            opt.WithAttribute("dial-code", countryInfo.DialCode);
+                            opt.WithValue(countryInfo.Code);
+                            opt.WithAttribute("data-content", string.Format(optContentTpl, countryInfo.Code.ToLower(), countryInfo.DialCode));
+                        });
+                    }
+                });
+            input.WithCssClass("jj-phone-input");
+            dropDownGroup.Append(input);
+            return dropDownGroup;
+        }
         if (!hasAction && !hasAddons)
         {
+
             if (UseFloatingLabel)
             {
                 input.WithAttribute("placeholder");
@@ -79,7 +114,7 @@ public sealed class JJTextGroup(IFormValues formValues)
             .WithCssClass("input-group jjform-action ")
             .WithCssClass(GroupCssClass);
         
-        if (hasAddons)
+        if (hasAddons )
             inputGroup.Append(GetHtmlAddons());
 
         if (UseFloatingLabel)

@@ -5,6 +5,7 @@ using System.Linq;
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using static JJMasterData.Core.UI.DateFormatMapper;
@@ -164,6 +165,15 @@ public sealed class TextGroupFactory(
                 textGroup.InputType = InputType.Tel;
                 textGroup.Attributes["data-inputmask"] =
                     "'mask': '[(99) 9999[9]-9999]', 'placeholder':'', 'greedy': 'false'";
+                break;
+            case FormComponent.Phone:
+                textGroup.Attributes.TryGetValue(FormElementField.DefaultFormatAttribute,  out var defaultCountryCode);
+                CountryHelper.TryGet(defaultCountryCode, out var defaultCountry);
+                textGroup.MaxLength = 15;
+                textGroup.InputType = InputType.Phone;
+                if(defaultCountry != null)
+                    textGroup.Attributes["data-inputmask"] =
+                        $"'mask': '[+{new string('9', defaultCountry.DialCode.Replace("+", "").Length)}9999[9]9999]', 'placeholder':'', 'greedy': 'false'";
                 break;
             case FormComponent.Hour:
                 textGroup.InputType = InputType.Text;

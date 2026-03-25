@@ -31,17 +31,17 @@ public enum FormComponent
     RadioButtonGroup = 11,
     [Display(GroupName = "4. Boolean")]
     CheckBox = 12,
-    [Display(Name = "CNPJ", GroupName = "6. Mask")]
+    [Display(Name = "CNPJ", GroupName = "9. Brasil")]
     Cnpj = 13,
-    [Display(Name = "CPF", GroupName = "6. Mask")]
+    [Display(Name = "CPF", GroupName = "9. Brasil")]
     Cpf = 14,
-    [Display(Name = "CNPJ/CPF", GroupName = "6. Mask")]
+    [Display(Name = "CNPJ/CPF", GroupName = "9. Brasil")]
     CnpjCpf = 15,
     [Display(Name = "Currency", GroupName = "2. Numeric")]
     Currency = 16,
-    [Display(Name = "Phone", GroupName = "6. Mask")]
+    [Display(Name = "Tel", GroupName = "9. Brasil")]
     Tel = 17,
-    [Display(Name = "CEP", GroupName = "6. Mask")]
+    [Display(Name = "CEP", GroupName = "9. Brasil")]
     Cep = 18,
     [Display(GroupName = "5. Data Item")]
     Lookup = 21,
@@ -56,7 +56,9 @@ public enum FormComponent
     [Display(Name = "Percentage", GroupName = "2. Numeric")]
     Percentage = 26,
     [Display(Name = "Code Editor",GroupName = "8. Especial")]
-    CodeEditor = 27
+    CodeEditor = 27,
+    [Display(GroupName = "6. Mask")]
+    Phone = 28,
 }
 
 public static class FormComponentExtensions
