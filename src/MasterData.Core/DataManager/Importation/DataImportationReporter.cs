@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Tasks.Progress;
 using Microsoft.Extensions.Localization;
 
@@ -39,14 +40,15 @@ public class DataImportationReporter(IStringLocalizer<MasterDataResources> strin
 
     public int Ignore { get; set; }
 
-    public StringBuilder ErrorLog { get; } = new();
+    public HtmlBuilder ErrorLogHtml { get; } = new();
 
     public void AddError(string value)
     {
-        ErrorLog.Append("<hr/>");
-        ErrorLog.Append("<b>" + stringLocalizer["Row: "] + "</b>");
-        ErrorLog.AppendLine(TotalProcessed.ToString());
-        ErrorLog.Append(value);
+        ErrorLogHtml.AppendBr();
+        ErrorLogHtml.AppendB(b=>b.AppendText(stringLocalizer["Row: "]));
+        ErrorLogHtml.AppendText(TotalProcessed.ToString());
+        ErrorLogHtml.AppendBr();
+        ErrorLogHtml.AppendText(value);
     }
 
     private void UpdatePercentProgress()

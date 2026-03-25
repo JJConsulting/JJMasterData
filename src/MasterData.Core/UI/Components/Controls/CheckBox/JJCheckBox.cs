@@ -117,7 +117,7 @@ public class JJCheckBox : ControlBase
             {
                 label.WithCssClass("btn btn-outline-primary")
                     .WithAttribute("for", checkBoxName.Replace(".", "_"))
-                    .AppendText(Text);
+                    .AppendText(_stringLocalizer[Text]);
             });
         }
         else
@@ -126,8 +126,8 @@ public class JJCheckBox : ControlBase
             {
                 label.WithAttribute("for", checkBoxName.Replace(".", "_"));
                 label.WithCssClass("form-check-label");
-                label.WithToolTip(Tooltip);
-                label.AppendText(Text);
+                label.WithToolTip(_stringLocalizer[Tooltip]);
+                label.AppendText(_stringLocalizer[Text]);
             });
         }
 

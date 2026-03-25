@@ -1744,19 +1744,34 @@ const listenAllEvents = (selectorPrefix = String()) => {
 };
 class Localization {
     static initialize() {
-        const lang = document.documentElement.lang.toLowerCase();
+        const lang = document.documentElement.lang.toLowerCase().substring(0, 2);
         switch (lang) {
-            case "pt-br":
+            case "pt":
                 Localization.strings = {
                     Yes: "Sim",
                     No: "Não",
                     Close: "Fechar"
                 };
                 break;
+            case "es":
+                Localization.strings = {
+                    Yes: "Sí",
+                    No: "No",
+                    Close: "Cerrar"
+                };
+                break;
+            default:
+                Localization.strings = {
+                    Yes: "Yes",
+                    No: "No",
+                    Close: "Close"
+                };
+                break;
         }
     }
     static get(key) {
-        return Localization.strings[key] || key;
+        var _a;
+        return (_a = Localization.strings[key]) !== null && _a !== void 0 ? _a : key;
     }
 }
 Localization.strings = {};
@@ -2451,6 +2466,30 @@ class PhoneInputListener {
                     $(select).selectpicker('val', countryFound.value);
                 else if (input.value.length >= longestDialCode)
                     $(input).val("+");
+            });
+        });
+    }
+}
+class PopoverHelper {
+    static dispose(selectorPrefix) {
+        const popoverList = [].slice.call(document.querySelectorAll(selectorPrefix + ' [data-bs-toggle="popover"]'));
+        popoverList.map(function (el) {
+            const popover = bootstrap.Popover.getOrCreateInstance(el);
+            popover.dispose();
+        });
+    }
+    static listen(selectorPrefix) {
+        const popoverList = document.querySelectorAll(selectorPrefix + ' [data-bs-toggle="popover"]');
+        popoverList.forEach(el => new bootstrap.Popover(el, {
+            trigger: 'focus',
+            html: true
+        }));
+    }
+    static createPopover(id) {
+        document.addEventListener("DOMContentLoaded", function () {
+            new bootstrap.Popover(document.getElementById(id), {
+                trigger: 'focus',
+                html: true
             });
         });
     }

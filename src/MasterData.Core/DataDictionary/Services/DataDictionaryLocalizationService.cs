@@ -46,7 +46,13 @@ public class DataDictionaryLocalizationService(
                 AddKey(keys, relationship.Panel?.Title);
                 AddKey(keys, relationship.Panel?.SubTitle);
             }
-
+            
+            foreach (var panel in formElement.Panels)
+            {
+                AddKey(keys, panel.Title);
+                AddKey(keys, panel.SubTitle);
+            }
+            
             foreach (var field in formElement.Fields)
             {
                 AddKey(keys, field.Name);
@@ -71,9 +77,16 @@ public class DataDictionaryLocalizationService(
             AddActionKeys(keys, formElement.Options.GridToolbarActions);
             AddActionKeys(keys, formElement.Options.FormToolbarActions);
             AddActionKeys(keys, formElement.Options.GridTableActions);
+            
+            AddOptionsKeys(keys, formElement.Options);
         }
 
         return keys.OrderBy(static x => x, StringComparer.Ordinal).ToArray();
+    }
+
+    private static void AddOptionsKeys(HashSet<string> keys, FormElementOptions options)
+    {
+        AddKey(keys, options.Grid.EmptyDataText);
     }
 
     private async Task AddDataItemAsync(HashSet<string> keys, FormElementDataItem dataItem, Guid? connectionId)
