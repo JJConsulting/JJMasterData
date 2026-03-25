@@ -288,6 +288,9 @@ public class FieldController(
                 }
 
                 break;
+            case FormComponent.Phone:
+                field.SetAttr(FormElementField.DefaultFormatAttribute, Request.Form[FormElementField.DefaultFormatAttribute].ToString());
+                break;
             case FormComponent.TextArea:
                 field.SetAttr(FormElementField.RowsAttribute, Request.Form["txtTextAreaRows"].ToString());
                 break;

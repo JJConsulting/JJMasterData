@@ -2,6 +2,7 @@
 
 @using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.DataDictionary.Services
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
@@ -74,6 +75,32 @@
             <label for="step" class="form-label">@StringLocalizer["Step"]</label>
             <tooltip title="@StringLocalizer["Defines the interval at which the value changes."]"/>
             <input id="step" name="step" placeholder="1" class="form-control jj-numeric" type="number" value="@Model.GetAttr(FormElementField.StepAttribute)"/>
+        </div>
+        break;
+    case FormComponent.Phone:
+        CountryHelper.TryGet(
+            Model.GetAttr(
+                FormElementField.DefaultFormatAttribute)?.ToString() ??
+                nameof(CountryCode.BR
+            ), 
+            out var countrySelected
+        );
+        <div class="col-sm-4">
+            <label for="@FormElementField.DefaultFormatAttribute" class="form-label">@StringLocalizer["Default Format"]</label>
+            <select class="selectpicker form-control form-select"
+                    data-live-search="true"
+                    data-style-base="form-select form-dropdown"
+                    id="@FormElementField.DefaultFormatAttribute"
+                    name="@FormElementField.DefaultFormatAttribute"
+                    >
+                @foreach (var countryInfo in CountryHelper.All)
+                {
+                    bool selected = countryInfo == countrySelected;
+                    <option selected="@selected" value="@countryInfo.Code" data-content="
+                    <span class='fi fi-@countryInfo.Code.ToLower()'></span><span>&nbsp;@($"{countryInfo.Name} - {countryInfo.Code}")</span>
+                "></option>
+                }
+            </select>
         </div>
         break;
     case FormComponent.TextArea:

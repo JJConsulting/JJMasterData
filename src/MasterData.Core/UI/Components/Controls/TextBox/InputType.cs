@@ -8,7 +8,8 @@ public enum InputType
     Number = 2,
     Tel = 3,
     Currency = 4,
-    Percentage = 5
+    Percentage = 5,
+    Phone = 6,
 }
 
 public static class InputTypeExtensions

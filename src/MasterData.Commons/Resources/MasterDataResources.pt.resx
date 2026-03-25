@@ -605,8 +605,8 @@
     <value>Nome da conexão padrão é [ConnectionString]</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="DefaultValue" xml:space="preserve">
-    <value>Valor Padrão</value>
+  <data name="Default Format" xml:space="preserve">
+    <value>Formato padrão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Delete" xml:space="preserve">
