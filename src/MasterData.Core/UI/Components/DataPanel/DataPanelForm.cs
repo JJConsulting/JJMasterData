@@ -405,6 +405,7 @@ internal sealed class DataPanelForm
 
         return field.Component switch
         {
+            FormComponent.Search => Scripts.GetReloadPanelScript(field.Name, nameWithPrefix + "_text"),
             FormComponent.CheckBox => Scripts.GetReloadPanelScript(field.Name, nameWithPrefix + "-checkbox"),
             _ =>  Scripts.GetReloadPanelScript(field.Name, nameWithPrefix)
         };
