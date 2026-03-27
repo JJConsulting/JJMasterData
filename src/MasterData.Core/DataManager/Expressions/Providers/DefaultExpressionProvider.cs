@@ -23,7 +23,7 @@ public sealed class DefaultExpressionProvider(
 {
     private readonly ExpressionContext _expressionContext = options.Value.ExpressionContext with
     {
-        StaticParameters = new Dictionary<string, object?>(options.Value.ExpressionContext.StaticParameters)
+        StaticParameters = new Dictionary<string, object?>(options.Value.ExpressionContext.StaticParameters, StringComparer.InvariantCultureIgnoreCase)
         {
             ["ServiceProvider"] = serviceProvider
         }
@@ -64,7 +64,7 @@ public sealed class DefaultExpressionProvider(
             var token = $"{ExpressionHelper.Begin}{kvp.Key}{ExpressionHelper.End}";
             var quotedToken = $"'{token}'";
 
-            if (expression.Contains(quotedToken, StringComparison.Ordinal))
+            if (expression.Contains(quotedToken, StringComparison.InvariantCultureIgnoreCase))
             {
                 expression = expression.Replace(quotedToken, kvp.Key);
                 parameters[kvp.Key] = kvp.Value?.ToString();
