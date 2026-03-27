@@ -1,4 +1,5 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@using JJMasterData.Core.DataDictionary.Models.Actions
 @model JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction
 
 @{
@@ -24,6 +25,22 @@
                 <div class="well" style="margin-bottom: 0">
                     <code-editor asp-for="SqlCommand" language="sql" height="300"/>
                 </div>
+                @if (ViewData["ActionSource"] is ActionSource.GridToolbar)
+                {
+                    <hr/>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="mb-3 col-sm-6">
+                                <checkbox tooltip="@StringLocalizer["When the command is triggered only the selected lines are affected."]" for="ApplyOnSelected" layout="Switch" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-sm-12">
+                <label asp-for="RedirectUrl" class="form-label"></label>
+                <tooltip title="@StringLocalizer["Redirects to this URL after the command is executed successfully."]"></tooltip>
+                <input asp-for="RedirectUrl" class="form-control font-monospace"/>
             </div>
         </div>
     </div>
