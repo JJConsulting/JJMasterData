@@ -21,7 +21,7 @@ public class ActionsController(ActionsService actionsService,
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
 
-        var selectedAction = formElement.GetAction(actionName, source, fieldName);
+        var selectedAction = formElement.GetActionOrDefault(actionName, source, fieldName);
         
         var model = await BuildActionListModel(elementName, source, selectedAction, fieldName);
         
@@ -38,7 +38,7 @@ public class ActionsController(ActionsService actionsService,
     {
         var formElement = await actionsService.GetFormElementAsync(elementName);
 
-        var action = formElement.GetAction(actionName, source, fieldName);
+        var action = formElement.GetActionOrDefault(actionName, source, fieldName);
         
         PopulateViewData(formElement, action, source, fieldName);
  

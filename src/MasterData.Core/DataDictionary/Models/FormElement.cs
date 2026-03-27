@@ -191,35 +191,33 @@ public class FormElement : Element
         return Panels.First(x => x.PanelId == id);
     }
 
-    public BasicAction? GetAction(string? name, ActionSource source, string? fieldName = null)
+    public BasicAction? GetActionOrDefault(string? name, ActionSource source, string? fieldName = null)
     {
-        bool validName = !string.IsNullOrWhiteSpace(name);
-        switch (source)
+        var actions = source switch
         {
-            case ActionSource.GridTable: 
-                return validName ? 
-                    Options.GridTableActions.FirstOrDefault(a => a.Name == name) : 
-                    Options.GridTableActions.FirstOrDefault();
-            case ActionSource.GridToolbar:
-                return validName ? 
-                    Options.GridToolbarActions.FirstOrDefault(a => a.Name == name) :
-                    Options.GridToolbarActions.FirstOrDefault();
-            case ActionSource.FormToolbar:
-                return validName ? 
-                    Options.FormToolbarActions.FirstOrDefault(a => a.Name == name) :
-                    Options.FormToolbarActions.FirstOrDefault();
-            case ActionSource.Field:
-                if (string.IsNullOrWhiteSpace(fieldName))
-                    return validName ? 
-                        Fields.SelectMany(f => f.Actions).FirstOrDefault(a => a.Name == name) :
-                        Fields.SelectMany(f => f.Actions).FirstOrDefault();
-                else
-                    return validName ? 
-                        Fields.FirstOrDefault(f => f.Name == fieldName)?.Actions .FirstOrDefault(a => a.Name == name) :
-                        Fields.FirstOrDefault(f => f.Name == fieldName)?.Actions.FirstOrDefault();
-            default:
-                return null;
-        }
+            ActionSource.GridTable => Options.GridTableActions,
+            ActionSource.GridToolbar => Options.GridToolbarActions,
+            ActionSource.FormToolbar => Options.FormToolbarActions,
+            ActionSource.Field => GetFieldActions(fieldName),
+            _ => null
+        };
+
+        if (actions == null)
+            return null;
+
+        var isValid = string.IsNullOrWhiteSpace(name);
+        
+        return isValid
+            ? actions.FirstOrDefault()
+            : actions.FirstOrDefault(a => a.Name == name);
+    }
+
+    private IEnumerable<BasicAction>? GetFieldActions(string? fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(fieldName))
+            return Fields.SelectMany(f => f.Actions);
+
+        return Fields.FirstOrDefault(f => f.Name == fieldName)?.Actions;
     }
 
     public FormElement DeepCopy()
