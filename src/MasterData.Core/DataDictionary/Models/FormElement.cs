@@ -193,19 +193,33 @@ public class FormElement : Element
 
     public BasicAction? GetAction(string? name, ActionSource source, string? fieldName = null)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return null;
-
-        return source switch
+        bool validName = !string.IsNullOrWhiteSpace(name);
+        switch (source)
         {
-            ActionSource.GridTable => Options.GridTableActions.FirstOrDefault(a => a.Name == name),
-            ActionSource.GridToolbar => Options.GridToolbarActions.FirstOrDefault(a => a.Name == name),
-            ActionSource.FormToolbar => Options.FormToolbarActions.FirstOrDefault(a => a.Name == name),
-            ActionSource.Field => string.IsNullOrWhiteSpace(fieldName)
-                ? Fields.SelectMany(f => f.Actions).FirstOrDefault(a => a.Name == name)
-                : Fields.FirstOrDefault(f => f.Name == fieldName)?.Actions.FirstOrDefault(a => a.Name == name),
-            _ => null
-        };
+            case ActionSource.GridTable: 
+                return validName ? 
+                    Options.GridTableActions.FirstOrDefault(a => a.Name == name) : 
+                    Options.GridTableActions.FirstOrDefault();
+            case ActionSource.GridToolbar:
+                return validName ? 
+                    Options.GridToolbarActions.FirstOrDefault(a => a.Name == name) :
+                    Options.GridToolbarActions.FirstOrDefault();
+            case ActionSource.FormToolbar:
+                return validName ? 
+                    Options.FormToolbarActions.FirstOrDefault(a => a.Name == name) :
+                    Options.FormToolbarActions.FirstOrDefault();
+            case ActionSource.Field:
+                if (string.IsNullOrWhiteSpace(fieldName))
+                    return validName ? 
+                        Fields.SelectMany(f => f.Actions).FirstOrDefault(a => a.Name == name) :
+                        Fields.SelectMany(f => f.Actions).FirstOrDefault();
+                else
+                    return validName ? 
+                        Fields.FirstOrDefault(f => f.Name == fieldName)?.Actions .FirstOrDefault(a => a.Name == name) :
+                        Fields.FirstOrDefault(f => f.Name == fieldName)?.Actions.FirstOrDefault();
+            default:
+                return null;
+        }
     }
 
     public FormElement DeepCopy()
