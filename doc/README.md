@@ -13,4 +13,4 @@ npm i
 ```
 
 4. Run the bat on folder (JJConsulting.JJMasterData\doc\JJMasterData.Documentation\server.bat)
-It'll build and host the documetation site on localhost:8080
+It'll build and host the documetation site on localhost:8080 
