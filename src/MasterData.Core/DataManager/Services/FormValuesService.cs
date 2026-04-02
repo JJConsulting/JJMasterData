@@ -201,7 +201,7 @@ public class FormValuesService(
         bool autoReloadFormFields,
         string? prefix = null)
     {
-        if (!autoReloadFormFields || formStateData.Values.Count == 0 )
+        if (formStateData.PageState != PageState.Insert && (!autoReloadFormFields || formStateData.Values.Count == 0))
         {
             var dbValues = await GetDbValues(formElement);
 
