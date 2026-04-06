@@ -291,20 +291,38 @@ internal sealed class GridTableBody(JJGridView gridView)
         {
             SearchId = stringValue
         };
+
         var dataItemValues = await gridView.DataItemService.GetValuesAsync(dataItem, dataQuery);
         var dataItemValue = dataItemValues.Find(d => d.Id == stringValue);
 
-        var tooltip = dataItem.GridBehavior is DataItemGridBehavior.Icon ? gridView.StringLocalizer[dataItemValue?.Description ?? string.Empty] : string.Empty;
+        var description = dataItemValue?.Description ?? string.Empty;
+        
+        if (dataItem.EnableLocalization)
+            description = gridView.StringLocalizer[description];
+
+        var tooltip = dataItem.GridBehavior is DataItemGridBehavior.Icon
+            ? description
+            : string.Empty;
 
         if (dataItemValue != null)
         {
-            cell = GetIconCell(dataItemValue.Icon, dataItemValue.IconColor ?? string.Empty, tooltip);
+            cell = GetIconCell(
+                dataItemValue.Icon,
+                dataItemValue.IconColor ?? string.Empty,
+                tooltip);
 
             cell.AppendIf(dataItem.GridBehavior is DataItemGridBehavior.IconWithDescription,
                 HtmlTag.Span,
                 span =>
                 {
-                    span.AppendText(dataItemValue.Description ?? dataItemValue.Id);
+                    var text = dataItemValue.Description ?? dataItemValue.Id;
+
+                    if (dataItem.EnableLocalization)
+                    {
+                        text = gridView.StringLocalizer[text];
+                    }
+
+                    span.AppendText(text);
                     span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
                 });
         }
@@ -316,10 +334,10 @@ internal sealed class GridTableBody(JJGridView gridView)
         return cell;
     }
 
-    private static HtmlBuilder GetIconCell(FontAwesomeIcon FontAwesomeIcon, string? color = null, string? tooltip = null)
+    private static HtmlBuilder GetIconCell(FontAwesomeIcon faIcon, string? color = null, string? tooltip = null)
     {
         var cell = new HtmlBuilder(HtmlTag.Div);
-        var icon = new JJIcon(FontAwesomeIcon, color ?? string.Empty);
+        var icon = new JJIcon(faIcon, color ?? string.Empty);
         if (tooltip is not null)
         {
             icon.Tooltip = tooltip;
