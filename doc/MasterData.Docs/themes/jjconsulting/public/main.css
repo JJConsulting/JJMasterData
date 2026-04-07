@@ -306,6 +306,10 @@ body:not([data-search])[data-layout=conceptual] > main > .affix {
   text-transform: uppercase;
 }
 
+.expand-stub{
+    margin: .5rem;
+}
+
 .toc .expand-stub:before {
   margin-top: 0.28rem;
   color: var(--jj-text-muted);
