@@ -20,15 +20,15 @@
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Include="../../JJMasterData.png">
+		<None Include="$(MSBuildThisFileDirectory)JJMasterData.png">
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>
-		<None Include="../../README.md">
+		<None Include="$(MSBuildThisFileDirectory)README.md">
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>
-		<None Include="../../README.NuGet.md">
+		<None Include="$(MSBuildThisFileDirectory)README.NuGet.md">
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>

@@ -81,6 +81,10 @@
     href: tutorials/relationship.md
   - name: DataItem SearchId and SearchText
     href: tutorials/search_id.md
+- name: Tooling
+  items:
+  - name: JJMasterData Command Line
+    href: tools/jjmasterdata.md
 - name: Components
   href: components/intro.md
   items:

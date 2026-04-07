@@ -29,6 +29,8 @@
 
 JJMasterData is an open-source .NET library to help you create CRUDs quickly from data dictionaries (database metadata), along with other boilerplate-intensive things like exporting and importing data.
 
+The repository also includes the `MasterData.CommandLine` dotnet tool, which exposes the `jjmasterdata` command for import, export, diff, and interactive workflows.
+
 <br>
 
 To getting started, click on this [link](articles/intro.md).

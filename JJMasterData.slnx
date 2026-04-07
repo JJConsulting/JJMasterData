@@ -12,7 +12,7 @@
     <File Path=".gitignore" />
   </Folder>
   <Folder Name="/ConsoleApps/">
-    <Project Path="src\ConsoleApps\MasterData.FormElementImporter\MasterData.FormElementImporter.csproj" Type="Classic C#" />
+    <Project Path="src\ConsoleApps\MasterData.CommandLine\MasterData.CommandLine.csproj" Type="Classic C#" />
     <Project Path="src\ConsoleApps\MasterData.LegacyMetadataMigrator\MasterData.LegacyMetadataMigrator.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Docs/">
@@ -28,6 +28,7 @@
     <File Path="src\Plugins\Directory.Build.props" />
   </Folder>
   <Folder Name="/Test/">
+    <Project Path="test\MasterData.CommandLine.Test\MasterData.CommandLine.Test.csproj" Type="Classic C#" />
     <Project Path="test\MasterData.Commons.Test\MasterData.Commons.Test.csproj" Type="Classic C#" />
     <Project Path="test\MasterData.Core.Test\MasterData.Core.Test.csproj" Type="Classic C#" />
     <Project Path="test\Plugins\MasterData.Brasil.Test\MasterData.Brasil.Test.csproj" Type="Classic C#" />

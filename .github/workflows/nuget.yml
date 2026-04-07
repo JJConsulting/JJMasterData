@@ -1,7 +1,8 @@
 name: NuGet Publish
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "main"]
 
 jobs:
   setup:
@@ -31,6 +32,7 @@ jobs:
           - src/MasterData.Core
           - src/MasterData.Web
           - src/MasterData.WebApi
+          - src/ConsoleApps/MasterData.CommandLine
           - src/Plugins/MasterData.Hangfire
           - src/Plugins/MasterData.Pdf
           - src/Plugins/MasterData.Brasil
