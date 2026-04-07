@@ -44,15 +44,15 @@ public static class DictionaryComparisonService
 }
 
 public sealed class DictionaryDiffResult(
-    IReadOnlyList<LocalFormElementFile> folderOnly,
-    IReadOnlyList<ChangedDictionary> changed,
-    IReadOnlyList<FormElement> databaseOnly,
-    IReadOnlyList<string> unchanged)
+    List<LocalFormElementFile> folderOnly,
+    List<ChangedDictionary> changed,
+    List<FormElement> databaseOnly,
+    List<string> unchanged)
 {
-    public IReadOnlyList<LocalFormElementFile> FolderOnly { get; } = folderOnly;
-    public IReadOnlyList<ChangedDictionary> Changed { get; } = changed;
-    public IReadOnlyList<FormElement> DatabaseOnly { get; } = databaseOnly;
-    public IReadOnlyList<string> Unchanged { get; } = unchanged;
+    public List<LocalFormElementFile> FolderOnly { get; } = folderOnly;
+    public List<ChangedDictionary> Changed { get; } = changed;
+    public List<FormElement> DatabaseOnly { get; } = databaseOnly;
+    public List<string> Unchanged { get; } = unchanged;
 
     public bool HasChanges => FolderOnly.Count > 0 || Changed.Count > 0 || DatabaseOnly.Count > 0;
 }

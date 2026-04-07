@@ -17,7 +17,7 @@ public static class DictionaryFileService
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
-    public static async Task<IReadOnlyList<LocalFormElementFile>> LoadAsync(
+    public static async Task<List<LocalFormElementFile>> LoadAsync(
         string dictionariesPath,
         CancellationToken cancellationToken)
     {

@@ -6,7 +6,7 @@ using Spectre.Console;
 
 namespace JJMasterData.CommandLine.Hosting;
 
-public sealed class ImportRunner(IAnsiConsole console)
+public sealed class ConsoleRunner(IAnsiConsole console)
 {
     private const string SecretKey = "jjmasterdata-console-tool";
 

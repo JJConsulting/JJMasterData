@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace JJMasterData.CommandLine.Commands;
 
-public sealed class InteractiveCommand(IAnsiConsole console, ImportRunner importRunner) : AsyncCommand
+public sealed class InteractiveCommand(IAnsiConsole console, ConsoleRunner consoleRunner) : AsyncCommand
 {
     protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
     {
@@ -31,11 +31,11 @@ public sealed class InteractiveCommand(IAnsiConsole console, ImportRunner import
         return action switch
         {
             "Import" => await ExecuteAsync(
-                importRunner.ImportAsync(path, connection, cancellationToken)),
+                consoleRunner.ImportAsync(path, connection, cancellationToken)),
             "Export" => await ExecuteAsync(
-                importRunner.ExportAsync(path, connection, cancellationToken)),
+                consoleRunner.ExportAsync(path, connection, cancellationToken)),
             "Diff" => await ExecuteAsync(
-                importRunner.DiffAsync(path, connection, cancellationToken)),
+                consoleRunner.DiffAsync(path, connection, cancellationToken)),
             _ => 1
         };
     }

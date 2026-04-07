@@ -6,7 +6,7 @@ using Spectre.Console.Cli;
 
 var services = new ServiceCollection()
     .AddSingleton(AnsiConsole.Console)
-    .AddSingleton<ImportRunner>();
+    .AddSingleton<ConsoleRunner>();
 
 var registrar = new TypeRegistrar(services);
 var app = new CommandApp(registrar);
