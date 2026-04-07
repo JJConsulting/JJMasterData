@@ -1,4 +1,5 @@
 - name: Introduction
+  icon: fa-solid fa-book-open
   href: intro.md
   items:
   - name: Getting Started
@@ -66,6 +67,7 @@
   - name: Customizing Layout
     href: customizing_layout.md
 - name: Tutorials
+  icon: fa-solid fa-graduation-cap
   items:
   - name: Creating your first dictionary
     href: tutorials/creating_data_dictionary.md
@@ -82,10 +84,12 @@
   - name: DataItem SearchId and SearchText
     href: tutorials/search_id.md
 - name: Tooling
+  icon: fa-solid fa-screwdriver-wrench
   items:
   - name: JJMasterData Command Line
     href: tools/jjmasterdata.md
 - name: Components
+  icon: fa-solid fa-cubes
   href: components/intro.md
   items:
     - name: Data Dictionary
@@ -123,11 +127,13 @@
       - name: FormView
         href: components/form_view.md
 - name: Errors
+  icon: fa-solid fa-circle-exclamation
   href: errors/intro.md
   items:
     - name: ConnectionString not found.
       href: errors/connection_string.md
 - name: Plugins
+  icon: fa-solid fa-plug
   items:
   - name: Hangfire
     href: plugins/hangfire.md
@@ -136,6 +142,7 @@
   - name: Python
     href: plugins/python.md
 - name: Miscellaneous
+  icon: fa-solid fa-layer-group
   items:
   - name: Multiple Forms Support
     href: multiple_forms.md

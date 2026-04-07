@@ -72,7 +72,8 @@
     "fileMetadataFiles": [],
     "template": [
       "default",
-      "modern"
+      "modern",
+      "themes/jjconsulting"
     ],
     "postProcessors": [ "ExtractSearchIndex" ],
     "noLangKeyword": false,
