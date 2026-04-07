@@ -6,11 +6,14 @@
 dotnet tool install --global JJMasterData.CommandLine
 ```
 
+## Why use it?
+This command line tool is useful for importing and exporting dictionaries to and from a database. 
+It's useful on:
+- CI/CD pipelines
+- Backups
+- Checking diff between dictionaries on different environments
+
 ## Commands
-
-### Interactive mode
-
-Run `jjmasterdata` with no arguments to open the interactive menu. The menu exposes `Import`, `Export`, and `Diff`, and prompts for the dictionary path and the database connection string.
 
 ### Import
 
@@ -30,7 +33,14 @@ jjmasterdata export -p ./dictionaries -c "Server=localhost;Database=JJMasterData
 jjmasterdata diff -p ./dictionaries -c "Server=localhost;Database=JJMasterData;Trusted_Connection=True"
 ```
 
-## Notes
+## Help
 
-- The command name is `jjmasterdata`.
-- Use `-p` or `--path` for the dictionary folder and `-c` or `--connection` for the database connection string.
+If you need help, use the command:
+```bash
+jjmasterdata --help
+```
+
+You can also use an interactive mode that contains all options: 
+```bash
+jjmasterdata
+```
