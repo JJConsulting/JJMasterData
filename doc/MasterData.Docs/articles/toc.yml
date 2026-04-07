@@ -86,8 +86,8 @@
 - name: Tooling
   icon: fa-solid fa-screwdriver-wrench
   items:
-  - name: JJMasterData Command Line
-    href: tools/jjmasterdata.md
+  - name: Command Line
+    href: tools/cli.md
 - name: Components
   icon: fa-solid fa-cubes
   href: components/intro.md
