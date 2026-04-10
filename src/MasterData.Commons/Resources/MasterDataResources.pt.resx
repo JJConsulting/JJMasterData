@@ -2617,6 +2617,9 @@
     <value>Tabela</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="Primary key fields cannot be of type Contains or MultiValuesContains." xml:space="preserve">
+    <value>Os campos de chave primária não podem ser do tipo Contains ou MultiValuesContains.</value><comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Table information" xml:space="preserve">
     <value>Informações sobre a tabela</value>
     <comment>JJMasterDataWeb</comment>
