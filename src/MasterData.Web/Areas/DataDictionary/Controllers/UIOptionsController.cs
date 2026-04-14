@@ -1,5 +1,4 @@
-﻿using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
-using JJMasterData.Core.DataDictionary.Models;
+﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +23,7 @@ public class UIOptionsController(UIOptionsService optionsService) : DataDictiona
             return RedirectToAction("Index", new { elementName });
 
         var jjValidationSummary = optionsService.GetValidationSummary();
-        ViewBag.Error = jjValidationSummary.GetHtmlContent();
+        ViewBag.Error = jjValidationSummary;
         ViewBag.ElementName = elementName;
         ViewBag.MenuId = "Options";
 

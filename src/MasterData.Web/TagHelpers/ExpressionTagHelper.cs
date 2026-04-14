@@ -2,7 +2,6 @@ using System.ComponentModel;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
-using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJConsulting.Html.Extensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

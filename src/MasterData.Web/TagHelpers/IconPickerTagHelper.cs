@@ -1,5 +1,4 @@
 ﻿using JJConsulting.FontAwesome;
-using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

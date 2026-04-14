@@ -1,6 +1,5 @@
 using System.Net;
 using JJConsulting.Html.Bootstrap.Components;
-using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
@@ -148,7 +147,7 @@ public class ElementController(
         }
 
         var validationSummary = elementService.GetValidationSummary();
-        ViewBag.Error = validationSummary.GetHtmlContent();
+        ViewBag.Error = validationSummary;
         return View();
     }
 
@@ -159,14 +158,14 @@ public class ElementController(
         if (!ModelState.IsValid)
         {
             validationSummary = elementService.GetValidationSummary();
-            ViewBag.Error = validationSummary.GetHtmlContent();
+            ViewBag.Error = validationSummary;
         }
             
         if (await elementService.DuplicateEntityAsync(model.OriginalElementName!, model.NewElementName!))
             return RedirectToAction("Index", new { elementName = model.NewElementName });
 
         validationSummary = elementService.GetValidationSummary();
-        ViewBag.Error = validationSummary.GetHtmlContent();
+        ViewBag.Error = validationSummary;
         return View();
     }
 

@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using JJConsulting.Html.Bootstrap.TagHelpers.Extensions;
-using JJMasterData.Core.DataDictionary.Models;
+﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +65,7 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
             return RedirectToAction("Index", new { elementName, panelId = panel.PanelId });
         }
 
-        ViewBag.Error = panelService.GetValidationSummary().GetHtmlContent();
+        ViewBag.Error = panelService.GetValidationSummary();
         return RedirectToIndex(elementName, panel);
     }
 
