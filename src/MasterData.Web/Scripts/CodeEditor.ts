@@ -80,7 +80,9 @@ class CodeEditor {
             const language = el.dataset.language;
             const name = el.dataset.editorName;
             const readOnly = el.dataset.readonly === "true";
+            const cursorPosition = el.dataset.cursorPosition;
             const editorTextArea = document.getElementById(name);
+            const cursorPositionInput = document.getElementById(`${name}CursorPosition`) as HTMLInputElement | null;
 
             // @ts-ignore
             const editor = monaco.editor.create(document.getElementById(editorId), {
@@ -96,6 +98,32 @@ class CodeEditor {
                 // @ts-ignore
                 editorTextArea.value = editor.getValue();
             });
+
+            if (cursorPositionInput) {
+                editor.onDidChangeCursorPosition(event => {
+                    const offset = editor.getModel().getOffsetAt(event.position);
+                    cursorPositionInput.value = offset.toString();
+                });
+
+                const currentPosition = editor.getPosition();
+                if (currentPosition) {
+                    cursorPositionInput.value = editor.getModel().getOffsetAt(currentPosition).toString();
+                }
+            }
+
+            if (cursorPosition) {
+                const position = Number.parseInt(cursorPosition, 10);
+
+                if (!Number.isNaN(position) && position >= 0) {
+                    const model = editor.getModel();
+                    const cursorOffset = Math.min(position, model.getValueLength());
+                    const cursor = model.getPositionAt(cursorOffset);
+
+                    editor.setPosition(cursor);
+                    editor.revealPositionInCenter(cursor);
+                    editor.focus();
+                }
+            }
         });
     }
 }

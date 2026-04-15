@@ -24,6 +24,9 @@ public sealed class CodeEditorTagHelper(IControlFactory<JJCodeEditor> codeEditor
 
     [HtmlAttributeName("height")]
     public int Height { get; set; } = 500;
+
+    [HtmlAttributeName("cursor-position")]
+    public int? CursorPosition { get; set; }
     
     [HtmlAttributeName("disabled")]
     public bool Disabled { get; set; }
@@ -45,6 +48,7 @@ public sealed class CodeEditorTagHelper(IControlFactory<JJCodeEditor> codeEditor
         codeEditor.Height = Height;
         codeEditor.Language = Language;
         codeEditor.Text = value?.ToString();
+        codeEditor.CursorPosition = CursorPosition;
         codeEditor.Enabled = !Disabled;
         
         output.TagName = null;
