@@ -1,5 +1,4 @@
-﻿@using JJConsulting.Html.Bootstrap.TagHelpers.Extensions
-@using JJMasterData.Core.DataDictionary.Models
+﻿@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI.Components
 @using Microsoft.AspNetCore.Html
@@ -31,7 +30,7 @@
         comboBox.SelectedValue = formElement.Options.GridToolbarActions.InsertAction.ElementNameToSelect;
 
         var result = await comboBox.GetHtmlBuilderAsync();
-        return result.ToHtmlContent();
+        return result;
     }
 }
 

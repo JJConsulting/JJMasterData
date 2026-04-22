@@ -422,7 +422,9 @@ class CodeEditor {
             const language = el.dataset.language;
             const name = el.dataset.editorName;
             const readOnly = el.dataset.readonly === "true";
+            const cursorPosition = el.dataset.cursorPosition;
             const editorTextArea = document.getElementById(name);
+            const cursorPositionInput = document.getElementById(`${name}CursorPosition`);
             const editor = monaco.editor.create(document.getElementById(editorId), {
                 value: editorTextArea.value,
                 automaticLayout: true,
@@ -433,6 +435,27 @@ class CodeEditor {
             editor.getModel().onDidChangeContent(() => {
                 editorTextArea.value = editor.getValue();
             });
+            if (cursorPositionInput) {
+                editor.onDidChangeCursorPosition(event => {
+                    const offset = editor.getModel().getOffsetAt(event.position);
+                    cursorPositionInput.value = offset.toString();
+                });
+                const currentPosition = editor.getPosition();
+                if (currentPosition) {
+                    cursorPositionInput.value = editor.getModel().getOffsetAt(currentPosition).toString();
+                }
+            }
+            if (cursorPosition) {
+                const position = Number.parseInt(cursorPosition, 10);
+                if (!Number.isNaN(position) && position >= 0) {
+                    const model = editor.getModel();
+                    const cursorOffset = Math.min(position, model.getValueLength());
+                    const cursor = model.getPositionAt(cursorOffset);
+                    editor.setPosition(cursor);
+                    editor.revealPositionInCenter(cursor);
+                    editor.focus();
+                }
+            }
         });
     }
 }
@@ -2408,13 +2431,11 @@ class PhoneInputListener {
                 if (isSelected) {
                     const selectedOption = options[clickedIndex];
                     const selectedDialCode = selectedOption.getAttribute('dial-code');
-                    console.log(`selectedIndex = ${clickedIndex}, ${previousDialCode} =>${selectedDialCode}`);
                     const input = $(select).closest('.input-group').find('.jj-phone-input')[0];
                     if (input && input.inputmask) {
                         input.inputmask.remove();
                     }
                     $(input).val($(input).val().toString().replace(previousDialCode.replace(/\s/g, ''), selectedDialCode.replace(/\s/g, '')));
-                    console.log('9'.repeat(selectedDialCode.replace('+', '').length));
                     Inputmask({
                         mask: `+${'9'.repeat(selectedDialCode.replace('+', '').length)}999999[9]9999`,
                         greedy: false,
@@ -2455,7 +2476,6 @@ class PhoneInputListener {
             else {
                 const optionCountrySelected = $(select).val();
                 const optionSelected = options.find(option => option.value === optionCountrySelected);
-                console.log(optionSelected.getAttribute('dial-code'));
                 $(input).val(optionSelected.getAttribute('dial-code'));
             }
             $(input).on('keyup', function (e) {

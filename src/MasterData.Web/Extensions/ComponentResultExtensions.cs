@@ -1,4 +1,3 @@
-using JJConsulting.Html.Bootstrap.TagHelpers.Adapters;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Html;
 
@@ -13,7 +12,7 @@ public static class ComponentResultExtensions
             get
             {
                 if (result is RenderedComponentResult html)
-                    return new HtmlContentAdapter(html.HtmlBuilder);
+                    return html.HtmlBuilder;
                 
                 return new HtmlString(string.Empty);
             }

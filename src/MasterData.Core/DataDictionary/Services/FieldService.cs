@@ -218,6 +218,15 @@ public class FieldService(
 
     private void ValidateFilter(FormElementField field)
     {
+        if (field.IsPk)
+        {
+            if (field.Filter.Type is FilterMode.Contain or FilterMode.MultValuesContain)
+            {
+                AddError(nameof(field.Filter.Type),
+                    StringLocalizer["Primary key fields cannot be of type Contains or MultiValuesContains."]);
+            }
+        }
+
         if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
         {
             if (!field.DataType.IsString)

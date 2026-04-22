@@ -14,6 +14,7 @@ public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
 {
     public string Language { get; set; } = "html";
     public int Height { get; set; } = 300;
+    public int? CursorPosition { get; set; }
     
     protected internal override ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
@@ -38,7 +39,14 @@ public class JJCodeEditor(IFormValues formValues) : ControlBase(formValues)
             .WithAttribute("data-editor-id",editorId)
             .WithAttribute("data-editor-name",Name)
             .WithAttribute("data-readonly", (!Enabled).ToString().ToLowerInvariant())
-            .WithAttribute("data-language", Language)
+            .WithAttribute("data-language", Language);
+
+        if (CursorPosition is not null)
+        {
+            wrapper.WithAttribute("data-cursor-position", CursorPosition.Value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        wrapper
             .AppendTextArea(textArea =>
             {
                 textArea.WithAttribute("hidden", "hidden")
