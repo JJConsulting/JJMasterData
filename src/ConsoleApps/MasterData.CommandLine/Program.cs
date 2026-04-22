@@ -1,10 +1,12 @@
 ﻿using JJMasterData.CommandLine.Commands;
 using JJMasterData.CommandLine.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Caching.Memory;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 var services = new ServiceCollection()
+    .AddMemoryCache()
     .AddSingleton(AnsiConsole.Console)
     .AddSingleton<ConsoleRunner>();
 
