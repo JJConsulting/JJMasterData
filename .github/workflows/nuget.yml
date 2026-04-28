@@ -2,7 +2,7 @@ name: NuGet Publish
 
 on:
   push:
-    branches: [ "main"]
+    branches: [ "main", "rc" ]
 
 jobs:
   setup:
@@ -42,7 +42,13 @@ jobs:
         run: |
           npm install --prefix src/MasterData.Web
           cd ${{ matrix.project }}
-          dotnet build -c release
-          dotnet pack -c release --output="nuget"
+          BASE_VERSION=$(dotnet msbuild -nologo -getProperty:Version | tail -n 1 | tr -d '\r')
+          if [ "${GITHUB_REF_NAME}" = "rc" ]; then
+            PACKAGE_VERSION="${BASE_VERSION}-preview"
+          else
+            PACKAGE_VERSION="${BASE_VERSION}"
+          fi
+          dotnet build -c release -p:GeneratePackageOnBuild=false -p:PackageVersion="${PACKAGE_VERSION}"
+          dotnet pack -c release --no-build --output="nuget" -p:PackageVersion="${PACKAGE_VERSION}"
           cd nuget
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
