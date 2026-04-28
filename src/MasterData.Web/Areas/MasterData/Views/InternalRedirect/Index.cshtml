@@ -15,7 +15,7 @@
         @if (Model.IsModal)
         {
             <text>
-                window.parent.defaultModal.modalTitle = '@Html.Raw(Model.Title)';
+                window.parent.defaultModal.modalTitle = '@Html.Raw(StringLocalizer[Model.Title])';
             </text>
         }
         @if (Model.SubmitParentWindow)
