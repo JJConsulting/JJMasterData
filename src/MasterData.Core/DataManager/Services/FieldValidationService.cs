@@ -24,16 +24,14 @@ public class FieldValidationService(
 {
     private Dictionary<RuleLanguage, IValidationScriptExecutor> ValidationScriptExecutors { get; } =
         validationScriptExecutors.ToDictionary(e => e.Language);
-
-    [Obsolete("Use ValidateFieldsAsync instead.")]
+    
     public Dictionary<string, string> ValidateFields(
         FormElement formElement,
         Dictionary<string, object?> formValues,
         PageState pageState,
-        bool enableErrorLink,
-        CommandOperation operation = CommandOperation.None)
+        bool enableErrorLink)
     {
-        var valueTask = ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink, operation);
+        var valueTask = ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink);
         
         if (valueTask.IsCompletedSuccessfully)
             return valueTask.Result;
@@ -45,8 +43,7 @@ public class FieldValidationService(
         FormElement formElement,
         Dictionary<string, object?> formValues,
         PageState pageState,
-        bool enableErrorLink,
-        CommandOperation operation = CommandOperation.None)
+        bool enableErrorLink)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -76,26 +73,20 @@ public class FieldValidationService(
             if (!string.IsNullOrEmpty(error))
                 errors.Add(field.Name, error!);
         }
-
-        if (operation != CommandOperation.None)
+        
+        foreach (var error in await ValidateScriptFieldsAsync(formElement, formValues))
         {
-            foreach (var error in await ValidateScriptFieldsAsync(formElement, formValues, operation))
-            {
-                errors[error.Key] = error.Value;
-            }
+            errors[error.Key] = error.Value;
         }
-
+        
         return errors;
     }
 
     private async Task<Dictionary<string, string>> ValidateScriptFieldsAsync(
         FormElement formElement,
-        Dictionary<string, object?> values,
-        CommandOperation operation)
+        Dictionary<string, object?> values)
     {
         var errors = new Dictionary<string, string>();
-        if (operation is not (CommandOperation.Insert or CommandOperation.Update))
-            return errors;
 
         foreach (var rule in formElement.Rules)
         {

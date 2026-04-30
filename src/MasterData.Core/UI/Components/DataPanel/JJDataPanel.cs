@@ -378,12 +378,16 @@ public class JJDataPanel(
 
         return LoadValuesFromPkAsync(filter);
     }
-
-
-    /// <inheritdoc cref="ValidateFields()"/>
+    
+    
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values)
     {
         return ValidateFields(values, PageState);
+    }
+    
+    public ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object> values)
+    {
+        return ValidateFieldsAsync(values, PageState);
     }
     
     /// <summary>
@@ -395,9 +399,12 @@ public class JJDataPanel(
     /// </returns>
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
     {
-        return fieldValidationService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink)
-            .GetAwaiter()
-            .GetResult();
+        return fieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
+    }
+    
+    public ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
+    {
+        return fieldValidationService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }
     
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)

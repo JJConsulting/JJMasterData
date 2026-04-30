@@ -72,8 +72,7 @@ public class FormService(
             formElement,
             values,
             PageState.Update,
-            isForm,
-            CommandOperation.Update);
+            isForm);
 
         var result = new FormLetter(errors);
 
@@ -131,8 +130,7 @@ public class FormService(
                 formElement,
                 values,
                 PageState.Insert,
-                isForm,
-                CommandOperation.Insert);
+                isForm);
         else
             errors = new Dictionary<string, string>();
 
@@ -262,8 +260,7 @@ public class FormService(
             formElement,
             primaryKeys,
             PageState.Delete,
-            false,
-            CommandOperation.Delete);
+            false);
         var result = new FormLetter(errors);
 
         if (OnBeforeDeleteAsync != null)

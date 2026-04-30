@@ -1683,12 +1683,21 @@ public class JJFormView : AsyncComponent
         return values;
     }
 
+    [Obsolete("Please use ValidateFieldsAsync")]
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
     {
         DataPanel.Values = values;
         var errors = DataPanel.ValidateFields(values, pageState);
         return errors;
     }
+    
+    public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object> values, PageState pageState)
+    {
+        DataPanel.Values = values;
+        var errors = await DataPanel.ValidateFieldsAsync(values, pageState);
+        return errors;
+    }
+
 
     private void ClearTempFiles()
     {
