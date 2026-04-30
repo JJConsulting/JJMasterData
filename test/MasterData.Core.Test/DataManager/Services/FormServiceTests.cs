@@ -47,7 +47,7 @@ public class FormServiceTests
         var loggerMock = new Mock<ILogger<FormService>>();
 
         fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, It.IsAny<PageState>(), false, It.IsAny<CommandOperation>()))
+            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, It.IsAny<PageState>(), false))
             .ReturnsAsync(new Dictionary<string, string>());
 
         return new FormService(
@@ -172,7 +172,7 @@ public class FormServiceTests
         var primaryKeys = new Dictionary<string, object>();
 
         fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false, CommandOperation.Delete))
+            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false))
             .ReturnsAsync(new Dictionary<string, string>());
 
         entityRepositoryMock.Setup(er => er.DeleteAsync(formElement, primaryKeys)).ReturnsAsync(1);
@@ -212,7 +212,7 @@ public class FormServiceTests
         var primaryKeys = new Dictionary<string, object>();
 
         fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false, CommandOperation.Delete))
+            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false))
             .ReturnsAsync(new Dictionary<string, string> { { "Field1", "Validation Error" } });
 
         var result = await formService.DeleteAsync(formElement, primaryKeys, new DataContext());
@@ -243,7 +243,7 @@ public class FormServiceTests
         var loggerMock = new Mock<ILogger<FormService>>();
 
         fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Insert, false, CommandOperation.Insert))
+            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Insert, false))
             .ReturnsAsync(new Dictionary<string, string> { { "validation:test", "Script error" } });
 
         var formService = new FormService(
