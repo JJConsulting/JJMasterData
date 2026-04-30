@@ -1,6 +1,7 @@
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Configuration;
@@ -15,6 +16,7 @@ public static class DataManagerServiceExtensions
         services.AddScoped<LookupService>();
         services.AddScoped<FieldFormattingService>();
         services.AddScoped<FieldValidationService>();
+        services.AddScoped<IValidationScriptExecutor, SqlValidationScriptExecutor>();
         services.AddScoped<FormService>();
         services.AddScoped<FieldValuesService>();
         services.AddScoped<UploadAreaService>();

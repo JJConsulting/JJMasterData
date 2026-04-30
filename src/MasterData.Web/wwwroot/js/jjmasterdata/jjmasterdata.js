@@ -402,6 +402,9 @@ class CodeEditor {
         catch (_a) {
             return;
         }
+        if (!hints || typeof hints !== "object") {
+            return;
+        }
         Object.keys(hints).forEach(lang => {
             monaco.languages.registerCompletionItemProvider(lang, {
                 provideCompletionItems: function (model, position) {

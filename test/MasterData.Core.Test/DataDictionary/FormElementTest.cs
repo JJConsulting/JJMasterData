@@ -191,6 +191,16 @@ public class FormElementTest
                     IsVerticalLayout = true
                 }
             },
+            Validations =
+            [
+                new FormElementValidation
+                {
+                    Id = 1,
+                    Name = "BeforeInsert",
+                    Language = ValidationType.Sql,
+                    Script = "return 'error'"
+                }
+            ],
             Indexes =
             [
                 new()

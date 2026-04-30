@@ -2597,6 +2597,22 @@
     <value>Sincronizar</value>
     <comment>JJMasterData.Commons</comment>
   </data>
+  <data name="Validations" xml:space="preserve">
+    <value>Validações</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Validation Type" xml:space="preserve">
+    <value>Tipo de validação</value>
+  </data>
+  <data name="Before insert and update" xml:space="preserve">
+    <value>Antes de inserir e atualizar</value>
+  </data>
+  <data name="Return one column with the error message or two columns with field and message. Column names do not matter." xml:space="preserve">
+    <value>Retorne uma coluna com a mensagem de erro ou duas colunas com campo e mensagem. Os nomes das colunas não importam.</value>
+  </data>
+  <data name="There is already a validation with this name." xml:space="preserve">
+    <value>Já existe uma validação com esse nome.</value>
+  </data>
   <data name="Sync Mode" xml:space="preserve">
     <value>Modo do Sincronismo</value>
     <comment>JJMasterDataWeb</comment>

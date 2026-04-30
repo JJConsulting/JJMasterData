@@ -1,0 +1,90 @@
+@using JJMasterData.Core.DataDictionary.Models
+@model JJMasterData.Core.DataDictionary.Models.FormElementValidation
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@{
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Validations"]}";
+    Layout = "_FormElementMenuLayout";
+}
+
+<script type="text/javascript">
+    function loadDetails(url, validationId) {
+        document.querySelectorAll("#validation-list a").forEach(element => {
+            element.classList.remove("active");
+        });
+
+        if (validationId !== "") {
+            const validation = document.getElementById("validation-" + validationId);
+            if (validation) {
+                validation.classList.add("active");
+            }
+        }
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.text();
+            })
+            .then(data => {
+                HTMLHelper.setInnerHTML("validation-details", data);
+                listenAllEvents("#validation-details ");
+            });
+    }
+
+    function searchValidations(oDom) {
+        const value = $(oDom).val().toLowerCase();
+        $("#validation-list a").filter(function () {
+            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            $(this).toggle(isSearch);
+        });
+    }
+</script>
+
+@using (Html.BeginMasterDataForm())
+{
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="input-group">
+                <input id="txtFilter" name="txtFilter" onkeyup="searchValidations(this);"
+                       placeholder="@StringLocalizer["Search..."]" type="text" class="form-control"
+                       data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
+                <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip"
+                     title="@StringLocalizer["Add"]"
+                     onclick="loadDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                    <i class="fa fa-plus"></i>
+                </div>
+            </div>
+            <br/>
+            <div class="jjrelative">
+                <div id="validation-list">
+                    <div class="list-group jj-list-group">
+                        @if (ViewBag.Validations.Count == 0)
+                        {
+                            <div>@StringLocalizer["No record found"]</div>
+                        }
+                        @foreach (FormElementValidation validation in ViewBag.Validations)
+                        {
+                            <a href="javascript:loadDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, validationId = validation.Id })', '@validation.Id');"
+                               class="list-group-item @(validation.Id.Equals(Model.Id) ? "active" : "")"
+                               id="validation-@validation.Id">
+                                <div>
+                                    <b>@validation.Name</b>
+                                    <br/>
+                                    <small>@validation.Language.ToString()</small>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9" style="padding-left:0px">
+            <div class="jjrelative" id="validation-details">
+                <partial name="_Detail" model="Model"/>
+            </div>
+        </div>
+    </div>
+}

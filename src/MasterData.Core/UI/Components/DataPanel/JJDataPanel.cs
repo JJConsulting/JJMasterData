@@ -395,7 +395,9 @@ public class JJDataPanel(
     /// </returns>
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
     {
-        return fieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
+        return fieldValidationService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink)
+            .GetAwaiter()
+            .GetResult();
     }
     
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)

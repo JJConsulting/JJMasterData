@@ -1,6 +1,9 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -8,6 +11,7 @@ using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 
 using Microsoft.Extensions.Localization;
 
@@ -15,13 +19,34 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FieldValidationService(
     ExpressionsService expressionsService,
+    IEnumerable<IValidationScriptExecutor> validationScriptExecutors,
     IStringLocalizer<MasterDataResources> localizer)
 {
+    private Dictionary<ValidationType, IValidationScriptExecutor> ValidationScriptExecutors { get; } =
+        validationScriptExecutors.ToDictionary(e => e.Language);
+
+    [Obsolete("Use ValidateFieldsAsync instead.")]
     public Dictionary<string, string> ValidateFields(
         FormElement formElement,
-        Dictionary<string, object> formValues,
+        Dictionary<string, object?> formValues,
         PageState pageState,
-        bool enableErrorLink)
+        bool enableErrorLink,
+        CommandOperation operation = CommandOperation.None)
+    {
+        var valueTask = ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink, operation);
+        
+        if (valueTask.IsCompletedSuccessfully)
+            return valueTask.Result;
+        
+        return valueTask.AsTask().GetAwaiter().GetResult();
+    }
+
+    public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(
+        FormElement formElement,
+        Dictionary<string, object?> formValues,
+        PageState pageState,
+        bool enableErrorLink,
+        CommandOperation operation = CommandOperation.None)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -49,20 +74,56 @@ public class FieldValidationService(
 
             var error = ValidateField(field, field.Name, value, enableErrorLink);
             if (!string.IsNullOrEmpty(error))
-                errors.Add(field.Name, error);
+                errors.Add(field.Name, error!);
+        }
+
+        if (operation != CommandOperation.None)
+        {
+            foreach (var error in await ValidateScriptFieldsAsync(formElement, formValues, operation))
+            {
+                errors[error.Key] = error.Value;
+            }
         }
 
         return errors;
     }
 
-    public string ValidateField(FormElementField field, string fieldId, object value, bool enableErrorLink = true)
+    private async Task<Dictionary<string, string>> ValidateScriptFieldsAsync(
+        FormElement formElement,
+        Dictionary<string, object?> values,
+        CommandOperation operation)
+    {
+        var errors = new Dictionary<string, string>();
+        if (operation is not (CommandOperation.Insert or CommandOperation.Update))
+            return errors;
+
+        foreach (var validation in formElement.Validations)
+        {
+            if (!ValidationScriptExecutors.TryGetValue(validation.Language, out var executor))
+            {
+                errors[$"validation:{validation.Name}"] =
+                    $"No script executor registered for language {validation.Language}.";
+                continue;
+            }
+
+            var executionErrors = await executor.ExecuteAsync(formElement, validation, values);
+            foreach (var error in executionErrors)
+            {
+                errors[error.Key] = error.Value;
+            }
+        }
+
+        return errors;
+    }
+
+    public string? ValidateField(FormElementField field, string fieldId, object? value, bool enableErrorLink = true)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        string fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : field.Label;
+        string? fieldName = (enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : field.Label) ?? string.Empty;
 
-        string error = null;
+        string? error = null;
 
         if (string.IsNullOrEmpty(value?.ToString()))
         {
@@ -75,15 +136,15 @@ public class FieldValidationService(
         {
             error = ValidateDataType(field, value, fieldName);
 
-            error ??= ValidateComponent(field, value, fieldName);
+            error ??= ValidateComponent(field, value!, fieldName);
         }
 
         return error;
     }
 
-    private string ValidateComponent(FormElementField field, object value, string fieldName)
+    private string? ValidateComponent(FormElementField field, object value, string fieldName)
     {
-        var valueString = value.ToString();
+        var valueString = value.ToString()!;
         switch (field.Component)
         {
             case FormComponent.Email:
@@ -143,13 +204,13 @@ public class FieldValidationService(
             case FormComponent.Slider:
                 if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))
                 {
-                    if (double.Parse(value?.ToString()) < (double?)minValue)
+                    if (double.Parse(value?.ToString()!) < (double?)minValue)
                         return localizer["{0} field needs to be greater than {1}", fieldName, minValue];
                 }
 
                 if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out var maxValue))
                 {
-                    if (double.Parse(value?.ToString()) > (double?)maxValue)
+                    if (double.Parse(value?.ToString()!) > (double?)maxValue)
                         return localizer["{0} field needs to be less or equal than {1}", fieldName, maxValue];
                 }
 
@@ -168,7 +229,7 @@ public class FieldValidationService(
         return null;
     }
 
-    private string ValidateDataType(FormElementField field, object value, string fieldName)
+    private string? ValidateDataType(FormElementField field, object? value, string fieldName)
     {
         var dataType = field.DataType;
         switch (dataType)
@@ -247,7 +308,7 @@ public class FieldValidationService(
         return null;
     }
 
-    private static string GetFieldLinkHtml(string fieldName, string label)
+    private static string GetFieldLinkHtml(string fieldName, string? label)
     {
         var link = new HtmlBuilder(HtmlTag.A);
         link.WithAttribute("href", "#void");
