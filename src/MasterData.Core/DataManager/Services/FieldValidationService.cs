@@ -74,7 +74,7 @@ public class FieldValidationService(
                 errors.Add(field.Name, error!);
         }
         
-        foreach (var error in await ValidateScriptFieldsAsync(formElement, formValues))
+        foreach (var error in await ValidateRulesAsync(formElement, formValues, enableErrorLink, pageState))
         {
             errors[error.Key] = error.Value;
         }
@@ -82,13 +82,15 @@ public class FieldValidationService(
         return errors;
     }
 
-    private async Task<Dictionary<string, string>> ValidateScriptFieldsAsync(
+    private async Task<Dictionary<string, string>> ValidateRulesAsync(
         FormElement formElement,
-        Dictionary<string, object?> values)
+        Dictionary<string, object?> values,
+        bool enableErrorLink,
+        PageState pageState)
     {
         var errors = new Dictionary<string, string>();
 
-        foreach (var rule in formElement.Rules)
+        foreach (var rule in formElement.Rules.Where(r => r.ShouldRun(pageState)))
         {
             if (!ValidationScriptExecutors.TryGetValue(rule.Language, out var executor))
             {
@@ -100,7 +102,19 @@ public class FieldValidationService(
             var executionErrors = await executor.ExecuteAsync(formElement, rule, values);
             foreach (var error in executionErrors)
             {
-                errors[error.Key] = error.Value;
+                if (formElement.Fields.TryGetField(error.Key, out var field))
+                {
+                    var fieldName = field.LabelOrName;
+                    
+                    if (enableErrorLink)
+                        fieldName = GetFieldLinkHtml(field.Name, field.LabelOrName);
+                    
+                    errors[error.Key] = fieldName + " - " + error.Value;
+                }
+                else
+                {
+                    errors[error.Key] = error.Value;
+                }
             }
         }
 
@@ -112,7 +126,10 @@ public class FieldValidationService(
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        string? fieldName = (enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : field.Label) ?? string.Empty;
+        var fieldName = field.LabelOrName;
+
+        if (enableErrorLink)
+            fieldName = GetFieldLinkHtml(fieldId, field.LabelOrName);
 
         string? error = null;
 
@@ -302,7 +319,7 @@ public class FieldValidationService(
     private static string GetFieldLinkHtml(string fieldName, string? label)
     {
         var link = new HtmlBuilder(HtmlTag.A);
-        link.WithAttribute("href", "#void");
+        link.WithAttribute("href", "javascript:void(0)");
         link.WithOnClick($"javascript:$('#{fieldName}').focus();");
         link.WithCssClass("alert-link");
         link.AppendText(label ?? fieldName);

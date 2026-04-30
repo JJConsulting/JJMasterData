@@ -60,13 +60,13 @@ public class RulesController(FormElementRulesService formElementRulesService) : 
 
     [HttpPost]
     [ExportModelState]
-    public async Task<IActionResult> Save(string elementName, FormElementRule rule)
+    public async Task<IActionResult> Save(string elementName, FormElementRule rule, string selectedTab = "#div-general")
     {
         await formElementRulesService.SaveAsync(elementName, rule);
         if (ModelState.IsValid)
-            return RedirectToAction("Index", new { elementName, ruleId = rule.Id });
+            return RedirectToAction("Index", new { elementName, ruleId = rule.Id, selectedTab });
 
-        return RedirectToIndex(elementName, rule);
+        return RedirectToIndex(elementName, rule, selectedTab);
     }
 
     public async Task<IActionResult> Delete(string elementName, int ruleId)
@@ -83,15 +83,20 @@ public class RulesController(FormElementRulesService formElementRulesService) : 
         return View(rule);
     }
 
-    private RedirectToActionResult RedirectToIndex(string elementName, FormElementRule rule)
+    private RedirectToActionResult RedirectToIndex(string elementName, FormElementRule rule, string selectedTab)
     {
         TempData.Put("rule", rule);
 
-        return RedirectToAction("Index", new { elementName });
+        return RedirectToAction("Index", new { elementName, selectedTab });
     }
 
     private void PopulateViewData(FormElement formElement, FormElementRule rule)
     {
+        var selectedTab = Request.HasFormContentType
+            ? Request.Form["selectedTab"].ToString()
+            : Request.Query["selectedTab"].ToString();
+
+        ViewBag.Tab = string.IsNullOrWhiteSpace(selectedTab) ? "#div-general" : selectedTab;
         ViewData["MenuId"] = "Rules";
         ViewData["ElementName"] = formElement.Name;
         ViewData["CodeEditorHints"] = formElement.Fields.Select(f => new CodeEditorHint

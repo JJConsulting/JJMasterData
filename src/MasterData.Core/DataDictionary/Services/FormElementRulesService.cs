@@ -58,6 +58,9 @@ public class FormElementRulesService(
     {
         ValidateScriptName(rule.Name);
 
+        if (!rule.RunOnInsert && !rule.RunOnUpdate && !rule.RunOnDelete)
+            AddError(nameof(rule.RunOnInsert), StringLocalizer["Select at least one operation."]);
+
         if (string.IsNullOrWhiteSpace(rule.Script))
             AddError(nameof(rule.Script), StringLocalizer["Required [Script] field"]);
 

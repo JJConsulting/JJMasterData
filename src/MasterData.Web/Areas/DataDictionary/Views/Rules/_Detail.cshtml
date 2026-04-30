@@ -3,6 +3,15 @@
 @model JJMasterData.Core.DataDictionary.Models.FormElementRule
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
+@{
+    string currentTab = ViewBag.Tab ?? "#div-general";
+
+    string Active(string tab)
+    {
+        return currentTab == tab ? "active show" : string.Empty;
+    }
+}
+
 <script type="text/javascript">
     function saveRule() {
         SpinnerOverlay.show();
@@ -27,34 +36,65 @@
             })
             .then(data => {
                 HTMLHelper.setInnerHTML("rule-details", data);
+                bindRuleTabs();
                 listenAllEvents("#rule-details ");
             });
+    }
+
+    function deleteRule() {
+        return confirm('@StringLocalizer["Are you sure you want to delete this rule?"]');
     }
 </script>
 
 <div class="container-fluid">
+    <ul class="nav nav-underline">
+        <li class="nav-item">
+            <a class="nav-link @Active("#div-general")" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @Active("#div-script")" @BootstrapHelper.GetDataToggle("tab") href="#div-script">@StringLocalizer["Script"]</a>
+        </li>
+    </ul>
+
     @Html.HiddenFor(model => model.Id)
 
-    <div class="row mt-4 mb-3">
-        <div class="col-sm-6">
-            <div class="form-floating">
-                <input asp-for="Name" class="form-control" placeholder="">
-                <label asp-for="Name"></label>
+    <div class="tab-content mt-4">
+        <div id="div-general" class="tab-pane fade @Active("#div-general")">
+            <div class="row mb-3">
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <input asp-for="Name" class="form-control" placeholder="">
+                        <label asp-for="Name"></label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <select asp-for="Language" class="form-select" asp-items="Html.GetEnumSelectList<RuleLanguage>()" onchange="changeRuleLanguage()"></select>
+                        <label>@StringLocalizer["Rule Type"]</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4">
+                    <checkbox for="RunOnInsert" layout="Switch"/>
+                </div>
+                <div class="col-sm-4">
+                    <checkbox for="RunOnUpdate" layout="Switch"/>
+                </div>
+                <div class="col-sm-4">
+                    <checkbox for="RunOnDelete" layout="Switch"/>
+                </div>
             </div>
         </div>
-        <div class="col-sm-6">
-            <div class="form-floating">
-                <select asp-for="Language" class="form-select" asp-items="Html.GetEnumSelectList<RuleLanguage>()" onchange="changeRuleLanguage()"></select>
-                <label>@StringLocalizer["Type"]</label>
+        <div id="div-script" class="tab-pane fade @Active("#div-script")">
+            <div class="row mb-3">
+                <div class="col-sm-12">
+                    <label class="form-label">@StringLocalizer["Script"] <tooltip title="@(Model.Language == RuleLanguage.JavaScript
+                                                                                         ? StringLocalizer["JavaScript rules run server-side with Jint. Use addError(message) for a general error or addError(name, message) for a field error."]
+                                                                                         : StringLocalizer["Return one column with the error message or two columns with field and message. Column names do not matter."])"/></label>
+                    <code-editor asp-for="Script" language="@(Model.Language == RuleLanguage.JavaScript ? "javascript" : "sql")" height="320" />
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-sm-12">
-            <label class="form-label">@StringLocalizer["Script"] <tooltip title="@(Model.Language == RuleLanguage.JavaScript
-                                                                                     ? StringLocalizer["JavaScript rules run server-side with Jint. Use addError(message) for a general error or addError(name, message) for a field error."]
-                                                                                     : StringLocalizer["Return one column with the error message or two columns with field and message. Column names do not matter."])"/></label>
-            <code-editor asp-for="Script" language="@(Model.Language == RuleLanguage.JavaScript ? "javascript" : "sql")" height="320" />
         </div>
     </div>
 
@@ -69,7 +109,7 @@
         <link-button text="@StringLocalizer["Save"]" color="Primary" icon="Check" on-client-click="saveRule()"/>
         @if (Model.Id > 0)
         {
-            <link-button text="@StringLocalizer["Delete"]" icon="SolidTrashCan" asp-action="Delete" asp-route-elementName="@ViewBag.ElementName" asp-route-ruleId="@Model.Id"/>
+            <link-button text="@StringLocalizer["Delete"]" icon="SolidTrashCan" asp-action="Delete" asp-route-elementName="@ViewBag.ElementName" asp-route-ruleId="@Model.Id" on-client-click="return deleteRule();"/>
         }
     </div>
 </div>

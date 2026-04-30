@@ -261,6 +261,7 @@ public class FormService(
             primaryKeys,
             PageState.Delete,
             false);
+        
         var result = new FormLetter(errors);
 
         if (OnBeforeDeleteAsync != null)

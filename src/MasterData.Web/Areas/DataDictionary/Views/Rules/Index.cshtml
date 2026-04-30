@@ -8,7 +8,21 @@
 }
 
 <script type="text/javascript">
+    function bindRuleTabs() {
+        const selectedTabInput = document.getElementById("selectedTab");
+        if (!selectedTabInput) {
+            return;
+        }
+
+        document.querySelectorAll("#rule-details [@BootstrapHelper.DataToggle='tab']").forEach(function(tabLink) {
+            tabLink.addEventListener("click", function(e) {
+                selectedTabInput.value = e.currentTarget.getAttribute("href");
+            });
+        });
+    }
+
     $(document).ready(function () {
+        bindRuleTabs();
         if (bootstrapVersion === 5) {
             TooltipHelper.listen("#rule-details");
         } else {
@@ -17,6 +31,13 @@
     });
 
     function loadDetails(url, ruleId) {
+        const selectedTabInput = document.getElementById("selectedTab");
+        const selectedTab = selectedTabInput && selectedTabInput.value
+            ? selectedTabInput.value
+            : "#div-general";
+        const detailsUrl = new URL(url, window.location.origin);
+        detailsUrl.searchParams.set("selectedTab", selectedTab);
+
         document.querySelectorAll("#rule-list a").forEach(element => {
             element.classList.remove("active");
         });
@@ -28,7 +49,7 @@
             }
         }
 
-        fetch(url)
+        fetch(detailsUrl.toString())
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
@@ -37,6 +58,7 @@
             })
             .then(data => {
                 HTMLHelper.setInnerHTML("rule-details", data);
+                bindRuleTabs();
                 listenAllEvents("#rule-details ");
             });
     }
@@ -53,6 +75,7 @@
 
 @using (Html.BeginMasterDataForm())
 {
+    <input type="hidden" name="selectedTab" id="selectedTab" value="@ViewBag.Tab"/>
     <div class="row">
         <div class="col-sm-3">
             <div class="input-group">

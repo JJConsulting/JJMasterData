@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Data.Entity.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -14,6 +13,18 @@ public class FormElementRule
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
+    [Display(Name = "Run On Insert")]
+    [JsonPropertyName("runOnInsert")]
+    public bool RunOnInsert { get; set; } = true;
+
+    [Display(Name = "Run On Update")]
+    [JsonPropertyName("runOnUpdate")]
+    public bool RunOnUpdate { get; set; } = true;
+
+    [Display(Name = "Run On Delete")]
+    [JsonPropertyName("runOnDelete")]
+    public bool RunOnDelete { get; set; }
+
     [Display(Name = "Rule Type")]
     [JsonPropertyName("language")]
     public RuleLanguage Language { get; set; } = RuleLanguage.Sql;
@@ -21,6 +32,17 @@ public class FormElementRule
     [Display(Name = "Script")]
     [JsonPropertyName("script")]
     public string Script { get; set; } = string.Empty;
+
+    public bool ShouldRun(PageState pageState)
+    {
+        return pageState switch
+        {
+            PageState.Insert => RunOnInsert,
+            PageState.Update => RunOnUpdate,
+            PageState.Delete => RunOnDelete,
+            _ => false
+        };
+    }
 
     public FormElementRule DeepCopy()
     {

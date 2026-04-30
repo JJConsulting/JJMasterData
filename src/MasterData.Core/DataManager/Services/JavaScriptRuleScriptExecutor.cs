@@ -30,6 +30,7 @@ public class JavaScriptRuleScriptExecutor : IValidationScriptExecutor
 
         using var engine = new Engine();
         engine.SetValue("values", valuesObject);
+        engine.SetValue("formElement", formElement);
         engine.SetValue("addError", new Action<JsValue, JsValue?>((first, second) =>
         {
             var hasSecondArgument = !second?.IsUndefined() ?? false;

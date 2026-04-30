@@ -1,11 +1,13 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -22,7 +24,7 @@ public class SqlValidationScriptExecutor(IEntityRepository entityRepository) : I
         var command = ExpressionDataAccessCommandFactory.Create(
             rule.Script,
             values);
-
+        
         var dataSet = await entityRepository.GetDataSetAsync(command, formElement.ConnectionId);
 
         var errors = new Dictionary<string, string>();
