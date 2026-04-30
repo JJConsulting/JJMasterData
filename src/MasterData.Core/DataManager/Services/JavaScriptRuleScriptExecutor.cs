@@ -11,7 +11,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class JavaScriptRuleScriptExecutor : IValidationScriptExecutor
+public class JavaScriptRuleScriptExecutor : IRuleExecutor
 {
     public RuleLanguage Language => RuleLanguage.JavaScript;
 

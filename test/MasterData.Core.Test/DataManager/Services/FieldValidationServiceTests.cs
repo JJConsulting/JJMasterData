@@ -22,7 +22,7 @@ public class FieldValidationServiceTests
         // Arrange
         var expressionsServiceMock = new Mock<ExpressionsService>();
         var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var service = new FieldValidationService(expressionsServiceMock.Object, Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IValidationScriptExecutor>(), localizerMock.Object);
+        var service = new FieldValidationService(expressionsServiceMock.Object, Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(), localizerMock.Object);
 
         // Act and Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => service.ValidateFieldsAsync(null, new Dictionary<string, object?>(), new PageState(), true).AsTask());
@@ -37,7 +37,7 @@ public class FieldValidationServiceTests
                              .Returns(false);
 
         var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var service = new FieldValidationService(expressionsServiceMock.Object, Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IValidationScriptExecutor>(), localizerMock.Object);
+        var service = new FieldValidationService(expressionsServiceMock.Object, Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(), localizerMock.Object);
 
         var formElement = new FormElement
         {
@@ -63,7 +63,7 @@ public class FieldValidationServiceTests
         var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         localizerMock.Setup(l => l["{0} field is required", It.IsAny<string>()]).Returns(new LocalizedString("Field is required","Field is required"));
 
-        var service = new FieldValidationService(expressionsServiceMock.Object, Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IValidationScriptExecutor>(), localizerMock.Object);
+        var service = new FieldValidationService(expressionsServiceMock.Object, Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(), localizerMock.Object);
 
         var field = new FormElementField { IsRequired = true, Label = "Field" };
         const string fieldId = "fieldId";

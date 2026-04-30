@@ -19,10 +19,10 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FieldValidationService(
     ExpressionsService expressionsService,
-    IEnumerable<IValidationScriptExecutor> validationScriptExecutors,
+    IEnumerable<IRuleExecutor> validationScriptExecutors,
     IStringLocalizer<MasterDataResources> localizer)
 {
-    private Dictionary<RuleLanguage, IValidationScriptExecutor> ValidationScriptExecutors { get; } =
+    private Dictionary<RuleLanguage, IRuleExecutor> ValidationScriptExecutors { get; } =
         validationScriptExecutors.ToDictionary(e => e.Language);
     
     public Dictionary<string, string> ValidateFields(

@@ -5,7 +5,7 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Services.Abstractions;
 
-public interface IValidationScriptExecutor
+public interface IRuleExecutor
 {
     RuleLanguage Language { get; }
 

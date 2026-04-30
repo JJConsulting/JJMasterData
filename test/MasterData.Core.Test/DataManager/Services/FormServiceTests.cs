@@ -40,7 +40,7 @@ public class FormServiceTests
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IValidationScriptExecutor>(),
+            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
             Mock.Of<IStringLocalizer<MasterDataResources>>());
         var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var auditLogServiceMock = new Mock<AuditLogService>();
@@ -151,7 +151,7 @@ public class FormServiceTests
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IValidationScriptExecutor>(),
+            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
             Mock.Of<IStringLocalizer<MasterDataResources>>());
         var auditLogServiceMock = new Mock<AuditLogService>();
         var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
@@ -192,7 +192,7 @@ public class FormServiceTests
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IValidationScriptExecutor>(),
+            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
             Mock.Of<IStringLocalizer<MasterDataResources>>());
         var auditLogServiceMock = new Mock<AuditLogService>();
         var loggerMock = new Mock<ILogger<FormService>>();
@@ -236,7 +236,7 @@ public class FormServiceTests
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IValidationScriptExecutor>(),
+            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
             Mock.Of<IStringLocalizer<MasterDataResources>>());
         var auditLogServiceMock = new Mock<AuditLogService>();
         var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();

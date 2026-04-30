@@ -12,7 +12,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class SqlValidationScriptExecutor(IEntityRepository entityRepository) : IValidationScriptExecutor
+public class SqlRuleExecutor(IEntityRepository entityRepository) : IRuleExecutor
 {
     public RuleLanguage Language => RuleLanguage.Sql;
 
