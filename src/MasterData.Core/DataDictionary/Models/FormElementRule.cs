@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
-public class FormElementValidation
+public class FormElementRule
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
@@ -14,16 +14,16 @@ public class FormElementValidation
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
-    [Display(Name = "Validation Type")]
+    [Display(Name = "Rule Type")]
     [JsonPropertyName("language")]
-    public ValidationType Language { get; set; } = ValidationType.Sql;
+    public RuleLanguage Language { get; set; } = RuleLanguage.Sql;
 
     [Display(Name = "Script")]
     [JsonPropertyName("script")]
     public string Script { get; set; } = string.Empty;
 
-    public FormElementValidation DeepCopy()
+    public FormElementRule DeepCopy()
     {
-        return (FormElementValidation)MemberwiseClone();
+        return (FormElementRule)MemberwiseClone();
     }
 }

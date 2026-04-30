@@ -191,13 +191,13 @@ public class FormElementTest
                     IsVerticalLayout = true
                 }
             },
-            Validations =
+            Rules =
             [
-                new FormElementValidation
+                new FormElementRule
                 {
                     Id = 1,
                     Name = "BeforeInsert",
-                    Language = ValidationType.Sql,
+                    Language = RuleLanguage.Sql,
                     Script = "return 'error'"
                 }
             ],

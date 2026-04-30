@@ -12,15 +12,15 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class SqlValidationScriptExecutor(IEntityRepository entityRepository) : IValidationScriptExecutor
 {
-    public ValidationType Language => ValidationType.Sql;
+    public RuleLanguage Language => RuleLanguage.Sql;
 
     public async Task<Dictionary<string, string>> ExecuteAsync(
         FormElement formElement,
-        FormElementValidation validation,
+        FormElementRule rule,
         Dictionary<string, object?> values)
     {
         var command = ExpressionDataAccessCommandFactory.Create(
-            validation.Script,
+            rule.Script,
             values);
 
         var dataSet = await entityRepository.GetDataSetAsync(command, formElement.ConnectionId);

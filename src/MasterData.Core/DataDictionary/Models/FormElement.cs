@@ -70,8 +70,8 @@ public class FormElement : Element
     public FormElementOptions Options { get; set; }
 
     [Required]
-    [JsonPropertyName("validations")]
-    public List<FormElementValidation> Validations { get; set; }
+    [JsonPropertyName("rules")]
+    public List<FormElementRule> Rules { get; set; }
 
     [Required]
     [JsonPropertyName("apiOptions")]
@@ -82,7 +82,7 @@ public class FormElement : Element
         Fields = new FormElementFieldList(base.Fields);
         Panels = [];
         Options = new FormElementOptions();
-        Validations = [];
+        Rules = [];
         Relationships = new FormElementRelationshipList(base.Relationships);
         ApiOptions = new FormElementApiOptions();
     }
@@ -107,7 +107,7 @@ public class FormElement : Element
         Panels = [];
         ApiOptions = new FormElementApiOptions();
         Options = new FormElementOptions();
-        Validations = [];
+        Rules = [];
     }
 
     [SetsRequiredMembers]
@@ -145,7 +145,7 @@ public class FormElement : Element
         List<FormElementPanel>? panels,
         FormElementRelationshipList relationships,
         FormElementOptions? options,
-        List<FormElementValidation>? validations,
+        List<FormElementRule>? rules,
         FormElementApiOptions? apiOptions)
     {
         base.Fields = new ElementFieldList(fields.Cast<ElementField>().ToList());
@@ -156,7 +156,7 @@ public class FormElement : Element
             .ToList()!;
         Relationships = relationships;
         Options = options ?? new FormElementOptions();
-        Validations = validations ?? [];
+        Rules = rules ?? [];
         ApiOptions = apiOptions ?? new FormElementApiOptions();
         Panels = panels ?? [];
     }
@@ -234,7 +234,7 @@ public class FormElement : Element
 
         copy.Fields = Fields.DeepCopy();
         copy.Options = Options.DeepCopy();
-        copy.Validations = Validations.ConvertAll(v => v.DeepCopy());
+        copy.Rules = Rules.ConvertAll(v => v.DeepCopy());
         copy.Panels = Panels.ConvertAll(p => p.DeepCopy());
         copy.Relationships = Relationships.DeepCopy();
         copy.Indexes = Indexes.ConvertAll(i => i.DeepCopy());
@@ -243,8 +243,8 @@ public class FormElement : Element
         return copy;
     }
 
-    public FormElementValidation GetValidationById(int id)
+    public FormElementRule GetRuleById(int id)
     {
-        return Validations.First(v => v.Id == id);
+        return Rules.First(v => v.Id == id);
     }
 }

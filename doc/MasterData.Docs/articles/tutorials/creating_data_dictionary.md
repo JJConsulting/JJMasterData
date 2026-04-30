@@ -149,6 +149,14 @@ The Actions field is divided into two, Grid and Toolbar.
 - Filter: Shows all filter options for searching items within the table.
 - Log: Records and displays the actions performed within the table, including adding, editing and deleting.
 
+## Rules
+Within the Rules tab you can create script-based validations executed before `insert` and `update`.
+
+- SQL rules can return rows representing validation errors
+- JavaScript rules can call `addError(message)` or `addError(fieldName, message)`
+
+For the complete reference, see [Rules](../rules.md).
+
 ## **API**
 Within this tab it will be possible to edit each verb responsible for http permissions within the REST API.
 - ApplyUseridOn: Name of the field where the user ID filter will be applied.

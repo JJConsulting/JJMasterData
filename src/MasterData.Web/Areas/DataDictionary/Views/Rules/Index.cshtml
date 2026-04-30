@@ -1,22 +1,30 @@
 @using JJMasterData.Core.DataDictionary.Models
-@model JJMasterData.Core.DataDictionary.Models.FormElementValidation
+@model JJMasterData.Core.DataDictionary.Models.FormElementRule
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @{
-    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Validations"]}";
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Rules"]}";
     Layout = "_FormElementMenuLayout";
 }
 
 <script type="text/javascript">
-    function loadDetails(url, validationId) {
-        document.querySelectorAll("#validation-list a").forEach(element => {
+    $(document).ready(function () {
+        if (bootstrapVersion === 5) {
+            TooltipHelper.listen("#rule-details");
+        } else {
+            $('#rule-details [data-toggle="tooltip"]').tooltip();
+        }
+    });
+
+    function loadDetails(url, ruleId) {
+        document.querySelectorAll("#rule-list a").forEach(element => {
             element.classList.remove("active");
         });
 
-        if (validationId !== "") {
-            const validation = document.getElementById("validation-" + validationId);
-            if (validation) {
-                validation.classList.add("active");
+        if (ruleId !== "") {
+            const rule = document.getElementById("rule-" + ruleId);
+            if (rule) {
+                rule.classList.add("active");
             }
         }
 
@@ -28,14 +36,14 @@
                 return response.text();
             })
             .then(data => {
-                HTMLHelper.setInnerHTML("validation-details", data);
-                listenAllEvents("#validation-details ");
+                HTMLHelper.setInnerHTML("rule-details", data);
+                listenAllEvents("#rule-details ");
             });
     }
 
-    function searchValidations(oDom) {
+    function searchRules(oDom) {
         const value = $(oDom).val().toLowerCase();
-        $("#validation-list a").filter(function () {
+        $("#rule-list a").filter(function () {
             const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
             const isSearch = textValues.toLowerCase().indexOf(value) > -1;
             $(this).toggle(isSearch);
@@ -48,7 +56,7 @@
     <div class="row">
         <div class="col-sm-3">
             <div class="input-group">
-                <input id="txtFilter" name="txtFilter" onkeyup="searchValidations(this);"
+                <input id="txtFilter" name="txtFilter" onkeyup="searchRules(this);"
                        placeholder="@StringLocalizer["Search..."]" type="text" class="form-control"
                        data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
                 <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip"
@@ -59,21 +67,21 @@
             </div>
             <br/>
             <div class="jjrelative">
-                <div id="validation-list">
+                <div id="rule-list">
                     <div class="list-group jj-list-group">
-                        @if (ViewBag.Validations.Count == 0)
+                        @if (ViewBag.Rules.Count == 0)
                         {
                             <div>@StringLocalizer["No record found"]</div>
                         }
-                        @foreach (FormElementValidation validation in ViewBag.Validations)
+                        @foreach (FormElementRule rule in ViewBag.Rules)
                         {
-                            <a href="javascript:loadDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, validationId = validation.Id })', '@validation.Id');"
-                               class="list-group-item @(validation.Id.Equals(Model.Id) ? "active" : "")"
-                               id="validation-@validation.Id">
+                            <a href="javascript:loadDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, ruleId = rule.Id })', '@rule.Id');"
+                               class="list-group-item @(rule.Id.Equals(Model.Id) ? "active" : "")"
+                               id="rule-@rule.Id">
                                 <div>
-                                    <b>@validation.Name</b>
+                                    <b>@rule.Name</b>
                                     <br/>
-                                    <small>@validation.Language.ToString()</small>
+                                    <small>@rule.Language.ToString()</small>
                                 </div>
                             </a>
                         }
@@ -82,7 +90,7 @@
             </div>
         </div>
         <div class="col-sm-9" style="padding-left:0px">
-            <div class="jjrelative" id="validation-details">
+            <div class="jjrelative" id="rule-details">
                 <partial name="_Detail" model="Model"/>
             </div>
         </div>

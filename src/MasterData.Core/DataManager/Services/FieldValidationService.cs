@@ -22,7 +22,7 @@ public class FieldValidationService(
     IEnumerable<IValidationScriptExecutor> validationScriptExecutors,
     IStringLocalizer<MasterDataResources> localizer)
 {
-    private Dictionary<ValidationType, IValidationScriptExecutor> ValidationScriptExecutors { get; } =
+    private Dictionary<RuleLanguage, IValidationScriptExecutor> ValidationScriptExecutors { get; } =
         validationScriptExecutors.ToDictionary(e => e.Language);
 
     [Obsolete("Use ValidateFieldsAsync instead.")]
@@ -97,16 +97,16 @@ public class FieldValidationService(
         if (operation is not (CommandOperation.Insert or CommandOperation.Update))
             return errors;
 
-        foreach (var validation in formElement.Validations)
+        foreach (var rule in formElement.Rules)
         {
-            if (!ValidationScriptExecutors.TryGetValue(validation.Language, out var executor))
+            if (!ValidationScriptExecutors.TryGetValue(rule.Language, out var executor))
             {
-                errors[$"validation:{validation.Name}"] =
-                    $"No script executor registered for language {validation.Language}.";
+                errors[$"rule:{rule.Name}"] =
+                    $"No script executor registered for language {rule.Language}.";
                 continue;
             }
 
-            var executionErrors = await executor.ExecuteAsync(formElement, validation, values);
+            var executionErrors = await executor.ExecuteAsync(formElement, rule, values);
             foreach (var error in executionErrors)
             {
                 errors[error.Key] = error.Value;

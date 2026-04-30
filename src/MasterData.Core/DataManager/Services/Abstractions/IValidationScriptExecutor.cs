@@ -7,10 +7,10 @@ namespace JJMasterData.Core.DataManager.Services.Abstractions;
 
 public interface IValidationScriptExecutor
 {
-    ValidationType Language { get; }
+    RuleLanguage Language { get; }
 
     Task<Dictionary<string, string>> ExecuteAsync(
         FormElement formElement,
-        FormElementValidation validation,
+        FormElementRule rule,
         Dictionary<string, object?> values);
 }
