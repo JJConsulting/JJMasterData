@@ -25,7 +25,7 @@ public class FieldValidationServiceTests
         var service = new FieldValidationService(expressionsServiceMock.Object, Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(), localizerMock.Object);
 
         // Act and Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => service.ValidateFieldsAsync(null, new Dictionary<string, object?>(), new PageState(), true).AsTask());
+        await Assert.ThrowsAsync<ArgumentNullException>(() => service.ValidateFieldsAsync(null!, new Dictionary<string, object?>(), new PageState(), true).AsTask());
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class FieldValidationServiceTests
             Name = "name",
             TableName = "tableName"
         };
-        var formValues = new Dictionary<string, object>();
+        var formValues = new Dictionary<string, object?>();
         const PageState pageState = new();
 
         // Act
