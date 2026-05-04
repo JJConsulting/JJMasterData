@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Models;
@@ -11,7 +7,6 @@ using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
 
@@ -47,7 +42,7 @@ public class FormServiceTests
         var loggerMock = new Mock<ILogger<FormService>>();
 
         fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, It.IsAny<PageState>(), false))
+            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values!, It.IsAny<PageState>(), false))
             .ReturnsAsync(new Dictionary<string, string>());
 
         return new FormService(
@@ -172,7 +167,7 @@ public class FormServiceTests
         var primaryKeys = new Dictionary<string, object>();
 
         fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false))
+            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys!, PageState.Delete, false))
             .ReturnsAsync(new Dictionary<string, string>());
 
         entityRepositoryMock.Setup(er => er.DeleteAsync(formElement, primaryKeys)).ReturnsAsync(1);
@@ -209,7 +204,7 @@ public class FormServiceTests
             Name = "name",
             TableName = "name"
         };
-        var primaryKeys = new Dictionary<string, object>();
+        var primaryKeys = new Dictionary<string, object?>();
 
         fieldValidationServiceMock
             .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false))
@@ -230,7 +225,7 @@ public class FormServiceTests
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
+        var values = new Dictionary<string, object?>();
 
         var entityRepositoryMock = new Mock<IEntityRepository>();
         var formFileServiceMock = new Mock<FormFileService>();
@@ -257,6 +252,6 @@ public class FormServiceTests
         var result = await formService.InsertAsync(formElement, values, new DataContext());
 
         Assert.Single(result.Errors);
-        entityRepositoryMock.Verify(r => r.InsertAsync(It.IsAny<FormElement>(), It.IsAny<Dictionary<string, object>>()), Times.Never);
+        entityRepositoryMock.Verify(r => r.InsertAsync(It.IsAny<FormElement>(), It.IsAny<Dictionary<string, object?>>()), Times.Never);
     }
 }
