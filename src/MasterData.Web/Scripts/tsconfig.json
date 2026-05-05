@@ -6,6 +6,7 @@
     "sourceRoot": "/Scripts",
     "allowJs": true,
     "sourceMap": true,
+    "ignoreDeprecations":"6.0", 
     "removeComments": true,
     "target": "ES6",
     "moduleResolution": "node",
