@@ -17,7 +17,7 @@
         <ProjectReference Include="..\..\MasterData.Core\MasterData.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="Spectre.Console" Version="0.55.0" />
-      <PackageReference Include="Spectre.Console.Cli" Version="0.55.0" />
+      <PackageReference Include="Spectre.Console" />
+      <PackageReference Include="Spectre.Console.Cli" />
     </ItemGroup>
 </Project>
