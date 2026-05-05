@@ -33,10 +33,4 @@
 			<PackagePath>/</PackagePath>
 		</None>
 	</ItemGroup>
-
-	<ItemGroup>
-        <PackageReference Include="Roslynator.Analyzers" Version="4.14.1" PrivateAssets="All"/>
-        <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.14.1" PrivateAssets="All" />
-        <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.14.1" PrivateAssets="All"/>
-	</ItemGroup>
 </Project>
