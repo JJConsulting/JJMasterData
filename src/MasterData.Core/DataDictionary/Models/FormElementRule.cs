@@ -25,6 +25,10 @@ public class FormElementRule
     [JsonPropertyName("runOnDelete")]
     public bool RunOnDelete { get; set; }
 
+    [Display(Name = "Run On Before Import")]
+    [JsonPropertyName("runOnBeforeImport")]
+    public bool RunOnBeforeImport { get; set; }
+
     [Display(Name = "Rule Type")]
     [JsonPropertyName("language")]
     public RuleLanguage Language { get; set; } = RuleLanguage.Sql;
@@ -39,6 +43,7 @@ public class FormElementRule
         {
             PageState.Insert => RunOnInsert,
             PageState.Update => RunOnUpdate,
+            PageState.Import => RunOnBeforeImport,
             PageState.Delete => RunOnDelete,
             _ => false
         };

@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
 
@@ -74,5 +75,51 @@ public class FieldValidationServiceTests
 
         // Assert
         Assert.Equal("Field is required", result);
+    }
+
+    [Fact]
+    public async Task ValidateFieldsAsync_ImportPageState_ExecutesRulesConfiguredForBeforeImport()
+    {
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
+        var executor = new ImportRuleExecutor();
+        var service = new FieldValidationService(expressionsServiceMock.Object, [executor], localizerMock.Object);
+
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName",
+            Rules =
+            [
+                new FormElementRule
+                {
+                    Name = "ImportRule",
+                    Language = RuleLanguage.Sql,
+                    RunOnBeforeImport = true,
+                    Script = "select 'error'"
+                }
+            ]
+        };
+
+        var result = await service.ValidateFieldsAsync(formElement, new Dictionary<string, object?>(), PageState.Import, false);
+
+        Assert.Single(result);
+        Assert.Equal("Import validation error", result["rule:import"]);
+    }
+
+    private sealed class ImportRuleExecutor : IRuleExecutor
+    {
+        public RuleLanguage Language => RuleLanguage.Sql;
+
+        public Task<Dictionary<string, string>> ExecuteAsync(
+            FormElement formElement,
+            FormElementRule rule,
+            Dictionary<string, object?> values)
+        {
+            return Task.FromResult(new Dictionary<string, string>
+            {
+                ["rule:import"] = "Import validation error"
+            });
+        }
     }
 }
