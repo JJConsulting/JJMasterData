@@ -6,7 +6,6 @@
         <RuntimeFrameworkVersion>10.0</RuntimeFrameworkVersion>
         <Nullable>disable</Nullable>
         <ImplicitUsings>false</ImplicitUsings>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Product>JJMasterData.Core - Sun Version</Product>
         <Description>JJMasterData library to render JJMasterData's components.</Description>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>

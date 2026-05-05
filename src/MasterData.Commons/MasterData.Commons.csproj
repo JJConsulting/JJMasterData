@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>net4.8;net10.0</TargetFrameworks>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<LangVersion>latest</LangVersion>
 		<Nullable>disable</Nullable>
 		<Product>JJMasterData.Commons - Sun Version</Product>

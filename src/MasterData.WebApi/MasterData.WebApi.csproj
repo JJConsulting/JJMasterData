@@ -8,7 +8,6 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <RootNamespace>JJMasterData.WebApi</RootNamespace>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>JJMasterData.WebApi</PackageId>
     <AssemblyName>JJMasterData.WebApi</AssemblyName>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

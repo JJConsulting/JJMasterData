@@ -2,7 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net4.8;net10.0</TargetFrameworks>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Description>JJMasterData Hangfire support to background tasks, like exportation and importation.</Description>
 		<PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
 		<AssemblyVersion>2.0.6</AssemblyVersion>

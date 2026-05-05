@@ -48,7 +48,7 @@ jobs:
           else
             PACKAGE_VERSION="${BASE_VERSION}"
           fi
-          dotnet build -c release -p:GeneratePackageOnBuild=false -p:PackageVersion="${PACKAGE_VERSION}"
+          dotnet build -c release -p:PackageVersion="${PACKAGE_VERSION}"
           dotnet pack -c release --no-build --output="nuget" -p:PackageVersion="${PACKAGE_VERSION}"
           cd nuget
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
