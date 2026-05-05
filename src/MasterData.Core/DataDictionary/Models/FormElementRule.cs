@@ -21,13 +21,13 @@ public class FormElementRule
     [JsonPropertyName("runOnUpdate")]
     public bool RunOnUpdate { get; set; } = true;
 
+    [Display(Name = "Run On Before Import")]
+    [JsonPropertyName("runOnBeforeImport")]
+    public bool RunOnBeforeImport { get; set; } = true;
+    
     [Display(Name = "Run On Delete")]
     [JsonPropertyName("runOnDelete")]
     public bool RunOnDelete { get; set; }
-
-    [Display(Name = "Run On Before Import")]
-    [JsonPropertyName("runOnBeforeImport")]
-    public bool RunOnBeforeImport { get; set; }
 
     [Display(Name = "Rule Type")]
     [JsonPropertyName("language")]
