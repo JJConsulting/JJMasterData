@@ -2613,13 +2613,13 @@
   <data name="Read more" xml:space="preserve">
     <value>Ler mais</value>
   </data>
-  <data name="Run On Insert" xml:space="preserve">
+  <data name="Run On Before Insert" xml:space="preserve">
     <value>Executa antes do insert</value>
   </data>
-  <data name="Run On Update" xml:space="preserve">
+  <data name="Run On Before Update" xml:space="preserve">
     <value>Executa antes do update</value>
   </data>
-  <data name="Run On Delete" xml:space="preserve">
+  <data name="Run On Before Delete" xml:space="preserve">
     <value>Executa antes do delete</value>
   </data>
   <data name="Are you sure you want to delete this rule?" xml:space="preserve">

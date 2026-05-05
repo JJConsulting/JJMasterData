@@ -13,21 +13,21 @@ public class FormElementRule
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
-    [Display(Name = "Run On Insert")]
-    [JsonPropertyName("runOnInsert")]
-    public bool RunOnInsert { get; set; } = true;
+    [Display(Name = "Run On Before Insert")]
+    [JsonPropertyName("runOnBeforeInsert")]
+    public bool RunOnBeforeInsert { get; set; } = true;
 
-    [Display(Name = "Run On Update")]
-    [JsonPropertyName("runOnUpdate")]
-    public bool RunOnUpdate { get; set; } = true;
+    [Display(Name = "Run On Before Update")]
+    [JsonPropertyName("runOnBeforeUpdate")]
+    public bool RunOnBeforeUpdate { get; set; } = true;
 
     [Display(Name = "Run On Before Import")]
     [JsonPropertyName("runOnBeforeImport")]
     public bool RunOnBeforeImport { get; set; } = true;
     
-    [Display(Name = "Run On Delete")]
-    [JsonPropertyName("runOnDelete")]
-    public bool RunOnDelete { get; set; }
+    [Display(Name = "Run On Before Delete")]
+    [JsonPropertyName("runOnBeforeDelete")]
+    public bool RunOnBeforeDelete { get; set; }
 
     [Display(Name = "Rule Type")]
     [JsonPropertyName("language")]
@@ -41,10 +41,10 @@ public class FormElementRule
     {
         return pageState switch
         {
-            PageState.Insert => RunOnInsert,
-            PageState.Update => RunOnUpdate,
+            PageState.Insert => RunOnBeforeInsert,
+            PageState.Update => RunOnBeforeUpdate,
             PageState.Import => RunOnBeforeImport,
-            PageState.Delete => RunOnDelete,
+            PageState.Delete => RunOnBeforeDelete,
             _ => false
         };
     }
