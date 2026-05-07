@@ -6,6 +6,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components.ColorPicker;
+using JJMasterData.Core.UI.Components.Phone;
 using JJMasterData.Core.UI.Components.TextRange;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,7 @@ public class ControlFactory(IServiceProvider serviceProvider,
     public IControlFactory<JJLookup> Lookup => GetControlFactory<JJLookup>();
     public IControlFactory<JJSearchBox> SearchBox => GetControlFactory<JJSearchBox>();
     public IControlFactory<JJSlider> Slider => GetControlFactory<JJSlider>();
+    public IControlFactory<JJPhoneGroup> PhoneGroup => GetControlFactory<JJPhoneGroup>();
     public IControlFactory<JJTextArea> TextArea => GetControlFactory<JJTextArea>();
     public IControlFactory<JJTextBox> TextBox => GetControlFactory<JJTextBox>();
     public IControlFactory<JJTextGroup> TextGroup => GetControlFactory<JJTextGroup>();
@@ -117,6 +119,9 @@ public class ControlFactory(IServiceProvider serviceProvider,
                 break;
             case FormComponent.Slider:
                 control = Create<JJSlider>(formElement, field, context);
+                break;
+            case FormComponent.Phone:
+                control = Create<JJPhoneGroup>(formElement, field, context);
                 break;
             case FormComponent.Color:
                 control = Create<JJColorPicker>(formElement, field, context);

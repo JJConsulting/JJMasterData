@@ -2422,26 +2422,44 @@ const setPageState = (componentName, pageState) => {
 };
 class PhoneInputListener {
     static listen(selectorPrefix = "") {
+        function normalizeDialCode(dialCode) {
+            return (dialCode || '').replace(/\s/g, '');
+        }
+        function getLocalPhoneValue(phoneValue, dialCode) {
+            const normalizedDialCode = normalizeDialCode(dialCode);
+            return phoneValue.startsWith(normalizedDialCode)
+                ? phoneValue.substring(normalizedDialCode.length)
+                : phoneValue;
+        }
+        function applyMask(input) {
+            if (input.inputmask) {
+                input.inputmask.remove();
+            }
+            Inputmask({
+                mask: `999999[9]9999`,
+                greedy: false,
+                placeholder: " ",
+                autoUnmask: false
+            }).mask(input);
+        }
+        function syncHiddenInput(input, select) {
+            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0];
+            if (!hiddenInput)
+                return;
+            const selectedOption = select.selectedOptions[0];
+            const dialCode = normalizeDialCode(selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.getAttribute('dial-code'));
+            const localPhone = (input.value || '').replace(/\s/g, '');
+            hiddenInput.value = localPhone ? `${dialCode}${localPhone}` : '';
+        }
         const selects = document.querySelectorAll(`${selectorPrefix}select.jj-phone-select`);
         selects.forEach(select => {
             $(select).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-                const options = [...select.options];
-                const previousOption = options.find(option => option.value === previousValue);
-                const previousDialCode = previousOption.getAttribute('dial-code');
                 if (isSelected) {
-                    const selectedOption = options[clickedIndex];
-                    const selectedDialCode = selectedOption.getAttribute('dial-code');
                     const input = $(select).closest('.input-group').find('.jj-phone-input')[0];
-                    if (input && input.inputmask) {
-                        input.inputmask.remove();
-                    }
-                    $(input).val($(input).val().toString().replace(previousDialCode.replace(/\s/g, ''), selectedDialCode.replace(/\s/g, '')));
-                    Inputmask({
-                        mask: `+${'9'.repeat(selectedDialCode.replace('+', '').length)}999999[9]9999`,
-                        greedy: false,
-                        placeholder: " ",
-                        autoUnmask: false
-                    }).mask(input);
+                    if (!input)
+                        return;
+                    applyMask(input);
+                    syncHiddenInput(input, select);
                 }
             });
         });
@@ -2450,9 +2468,10 @@ class PhoneInputListener {
             const select = $(input).closest('.input-group').find('select.jj-phone-select')[0];
             if (!select)
                 return;
+            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0];
             const options = [...select.options];
             const longestDialCode = options.reduce((longest, current) => {
-                const dialCode = current.getAttribute('dial-code');
+                const dialCode = normalizeDialCode(current.getAttribute('dial-code'));
                 return dialCode.length > longest ? dialCode.length : longest;
             }, 0);
             function getCountryFromInputValue(currentValue) {
@@ -2461,31 +2480,26 @@ class PhoneInputListener {
                 while (!countryFound && verifySubStrLen > 0) {
                     const val = currentValue.substring(0, verifySubStrLen);
                     countryFound = options.find(option => {
-                        const dialCode = option.getAttribute('dial-code') || '';
-                        return val == dialCode.replace(/\s/g, '');
+                        const dialCode = normalizeDialCode(option.getAttribute('dial-code'));
+                        return val == dialCode;
                     });
                     verifySubStrLen--;
                 }
                 return countryFound;
             }
-            if (input.value.startsWith('+')) {
-                const optionCountrySelected = getCountryFromInputValue(input.value);
+            if (hiddenInput === null || hiddenInput === void 0 ? void 0 : hiddenInput.value.startsWith('+')) {
+                const optionCountrySelected = getCountryFromInputValue(hiddenInput.value);
                 if (optionCountrySelected)
                     $(select).selectpicker('val', optionCountrySelected.value);
             }
-            else {
-                const optionCountrySelected = $(select).val();
-                const optionSelected = options.find(option => option.value === optionCountrySelected);
-                $(input).val(optionSelected.getAttribute('dial-code'));
+            const selectedOption = select.selectedOptions[0] || options.find(option => option.value === $(select).val());
+            if (selectedOption) {
+                input.value = getLocalPhoneValue((hiddenInput === null || hiddenInput === void 0 ? void 0 : hiddenInput.value) || input.value || '', selectedOption.getAttribute('dial-code'));
             }
-            $(input).on('keyup', function (e) {
-                const currentValue = this.value;
-                let countryFound;
-                countryFound = getCountryFromInputValue(currentValue);
-                if (countryFound)
-                    $(select).selectpicker('val', countryFound.value);
-                else if (input.value.length >= longestDialCode)
-                    $(input).val("+");
+            applyMask(input);
+            syncHiddenInput(input, select);
+            $(input).on('input', function () {
+                syncHiddenInput(this, select);
             });
         });
     }
