@@ -36,9 +36,23 @@
 }
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-select/bootstrap-select.min.js"></script>
 
+
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/flatpickr.min.js"></script>
-<script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/l10n/pt.min.js"></script>
-<script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/l10n/en.min.js"></script>
+
+@switch (System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
+{
+    case "pt":
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/l10n/pt.min.js"></script>
+        break;
+
+    case "es":
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/l10n/es.min.js"></script>
+        break;
+
+    default:
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/l10n/en.min.js"></script>
+        break;
+}
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/popperjs/popper.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/spin/spin.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/inputmask/dist/inputmask.min.js"></script>
