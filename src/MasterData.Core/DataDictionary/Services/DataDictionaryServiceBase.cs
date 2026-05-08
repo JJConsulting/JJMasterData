@@ -91,6 +91,17 @@ public abstract class DataDictionaryServiceBase(
         return validationDictionary.IsValid;
     }
 
+    protected bool ValidateScriptName(string name, string fieldName = "Name")
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            AddError(fieldName, StringLocalizer["Required [Name] field"]);
+            return false;
+        }
+
+        return true;
+    }
+
     protected static bool ValidateExpression(string value, IEnumerable<string> args)
     {
         return args.Any(value.StartsWith);

@@ -2597,6 +2597,52 @@
     <value>Sincronizar</value>
     <comment>JJMasterData.Commons</comment>
   </data>
+  <data name="Validations" xml:space="preserve">
+    <value>Validações</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Rules" xml:space="preserve">
+    <value>Regras</value>
+  </data>
+  <data name="Validation Type" xml:space="preserve">
+    <value>Tipo de validação</value>
+  </data>
+  <data name="Rule Type" xml:space="preserve">
+    <value>Tipo de regra</value>
+  </data>
+  <data name="Read more" xml:space="preserve">
+    <value>Ler mais</value>
+  </data>
+  <data name="Run On Before Insert" xml:space="preserve">
+    <value>Executa antes do insert</value>
+  </data>
+  <data name="Run On Before Update" xml:space="preserve">
+    <value>Executa antes do update</value>
+  </data>
+  <data name="Run On Before Delete" xml:space="preserve">
+    <value>Executa antes do delete</value>
+  </data>
+  <data name="Are you sure you want to delete this rule?" xml:space="preserve">
+    <value>Tem certeza que deseja deletar esta regra?</value>
+  </data>
+  <data name="Select at least one operation." xml:space="preserve">
+    <value>Selecione pelo menos uma operação.</value>
+  </data>
+  <data name="JavaScript rules run server-side with Jint. Use addError(message) for a general error or addError(name, message) for a field error." xml:space="preserve">
+    <value>As regras em JavaScript rodam no servidor com Jint. Use addError(message) para um erro geral ou addError(name, message) para um erro de campo.</value>
+  </data>
+  <data name="Before insert and update" xml:space="preserve">
+    <value>Antes de inserir e atualizar</value>
+  </data>
+  <data name="Return one column with the error message or two columns with field and message. Column names do not matter." xml:space="preserve">
+    <value>Retorne uma coluna com a mensagem de erro ou duas colunas com campo e mensagem. Os nomes das colunas não importam.</value>
+  </data>
+  <data name="There is already a validation with this name." xml:space="preserve">
+    <value>Já existe uma validação com esse nome.</value>
+  </data>
+  <data name="There is already a rule with this name." xml:space="preserve">
+    <value>Já existe uma regra com esse nome.</value>
+  </data>
   <data name="Sync Mode" xml:space="preserve">
     <value>Modo do Sincronismo</value>
     <comment>JJMasterDataWeb</comment>

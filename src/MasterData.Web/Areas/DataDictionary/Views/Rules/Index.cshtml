@@ -1,0 +1,121 @@
+@using JJMasterData.Core.DataDictionary.Models
+@model JJMasterData.Core.DataDictionary.Models.FormElementRule
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@{
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Rules"]}";
+    Layout = "_FormElementMenuLayout";
+}
+
+<script type="text/javascript">
+    function bindRuleTabs() {
+        const selectedTabInput = document.getElementById("selectedTab");
+        if (!selectedTabInput) {
+            return;
+        }
+
+        document.querySelectorAll("#rule-details [@BootstrapHelper.DataToggle='tab']").forEach(function(tabLink) {
+            tabLink.addEventListener("click", function(e) {
+                selectedTabInput.value = e.currentTarget.getAttribute("href");
+            });
+        });
+    }
+
+    $(document).ready(function () {
+        bindRuleTabs();
+        if (bootstrapVersion === 5) {
+            TooltipHelper.listen("#rule-details");
+        } else {
+            $('#rule-details [data-toggle="tooltip"]').tooltip();
+        }
+    });
+
+    function loadDetails(url, ruleId) {
+        const selectedTabInput = document.getElementById("selectedTab");
+        const selectedTab = selectedTabInput && selectedTabInput.value
+            ? selectedTabInput.value
+            : "#div-general";
+        const detailsUrl = new URL(url, window.location.origin);
+        detailsUrl.searchParams.set("selectedTab", selectedTab);
+
+        document.querySelectorAll("#rule-list a").forEach(element => {
+            element.classList.remove("active");
+        });
+
+        if (ruleId !== "") {
+            const rule = document.getElementById("rule-" + ruleId);
+            if (rule) {
+                rule.classList.add("active");
+            }
+        }
+
+        fetch(detailsUrl.toString())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.text();
+            })
+            .then(data => {
+                HTMLHelper.setInnerHTML("rule-details", data);
+                bindRuleTabs();
+                listenAllEvents("#rule-details ");
+            });
+    }
+
+    function searchRules(oDom) {
+        const value = $(oDom).val().toLowerCase();
+        $("#rule-list a").filter(function () {
+            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            $(this).toggle(isSearch);
+        });
+    }
+</script>
+
+@using (Html.BeginMasterDataForm())
+{
+    <input type="hidden" name="selectedTab" id="selectedTab" value="@ViewBag.Tab"/>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="input-group">
+                <input id="txtFilter" name="txtFilter" onkeyup="searchRules(this);"
+                       placeholder="@StringLocalizer["Search..."]" type="text" class="form-control"
+                       data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
+                <div class="input-group-text" style="cursor:pointer" data-bs-toggle="tooltip"
+                     title="@StringLocalizer["Add"]"
+                     onclick="loadDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                    <i class="fa fa-plus"></i>
+                </div>
+            </div>
+            <br/>
+            <div class="jjrelative">
+                <div id="rule-list">
+                    <div class="list-group jj-list-group">
+                        @if (ViewBag.Rules.Count == 0)
+                        {
+                            <div>@StringLocalizer["No record found"]</div>
+                        }
+                        @foreach (FormElementRule rule in ViewBag.Rules)
+                        {
+                            <a href="javascript:loadDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, ruleId = rule.Id })', '@rule.Id');"
+                               class="list-group-item @(rule.Id.Equals(Model.Id) ? "active" : "")"
+                               id="rule-@rule.Id">
+                                <div>
+                                    <b>@rule.Name</b>
+                                    <br/>
+                                    <small>@rule.Language.ToString()</small>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9" style="padding-left:0px">
+            <div class="jjrelative" id="rule-details">
+                <partial name="_Detail" model="Model"/>
+            </div>
+        </div>
+    </div>
+}

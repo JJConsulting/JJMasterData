@@ -48,8 +48,10 @@
       href: actions/cancel_action.md      
     - name: Back
       href: actions/back_action.md
-  - name: Custom Rules
-    href: custom_rules.md
+  - name: Customizations
+    href: customizations.md
+  - name: Rules
+    href: rules.md
   - name: TagHelpers
     href: taghelpers.md
   - name: Localization
