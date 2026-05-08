@@ -1,0 +1,49 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="AspNetCore.SassCompiler" Version="1.77.4" />
+    <PackageVersion Include="Fluid.Core" Version="2.31.0" />
+    <PackageVersion Include="Hangfire.Console" Version="1.4.3" />
+    <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
+    <PackageVersion Include="IronPython" Version="3.4.2" />
+    <PackageVersion Include="IronPython.StdLib" Version="3.4.2" />
+    <PackageVersion Include="JJConsulting.Html.Bootstrap" Version="1.0.21" />
+    <PackageVersion Include="JJConsulting.Html.Bootstrap.TagHelpers" Version="1.0.21" />
+    <PackageVersion Include="JetBrains.Annotations" Version="2025.2.4" />
+    <PackageVersion Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
+    <PackageVersion Include="Microsoft.TypeScript.MSBuild" Version="5.8.3" />
+    <PackageVersion Include="MongoDB.Driver" Version="3.5.2" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="NCalc.DependencyInjection" Version="5.12.0" />
+    <PackageVersion Include="NCalc.MemoryCache" Version="5.12.0" />
+    <PackageVersion Include="NCalcSync" Version="5.12.0" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="PolySharp" Version="1.14.1" />
+    <PackageVersion Include="Spectre.Console" Version="0.55.2" />
+    <PackageVersion Include="Spectre.Console.Cli" Version="0.55.0" />
+    <PackageVersion Include="System.Collections.Immutable" Version="10.0.7" />
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
+    <PackageVersion Include="System.Drawing.Common" Version="10.0.7" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.7" />
+    <PackageVersion Include="System.Threading.Channels" Version="10.0.7" />
+    <PackageVersion Include="Xunit.Extensions.Ordering" Version="1.4.5" />
+    <PackageVersion Include="coverlet.collector" Version="10.0.0" />
+    <PackageVersion Include="itext7" Version="9.6.0" />
+    <PackageVersion Include="itext7.bouncy-castle-fips-adapter" Version="9.6.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+</Project>

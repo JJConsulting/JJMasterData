@@ -5,6 +5,7 @@ using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.ColorPicker;
 using JJMasterData.Core.UI.Components.Factories;
+using JJMasterData.Core.UI.Components.Phone;
 using JJMasterData.Core.UI.Components.TextRange;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,6 +73,7 @@ public static class FactoriesServiceExtensions
             services.AddScoped<IControlFactory<JJSearchBox>, SearchBoxFactory>();
             services.AddScoped<IControlFactory<JJTextArea>, TextAreaFactory>();
             services.AddScoped<IControlFactory<JJSlider>, SliderFactory>();
+            services.AddScoped<IControlFactory<JJPhoneGroup>, PhoneGroupFactory>();
             services.AddScoped<IControlFactory<JJTextGroup>, TextGroupFactory>();
             services.AddScoped<IControlFactory<JJTextRange>, TextRangeFactory>();
             services.AddScoped<IControlFactory<JJTextFile>, TextFileFactory>();

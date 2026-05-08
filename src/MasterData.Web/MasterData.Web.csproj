@@ -7,7 +7,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <OutputType>Library</OutputType>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Product>JJMasterData.Web - Sun Version</Product>
         <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
@@ -28,10 +27,10 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="AspNetCore.SassCompiler" Version="1.77.4" ReferenceOutputAssembly="false" />
-        <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
-        <PackageReference Include="JJConsulting.Html.Bootstrap.TagHelpers" Version="1.0.21" />
-        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.8.3">
+        <PackageReference Include="AspNetCore.SassCompiler" ReferenceOutputAssembly="false" />
+        <PackageReference Include="JetBrains.Annotations" />
+        <PackageReference Include="JJConsulting.Html.Bootstrap.TagHelpers" />
+        <PackageReference Include="Microsoft.TypeScript.MSBuild">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

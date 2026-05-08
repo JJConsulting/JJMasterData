@@ -15,7 +15,7 @@
       <ProjectReference Include="..\..\MasterData.Core\MasterData.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="PolySharp" Version="1.13.2">
+      <PackageReference Include="PolySharp">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>

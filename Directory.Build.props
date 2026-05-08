@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>4.5.20</Version>
+		<Version>4.5.23</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
@@ -32,11 +32,5 @@
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-        <PackageReference Include="Roslynator.Analyzers" Version="4.14.1" PrivateAssets="All"/>
-        <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.14.1" PrivateAssets="All" />
-        <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.14.1" PrivateAssets="All"/>
 	</ItemGroup>
 </Project>
