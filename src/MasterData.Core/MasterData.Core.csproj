@@ -28,6 +28,7 @@
     
     <ItemGroup>
         <PackageReference Include="Fluid.Core" />
+        <PackageReference Include="Jint" />
         <PackageReference Include="JJConsulting.Html.Bootstrap" />
         <PackageReference Include="NCalcSync" />
         <PackageReference Include="NCalc.MemoryCache" />
