@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
@@ -12,9 +11,7 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -50,12 +47,6 @@ public class JJComboBox(
             return field;
         }
         set;
-    }
-
-    public bool EnableLocalization
-    {
-        get => DataItem.EnableLocalization;
-        set => DataItem.EnableLocalization = value;
     }
 
     public string? FloatingLabel { get; set; }
@@ -154,8 +145,7 @@ public class JJComboBox(
 
     private HtmlBuilder CreateOption(DataItemValue value)
     {
-        var label = GetLocalizedDescription(value.Description);
-
+        var label = value.Description;
         bool isSelected;
 
         if (MultiSelect && SelectedValue != null)
@@ -231,9 +221,6 @@ public class JJComboBox(
             if (SelectedValue.Equals(item.Id))
             {
                 selectedText = item.Description;
-
-                selectedText = GetLocalizedDescription(selectedText);
-
                 break;
             }
         }
@@ -259,7 +246,8 @@ public class JJComboBox(
         if (item == null)
             return null;
 
-        var label = GetLocalizedDescription(item.Description);
+        
+        var label = item.Description;
 
         if (DataItem.ShowIcon)
         {
@@ -295,11 +283,4 @@ public class JJComboBox(
         return values.Find(v => string.Equals(v.Id, searchId, StringComparison.InvariantCultureIgnoreCase));
     }
 
-    private string GetLocalizedDescription(string? description)
-    {
-        if (string.IsNullOrEmpty(description))
-            return string.Empty;
-
-        return DataItem.EnableLocalization ? stringLocalizer[description!] : description!;
-    }
 }

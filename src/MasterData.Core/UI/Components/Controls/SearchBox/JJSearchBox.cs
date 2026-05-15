@@ -9,16 +9,13 @@ using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -376,7 +373,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
                 var ids = searchId.Split(',');
                 var descriptions = _values
                     .Where(x => ids.Contains(x.Id))
-                    .Select(x => LocalizeDescription(x.Description))
+                    .Select(x => x.Description)
                     .Where(d => !string.IsNullOrEmpty(d));
                 description = string.Join(", ", descriptions);
             }
@@ -384,11 +381,11 @@ public class JJSearchBox : ControlBase, IDataItemControl
             {
                 var item = _values.FirstOrDefault(x => x.Id.Equals(searchId));
                 if (item != null)
-                    description = LocalizeDescription(item.Description);
+                    description = item.Description;
             }
         }
 
-        return LocalizeDescription(description);
+        return description;
     }
 
 
@@ -425,7 +422,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         return values.ConvertAll(v=>new DataItemResult
         {
             Id = v.Id,
-            Description = LocalizeDescription(v.Description),
+            Description = v.Description,
             IconCssClass = DataItem.ShowIcon
                 ? v.Icon.CssClass
                 : null,
@@ -436,11 +433,4 @@ public class JJSearchBox : ControlBase, IDataItemControl
         });
     }
 
-    private string? LocalizeDescription(string? description)
-    {
-        if (!DataItem.EnableLocalization || string.IsNullOrEmpty(description))
-            return description;
-
-        return StringLocalizer[description!];
-    }
 }

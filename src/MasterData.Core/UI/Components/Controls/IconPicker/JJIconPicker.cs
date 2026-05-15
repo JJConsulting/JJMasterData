@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,13 +9,9 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
-
 using Microsoft.Extensions.Localization;
-
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -57,8 +54,6 @@ public class JJIconPicker(
             FirstOption = FirstOptionMode.Choose,
             ShowIcon = Enabled,
         };
-
-        comboBox.EnableLocalization = false;
         
         comboBox.Attributes["data-live-search"] = "true";
         comboBox.Attributes["data-virtual-scroll"] = "true";

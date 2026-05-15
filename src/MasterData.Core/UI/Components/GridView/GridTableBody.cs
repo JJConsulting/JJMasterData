@@ -1,5 +1,5 @@
 #nullable enable
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,16 +10,13 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
 using JJMasterData.Core.UI.Events.Args;
-
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
@@ -294,12 +291,7 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         var dataItemValues = await gridView.DataItemService.GetValuesAsync(dataItem, dataQuery);
         var dataItemValue = dataItemValues.Find(d => d.Id == stringValue);
-
         var description = dataItemValue?.Description ?? string.Empty;
-        
-        if (dataItem.EnableLocalization)
-            description = gridView.StringLocalizer[description];
-
         var tooltip = dataItem.GridBehavior is DataItemGridBehavior.Icon
             ? description
             : string.Empty;
@@ -316,12 +308,6 @@ internal sealed class GridTableBody(JJGridView gridView)
                 span =>
                 {
                     var text = dataItemValue.Description ?? dataItemValue.Id;
-
-                    if (dataItem.EnableLocalization)
-                    {
-                        text = gridView.StringLocalizer[text];
-                    }
-
                     span.AppendText(text);
                     span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
                 });
@@ -534,19 +520,16 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value.Equals(pkValues)));
 
-        if (OnRenderSelectedCellAsync is not null)
+        if (OnRenderSelectedCellAsync is null) 
+            return checkBox;
+        
+        var args = new GridSelectedCellEventArgs
         {
-            var args = new GridSelectedCellEventArgs
-            {
-                DataRow = row,
-                CheckBox = checkBox
-            };
+            DataRow = row,
+            CheckBox = checkBox
+        };
 
-            await OnRenderSelectedCellAsync(gridView, args);
-
-            if (args.CheckBox != null)
-                return checkBox;
-        }
+        await OnRenderSelectedCellAsync(gridView, args);
 
         return checkBox;
     }
