@@ -1,65 +1,63 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+﻿@using JJMasterData.Core.DataDictionary.Models
 
-@using JJConsulting.FontAwesome
-@using JJMasterData.Core.DataDictionary.Models
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @model JJMasterData.Core.DataDictionary.Models.ProcessOptions
 
-
-<script lang="javascript" type="text/javascript">
-    document.addEventListener("DOMContentLoaded",()=>{
-        $("#cboSqlEvent").change(function () {
-            const selectedVal = $("#cboSqlEvent").selectpicker('val');
-            if (selectedVal == "1") {
-                $("#divCommandBefore").css("display", "");
-                $("#divCommandAfter").css("display", "none");
-            } else {
-                $("#divCommandBefore").css("display", "none");
-                $("#divCommandAfter").css("display", "");
-            }
-        });
-    });
-</script>
-
+<style>
+    .tooltip-large .tooltip-inner {
+        max-width: 500px;
+        width: 500px;
+        text-align: left;
+        white-space: normal;
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+</style>
 
 <div class="row" style="margin-bottom:5px">
 
     <div class="col-sm-12">
         <label class="@BootstrapHelper.Label">@StringLocalizer["Sql Command"]</label>
     </div>
-    <div class="col-sm-4">
-        <select class="form-control selectpicker"
-                data-style-base="form-select form-dropdown" id="cboSqlEvent" name="cboSqlEvent">
-            <option value="1" selected="selected" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@StringLocalizer["Before starting the process"]">@StringLocalizer["Before starting the process"]</option>
-            <option value="2" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@StringLocalizer["After finishing the process"]">@StringLocalizer["After finishing the process"]</option>
-        </select>
-    </div>
-    <div class="col-sm-8 @BootstrapHelper.TextRight" style="margin-top: 15px;">
-        <span class="small text-info">@StringLocalizer["(Type Ctrl+Space to autocomplete)"]&nbsp;</span>
+
+    <div class="col-sm-12">
+        <code-editor-button
+            asp-for="@Model.CommandBeforeProcess"
+            label="@StringLocalizer["Before starting the process"]"
+            language="sql"/>
+    
+        &nbsp;
+        
+        <code-editor-button
+            asp-for="@Model.CommandAfterProcess"
+            label="@StringLocalizer["After finishing the process"]"
+            language="sql"/>
+        
     </div>
 
 </div>
-<div class="row">
-    <div id="divCommandBefore" class="mb-3 col-sm-12">
-            <code-editor name="ProcessOptions.CommandBeforeProcess" value="@Model.CommandBeforeProcess" language="sql" height="300"/>
-    </div>
 
-    <div id="divCommandAfter" class="mb-3 col-sm-12" style="display:none;">
-            <code-editor name="ProcessOptions.CommandAfterProcess" value="@Model.CommandAfterProcess" language="sql" height="300"/>
-    </div>
-</div>
-<hr />
+<hr/>
+
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-3">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom">@StringLocalizer["Scope"]</label>
-        <select class="form-control form-select" asp-for="Scope" asp-items="Html.GetEnumSelectList<ProcessScope>()"></select>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip")
+               data-placement="bottom">@StringLocalizer["Scope"]</label>
+        <span class="fa fa-question-circle help-description"
+              data-bs-toggle="tooltip"
+              data-bs-html="true"
+              data-bs-custom-class="tooltip-large"
+              title="
+                <b>@StringLocalizer["Scope of execution of the process."]</b><hr/>  
+                <b>@StringLocalizer["Global"]:</b><br/>
+                @StringLocalizer["Only one process from this element can be run at a time."]
+                @StringLocalizer["and all users will be able to view the latest log and execution of an ongoing process."]
+                <br/><br/>
+                <b>@StringLocalizer["User"]:</b><br/>
+                @StringLocalizer["Several users can run this process simultaneously, but only see the log and one run of your process."]">
+        </span>
+        <select class="form-control form-select" asp-for="Scope"
+                asp-items="Html.GetEnumSelectList<ProcessScope>()"></select>
     </div>
 
-    <div class="col-sm-9">
-        <alert color="Info" title="@StringLocalizer["Scope of execution of the process."]" icon="FontAwesomeIcon.InfoCircle">
-            <b>@StringLocalizer["Global"]:</b>&nbsp;@StringLocalizer["Only one process from this element can be run at a time."]<br/>
-            @StringLocalizer["and all users will be able to view the latest log and execution of an ongoing process."]
-            <br/>
-            <b>@StringLocalizer["User"]:</b>&nbsp;@StringLocalizer["Several users can run this process simultaneously, but only see the log and one run of your process."]
-        </alert>
-    </div>
 </div>
