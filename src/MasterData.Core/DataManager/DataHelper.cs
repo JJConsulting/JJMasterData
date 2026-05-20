@@ -82,7 +82,7 @@ public static class DataHelper
             {
                 case FieldType.Date or FieldType.DateTime or FieldType.DateTime2:
                 {
-                    if (DateTime.TryParse(stringValue, out var dateValue))
+                    if (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateValue))
                     {
                         value = dateValue;
                     }
