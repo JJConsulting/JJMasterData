@@ -23,13 +23,11 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
     {
         get
         {
- 
             foreach (var field in CustomFieldMapKeys)
             {
                 yield return field;
             }
             
-
             yield return IsResultValidKey;
         }
     }

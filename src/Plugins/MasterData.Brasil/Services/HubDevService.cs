@@ -48,7 +48,8 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
 
             var protocol = IsHttps ? "https://" : "http://";
             var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
-            var url = $"{protocol}{_settings.Url}{endpoint}/?{endpoint}={identifier}&token={_settings.ApiKey}{ignoreDb}";
+            var url =
+                $"{protocol}{_settings.Url}{endpoint}/?{endpoint}={identifier}&token={_settings.ApiKey}{ignoreDb}";
 
             if (additionalParameters is { Count: > 0 })
             {
@@ -56,7 +57,7 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
                 url = $"{url}&{additionalQueryString}";
             }
 
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
             var message = await httpClient.GetAsync(url, cts.Token);
 
 #if NET
@@ -64,7 +65,8 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
 #else
             var content = await message.Content.ReadAsStringAsync();
 #endif
-            logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);
+            logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}",
+                endpoint, identifier, content);
 
             var apiResult = JsonSerializer.Deserialize<JsonObject>(content, JsonSerializerOptions);
 
@@ -72,6 +74,10 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
 
             logger.LogInformation("{Endpoint} found successfully", endpoint);
             return result;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
