@@ -99,6 +99,13 @@ class PhoneInputListener {
             {
                 syncHiddenInput(this as HTMLInputElement, select);
             });
+
+            input.addEventListener('paste', () => {
+                setTimeout(() => {
+                    syncHiddenInput(input, select);
+                }, 0);
+            });
+            
         })
     }
 }

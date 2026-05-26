@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Globalization;
+﻿using System.Globalization;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -8,8 +6,6 @@ using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
