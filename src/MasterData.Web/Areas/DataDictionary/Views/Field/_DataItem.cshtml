@@ -5,8 +5,11 @@
 @using JJMasterData.Core.DataDictionary.Models
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
-<jj-title title="Data Item" size="HeadingSize.H5"/>
+
 <div class="row">
+    <div class="col-sm-12">
+        <jj-title title="Data Item" size="HeadingSize.H5"/>
+    </div>
     <div class="mb-3 col-sm-4 required">
         <label class="form-label">@StringLocalizer["Type"]</label>
         <select asp-for="DataItem!.DataItemType"

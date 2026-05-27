@@ -1,4 +1,5 @@
-﻿@using JJMasterData.Core.UI.Components
+﻿@using JJConsulting.Html.Bootstrap.Models
+@using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
@@ -39,15 +40,14 @@
     </script>
 }
 
+
 <div class="row">
     <div class="col-sm-12">
-        <h4>@StringLocalizer["DataFile"]</h4>
-        <hr/>
+        <jj-title title="@StringLocalizer["File"]" size="HeadingSize.H5"/>
     </div>
-
     <div class="mb-3 col-sm-12 required">
         <label asp-for="DataFile!.FolderPath" class="form-label"></label>
-        <input asp-for="DataFile!.FolderPath" maxlength="400" class="form-control"  placeholder="" />
+        <input asp-for="DataFile!.FolderPath" maxlength="400" class="form-control" placeholder=""/>
         <span class="help-block">
             @StringLocalizer["You can use for example:"] {app.path}/Files/ExampleFolder
         </span>
@@ -55,7 +55,7 @@
 
     <div class="mb-3 col-sm-6 required">
         <label asp-for="DataFile!.AllowedTypes" class="form-label"></label>
-        <input asp-for="DataFile!.AllowedTypes" maxlength="255" class="form-control"  placeholder="" />
+        <input asp-for="DataFile!.AllowedTypes" maxlength="255" class="form-control" placeholder=""/>
         <span class="help-block">@StringLocalizer["File types separated with comma ex: txt,csv,xlsx. In * mode system files are blocked"]</span>
     </div>
 
