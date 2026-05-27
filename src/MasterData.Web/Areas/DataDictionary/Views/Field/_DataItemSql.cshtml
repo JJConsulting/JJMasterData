@@ -1,73 +1,60 @@
 @using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
+
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
-
-
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+
 @{
-    bool showIcon = Model.DataItem!.ShowIcon;
+    var showIcon = Model.DataItem!.ShowIcon;
 }
 
-<div id="div-sql-command">
-    <div class="mb-3 col-sm-12 required">
-        <label asp-for="DataItem!.Command!.Sql" class="form-label"></label>
-        <span class="small float-end text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to autocomplete)"]</span>
-        <div class="well" style="margin-bottom: 0">
-            <code-editor asp-for="DataItem!.Command!.Sql" language="sql" height="300"/>
-        </div>
-    </div>
-    <collapse-panel title="@StringLocalizer["Data Item SQL Query"]" icon="InfoCircle" expanded-by-default="true">
-        <span>@StringLocalizer["The query result must contain these columns in the following order:"]</span>
-        <ol>
-            <li>@StringLocalizer["Id"]</li>
-            <li>@StringLocalizer["Description"]</li>
-            @if (showIcon)
-            {
-                <li>
-                    <a href="https://md.jjconsulting.tech/api/JJMasterData.Core.DataDictionary.FontAwesomeIcon.html">@StringLocalizer["Icon Id"]</a>
-                </li>
-                <li>@StringLocalizer["Icon Color in Hexadecimal"]</li>
-            }
-            @if (Model.Component is FormComponent.ComboBox)
-            {
-                <li>@StringLocalizer["Group (optional)"]</li>
-            }
-        </ol>
-        @{
-            var isDynamicAtGrid = Model.DataItem.GridBehavior is not DataItemGridBehavior.Id;
-            var isSearch = Model.Component is FormComponent.Search;
-        }
-        @if (isSearch && !showIcon)
-        {
-            <span>@StringLocalizer["You can also render an image alongside the result by returning a column called ImageUrl."]</span>
-        }
-        <br/>
-        <br/>
-        @if(isDynamicAtGrid || isSearch)
-        {
-            <span>@StringLocalizer["We recommend using the following parameters in the query:"]</span><br/>
-            <ul>
-                @if (isDynamicAtGrid)
+<div class="col-sm-6">
+    <code-editor-button asp-for="DataItem!.Command!.Sql" label="@StringLocalizer["SQL Query"]" language="sql" required="true">
+        <collapse-panel title="@StringLocalizer["Data Item SQL Query"]" icon="InfoCircle" expanded-by-default="false">
+            <span>@StringLocalizer["The query result must contain these columns in the following order:"]</span>
+            <ol>
+                <li>@StringLocalizer["Id"]</li>
+                <li>@StringLocalizer["Description"]</li>
+                @if (showIcon)
                 {
-                <li>
-                    @StringLocalizer["{SearchId}: Id of the column used at the grid for recovering the description."]
-                </li>
+                    <li>
+                        <a href="https://md.jjconsulting.tech/api/JJMasterData.Core.DataDictionary.FontAwesomeIcon.html">@StringLocalizer["Icon Id"]</a>
+                    </li>
+                    <li>@StringLocalizer["Icon Color in Hexadecimal"]</li>
                 }
-                @if (isSearch)
+                @if (Model.Component is FormComponent.ComboBox)
                 {
-                <li>
-                    @StringLocalizer["{SearchText}: Typed text that can be used with the SQL query."]
-                </li>
+                    <li>@StringLocalizer["Group (optional)"]</li>
                 }
-            </ul>
-        }
+            </ol>
+            @{
+                var isDynamicAtGrid = Model.DataItem.GridBehavior is not DataItemGridBehavior.Id;
+                var isSearch = Model.Component is FormComponent.Search;
+            }
+            @if (isSearch && !showIcon)
+            {
+                <span>@StringLocalizer["You can also render an image alongside the result by returning a column called ImageUrl."]</span>
+            }
+            <br/>
+            <br/>
+            @if(isDynamicAtGrid || isSearch)
+            {
+                <span>@StringLocalizer["We recommend using the following parameters in the query:"]</span><br/>
+                <ul>
+                    @if (isDynamicAtGrid)
+                    {
+                        <li>
+                            @StringLocalizer["{SearchId}: Id of the column used at the grid for recovering the description."]
+                        </li>
+                    }
+                    @if (isSearch)
+                    {
+                        <li>
+                            @StringLocalizer["{SearchText}: Typed text that can be used with the SQL query."]
+                        </li>
+                    }
+                </ul>
+            }
 
-    </collapse-panel>
-
-
-
-    <br/>
-
-
+        </collapse-panel>
+    </code-editor-button>
 </div>

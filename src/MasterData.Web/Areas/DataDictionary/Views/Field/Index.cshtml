@@ -58,8 +58,7 @@
             FormComponent.Cpf => FontAwesomeIcon.RegularIdCard,
             FormComponent.CnpjCpf => FontAwesomeIcon.RegularIdBadge,
             FormComponent.Currency => FontAwesomeIcon.Dollar,
-            FormComponent.Tel => FontAwesomeIcon.Phone,
-            FormComponent.Phone => FontAwesomeIcon.Phone,
+            FormComponent.Tel or FormComponent.Phone => FontAwesomeIcon.Phone,
             FormComponent.Cep => FontAwesomeIcon.MapMarker,
             FormComponent.Lookup => FontAwesomeIcon.Binoculars,
             FormComponent.File => FontAwesomeIcon.File,
@@ -259,7 +258,7 @@
         </div>
         <div class="col-sm-9" style="padding-left:0px">
             <div class="jjrelative" id="field-details">
-                <partial name="_Detail" model="Model"/>
+                    <partial name="_Detail" model="Model"/>
             </div>
         </div>
         <br/>

@@ -2,6 +2,8 @@
 
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -30,11 +32,14 @@ public sealed class CodeEditorButtonTagHelper(
     [HtmlAttributeName("disabled")]
     public bool Disabled { get; set; }
 
+    [HtmlAttributeName("required")]
+    public bool Required { get; set; }
+    
     [ViewContext]
     [HtmlAttributeNotBound]
     public ViewContext ViewContext { get; set; } = null!;
 
-    public override void Process(TagHelperContext context, TagHelperOutput output)
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         Contextualize();
 
@@ -51,19 +56,33 @@ public sealed class CodeEditorButtonTagHelper(
         modalContent.Append(GetHtmlTextInfo());
         modalContent.Append(codeEditor.GetHtmlBuilder());
         
-        var modal = new JJModalDialog(); 
-        modal.Title = Label;
-        modal.Name = $"{name}_modal";
-        modal.Content = modalContent;
-        
-        var btnOk = new JJLinkButton();
-        btnOk.Text = stringLocalizer["Ok"];
-        btnOk.IconClass = "fa fa-check";
-        btnOk.ShowAsButton = true;
-        btnOk.CssClass = "btn btn-primary";
-        btnOk.Attributes.Add("data-bs-dismiss", "modal");
-        modal.Buttons.Add(btnOk);
+        var tagHelperContent = await output.GetChildContentAsync();
 
+        if (!tagHelperContent.IsEmptyOrWhiteSpace)
+        {
+            modalContent.Append(tagHelperContent);
+        }
+        
+        var btnOk = new JJLinkButton
+        {
+            Text = stringLocalizer["Ok"],
+            IconClass = "fa fa-check",
+            ShowAsButton = true,
+            CssClass = "btn btn-primary",
+            Attributes =
+            {
+                ["data-bs-dismiss"] = "modal"
+            }
+        };
+        
+        var modal = new JJModalDialog
+        {
+            Title = Label,
+            Name = $"{name}_modal",
+            Size = ModalSize.Large,
+            Content = modalContent,
+            Buttons = [btnOk]
+        };
 
         var html = new HtmlBuilder();
         html.Append(modal);
@@ -83,16 +102,29 @@ public sealed class CodeEditorButtonTagHelper(
         var badge = new HtmlBuilder();
         badge.AppendText(" ");
         badge.AppendText(Label);
-        if (!string.IsNullOrEmpty(value))
+
+        var isEmpty = string.IsNullOrEmpty(value);
+        
+        if (!isEmpty)
         {
             badge.AppendSpan(s =>
-                s.WithCssClass("position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger")
-                    .AppendSpan(ico => ico.WithCssClass("fa-solid fa-bolt"))
+                s.WithCssClass("position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success")
+                    .AppendSpan(icon => icon.WithCssClass("fa fa-check"))
             );    
         }
+        else if (Required && !Disabled)
+        {
+            badge.AppendSpan(s =>
+                s.WithCssClass("position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning")
+                    .AppendSpan(icon => icon.WithCssClass("fa fa-exclamation-triangle"))
+                    .WithToolTip(stringLocalizer["Required field"])
+            );
+        }
         
-        var btn = new JJLinkButton();
-        btn.Name = $"{name}_btn";
+        var btn = new JJLinkButton
+        {
+            Name = $"{name}_btn"
+        };
         btn.InnerHtml.Append(badge);
         btn.ShowAsButton = true;
         btn.CssClass = "position-relative";
@@ -109,8 +141,8 @@ public sealed class CodeEditorButtonTagHelper(
     
     private HtmlBuilder GetHtmlTextInfo()
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
-        div.WithCssClass($"col-sm-12");
+        var div = HtmlBuilder.Div();
+        div.WithCssClass("col-sm-12");
         div.AppendSpan(s => 
             s.WithCssClass("small text-info")
              .AppendText(stringLocalizer["(Type Ctrl+Space to autocomplete)"])

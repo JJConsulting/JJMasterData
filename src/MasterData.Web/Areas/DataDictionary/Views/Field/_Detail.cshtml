@@ -19,7 +19,6 @@
 }
 
 @{
-    var isForm = ViewData["IsForm"] is true;
     var elementName = ViewData["ElementName"]!.ToString()!;
     var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(elementName) as IEventHandler ?? GridEventHandlerResolver.GetGridEventHandler(elementName);
 
@@ -59,63 +58,41 @@
             <validation-summary/>
         </div>
     </div>
-    <ul id="field-nav" class="nav nav-underline">
-        <li class="nav-item" id="nav-general" @Active("#div-general")>
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-general"
-               href="#div-general">@StringLocalizer["General"]</a>
-        </li>
-        <li class="nav-item" id="nav-component" @Active("#div-component")>
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-component"
-               href="#div-component">@StringLocalizer["Component"]</a>
-        </li>
-        <li class="nav-item" id="nav-layout" @Active("#div-layout")>
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-layout"
-               href="#div-layout">@StringLocalizer["Layout"]</a>
-        </li>
-        <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-advanced"
-               href="#div-advanced">@StringLocalizer["Expressions"]</a>
-        </li>
-        @if (isForm)
-        {
-            <li class="nav-item" id="nav-template" @Active("#div-template")>
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-template"
-                   href="#div-template">@StringLocalizer["Grid Template"]</a>
+    <card>
+        <ul id="field-nav" class="nav nav-underline">
+            <li class="nav-item" id="nav-general" @Active("#div-general")>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-general"
+                   href="#div-general">@StringLocalizer["General"]</a>
             </li>
-        }
-    </ul>
+            <li class="nav-item" id="nav-component" @Active("#div-component")>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-component"
+                   href="#div-component">@StringLocalizer["Component"]</a>
+            </li>
+            <li class="nav-item" id="nav-layout" @Active("#div-layout")>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-layout"
+                   href="#div-layout">@StringLocalizer["Layout"]</a>
+            </li>
+            <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#div-advanced"
+                   href="#div-advanced">@StringLocalizer["Expressions"]</a>
+            </li>
+        </ul>
 
-    <div class="tab-content" style="margin-top: 1.25rem;">
-        <div id="div-general" class="tab-pane fade @Active("#div-general")">
-            <partial name="_General" model="Model"/>
-        </div>
-        <div id="div-component" class="tab-pane fade @Active("#div-component")">
-            <partial name="_Component" model="Model"/>
-        </div>
-        <div id="div-layout" class="tab-pane fade @Active("#div-layout")">
-            <partial name="_FieldLayout" model="Model"/>
-        </div>
-        <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
-            <partial name="_Expressions" model="Model"/>
-        </div>
-        <div id="div-template" class="tab-pane fade @Active("#div-template")">
-
-            <div class="row">
-                <div class="mb-3 col-sm-12 required">
-                    <code-editor height="300" asp-for="GridRenderingTemplate" language="liquid"/>
-                </div>
+        <div class="tab-content" style="margin-top: 1.25rem;">
+            <div id="div-general" class="tab-pane fade @Active("#div-general")">
+                <partial name="_General" model="Model"/>
             </div>
-            <div class="row">
-                <span class="text-small">
-                    <span class="fa fa-info-circle"
-                          style="color:#005a86"></span> @StringLocalizer["Read more about HTML templates "]
-                    <a target="_blank"
-                       href="https://md.jjconsulting.tech/articles/html_templates.html">@StringLocalizer[" in this link."]</a>
-                </span>
+            <div id="div-component" class="tab-pane fade @Active("#div-component")">
+                <partial name="_Component" model="Model"/>
+            </div>
+            <div id="div-layout" class="tab-pane fade @Active("#div-layout")">
+                <partial name="_FieldLayout" model="Model"/>
+            </div>
+            <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
+                <partial name="_Expressions" model="Model"/>
             </div>
         </div>
-
-    </div>
+    </card>
 
     <div class="row">
         <div class="col-sm-12">
