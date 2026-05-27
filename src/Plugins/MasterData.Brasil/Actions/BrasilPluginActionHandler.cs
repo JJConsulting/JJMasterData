@@ -60,7 +60,7 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
             yield return new PluginConfigurationField
             {
                 Name = TimeoutSeconds,
-                Label = "Tempo de timeout máximo em segundos para a consulta na Receita Federal.",
+                Label = "Tempo de timeout máximo em segundos para a consulta na Receita Federal. Caso não preenchido, o padrão é 5 segundos.",
                 Type = PluginConfigurationFieldType.Number
             };
         }
