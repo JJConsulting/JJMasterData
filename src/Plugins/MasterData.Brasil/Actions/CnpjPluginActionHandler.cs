@@ -61,6 +61,10 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
         
         var cnpj = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString()!);
         
+        if (context.ConfigurationMap.TryGetValue(TimeoutSeconds, out var value))
+            receitaFederalService.TimeoutSeconds = Convert.ToInt32(value);
+        else
+            receitaFederalService.TimeoutSeconds = 5;
         receitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
         
         var cnpjResult = await receitaFederalService.SearchCnpjAsync(cnpj);

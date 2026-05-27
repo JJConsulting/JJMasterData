@@ -64,7 +64,11 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
             throw new ArgumentNullException(nameof(birthDate));
 
         receitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
-        
+        if (context.ConfigurationMap.TryGetValue(TimeoutSeconds, out var value))
+            receitaFederalService.TimeoutSeconds = Convert.ToInt32(value);
+        else
+            receitaFederalService.TimeoutSeconds = 5;
+
         var cpfResult = await receitaFederalService.SearchCpfAsync(cpf, birthDateTime);
 
         return cpfResult.ToDictionary();

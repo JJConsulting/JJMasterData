@@ -5,8 +5,9 @@ namespace JJMasterData.Brasil.Exceptions;
 
 public class ReceitaFederalException : JJMasterDataException
 {
-    public ReceitaFederalException(string message) : base(message)
+    public ReceitaFederalException()
     {
+        
     }
 
     public ReceitaFederalException(string message, Exception innerException) : base(message, innerException)

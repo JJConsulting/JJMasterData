@@ -18,6 +18,9 @@ public class SintegraService(HttpClient httpClient, ICepService cepService, IOpt
     private HttpClient HttpClient { get; } = httpClient;
     private ICepService CepService { get; } = cepService;
     private SintegraSettings Settings { get; } = options.Value;
+
+    public int TimeoutSeconds { get; set; } = 5;
+
     public bool IsHttps { get; set; } = true;
 
     public bool IgnoreDb { get; set; }

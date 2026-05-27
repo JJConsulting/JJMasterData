@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 
@@ -11,6 +12,7 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
 {
     private const string AllowEditingOnErrorKey  = "AllowEditingOnError";
     private const string ShowErrorMessageKey = "ShowErrorMessage";
+    protected const string TimeoutSeconds = "TimeoutSeconds";
     private const string IsResultValidKey = "IsResultValid";
     
     public abstract Guid Id { get; }
@@ -55,6 +57,12 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
                 Label = $"Mostrar mensagem de erro quando o {Title.ToUpper()} não for encontrado.",
                 Type = PluginConfigurationFieldType.Boolean
             };
+            yield return new PluginConfigurationField
+            {
+                Name = TimeoutSeconds,
+                Label = "Tempo de timeout máximo em segundos para a consulta na Receita Federal.",
+                Type = PluginConfigurationFieldType.Number
+            };
         }
     }
 
@@ -89,6 +97,26 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
 
     private PluginActionResult OnResultNotFound(PluginFieldActionContext context)
     {
+        HandleError(context);
+
+        if (context.ConfigurationMap[ShowErrorMessageKey] is true)
+            return PluginActionResult.Error("Erro", $"{Title} não encontrado.");
+
+        return PluginActionResult.Success();
+    }
+    
+    private static PluginActionResult OnReceitaError(PluginFieldActionContext context)
+    {
+        HandleError(context);
+
+        if (context.ConfigurationMap[ShowErrorMessageKey] is true)
+            return PluginActionResult.Error("Erro", "A integração com a Receita Federal está indisponível ou levou mais tempo do que o esperado para retornar uma resposta.");
+
+        return PluginActionResult.Success();
+    }
+
+    private static void HandleError(PluginFieldActionContext context)
+    {
         ClearFields(context);
 
         if (context.ConfigurationMap[AllowEditingOnErrorKey] is true)
@@ -102,11 +130,6 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
         
         if(context.FieldMap.TryGetValue(IsResultValidKey, out var fieldName))
             context.Values[fieldName] = false;
-        
-        if (context.ConfigurationMap[ShowErrorMessageKey] is true)
-            return PluginActionResult.Error("Erro", $"{Title} não encontrado.");
-
-        return PluginActionResult.Success();
     }
 
     protected abstract Task<Dictionary<string, object?>> GetResultAsync(PluginFieldActionContext context);
@@ -119,9 +142,13 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
         {
             result = await GetResultAsync(context);
         }
+        catch (ReceitaFederalException)
+        {
+            return OnReceitaError(context);
+        }
         catch(OperationCanceledException)
         {
-            return PluginActionResult.Error(message:"A integração com a Receita Federal levou mais tempo do que o esperado para retornar uma resposta.");
+            return OnReceitaError(context);
         }
         catch
         {
