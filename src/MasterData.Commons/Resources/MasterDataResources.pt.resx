@@ -75,7 +75,7 @@
     <value>Template de Renderização da Grid</value>
         <comment>JJMasterDataWeb</comment>
   </data>
-    <data name="Render As Static" xml:space="preserve">
+    <data name="Render as Static" xml:space="preserve">
     <value>Renderizar como Estático</value>
         <comment>JJMasterDataWeb</comment>
   </data>
