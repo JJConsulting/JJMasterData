@@ -59,5 +59,6 @@ await app.UseMasterDataSeedingAsync();
 //Here you can also app.MapDataDictionary().RequireAuthorization();
 app.MapDataDictionary();
 app.MapMasterData();
+app.MapDictionaries();
 app.MapMasterDataApi();
 app.Run();
