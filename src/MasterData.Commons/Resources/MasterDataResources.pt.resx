@@ -1789,8 +1789,8 @@
     <value>Marcar|Desmarcar todos da página</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Max. {0} characters" xml:space="preserve">
-    <value>Máx. {0} caracteres</value>
+  <data name="Max. {0} characters." xml:space="preserve">
+    <value>Máx. {0} caracteres.</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="MaxFileSize" xml:space="preserve">
