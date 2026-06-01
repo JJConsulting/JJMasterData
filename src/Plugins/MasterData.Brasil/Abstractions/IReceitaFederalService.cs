@@ -10,6 +10,7 @@ public interface IReceitaFederalService : ICepService
     /// Ignora o banco local forçando uma conexão com a Receita Federal para recuperar os dados atualizados.
     /// </summary>
     bool IgnoreDb { get; set; }
+    bool SupportsIgnoreDb { get; }
     int TimeoutSeconds { get; set; }
     bool IsHttps { get; set; }
     Task<CnpjResult> SearchCnpjAsync(string cnpj);

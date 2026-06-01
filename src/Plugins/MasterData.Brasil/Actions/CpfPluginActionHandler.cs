@@ -14,7 +14,6 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
     : BrasilPluginActionHandler(expressionsService)
 {
     private const string BirthDateFieldKey = "BirthDate";
-    private const string IgnoreDbFieldKey = "IgnoreDb";
     public override Guid Id => GuidGenerator.FromValue(nameof(CpfPluginActionHandler));
     public override string Title => "Cpf";
     protected override IEnumerable<string> CustomFieldMapKeys
@@ -38,12 +37,15 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
                 Required = true,
                 Type = PluginConfigurationFieldType.FormElementField
             };
-            yield return new PluginConfigurationField
+            if (receitaFederalService.SupportsIgnoreDb)
             {
-                Name = IgnoreDbFieldKey,
-                Label = "Quando habilitado, a busca é realizada diretamente na Receita Federal. Nessa modalidade de consulta, serão consumidos 3 créditos ao invés de somente 1.",
-                Type = PluginConfigurationFieldType.Boolean
-            };
+                yield return new PluginConfigurationField
+                {
+                    Name = "IgnoreDb",
+                    Label = "Quando habilitado, a busca é realizada diretamente na Receita Federal. Nessa modalidade de consulta, serão consumidos 3 créditos ao invés de somente 1.",
+                    Type = PluginConfigurationFieldType.Boolean
+                };
+            }
         }
     }
 
@@ -63,7 +65,7 @@ public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService
         if (birthDate is not DateTime birthDateTime)
             throw new ArgumentNullException(nameof(birthDate));
 
-        receitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
+        receitaFederalService.IgnoreDb = context.ConfigurationMap.TryGetValue("IgnoreDb", out var ignoreDb) && ignoreDb is true;
         if (context.ConfigurationMap.TryGetValue(TimeoutSeconds, out var value))
             receitaFederalService.TimeoutSeconds = Convert.ToInt32(value);
         else

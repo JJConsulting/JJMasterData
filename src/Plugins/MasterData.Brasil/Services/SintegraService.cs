@@ -25,6 +25,8 @@ public class SintegraService(HttpClient httpClient, ICepService cepService, IOpt
 
     public bool IgnoreDb { get; set; }
 
+    public bool SupportsIgnoreDb => false;
+
     public async Task<CnpjResult> SearchCnpjAsync(string cnpj)
     {
         try

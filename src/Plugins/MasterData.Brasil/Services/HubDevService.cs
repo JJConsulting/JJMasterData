@@ -36,6 +36,8 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
     
     public bool IgnoreDb { get; set; }
 
+    public bool SupportsIgnoreDb => true;
+
     private async Task<T> Search<T>(string endpoint, string identifier, Dictionary<string, string>? additionalParameters = null)
     {
         logger.LogInformation("Searching search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
