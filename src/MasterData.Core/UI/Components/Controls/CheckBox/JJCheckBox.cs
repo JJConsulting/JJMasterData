@@ -127,7 +127,7 @@ public class JJCheckBox : ControlBase
                 label.WithAttribute("for", checkBoxName.Replace(".", "_"));
                 label.WithCssClass("form-check-label");
                 label.WithToolTip(_stringLocalizer[Tooltip ?? string.Empty]);
-                label.AppendText(_stringLocalizer[Text ?? string.Empty]);
+                label.AppendRawHtml(_stringLocalizer[Text ?? string.Empty]);
             });
         }
 
