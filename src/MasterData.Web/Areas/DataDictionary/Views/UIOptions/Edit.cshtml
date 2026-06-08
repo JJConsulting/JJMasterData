@@ -31,13 +31,15 @@
         </div>
     </div>
 
-    <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
-        <partial for="Grid" name="_GridView"/>
-    </collapse-panel>
-    <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
-        <partial for="Form" name="_DataPanel"/>
-    </collapse-panel>
-    <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="true">
-        <partial model="Model" name="_Options"/>
-    </collapse-panel>
+    <card>
+        <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
+            <partial for="Grid" name="_GridView"/>
+        </collapse-panel>
+        <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
+            <partial for="Form" name="_DataPanel"/>
+        </collapse-panel>
+        <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="true">
+            <partial model="Model" name="_Options"/>
+        </collapse-panel>
+    </card>
 }

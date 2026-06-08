@@ -5,6 +5,7 @@ using JJMasterData.Brasil.Actions;
 using JJMasterData.Brasil.Services;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -27,7 +28,7 @@ public static class MasterDataServiceBuilderExtensions
     
     public static MasterDataServiceBuilder WithSintegra(this MasterDataServiceBuilder builder, Action<SintegraSettings>? configure = null)
     {
-        builder.Services.AddOptions<SintegraSettings>().BindConfiguration("Sintegra");
+        builder.Services.AddOptions<SintegraSettings>().BindConfiguration("JJMasterData:Sintegra");
 
         if (configure is not null)
             builder.Services.PostConfigure(configure);
@@ -38,7 +39,7 @@ public static class MasterDataServiceBuilderExtensions
     
     public static MasterDataServiceBuilder WithHubDev(this MasterDataServiceBuilder builder, Action<HubDevSettings>? configure = null)
     {
-        builder.Services.AddOptions<HubDevSettings>().BindConfiguration("HubDev");
+        builder.Services.AddOptions<HubDevSettings>().BindConfiguration("JJMasterData:HubDev");
         
         if(configure is not null)
             builder.Services.PostConfigure(configure);
@@ -111,6 +112,43 @@ public static class MasterDataServiceBuilderExtensions
         builder.WithHubDevCpfActionPlugin();
         builder.WithCepActionPlugin<ViaCepService>();
         
+        return builder;
+    }
+
+    public static MasterDataServiceBuilder WithBrasilActionPlugins(this MasterDataServiceBuilder builder, IConfiguration configuration)
+    {
+        builder.Services.TryAddSingleton<HttpClient>();
+
+        var settings = configuration.GetSection("JJMasterData").Get<BrasilSettings>() ?? new BrasilSettings();
+
+        if (!string.IsNullOrWhiteSpace(settings.Sintegra?.ApiKey) &&
+            string.IsNullOrWhiteSpace(settings.HubDev?.ApiKey))
+        {
+            builder.WithSintegraCnpjActionPlugin();
+            builder.WithSintegraCpfActionPlugin();
+        }
+        else
+        {
+            builder.WithHubDevCnpjActionPlugin();
+            builder.WithHubDevCpfActionPlugin();
+        }
+        
+        builder.WithCepActionPlugin<ViaCepService>();
+
+        return builder;
+    }
+
+    public static MasterDataServiceBuilder WithSintegraCpfActionPlugin(this MasterDataServiceBuilder builder, Action<SintegraSettings>? configure = null)
+    {
+        builder.WithSintegra(configure);
+        builder.WithCpfActionPlugin<SintegraService>();
+        return builder;
+    }
+
+    public static MasterDataServiceBuilder WithSintegraCnpjActionPlugin(this MasterDataServiceBuilder builder, Action<SintegraSettings>? configure = null)
+    {
+        builder.WithSintegra(configure);
+        builder.WithCnpjActionPlugin<SintegraService>();
         return builder;
     }
 }

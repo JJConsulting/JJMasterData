@@ -1,6 +1,4 @@
 ﻿@using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Core.DataDictionary.Models.Actions
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @{
@@ -16,31 +14,29 @@
             {
                 componentList.RemoveAll(c => c.Text == "File");
             }
-            
+
             foreach (var component in componentList)
                 component.Group.Name = StringLocalizer[component.Group.Name];
         }
         <label asp-for="Component" class="form-label"></label>
-        <select asp-for="Component" 
+        <select asp-for="Component"
                 class="form-control form-select"
                 onchange="this.form.submit();"
                 asp-items="componentList.OrderBy(c => c.Group.Name).ThenBy(c => c.Text)"></select>
     </div>
-</div>
-
-<div class="row">
+    
     <partial name="_Attributes" model="@Model"/>
-</div>
 
-@switch (Model.Component)
-{
-    case FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup:
-        <partial name="_DataItem" model="Model" />
-        break;
-    case FormComponent.Lookup:
-        <partial name="_Lookup" model="Model" />
-        break;
-    case FormComponent.File:
-        <partial name="_DataFile" model="Model" />
-        break;
-}
+    @switch (Model.Component)
+    {
+        case FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup:
+            <partial name="_DataItem" model="Model"/>
+            break;
+        case FormComponent.Lookup:
+            <partial name="_Lookup" model="Model"/>
+            break;
+        case FormComponent.File:
+            <partial name="_DataFile" model="Model"/>
+            break;
+    }
+</div>

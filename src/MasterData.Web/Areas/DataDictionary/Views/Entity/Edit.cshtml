@@ -23,14 +23,17 @@
         </div>
     </div>
     <br>
+        
+    <card>
+        <collapse-panel icon="Book" title="@StringLocalizer["Element"]" expanded-by-default="true">
+            <partial name="_ElementPanel" model="Model"/>
+        </collapse-panel>
 
-    <collapse-panel icon="Book" title="@StringLocalizer["Element"]" expanded-by-default="true">
-        <partial name="_ElementPanel" model="Model"/>
-    </collapse-panel>
+        <collapse-panel icon="RegularRectangleList" title="@StringLocalizer["Form Title"]" expanded-by-default="true">
+            <partial name="_FormTitle" model="Model"/>
+        </collapse-panel>
+    </card>
 
-    <collapse-panel icon="RegularRectangleList" title="@StringLocalizer["Form Title"]" expanded-by-default="true">
-        <partial name="_FormTitle" model="Model"/>
-    </collapse-panel>
     
     if (Model.FormEvent != null)
     {

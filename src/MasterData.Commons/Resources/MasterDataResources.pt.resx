@@ -71,6 +71,14 @@
     <value>Você também pode renderizar uma imagem ao lado do resultado retornando uma coluna chamada ImageUrl.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="Grid Rendering Template" xml:space="preserve">
+    <value>Template de Renderização da Grid</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
+    <data name="Render as Static" xml:space="preserve">
+    <value>Renderizar como Estático</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="12 (twelve columns)" xml:space="preserve">
     <value>12 (doze colunas)</value>
     <comment>JJMasterDataWeb</comment>
@@ -1781,8 +1789,8 @@
     <value>Marcar|Desmarcar todos da página</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Max. {0} characters" xml:space="preserve">
-    <value>Máx. {0} caracteres</value>
+  <data name="Max. {0} characters." xml:space="preserve">
+    <value>Máx. {0} caracteres.</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="MaxFileSize" xml:space="preserve">
@@ -4079,6 +4087,9 @@
   </data>
   <data name="Invalid character." xml:space="preserve">
     <value>Caractere inválido.</value>
+  </data>
+    <data name="SQL Query" xml:space="preserve">
+    <value>Consulta SQL</value>
   </data>
   <data name="Data Item SQL Query" xml:space="preserve">
     <value>Consulta SQL do Data Item</value>

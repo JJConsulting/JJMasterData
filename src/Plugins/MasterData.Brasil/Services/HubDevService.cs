@@ -32,52 +32,53 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
 
     public bool IsHttps { get; set; } = true;
 
+    public int TimeoutSeconds { get; set; } = 5;
+    
     public bool IgnoreDb { get; set; }
+
+    public bool SupportsIgnoreDb => true;
 
     private async Task<T> Search<T>(string endpoint, string identifier, Dictionary<string, string>? additionalParameters = null)
     {
         logger.LogInformation("Searching search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
-
-        try
+        
+        if (string.IsNullOrEmpty(identifier))
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                logger.LogWarning("Identifier is null or empty for endpoint {Endpoint}", endpoint);
-                throw new ArgumentNullException(nameof(identifier));
-            }
+            logger.LogWarning("Identifier is null or empty for endpoint {Endpoint}", endpoint);
+            throw new ArgumentNullException(nameof(identifier));
+        }
 
-            var protocol = IsHttps ? "https://" : "http://";
-            var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
-            var url = $"{protocol}{_settings.Url}{endpoint}/?{endpoint}={identifier}&token={_settings.ApiKey}{ignoreDb}";
+        var protocol = IsHttps ? "https://" : "http://";
+        var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
+        var url =
+            $"{protocol}{_settings.Url}{endpoint}/?{endpoint}={identifier}&token={_settings.ApiKey}{ignoreDb}";
 
-            if (additionalParameters is { Count: > 0 })
-            {
-                var additionalQueryString = string.Join("&", additionalParameters.Select(kv => $"{kv.Key}={kv.Value}"));
-                url = $"{url}&{additionalQueryString}";
-            }
+        if (additionalParameters is { Count: > 0 })
+        {
+            var additionalQueryString = string.Join("&", additionalParameters.Select(kv => $"{kv.Key}={kv.Value}"));
+            url = $"{url}&{additionalQueryString}";
+        }
 
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-            var message = await httpClient.GetAsync(url, cts.Token);
-
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(TimeoutSeconds));
+        var message = await httpClient.GetAsync(url, cts.Token);
 #if NET
-            var content = await message.Content.ReadAsStringAsync(cts.Token);
+        var content = await message.Content.ReadAsStringAsync(cts.Token);
 #else
-            var content = await message.Content.ReadAsStringAsync();
+        var content = await message.Content.ReadAsStringAsync();
 #endif
-            logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}", endpoint, identifier, content);
-
-            var apiResult = JsonSerializer.Deserialize<JsonObject>(content, JsonSerializerOptions);
-
-            var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), JsonSerializerOptions)!;
-
-            logger.LogInformation("{Endpoint} found successfully", endpoint);
-            return result;
-        }
-        catch (Exception ex)
+        if (!message.IsSuccessStatusCode)
         {
-            logger.LogError(ex, "Error during search for {Endpoint} with identifier {Identifier}", endpoint, identifier);
-            throw new ReceitaFederalException(ex.Message, ex);
+            throw new ReceitaFederalException();
         }
+        
+        logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}",
+            endpoint, identifier, content);
+
+        var apiResult = JsonSerializer.Deserialize<JsonObject>(content, JsonSerializerOptions);
+
+        var result = JsonSerializer.Deserialize<T>(apiResult!["result"]!.ToString(), JsonSerializerOptions)!;
+        
+        return result;
     }
 
     public Task<CnpjResult> SearchCnpjAsync(string cnpj)
@@ -92,8 +93,7 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
             {"data", birthDate.ToString("dd/MM/yyyy")}
         });
     }
-
-
+    
     public Task<CepResult> SearchCepAsync(string cep)
     {
         return Search<CepResult>("cep", cep);

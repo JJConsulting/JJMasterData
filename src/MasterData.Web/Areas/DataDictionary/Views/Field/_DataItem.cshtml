@@ -3,18 +3,18 @@
 
 @using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
+
 
 <div class="row">
     <div class="col-sm-12">
-        <jj-title title="@StringLocalizer["Data Item"]" size="HeadingSize.H4"/>
+        <jj-title title="Data Item" size="HeadingSize.H5"/>
     </div>
-
     <div class="mb-3 col-sm-4 required">
         <label class="form-label">@StringLocalizer["Type"]</label>
         <select asp-for="DataItem!.DataItemType"
-                asp-items="Enum.GetValues<DataItemType>().Select(d => new SelectListItem(d.ToString(), d.ToString()))" onchange="this.form.submit();" class="form-control form-select">
+                asp-items="Enum.GetValues<DataItemType>().Select(d => new SelectListItem(d.ToString(), d.ToString()))"
+                onchange="this.form.submit();" class="form-control form-select">
         </select>
     </div>
 
@@ -33,14 +33,14 @@
                 }
             </select>
         </div>
-
     }
 
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="mb-3 col-sm-4 required" id="divFirstOption">
             <label asp-for="DataItem!.FirstOption" class="form-label"></label>
-            <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
+            <select asp-for="DataItem!.FirstOption" class="form-control form-select"
+                    asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }
 
@@ -48,15 +48,18 @@
     {
         <div class="mb-3 col-sm-4 required">
             <label asp-for="DataItem!.RadioLayout" class="form-label"></label>
-            <select asp-for="DataItem!.RadioLayout" class="form-control form-select" asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
+            <select asp-for="DataItem!.RadioLayout" class="form-control form-select"
+                    asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
         </div>
     }
-    
+
 
     <div class="mb-3 col-sm-4 required">
-        <checkbox tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]" for="DataItem!.EnableMultiSelect" layout="Switch"/>
+        <checkbox
+            tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]"
+            for="DataItem!.EnableMultiSelect" layout="Switch"/>
     </div>
-    
+
     <div class="mb-3 col-sm-4 required">
         <checkbox for="DataItem!.EnableLocalization" layout="Switch"/>
     </div>

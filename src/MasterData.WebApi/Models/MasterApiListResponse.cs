@@ -19,12 +19,12 @@ public class MasterApiListResponse
     public Dictionary<string, object?>[]? Fields { get; set; }
 
 
-    public void SetData(FormElement formElement, IEnumerable<Dictionary<string, object?>> data)
+    public void SetData(FormElement formElement, List<Dictionary<string, object?>> data)
     {
         var list = new List<Dictionary<string, object?>>();
         foreach (var row in data)
         {
-            var cols = new Dictionary<string, object?>();
+            var cols = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var field in formElement.Fields)
             {
                 var fieldName = formElement.ApiOptions.GetJsonFieldName(field.Name);

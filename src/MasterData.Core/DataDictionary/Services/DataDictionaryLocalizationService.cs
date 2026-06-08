@@ -58,26 +58,13 @@ public class DataDictionaryLocalizationService(
                 AddKey(keys, field.Name);
                 AddKey(keys, field.Label);
                 AddKey(keys, field.HelpDescription);
-
-                if (field.Component is FormComponent.ComboBox && field.DataItem?.EnableLocalization == true)
-                {
-                    try
-                    {
-                        await AddDataItemAsync(keys, field.DataItem, formElement.ConnectionId);
-                    }
-                    catch (Exception e)
-                    {
-                        logger?.LogError(e, "Error adding data item localization keys");
-                    }
-                }
-                
                 AddActionKeys(keys, field.Actions);
+                await AddDataItemAsync(keys, field.DataItem, formElement.ConnectionId);
             }
 
             AddActionKeys(keys, formElement.Options.GridToolbarActions);
             AddActionKeys(keys, formElement.Options.FormToolbarActions);
             AddActionKeys(keys, formElement.Options.GridTableActions);
-            
             AddOptionsKeys(keys, formElement.Options);
         }
 
@@ -89,28 +76,42 @@ public class DataDictionaryLocalizationService(
         AddKey(keys, options.Grid.EmptyDataText);
     }
 
-    private async Task AddDataItemAsync(HashSet<string> keys, FormElementDataItem dataItem, Guid? connectionId)
+    private async Task AddDataItemAsync(HashSet<string> keys, FormElementDataItem? dataItem, Guid? connectionId)
     {
+        if (dataItem is null)
+            return;
+
+        if (!dataItem.EnableLocalization)
+            return;
+        
         if (dataItem.HasItems())
         {
             foreach (var item in dataItem.Items!)
             {
                 AddKey(keys, item.Description);
             }
-
             return;
         }
-
-        if (!dataItem.HasSqlCommand() || dataItemService is null)
+        
+        if (dataItemService is null)
             return;
-
-        var values = await dataItemService.GetValuesAsync(
-            dataItem,
-            new DataQuery(new FormStateData(PageState.List), connectionId));
-
-        foreach (var item in values)
+        
+        try
         {
-            AddKey(keys, item.Description);
+            dataItem.EnableLocalization = false;
+            var dataQuery = new DataQuery(new FormStateData(PageState.List), connectionId);
+            var values = await dataItemService.GetValuesAsync(dataItem, dataQuery);      
+            dataItem.EnableLocalization = true;
+            
+            foreach (var item in values)
+            {
+                AddKey(keys, item.Description);
+            }
+            
+        }
+        catch (Exception e)
+        {
+            logger?.LogError(e, "Error adding data item localization keys");
         }
     }
 

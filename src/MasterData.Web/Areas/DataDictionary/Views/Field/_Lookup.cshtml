@@ -9,9 +9,8 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <jj-title title="@StringLocalizer["DataItem"]" size="HeadingSize.H4"/>
+        <jj-title title="Data Item" size="HeadingSize.H5"/>
     </div>
-
     <div class="mb-3 col-sm-3 required">
         <label asp-for="DataItem!.DataItemType" class="form-label">@StringLocalizer["Type"]</label>
         <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">

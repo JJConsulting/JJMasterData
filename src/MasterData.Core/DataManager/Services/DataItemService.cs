@@ -10,11 +10,10 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -23,6 +22,7 @@ public class DataItemService(
     IEntityRepository entityRepository,
     ExpressionParser expressionParser,
     ElementMapService elementMapService,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
     ILogger<DataItemService> logger)
 {
     public async Task<List<DataItemValue>> GetValuesAsync(
@@ -31,13 +31,32 @@ public class DataItemService(
     {
         var dataItemType = GetDataItemType(dataItem);
 
-        return dataItemType switch
+        List<DataItemValue>? values;
+        switch (dataItemType)
         {
-            DataItemType.Manual => GetItemsValues(dataItem, dataQuery.SearchId, dataQuery.SearchText).ToList(),
-            DataItemType.SqlCommand => await GetSqlCommandValues(dataItem, dataQuery),
-            DataItemType.ElementMap => await GetElementMapValues(dataItem, dataQuery),
-            _ => throw new JJMasterDataException("Invalid DataItemType.")
-        };
+            case DataItemType.Manual:
+                values = GetItemsValues(dataItem, dataQuery.SearchId, dataQuery.SearchText).ToList();
+                break;
+            case DataItemType.SqlCommand:
+                values = await GetSqlCommandValues(dataItem, dataQuery);
+                break;
+            case DataItemType.ElementMap:
+                values = await GetElementMapValues(dataItem, dataQuery);
+                break;
+            default:
+                throw new JJMasterDataException("Invalid DataItemType.");
+        }
+
+        if (dataItem.EnableLocalization)
+        {
+            foreach (var v in values)
+            {
+                if (!string.IsNullOrEmpty(v.Description))
+                    v.Description = stringLocalizer[v.Description];
+            }
+        }
+        
+        return values;
     }
 
     private static DataItemType GetDataItemType(FormElementDataItem dataItem)

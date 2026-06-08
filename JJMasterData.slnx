@@ -31,6 +31,7 @@
     <Project Path="test\MasterData.CommandLine.Test\MasterData.CommandLine.Test.csproj" Type="Classic C#" />
     <Project Path="test\MasterData.Commons.Test\MasterData.Commons.Test.csproj" Type="Classic C#" />
     <Project Path="test\MasterData.Core.Test\MasterData.Core.Test.csproj" Type="Classic C#" />
+    <Project Path="test\MasterData.IntegrationTests\MasterData.IntegrationTests.csproj" Type="Classic C#" />
     <Project Path="test\Plugins\MasterData.Brasil.Test\MasterData.Brasil.Test.csproj" Type="Classic C#" />
   </Folder>
   <Project Path="example\MasterData.WebEntryPoint\MasterData.WebEntryPoint.csproj" Type="Classic C#" />

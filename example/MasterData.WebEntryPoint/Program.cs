@@ -1,6 +1,7 @@
 // This is a debug and example purposes Program.cs
 
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Brasil.Configuration;
 using JJMasterData.Web.Configuration;
 using Microsoft.AspNetCore.ResponseCompression;
 using JJMasterData.Pdf;
@@ -25,7 +26,9 @@ builder.Services.Configure<HostOptions>(options =>
     options.BackgroundServiceExceptionBehavior = 
         BackgroundServiceExceptionBehavior.Ignore;
 });
-builder.Services.AddJJMasterDataWeb(builder.Configuration).WithPdfExportation();
+builder.Services.AddJJMasterDataWeb(builder.Configuration)
+    .WithPdfExportation()
+    .WithBrasilActionPlugins(builder.Configuration);
 builder.Services.AddJJMasterDataWebApi();
 builder.Services.AddResponseCaching();
 var app = builder.Build();
@@ -56,5 +59,6 @@ await app.UseMasterDataSeedingAsync();
 //Here you can also app.MapDataDictionary().RequireAuthorization();
 app.MapDataDictionary();
 app.MapMasterData();
+app.MapDictionaries();
 app.MapMasterDataApi();
 app.Run();

@@ -70,13 +70,13 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = await dataDictionaryRepository.GetFormElementAsync(elementName);
-        if (!dictionary.ApiOptions.EnableGetAll)
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
         var recoverTotalOfRecords = total == 0;
-        var filters = GetDefaultFilter(dictionary, true);
-        var result = await entityRepository.GetDictionaryListResultAsync(dictionary, new EntityParameters
+        var filters = GetDefaultFilter(formElement, true);
+        var result = await entityRepository.GetDictionaryListResultAsync(formElement, new EntityParameters
         {
             Filters = filters!,
             CurrentPage = pag,
@@ -91,7 +91,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         {
             TotalOfRecords = recoverTotalOfRecords ? result.TotalOfRecords : total
         };
-        response.SetData(dictionary, result.Data);
+        response.SetData(formElement, result.Data);
 
         return response;
     }
@@ -422,7 +422,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (string.IsNullOrEmpty(formElement.ApiOptions.ApplyUserIdOn))
             return filters;
 
-        var userId = GetUserId();
+        var userId = masterDataUser.Id;
         if (!filters.TryGetValue(formElement.ApiOptions.ApplyUserIdOn, out var filter))
         {
             filters.Add(formElement.ApiOptions.ApplyUserIdOn, userId);
@@ -439,14 +439,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         return filters;
     }
 
-    private string GetUserId()
-    {
-        return masterDataUser.Id;
-    }
-
     private DataContext GetDataContext()
     {
-        var userId = GetUserId();
+        var userId = masterDataUser.Id;
         return new DataContext(httpContext.Request, DataContextSource.Api, userId);
     }
 

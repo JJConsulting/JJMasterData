@@ -733,4 +733,61 @@
   <data name="Year" xml:space="preserve">
     <value>Año</value>
   </data>
+  <data name="(1, 0)." xml:space="preserve">
+    <value>(1, 0).</value>
+  </data>
+  <data name="Date and time" xml:space="preserve">
+    <value>Fecha y hora</value>
+  </data>
+  <data name="Decimal number" xml:space="preserve">
+    <value>Número decimal</value>
+  </data>
+  <data name="Format (dd/MM/yyyy HH:mm:ss) example:" xml:space="preserve">
+    <value>Formato (dd/MM/yyyy HH:mm:ss) ejemplo:</value>
+  </data>
+  <data name="Format (dd/MM/yyyy) example:" xml:space="preserve">
+    <value>Formato (dd/MM/yyyy) ejemplo:</value>
+  </data>
+  <data name="Inform the Id" xml:space="preserve">
+    <value>Informe el Id</value>
+  </data>
+  <data name="Integer number" xml:space="preserve">
+    <value>Número entero</value>
+  </data>
+  <data name="Max. {0} characters." xml:space="preserve">
+    <value>Máx. {0} caracteres.</value>
+  </data>
+  <data name="No dot or comma." xml:space="preserve">
+    <value>Sin punto ni coma.</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Orden</value>
+  </data>
+  <data name="or" xml:space="preserve">
+    <value>o</value>
+  </data>
+  <data name="Primary Key" xml:space="preserve">
+    <value>Clave primaria</value>
+  </data>
+  <data name="To bulk insert records, select a file of type" xml:space="preserve">
+    <value>Para insertar registros en masa, seleccione un archivo de tipo</value>
+  </data>
+  <data name="the file must contain" xml:space="preserve">
+    <value>el archivo debe contener</value>
+  </data>
+  <data name="separated by semicolons (;), following the layout below:" xml:space="preserve">
+    <value>separadas por punto y coma (;), siguiendo el diseño a continuación:</value>
+  </data>
+  <data name="To select more than one item, enter the desired values separated by a comma." xml:space="preserve">
+    <value>Para seleccionar más de un elemento, ingrese los valores deseados separados por una coma.</value>
+  </data>
+  <data name="with the maximum size of" xml:space="preserve">
+    <value>con el tamaño máximo de</value>
+  </data>
+  <data name="do not include caption or description in the first line" xml:space="preserve">
+    <value>no incluya leyenda ni descripción en la primera línea</value>
+  </data>
+  <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
+    <value>Use '{0}' como separador para {1} decimales.</value>
+  </data>
 </root>

@@ -194,7 +194,7 @@ internal sealed class DataImportationHelp
                 text.Append(await GetHtmlComboHelp(field));
                 break;
             case FormComponent.CheckBox:
-                text.AppendText("(1, 0).");
+                text.AppendText(StringLocalizer["(1, 0)."]);
                 break;
             default:
             {
@@ -206,17 +206,17 @@ internal sealed class DataImportationHelp
                 {
                     if (field.Size > 0)
                     {
-                        text.AppendText(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
+                        text.AppendText(StringLocalizer["Max. {0} characters.", field.Size]);
                     }
 
-                    text.AppendText(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.",
+                    text.AppendText(StringLocalizer["Use '{0}' as separator for {1} decimal places.",
                         CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator, field.NumberOfDecimalPlaces]);
                 }
                 else
                 {
                     if (field.Size > 0)
                     {
-                        text.AppendText(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
+                        text.AppendText(StringLocalizer["Max. {0} characters.", field.Size]);
                     }
                 }
 
@@ -238,7 +238,7 @@ internal sealed class DataImportationHelp
         var upload = DataImportation.UploadArea;
         var infoHtml = new HtmlBuilder();
 
-        infoHtml.AppendText(StringLocalizer["To bulk insert records, select a file of type"]);
+        infoHtml.AppendText(StringLocalizer["To bulk insert records, select a file of type"] + " ");
 
         infoHtml.AppendB(b =>
         {

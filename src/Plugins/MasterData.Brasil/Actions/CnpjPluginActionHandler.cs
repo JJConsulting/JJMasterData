@@ -14,7 +14,6 @@ namespace JJMasterData.Brasil.Actions;
 public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService)
     : BrasilPluginActionHandler(expressionsService)
 {
-    private const string IgnoreDbFieldKey = "IgnoreDb";
     public override Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
     public override string Title => "Cnpj";
     
@@ -46,12 +45,15 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
     {
         get
         {
-            yield return new PluginConfigurationField
+            if (receitaFederalService.SupportsIgnoreDb)
             {
-                Name = IgnoreDbFieldKey,
-                Label = "Quando habilitado, a busca é realizada diretamente na Receita Federal. Nessa modalidade de consulta, serão consumidos 3 créditos ao invés de somente 1.",
-                Type = PluginConfigurationFieldType.Boolean
-            };
+                yield return new PluginConfigurationField
+                {
+                    Name = "IgnoreDb",
+                    Label = "Quando habilitado, a busca é realizada diretamente na Receita Federal. Nessa modalidade de consulta, serão consumidos 3 créditos ao invés de somente 1.",
+                    Type = PluginConfigurationFieldType.Boolean
+                };
+            }
         }
     }
 
@@ -61,7 +63,11 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
         
         var cnpj = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString()!);
         
-        receitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
+        if (context.ConfigurationMap.TryGetValue(TimeoutSeconds, out var value))
+            receitaFederalService.TimeoutSeconds = Convert.ToInt32(value);
+        else
+            receitaFederalService.TimeoutSeconds = 5;
+        receitaFederalService.IgnoreDb = context.ConfigurationMap.TryGetValue("IgnoreDb", out var ignoreDb) && ignoreDb is true;
         
         var cnpjResult = await receitaFederalService.SearchCnpjAsync(cnpj);
 

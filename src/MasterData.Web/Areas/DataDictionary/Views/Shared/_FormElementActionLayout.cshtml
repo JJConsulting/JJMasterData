@@ -97,146 +97,148 @@
             </script>
         }
 
-        <ul class="nav nav-underline">
-            <li id="nav-general" class="nav-item active">
-                <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">
-                    @StringLocalizer["General"]
-                </a>
-            </li>
-            @await RenderSectionAsync("ActionTabs", required: false)
-            <li id="nav-advanced" class="nav-item">
-                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">
-                    @StringLocalizer["Advanced"]
-                </a>
-            </li>
-        </ul>
+        <card>
+            <ul class="nav nav-underline">
+                <li id="nav-general" class="nav-item active">
+                    <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">
+                        @StringLocalizer["General"]
+                    </a>
+                </li>
+                @await RenderSectionAsync("ActionTabs", required: false)
+                <li id="nav-advanced" class="nav-item">
+                    <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">
+                        @StringLocalizer["Advanced"]
+                    </a>
+                </li>
+            </ul>
 
-        <div class="tab-content" style="margin-top: 1.25rem;">
-            <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-                <div class="row">
-                    @if (isFieldSource)
-                    {
-                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                            <label class="@BootstrapHelper.Label" asp-for="Name">@StringLocalizer["Name"]</label>
-                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
-                        </div>
-                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                            <label class="@BootstrapHelper.Label" for="fieldName">@StringLocalizer["Field"]</label>
-                            @{
-                                var formElement = (FormElement)ViewData["FormElement"]!;
-                                var actionFieldList = formElement.Fields
-                                    .Where(f => f.Component.SupportActions)
-                                    .Select(f => new SelectListItem(f.Name, f.Name, f.Name == fieldName));
-                            }
-                            @Html.DropDownList("fieldName", actionFieldList, new { @class = "form-select" })
-                            <input type="hidden" id="originalFieldName" name="originalFieldName" value="@fieldName"/>
-                        </div>
-                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                            <label asp-for="Icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
-                            <icon-picker for="Icon"/>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                            <label class="@BootstrapHelper.Label" asp-for="Name">@StringLocalizer["Name"]</label>
-                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
-                        </div>
-                        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                            <label asp-for="Icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
-                            <icon-picker for="Icon"/>
-                        </div>
-                    }
-                    <div class="@BootstrapHelper.FormGroup col-sm-6">
-                        <label class="@BootstrapHelper.Label" asp-for="Text">@StringLocalizer["Text"]</label>
-                        @Html.TextBoxFor(model => model.Text, new { @class = "form-control" })
-                        <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
-                    </div>
-                    <div class="@BootstrapHelper.FormGroup col-sm-6">
-                        <label class="@BootstrapHelper.Label " asp-for="Tooltip">@StringLocalizer["Tooltip"]</label>
-                        @Html.TextBoxFor(model => model.Tooltip, new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-
-            @await RenderSectionAsync("ActionTabContent", required: false)
-
-            <div id="div-advanced" class="tab-pane fade">
-                @if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserDefined) || Model is AuditLogFormToolbarAction)
-                {
+            <div class="tab-content" style="margin-top: 1.25rem;">
+                <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
                     <div class="row">
-                        <div class="mb-3 col-sm-12 required">
-                            <expression use-floating-label="false" for="VisibleExpression" icon="FontAwesomeIcon.Eye"
-                                        tooltip="@StringLocalizer["Boolean expression to show the action. See the docs for more information."]"/>
+                        @if (isFieldSource)
+                        {
+                            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                                <label class="@BootstrapHelper.Label" asp-for="Name">@StringLocalizer["Name"]</label>
+                                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                            </div>
+                            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                                <label class="@BootstrapHelper.Label" for="fieldName">@StringLocalizer["Field"]</label>
+                                @{
+                                    var formElement = (FormElement)ViewData["FormElement"]!;
+                                    var actionFieldList = formElement.Fields
+                                        .Where(f => f.Component.SupportActions)
+                                        .Select(f => new SelectListItem(f.Name, f.Name, f.Name == fieldName));
+                                }
+                                @Html.DropDownList("fieldName", actionFieldList, new { @class = "form-select" })
+                                <input type="hidden" id="originalFieldName" name="originalFieldName" value="@fieldName"/>
+                            </div>
+                            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                                <label asp-for="Icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
+                                <icon-picker for="Icon"/>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+                                <label class="@BootstrapHelper.Label" asp-for="Name">@StringLocalizer["Name"]</label>
+                                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                            </div>
+                            <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+                                <label asp-for="Icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
+                                <icon-picker for="Icon"/>
+                            </div>
+                        }
+                        <div class="@BootstrapHelper.FormGroup col-sm-6">
+                            <label class="@BootstrapHelper.Label" asp-for="Text">@StringLocalizer["Text"]</label>
+                            @Html.TextBoxFor(model => model.Text, new { @class = "form-control" })
+                            <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
                         </div>
-                        <div class="mb-3 col-sm-12 required">
-                            <expression use-floating-label="false" for="EnableExpression" icon="FontAwesomeIcon.Pencil"
-                                        tooltip="@StringLocalizer["Boolean expression to enable the action. See the docs for more information."]"/>
+                        <div class="@BootstrapHelper.FormGroup col-sm-6">
+                            <label class="@BootstrapHelper.Label " asp-for="Tooltip">@StringLocalizer["Tooltip"]</label>
+                            @Html.TextBoxFor(model => model.Tooltip, new { @class = "form-control" })
                         </div>
-                    </div>
-                }
-
-                <div class="row">
-                    <div class="mb-3 col-sm-3">
-                        <label class="form-label" asp-for="ConfirmationMessage"></label>
-                        <tooltip
-                            title="@StringLocalizer["If filled, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"]"/>
-                        <input asp-for="ConfirmationMessage" class="form-control"/>
-                    </div>
-                    <div class="mb-3 col-sm-3">
-                        <label asp-for="CssClass" class="form-label">@StringLocalizer["CSS Class"]</label>
-                        <input asp-for="CssClass" class="form-control"/>
-                    </div>
-                    <div class="mb-3 col-sm-3">
-                        <label class="form-label" asp-for="Color"></label>
-                        <select asp-for="Color" class="form-select"
-                                asp-items="Html.GetEnumSelectList<BootstrapColor>()"></select>
-                    </div>
-                    <div class="mb-3 col-sm-3">
-                        <label asp-for="Order" class="form-label">@StringLocalizer["Order"]</label>
-                        <input asp-for="Order" class="form-control"/>
                     </div>
                 </div>
-                <div class="row">
 
-                    <div class="mb-3 col-sm-2">
-                        <checkbox for="ShowTitle" layout="Switch"/>
-                    </div>
+                @await RenderSectionAsync("ActionTabContent", required: false)
 
-                    <div class="mb-3 col-sm-2">
-                        <checkbox for="ShowAsButton" layout="Switch"/>
-                    </div>
-
-                    <div class="mb-3 col-sm-2">
-                        <checkbox for="IsDefaultOption" layout="Switch"/>
-                    </div>
-                    <div class="mb-3 col-sm-2">
-                        <checkbox for="IsGroup" layout="Switch"/>
-                    </div>
-                    <div class="mb-3 col-sm-2">
-                        <checkbox tooltip="@StringLocalizer["Show a separator before this action."]" for="DividerLine"
-                                  layout="Switch"/>
-                    </div>
-                    @if (actionSource is ActionSource.FormToolbar)
+                <div id="div-advanced" class="tab-pane fade">
+                    @if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserDefined) || Model is AuditLogFormToolbarAction)
                     {
-                        <div class="mb-3 col-sm-2">
-                            <label asp-for="Location" class="form-label">@StringLocalizer["Location"]</label>
-                            <tooltip
-                                title="@StringLocalizer["If not in a relationship, Panel is considered the same as Bottom."]"/>
-                            <div class="input-append">
-                                <select asp-for="Location" class="form-select"
-                                        asp-items="Html.GetEnumSelectList<FormToolbarActionLocation>()"></select>
+                        <div class="row">
+                            <div class="mb-3 col-sm-12 required">
+                                <expression use-floating-label="false" for="VisibleExpression" icon="FontAwesomeIcon.Eye"
+                                            tooltip="@StringLocalizer["Boolean expression to show the action. See the docs for more information."]"/>
+                            </div>
+                            <div class="mb-3 col-sm-12 required">
+                                <expression use-floating-label="false" for="EnableExpression" icon="FontAwesomeIcon.Pencil"
+                                            tooltip="@StringLocalizer["Boolean expression to enable the action. See the docs for more information."]"/>
                             </div>
                         </div>
                     }
-                    @if (Model is ISubmittableAction submitAction)
-                    {
-                        <partial name="~/Areas/DataDictionary/Views/Actions/_SubmittableAction.cshtml"
-                                 model="@submitAction"/>
-                    }
+
+                    <div class="row">
+                        <div class="mb-3 col-sm-3">
+                            <label class="form-label" asp-for="ConfirmationMessage"></label>
+                            <tooltip
+                                title="@StringLocalizer["If filled, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"]"/>
+                            <input asp-for="ConfirmationMessage" class="form-control"/>
+                        </div>
+                        <div class="mb-3 col-sm-3">
+                            <label asp-for="CssClass" class="form-label">@StringLocalizer["CSS Class"]</label>
+                            <input asp-for="CssClass" class="form-control"/>
+                        </div>
+                        <div class="mb-3 col-sm-3">
+                            <label class="form-label" asp-for="Color"></label>
+                            <select asp-for="Color" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<BootstrapColor>()"></select>
+                        </div>
+                        <div class="mb-3 col-sm-3">
+                            <label asp-for="Order" class="form-label">@StringLocalizer["Order"]</label>
+                            <input asp-for="Order" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="mb-3 col-sm-2">
+                            <checkbox for="ShowTitle" layout="Switch"/>
+                        </div>
+
+                        <div class="mb-3 col-sm-2">
+                            <checkbox for="ShowAsButton" layout="Switch"/>
+                        </div>
+
+                        <div class="mb-3 col-sm-2">
+                            <checkbox for="IsDefaultOption" layout="Switch"/>
+                        </div>
+                        <div class="mb-3 col-sm-2">
+                            <checkbox for="IsGroup" layout="Switch"/>
+                        </div>
+                        <div class="mb-3 col-sm-2">
+                            <checkbox tooltip="@StringLocalizer["Show a separator before this action."]" for="DividerLine"
+                                      layout="Switch"/>
+                        </div>
+                        @if (actionSource is ActionSource.FormToolbar)
+                        {
+                            <div class="mb-3 col-sm-2">
+                                <label asp-for="Location" class="form-label">@StringLocalizer["Location"]</label>
+                                <tooltip
+                                    title="@StringLocalizer["If not in a relationship, Panel is considered the same as Bottom."]"/>
+                                <div class="input-append">
+                                    <select asp-for="Location" class="form-select"
+                                            asp-items="Html.GetEnumSelectList<FormToolbarActionLocation>()"></select>
+                                </div>
+                            </div>
+                        }
+                        @if (Model is ISubmittableAction submitAction)
+                        {
+                            <partial name="~/Areas/DataDictionary/Views/Actions/_SubmittableAction.cshtml"
+                                     model="@submitAction"/>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        </card>
 
         @await RenderSectionAsync("ActionExtraContent", required: false)
 

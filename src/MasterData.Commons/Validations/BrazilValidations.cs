@@ -72,10 +72,10 @@ internal static class BrazilValidations
     {
         //Deixa somente as posições do CNPJ sem barras, pontos, etc
         cnpj =  !string.IsNullOrEmpty(cnpj) 
-            ? cnpj.Trim().ToUpper().Replace(".", "").Replace("-", "").Replace("/", "").Replace("\\", "") 
+            ? cnpj.Trim().ToUpperInvariant().Replace(".", "").Replace("-", "").Replace("/", "").Replace("\\", "") 
             : "";
 
-        if (cnpj.Length != 14)
+        if (cnpj.Length != 14 || !HasValidCnpjPattern(cnpj))
         {
             return false;
         }
@@ -114,6 +114,17 @@ internal static class BrazilValidations
         string digito2 = (resto <= 1 ? 0 : 11 - resto).ToString();
 
         return cnpj.Equals($"{calcDV1}{digito1}{digito2}");
+    }
+
+    private static bool HasValidCnpjPattern(string cnpj)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            if (!char.IsDigit(cnpj[i]) && cnpj[i] is < 'A' or > 'Z')
+                return false;
+        }
+
+        return char.IsDigit(cnpj[12]) && char.IsDigit(cnpj[13]);
     }
     
     public static bool ValidateIE(string pUF, string pInscr)
