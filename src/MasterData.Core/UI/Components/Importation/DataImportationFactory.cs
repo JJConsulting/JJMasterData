@@ -59,7 +59,7 @@ internal sealed class DataImportationFactory(
 
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
-        var dataContext = new DataContext(httpContext.HttpContext!.Request, DataContextSource.Upload, masterDataUser.Id);
+        var dataContext = new DataContext(httpContext.HttpContext?.Request, DataContextSource.Upload, masterDataUser.Id);
 
         var formEvent = formEventHandlerResolver.GetFormEventHandler(elementName);
 

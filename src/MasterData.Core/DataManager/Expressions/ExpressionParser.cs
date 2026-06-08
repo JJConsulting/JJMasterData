@@ -95,7 +95,7 @@ public sealed class ExpressionParser(
         }
         else if (httpContext.HttpContext?.Session.Keys.Contains(field) == true)
         {
-            parsedValue = httpContext.HttpContext!.Session.GetString(field);
+            parsedValue = httpContext.HttpContext.Session.GetString(field);
         }
         else
         {

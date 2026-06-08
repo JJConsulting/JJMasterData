@@ -20,15 +20,15 @@ public class DataContext
     }
 
     public DataContext(IHttpContextAccessor request, DataContextSource source, string? userId)
-        : this(request.HttpContext!.Request, source, userId)
+        : this(request.HttpContext?.Request, source, userId)
     {
     }
 
-    public DataContext(HttpRequest request, DataContextSource source, string? userId)
+    public DataContext(HttpRequest? request, DataContextSource source, string? userId)
     {
         Source = source;
         UserId = userId;
-        IpAddress = request.HttpContext.Connection.RemoteIpAddress?.ToString();
-        BrowserInfo = request.Headers.UserAgent.ToString();
+        IpAddress = request?.HttpContext.Connection.RemoteIpAddress?.ToString();
+        BrowserInfo = request?.Headers.UserAgent.ToString();
     }
 }
