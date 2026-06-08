@@ -11,7 +11,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class FormViewFactory(
-    IHttpContext currentContext,
+    IHttpContextAccessor currentContext,
     IMasterDataUser masterDataUser,
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,

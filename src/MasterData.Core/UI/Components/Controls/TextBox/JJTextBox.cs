@@ -5,7 +5,7 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -41,7 +41,7 @@ public class JJTextBox : ControlBase
         set => SetAttribute(FormElementField.MaxValueAttribute, value.ToString());
     }
 
-    public JJTextBox(IFormValues formValues) : base(formValues)
+    public JJTextBox(IHttpContextAccessor formValues) : base(formValues)
     {
         InputType = InputType.Text;
         Visible = true;

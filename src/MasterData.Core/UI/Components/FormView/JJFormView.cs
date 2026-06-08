@@ -30,8 +30,6 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
@@ -308,12 +306,12 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_pageState is null &&
-                CurrentContext.Request.Form.TryGetValue($"form-view-page-state-{Name}", out var formPageState))
-                _pageState = (PageState)int.Parse(formPageState);
+            if (_pageState is null && CurrentContext.HttpContext!.Request.HasFormContentType &&
+                CurrentContext.HttpContext!.Request.Form.TryGetValue($"form-view-page-state-{Name}", out var formPageState))
+                _pageState = (PageState)int.Parse(formPageState.ToString());
 
             if (_pageState is null &&
-                CurrentContext.Request.QueryString.TryGetValue($"{FormElement.Name}_PageState",
+                CurrentContext.HttpContext!.Request.Query.TryGetValue($"{FormElement.Name}_PageState",
                     out var queryStringPageState))
             {
                 if (Enum.TryParse(queryStringPageState, ignoreCase: true, out PageState pageState))
@@ -332,7 +330,10 @@ public class JJFormView : AsyncComponent
             if (_currentActionMap != null || _isCustomCurrentAction)
                 return _currentActionMap;
 
-            var encryptedActionMap = CurrentContext.Request.Form[$"current-action-map-{Name}"];
+            if (!CurrentContext.HttpContext!.Request.HasFormContentType)
+                return null;
+            
+            var encryptedActionMap = CurrentContext.HttpContext!.Request.GetFormValue($"current-action-map-{Name}");
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -369,7 +370,7 @@ public class JJFormView : AsyncComponent
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             field = factory.Create();
 
             return field;
@@ -393,9 +394,10 @@ public class JJFormView : AsyncComponent
         get
         {
             if (_relationshipType is null &&
-                CurrentContext.Request.Form.TryGetValue($"form-view-relationship-type-{Name}",
+                CurrentContext.HttpContext!.Request.HasFormContentType &&
+                CurrentContext.HttpContext!.Request.Form.TryGetValue($"form-view-relationship-type-{Name}",
                     out var relationshipType))
-                _relationshipType = (RelationshipType)int.Parse(relationshipType);
+                _relationshipType = (RelationshipType)int.Parse(relationshipType.ToString());
 
             return _relationshipType ?? RelationshipType.Parent;
         }
@@ -405,8 +407,8 @@ public class JJFormView : AsyncComponent
     internal bool IsInsertAtGridView => PageState is PageState.List &&
                                         FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid;
 
-    internal IHttpContext CurrentContext { get; }
-    internal IFormValues FormValues => CurrentContext.Request.Form;
+    internal IHttpContextAccessor CurrentContext { get; }
+    internal IFormCollection FormValues => CurrentContext.HttpContext!.Request.Form;
     internal IEncryptionService EncryptionService { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
@@ -420,7 +422,7 @@ public class JJFormView : AsyncComponent
 
     public JJFormView(
         FormElement formElement,
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -551,9 +553,9 @@ public class JJFormView : AsyncComponent
         else
             values = await GetFormValuesAsync();
 
-        var fieldName = CurrentContext.Request.QueryString["fieldName"];
+        var fieldName = CurrentContext.HttpContext!.Request.Query["fieldName"];
 
-        var field = FormElement.Fields[fieldName];
+            var field = FormElement.Fields[fieldName!];
 
         var scripts = new HtmlBuilder();
 
@@ -952,7 +954,7 @@ public class JJFormView : AsyncComponent
 
     private bool ContainsHiddenPkValues()
     {
-        return CurrentContext.Request.Form[$"data-panel-pk-values-{FormElement.Name}"] is not null;
+        return !string.IsNullOrEmpty(CurrentContext.HttpContext!.Request.GetFormValue($"data-panel-pk-values-{FormElement.Name}"));
     }
 
     private async Task<ComponentResult> GetUpdateResult()
@@ -1018,7 +1020,7 @@ public class JJFormView : AsyncComponent
         var containsGridAction = false;
         if (GridView.TableActions.Any(a => a is InsertSelectionAction))
         {
-            containsGridAction = !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);
+            containsGridAction = !string.IsNullOrEmpty(CurrentContext.HttpContext!.Request.GetFormValue($"grid-view-action-map-{Name}"));
         }
         
         if (PageState is PageState.List || containsGridAction)
@@ -1043,7 +1045,7 @@ public class JJFormView : AsyncComponent
 
     private bool IsReloadFields()
     {
-        return CurrentContext.Request.Form.ContainsFormValues() &&
+        return CurrentContext.HttpContext!.Request.HasFormContentType &&
                DataPanel.PageState is not PageState.View &&
                CurrentAction is not PluginAction;
     }
@@ -1638,7 +1640,7 @@ public class JJFormView : AsyncComponent
         Dictionary<string, object?> values,
         bool validateFields = true)
     {
-        var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Form, UserId);
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
         var result = await _formService.InsertAsync(FormElement, values, dataContext, validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -1651,7 +1653,7 @@ public class JJFormView : AsyncComponent
     public async Task<Dictionary<string, string>> UpdateFormValuesAsync(Dictionary<string, object?> values)
     {
         var result = await _formService.UpdateAsync(FormElement, values,
-            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
+            new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1662,7 +1664,7 @@ public class JJFormView : AsyncComponent
             await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement,
                 new FormStateData(filter!, UserValues, PageState.Delete));
         var result = await _formService.DeleteAsync(FormElement, values,
-            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
+            new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1700,8 +1702,8 @@ public class JJFormView : AsyncComponent
         foreach (var field in uploadFields)
         {
             string sessionName = $"{field.Name}-upload-view_jjfiles";
-            if (CurrentContext.Session.HasKey(sessionName))
-                CurrentContext.Session[sessionName] = null;
+            if (CurrentContext.HttpContext!.Session.Keys.Contains(sessionName))
+                CurrentContext.HttpContext!.Session.Remove(sessionName);
         }
     }
 
@@ -1749,7 +1751,7 @@ public class JJFormView : AsyncComponent
 
     public Dictionary<string, object> GetRelationValuesFromForm()
     {
-        var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{FormElement.Name}"];
+        var encryptedRelationValues = CurrentContext.HttpContext!.Request.GetFormValue($"form-view-relation-values-{FormElement.Name}");
 
         if (string.IsNullOrEmpty(encryptedRelationValues))
             return new Dictionary<string, object>();

@@ -11,7 +11,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +24,7 @@ internal sealed class DataImportationFactory(
     FieldValuesService fieldValuesService,
     FormService formService,
     IBackgroundTaskManager backgroundTaskManager,
-    IHttpContext httpContext,
+    IHttpContextAccessor httpContext,
     IMasterDataUser masterDataUser,
     IComponentFactory componentFactory,
     DataItemService dataItemService,
@@ -59,7 +59,7 @@ internal sealed class DataImportationFactory(
 
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
-        var dataContext = new DataContext(httpContext.Request, DataContextSource.Upload, masterDataUser.Id);
+        var dataContext = new DataContext(httpContext.HttpContext!.Request, DataContextSource.Upload, masterDataUser.Id);
 
         var formEvent = formEventHandlerResolver.GetFormEventHandler(elementName);
 

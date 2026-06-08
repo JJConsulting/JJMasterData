@@ -19,7 +19,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Tasks;
 
 using JJMasterData.Core.UI.Routing;
@@ -42,7 +42,7 @@ public class JJAuditLogView : AsyncComponent
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             field = factory.Create();
 
             return field;
@@ -60,7 +60,7 @@ public class JJAuditLogView : AsyncComponent
     /// </remarks>
     internal string UserId => _masterDataUser.Id;
 
-    private IHttpContext CurrentContext { get; }
+    private IHttpContextAccessor CurrentContext { get; }
 
     private AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
@@ -88,7 +88,7 @@ public class JJAuditLogView : AsyncComponent
 
     public JJAuditLogView(
         FormElement formElement,
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
@@ -109,7 +109,7 @@ public class JJAuditLogView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
+        var logId = CurrentContext.HttpContext!.Request.GetFormValue($"audit-log-id-{FormElement.Name}");
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))

@@ -1,17 +1,39 @@
-using JJMasterData.Core.Http.Abstractions;
+#nullable enable
+using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static bool TryGetValue(this IFormValues formValues, string key, out string value)
+    extension(HttpRequest request)
     {
-        value = formValues[key];
-        return !string.IsNullOrEmpty(value);
-    }   
-    public static bool TryGetValue(this IQueryString queryString,string key, out string value)
+        public string GetApplicationPath()
+        {
+            return request.PathBase.ToString();
+        }
+
+        public string? GetFormValue(string key)
+        {
+            return request.HasFormContentType ? request.Form[key].ToString() : null;
+        }
+        
+        public string GetApplicationUri()
+        {
+            return new Uri($"{request.Scheme}://{request.Host}{request.PathBase}").ToString();
+        }
+
+        public string GetAbsoluteUri()
+        {
+            return request.GetDisplayUrl();
+        }
+    }
+
+    public static long GetMaxRequestBodySize(this IOptions<FormOptions> options)
     {
-        value = queryString[key];
-        return !string.IsNullOrWhiteSpace(value);
-    }   
+        return options.Value.MultipartBodyLengthLimit;
+    }
 }

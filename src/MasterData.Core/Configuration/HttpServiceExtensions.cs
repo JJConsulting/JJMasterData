@@ -1,5 +1,4 @@
-using JJMasterData.Core.Http;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,15 +9,7 @@ public static class HttpServiceExtensions
 {
     public static void AddHttpServices(this IServiceCollection services)
     {
-        services.AddScoped<IHttpContext, HttpContextWrapper>();
         services.AddHttpContextAccessor();
-        services.AddScoped<IRequestLengthService, Http.AspNetCore.RequestLengthService>();  
-
-        services.AddScoped<IHttpSession, Http.AspNetCore.HttpSessionWrapper>();
-        services.AddScoped<IHttpRequest, Http.AspNetCore.HttpRequestWrapper>();
-        services.AddScoped<IQueryString, Http.AspNetCore.QueryStringWrapper>();  
-        services.AddScoped<IFormValues, Http.AspNetCore.FormValuesWrapper>();  
-        services.AddScoped<IClaimsPrincipalAccessor, Http.AspNetCore.ClaimsPrincipalWrapper>();
 
 #pragma warning disable ASPDEPR006
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

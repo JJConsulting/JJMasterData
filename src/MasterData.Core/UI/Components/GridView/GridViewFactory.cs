@@ -8,14 +8,14 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class GridViewFactory(IHttpContext currentContext,
+internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IEncryptionService encryptionService,
@@ -114,7 +114,7 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad)
-                settings = currentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
+                settings = currentContext.HttpContext!.Session.GetObject<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
 
             if (settings == null)
             {

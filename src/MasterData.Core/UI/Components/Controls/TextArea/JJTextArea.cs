@@ -4,7 +4,7 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 using Microsoft.Extensions.Localization;
 
@@ -19,7 +19,7 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
 
-    public JJTextArea(IFormValues formValues,IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
+    public JJTextArea(IHttpContextAccessor formValues,IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
     {
         StringLocalizer = stringLocalizer;
         Attributes.Add("class", "form-control");

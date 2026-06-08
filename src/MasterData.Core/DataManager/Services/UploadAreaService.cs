@@ -8,14 +8,14 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.IO;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
+public class UploadAreaService(IHttpContextAccessor currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
@@ -71,7 +71,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
     /// </summary>
     private FormFileContent? GetFile(string fileName)
     {
-        var fileData = currentContext.Request.Form.GetFile(fileName);
+        var fileData = currentContext.HttpContext!.Request.Form.Files[fileName];
 
         if (fileData is null)
             return null;

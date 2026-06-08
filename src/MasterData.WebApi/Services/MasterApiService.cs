@@ -10,7 +10,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
 
@@ -18,7 +18,6 @@ namespace JJMasterData.WebApi.Services;
 
 public class MasterApiService(ExpressionsService expressionsService,
     IHttpContextAccessor httpContextAccessor,
-    IHttpContext httpContext,
     IMasterDataUser masterDataUser,
     DataItemService dataItemService,
     FieldValuesService fieldValuesService,
@@ -442,7 +441,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     private DataContext GetDataContext()
     {
         var userId = masterDataUser.Id;
-        return new DataContext(httpContext.Request, DataContextSource.Api, userId);
+        return new DataContext(httpContextAccessor.HttpContext!.Request, DataContextSource.Api, userId);
     }
 
     private ValueTask<FormElement> GetDataDictionary(string elementName)

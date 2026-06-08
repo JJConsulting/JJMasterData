@@ -23,7 +23,7 @@ using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Args;
 
 using Microsoft.Extensions.Localization;
@@ -76,7 +76,7 @@ public class JJDataExportation : ProcessComponent
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
-        IHttpContext currentContext, 
+        IHttpContextAccessor currentContext, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
         base(currentContext, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)

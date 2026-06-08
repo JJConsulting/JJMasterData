@@ -1,9 +1,9 @@
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class CodeEditorFactory(IFormValues formValues) : IControlFactory<JJCodeEditor>
+public class CodeEditorFactory(IHttpContextAccessor formValues) : IControlFactory<JJCodeEditor>
 {
     public JJCodeEditor Create()
     {

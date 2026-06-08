@@ -4,12 +4,12 @@ using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory)
+public class JJSlider(IHttpContextAccessor formValues, IControlFactory<JJTextBox> textBoxFactory)
     : ControlBase(formValues)
 {
     private IControlFactory<JJTextBox> TextBoxFactory { get; } = textBoxFactory;

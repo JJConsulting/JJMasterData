@@ -1,9 +1,9 @@
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class TextBoxFactory(IFormValues formValues)
+internal sealed class TextBoxFactory(IHttpContextAccessor formValues)
     : IControlFactory<JJTextBox>
 {
     public JJTextBox Create()

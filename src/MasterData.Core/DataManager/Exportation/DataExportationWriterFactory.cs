@@ -87,7 +87,7 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
         writer.Configuration = dataExportation.ExportOptions;
         writer.UserId = dataExportation.UserId;
         writer.ProcessOptions = dataExportation.ProcessOptions;
-        writer.AbsoluteUri = dataExportation.CurrentContext.Request.AbsoluteUri;
+        writer.AbsoluteUri = dataExportation.CurrentContext.HttpContext!.Request.GetAbsoluteUri();
     }
 
 

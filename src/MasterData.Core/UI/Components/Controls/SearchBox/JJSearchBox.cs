@@ -15,7 +15,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -84,9 +84,9 @@ public class JJSearchBox : ControlBase, IDataItemControl
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && Request.Form.ContainsFormValues())
+            if (AutoReloadFormFields && _text == null && Request.HttpContext!.Request.HasFormContentType)
             {
-                _text = Request.Form[$"{Name}_text"];
+                _text = Request.HttpContext.Request.GetFormValue($"{Name}_text");
             }
 
             return _text;
@@ -161,9 +161,9 @@ public class JJSearchBox : ControlBase, IDataItemControl
             return _selectedValue;
         }
         
-        if (AutoReloadFormFields && Request.Form.ContainsFormValues())
+        if (AutoReloadFormFields && Request.HttpContext!.Request.HasFormContentType)
         {
-            _selectedValue = Request.Form[Name];
+            _selectedValue = Request.HttpContext.Request.GetFormValue(Name);
         }
 
         if (!string.IsNullOrEmpty(Text))
@@ -185,7 +185,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    private IHttpRequest Request { get; }
+    private IHttpContextAccessor Request { get; }
     private IEncryptionService EncryptionService { get; }
     private DataItemService DataItemService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
@@ -208,7 +208,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(Request, EncryptionService);
             _routeContext = factory.Create();
             
             return _routeContext;
@@ -222,10 +222,10 @@ public class JJSearchBox : ControlBase, IDataItemControl
     #region "Constructors"
 
     public JJSearchBox(
-        IHttpRequest request,
+        IHttpContextAccessor request,
         IEncryptionService encryptionService,
         DataItemService dataItemService,
-        IStringLocalizer<MasterDataResources> stringLocalizer) : base(request.Form)
+        IStringLocalizer<MasterDataResources> stringLocalizer) : base(request)
     {
         HtmlId = Name;
         Request = request;
@@ -246,7 +246,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
-        var fieldName = Request.QueryString["fieldName"];
+        var fieldName = Request.HttpContext?.Request.Query["fieldName"].ToString();
         
         if (ComponentContext is ComponentContext.SearchBox or ComponentContext.SearchBoxFilter && FieldName == fieldName)
         {
@@ -412,7 +412,11 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     private async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
-        var searchText = Request.QueryString["q"] ?? Request.Form[Name + "_text"];
+        var searchText = Request.HttpContext?.Request.Query["q"].ToString();
+        if (string.IsNullOrEmpty(searchText) && Request.HttpContext!.Request.HasFormContentType)
+        {
+            searchText = Request.HttpContext.Request.GetFormValue(Name + "_text");
+        }
         var values = await GetValuesAsync(searchId: null, searchText);
         return values.ConvertAll(v=>new DataItemResult
         {

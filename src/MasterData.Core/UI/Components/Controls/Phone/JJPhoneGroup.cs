@@ -4,11 +4,11 @@ using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Components.Phone;
 
-public sealed class JJPhoneGroup(IFormValues formValues) : JJTextBox(formValues)
+public sealed class JJPhoneGroup(IHttpContextAccessor formValues) : JJTextBox(formValues)
 {
     public string GroupCssClass { get; set; }
 

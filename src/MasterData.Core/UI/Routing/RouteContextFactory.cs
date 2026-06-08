@@ -1,14 +1,15 @@
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Routing;
 
-public class RouteContextFactory(IQueryString queryString, IEncryptionService encryptionService)
+public class RouteContextFactory(IHttpContextAccessor httpContextAccessor, IEncryptionService encryptionService)
 {
     public RouteContext Create()
     {
-        if (queryString.TryGetValue("routeContext", out var encryptedQueryString))
+        var queryString = httpContextAccessor.HttpContext?.Request.Query;
+        if (queryString?.TryGetValue("routeContext", out var encryptedQueryString) == true)
         {
             return encryptionService.DecryptRouteContext(encryptedQueryString);
         }

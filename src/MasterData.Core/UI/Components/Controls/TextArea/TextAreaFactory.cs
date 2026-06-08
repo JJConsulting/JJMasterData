@@ -1,12 +1,12 @@
 using System;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class TextAreaFactory(
-    IFormValues formValues, 
+    IHttpContextAccessor formValues, 
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJTextArea>
 {

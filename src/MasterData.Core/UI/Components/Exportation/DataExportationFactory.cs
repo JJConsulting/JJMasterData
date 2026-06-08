@@ -7,7 +7,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,7 +20,7 @@ internal class DataExportationFactory(
     ExpressionsService expressionsService,
     IOptionsSnapshot<MasterDataCoreOptions> options,
     IBackgroundTaskManager backgroundTaskManager,
-    IHttpContext httpContext,
+    IHttpContextAccessor httpContext,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILoggerFactory loggerFactory,
     IComponentFactory componentFactory,

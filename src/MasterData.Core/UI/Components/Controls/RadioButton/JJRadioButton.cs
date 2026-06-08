@@ -3,12 +3,12 @@ using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
+internal sealed class JJRadioButton(IHttpContextAccessor formValues) : ControlBase(formValues)
 {
     public string Id { get; set; }
     public HtmlBuilder LabelHtml { get; } = new();

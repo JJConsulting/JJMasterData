@@ -1,10 +1,10 @@
 ﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class RadioButtonGroupFactory(DataItemService dataItemService, IFormValues formValues) : IControlFactory<JJRadioButtonGroup>
+internal sealed class RadioButtonGroupFactory(DataItemService dataItemService, IHttpContextAccessor formValues) : IControlFactory<JJRadioButtonGroup>
 {
     public JJRadioButtonGroup Create()
     {

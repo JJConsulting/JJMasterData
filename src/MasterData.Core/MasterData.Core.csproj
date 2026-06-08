@@ -12,12 +12,15 @@
         <RootNamespace>JJMasterData.Core</RootNamespace>
         <AssemblyName>JJMasterData.Core</AssemblyName>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NoWarn>$(NoWarn);CS9107</NoWarn>
     </PropertyGroup>
     
     <!--Runtime dependencies-->
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <Using Include="Microsoft.AspNetCore.Mvc" />
+        <Using Include="Microsoft.AspNetCore.Http" />
+        <Using Include="JJMasterData.Core.Extensions" />
     </ItemGroup>
     
     <ItemGroup>

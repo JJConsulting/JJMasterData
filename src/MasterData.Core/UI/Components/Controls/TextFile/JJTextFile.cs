@@ -9,18 +9,18 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.IO;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public sealed class JJTextFile(IHttpRequest request,
+public sealed class JJTextFile(IHttpContextAccessor request,
         IComponentFactory componentFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEncryptionService encryptionService)
-    : ControlBase(request.Form)
+    : ControlBase(request)
 {
     internal IEncryptionService EncryptionService { get; } = encryptionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -58,7 +58,7 @@ public sealed class JJTextFile(IHttpRequest request,
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(request, EncryptionService);
             field = factory.Create();
             
             return field;
