@@ -49,7 +49,6 @@ public class FormElementTest
                     AutoPostBack = true,
                     DataBehavior = FieldBehavior.Real,
                     IsPk = true,
-                    ValidateRequest = true,
                     DataItem = new FormElementDataItem
                     {
                         Command = new DataAccessCommand
