@@ -16,9 +16,20 @@ public static class HttpContextExtensions
             return request.PathBase.ToString();
         }
 
+        public string? GetValue(string key)
+        {
+            if (request.Query.ContainsKey(key))
+                return request.Query[key];
+
+            if (request.HasFormContentType)
+                return request.Form[key];
+
+            return null;
+        }
+        
         public string? GetFormValue(string key)
         {
-            return request.HasFormContentType ? request.Form[key].ToString() : null;
+            return request.HasFormContentType ? request.Form[key] : (string?)null;
         }
         
         public string GetApplicationUri()
@@ -32,8 +43,11 @@ public static class HttpContextExtensions
         }
     }
 
-    public static long GetMaxRequestBodySize(this IOptions<FormOptions> options)
+    extension(IOptions<FormOptions> options)
     {
-        return options.Value.MultipartBodyLengthLimit;
+        public long GetMaxRequestBodySize()
+        {
+            return options.Value.MultipartBodyLengthLimit;
+        }
     }
 }

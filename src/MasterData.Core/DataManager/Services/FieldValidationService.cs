@@ -97,7 +97,7 @@ public class FieldValidationService(
         return errors;
     }
 
-    private async Task<Dictionary<string, string>> ValidateRulesAsync(
+    public async Task<Dictionary<string, string>> ValidateRulesAsync(
         FormElement formElement,
         Dictionary<string, object?> values,
         bool enableErrorLink,

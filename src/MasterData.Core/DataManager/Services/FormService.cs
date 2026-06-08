@@ -256,11 +256,11 @@ public class FormService(
     public async Task<FormLetter> DeleteAsync(FormElement formElement, Dictionary<string, object> primaryKeys,
         DataContext dataContext)
     {
-        var errors = await fieldValidationService.ValidateFieldsAsync(
+        var errors = await fieldValidationService.ValidateRulesAsync(
             formElement,
             primaryKeys,
-            PageState.Delete,
-            false);
+            false,
+            PageState.Delete);
         
         var result = new FormLetter(errors);
 

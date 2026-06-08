@@ -308,7 +308,9 @@ public class JJFormView : AsyncComponent
         {
             if (_pageState is null && CurrentContext.HttpContext!.Request.HasFormContentType &&
                 CurrentContext.HttpContext!.Request.Form.TryGetValue($"form-view-page-state-{Name}", out var formPageState))
+            {
                 _pageState = (PageState)int.Parse(formPageState.ToString());
+            }
 
             if (_pageState is null &&
                 CurrentContext.HttpContext!.Request.Query.TryGetValue($"{FormElement.Name}_PageState",
@@ -329,9 +331,6 @@ public class JJFormView : AsyncComponent
         {
             if (_currentActionMap != null || _isCustomCurrentAction)
                 return _currentActionMap;
-
-            if (!CurrentContext.HttpContext!.Request.HasFormContentType)
-                return null;
             
             var encryptedActionMap = CurrentContext.HttpContext!.Request.GetFormValue($"current-action-map-{Name}");
             if (string.IsNullOrEmpty(encryptedActionMap))
