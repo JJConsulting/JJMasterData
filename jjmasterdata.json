@@ -23,9 +23,6 @@
             "null"
           ]
         },
-        "SupportNetFramework": {
-          "type": "boolean"
-        },
         "EnableBundleAndMinification": {
           "type": "boolean"
         },
@@ -48,12 +45,6 @@
           ]
         },
         "AuditLogTableName": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "MasterDataUrl": {
           "type": [
             "string",
             "null"
@@ -111,12 +102,10 @@
         "LayoutPath",
         "ModalLayoutPath",
         "CustomBootstrapPath",
-        "SupportNetFramework",
         "EnableBundleAndMinification",
         "CustomScriptsPaths",
         "DataDictionaryTableName",
         "AuditLogTableName",
-        "MasterDataUrl",
         "ExportationFolderPath",
         "ConnectionString",
         "ConnectionProvider",

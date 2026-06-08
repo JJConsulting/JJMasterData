@@ -17,10 +17,6 @@ public static class DictionaryHash
         using var sha = SHA256.Create();
         var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(json));
         
-        #if NETFRAMEWORK
-        return BitConverter.ToString(bytes).Replace("-", "");
-        #else
         return Convert.ToHexString(bytes);
-        #endif
     }
 }

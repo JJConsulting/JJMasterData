@@ -36,13 +36,7 @@ public class FormValuesService(
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
 
-#if NET48
-            var value = field.ValidateRequest
-                ? httpRequest.Form[fieldName]
-                : httpRequest.Form.GetUnvalidated(fieldName);
-#else
             var value = httpRequest.Form[fieldName];
-#endif
             HandleFieldValue(field, values, value);
         }
 
@@ -112,12 +106,6 @@ public class FormValuesService(
                 else //Legacy compatibility when FieldType.Bit didn't exist.
                     parsedValue = boolValue ? "1" : "0";
                 break;
-#if NET48
-            //.NET Framework 4.8 don't handle well multiple inputs with the same name.
-            case FormComponent.ComboBox when field.DataItem?.EnableMultiSelect is true:
-                parsedValue = string.IsNullOrEmpty(value) ? null : value?.TrimEnd(',');
-                break;
-#endif
             default:
                 parsedValue = string.IsNullOrEmpty(value) ? null : value;
                 break;

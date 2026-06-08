@@ -162,17 +162,10 @@ public abstract class DataExportationWriterBase(
 
     public string UserId { get; set; }
 
-#if NETFRAMEWORK
-    internal HttpContext HttpContext { get; set; }
-#endif
-
     #endregion
 
     public async Task RunWorkerAsync(CancellationToken token)
     {
-#if NETFRAMEWORK
-            HttpContext.Current = HttpContext;
-#endif
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 

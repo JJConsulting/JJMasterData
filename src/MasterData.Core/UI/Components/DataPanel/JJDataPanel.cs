@@ -22,10 +22,6 @@ using JJMasterData.Core.Tasks;
 
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
-#if NET48
-using JJMasterData.Commons.Configuration;
-#endif
-
 namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
@@ -348,13 +344,6 @@ public class JJDataPanel(
         
         return Values;
     }
-#if NETFRAMEWORK
-    [Obsolete("Please use LoadValuesFromPkAsync")]
-    public void LoadValuesFromPK(Dictionary<string, object> pks)
-    {
-        Values = AsyncHelper.RunSync(()=>entityRepository.GetFieldsAsync(FormElement, pks));
-    }
-#endif
     public async Task LoadValuesFromPkAsync(Dictionary<string, object> pks)
     {
         Values = await entityRepository.GetFieldsAsync(FormElement, pks);
@@ -378,12 +367,16 @@ public class JJDataPanel(
 
         return LoadValuesFromPkAsync(filter);
     }
-
-
-    /// <inheritdoc cref="ValidateFields()"/>
+    
+    
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values)
     {
         return ValidateFields(values, PageState);
+    }
+    
+    public ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object> values, bool enableErrorLink = true)
+    {
+        return fieldValidationService.ValidateFieldsAsync(FormElement, values, PageState.Delete, enableErrorLink);
     }
     
     /// <summary>
@@ -397,7 +390,7 @@ public class JJDataPanel(
     {
         return fieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
-    
+
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
         return urlRedirectService.GetUrlRedirectResult(this, actionMap);

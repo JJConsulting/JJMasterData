@@ -68,7 +68,12 @@ public class FormService(
     {
         ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
+        var errors = await fieldValidationService.ValidateFieldsAsync(
+            formElement,
+            values,
+            PageState.Update,
+            isForm);
+
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdateAsync != null)
@@ -121,7 +126,11 @@ public class FormService(
         var isForm = dataContext.Source is DataContextSource.Form;
         Dictionary<string, string> errors;
         if (validateFields)
-            errors = fieldValidationService.ValidateFields(formElement, values, PageState.Insert, isForm);
+            errors = await fieldValidationService.ValidateFieldsAsync(
+                formElement,
+                values,
+                PageState.Insert,
+                isForm);
         else
             errors = new Dictionary<string, string>();
 
@@ -176,7 +185,7 @@ public class FormService(
     {
         ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
+        var errors = await fieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, isForm);
         var letter = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImportAsync != null)
@@ -247,7 +256,12 @@ public class FormService(
     public async Task<FormLetter> DeleteAsync(FormElement formElement, Dictionary<string, object> primaryKeys,
         DataContext dataContext)
     {
-        var errors = new Dictionary<string, string>();
+        var errors = await fieldValidationService.ValidateFieldsAsync(
+            formElement,
+            primaryKeys,
+            PageState.Delete,
+            false);
+        
         var result = new FormLetter(errors);
 
         if (OnBeforeDeleteAsync != null)

@@ -40,10 +40,6 @@ using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-#if NET48
-using JJMasterData.Commons.Configuration;
-#endif
-
 namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
@@ -1682,13 +1678,21 @@ public class JJFormView : AsyncComponent
 
         return values;
     }
-
+    
     public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
     {
         DataPanel.Values = values;
         var errors = DataPanel.ValidateFields(values, pageState);
         return errors;
     }
+    
+    public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object> values)
+    {
+        DataPanel.Values = values;
+        var errors = await DataPanel.ValidateFieldsAsync(values);
+        return errors;
+    }
+
 
     private void ClearTempFiles()
     {

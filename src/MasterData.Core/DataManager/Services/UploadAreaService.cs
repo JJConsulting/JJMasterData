@@ -79,11 +79,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
         using var stream = new MemoryStream();
         string filename = fileData.FileName;
 
-#if NETFRAMEWORK
-        fileData.InputStream.CopyTo(stream);
-#else
         fileData.CopyTo(stream);
-#endif
 
         var content = new FormFileContent
         {

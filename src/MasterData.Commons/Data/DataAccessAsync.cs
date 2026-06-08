@@ -72,12 +72,12 @@ public partial class DataAccess
     {
         try
         {
-            using var dbCommand = CreateDbCommand(command);
+            await using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
-            using (dbCommand.Connection)
+            await using (dbCommand.Connection)
             {
-                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
+                await using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
                     await readerAction(reader, state, cancellationToken);
 
@@ -103,9 +103,9 @@ public partial class DataAccess
         object? scalarResult;
         try
         {
-            using var dbCommand = CreateDbCommand(command);
+            await using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
-            using (dbCommand.Connection)
+            await using (dbCommand.Connection)
             {
                 scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
 
@@ -126,9 +126,9 @@ public partial class DataAccess
         int rowsAffected;
         try
         {
-            using var dbCommand = CreateDbCommand(command);
+            await using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
-            using (dbCommand.Connection)
+            await using (dbCommand.Connection)
             {
                 rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
 
@@ -150,37 +150,25 @@ public partial class DataAccess
         int numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
 
-        using var connection = await CreateConnectionAsync(cancellationToken);
+        await using var connection = await CreateConnectionAsync(cancellationToken);
 
-#if NET48
-        using var transaction = connection.BeginTransaction();
-#else
-        using var transaction = await connection.BeginTransactionAsync(cancellationToken);
-#endif
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
         try
         {
             foreach (var command in commands)
             {
                 currentCommand = command;
-                using var dbCommand = CreateDbCommand(command);
+                await using var dbCommand = CreateDbCommand(command);
                 dbCommand.Connection = connection;
                 dbCommand.Transaction = transaction;
 
                 numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
             }
-#if NET48
-            transaction.Commit();
-#else
             await transaction.CommitAsync(cancellationToken);
-#endif
         }
         catch (Exception ex)
         {
-#if NET48
-            transaction.Rollback();
-#else
             await transaction.RollbackAsync(cancellationToken);
-#endif
             throw GetDataAccessException(ex, currentCommand);
         }
 
@@ -234,13 +222,13 @@ public partial class DataAccess
     {
         try
         {
-            using var dbCommand = CreateDbCommand(command);
+            await using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
-            using (dbCommand.Connection)
+            await using (dbCommand.Connection)
             {
-                using (var dataReader =
-                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
+                await using (var dataReader =
+                             await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
                 {
                     while (await dataReader.ReadAsync(cancellationToken))
                     {
@@ -273,11 +261,11 @@ public partial class DataAccess
 
         try
         {
-            using var dbCommand = CreateDbCommand(command);
+            await using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
-            using var connection = dbCommand.Connection;
-            using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
+            await using var connection = dbCommand.Connection;
+            await using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
                 List<string> columnNames = [];
 

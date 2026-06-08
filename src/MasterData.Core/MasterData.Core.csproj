@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net4.8;net10.0</TargetFrameworks>
+        <TargetFramework>net10.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <RuntimeFrameworkVersion>10.0</RuntimeFrameworkVersion>
         <Nullable>disable</Nullable>
@@ -14,22 +14,16 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     
-    <ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
-        <PackageReference Include="Microsoft.AspNet.Mvc" />
-        <PackageReference Include="System.Configuration.ConfigurationManager" />
-        <Reference Include="System.Web" />
-    </ItemGroup>
-    
     <!--Runtime dependencies-->
-    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <Using Include="Microsoft.AspNetCore.Mvc" />
     </ItemGroup>
     
     <ItemGroup>
         <PackageReference Include="Fluid.Core" />
+        <PackageReference Include="Jint" />
         <PackageReference Include="JJConsulting.Html.Bootstrap" />
-        <PackageReference Include="NCalcSync" />
         <PackageReference Include="NCalc.MemoryCache" />
         <PackageReference Include="NCalc.DependencyInjection" />
     </ItemGroup>
