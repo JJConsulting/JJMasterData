@@ -26,7 +26,6 @@ public static class DataManagerServiceExtensions
         services.AddScoped<FormValuesService>();
         services.AddScoped<IFileStorage, DiskFileStorage>();
         services.AddScoped<ITemporaryUploadStore, TemporaryDiskUploadStore>();
-        services.AddSingleton<IFileReferenceStore, InMemoryFileReferenceStore>();
         services.AddScoped<FormFileManagerFactory>();
         services.AddScoped<FormFileService>();
         services.AddScoped<ElementFileService>();

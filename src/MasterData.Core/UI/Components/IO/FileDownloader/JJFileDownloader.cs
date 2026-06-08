@@ -6,9 +6,7 @@ using JJConsulting.Html.Bootstrap.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataManager.IO.Storage;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +16,6 @@ public class JJFileDownloader(
         IHttpContextAccessor currentContext,
         IFileStorage fileStorage,
         ITemporaryUploadStore temporaryUploadStore,
-        IFileReferenceStore fileReferenceStore,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFileDownloader> logger)
@@ -57,7 +54,10 @@ public class JJFileDownloader(
         if (string.IsNullOrEmpty(token))
             throw new JJMasterDataException("Invalid file token.");
 
-        FileReference = await fileReferenceStore.ResolveAsync(token);
+        var fileToken = EncryptionService.DecryptObject<FileStorageReference>(token);
+
+        FileReference = fileToken;
+        
         return await GetDirectDownloadResultAsync();
     }
 
@@ -71,7 +71,7 @@ public class JJFileDownloader(
         var routeContext = new RouteContext(ComponentContext.DownloadFile);
 
         query["routeContext"] = EncryptionService.EncryptObject(routeContext);
-        query[FileTokenParameter] = fileReferenceStore.Create(FileReference);
+        query[FileTokenParameter] = EncryptionService.EncryptObject(FileReference);
 
         uriBuilder.Query = query.ToString()!;
 
