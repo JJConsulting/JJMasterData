@@ -30,7 +30,7 @@ public class FormFileManagerTests
 
         try
         {
-            await fileStorage.SaveAsync(folderKey, "old-file.txt", CreateStream("old"), true);
+            await fileStorage.SaveAsync(folderKey, "old-file.txt", CreateStream("old"), true, TestContext.Current.CancellationToken);
             await manager.CreateFileAsync(new FormFileContent
             {
                 FileName = "new-file.txt",

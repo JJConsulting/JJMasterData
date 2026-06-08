@@ -752,7 +752,7 @@ public class JJUploadView : AsyncComponent
     public Task PromoteTemporaryFilesAsync(string folderKey) =>
         FormFileManager.PromoteTemporaryFilesAsync(folderKey, !UploadArea.Multiple);
 
-    public async Task<FileComponentResult> GetDownloadFileResultAsync(string fileName)
+    public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {
         if (OnBeforeDownloadFile != null)
         {

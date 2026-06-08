@@ -226,8 +226,7 @@ public class JJDataExportation : ProcessComponent
         
         await exporter.RunWorkerAsync(CancellationToken.None);
 
-        var filePath = exporter.ProcessReporter.FilePath;
-        return new FileComponentResult(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true), Path.GetFileName(filePath));
+        return new FilePathComponentResult(exporter.ProcessReporter.FilePath);
     }
 
     internal void ExportFileInBackground(Dictionary<string, object> filter, OrderByData orderByData)

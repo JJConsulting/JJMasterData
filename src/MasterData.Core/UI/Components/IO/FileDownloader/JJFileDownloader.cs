@@ -35,17 +35,17 @@ public class JJFileDownloader(
         return new HtmlBuilder();
     }
 
-    public async Task<FileComponentResult> GetDirectDownloadResultAsync()
+    public async Task<FileStreamComponentResult> GetDirectDownloadResultAsync()
     {
         if (FileReference == null)
             throw new ArgumentNullException(nameof(FileReference));
 
         var storage = FileReference.IsTemporary ? temporaryUploadStore : fileStorage;
         var stream = await storage.OpenReadAsync(FileReference.FolderKey, FileReference.FileName);
-        return new FileComponentResult(stream, FileReference.FileName);
+        return new FileStreamComponentResult(stream, FileReference.FileName);
     }
 
-    public async Task<FileComponentResult> GetDownloadResultAsync()
+    public async Task<FileStreamComponentResult> GetDownloadResultAsync()
     {
         var token = CurrentContext.HttpContext!.Request.Query[FileTokenParameter].ToString();
         if (string.IsNullOrEmpty(token))
