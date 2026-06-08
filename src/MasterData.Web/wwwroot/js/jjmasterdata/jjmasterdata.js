@@ -402,6 +402,9 @@ class CodeEditor {
         catch (_a) {
             return;
         }
+        if (!hints || typeof hints !== "object") {
+            return;
+        }
         Object.keys(hints).forEach(lang => {
             monaco.languages.registerCompletionItemProvider(lang, {
                 provideCompletionItems: function (model, position) {
@@ -2500,6 +2503,11 @@ class PhoneInputListener {
             syncHiddenInput(input, select);
             $(input).on('input', function () {
                 syncHiddenInput(this, select);
+            });
+            input.addEventListener('paste', () => {
+                setTimeout(() => {
+                    syncHiddenInput(input, select);
+                }, 0);
             });
         });
     }

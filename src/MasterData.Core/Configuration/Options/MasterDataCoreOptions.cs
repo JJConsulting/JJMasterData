@@ -9,6 +9,7 @@ using System.Security.Claims;
 using JJMasterData.Commons.Util;
 using NCalc;
 using NCalc.Exceptions;
+using NCalc.Handlers;
 
 namespace JJMasterData.Core.Configuration.Options;
 
@@ -79,8 +80,8 @@ public sealed class MasterDataCoreOptions
                 {
                     if (args.Count() != 3)
                         throw new NCalcEvaluationException("iif() takes exactly 3 arguments.");
-                    var conditional = StringManager.ParseBool(args[0].Evaluate());
-                    return conditional ? args[1].Evaluate() : args[2].Evaluate();
+                    var conditional = StringManager.ParseBool(args.Evaluate(0));
+                    return conditional ? args.Evaluate(1) : args.Evaluate(2);
                 }
             },
             {
@@ -91,18 +92,18 @@ public sealed class MasterDataCoreOptions
                         throw new NCalcEvaluationException("len() takes exactly 1 argument.");
                     }
 
-                    return args[0].Evaluate()?.ToString()?.Length;
+                    return args.Evaluate(0)?.ToString()?.Length;
                 }
             },
             {
                 "trim", args =>
                 {
-                    if (args.Count() != 1)
+                    if (args.Count != 1)
                     {
                         throw new NCalcEvaluationException("trim() takes exactly 1 argument.");
                     }
 
-                    return args[0].Evaluate()?.ToString()?.Trim();
+                    return args.Evaluate(0)?.ToString()?.Trim();
                 }
             }
         }

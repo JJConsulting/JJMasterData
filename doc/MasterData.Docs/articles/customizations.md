@@ -1,4 +1,6 @@
-# Custom Rules
+# Customizations
+
+If you are looking for declarative validations configured directly in the Data Dictionary UI, see [Rules](rules.md).
 
 There are three ways to customize MasterData
 
@@ -82,7 +84,6 @@ IF (MyCustomLogic, you can use your @Parameters)
 ```
 
 > [!WARNING] 
-> It is not a best practice write business rules at database, recommended only for simple validations.
+> It is not a best practice write business rules as exceptions at the database, please use [Rules](rules.md).
 
 ---
-
