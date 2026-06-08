@@ -2504,6 +2504,11 @@ class PhoneInputListener {
             $(input).on('input', function () {
                 syncHiddenInput(this, select);
             });
+            input.addEventListener('paste', () => {
+                setTimeout(() => {
+                    syncHiddenInput(input, select);
+                }, 0);
+            });
         });
     }
 }
