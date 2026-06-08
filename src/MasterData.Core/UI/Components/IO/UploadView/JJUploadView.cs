@@ -577,7 +577,7 @@ public class JJUploadView : AsyncComponent
 
     private async Task<HtmlBuilder> GetFilesTableHtmlAsync()
     {
-        var files = (await FormFileManager.GetFilesAsync())
+        var files = (await GetFilesAsync())
             .Where(f => !f.Deleted)
             .Select(f => f.Content)
             .ToList();
@@ -744,7 +744,7 @@ public class JJUploadView : AsyncComponent
         FormFileManager.DeleteAllAsync();
 
     public Task<List<FormFileInfo>> GetFilesAsync() => 
-        FormFileManager.GetFilesAsync();
+        FormFileManager.GetFilesAsync(!UploadArea.Multiple);
 
     public Task ClearTemporaryFilesAsync() => 
         FormFileManager.DeleteAllAsync();

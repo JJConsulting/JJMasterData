@@ -34,7 +34,7 @@ public class FormFileManager(
 
     private string DraftFolderKey => temporaryUploadStore.GetDraftFolderKey(DraftId);
 
-    public async Task<List<FormFileInfo>> GetFilesAsync()
+    public async Task<List<FormFileInfo>> GetFilesAsync(bool preferTemporaryFiles = false)
     {
         var files = new List<FormFileInfo>();
 
@@ -43,10 +43,14 @@ public class FormFileManager(
 
         files.AddRange(await GetStorageFilesAsync(temporaryUploadStore, DraftFolderKey, true));
 
-        return files
+        var mergedFiles = files
             .GroupBy(file => file.Content.FileName)
             .Select(group => group.OrderByDescending(file => file.IsTemporary).First())
             .ToList();
+
+        return preferTemporaryFiles && mergedFiles.Exists(file => file.IsTemporary)
+            ? mergedFiles.Where(file => file.IsTemporary).ToList()
+            : mergedFiles;
     }
 
     public async Task RenameFileAsync(string currentName, string newName)
