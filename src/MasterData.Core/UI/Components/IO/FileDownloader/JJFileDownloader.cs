@@ -8,7 +8,6 @@ using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -17,8 +16,7 @@ public class JJFileDownloader(
         IFileStorage fileStorage,
         ITemporaryUploadStore temporaryUploadStore,
         IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILogger<JJFileDownloader> logger)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     : HtmlComponent
 {
     public const string FileTokenParameter = "downloadFileToken";
@@ -27,7 +25,6 @@ public class JJFileDownloader(
 
     internal IHttpContextAccessor CurrentContext { get; } = currentContext;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    internal ILogger<JJFileDownloader> Logger { get; } = logger;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
 
     protected override HtmlBuilder BuildHtml()
