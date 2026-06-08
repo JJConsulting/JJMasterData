@@ -357,7 +357,7 @@ public class JJUploadView : AsyncComponent
             col.WithCssClass("col-sm-3");
             
             var previewHtml = await GetHtmlGalleryPreview(file.FileName);
-            var actionsHtml = await GetActionsHtmlAsync(file.FileName);
+            var actionsHtml = await GetActionsHtmlListAsync(file.FileName);
             
             col.Append(HtmlTag.Ul, ul =>
             {
@@ -374,7 +374,7 @@ public class JJUploadView : AsyncComponent
                         table.WithCssClass("table-gallery");
                         table.Append(HtmlTag.Tr, tr =>
                         {
-                            tr.Append(HtmlTag.Td, td => td.Append(actionsHtml));
+                            tr.AppendRange(actionsHtml);
                         });
                     });
                 });
@@ -588,6 +588,8 @@ public class JJUploadView : AsyncComponent
         var table = new HtmlBuilder(HtmlTag.Table)
             .WithCssClass("table table-striped table-hover table-sm");
 
+        var visibleActionCount = GetVisibleActionsCount();
+
         table.Append(HtmlTag.Thead, thead =>
         {
             thead.Append(HtmlTag.Tr, tr =>
@@ -595,28 +597,24 @@ public class JJUploadView : AsyncComponent
                 tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Name"]));
                 tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Size"]));
                 tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Last Modified"]));
-                tr.Append(HtmlTag.Th, th =>
+
+                for (var i = 0; i < visibleActionCount; i++)
                 {
-                    th.WithCssClass("table-action");
-                    th.AppendText(StringLocalizer["Actions"]);
-                });
+                    tr.Append(HtmlTag.Th, th => th.WithCssClass("table-action"));
+                }
             });
         });
 
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
         foreach (var file in files)
         {
-            var actionsHtml = await GetActionsHtmlAsync(file.FileName);
+            var actionsHtml = await GetActionsHtmlListAsync(file.FileName);
             tbody.Append(HtmlTag.Tr, tr =>
             {
                 tr.Append(HtmlTag.Td, td => td.AppendText(file.FileName));
                 tr.Append(HtmlTag.Td, td => td.AppendText(Format.FormatFileSize(file.Length)));
                 tr.Append(HtmlTag.Td, td => td.AppendText(file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
-                tr.Append(HtmlTag.Td, td =>
-                {
-                    td.WithCssClass("table-action");
-                    td.Append(actionsHtml);
-                });
+                tr.AppendRange(actionsHtml);
             });
         }
 
@@ -624,24 +622,49 @@ public class JJUploadView : AsyncComponent
         return table;
     }
 
-    private async Task<HtmlBuilder> GetActionsHtmlAsync(string fileName)
+    private int GetVisibleActionsCount()
     {
-        var buttonGroup = new JJLinkButtonGroup();
+        var count = 0;
+
+        if (DownloadAction.IsVisible)
+            count++;
+
+        if (RenameAction.IsVisible)
+            count++;
+
+        if (DeleteAction.IsVisible)
+            count++;
+
+        return count;
+    }
+
+    private async Task<List<HtmlBuilder>> GetActionsHtmlListAsync(string fileName)
+    {
+        List<HtmlBuilder> actions = [];
 
         if (DownloadAction.IsVisible)
         {
             var downloader = ComponentFactory.Downloader.Create();
             downloader.FileReference = await FormFileManager.GetFileReferenceAsync(fileName);
-            buttonGroup.Actions.Add(CreateActionButton(DownloadAction, urlAction: downloader.GetDownloadUrl()));
+            actions.Add(CreateActionCell(DownloadAction, urlAction: downloader.GetDownloadUrl()));
         }
 
         if (RenameAction.IsVisible)
-            buttonGroup.Actions.Add(CreateActionButton(RenameAction, onClientClick: GetActionScript(RenameAction, fileName)));
+            actions.Add(CreateActionCell(RenameAction, onClientClick: GetActionScript(RenameAction, fileName)));
 
         if (DeleteAction.IsVisible)
-            buttonGroup.Actions.Add(CreateActionButton(DeleteAction, onClientClick: GetActionScript(DeleteAction, fileName)));
+            actions.Add(CreateActionCell(DeleteAction, onClientClick: GetActionScript(DeleteAction, fileName)));
 
-        return buttonGroup.GetHtmlBuilder();
+        return actions;
+    }
+
+    private static HtmlBuilder CreateActionCell(BasicAction action, string urlAction = null, string onClientClick = null)
+    {
+        var td = new HtmlBuilder(HtmlTag.Td);
+        td.WithCssClass("table-action");
+        td.AppendComponent(CreateActionButton(action, urlAction, onClientClick));
+
+        return td;
     }
 
     private static JJLinkButton CreateActionButton(BasicAction action, string urlAction = null, string onClientClick = null)
@@ -727,7 +750,7 @@ public class JJUploadView : AsyncComponent
         FormFileManager.DeleteAllAsync();
 
     public Task PromoteTemporaryFilesAsync(string folderKey) =>
-        FormFileManager.PromoteTemporaryFilesAsync(folderKey);
+        FormFileManager.PromoteTemporaryFilesAsync(folderKey, !UploadArea.Multiple);
 
     public async Task<FileComponentResult> GetDownloadFileResultAsync(string fileName)
     {
