@@ -15,9 +15,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Tasks;
 
 using JJMasterData.Core.UI.Routing;
@@ -109,7 +106,10 @@ public class JJDataPanel(
         {
             if (field == null &&
                 CurrentContext.HttpContext!.Request.HasFormContentType && CurrentContext.HttpContext!.Request.Form.TryGetValue($"data-panel-secret-values-{Name}", out var secretValues))
+            {
                 field = EncryptionService.DecryptDictionary(secretValues);
+            }
+
             return field;
         }
         set;

@@ -21,7 +21,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -29,9 +28,6 @@ using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.UI.Events;
 using JJMasterData.Core.UI.Events.Args;
@@ -1538,9 +1534,9 @@ public class JJGridView : AsyncComponent
 
     public bool IsExportPost()
     {
-        var form = CurrentContext.HttpContext!.Request.GetFormValue;
-        var operation = form("dataExportationOperation");
-        var gridViewName = form("gridViewName");
+        var request = CurrentContext.HttpContext!.Request.GetValue;
+        var operation = request("dataExportationOperation");
+        var gridViewName = request("gridViewName");
         return "startProcess".Equals(operation) && Name.Equals(gridViewName);
     }
     
