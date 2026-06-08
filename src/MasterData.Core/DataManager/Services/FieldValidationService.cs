@@ -31,35 +31,15 @@ public class FieldValidationService(
         PageState pageState,
         bool enableErrorLink)
     {
-        if (formElement.Rules.Any(r => r.ShouldRun(pageState)))
-            throw new InvalidOperationException("Validation rules require ValidateFieldsAsync.");
-
-        return ValidateFieldsCore(formElement, formValues, pageState, enableErrorLink);
+        var valueTask = ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink);
+        
+        if (valueTask.IsCompletedSuccessfully)
+            return valueTask.Result;
+        
+        return valueTask.AsTask().GetAwaiter().GetResult();
     }
 
     public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(
-        FormElement formElement,
-        Dictionary<string, object?> formValues,
-        PageState pageState,
-        bool enableErrorLink)
-    {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-
-        if (formValues == null)
-            throw new ArgumentNullException(nameof(formValues));
-
-        var errors = ValidateFieldsCore(formElement, formValues, pageState, enableErrorLink);
-
-        foreach (var error in await ValidateRulesAsync(formElement, formValues, enableErrorLink, pageState))
-        {
-            errors[error.Key] = error.Value;
-        }
-        
-        return errors;
-    }
-
-    private Dictionary<string, string> ValidateFieldsCore(
         FormElement formElement,
         Dictionary<string, object?> formValues,
         PageState pageState,
@@ -93,7 +73,12 @@ public class FieldValidationService(
             if (!string.IsNullOrEmpty(error))
                 errors.Add(field.Name, error!);
         }
-
+        
+        foreach (var error in await ValidateRulesAsync(formElement, formValues, enableErrorLink, pageState))
+        {
+            errors[error.Key] = error.Value;
+        }
+        
         return errors;
     }
 
