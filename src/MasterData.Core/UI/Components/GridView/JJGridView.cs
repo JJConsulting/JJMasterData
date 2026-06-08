@@ -672,7 +672,7 @@ public class JJGridView : AsyncComponent
             return await GetExportationResult();
 
         if (ComponentContext is ComponentContext.DownloadFile)
-            return ComponentFactory.Downloader.Create().GetDownloadResult();
+            return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
         
         if (ComponentContext is ComponentContext.GridViewRow)
         {

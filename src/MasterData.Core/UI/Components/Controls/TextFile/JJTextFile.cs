@@ -8,7 +8,7 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.DataManager.IO.Storage;
 using Microsoft.AspNetCore.Http;
 
 using JJMasterData.Core.UI.Routing;
@@ -18,6 +18,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class JJTextFile(IHttpContextAccessor request,
         IComponentFactory componentFactory,
+        IFileStorage fileStorage,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEncryptionService encryptionService)
     : ControlBase(request)
@@ -49,8 +50,6 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     public FormElement FormElement { get; set; }
 
-    private FormFilePathBuilder PathBuilder => field ??= new FormFilePathBuilder(FormElement);
-    
     private RouteContext RouteContext
     {
         get
@@ -81,7 +80,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
             field.RenameAction.SetVisible(true);
             
             if (HasPk())
-                field.FolderPath = GetFolderPath();
+                field.FolderKey = GetFolderKey();
             
             var dataFile = FormElementField.DataFile!;
             field.UploadArea.Multiple = dataFile.MultipleFile;
@@ -94,9 +93,6 @@ public sealed class JJTextFile(IHttpContextAccessor request,
             field.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
             field.UploadArea.QueryStringParams["fieldName"] = FieldName;
             field.ViewGallery = dataFile.ViewGallery;
-
-            if (dataFile.ShowAsUploadView)
-                field.GridView.EmptyDataText = null;
             
             if (!Enabled || PageState is PageState.View)
                 field.Disable();
@@ -130,12 +126,12 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         if (FormElementField.DataFile!.ShowAsUploadView)
         {
             var uploadViewHtml = ((RenderedComponentResult)await GetUploadViewResultAsync()).HtmlBuilder;
-            uploadViewHtml.Append(GetHiddenInputHtml());
+            uploadViewHtml.Append(await GetHiddenInputsHtmlAsync());
             return uploadViewHtml;
         }
         
         if (!Enabled)
-            UploadView.ClearMemoryFiles();
+            await UploadView.ClearTemporaryFilesAsync();
 
         var textGroup = componentFactory.Controls.TextGroup.Create();
         textGroup.CssClass = CssClass;
@@ -143,7 +139,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         textGroup.ReadOnly = true;
         textGroup.Tooltip = Tooltip;
         textGroup.Attributes = Attributes;
-        textGroup.Text = GetPresentationText();
+        textGroup.Text = await GetPresentationTextAsync();
 
         var button = new JJLinkButton
         {
@@ -157,7 +153,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
         var html = new HtmlBuilder();
         html.Append(await textGroup.GetHtmlBuilderAsync());
-        html.Append(GetHiddenInputHtml());
+        html.Append(await GetHiddenInputsHtmlAsync());
         
         return html;
     }
@@ -171,31 +167,41 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         
         var html = new HtmlBuilder();
         html.Append(uploadViewResult.HtmlBuilder);
-        html.AppendScript(Scripts.GetRefreshInputsScript());
+        html.AppendScript(await Scripts.GetRefreshInputsScriptAsync());
         return new RenderedComponentResult(html);
     }
 
-    private HtmlBuilder GetHiddenInputHtml()
+    private async Task<HtmlBuilder> GetHiddenInputsHtmlAsync()
     {
-        var input = new HtmlBuilder(HtmlTag.Input);
-        input.WithAttribute("type", "hidden")
+        var fileName = await GetFileNameAsync();
+        var draftId = UploadView.DraftId;
+        var html = new HtmlBuilder();
+        html.Append(HtmlTag.Input, input =>
+        {
+            input.WithAttribute("type", "hidden")
             .WithNameAndId(Name)
-            .WithAttribute("value", GetFileName());
-        return input;
+            .WithAttribute("value", fileName);
+        });
+        html.Append(HtmlTag.Input, input =>
+        {
+            input.WithAttribute("type", "hidden")
+                .WithNameAndId(GetDraftInputName())
+                .WithAttribute("value", draftId);
+        });
+        return html;
     }
 
-    public void SaveMemoryFiles()
+    public Task PromoteTemporaryFilesAsync()
     {
-        string folderPath = GetFolderPath();
         var uploadView = UploadView;
-        uploadView.SaveMemoryFiles(folderPath);
+        return uploadView.PromoteTemporaryFilesAsync(GetFolderKey());
     }
 
-    public void DeleteAll()
+    public Task DeleteAllAsync()
     {
         var uploadView = UploadView;
-        uploadView.FolderPath = GetFolderPath();
-        uploadView.DeleteAll();
+        uploadView.FolderKey = GetFolderKey();
+        return uploadView.DeleteAllAsync();
     }
     private bool HasPk()
     {
@@ -206,15 +212,17 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         return pkFields.All(pkField => FormStateValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FormStateValues[pkField.Name]?.ToString()));
     }
 
-    public string GetFolderPath()
+    public string GetFolderKey()
     {
-        return PathBuilder.GetFolderPath(FormElementField, FormStateValues);
+        return fileStorage.GetFolderKey(FormElement, FormElementField, FormStateValues);
     }
 
-    internal string GetFileName()
+    internal string GetDraftInputName() => $"{FormElementField.Name}-upload-view-files-draft-id";
+
+    internal async Task<string> GetFileNameAsync()
     {
         string fileNames = string.Empty;
-        var listFile = UploadView.GetFiles().FindAll(x => !x.Deleted);
+        var listFile = (await UploadView.GetFilesAsync()).FindAll(x => !x.Deleted);
         foreach (var file in listFile)
         {
             if (fileNames != string.Empty)
@@ -226,9 +234,9 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         return fileNames;
     }
 
-    internal string GetPresentationText()
+    internal async Task<string> GetPresentationTextAsync()
     {
-        var files = UploadView.GetFiles().FindAll(x => !x.Deleted);
+        var files = (await UploadView.GetFilesAsync()).FindAll(x => !x.Deleted);
 
         return files.Count switch
         {
@@ -238,7 +246,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         };
     }
 
-    internal HtmlBuilder GetButtonGroupHtml()
+    internal async Task<HtmlBuilder> GetButtonGroupHtmlAsync()
     {
         if (string.IsNullOrEmpty(Text))
             return new HtmlBuilder(string.Empty);
@@ -270,21 +278,23 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     private JJLinkButton GetLinkButton(string filename)
     {
-        var btn = new JJLinkButton();
-        btn.IconClass = "fa fa-cloud-download";
-        btn.Text = filename;
-        btn.Attributes.Add("onclick", "event.stopPropagation()");
-        btn.UrlAction = GetDownloadLink(filename);
-        btn.IsGroup = true;
-
-        return btn;
+        return new JJLinkButton
+        {
+            IconClass = "fa fa-cloud-download",
+            Text = filename,
+            UrlAction = GetDownloadLink(filename),
+            IsGroup = true,
+            Attributes =
+            {
+                {"onclick", "event.stopPropagation()"}
+            }
+        };
     }
 
     private string GetDownloadLink(string fileName)
     {
-        var filePath = GetFolderPath() + fileName;
         var fileDownloader = componentFactory.Downloader.Create();
-        fileDownloader.FilePath = filePath;
+        fileDownloader.FileReference = FileStorageReference.Create(GetFolderKey(), fileName, false);
         return fileDownloader.GetDownloadUrl();
     }
 }

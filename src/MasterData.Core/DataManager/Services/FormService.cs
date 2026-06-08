@@ -103,7 +103,7 @@ public class FormService(
             return result;
 
         if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
+            await formFileService.SaveFormTemporaryFilesAsync(formElement, values);
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
@@ -159,7 +159,7 @@ public class FormService(
             return result;
 
         if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
+            await formFileService.SaveFormTemporaryFilesAsync(formElement, values);
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
@@ -215,7 +215,7 @@ public class FormService(
             await auditLogService.LogAsync(formElement, dataContext, values, letter.Result);
 
         if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
+            await formFileService.SaveFormTemporaryFilesAsync(formElement, values);
 
         switch (letter.Result)
         {
@@ -288,7 +288,7 @@ public class FormService(
             return result;
 
         if (dataContext.Source == DataContextSource.Form)
-            formFileService.DeleteFiles(formElement, primaryKeys);
+            await formFileService.DeleteFilesAsync(formElement, primaryKeys);
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);

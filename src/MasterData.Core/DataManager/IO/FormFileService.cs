@@ -1,27 +1,28 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.IO.Storage;
 
 namespace JJMasterData.Core.DataManager.IO;
 
-public class FormFileService(FormFileManagerFactory formFileManagerFactory)
+public class FormFileService(FormFileManagerFactory formFileManagerFactory, IFileStorage fileStorage)
 {
-    public void SaveFormMemoryFiles(FormElement formElement, Dictionary<string, object> primaryKeys)
+    public async Task SaveFormTemporaryFilesAsync(FormElement formElement, Dictionary<string, object> values)
     {
         var uploadFields = formElement.Fields.FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
             return;
 
-        var pathBuilder = new FormFilePathBuilder(formElement);
         foreach (var field in uploadFields)
         {
-            var folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
+            var folderKey = fileStorage.GetFolderKey(formElement, field, values);
             var manager = formFileManagerFactory.Create($"{field.Name}-upload-view-files");
             
-            manager.SaveMemoryFiles(folderPath, deleteExistingFiles: !field.DataFile.MultipleFile);
+            await manager.PromoteTemporaryFilesAsync(folderKey, deleteExistingFiles: !field.DataFile.MultipleFile);
         }
     }
 
-    public void DeleteFiles(FormElement formElement, Dictionary<string, object> primaryKeys)
+    public async Task DeleteFilesAsync(FormElement formElement, Dictionary<string, object> primaryKeys)
     {
         var fileFields = formElement.Fields.FindAll(x => x.Component == FormComponent.File);
         if (fileFields.Count == 0)
@@ -30,8 +31,8 @@ public class FormFileService(FormFileManagerFactory formFileManagerFactory)
         foreach (var field in fileFields)
         {
             var manager = formFileManagerFactory.Create($"{field.Name}-upload-view-files");
-            manager.FolderPath = new FormFilePathBuilder(formElement).GetFolderPath(field, primaryKeys);
-            manager.DeleteAll();
+            manager.FolderKey = fileStorage.GetFolderKey(formElement, field, primaryKeys);
+            await manager.DeleteAllAsync();
         }
     }
 }

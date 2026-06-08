@@ -23,5 +23,5 @@ public class FormFileInfo
 
     public string FileName =>  Content.FileName ?? OldName;
     
-    public bool IsInMemory => Content.Bytes != null;
+    public bool IsTemporary { get; set; }
 }

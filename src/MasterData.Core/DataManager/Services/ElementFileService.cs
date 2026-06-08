@@ -10,37 +10,32 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.DataManager.IO.Storage;
 using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class ElementFileService(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
+public class ElementFileService(
+    IDataDictionaryRepository dictionaryRepository,
+    IEntityRepository entityRepository,
+    IFileStorage fileStorage)
 {
-    public async Task<FileStream?> GetElementFileAsync(string elementName, string pkValues, string fieldName, string? fileName)
+    public async Task<Stream?> GetElementFileAsync(string elementName, string pkValues, string fieldName, string? fileName)
     {
         var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
 
         fileName = Path.GetFileName(fileName);
 
         var field = formElement.Fields.First(f => f.Name == fieldName);
+        var folderKey = fileStorage.GetFolderKey(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
-        var builder = new FormFilePathBuilder(formElement);
-
-        var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
-
-        string? file;
         if (string.IsNullOrEmpty(fileName))
-            file = Directory.GetFiles(path).FirstOrDefault();
-        else
-            file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
+            fileName = (await fileStorage.ListAsync(folderKey)).FirstOrDefault()?.FileName;
 
-        if (file == null)
+        if (string.IsNullOrEmpty(fileName))
             return null;
 
-        var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        return fileStream;
+        return await fileStorage.OpenReadAsync(folderKey, fileName);
     }
 
     
@@ -96,38 +91,19 @@ public class ElementFileService(IDataDictionaryRepository dictionaryRepository, 
         await entityRepository.SetValuesAsync(formElement, values);
     }
     
-    private static async Task SetPhysicalFileAsync(
+    private async Task SetPhysicalFileAsync(
         FormElement formElement,
         FormElementField field,
         string pkValues,
         IFormFile file)
     {
-        var builder = new FormFilePathBuilder(formElement);
-
         var hashValues = DataHelper.GetPkValues(formElement, pkValues, ',');
-        
-        var path = builder.GetFolderPath(field, hashValues);
-        
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
+        var folderKey = fileStorage.GetFolderKey(formElement, field, hashValues);
 
         var fileName = Path.GetFileName(file.FileName);
         
-        if (field.DataFile!.MultipleFile)
-        {
-            foreach (var fileInfo in new DirectoryInfo(path).EnumerateFiles())
-            {
-                if (fileInfo.Name == fileName)
-                {
-                    fileInfo.Delete();
-                }
-            }
-        }
-        
-        await using var fileStream =
-            new FileStream(Path.Combine(path, fileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-        await file.CopyToAsync(fileStream);
+        await using var uploadStream = file.OpenReadStream();
+        await fileStorage.SaveAsync(folderKey, fileName, uploadStream, true);
     }
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
@@ -141,24 +117,16 @@ public class ElementFileService(IDataDictionaryRepository dictionaryRepository, 
         
         fileName = Path.GetFileName(fileName);
         
-        DeletePhysicalFile(formElement, field, pkValues, fileName);
+        await DeletePhysicalFileAsync(formElement, field, pkValues, fileName);
         await DeleteEntityFileAsync(formElement, field, pkValues, fileName);
     }
     
-    private static void DeletePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
+    private async Task DeletePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
-        var builder = new FormFilePathBuilder(formElement);
-
-        var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
-
         fileName = Path.GetFileName(fileName);
-        
-        var filePath = Path.Combine(path, fileName);
-        
-        if (File.Exists(filePath))
-            File.Delete(filePath);
-        else
-            throw new KeyNotFoundException("File not found");
+        var folderKey = fileStorage.GetFolderKey(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+
+        await fileStorage.DeleteAsync(folderKey, fileName);
     }
     
     private async Task DeleteEntityFileAsync(Element element, FormElementField field, string pkValues, string fileName)
@@ -201,23 +169,14 @@ public class ElementFileService(IDataDictionaryRepository dictionaryRepository, 
         oldName = Path.GetFileName(oldName);
         newName = Path.GetFileName(newName);
         
-        RenamePhysicalFile(formElement, field, pkValues, oldName, newName);
+        await RenamePhysicalFileAsync(formElement, field, pkValues, oldName, newName);
         await RenameEntityFileAsync(formElement,field, pkValues, oldName, newName);
     }
     
-    private static void RenamePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
+    private async Task RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
-        var builder = new FormFilePathBuilder(formElement);
-
-        var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
-        
-        var oldFilePath = Path.Combine(path, oldName);
-        var newFilePath = Path.Combine(path, newName);
-
-        if (File.Exists(oldFilePath))
-            File.Move(oldFilePath, newFilePath);
-        else
-            throw new KeyNotFoundException("File not found");
+        var folderKey = fileStorage.GetFolderKey(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        await fileStorage.RenameAsync(folderKey, oldName, newName);
     }
     
     private async Task RenameEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName,

@@ -1,6 +1,7 @@
 using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.IO.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
@@ -10,12 +11,13 @@ internal sealed class TextFileFactory(
         IHttpContextAccessor request,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
+        IFileStorage fileStorage,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJTextFile>
 {
     public JJTextFile Create()
     {
-        return new JJTextFile(request,componentFactory, stringLocalizer, encryptionService);
+        return new JJTextFile(request,componentFactory, fileStorage, stringLocalizer, encryptionService);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)

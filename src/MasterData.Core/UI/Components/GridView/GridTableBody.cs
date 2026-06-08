@@ -236,7 +236,7 @@ internal sealed class GridTableBody(JJGridView gridView)
                 var controlContext = new ControlContext(formStateData, _name, stringValue);
                 var controlFactory = gridView.ComponentFactory.Controls;
                 var textFile = controlFactory.Create<JJTextFile>(gridView.FormElement, field, controlContext);
-                cell = textFile.GetButtonGroupHtml();
+                cell = await textFile.GetButtonGroupHtmlAsync();
             }
             else
             {

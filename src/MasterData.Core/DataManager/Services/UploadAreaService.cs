@@ -8,9 +8,9 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.IO;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -20,23 +20,30 @@ public class UploadAreaService(IHttpContextAccessor currentContext, IStringLocal
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
 
-    public async Task<UploadAreaResultDto> UploadFileAsync(FormFileContent formFile, string? allowedTypes = null)
+    public async Task<UploadAreaResultDto> UploadFileAsync(IFormFile file, string? allowedTypes = null)
     {
         UploadAreaResultDto dto = new();
+
+        await using var stream = file.OpenReadStream();
+        var formFile = new FormFileContent
+        {
+            FileName = Path.GetFileName(file.FileName),
+            Stream = stream,
+            Length = file.Length,
+            LastWriteTime = DateTime.Now
+        };
 
         try
         {
             var message = string.Empty;
 
             ValidateAllowedExtensions(formFile.FileName, allowedTypes);
-            
+
             var args = new FormUploadFileEventArgs(formFile);
             OnFileUploaded?.Invoke(this, args);
 
             if (OnFileUploadedAsync != null)
-            {
                 await OnFileUploadedAsync.Invoke(this, args);
-            }
 
             if (formFile.FileName.Contains(","))
             {
@@ -46,9 +53,7 @@ public class UploadAreaService(IHttpContextAccessor currentContext, IStringLocal
 
             var errorMessage = args.ErrorMessage;
             if (args.SuccessMessage != null)
-            {
                 message = args.SuccessMessage;
-            }
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -66,36 +71,9 @@ public class UploadAreaService(IHttpContextAccessor currentContext, IStringLocal
         return dto;
     }
 
-    /// <summary>
-    /// Recovers the file after the POST
-    /// </summary>
-    private FormFileContent? GetFile(string fileName)
+    public bool TryGetFile(string fileName, out IFormFile? formFile)
     {
-        var fileData = currentContext.HttpContext!.Request.Form.Files[fileName];
-
-        if (fileData is null)
-            return null;
-
-        using var stream = new MemoryStream();
-        string filename = fileData.FileName;
-
-        fileData.CopyTo(stream);
-
-        var content = new FormFileContent
-        {
-            FileName = filename,
-            Bytes = stream.ToArray(),
-            Length = stream.Length,
-            LastWriteTime = DateTime.Now
-        };
-
-        return content;
-    }
-
-    public bool TryGetFile(string fileName, out FormFileContent? formFile)
-    {
-        formFile = GetFile(fileName);
-
+        formFile = currentContext.HttpContext!.Request.Form.Files[fileName];
         return formFile != null;
     }
 
@@ -142,6 +120,7 @@ public class UploadAreaService(IHttpContextAccessor currentContext, IStringLocal
             ".ps1",
             ".scr",
             ".sct",
+            ".sh",
             ".shb",
             ".sys",
             ".vb",

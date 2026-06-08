@@ -112,9 +112,7 @@ public class JJDataExportation : ProcessComponent
 
     internal string GetDownloadUrl(string filePath)
     {
-        var downloader = ComponentFactory.Downloader.Create();
-        downloader.FilePath = filePath;
-        return downloader.GetDownloadUrl();
+        return $"#{Name}-{Path.GetFileName(filePath)}";
     }
 
     private string GetFinishedMessageHtml(DataExportationReporter reporter)
@@ -228,10 +226,8 @@ public class JJDataExportation : ProcessComponent
         
         await exporter.RunWorkerAsync(CancellationToken.None);
 
-        var downloader = ComponentFactory.Downloader.Create();
-        downloader.FilePath = exporter.ProcessReporter.FilePath;
-
-        return downloader.GetDirectDownloadResult();
+        var filePath = exporter.ProcessReporter.FilePath;
+        return new FileComponentResult(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true), Path.GetFileName(filePath));
     }
 
     internal void ExportFileInBackground(Dictionary<string, object> filter, OrderByData orderByData)

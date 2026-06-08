@@ -532,7 +532,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.SearchBoxFilter:
                 return await GetGridViewResult();
             case ComponentContext.DownloadFile:
-                return ComponentFactory.Downloader.Create().GetDownloadResult();
+                return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
             case ComponentContext.AuditLogView:
                 return await AuditLogView.GetResultAsync();
             case ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload:
@@ -639,7 +639,9 @@ public class JJFormView : AsyncComponent
 
         Dictionary<string, string> errors;
         if (PageState is PageState.Insert || IsInsertAtGridView)
+        {
             errors = await InsertFormValuesAsync(values);
+        }
         else
             errors = await UpdateFormValuesAsync(values);
 
@@ -725,8 +727,6 @@ public class JJFormView : AsyncComponent
     private Task<ComponentResult> GetCancelActionResult()
     {
         PageState = PageState.List;
-
-        ClearTempFiles();
 
         return GridView.GetResultAsync();
     }
@@ -1693,18 +1693,6 @@ public class JJFormView : AsyncComponent
         DataPanel.Values = values;
         var errors = await DataPanel.ValidateFieldsAsync(values);
         return errors;
-    }
-
-
-    private void ClearTempFiles()
-    {
-        var uploadFields = FormElement.Fields.FindAll(x => x.Component == FormComponent.File);
-        foreach (var field in uploadFields)
-        {
-            string sessionName = $"{field.Name}-upload-view_jjfiles";
-            if (CurrentContext.HttpContext!.Session.Keys.Contains(sessionName))
-                CurrentContext.HttpContext!.Session.Remove(sessionName);
-        }
     }
 
     public async ValueTask<FormStateData> GetFormStateDataAsync()

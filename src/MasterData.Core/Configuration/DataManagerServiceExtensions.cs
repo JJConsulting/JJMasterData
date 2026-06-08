@@ -1,5 +1,6 @@
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +24,12 @@ public static class DataManagerServiceExtensions
         services.AddScoped<FieldValuesService>();
         services.AddScoped<UploadAreaService>();
         services.AddScoped<FormValuesService>();
+        services.AddScoped<IFileStorage, DiskFileStorage>();
+        services.AddScoped<ITemporaryUploadStore, TemporaryDiskUploadStore>();
+        services.AddSingleton<IFileReferenceStore, InMemoryFileReferenceStore>();
         services.AddScoped<FormFileManagerFactory>();
         services.AddScoped<FormFileService>();
-#if NET
         services.AddScoped<ElementFileService>();
-#endif
         services.AddScoped<ElementMapService>();
         services.AddScoped<UrlRedirectService>();
 

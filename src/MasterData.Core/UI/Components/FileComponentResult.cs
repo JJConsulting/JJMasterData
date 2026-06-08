@@ -8,25 +8,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Core.UI.Components;
 
-public sealed class FileComponentResult(string filePath) : ComponentResult
-#if NET
-    ,IActionResult
-#endif
+public sealed class FileComponentResult(
+    Stream stream,
+    string fileName) : ComponentResult, IActionResult
 {
-    private string FilePath { get; } = filePath;
-    public override string Content => FilePath;
-
-#if NET
+    public override string Content => fileName;
+    
     public Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {
-        var fileName = Path.GetFileName(FilePath);
-
-        var fileContentResult = new PhysicalFileResult(FilePath,  MimeTypeUtil.GetMimeType(fileName))
+        var fileContentResult = new FileStreamResult(stream, MimeTypeUtil.GetMimeType(fileName))
         {
             FileDownloadName = fileName
         };
 
         return fileContentResult.ExecuteResultAsync(context);
     }
-#endif
 }

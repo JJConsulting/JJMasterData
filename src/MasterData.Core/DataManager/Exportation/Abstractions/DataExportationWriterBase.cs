@@ -15,7 +15,6 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
@@ -40,7 +39,6 @@ public abstract class DataExportationWriterBase(
 
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
-    private FormFilePathBuilder _pathBuilder;
 
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
@@ -48,14 +46,8 @@ public abstract class DataExportationWriterBase(
     private IOptionsSnapshot<MasterDataCoreOptions> Options { get; } = options;
 
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
-    private FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
 
     public string AbsoluteUri { get; internal set; }
-
-    private string GetFolderPath(FormElementField field, Dictionary<string, object> values)
-    {
-        return PathBuilder.GetFolderPath(field, values);
-    }
 
     protected List<FormElementField> VisibleFields
     {
@@ -236,7 +228,7 @@ public abstract class DataExportationWriterBase(
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    protected string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
+    protected static string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
     {
         if (!field.DataFile!.ExportAsLink)
             return null;
@@ -248,8 +240,7 @@ public abstract class DataExportationWriterBase(
         if (files.Length != 1)
             return null;
 
-        var filePath = GetFolderPath(field, row) + value;
-        return JJFileDownloader.GetExternalDownloadLink(EncryptionService, AbsoluteUri, filePath);
+        return null;
     }
     
     private string GetFilePath()

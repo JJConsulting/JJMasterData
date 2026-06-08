@@ -2,64 +2,54 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.DataManager.Models;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.IO;
 
-public class FormFileManager(string memoryFilesSessionName,
-    IHttpContextAccessor httpContext,
-    IStringLocalizer<MasterDataResources> stringLocalizer, 
+public class FormFileManager(
+    string draftId,
+    ITemporaryUploadStore temporaryUploadStore,
+    IFileStorage fileStorage,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
     ILogger<FormFileManager> logger)
 {
-    public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
-    public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
-    public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
+    public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync;
+    public event AsyncEventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFileAsync;
+    public event AsyncEventHandler<FormRenameFileEventArgs> OnBeforeRenameFileAsync;
 
-    /// <summary>
-    /// Session variable name
-    /// </summary>
-    private string MemoryFilesSessionName { get; } = $"{memoryFilesSessionName}_files";
+    public string DraftId { get; } = string.IsNullOrWhiteSpace(draftId)
+        ? temporaryUploadStore.CreateDraftId()
+        : temporaryUploadStore.GetDraftFolderKey(draftId);
 
-    /// <summary>
-    /// Always apply changes from files on disk,
-    /// if it is false, keep it in memory
-    /// Default: true
-    /// </summary>
     public bool AutoSave { get; set; } = true;
+    public string FolderKey { get; set; }
 
-    /// <summary>
-    /// Full Directory Path.<para></para>
-    /// (Optional) If the path is not given, all files will be stored in the session.
-    /// </summary>
-    /// <remarks>
-    /// The path is OS agnostic, you can use for example C:\Temp\Files\ or /home/gumbarros/Documents/Files,
-    /// but beware where you're deploying your application.
-    /// </remarks>
-    public string FolderPath { get; set; }
+    private string DraftFolderKey => temporaryUploadStore.GetDraftFolderKey(DraftId);
 
-    public List<FormFileInfo> MemoryFiles
+    public async Task<List<FormFileInfo>> GetFilesAsync()
     {
-        get => httpContext.HttpContext!.Session.GetObject<List<FormFileInfo>>(MemoryFilesSessionName);
-        set => httpContext.HttpContext!.Session.SetObject(MemoryFilesSessionName, value);
+        var files = new List<FormFileInfo>();
+
+        if (!string.IsNullOrEmpty(FolderKey))
+            files.AddRange(await GetStorageFilesAsync(fileStorage, FolderKey, false));
+
+        files.AddRange(await GetStorageFilesAsync(temporaryUploadStore, DraftFolderKey, true));
+
+        return files
+            .GroupBy(file => file.Content.FileName)
+            .Select(group => group.OrderByDescending(file => file.IsTemporary).First())
+            .ToList();
     }
 
-    public List<FormFileInfo> GetFiles()
-    {
-        List<FormFileInfo> files = null;
-
-        if (!AutoSave || string.IsNullOrEmpty(FolderPath))
-            files = MemoryFiles;
-
-        return files ?? GetPhysicalFiles();
-    }
-
-    public void RenameFile(string currentName, string newName)
+    public async Task RenameFileAsync(string currentName, string newName)
     {
         if (string.IsNullOrEmpty(currentName))
             throw new ArgumentNullException(nameof(currentName));
@@ -67,119 +57,96 @@ public class FormFileManager(string memoryFilesSessionName,
         if (string.IsNullOrWhiteSpace(newName))
             throw new ArgumentNullException(stringLocalizer["Required file name"]);
 
+        currentName = Path.GetFileName(currentName);
+        newName = Path.GetFileName(newName);
+
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
             throw new JJMasterDataException(stringLocalizer["The file extension must remain the same"]);
 
-        var files = GetFiles();
-        if (files.Exists(x => x.Content.FileName.Equals(newName)))
+        if ((await GetFilesAsync()).Exists(x => x.Content.FileName.Equals(newName)))
             throw new JJMasterDataException(stringLocalizer["A file with the name {0} already exists", newName]);
 
-        if (OnBeforeRenameFile != null)
+        if (OnBeforeRenameFileAsync != null)
         {
             var args = new FormRenameFileEventArgs(currentName, newName);
-            OnBeforeRenameFile.Invoke(this, args);
+            await OnBeforeRenameFileAsync(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
                 throw new JJMasterDataException(args.ErrorMessage);
         }
 
-        if (AutoSave && !string.IsNullOrEmpty(FolderPath))
-        {
-            File.Move(Path.Combine(FolderPath,currentName), Path.Combine(FolderPath, newName));
-        }
-        else
-        {
-            var file = files.Find(x => x.Content.FileName.Equals(currentName));
-            if (file == null)
-                throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
+        var file = await GetFileAsync(currentName) ?? throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
+        var storage = file.IsTemporary || string.IsNullOrEmpty(FolderKey)
+            ? temporaryUploadStore
+            : fileStorage;
+        var folderKey = file.IsTemporary || string.IsNullOrEmpty(FolderKey)
+            ? DraftFolderKey
+            : FolderKey;
 
-            files.Remove(file);
-            
-            file.Content.FileName = newName;
-            file.OldName ??= currentName;
-            
-            file.IsRenamed = true;
-            files.Add(file);
-            
-            MemoryFiles = files;
-        }
+        await storage.RenameAsync(folderKey, currentName, newName);
     }
 
-    public FormFileInfo GetFile(string fileName)
+    public async Task<FormFileInfo> GetFileAsync(string fileName)
     {
-        var files = GetFiles();
-        var file = files.Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
-        
-        return file;
+        fileName = Path.GetFileName(fileName);
+        return (await GetFilesAsync()).Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
     }
 
-    public string GetFilePath(string fileName)
+    public async Task<FileStorageReference> GetFileReferenceAsync(string fileName)
     {
-        return Path.Combine(FolderPath, fileName);
+        var file = await GetFileAsync(fileName);
+        if (file == null)
+            throw new JJMasterDataException(stringLocalizer["file {0} not found!", fileName]);
+
+        return FileStorageReference.Create(
+            file.IsTemporary ? DraftFolderKey : FolderKey,
+            file.Content.FileName,
+            file.IsTemporary);
     }
 
-    public void CreateFile(FormFileContent fileContent, bool replaceIfExists)
+    public async Task CreateFileAsync(FormFileContent fileContent, bool replaceIfExists)
     {
         if (fileContent == null)
             throw new ArgumentNullException(nameof(fileContent));
 
-        string fileName = fileContent.FileName;
+        fileContent.FileName = Path.GetFileName(fileContent.FileName);
 
-        if (OnBeforeCreateFile != null)
+        if (OnBeforeCreateFileAsync != null)
         {
             var args = new FormUploadFileEventArgs(fileContent);
-            OnBeforeCreateFile.Invoke(this, args);
+            await OnBeforeCreateFileAsync(this, args);
             string errorMessage = args.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 var exception = new JJMasterDataException(errorMessage);
-                logger.LogError(exception,"Error OnBeforeCreateFile");
+                logger.LogError(exception, "Error OnBeforeCreateFile");
                 throw exception;
             }
-                
         }
 
-        if (replaceIfExists && CountFiles() > 0)
-            DeleteAll();
+        if (replaceIfExists && await CountFilesAsync() > 0)
+            await DeleteAllAsync();
 
-        if (fileName?.LastIndexOf("\\") > 0)
-            // ReSharper disable once ReplaceSubstringWithRangeIndexer
-            fileName = fileName.Substring(fileName.LastIndexOf("\\", StringComparison.Ordinal) + 1);
+        var storage = AutoSave && !string.IsNullOrEmpty(FolderKey)
+            ? fileStorage
+            : temporaryUploadStore;
+        var folderKey = AutoSave && !string.IsNullOrEmpty(FolderKey)
+            ? FolderKey
+            : DraftFolderKey;
 
-        if (AutoSave && !string.IsNullOrEmpty(FolderPath))
-        {
-            SavePhysicalFile(fileContent);
-        }
-        else
-        {
-            var files = GetFiles();
-            var currentFile = files.Find(x => x.Content.FileName.Equals(fileName));
-            if (currentFile == null)
-            {
-                var file = new FormFileInfo
-                {
-                    Content = fileContent
-                };
-                files.Add(file);
-            }
-            else
-            {
-                currentFile.Content = fileContent;
-                currentFile.Deleted = false;
-            }
-
-            MemoryFiles = files;
-        }
+        await storage.SaveAsync(folderKey, fileContent.FileName, fileContent.Stream, true);
     }
 
-    public void DeleteFile(string fileName)
+    public async Task DeleteFileAsync(string fileName)
     {
-        if (OnBeforeDeleteFile != null)
+        fileName = Path.GetFileName(fileName);
+
+        if (OnBeforeDeleteFileAsync != null)
         {
             var args = new FormDeleteFileEventArgs(fileName);
-            OnBeforeDeleteFile.Invoke(this, args);
-            
+            await OnBeforeDeleteFileAsync(this, args);
+
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
@@ -188,125 +155,58 @@ public class FormFileManager(string memoryFilesSessionName,
             }
         }
 
-        if (AutoSave && !string.IsNullOrEmpty(FolderPath))
-        {
-            File.Delete(Path.Combine(FolderPath, fileName));
-        }
-        else
-        {
-            var files = GetFiles();
-            var file = files.Find(x => x.Content.FileName.Equals(fileName));
-            if (file != null)
-            {
-                if (!file.IsInMemory)
-                    file.Deleted = true;
-                else
-                    files.Remove(file);
-            }
-
-            MemoryFiles = files;
-        }
-    }
-
-    public void DeleteAll()
-    {
-        if (!string.IsNullOrEmpty(FolderPath))
-        {
-            if (Directory.Exists(FolderPath))
-                Directory.Delete(FolderPath, true);
-        }
-
-        MemoryFiles = null;
-    }
-
-    public int CountFiles()
-    {
-        var listFiles = GetFiles();
-        return listFiles.Count(x => !x.Deleted);
-    }
-
-    public void SaveMemoryFiles(string folderPath, bool deleteExistingFiles = false)
-    {
-        if (string.IsNullOrEmpty(folderPath))
-            throw new ArgumentNullException(nameof(folderPath));
-
-        if (MemoryFiles == null)
+        var file = await GetFileAsync(fileName);
+        if (file == null)
             return;
 
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
-
-        FolderPath = folderPath;
-
-        if (deleteExistingFiles)
-        {
-            foreach (var filePath in Directory.GetFiles(FolderPath))
-                File.Delete(filePath);
-        }
-        
-        foreach (var file in MemoryFiles)
-        {
-            string fileName = file.Content.FileName;
-            if (file.Deleted)
-            {
-                string filename = string.IsNullOrEmpty(file.OldName) ? fileName : file.OldName;
-                File.Delete(folderPath + filename);
-            }
-            else if (!string.IsNullOrEmpty(file.OldName) && !file.IsInMemory)
-            {
-                File.Move(folderPath + file.OldName, folderPath + fileName);
-            }
-            else if (file.Content.Bytes != null && file.IsInMemory)
-            {
-                SavePhysicalFile(file.Content);
-            }
-        }
-        
-        MemoryFiles = null;
+        var storage = file.IsTemporary ? temporaryUploadStore : fileStorage;
+        var folderKey = file.IsTemporary ? DraftFolderKey : FolderKey;
+        await storage.DeleteAsync(folderKey, fileName);
     }
 
-    private List<FormFileInfo> GetPhysicalFiles()
+    public async Task DeleteAllAsync()
     {
-        var formFileInfoList = new List<FormFileInfo>();
-        if (string.IsNullOrEmpty(FolderPath))
-            return formFileInfoList;
+        await temporaryUploadStore.DeleteFolderAsync(DraftFolderKey);
 
-        var directory = new DirectoryInfo(FolderPath);
-        if (directory.Exists)
-        {
-            var files = directory.GetFiles();
-            foreach (var file in files)
+        if (AutoSave && !string.IsNullOrEmpty(FolderKey))
+            await fileStorage.DeleteFolderAsync(FolderKey);
+    }
+
+    public async Task<int> CountFilesAsync()
+    {
+        return (await GetFilesAsync()).Count(x => !x.Deleted);
+    }
+
+    public async Task PromoteTemporaryFilesAsync(string folderKey, bool deleteExistingFiles = false)
+    {
+        if (string.IsNullOrEmpty(folderKey))
+            throw new ArgumentNullException(nameof(folderKey));
+
+        FolderKey = folderKey;
+        await temporaryUploadStore.PromoteAsync(DraftId, fileStorage, folderKey, deleteExistingFiles);
+    }
+
+    public Task<Stream> OpenReadAsync(FileStorageReference reference)
+    {
+        var storage = reference.IsTemporary ? temporaryUploadStore : fileStorage;
+        return storage.OpenReadAsync(reference.FolderKey, reference.FileName);
+    }
+
+    private static async Task<IEnumerable<FormFileInfo>> GetStorageFilesAsync(IFileStorage storage, string folderKey, bool temporary)
+    {
+        if (string.IsNullOrEmpty(folderKey))
+            return [];
+
+        return (await storage.ListAsync(folderKey))
+            .Select(file => new FormFileInfo
             {
-                formFileInfoList.Add(new FormFileInfo
+                IsTemporary = temporary,
+                Content =
                 {
-                    Content =
-                    {
-                        FileName = file.Name,
-                        Length = file.Length,
-                        LastWriteTime = file.LastWriteTime,
-                    }
-                });
-            }
-        }
-        return formFileInfoList;
-    }
-
-    private void SavePhysicalFile(FormFileContent file)
-    {
-        if (file == null)
-            throw new ArgumentNullException(nameof(file));
-
-        if (string.IsNullOrEmpty(FolderPath))
-            throw new ArgumentNullException(nameof(FolderPath));
-
-        if (!Directory.Exists(FolderPath))
-            Directory.CreateDirectory(FolderPath);
-
-        var fileFullName = Path.Combine(FolderPath, file.FileName);
-        using var ms = new MemoryStream(file.Bytes);
-        using var fileStream = File.Create(fileFullName);
-        ms.Seek(0, SeekOrigin.Begin);
-        ms.CopyTo(fileStream);
-        fileStream.Close();
+                    FileName = file.FileName,
+                    Length = file.Length,
+                    LastWriteTime = file.LastWriteTime
+                }
+            });
     }
 }

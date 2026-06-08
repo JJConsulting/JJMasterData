@@ -149,7 +149,7 @@ public class JJUploadArea : AsyncComponent
         return new RenderedComponentResult(GetUploadAreaHtmlBuilder());
     }
 
-    public async Task<ComponentResult> GetFileUploadResultAsync(FormFileContent formFile)
+    public async Task<ComponentResult> GetFileUploadResultAsync(IFormFile formFile)
     {
         if (OnFileUploaded != null)
             _uploadAreaService.OnFileUploaded += OnFileUploaded;

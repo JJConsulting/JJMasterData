@@ -1,19 +1,14 @@
 ﻿using System;
-using System.IO;
+using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Abstractions;
-using JJConsulting.Html.Bootstrap.Components;
-using JJConsulting.Html.Bootstrap.Extensions;
-using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
-
 using JJMasterData.Core.UI.Routing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -21,158 +16,65 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJFileDownloader(
         IHttpContextAccessor currentContext,
+        IFileStorage fileStorage,
+        ITemporaryUploadStore temporaryUploadStore,
+        IFileReferenceStore fileReferenceStore,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFileDownloader> logger)
     : HtmlComponent
 {
-    public const string DirectDownloadParameter = "directDownloadFilePath";
-    public const string DownloadParameter = "downloadFilePath";
-    
-    public string FilePath { get; set; }
-    public bool IsExternalLink { get; set; }
+    public const string FileTokenParameter = "downloadFileToken";
+
+    public FileStorageReference FileReference { get; set; }
 
     internal IHttpContextAccessor CurrentContext { get; } = currentContext;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     internal ILogger<JJFileDownloader> Logger { get; } = logger;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
-    
-    
+
     protected override HtmlBuilder BuildHtml()
     {
-        if (string.IsNullOrEmpty(FilePath))
-            throw new JJMasterDataException(StringLocalizer["Invalid file path or badly formatted URL"]);
-    
-        if (IsExternalLink)
-            return GetDownloadHtmlElement();
-        
-        GetDirectDownloadResult();
+        if (FileReference == null)
+            throw new JJMasterDataException(StringLocalizer["Invalid file reference"]);
 
-        return null;
+        return new HtmlBuilder();
     }
 
-    private HtmlBuilder GetDownloadHtmlElement()
+    public async Task<FileComponentResult> GetDirectDownloadResultAsync()
     {
-        var file = new FileInfo(FilePath);
-        string fileName = file.Name;
-        string size = Format.FormatFileSize(file.Length);
-        string lastWriteTime = file.LastWriteTime.ToDateTimeString();
-        string url = CurrentContext.HttpContext!.Request.GetAbsoluteUri().Replace(DirectDownloadParameter, DownloadParameter);
+        if (FileReference == null)
+            throw new ArgumentNullException(nameof(FileReference));
 
-        var htmlTitle = new JJTitle
-        {
-            Title = StringLocalizer["Downloading"],
-            SubTitle = fileName.ToLower()
-        };
-
-        var html = HtmlBuilder.Div()
-            .AppendComponent(htmlTitle)
-            .AppendSection(section =>
-            {
-                section.WithCssClass("container mt-3");
-                section.AppendDiv(div =>
-                {
-                    div.WithCssClass("jumbotron px-3 py-4 px-sm-4 py-sm-5 bg-light rounded-3 mb-3");
-                    div.AppendDiv(div =>
-                    {
-                        div.AppendH1(h1 =>
-                        {
-                            h1.AppendComponent(new JJIcon("fa fa-cloud-download text-info"));
-                            h1.AppendText(fileName);
-                        });
-                        div.Append(HtmlTag.P,p =>
-                        {
-                            p.AppendText($"{StringLocalizer["File Size:"]} {size}");
-                            p.Append(HtmlTag.Br);
-                            p.AppendText($"{StringLocalizer["Last write time:"]} {lastWriteTime}");
-                        });
-                        div.AppendHr(hr =>
-                        {
-                            hr.WithCssClass("my-4");
-                        });
-                        div.Append(HtmlTag.P, p =>
-                        {
-                            p.AppendText(StringLocalizer["You are downloading file {0}.", fileName]);
-                            p.AppendText(" ");
-                            p.AppendText($"{StringLocalizer["If the download not start automatically"]}, ");
-                            p.Append(HtmlTag.A, a =>
-                            {
-                                a.WithAttribute("href", url);
-                                a.AppendText(StringLocalizer["click here."]);
-                            });
-                        });
-                    });
-                });
-            });
-        return html;
+        var storage = FileReference.IsTemporary ? temporaryUploadStore : fileStorage;
+        var stream = await storage.OpenReadAsync(FileReference.FolderKey, FileReference.FileName);
+        return new FileComponentResult(stream, FileReference.FileName);
     }
-    
-    internal FileComponentResult GetDirectDownloadResult()
+
+    public async Task<FileComponentResult> GetDownloadResultAsync()
     {
-        if (string.IsNullOrEmpty(FilePath))
-            throw new ArgumentNullException(nameof(FilePath));
+        var token = CurrentContext.HttpContext!.Request.Query[FileTokenParameter].ToString();
+        if (string.IsNullOrEmpty(token))
+            throw new JJMasterDataException("Invalid file token.");
 
-        if (!File.Exists(FilePath))
-        {
-            var exception = new JJMasterDataException(StringLocalizer["File {0} not found!", Path.GetFileName(FilePath)]);
-            Logger.LogError(exception, "File {FilePath} not found!", FilePath);
-            throw exception;
-        }
-
-        return new FileComponentResult(FilePath);
+        FileReference = await fileReferenceStore.ResolveAsync(token);
+        return await GetDirectDownloadResultAsync();
     }
-    
-    public FileComponentResult GetDownloadResult()
-    {
-        bool isExternalLink = false;
-        string criptFilePath = CurrentContext.HttpContext!.Request.Query[DownloadParameter];
-        if (criptFilePath == null)
-        {
-            criptFilePath = CurrentContext.HttpContext!.Request.Query[DirectDownloadParameter];
-            isExternalLink = true;
-        }
 
-        if (criptFilePath == null)
-            throw new JJMasterDataException("Invalid file path or badly formatted URL");
-
-        string filePath = EncryptionService.DecryptStringWithUrlUnescape(criptFilePath);
-
-        FilePath = filePath ?? throw new JJMasterDataException("Invalid file path or badly formatted URL");
-        IsExternalLink = isExternalLink;
-
-        return GetDirectDownloadResult();
-    }
-    
     public string GetDownloadUrl()
     {
-        var url = CurrentContext.HttpContext!.Request.GetAbsoluteUri();
-        var encryptedFilePath = EncryptionService.EncryptStringWithUrlEscape(FilePath);
+        if (FileReference == null)
+            throw new ArgumentNullException(nameof(FileReference));
 
-        var uriBuilder = new UriBuilder(url);
+        var uriBuilder = new UriBuilder(CurrentContext.HttpContext!.Request.GetAbsoluteUri());
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        var routeContext = new RouteContext( ComponentContext.DownloadFile);
-        var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
-        
-        query["routeContext"] = encryptedRouteContext;
-        query[DirectDownloadParameter] = encryptedFilePath;
+        var routeContext = new RouteContext(ComponentContext.DownloadFile);
+
+        query["routeContext"] = EncryptionService.EncryptObject(routeContext);
+        query[FileTokenParameter] = fileReferenceStore.Create(FileReference);
 
         uriBuilder.Query = query.ToString()!;
 
         return uriBuilder.Uri.PathAndQuery;
-    }
-
-    public static string GetExternalDownloadLink(IEncryptionService encryptionService, string absoluteUri, string filePath)
-    {
-        var uriBuilder = new UriBuilder(absoluteUri);
-        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        var routeContext = new RouteContext( ComponentContext.DownloadFile);
-        var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
-        var encryptedFilePath = encryptionService.EncryptStringWithUrlEscape(filePath);
-        query["routeContext"] = encryptedRouteContext;
-        query[DirectDownloadParameter] = encryptedFilePath;
-
-        uriBuilder.Query = query.ToString()!;
-
-        return uriBuilder.Uri.AbsoluteUri;
     }
 }
