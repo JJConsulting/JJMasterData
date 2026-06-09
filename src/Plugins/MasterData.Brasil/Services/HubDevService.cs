@@ -59,7 +59,7 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
             url = $"{url}&{additionalQueryString}";
         }
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(TimeoutSeconds));
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(TimeoutSeconds == 0 ? 5 : TimeoutSeconds));
         var message = await httpClient.GetAsync(url, cts.Token);
 #if NET
         var content = await message.Content.ReadAsStringAsync(cts.Token);
@@ -68,7 +68,11 @@ public class HubDevService(HttpClient httpClient, IOptions<HubDevSettings> optio
 #endif
         if (!message.IsSuccessStatusCode)
         {
-            throw new ReceitaFederalException();
+            var exception = new ReceitaFederalException($"Invalid status code ({message.StatusCode}).");
+            
+            logger.LogError(exception, "Error at HubDevService. Response: {Response}", content);
+
+            throw exception;
         }
         
         logger.LogInformation("JSON returned by HubDev for {Endpoint} with identifier {Identifier}: {Content}",
