@@ -74,9 +74,6 @@
       <Compile Update="UI\Components\FileStreamComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
-      <Compile Update="UI\Components\FilePathComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
     </ItemGroup>
 
     <ItemGroup>
