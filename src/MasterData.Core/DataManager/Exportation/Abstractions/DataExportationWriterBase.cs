@@ -126,12 +126,12 @@ public abstract class DataExportationWriterBase(
     /// <summary>
     /// Path where the files are generated.
     /// </summary>
-    public string FolderKey
+    public string FolderPath
     {
         get
         {
             var path = Options.Value.ExportationFolderPath;
-            return DataExportationHelper.GetFolderPath(FormElement, path, UserId);
+            return DataExportationHelper.GetExportationFolderPath(FormElement, path, UserId);
         }
     }
 
@@ -164,7 +164,7 @@ public abstract class DataExportationWriterBase(
                 }
 
                 await using var readStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
-                await FileStorage.SaveAsync(FolderKey, fileName, readStream, true, token);
+                await FileStorage.SaveAsync(FolderPath, fileName, readStream, true, token);
             }
             finally
             {
@@ -172,7 +172,7 @@ public abstract class DataExportationWriterBase(
                     File.Delete(tempFilePath);
             }
 
-            ProcessReporter.FolderKey = FolderKey;
+            ProcessReporter.FolderPath = FolderPath;
             ProcessReporter.FileName = fileName;
 
             ProcessReporter.EndDate = DateTime.Now;

@@ -15,7 +15,7 @@ public sealed class TemporaryDiskUploadStore : DiskFileStorage, ITemporaryUpload
         return Guid.NewGuid().ToString("N");
     }
 
-    public string GetDraftFolderKey(string draftId)
+    public string GetDraftFolderPath(string draftId)
     {
         draftId = NormalizeDraftId(draftId);
         if (string.IsNullOrWhiteSpace(draftId))
@@ -26,26 +26,26 @@ public sealed class TemporaryDiskUploadStore : DiskFileStorage, ITemporaryUpload
 
     public Task SaveUploadAsync(string draftId, string fileName, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)
     {
-        return SaveAsync(GetDraftFolderKey(draftId), fileName, content, replaceIfExists, cancellationToken);
+        return SaveAsync(GetDraftFolderPath(draftId), fileName, content, replaceIfExists, cancellationToken);
     }
 
-    public async Task PromoteAsync(string draftId, IFileStorage destinationStorage, string destinationFolderKey, bool deleteExistingFiles = false, CancellationToken cancellationToken = default)
+    public async Task PromoteAsync(string draftId, IFileStorage destinationStorage, string destinationFolderPath, bool deleteExistingFiles = false, CancellationToken cancellationToken = default)
     {
-        var draftFolderKey = GetDraftFolderKey(draftId);
-        var files = await ListAsync(draftFolderKey, cancellationToken);
+        var draftFolderPath = GetDraftFolderPath(draftId);
+        var files = await ListAsync(draftFolderPath, cancellationToken);
         if (files.Count == 0)
             return;
 
         if (deleteExistingFiles)
-            await destinationStorage.DeleteFolderAsync(destinationFolderKey, cancellationToken);
+            await destinationStorage.DeleteFolderAsync(destinationFolderPath, cancellationToken);
 
         foreach (var file in files)
         {
-            await using var stream = await OpenReadAsync(draftFolderKey, file.FileName, cancellationToken);
-            await destinationStorage.SaveAsync(destinationFolderKey, file.FileName, stream, true, cancellationToken);
+            await using var stream = await OpenReadAsync(draftFolderPath, file.FileName, cancellationToken);
+            await destinationStorage.SaveAsync(destinationFolderPath, file.FileName, stream, true, cancellationToken);
         }
 
-        await DeleteFolderAsync(draftFolderKey, cancellationToken);
+        await DeleteFolderAsync(draftFolderPath, cancellationToken);
     }
 
     public Task CleanupExpiredAsync(TimeSpan maxAge, CancellationToken cancellationToken = default)
@@ -67,9 +67,9 @@ public sealed class TemporaryDiskUploadStore : DiskFileStorage, ITemporaryUpload
         }
     }
 
-    protected override string ResolveFolderPath(string folderKey)
+    protected override string ResolveFolderPath(string folderPath)
     {
-        var draftId = GetDraftFolderKey(folderKey);
+        var draftId = GetDraftFolderPath(folderPath);
         return Path.Combine(_rootPath, draftId);
     }
 

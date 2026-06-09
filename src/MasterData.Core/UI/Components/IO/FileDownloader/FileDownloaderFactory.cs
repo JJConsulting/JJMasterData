@@ -29,7 +29,7 @@ public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
     public JJFileDownloader Create(FormElement formElement, FormElementField field, Dictionary<string, object> values, string fileName, bool isTemporary = false)
     {
         var storage = isTemporary ? temporaryUploadStore : fileStorage;
-        var folderKey = storage.GetFolderKey(formElement, field, values);
-        return Create(FileStorageReference.Create(folderKey, fileName, isTemporary));
+        var folderPath = storage.GetFolderPath(formElement, field, values);
+        return Create(FileStorageReference.Create(folderPath, fileName, isTemporary));
     }
 }

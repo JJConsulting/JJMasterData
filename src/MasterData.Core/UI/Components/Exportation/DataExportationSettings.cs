@@ -26,10 +26,10 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         
-        var folderKey = DataExportationHelper.GetFolderPath(dataExportation);
+        var folderPath = DataExportationHelper.GetExportationFolderPath(dataExportation);
         
         html.WithCssClass("container-fluid");
-        html.Append(await GetFormHtmlElementAsync(folderKey));
+        html.Append(await GetFormHtmlElementAsync(folderPath));
         html.AppendHr();
         html.AppendDiv(div =>
         {
@@ -65,7 +65,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return html;
     }
 
-    private async Task<HtmlBuilder> GetFormHtmlElementAsync(string exportationFolderKey)
+    private async Task<HtmlBuilder> GetFormHtmlElementAsync(string exportationFolderPath)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("row");
@@ -80,7 +80,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 
         div.Append(GetFirstLineField());
 
-        div.Append(await GetFilesCollapsePanelHtmlBuilderAsync(exportationFolderKey));
+        div.Append(await GetFilesCollapsePanelHtmlBuilderAsync(exportationFolderPath));
 
         div.Append(HtmlTag.Div, div =>
         {
@@ -282,9 +282,9 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return alert;
     }
 
-    private async Task<HtmlBuilder> GetFilesCollapsePanelHtmlBuilderAsync(string exportationFolderKey)
+    private async Task<HtmlBuilder> GetFilesCollapsePanelHtmlBuilderAsync(string exportationFolderPath)
     {
-        var files = await GetGeneratedFilesAsync(exportationFolderKey);
+        var files = await GetGeneratedFilesAsync(exportationFolderPath);
         var filesCount = files.Count;
         var panel = new JJCollapsePanel
         {
@@ -327,9 +327,9 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return html;
     }
 
-    private async Task<List<FileStorageItem>> GetGeneratedFilesAsync(string exportationFolderKey)
+    private async Task<List<FileStorageItem>> GetGeneratedFilesAsync(string exportationFolderPath)
     {
-        return (await dataExportation.FileStorage.ListAsync(exportationFolderKey))
+        return (await dataExportation.FileStorage.ListAsync(exportationFolderPath))
             .OrderByDescending(f => f.LastWriteTime)
             .ToList();
     }

@@ -41,7 +41,7 @@ public class JJFileDownloader(
             throw new ArgumentNullException(nameof(FileReference));
 
         var storage = FileReference.IsTemporary ? temporaryUploadStore : fileStorage;
-        var stream = await storage.OpenReadAsync(FileReference.FolderKey, FileReference.FileName);
+        var stream = await storage.OpenReadAsync(FileReference.FolderPath, FileReference.FileName);
         return new FileStreamComponentResult(stream, FileReference.FileName);
     }
 

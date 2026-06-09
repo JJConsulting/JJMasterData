@@ -7,7 +7,7 @@ public sealed class FileStorageReference
     public string Key { get; init; } = string.Empty;
     public bool IsTemporary { get; init; }
 
-    public string FolderKey
+    public string FolderPath
     {
         get
         {
@@ -18,13 +18,13 @@ public sealed class FileStorageReference
 
     public string FileName => GetSafeFileName(Key);
 
-    public static FileStorageReference Create(string folderKey, string fileName, bool isTemporary)
+    public static FileStorageReference Create(string folderPath, string fileName, bool isTemporary)
     {
-        var normalizedFolderKey = folderKey?.TrimEnd('/', '\\').Replace('\\', '/');
+        var normalizedFolderPath = folderPath?.TrimEnd('/', '\\').Replace('\\', '/');
         var safeFileName = GetSafeFileName(fileName);
-        var key = string.IsNullOrEmpty(normalizedFolderKey)
+        var key = string.IsNullOrEmpty(normalizedFolderPath)
             ? safeFileName
-            : $"{normalizedFolderKey}/{safeFileName}";
+            : $"{normalizedFolderPath}/{safeFileName}";
 
         return new FileStorageReference
         {

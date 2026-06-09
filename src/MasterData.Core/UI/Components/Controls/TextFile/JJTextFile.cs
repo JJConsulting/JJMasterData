@@ -80,7 +80,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
             field.RenameAction.SetVisible(true);
             
             if (HasPk())
-                field.FolderKey = GetFolderKey();
+                field.FolderPath = GetFolderPath();
             
             var dataFile = FormElementField.DataFile!;
             field.UploadArea.Multiple = dataFile.MultipleFile;
@@ -194,13 +194,13 @@ public sealed class JJTextFile(IHttpContextAccessor request,
     public Task PromoteTemporaryFilesAsync()
     {
         var uploadView = UploadView;
-        return uploadView.PromoteTemporaryFilesAsync(GetFolderKey());
+        return uploadView.PromoteTemporaryFilesAsync(GetFolderPath());
     }
 
     public Task DeleteAllAsync()
     {
         var uploadView = UploadView;
-        uploadView.FolderKey = GetFolderKey();
+        uploadView.FolderPath = GetFolderPath();
         return uploadView.DeleteAllAsync();
     }
     private bool HasPk()
@@ -212,9 +212,9 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         return pkFields.All(pkField => FormStateValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FormStateValues[pkField.Name]?.ToString()));
     }
 
-    public string GetFolderKey()
+    public string GetFolderPath()
     {
-        return fileStorage.GetFolderKey(FormElement, FormElementField, FormStateValues);
+        return fileStorage.GetFolderPath(FormElement, FormElementField, FormStateValues);
     }
 
     internal string GetDraftInputName() => $"{FormElementField.Name}-upload-view-files-draft-id";
@@ -294,7 +294,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
     private string GetDownloadLink(string fileName)
     {
         var fileDownloader = componentFactory.Downloader.Create();
-        fileDownloader.FileReference = FileStorageReference.Create(GetFolderKey(), fileName, false);
+        fileDownloader.FileReference = FileStorageReference.Create(GetFolderPath(), fileName, false);
         return fileDownloader.GetDownloadUrl();
     }
 }

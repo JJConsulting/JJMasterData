@@ -18,7 +18,7 @@ public class FormFileServiceTests
         var fileStorage = new DiskFileStorage();
         var temporaryUploadStore = new TemporaryDiskUploadStore();
         var draftId = Guid.NewGuid().ToString("N");
-        var folderKey = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
+        var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
         var service = new FormFileService(
             new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
             temporaryUploadStore,
@@ -28,10 +28,10 @@ public class FormFileServiceTests
 
         try
         {
-            await fileStorage.SaveAsync(folderKey, "old-file.txt", CreateStream("old"), true, TestContext.Current.CancellationToken);
+            await fileStorage.SaveAsync(folderPath, "old-file.txt", CreateStream("old"), true, TestContext.Current.CancellationToken);
             await service.CreateFileAsync(
                 draftId,
-                folderKey,
+                folderPath,
                 autoSave: false,
                 new FormFileContent
                 {
@@ -40,8 +40,8 @@ public class FormFileServiceTests
                 },
                 replaceIfExists: true);
 
-            var allFiles = await service.GetFilesAsync(draftId, folderKey);
-            var preferredFiles = await service.GetFilesAsync(draftId, folderKey, preferTemporaryFiles: true);
+            var allFiles = await service.GetFilesAsync(draftId, folderPath);
+            var preferredFiles = await service.GetFilesAsync(draftId, folderPath, preferTemporaryFiles: true);
 
             Assert.Equal(["new-file.txt", "old-file.txt"], allFiles.Select(file => file.Content.FileName).Order());
             Assert.Equal(["new-file.txt"], preferredFiles.Select(file => file.Content.FileName));
@@ -49,7 +49,7 @@ public class FormFileServiceTests
         }
         finally
         {
-            await fileStorage.DeleteFolderAsync(folderKey, TestContext.Current.CancellationToken);
+            await fileStorage.DeleteFolderAsync(folderPath, TestContext.Current.CancellationToken);
             await temporaryUploadStore.DeleteFolderAsync(draftId, TestContext.Current.CancellationToken);
         }
     }

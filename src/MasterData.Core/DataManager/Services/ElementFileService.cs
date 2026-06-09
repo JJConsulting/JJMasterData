@@ -27,15 +27,15 @@ public class ElementFileService(
         fileName = Path.GetFileName(fileName);
 
         var field = formElement.Fields.First(f => f.Name == fieldName);
-        var folderKey = fileStorage.GetFolderKey(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
         if (string.IsNullOrEmpty(fileName))
-            fileName = (await fileStorage.ListAsync(folderKey)).FirstOrDefault()?.FileName;
+            fileName = (await fileStorage.ListAsync(folderPath)).FirstOrDefault()?.FileName;
 
         if (string.IsNullOrEmpty(fileName))
             return null;
 
-        return await fileStorage.OpenReadAsync(folderKey, fileName);
+        return await fileStorage.OpenReadAsync(folderPath, fileName);
     }
 
     
@@ -98,12 +98,12 @@ public class ElementFileService(
         IFormFile file)
     {
         var hashValues = DataHelper.GetPkValues(formElement, pkValues, ',');
-        var folderKey = fileStorage.GetFolderKey(formElement, field, hashValues);
+        var folderPath = fileStorage.GetFolderPath(formElement, field, hashValues);
 
         var fileName = Path.GetFileName(file.FileName);
         
         await using var uploadStream = file.OpenReadStream();
-        await fileStorage.SaveAsync(folderKey, fileName, uploadStream, true);
+        await fileStorage.SaveAsync(folderPath, fileName, uploadStream, true);
     }
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
@@ -124,9 +124,9 @@ public class ElementFileService(
     private async Task DeletePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         fileName = Path.GetFileName(fileName);
-        var folderKey = fileStorage.GetFolderKey(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
-        await fileStorage.DeleteAsync(folderKey, fileName);
+        await fileStorage.DeleteAsync(folderPath, fileName);
     }
     
     private async Task DeleteEntityFileAsync(Element element, FormElementField field, string pkValues, string fileName)
@@ -175,8 +175,8 @@ public class ElementFileService(
     
     private async Task RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
-        var folderKey = fileStorage.GetFolderKey(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
-        await fileStorage.RenameAsync(folderKey, oldName, newName);
+        var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        await fileStorage.RenameAsync(folderPath, oldName, newName);
     }
     
     private async Task RenameEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName,

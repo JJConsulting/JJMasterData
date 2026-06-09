@@ -39,18 +39,18 @@ public class FormFileService(
 
         return string.IsNullOrWhiteSpace(draftId)
             ? temporaryUploadStore.CreateDraftId()
-            : temporaryUploadStore.GetDraftFolderKey(draftId);
+            : temporaryUploadStore.GetDraftFolderPath(draftId);
     }
 
-    public async Task<List<FormFileInfo>> GetFilesAsync(string draftId, string folderKey,
+    public async Task<List<FormFileInfo>> GetFilesAsync(string draftId, string folderPath,
         bool preferTemporaryFiles = false)
     {
         var files = new List<FormFileInfo>();
 
-        if (!string.IsNullOrEmpty(folderKey))
-            files.AddRange(await GetStorageFilesAsync(fileStorage, folderKey, false));
+        if (!string.IsNullOrEmpty(folderPath))
+            files.AddRange(await GetStorageFilesAsync(fileStorage, folderPath, false));
 
-        files.AddRange(await GetStorageFilesAsync(temporaryUploadStore, temporaryUploadStore.GetDraftFolderKey(draftId),
+        files.AddRange(await GetStorageFilesAsync(temporaryUploadStore, temporaryUploadStore.GetDraftFolderPath(draftId),
             true));
 
         var mergedFiles = files
@@ -65,7 +65,7 @@ public class FormFileService(
 
     public async Task RenameFileAsync(
         string draftId,
-        string folderKey,
+        string folderPath,
         string currentName,
         string newName)
     {
@@ -81,7 +81,7 @@ public class FormFileService(
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
             throw new JJMasterDataException(stringLocalizer["The file extension must remain the same"]);
 
-        if ((await GetFilesAsync(draftId, folderKey)).Exists(x => x.Content.FileName.Equals(newName)))
+        if ((await GetFilesAsync(draftId, folderPath)).Exists(x => x.Content.FileName.Equals(newName)))
             throw new JJMasterDataException(stringLocalizer["A file with the name {0} already exists", newName]);
 
         if (OnBeforeRenameFileAsync != null)
@@ -93,41 +93,41 @@ public class FormFileService(
                 throw new JJMasterDataException(args.ErrorMessage);
         }
 
-        var file = await GetFileAsync(draftId, folderKey, currentName)
+        var file = await GetFileAsync(draftId, folderPath, currentName)
                    ?? throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
 
-        var storage = file.IsTemporary || string.IsNullOrEmpty(folderKey)
+        var storage = file.IsTemporary || string.IsNullOrEmpty(folderPath)
             ? temporaryUploadStore
             : fileStorage;
-        var storageFolderKey = file.IsTemporary || string.IsNullOrEmpty(folderKey)
-            ? temporaryUploadStore.GetDraftFolderKey(draftId)
-            : folderKey;
+        var storageFolderPath = file.IsTemporary || string.IsNullOrEmpty(folderPath)
+            ? temporaryUploadStore.GetDraftFolderPath(draftId)
+            : folderPath;
 
-        await storage.RenameAsync(storageFolderKey, currentName, newName);
+        await storage.RenameAsync(storageFolderPath, currentName, newName);
     }
 
-    public async Task<FormFileInfo> GetFileAsync(string draftId, string folderKey, string fileName)
+    public async Task<FormFileInfo> GetFileAsync(string draftId, string folderPath, string fileName)
     {
         fileName = Path.GetFileName(fileName);
-        return (await GetFilesAsync(draftId, folderKey))
+        return (await GetFilesAsync(draftId, folderPath))
             .Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
     }
 
-    public async Task<FileStorageReference> GetFileReferenceAsync(string draftId, string folderKey, string fileName)
+    public async Task<FileStorageReference> GetFileReferenceAsync(string draftId, string folderPath, string fileName)
     {
-        var file = await GetFileAsync(draftId, folderKey, fileName);
+        var file = await GetFileAsync(draftId, folderPath, fileName);
         if (file == null)
             throw new JJMasterDataException(stringLocalizer["file {0} not found!", fileName]);
 
         return FileStorageReference.Create(
-            file.IsTemporary ? temporaryUploadStore.GetDraftFolderKey(draftId) : folderKey,
+            file.IsTemporary ? temporaryUploadStore.GetDraftFolderPath(draftId) : folderPath,
             file.Content.FileName,
             file.IsTemporary);
     }
 
     public async Task CreateFileAsync(
         string draftId,
-        string folderKey,
+        string folderPath,
         bool autoSave,
         FormFileContent fileContent,
         bool replaceIfExists)
@@ -151,22 +151,22 @@ public class FormFileService(
             }
         }
 
-        if (replaceIfExists && await CountFilesAsync(draftId, folderKey) > 0)
-            await DeleteAllAsync(draftId, folderKey, autoSave);
+        if (replaceIfExists && await CountFilesAsync(draftId, folderPath) > 0)
+            await DeleteAllAsync(draftId, folderPath, autoSave);
 
-        var storage = autoSave && !string.IsNullOrEmpty(folderKey)
+        var storage = autoSave && !string.IsNullOrEmpty(folderPath)
             ? fileStorage
             : temporaryUploadStore;
-        var storageFolderKey = autoSave && !string.IsNullOrEmpty(folderKey)
-            ? folderKey
-            : temporaryUploadStore.GetDraftFolderKey(draftId);
+        var storageFolderPath = autoSave && !string.IsNullOrEmpty(folderPath)
+            ? folderPath
+            : temporaryUploadStore.GetDraftFolderPath(draftId);
 
-        await storage.SaveAsync(storageFolderKey, fileContent.FileName, fileContent.Stream, true);
+        await storage.SaveAsync(storageFolderPath, fileContent.FileName, fileContent.Stream, true);
     }
 
     public async Task DeleteFileAsync(
         string draftId,
-        string folderKey,
+        string folderPath,
         string fileName)
     {
         fileName = Path.GetFileName(fileName);
@@ -184,40 +184,40 @@ public class FormFileService(
             }
         }
 
-        var file = await GetFileAsync(draftId, folderKey, fileName);
+        var file = await GetFileAsync(draftId, folderPath, fileName);
         if (file == null)
             return;
 
         var storage = file.IsTemporary ? temporaryUploadStore : fileStorage;
-        var storageFolderKey = file.IsTemporary ? temporaryUploadStore.GetDraftFolderKey(draftId) : folderKey;
-        await storage.DeleteAsync(storageFolderKey, fileName);
+        var storageFolderPath = file.IsTemporary ? temporaryUploadStore.GetDraftFolderPath(draftId) : folderPath;
+        await storage.DeleteAsync(storageFolderPath, fileName);
     }
 
-    public async Task DeleteAllAsync(string draftId, string folderKey, bool autoSave)
+    public async Task DeleteAllAsync(string draftId, string folderPath, bool autoSave)
     {
-        await temporaryUploadStore.DeleteFolderAsync(temporaryUploadStore.GetDraftFolderKey(draftId));
+        await temporaryUploadStore.DeleteFolderAsync(temporaryUploadStore.GetDraftFolderPath(draftId));
 
-        if (autoSave && !string.IsNullOrEmpty(folderKey))
-            await fileStorage.DeleteFolderAsync(folderKey);
+        if (autoSave && !string.IsNullOrEmpty(folderPath))
+            await fileStorage.DeleteFolderAsync(folderPath);
     }
 
-    public async Task<int> CountFilesAsync(string draftId, string folderKey)
+    public async Task<int> CountFilesAsync(string draftId, string folderPath)
     {
-        return (await GetFilesAsync(draftId, folderKey)).Count(x => !x.Deleted);
+        return (await GetFilesAsync(draftId, folderPath)).Count(x => !x.Deleted);
     }
 
-    public async Task PromoteTemporaryFilesAsync(string draftId, string folderKey, bool deleteExistingFiles = false)
+    public async Task PromoteTemporaryFilesAsync(string draftId, string folderPath, bool deleteExistingFiles = false)
     {
-        if (string.IsNullOrEmpty(folderKey))
-            throw new ArgumentNullException(nameof(folderKey));
+        if (string.IsNullOrEmpty(folderPath))
+            throw new ArgumentNullException(nameof(folderPath));
 
-        await temporaryUploadStore.PromoteAsync(draftId, fileStorage, folderKey, deleteExistingFiles);
+        await temporaryUploadStore.PromoteAsync(draftId, fileStorage, folderPath, deleteExistingFiles);
     }
 
     public Task<Stream> OpenReadAsync(FileStorageReference reference)
     {
         var storage = reference.IsTemporary ? temporaryUploadStore : fileStorage;
-        return storage.OpenReadAsync(reference.FolderKey, reference.FileName);
+        return storage.OpenReadAsync(reference.FolderPath, reference.FileName);
     }
 
     public async Task SaveFormTemporaryFilesAsync(FormElement formElement, Dictionary<string, object> values)
@@ -229,9 +229,9 @@ public class FormFileService(
         foreach (var field in uploadFields)
         {
             var draftId = GetDraftId($"{field.Name}-upload-view-files");
-            var folderKey = fileStorage.GetFolderKey(formElement, field, values);
+            var folderPath = fileStorage.GetFolderPath(formElement, field, values);
 
-            await PromoteTemporaryFilesAsync(draftId, folderKey, deleteExistingFiles: !field.DataFile.MultipleFile);
+            await PromoteTemporaryFilesAsync(draftId, folderPath, deleteExistingFiles: !field.DataFile.MultipleFile);
         }
     }
 
@@ -244,8 +244,8 @@ public class FormFileService(
         foreach (var field in fileFields)
         {
             var draftId = GetDraftId($"{field.Name}-upload-view-files");
-            var folderKey = fileStorage.GetFolderKey(formElement, field, primaryKeys);
-            await DeleteAllAsync(draftId, folderKey, autoSave: true);
+            var folderPath = fileStorage.GetFolderPath(formElement, field, primaryKeys);
+            await DeleteAllAsync(draftId, folderPath, autoSave: true);
         }
     }
 
@@ -264,13 +264,13 @@ public class FormFileService(
 
     private static async Task<IEnumerable<FormFileInfo>> GetStorageFilesAsync(
         IFileStorage storage,
-        string folderKey,
+        string folderPath,
         bool temporary)
     {
-        if (string.IsNullOrEmpty(folderKey))
+        if (string.IsNullOrEmpty(folderPath))
             return [];
 
-        return (await storage.ListAsync(folderKey))
+        return (await storage.ListAsync(folderPath))
             .Select(file => new FormFileInfo
             {
                 IsTemporary = temporary,

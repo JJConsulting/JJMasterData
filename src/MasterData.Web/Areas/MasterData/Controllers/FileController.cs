@@ -53,7 +53,7 @@ public class FileController(
             return BadRequest();
 
         var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
-        var folderPath = DataExportationHelper.GetFolderPath(
+        var folderPath = DataExportationHelper.GetExportationFolderPath(
             formElement,
             options.Value.ExportationFolderPath,
             masterDataUser.Id);

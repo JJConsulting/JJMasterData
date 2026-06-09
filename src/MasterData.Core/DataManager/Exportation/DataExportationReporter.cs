@@ -25,7 +25,7 @@ public class DataExportationReporter : ProgressReporter
         }
     }
 
-    public string FolderKey { get; set; }
+    public string FolderPath { get; set; }
     public string FileName { get; set; }
 
     private void UpdatePercentage()

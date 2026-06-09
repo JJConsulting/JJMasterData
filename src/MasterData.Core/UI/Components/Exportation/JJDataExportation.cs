@@ -232,7 +232,7 @@ public class JJDataExportation : ProcessComponent
         await exporter.RunWorkerAsync(CancellationToken.None);
 
         var stream = await exporter.FileStorage.OpenReadAsync(
-            exporter.ProcessReporter.FolderKey,
+            exporter.ProcessReporter.FolderPath,
             exporter.ProcessReporter.FileName);
         return new FileStreamComponentResult(stream, exporter.ProcessReporter.FileName);
     }

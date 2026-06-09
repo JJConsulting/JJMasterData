@@ -79,7 +79,7 @@ public class JJUploadView : AsyncComponent
     /// </summary>
     public bool AutoSave { get; set; } = true;
 
-    public string FolderKey { get; set; }
+    public string FolderPath { get; set; }
 
     public string DraftId => field ??= FormFileService.GetDraftId($"{Name}-files");
 
@@ -467,7 +467,7 @@ public class JJUploadView : AsyncComponent
     private async Task<HtmlBuilder> GetHtmlImageBox(string fileName)
     {
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderKey, fileName);
+        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderPath, fileName);
         var src = downloader.GetDownloadUrl();
         
         var html = new HtmlBuilder(HtmlTag.Img);
@@ -634,7 +634,7 @@ public class JJUploadView : AsyncComponent
         if (DownloadAction.IsVisible)
         {
             var downloader = ComponentFactory.Downloader.Create();
-            downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderKey, fileName);
+            downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderPath, fileName);
             actions.Add(CreateActionCell(DownloadAction, urlAction: downloader.GetDownloadUrl()));
         }
 
@@ -710,14 +710,14 @@ public class JJUploadView : AsyncComponent
     }
 
     public Task RenameFileAsync(string currentName, string newName) =>
-      FormFileService.RenameFileAsync(DraftId, FolderKey, currentName, newName);
+      FormFileService.RenameFileAsync(DraftId, FolderPath, currentName, newName);
 
     public Task CreateFileAsync(FormFileContent file) =>
-        FormFileService.CreateFileAsync(DraftId, FolderKey, AutoSave, file, !UploadArea.Multiple);
+        FormFileService.CreateFileAsync(DraftId, FolderPath, AutoSave, file, !UploadArea.Multiple);
 
     public async Task<ComponentResult> GetDeleteFileResultAsync(string fileName)
     {
-        await FormFileService.DeleteFileAsync(DraftId, FolderKey, fileName);
+        await FormFileService.DeleteFileAsync(DraftId, FolderPath, fileName);
         var text = StringLocalizer["File successfully deleted."];
         var alert = new JJAlert
         {
@@ -731,16 +731,16 @@ public class JJUploadView : AsyncComponent
     }
     
     internal Task DeleteAllAsync() => 
-        FormFileService.DeleteAllAsync(DraftId, FolderKey, AutoSave);
+        FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
 
     public Task<List<FormFileInfo>> GetFilesAsync() => 
-        FormFileService.GetFilesAsync(DraftId, FolderKey, !UploadArea.Multiple);
+        FormFileService.GetFilesAsync(DraftId, FolderPath, !UploadArea.Multiple);
 
     public Task ClearTemporaryFilesAsync() => 
-        FormFileService.DeleteAllAsync(DraftId, FolderKey, AutoSave);
+        FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
 
-    public Task PromoteTemporaryFilesAsync(string folderKey) =>
-        FormFileService.PromoteTemporaryFilesAsync(DraftId, folderKey, !UploadArea.Multiple);
+    public Task PromoteTemporaryFilesAsync(string folderPath) =>
+        FormFileService.PromoteTemporaryFilesAsync(DraftId, folderPath, !UploadArea.Multiple);
 
     public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {
@@ -758,7 +758,7 @@ public class JJUploadView : AsyncComponent
             }
         }
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderKey, fileName);
+        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderPath, fileName);
         return await downloader.GetDirectDownloadResultAsync();
     }
 
