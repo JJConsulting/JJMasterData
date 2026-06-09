@@ -6,14 +6,15 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Extensions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 
 public class UrlRedirectService(
-    IHttpRequest httpRequest,
+    IHttpContextAccessor httpRequest,
     IEntityRepository entityRepository,
     FormValuesService formValuesService,
     ExpressionsService expressionsService)
@@ -78,7 +79,7 @@ public class UrlRedirectService(
     {
         var formStateDataCopy = formStateData.DeepCopy();
         
-        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationPath);
+        formStateDataCopy.Values.Add("AppPath", httpRequest.HttpContext?.Request.GetApplicationPath());
         
         var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
         

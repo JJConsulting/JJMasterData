@@ -20,7 +20,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 
@@ -259,7 +259,7 @@ public class JJUploadView : AsyncComponent
 
     private UploadViewScripts Scripts => _scripts ??= new UploadViewScripts(this);
 
-    private IHttpContext CurrentContext { get; }
+    private IHttpContextAccessor CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
 
@@ -270,7 +270,7 @@ public class JJUploadView : AsyncComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             _routeContext = factory.Create();
             
             return _routeContext;
@@ -281,7 +281,7 @@ public class JJUploadView : AsyncComponent
     private ILoggerFactory LoggerFactory { get; }
     private ILogger<JJUploadView> Logger { get; }
     public JJUploadView(
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -321,7 +321,7 @@ public class JJUploadView : AsyncComponent
     {
         var html = HtmlBuilder.Div();
 
-        var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
+        var uploadAction = CurrentContext.HttpContext!.Request.GetFormValue($"upload-view-action-{Name}");
         if (!string.IsNullOrEmpty(uploadAction))
         {
             var result = GetUploadActionResult(uploadAction);
@@ -377,7 +377,7 @@ public class JJUploadView : AsyncComponent
 
     private ComponentResult GetUploadActionResult(string uploadViewAction)
     {
-        var fileName = CurrentContext.Request.Form[$"upload-view-file-name-{Name}"];
+        var fileName = CurrentContext.HttpContext!.Request.GetFormValue($"upload-view-file-name-{Name}");
         try
         {
             switch (uploadViewAction)
@@ -415,7 +415,7 @@ public class JJUploadView : AsyncComponent
         if (!ShowAddFiles)
             return html;
 
-        html.AppendComponent(new JJMasterDataCollapsePanel(CurrentContext.Request.Form)
+        html.AppendComponent(new JJMasterDataCollapsePanel(CurrentContext)
         {
             Title = StringLocalizer["New File"],
             ExpandedByDefault = IsCollapseExpandedByDefault,

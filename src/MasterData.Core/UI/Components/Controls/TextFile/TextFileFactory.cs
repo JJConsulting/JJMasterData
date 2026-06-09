@@ -1,13 +1,13 @@
 using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class TextFileFactory(
-        IHttpRequest request,
+        IHttpContextAccessor request,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)

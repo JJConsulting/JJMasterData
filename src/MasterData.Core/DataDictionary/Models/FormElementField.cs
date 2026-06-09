@@ -123,17 +123,6 @@ public class FormElementField : ElementField
     public bool Export { get; set; }
 
     /// <summary>
-    /// Validates possibly dangerous values in the request for .NET Framework
-    /// </summary>
-    /// <remarks>
-    /// Important for lower versions of .NET Framework to enable the parameter: 
-    /// httpRuntime requestValidationMode="4.5" ... 
-    /// </remarks>
-    [JsonPropertyName("validateRequest")]
-    [Display(Name = "Validate Request")]
-    public bool ValidateRequest { get; set; }
-
-    /// <summary>
     /// Ao alterar o conteúdo recarrega todos os campos do formulário
     /// (Default=false)
     /// </summary>
@@ -201,7 +190,6 @@ public class FormElementField : ElementField
     {
         Component = FormComponent.Text;
         Export = true;
-        ValidateRequest = true;
         VisibleExpression = "val:1";
         EnableExpression = "val:1";
         TextCase = TextCase.None;
@@ -254,9 +242,8 @@ public class FormElementField : ElementField
         }
 
         Export = true;
-        ValidateRequest = true;
         TextCase = TextCase.None;
-        Actions = new();
+        Actions = [];
     }
 
 

@@ -11,13 +11,13 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class JJComboBox(
-    IFormValues formValues,
+    IHttpContextAccessor formValues,
     DataItemService dataItemService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : ControlBase(formValues), IDataItemControl, IFloatingLabelControl
@@ -39,7 +39,7 @@ public class JJComboBox(
     {
         get
         {
-            if (field == null && FormValues.ContainsFormValues())
+            if (field == null && HasFormValues)
             {
                 field = FormValues[Name];
             }

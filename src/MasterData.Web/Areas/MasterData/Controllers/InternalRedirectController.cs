@@ -7,7 +7,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -19,7 +19,7 @@ public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
     FormService formService,
-    IHttpRequest request,
+    IHttpContextAccessor request,
     IMasterDataUser masterDataUser,
     IEncryptionService encryptionService) : MasterDataController
 {

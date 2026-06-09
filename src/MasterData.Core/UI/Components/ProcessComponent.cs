@@ -6,14 +6,14 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
 public abstract class ProcessComponent(
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IMasterDataUser masterDataUser,
         ExpressionsService expressionsService,
         IBackgroundTaskManager backgroundTaskManager,
@@ -50,7 +50,7 @@ public abstract class ProcessComponent(
     /// </remarks>
     internal string UserId => _userId ??= masterDataUser.Id;
 
-    public IHttpContext CurrentContext { get; init; } = currentContext;
+    public IHttpContextAccessor CurrentContext { get; init; } = currentContext;
 
     public ProcessOptions ProcessOptions
     {

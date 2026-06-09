@@ -24,7 +24,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
@@ -91,7 +91,7 @@ public class JJDataImportation : ProcessComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             _routeContext = factory.Create();
 
             return _routeContext;
@@ -116,7 +116,7 @@ public class JJDataImportation : ProcessComponent
         FormService formService,
         FieldValuesService fieldValuesService,
         IBackgroundTaskManager backgroundTaskManager,
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
         DataItemService dataItemService,
         DataImportationWorkerFactory dataImportationWorkerFactory,
@@ -152,7 +152,7 @@ public class JJDataImportation : ProcessComponent
             return await UploadArea.GetResultAsync();
         }
 
-        string action = CurrentContext.Request.QueryString["dataImportationOperation"];
+        string action = CurrentContext.HttpContext!.Request.Query["dataImportationOperation"];
 
         switch (action)
         {
@@ -175,7 +175,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (!IsRunning())
                 {
-                    var pasteValue = CurrentContext.Request.Form["pasteValue"];
+                    var pasteValue = CurrentContext.HttpContext!.Request.GetFormValue("pasteValue");
                     ImportInBackground(pasteValue);
                 }
 
@@ -300,7 +300,7 @@ public class JJDataImportation : ProcessComponent
                 area.WithStyle( "display:none");
             });
         
-        var collapsePanel = new JJMasterDataCollapsePanel(CurrentContext.Request.Form)
+        var collapsePanel = new JJMasterDataCollapsePanel(CurrentContext)
         {
             TitleIcon = new JJIcon(FontAwesomeIcon.Upload),
             Title = StringLocalizer["Upload File"],
@@ -356,7 +356,7 @@ public class JJDataImportation : ProcessComponent
 
     private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
     {
-        var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Upload, UserId);
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Upload, UserId);
         var dataImportationContext = new DataImportationContext(FormElement, dataContext, RelationValues, postedText, separator);
         var worker = DataImportationWorkerFactory.Create(dataImportationContext);
         worker.UserId = UserId;

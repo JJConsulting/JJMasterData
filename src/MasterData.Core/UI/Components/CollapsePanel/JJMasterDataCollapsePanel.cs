@@ -1,24 +1,27 @@
 using JJConsulting.Html.Bootstrap.Components;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class JJMasterDataCollapsePanel : JJCollapsePanel
 {
-    public JJMasterDataCollapsePanel(IFormValues formValues)
+    public JJMasterDataCollapsePanel(IHttpContextAccessor httpContextAccessor)
     {
-        if (formValues.TryGetValue($"{Name}-is-open", out var value))
+        var request = httpContextAccessor.HttpContext?.Request;
+        if (request?.HasFormContentType == true &&
+            request.Form.TryGetValue($"{Name}-is-open", out var value))
         {
-            IsOpen = "1".Equals(value) ? true : null;
+            IsOpen = "1".Equals(value.ToString()) ? true : null;
         }
     }
-    public JJMasterDataCollapsePanel(IFormValues formValues, string name)
+    public JJMasterDataCollapsePanel(IHttpContextAccessor httpContextAccessor, string name)
     {
         Name = name;
-        if (formValues.TryGetValue($"{Name}-is-open", out var value))
+        var request = httpContextAccessor.HttpContext?.Request;
+        if (request?.HasFormContentType == true &&
+            request.Form.TryGetValue($"{Name}-is-open", out var value))
         {
-            IsOpen = "1".Equals(value) ;
+            IsOpen = "1".Equals(value.ToString()) ;
         }
     }
 }

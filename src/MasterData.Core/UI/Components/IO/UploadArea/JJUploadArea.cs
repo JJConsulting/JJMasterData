@@ -13,18 +13,20 @@ using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class JJUploadArea : AsyncComponent
 {
-    private readonly IRequestLengthService _requestLengthService;
-    private readonly IHttpContext _httpContext ;
+    private readonly IOptions<FormOptions> _requestLengthService;
+    private readonly IHttpContextAccessor _httpContext ;
     private readonly UploadAreaService _uploadAreaService ;
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer ;
     private readonly IEncryptionService _encryptionService;
@@ -116,7 +118,7 @@ public class JJUploadArea : AsyncComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(_httpContext.Request.QueryString, _encryptionService);
+            var factory = new RouteContextFactory(_httpContext, _encryptionService);
             _routeContext = factory.Create();
             
             return _routeContext;
@@ -124,10 +126,10 @@ public class JJUploadArea : AsyncComponent
     }
     
     public JJUploadArea(
-        IHttpContext httpContext,
+        IHttpContextAccessor httpContext,
         UploadAreaService uploadAreaService,
         IEncryptionService encryptionService,
-        IRequestLengthService requestLengthService,
+        IOptions<FormOptions> requestLengthService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _requestLengthService = requestLengthService;

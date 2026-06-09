@@ -8,14 +8,15 @@ using System.Security.Claims;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Extensions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
 public sealed class ExpressionParser(
-    IHttpContext httpContext,
+    IHttpContextAccessor httpContext,
     IMasterDataUser masterDataUser,
     ILogger<ExpressionParser> logger)
 {
@@ -68,7 +69,7 @@ public sealed class ExpressionParser(
             case "isdelete":
                 return pageState is PageState.Delete ? 1 : 0;
             case "fieldname":
-                return httpContext.Request.QueryString["fieldName"];
+                return httpContext.HttpContext?.Request.Query["fieldName"].ToString();
             case "userid":
                 return masterDataUser.Id;
             case "currentculture":
@@ -92,9 +93,9 @@ public sealed class ExpressionParser(
             else
                 parsedValue = objValue;
         }
-        else if (httpContext.Session.HasSession() && httpContext.Session.HasKey(field))
+        else if (httpContext.HttpContext?.Session.Keys.Contains(field) == true)
         {
-            parsedValue = httpContext.Session[field];
+            parsedValue = httpContext.HttpContext.Session.GetString(field);
         }
         else
         {
@@ -106,6 +107,6 @@ public sealed class ExpressionParser(
 
     private string? GetClaimValue(string claimType)
     {
-        return httpContext.User?.FindFirst(claimType)?.Value;
+        return httpContext.HttpContext?.User?.FindFirst(claimType)?.Value;
     }
 }

@@ -70,6 +70,10 @@ public class FormElement : Element
     public FormElementOptions Options { get; set; }
 
     [Required]
+    [JsonPropertyName("rules")]
+    public List<FormElementRule> Rules { get; set; }
+
+    [Required]
     [JsonPropertyName("apiOptions")]
     public FormElementApiOptions ApiOptions { get; set; }
 
@@ -78,6 +82,7 @@ public class FormElement : Element
         Fields = new FormElementFieldList(base.Fields);
         Panels = [];
         Options = new FormElementOptions();
+        Rules = [];
         Relationships = new FormElementRelationshipList(base.Relationships);
         ApiOptions = new FormElementApiOptions();
     }
@@ -102,6 +107,7 @@ public class FormElement : Element
         Panels = [];
         ApiOptions = new FormElementApiOptions();
         Options = new FormElementOptions();
+        Rules = [];
     }
 
     [SetsRequiredMembers]
@@ -139,6 +145,7 @@ public class FormElement : Element
         List<FormElementPanel>? panels,
         FormElementRelationshipList relationships,
         FormElementOptions? options,
+        List<FormElementRule>? rules,
         FormElementApiOptions? apiOptions)
     {
         base.Fields = new ElementFieldList(fields.Cast<ElementField>().ToList());
@@ -149,6 +156,7 @@ public class FormElement : Element
             .ToList()!;
         Relationships = relationships;
         Options = options ?? new FormElementOptions();
+        Rules = rules ?? [];
         ApiOptions = apiOptions ?? new FormElementApiOptions();
         Panels = panels ?? [];
     }
@@ -226,11 +234,17 @@ public class FormElement : Element
 
         copy.Fields = Fields.DeepCopy();
         copy.Options = Options.DeepCopy();
+        copy.Rules = Rules.ConvertAll(v => v.DeepCopy());
         copy.Panels = Panels.ConvertAll(p => p.DeepCopy());
         copy.Relationships = Relationships.DeepCopy();
         copy.Indexes = Indexes.ConvertAll(i => i.DeepCopy());
         copy.ApiOptions = ApiOptions.DeepCopy();
 
         return copy;
+    }
+
+    public FormElementRule GetRuleById(int id)
+    {
+        return Rules.First(v => v.Id == id);
     }
 }

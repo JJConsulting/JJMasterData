@@ -14,7 +14,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Components;
 

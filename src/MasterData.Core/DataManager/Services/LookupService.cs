@@ -6,13 +6,13 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class LookupService(
-    IFormValues formValues,
+    IHttpContextAccessor httpContextAccessor,
     ExpressionsService expressionsService,
     IEncryptionService encryptionService,
     ElementMapService elementMapService,
@@ -73,6 +73,6 @@ public class LookupService(
 
     public string? GetSelectedValue(string componentName)
     {
-        return formValues[componentName];
+        return httpContextAccessor.HttpContext?.Request.GetFormValue(componentName);
     }
 }

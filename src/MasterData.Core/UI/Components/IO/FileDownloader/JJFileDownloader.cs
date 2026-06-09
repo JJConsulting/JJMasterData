@@ -11,7 +11,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.UI.Components;
 
 public class JJFileDownloader(
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFileDownloader> logger)
@@ -32,7 +32,7 @@ public class JJFileDownloader(
     public string FilePath { get; set; }
     public bool IsExternalLink { get; set; }
 
-    internal IHttpContext CurrentContext { get; } = currentContext;
+    internal IHttpContextAccessor CurrentContext { get; } = currentContext;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     internal ILogger<JJFileDownloader> Logger { get; } = logger;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
@@ -57,7 +57,7 @@ public class JJFileDownloader(
         string fileName = file.Name;
         string size = Format.FormatFileSize(file.Length);
         string lastWriteTime = file.LastWriteTime.ToDateTimeString();
-        string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
+        string url = CurrentContext.HttpContext!.Request.GetAbsoluteUri().Replace(DirectDownloadParameter, DownloadParameter);
 
         var htmlTitle = new JJTitle
         {
@@ -125,10 +125,10 @@ public class JJFileDownloader(
     public FileComponentResult GetDownloadResult()
     {
         bool isExternalLink = false;
-        string criptFilePath = CurrentContext.Request.QueryString[DownloadParameter];
+        string criptFilePath = CurrentContext.HttpContext!.Request.Query[DownloadParameter];
         if (criptFilePath == null)
         {
-            criptFilePath = CurrentContext.Request.QueryString[DirectDownloadParameter];
+            criptFilePath = CurrentContext.HttpContext!.Request.Query[DirectDownloadParameter];
             isExternalLink = true;
         }
 
@@ -145,7 +145,7 @@ public class JJFileDownloader(
     
     public string GetDownloadUrl()
     {
-        var url = CurrentContext.Request.AbsoluteUri;
+        var url = CurrentContext.HttpContext!.Request.GetAbsoluteUri();
         var encryptedFilePath = EncryptionService.EncryptStringWithUrlEscape(FilePath);
 
         var uriBuilder = new UriBuilder(url);

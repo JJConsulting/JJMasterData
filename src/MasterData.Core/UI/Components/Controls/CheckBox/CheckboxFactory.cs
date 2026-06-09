@@ -1,11 +1,11 @@
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class CheckboxFactory(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
+internal sealed class CheckboxFactory(IHttpContextAccessor formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJCheckBox>
 {
     public JJCheckBox Create() => new(formValues,stringLocalizer);

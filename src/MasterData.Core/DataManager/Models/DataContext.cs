@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
+using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Core.DataManager.Models;
 
@@ -18,11 +19,16 @@ public class DataContext
     {
     }
 
-    public DataContext(IHttpRequest request, DataContextSource source, string? userId)
+    public DataContext(IHttpContextAccessor request, DataContextSource source, string? userId)
+        : this(request.HttpContext?.Request, source, userId)
+    {
+    }
+
+    public DataContext(HttpRequest? request, DataContextSource source, string? userId)
     {
         Source = source;
         UserId = userId;
-        IpAddress = request.UserHostAddress;
-        BrowserInfo = request.UserAgent;
+        IpAddress = request?.HttpContext.Connection.RemoteIpAddress?.ToString();
+        BrowserInfo = request?.Headers.UserAgent.ToString();
     }
 }

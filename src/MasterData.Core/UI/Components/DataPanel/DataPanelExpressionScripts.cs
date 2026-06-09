@@ -90,9 +90,9 @@ internal sealed class DataPanelExpressionScripts(JJDataPanel dataPanel)
             {
                 val = $"'{value}'";
             }
-            else if (dataPanel.CurrentContext.Session.HasKey(fieldName))
+            else if (dataPanel.CurrentContext.HttpContext!.Session.Keys.Contains(fieldName))
             {
-                val = $"'{dataPanel.CurrentContext.Session[fieldName]}'";
+                val = $"'{dataPanel.CurrentContext.HttpContext!.Session.GetString(fieldName)}'";
             }
             //Hidden fields
             else if (dataPanel.Values.TryGetValue(fieldName, out var panelValue))

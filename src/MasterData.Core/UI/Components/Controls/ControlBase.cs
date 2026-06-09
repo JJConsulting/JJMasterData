@@ -2,13 +2,19 @@
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Abstractions;
-using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Extensions;
+using Microsoft.AspNetCore.Http;
 
 
 namespace JJMasterData.Core.UI.Components;
 
-public abstract class ControlBase(IFormValues formValues) : ComponentBase
+public abstract class ControlBase : ComponentBase
 {
+    protected ControlBase(IHttpContextAccessor httpContextAccessor)
+    {
+        HttpContextAccessor = httpContextAccessor;
+    }
+
     /// <summary>
     /// Property to check if the control is enabled.
     /// (Default = true)
@@ -34,7 +40,13 @@ public abstract class ControlBase(IFormValues formValues) : ComponentBase
     
     public int MaxLength { get; set; }
 
-    internal IFormValues FormValues { get; } = formValues;
+    internal IHttpContextAccessor HttpContextAccessor { get; }
+
+    internal bool HasFormValues => HttpContextAccessor.HttpContext?.Request.HasFormContentType == true;
+
+    internal IFormCollection FormValues => HasFormValues
+        ? HttpContextAccessor.HttpContext!.Request.Form
+        : FormCollection.Empty;
 
     /// <summary>
     /// Value of the component.
@@ -43,7 +55,7 @@ public abstract class ControlBase(IFormValues formValues) : ComponentBase
     {
         get
         {
-            if (field == null && FormValues.ContainsFormValues())
+            if (field == null && HasFormValues)
             {
                 field = FormValues[Name];
             }

@@ -505,7 +505,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jj-checkbox");
 
-        var checkBox = new JJCheckBox(gridView.CurrentContext.Request.Form, gridView.StringLocalizer)
+        var checkBox = new JJCheckBox(gridView.CurrentContext, gridView.StringLocalizer)
         {
             Name = $"jjchk_{index}",
             Value = gridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),

@@ -5,14 +5,14 @@ using System.Linq;
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using static JJMasterData.Core.UI.DateFormatMapper;
 
 namespace JJMasterData.Core.UI.Components;
 
 public sealed class TextGroupFactory(
-    IFormValues formValues,
+    IHttpContextAccessor formValues,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>

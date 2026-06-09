@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 using Fluid.Values;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using Microsoft.Extensions.Localization;
@@ -16,7 +16,7 @@ namespace JJMasterData.Core.Html.Templates;
 public class HtmlTemplateFunctions(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     RelativeDateFormatter dateFormatter,
-    IHttpContext httpContext)
+    IHttpContextAccessor httpContext)
 {
     public FunctionValue GetDateAsText()
     {
@@ -52,14 +52,14 @@ public class HtmlTemplateFunctions(
 
     public FunctionValue GetUrlPathFunction()
     {
-        var urlAction = new FunctionValue((_, _) => StringValue.Create(httpContext.Request.ApplicationPath));
+        var urlAction = new FunctionValue((_, _) => StringValue.Create(httpContext.HttpContext?.Request.GetApplicationPath()));
 
         return urlAction;
     }
 
     public FunctionValue GetAppUrlFunction()
     {
-        var urlAction = new FunctionValue((_, _) => StringValue.Create(httpContext.Request.ApplicationUri));
+        var urlAction = new FunctionValue((_, _) => StringValue.Create(httpContext.HttpContext?.Request.GetApplicationUri()));
 
         return urlAction;
     }

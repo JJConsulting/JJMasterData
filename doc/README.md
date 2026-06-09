@@ -3,7 +3,7 @@ We use docfx to build the documentation in markdown to learn more visit
 [DocFx Documetantion](https://dotnet.github.io/docfx/)
 
 ## Building from source
-1. Install [.NET Framework 4.8]
+1. Install [.NET 10 SDK](https://dotnet.microsoft.com/download)
 
 2. Install [NodeJS](https://nodejs.org/en/download/)
 

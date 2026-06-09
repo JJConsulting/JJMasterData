@@ -5,7 +5,7 @@ using System.Linq;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataManager.IO;
 
 public class FormFileManager(string memoryFilesSessionName,
-    IHttpContext httpContext,
+    IHttpContextAccessor httpContext,
     IStringLocalizer<MasterDataResources> stringLocalizer, 
     ILogger<FormFileManager> logger)
 {
@@ -45,8 +45,8 @@ public class FormFileManager(string memoryFilesSessionName,
 
     public List<FormFileInfo> MemoryFiles
     {
-        get => httpContext.Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
-        set => httpContext.Session.SetSessionValue(MemoryFilesSessionName, value);
+        get => httpContext.HttpContext!.Session.GetObject<List<FormFileInfo>>(MemoryFilesSessionName);
+        set => httpContext.HttpContext!.Session.SetObject(MemoryFilesSessionName, value);
     }
 
     public List<FormFileInfo> GetFiles()

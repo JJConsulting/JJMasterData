@@ -11,7 +11,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 using Microsoft.Extensions.Localization;
 
@@ -21,7 +21,7 @@ internal sealed class DataImportationLog
 {
     private readonly DataImportationReporter _reporter;
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-    private readonly IHttpContext _currentContext;
+    private readonly IHttpContextAccessor _currentContext;
     internal DataImportationLog(JJDataImportation dataImportation)
     {
         _stringLocalizer = dataImportation.StringLocalizer;
