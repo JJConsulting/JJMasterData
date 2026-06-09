@@ -330,7 +330,7 @@ public partial class DataAccess
             {
                 if (connection.State == ConnectionState.Open)
                 {
-                    connection.Close();
+                    await connection.CloseAsync();
                 }
 
                 connection.Dispose();

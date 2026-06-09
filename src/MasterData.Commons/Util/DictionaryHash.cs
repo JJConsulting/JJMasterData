@@ -13,10 +13,8 @@ public static class DictionaryHash
     {
         var ordered = dict.OrderBy(x => x.Key);
         var json = JsonSerializer.Serialize(ordered);
-        
-        using var sha = SHA256.Create();
-        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(json));
-        
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(json));
+
         return Convert.ToHexString(bytes);
     }
 }
