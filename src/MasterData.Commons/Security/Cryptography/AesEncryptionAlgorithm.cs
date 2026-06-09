@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,8 +14,6 @@ namespace JJMasterData.Commons.Security.Cryptography;
 /// </summary>
 public sealed class AesEncryptionAlgorithm : IEncryptionAlgorithm
 {
-    private readonly ConcurrentDictionary<string, (byte[] Key, byte[] IV)> _aesCache = new();
-
     public string EncryptString(string plainText, string secretKey)
     {
         using var aes = CreateAes(secretKey);
@@ -25,7 +22,7 @@ public sealed class AesEncryptionAlgorithm : IEncryptionAlgorithm
 
         using var memoryStream = new MemoryStream();
         using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
-        using (var streamWriter = new StreamWriter(cryptoStream))
+        using (var streamWriter = new StreamWriter(cryptoStream, Encoding.UTF8))
         {
             streamWriter.Write(plainText);
         }
@@ -43,7 +40,7 @@ public sealed class AesEncryptionAlgorithm : IEncryptionAlgorithm
 
             using var memoryStream = new MemoryStream(buffer);
             using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-            using var streamReader = new StreamReader(cryptoStream);
+            using var streamReader = new StreamReader(cryptoStream, Encoding.UTF8);
 
             return streamReader.ReadToEnd();
         }
@@ -54,34 +51,15 @@ public sealed class AesEncryptionAlgorithm : IEncryptionAlgorithm
     }
     
     [MustDisposeResource]
-    private Aes CreateAes(string secretKey)
+    private static Aes CreateAes(string secretKey)
     {
-        if (_aesCache.TryGetValue(secretKey, out var aesEntry))
-        {
-            return CreateAes(aesEntry.Key, aesEntry.IV);
-        }
-        
         var keyBytes = Encoding.UTF8.GetBytes(secretKey);
+        var aesKey = SHA256.HashData(keyBytes);
+        var aesIv = MD5.HashData(keyBytes);
 
-        using var sha256 = SHA256.Create();
-        var aesKey = sha256.ComputeHash(keyBytes);
-
-        using var md5 = MD5.Create();
-        var aesIv = md5.ComputeHash(keyBytes);
-
-        aesEntry = new(aesKey, aesIv);
-        
-        _aesCache.TryAdd(secretKey, aesEntry);
-
-        return CreateAes(aesEntry.Key, aesEntry.IV);
-    }
-
-    [MustDisposeResource]
-    private static Aes CreateAes(byte[] key, byte[] iv)
-    {
         var aes = Aes.Create();
-        aes.Key = key;
-        aes.IV = iv;
+        aes.Key = aesKey;
+        aes.IV = aesIv;
         return aes;
     }
 }

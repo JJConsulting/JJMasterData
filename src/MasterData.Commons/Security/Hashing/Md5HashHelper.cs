@@ -8,12 +8,8 @@ public static class Md5HashHelper
 {
     public static string ComputeHash(string input)
     {
-        byte[] data;
-        using (var md5Hasher = MD5.Create())
-        {
-            data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
-        }
-        
+        var data = MD5.HashData(Encoding.Default.GetBytes(input));
+
         var stringBuilder = new StringBuilder();
         for (var i = 0; i <= data.Length - 1; i++)
         {
@@ -22,7 +18,7 @@ public static class Md5HashHelper
 
         return stringBuilder.ToString();
     }
-    
+
     public static bool VerifyHash(string input, string hash)
     {
         var hashOfInput = ComputeHash(input);
