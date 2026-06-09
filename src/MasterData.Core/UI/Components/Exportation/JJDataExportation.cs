@@ -62,6 +62,7 @@ public class JJDataExportation : ProcessComponent
 
     internal DataExportationScripts Scripts => field ??= new DataExportationScripts(this);
     internal IComponentFactory ComponentFactory { get; }
+    public IUrlHelper UrlHelper { get; }
     public DataExportationWriterFactory DataExportationWriterFactory { get; }
 
     #endregion
@@ -70,6 +71,7 @@ public class JJDataExportation : ProcessComponent
     internal JJDataExportation(
         FormElement formElement,
         IMasterDataUser masterDataUser,
+        IUrlHelper urlHelper,
         ExpressionsService expressionsService,
         IOptionsSnapshot<MasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
@@ -81,6 +83,7 @@ public class JJDataExportation : ProcessComponent
         DataExportationWriterFactory dataExportationWriterFactory) : 
         base(currentContext, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
+        UrlHelper = urlHelper;
         DataExportationWriterFactory = dataExportationWriterFactory;
         ComponentFactory = componentFactory;
         CurrentContext = currentContext;
@@ -110,9 +113,9 @@ public class JJDataExportation : ProcessComponent
         return new JJIcon(FontAwesomeIcon.FileTextO);
     }
 
-    internal string GetDownloadUrl(string filePath)
+    internal string GetDownloadUrl(string fileName)
     {
-        return $"#{Name}-{Path.GetFileName(filePath)}";
+        return UrlHelper.ActionLink("Exportation", "File", new { Area = "MasterData", elementName = FormElement.Name, fileName });
     }
 
     private string GetFinishedMessageHtml(DataExportationReporter reporter)
@@ -124,9 +127,11 @@ public class JJDataExportation : ProcessComponent
 
             if (reporter.HasError)
             {
-                var panel = new JJValidationSummary();
-                panel.ShowCloseButton = false;
-                panel.Title = reporter.Message;
+                var panel = new JJValidationSummary
+                {
+                    ShowCloseButton = false,
+                    Title = reporter.Message
+                };
                 html.AppendComponent(panel);
             }
             else

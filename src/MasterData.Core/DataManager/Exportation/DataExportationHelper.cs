@@ -6,7 +6,7 @@ using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
-internal static class DataExportationHelper
+public static class DataExportationHelper
 {
     /// <summary>
     /// Path where the files are generated.

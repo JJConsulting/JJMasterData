@@ -310,7 +310,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                 continue;
 
             var icon = JJDataExportation.GetFileIcon(file.Extension);
-            string url = dataExportation.GetDownloadUrl(file.FullName);
+            string url = dataExportation.GetDownloadUrl(file.Name);
 
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");

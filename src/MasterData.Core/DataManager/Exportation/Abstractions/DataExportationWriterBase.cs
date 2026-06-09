@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
@@ -24,7 +23,6 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 public abstract class DataExportationWriterBase(
-    IEncryptionService encryptionService,
     ExpressionsService expressionsService,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCoreOptions> options,
@@ -34,20 +32,21 @@ public abstract class DataExportationWriterBase(
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     protected const int RecordsPerPage = 100000;
-
+    
+    private List<FormElementField> _fields;
+    
     #region "Properties"
 
     private DataExportationReporter _processReporter;
-    private List<FormElementField> _fields;
 
-    private IEncryptionService EncryptionService { get; } = encryptionService;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IOptionsSnapshot<MasterDataCoreOptions> Options { get; } = options;
 
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
 
-    public string AbsoluteUri { get; internal set; }
+    internal FileDownloaderFactory FileDownloaderFactory { get; set; }
+    internal string AbsoluteUri { get; set; }
 
     protected List<FormElementField> VisibleFields
     {
@@ -172,7 +171,7 @@ public abstract class DataExportationWriterBase(
             
             var filePath = Path.Combine(FolderPath, GetFilePath());
 
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
+            await using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
             {
                 await GenerateDocument(fs, token);
             }
@@ -228,7 +227,8 @@ public abstract class DataExportationWriterBase(
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    protected static string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
+    protected string GetFileLink(FormElement formElement, FormElementField field, Dictionary<string, object> row,
+        string value)
     {
         if (!field.DataFile!.ExportAsLink)
             return null;
@@ -240,7 +240,13 @@ public abstract class DataExportationWriterBase(
         if (files.Length != 1)
             return null;
 
-        return null;
+        var fileName = Path.GetFileName(files[0]);
+        if (string.IsNullOrEmpty(fileName))
+            return null;
+
+        var downloader = FileDownloaderFactory.Create(formElement, field, row, fileName);
+        
+        return new Uri(new Uri(AbsoluteUri), downloader.GetDownloadUrl(AbsoluteUri)).AbsoluteUri;
     }
     
     private string GetFilePath()

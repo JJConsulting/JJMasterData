@@ -60,10 +60,15 @@ public class JJFileDownloader(
 
     public string GetDownloadUrl()
     {
+        return GetDownloadUrl(CurrentContext.HttpContext!.Request.GetAbsoluteUri());
+    }
+
+    public string GetDownloadUrl(string absoluteUri)
+    {
         if (FileReference == null)
             throw new ArgumentNullException(nameof(FileReference));
 
-        var uriBuilder = new UriBuilder(CurrentContext.HttpContext!.Request.GetAbsoluteUri());
+        var uriBuilder = new UriBuilder(absoluteUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         var routeContext = new RouteContext(ComponentContext.DownloadFile);
 

@@ -17,6 +17,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
     IMasterDataUser masterDataUser,
+    IUrlHelper urlHelper,
     ExpressionsService expressionsService,
     IOptionsSnapshot<MasterDataCoreOptions> options,
     IBackgroundTaskManager backgroundTaskManager,
@@ -39,6 +40,7 @@ internal class DataExportationFactory(
         return new JJDataExportation(
             formElement,
             masterDataUser,
+            urlHelper,
             expressionsService,
             options, 
             backgroundTaskManager,

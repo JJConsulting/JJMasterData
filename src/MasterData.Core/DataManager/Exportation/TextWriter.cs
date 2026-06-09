@@ -7,7 +7,6 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
@@ -21,15 +20,12 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.DataManager.Exportation;
 
 public class TextWriter(
-        IEncryptionService encryptionService,
-        ExpressionsService expressionsService,
+    ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         ILoggerFactory logger,
         IEntityRepository entityRepository)
-    : DataExportationWriterBase(
-        encryptionService,
-        expressionsService,
+    : DataExportationWriterBase(expressionsService,
         stringLocalizer,
         options,
         logger.CreateLogger<DataExportationWriterBase>()), ITextWriter
