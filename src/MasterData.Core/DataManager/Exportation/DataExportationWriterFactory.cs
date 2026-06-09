@@ -3,7 +3,7 @@ using System;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
-using JJMasterData.Core.DataManager.IO.Storage;
+using JJMasterData.Core.DataManager.Storage;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.DependencyInjection;

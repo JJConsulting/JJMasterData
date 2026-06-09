@@ -1,6 +1,6 @@
 using System;
 
-namespace JJMasterData.Core.DataManager.IO.Storage;
+namespace JJMasterData.Core.DataManager.Storage;
 
 public sealed class FileStorageItem
 {

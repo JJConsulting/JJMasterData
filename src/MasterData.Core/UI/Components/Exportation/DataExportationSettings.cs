@@ -12,7 +12,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
-using JJMasterData.Core.DataManager.IO.Storage;
+using JJMasterData.Core.DataManager.Storage;
 using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 

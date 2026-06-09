@@ -10,7 +10,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.IO.Storage;
+using JJMasterData.Core.DataManager.Storage;
 using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.DataManager.Services;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager.IO.Storage;
+namespace JJMasterData.Core.DataManager.Storage;
 
 public class DiskFileStorage : IFileStorage
 {

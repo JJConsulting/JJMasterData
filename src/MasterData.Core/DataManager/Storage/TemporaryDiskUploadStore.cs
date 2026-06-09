@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JJMasterData.Core.DataManager.IO.Storage;
+namespace JJMasterData.Core.DataManager.Storage;
 
 public sealed class TemporaryDiskUploadStore : DiskFileStorage, ITemporaryUploadStore
 {

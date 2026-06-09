@@ -8,7 +8,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
-        FormFileManagerFactory formFileManagerFactory,
+        FormFileService formFileService,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
@@ -18,7 +18,7 @@ public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         return new JJUploadView(
             currentContext, 
             componentFactory,
-            formFileManagerFactory,
+            formFileService,
             encryptionService, 
             stringLocalizer,
             loggerFactory);

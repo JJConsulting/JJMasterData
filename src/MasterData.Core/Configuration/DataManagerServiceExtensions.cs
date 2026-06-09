@@ -1,8 +1,8 @@
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.IO;
-using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -12,25 +12,29 @@ public static class DataManagerServiceExtensions
 {
     public static IServiceCollection AddDataManagerServices(this IServiceCollection services)
     {
-        services.AddScoped<IMasterDataUser, MasterDataUser>();
-        services.AddScoped<AuditLogService>();
-        services.AddScoped<DataItemService>();
-        services.AddScoped<LookupService>();
-        services.AddScoped<FieldFormattingService>();
-        services.AddScoped<FieldValidationService>();
+        services.TryAddScoped<IMasterDataUser, MasterDataUser>();
+        
+        services.TryAddTransient<AuditLogService>();
+        services.TryAddTransient<DataItemService>();
+        services.TryAddTransient<LookupService>();
+        services.TryAddTransient<FieldFormattingService>();
+        services.TryAddTransient<FieldValidationService>();
+        
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IRuleExecutor, SqlRuleExecutor>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IRuleExecutor, JavaScriptRuleScriptExecutor>());
-        services.AddScoped<FormService>();
-        services.AddScoped<FieldValuesService>();
-        services.AddScoped<UploadAreaService>();
-        services.AddScoped<FormValuesService>();
-        services.AddScoped<IFileStorage, DiskFileStorage>();
-        services.AddScoped<ITemporaryUploadStore, TemporaryDiskUploadStore>();
-        services.AddScoped<FormFileManagerFactory>();
-        services.AddScoped<FormFileService>();
-        services.AddScoped<ElementFileService>();
-        services.AddScoped<ElementMapService>();
-        services.AddScoped<UrlRedirectService>();
+        
+        services.TryAddTransient<FormService>();
+        services.TryAddTransient<FieldValuesService>();
+        services.TryAddTransient<UploadAreaService>();
+        services.TryAddTransient<FormValuesService>();
+        
+        services.TryAddScoped<IFileStorage, DiskFileStorage>();
+        services.TryAddScoped<ITemporaryUploadStore, TemporaryDiskUploadStore>();
+        
+        services.TryAddTransient<FormFileService>();
+        services.TryAddTransient<ElementFileService>();
+        services.TryAddTransient<ElementMapService>();
+        services.TryAddTransient<UrlRedirectService>();
 
         return services;
     }

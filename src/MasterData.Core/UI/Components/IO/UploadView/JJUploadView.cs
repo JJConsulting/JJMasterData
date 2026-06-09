@@ -17,9 +17,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.IO;
-using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.DataManager.Models;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
@@ -41,17 +39,23 @@ public class JJUploadView : AsyncComponent
     private const string FileName = "Name";
     private const string FileNameJs = "NameJS";
 
-    private UrlRedirectAction _downloadAction;
-    private ScriptAction _deleteAction;
-    private ScriptAction _renameAction;
-    private JJUploadArea _uploadArea;
-    private FormFileManager _formFileManager;
-    private UploadViewScripts _scripts;
-    private RouteContext _routeContext;
-    
-    public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync;
-    public event AsyncEventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFileAsync;
-    public event AsyncEventHandler<FormRenameFileEventArgs> OnBeforeRenameFileAsync;
+    public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync
+    {
+        add => FormFileService.OnBeforeCreateFileAsync += value;
+        remove => FormFileService.OnBeforeCreateFileAsync -= value;
+    }
+
+    public event AsyncEventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFileAsync
+    {
+        add => FormFileService.OnBeforeDeleteFileAsync += value;
+        remove => FormFileService.OnBeforeDeleteFileAsync -= value;
+    }
+
+    public event AsyncEventHandler<FormRenameFileEventArgs> OnBeforeRenameFileAsync
+    {
+        add => FormFileService.OnBeforeRenameFileAsync += value;
+        remove => FormFileService.OnBeforeRenameFileAsync -= value;
+    }
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
     
     internal string ParentName { get; set; }
@@ -77,29 +81,29 @@ public class JJUploadView : AsyncComponent
 
     public string FolderKey { get; set; }
 
-    public string DraftId => FormFileManager.DraftId;
+    public string DraftId => field ??= FormFileService.GetDraftId($"{Name}-files");
 
     public JJUploadArea UploadArea
     {
         get
         {
-            if (_uploadArea != null)
-                return _uploadArea;
+            if (field != null)
+                return field;
             
-            _uploadArea = ComponentFactory.UploadArea.Create();
-            _uploadArea.OnFileUploadedAsync += OnFileUploadedAsync;
-            _uploadArea.JsCallback = JsCallback;
-            _uploadArea.Name = $"{Name}-files";
-            _uploadArea.QueryStringParams["draftId"] = FormFileManager.DraftId;
+            field = ComponentFactory.UploadArea.Create();
+            field.OnFileUploadedAsync += OnFileUploadedAsync;
+            field.JsCallback = JsCallback;
+            field.Name = $"{Name}-files";
+            field.QueryStringParams["draftId"] = DraftId;
 
-            return _uploadArea;
+            return field;
         }
     }
     
     public string JsCallback { get; set; } = "getMasterDataForm().submit()";
 
     public UrlRedirectAction DownloadAction =>
-        _downloadAction ??= new UrlRedirectAction
+        field ??= new UrlRedirectAction
         {
             Icon = FontAwesomeIcon.CloudDownload,
             Tooltip = "Download File",
@@ -110,10 +114,10 @@ public class JJUploadView : AsyncComponent
     {
         get
         {
-            if (_deleteAction != null)
-                return _deleteAction;
+            if (field != null)
+                return field;
             
-            _deleteAction = new ScriptAction
+            field = new ScriptAction
             {
                 Icon = FontAwesomeIcon.Trash,
                 Tooltip = "Delete File",
@@ -121,65 +125,50 @@ public class JJUploadView : AsyncComponent
                 Name = "delete-file"
             };
           
-            return _deleteAction;
+            return field;
         }
     }
-    
+
     public ScriptAction RenameAction
     {
         get
         {
-            if (_renameAction != null)
-                return _renameAction;
-            
-            _renameAction = new ScriptAction
+            if (field != null)
+                return field;
+
+            field = new ScriptAction
             {
                 Icon = FontAwesomeIcon.PencilSquareO,
                 Tooltip = "Rename File",
                 OnClientClick = Scripts.GetRenameFileScript(),
                 Name = "rename-file"
             };
-            _renameAction.SetVisible(false);
-            return _renameAction;
+            
+            field.SetVisible(false);
+            
+            return field;
         }
-        set => _renameAction = value;
+        set;
     }
 
-    private FormFileManager FormFileManager
-    {
-        get
-        {
-            if (_formFileManager == null)
-            {
-                _formFileManager = FormFileManagerFactory.Create($"{Name}-files");
-                _formFileManager.OnBeforeCreateFileAsync += OnBeforeCreateFileAsync;
-                _formFileManager.OnBeforeDeleteFileAsync += OnBeforeDeleteFileAsync;
-                _formFileManager.OnBeforeRenameFileAsync += OnBeforeRenameFileAsync;
-            }
-            _formFileManager.AutoSave = AutoSave;
-            _formFileManager.FolderKey = FolderKey;
-            return _formFileManager;
-        }
-    }
-
-    private UploadViewScripts Scripts => _scripts ??= new UploadViewScripts(this);
+    private UploadViewScripts Scripts => field ??= new UploadViewScripts(this);
 
     private IHttpContextAccessor CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
-    private FormFileManagerFactory FormFileManagerFactory { get; }
+    private FormFileService FormFileService { get; }
     private IEncryptionService EncryptionService { get; }
 
     protected RouteContext RouteContext
     {
         get
         {
-            if (_routeContext != null)
-                return _routeContext;
+            if (field != null)
+                return field;
 
             var factory = new RouteContextFactory(CurrentContext, EncryptionService);
-            _routeContext = factory.Create();
+            field = factory.Create();
             
-            return _routeContext;
+            return field;
         }
     }
 
@@ -189,14 +178,14 @@ public class JJUploadView : AsyncComponent
     public JJUploadView(
         IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
-        FormFileManagerFactory formFileManagerFactory,
+        FormFileService formFileService,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
         ComponentFactory = componentFactory;
-        FormFileManagerFactory = formFileManagerFactory;
+        FormFileService = formFileService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
@@ -310,7 +299,7 @@ public class JJUploadView : AsyncComponent
         var html = new HtmlBuilder()
            .AppendHiddenInput($"upload-view-action-{Name}")
            .AppendHiddenInput($"upload-view-file-name-{Name}")
-           .AppendHiddenInput($"{Name}-files-draft-id", FormFileManager.DraftId);
+           .AppendHiddenInput($"{Name}-files-draft-id", DraftId);
 
         if (!ShowAddFiles)
             return html;
@@ -478,7 +467,7 @@ public class JJUploadView : AsyncComponent
     private async Task<HtmlBuilder> GetHtmlImageBox(string fileName)
     {
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.FileReference = await FormFileManager.GetFileReferenceAsync(fileName);
+        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderKey, fileName);
         var src = downloader.GetDownloadUrl();
         
         var html = new HtmlBuilder(HtmlTag.Img);
@@ -645,7 +634,7 @@ public class JJUploadView : AsyncComponent
         if (DownloadAction.IsVisible)
         {
             var downloader = ComponentFactory.Downloader.Create();
-            downloader.FileReference = await FormFileManager.GetFileReferenceAsync(fileName);
+            downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderKey, fileName);
             actions.Add(CreateActionCell(DownloadAction, urlAction: downloader.GetDownloadUrl()));
         }
 
@@ -677,7 +666,8 @@ public class JJUploadView : AsyncComponent
             OnClientClick = onClientClick,
             IconClass = $"{action.Icon.CssClass} fa-fw",
             ShowAsButton = action.ShowAsButton,
-            CssClass = action.CssClass
+            CssClass = action.CssClass,
+            Visible = action.IsVisible
         };
     }
 
@@ -720,14 +710,14 @@ public class JJUploadView : AsyncComponent
     }
 
     public Task RenameFileAsync(string currentName, string newName) =>
-      FormFileManager.RenameFileAsync(currentName, newName);
+      FormFileService.RenameFileAsync(DraftId, FolderKey, currentName, newName);
 
     public Task CreateFileAsync(FormFileContent file) =>
-        FormFileManager.CreateFileAsync(file, !UploadArea.Multiple);
+        FormFileService.CreateFileAsync(DraftId, FolderKey, AutoSave, file, !UploadArea.Multiple);
 
     public async Task<ComponentResult> GetDeleteFileResultAsync(string fileName)
     {
-        await FormFileManager.DeleteFileAsync(fileName);
+        await FormFileService.DeleteFileAsync(DraftId, FolderKey, fileName);
         var text = StringLocalizer["File successfully deleted."];
         var alert = new JJAlert
         {
@@ -741,16 +731,16 @@ public class JJUploadView : AsyncComponent
     }
     
     internal Task DeleteAllAsync() => 
-        FormFileManager.DeleteAllAsync();
+        FormFileService.DeleteAllAsync(DraftId, FolderKey, AutoSave);
 
     public Task<List<FormFileInfo>> GetFilesAsync() => 
-        FormFileManager.GetFilesAsync(!UploadArea.Multiple);
+        FormFileService.GetFilesAsync(DraftId, FolderKey, !UploadArea.Multiple);
 
     public Task ClearTemporaryFilesAsync() => 
-        FormFileManager.DeleteAllAsync();
+        FormFileService.DeleteAllAsync(DraftId, FolderKey, AutoSave);
 
     public Task PromoteTemporaryFilesAsync(string folderKey) =>
-        FormFileManager.PromoteTemporaryFilesAsync(folderKey, !UploadArea.Multiple);
+        FormFileService.PromoteTemporaryFilesAsync(DraftId, folderKey, !UploadArea.Multiple);
 
     public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {
@@ -768,7 +758,7 @@ public class JJUploadView : AsyncComponent
             }
         }
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.FileReference = await FormFileManager.GetFileReferenceAsync(fileName);
+        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderKey, fileName);
         return await downloader.GetDirectDownloadResultAsync();
     }
 

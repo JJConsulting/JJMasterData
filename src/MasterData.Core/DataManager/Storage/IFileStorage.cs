@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager.IO.Storage;
+namespace JJMasterData.Core.DataManager.Storage;
 
 public interface IFileStorage
 {

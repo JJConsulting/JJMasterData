@@ -1,7 +1,7 @@
 using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.IO.Storage;
+using JJMasterData.Core.DataManager.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
