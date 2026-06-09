@@ -3,6 +3,7 @@ using System;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
+using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.DependencyInjection;
@@ -88,6 +89,7 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
         writer.UserId = dataExportation.UserId;
         writer.ProcessOptions = dataExportation.ProcessOptions;
         writer.FileDownloaderFactory = serviceProvider.GetRequiredService<FileDownloaderFactory>();
+        writer.FileStorage = serviceProvider.GetRequiredService<IFileStorage>();
         writer.AbsoluteUri = dataExportation.CurrentContext.HttpContext!.Request.GetAbsoluteUri();
     }
 

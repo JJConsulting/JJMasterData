@@ -5,29 +5,28 @@ namespace JJMasterData.Core.DataManager.Exportation;
 
 public class DataExportationReporter : ProgressReporter
 {
-    private int _totalProcessed;
     public int TotalProcessed
     {
-        get => _totalProcessed;
+        get;
         set
         {
-            _totalProcessed = value;
+            field = value;
             UpdatePercentage();
         }
     }
 
-    private int _totalOfRecords;
     public int TotalOfRecords
     {
-        get => _totalOfRecords;
+        get;
         set
         {
-            _totalOfRecords = value;
+            field = value;
             UpdatePercentage();
         }
     }
 
-    public string FilePath { get; set; }
+    public string FolderKey { get; set; }
+    public string FileName { get; set; }
 
     private void UpdatePercentage()
     {

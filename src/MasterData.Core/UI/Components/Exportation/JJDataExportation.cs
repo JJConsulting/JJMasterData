@@ -15,15 +15,13 @@ using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Html;
-using Microsoft.AspNetCore.Http;
+using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.UI.Events.Args;
 
 using Microsoft.Extensions.Localization;
@@ -62,6 +60,7 @@ public class JJDataExportation : ProcessComponent
 
     internal DataExportationScripts Scripts => field ??= new DataExportationScripts(this);
     internal IComponentFactory ComponentFactory { get; }
+    internal IFileStorage FileStorage { get; }
     public IUrlHelper UrlHelper { get; }
     public DataExportationWriterFactory DataExportationWriterFactory { get; }
 
@@ -80,9 +79,11 @@ public class JJDataExportation : ProcessComponent
         ILoggerFactory loggerFactory,
         IHttpContextAccessor currentContext, 
         IEncryptionService encryptionService, 
+        IFileStorage fileStorage,
         DataExportationWriterFactory dataExportationWriterFactory) : 
         base(currentContext, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
+        FileStorage = fileStorage;
         UrlHelper = urlHelper;
         DataExportationWriterFactory = dataExportationWriterFactory;
         ComponentFactory = componentFactory;
@@ -92,16 +93,16 @@ public class JJDataExportation : ProcessComponent
     }
     #endregion
     
-    protected override Task<ComponentResult> BuildResultAsync()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         ComponentResult result;
         
         if (IsRunning())
             result = new ContentComponentResult(new DataExportationLog(this).GetLoadingHtml());
         else
-            result = new ContentComponentResult(new DataExportationSettings(this).GetHtmlBuilder());
+            result = new ContentComponentResult(await new DataExportationSettings(this).GetHtmlBuilderAsync());
         
-        return Task.FromResult(result);
+        return result;
     }
 
     internal static JJIcon GetFileIcon(string ext)
@@ -122,7 +123,7 @@ public class JJDataExportation : ProcessComponent
     {
         if (!reporter.HasError)
         {
-            string url = GetDownloadUrl(reporter.FilePath);
+            string url = GetDownloadUrl(reporter.FileName);
             var html = new HtmlBuilder(HtmlTag.Div);
 
             if (reporter.HasError)
@@ -136,8 +137,7 @@ public class JJDataExportation : ProcessComponent
             }
             else
             {
-                var file = new FileInfo(reporter.FilePath);
-                var icon = GetFileIcon(file.Extension);
+                var icon = GetFileIcon(Path.GetExtension(reporter.FileName));
                 icon.CssClass = "fa-3x ";
 
                 html.Append(HtmlTag.Div, div =>
@@ -179,7 +179,7 @@ public class JJDataExportation : ProcessComponent
                         a.WithAttribute("href", url);
                         a.AppendComponent(icon);
                         a.Append(HtmlTag.Br);
-                        a.AppendText(file.Name);
+                        a.AppendText(reporter.FileName);
                     });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.Br);
@@ -231,7 +231,10 @@ public class JJDataExportation : ProcessComponent
         
         await exporter.RunWorkerAsync(CancellationToken.None);
 
-        return new FilePathComponentResult(exporter.ProcessReporter.FilePath);
+        var stream = await exporter.FileStorage.OpenReadAsync(
+            exporter.ProcessReporter.FolderKey,
+            exporter.ProcessReporter.FileName);
+        return new FileStreamComponentResult(stream, exporter.ProcessReporter.FileName);
     }
 
     internal void ExportFileInBackground(Dictionary<string, object> filter, OrderByData orderByData)

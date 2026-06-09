@@ -14,6 +14,7 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
@@ -46,6 +47,7 @@ public abstract class DataExportationWriterBase(
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
 
     internal FileDownloaderFactory FileDownloaderFactory { get; set; }
+    internal IFileStorage FileStorage { get; set; }
     internal string AbsoluteUri { get; set; }
 
     protected List<FormElementField> VisibleFields
@@ -124,30 +126,12 @@ public abstract class DataExportationWriterBase(
     /// <summary>
     /// Path where the files are generated.
     /// </summary>
-    public string FolderPath
+    public string FolderKey
     {
         get
         {
             var path = Options.Value.ExportationFolderPath;
-            string folderPath = DataExportationHelper.GetFolderPath(FormElement, path, UserId);
-
-            CreateFolderPathIfNotExits(folderPath);
-
-            return folderPath;
-        }
-    }
-
-    private static void CreateFolderPathIfNotExits(string folderPath)
-    {
-        try
-        {
-            if (folderPath != null && !Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-        }
-        catch (Exception ex)
-        {
-            const string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
-            throw new JJMasterDataException(message, ex);
+            return DataExportationHelper.GetFolderPath(FormElement, path, UserId);
         }
     }
 
@@ -169,14 +153,27 @@ public abstract class DataExportationWriterBase(
 
             Reporter(ProcessReporter);
             
-            var filePath = Path.Combine(FolderPath, GetFilePath());
+            var fileName = GetFileName();
+            var tempFilePath = Path.GetTempFileName();
 
-            await using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
+            try
             {
-                await GenerateDocument(fs, token);
+                await using (var fs = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 81920, true))
+                {
+                    await GenerateDocument(fs, token);
+                }
+
+                await using var readStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
+                await FileStorage.SaveAsync(FolderKey, fileName, readStream, true, token);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
             }
 
-            ProcessReporter.FilePath = filePath;
+            ProcessReporter.FolderKey = FolderKey;
+            ProcessReporter.FileName = fileName;
 
             ProcessReporter.EndDate = DateTime.Now;
             ProcessReporter.HasError = false;
@@ -192,14 +189,6 @@ public abstract class DataExportationWriterBase(
                 case ThreadAbortException:
                     ProcessReporter.Message = StringLocalizer["Process aborted by the user."];
                     break;
-                case IOException:
-                    if (FileIO.IsFileLocked(FolderPath))
-                        ProcessReporter.Message =
-                            StringLocalizer[
-                                "File is already being used by another process. Try downloading it from \"Recently generated files\"."];
-                    else
-                        goto default;
-                    break;
                 case JJMasterDataException:
                     ProcessReporter.Message = ex.Message;
                     break;
@@ -210,8 +199,6 @@ public abstract class DataExportationWriterBase(
                     break;
             }
 
-            if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
-                File.Delete(FolderPath);
         }
         finally
         {
@@ -249,7 +236,7 @@ public abstract class DataExportationWriterBase(
         return new Uri(new Uri(AbsoluteUri), downloader.GetDownloadUrl(AbsoluteUri)).AbsoluteUri;
     }
     
-    private string GetFilePath()
+    private string GetFileName()
     {
         string fileName;
         var exportActionFileName = FormElement.Options.GridToolbarActions.ExportAction.FileName;

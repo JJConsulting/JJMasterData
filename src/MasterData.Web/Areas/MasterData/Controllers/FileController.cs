@@ -3,6 +3,7 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.IO.Storage;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,7 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FileController(
     ElementFileService service,
+    IFileStorage fileStorage,
     IDataDictionaryRepository dictionaryRepository,
     IMasterDataUser masterDataUser,
     IOptionsSnapshot<MasterDataCoreOptions> options) : MasterDataController
@@ -57,16 +59,16 @@ public class FileController(
             masterDataUser.Id);
 
         var safeFileName = Path.GetFileName(fileName);
-        var fullFolderPath = Path.GetFullPath(folderPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        var filePath = Path.GetFullPath(Path.Combine(fullFolderPath, safeFileName));
 
-        if (!filePath.StartsWith(fullFolderPath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
-            || !System.IO.File.Exists(filePath))
+        try
+        {
+            var stream = await fileStorage.OpenReadAsync(folderPath, safeFileName);
+            var contentType = MimeTypeUtil.GetMimeType(safeFileName);
+            return File(stream, contentType, safeFileName);
+        }
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or KeyNotFoundException)
         {
             return NotFound();
         }
-
-        var contentType = MimeTypeUtil.GetMimeType(safeFileName);
-        return PhysicalFile(filePath, contentType, safeFileName);
     }
 }
