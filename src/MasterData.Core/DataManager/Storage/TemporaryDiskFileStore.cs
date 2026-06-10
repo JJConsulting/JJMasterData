@@ -11,7 +11,7 @@ public sealed class TemporaryDiskFileStore : DiskFileStorage, ITemporaryFileStor
 
     public string CreateDraftId()
     {
-        CleanupExpiredCore(TimeSpan.FromHours(12));
+        CleanupExpired(TimeSpan.FromHours(12));
         return Guid.NewGuid().ToString("N");
     }
 
@@ -22,11 +22,6 @@ public sealed class TemporaryDiskFileStore : DiskFileStorage, ITemporaryFileStor
             throw new ArgumentNullException(nameof(draftId));
 
         return draftId;
-    }
-
-    public Task SaveUploadAsync(string draftId, string fileName, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)
-    {
-        return SaveAsync(GetDraftFolderPath(draftId), fileName, content, replaceIfExists, cancellationToken);
     }
 
     public async Task PromoteAsync(string draftId, IFileStorage destinationStorage, string destinationFolderPath, bool deleteExistingFiles = false, CancellationToken cancellationToken = default)
@@ -48,13 +43,7 @@ public sealed class TemporaryDiskFileStore : DiskFileStorage, ITemporaryFileStor
         await DeleteFolderAsync(draftFolderPath, cancellationToken);
     }
 
-    public Task CleanupExpiredAsync(TimeSpan maxAge, CancellationToken cancellationToken = default)
-    {
-        CleanupExpiredCore(maxAge);
-        return Task.CompletedTask;
-    }
-
-    private void CleanupExpiredCore(TimeSpan maxAge)
+    private void CleanupExpired(TimeSpan maxAge)
     {
         if (!Directory.Exists(_rootPath))
             return;
