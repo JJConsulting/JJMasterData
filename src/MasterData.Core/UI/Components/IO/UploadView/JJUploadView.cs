@@ -16,8 +16,9 @@ using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Storage;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
@@ -332,16 +333,15 @@ public class JJUploadView : AsyncComponent
 
     private async Task<HtmlBuilder> GetGalleryHtml()
     {
-        var files = (await GetFilesAsync()).FindAll(x => !x.Deleted);
+        var files = await GetFilesAsync();
         if (files.Count == 0) 
             return new JJAlert{Title = StringLocalizer["There is no files to display."]}.GetHtmlBuilder();
 
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
-        foreach (var fileInfo in files)
+        foreach (var file in files)
         {
-            var file = fileInfo.Content;
             var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
             
@@ -375,7 +375,7 @@ public class JJUploadView : AsyncComponent
         return row;
     }
     
-    private IEnumerable<HtmlBuilder> GetGalleryListItems(FormFileContent file)
+    private IEnumerable<HtmlBuilder> GetGalleryListItems(FileStorageItem file)
     {
         yield return GetHtmlGalleryListItem("Name", file.FileName);
         yield return GetHtmlGalleryListItem("Size", $"{file.Length} Bytes");
@@ -467,7 +467,7 @@ public class JJUploadView : AsyncComponent
     private async Task<HtmlBuilder> GetHtmlImageBox(string fileName)
     {
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderPath, fileName);
+        downloader.File = await FormFileService.GetFileKeyAsync(DraftId, FolderPath, fileName);
         var src = downloader.GetDownloadUrl();
         
         var html = new HtmlBuilder(HtmlTag.Img);
@@ -566,10 +566,7 @@ public class JJUploadView : AsyncComponent
 
     private async Task<HtmlBuilder> GetFilesTableHtmlAsync()
     {
-        var files = (await GetFilesAsync())
-            .Where(f => !f.Deleted)
-            .Select(f => f.Content)
-            .ToList();
+        var files = await GetFilesAsync();
 
         if (files.Count == 0)
             return new JJAlert { Title = StringLocalizer["There is no files to display."] }.GetHtmlBuilder();
@@ -634,7 +631,7 @@ public class JJUploadView : AsyncComponent
         if (DownloadAction.IsVisible)
         {
             var downloader = ComponentFactory.Downloader.Create();
-            downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderPath, fileName);
+            downloader.File = await FormFileService.GetFileKeyAsync(DraftId, FolderPath, fileName);
             actions.Add(CreateActionCell(DownloadAction, urlAction: downloader.GetDownloadUrl()));
         }
 
@@ -733,7 +730,7 @@ public class JJUploadView : AsyncComponent
     internal Task DeleteAllAsync() => 
         FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
 
-    public Task<List<FormFileInfo>> GetFilesAsync() => 
+    public Task<List<FileStorageItem>> GetFilesAsync() => 
         FormFileService.GetFilesAsync(DraftId, FolderPath, !UploadArea.Multiple);
 
     public Task ClearTemporaryFilesAsync() => 
@@ -758,7 +755,7 @@ public class JJUploadView : AsyncComponent
             }
         }
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.FileReference = await FormFileService.GetFileReferenceAsync(DraftId, FolderPath, fileName);
+        downloader.File = await FormFileService.GetFileKeyAsync(DraftId, FolderPath, fileName);
         return await downloader.GetDirectDownloadResultAsync();
     }
 

@@ -28,7 +28,7 @@ public class DiskFileStorage : IFileStorage
         var resolvedFolderPath = ResolveFolderPath(folderPath);
         Directory.CreateDirectory(resolvedFolderPath);
 
-        var filePath = GetFilePath(folderPath, fileName);
+        var filePath = GetFilePath(resolvedFolderPath, fileName);
         var mode = replaceIfExists ? FileMode.Create : FileMode.CreateNew;
 
         if (content.CanSeek)
@@ -90,7 +90,8 @@ public class DiskFileStorage : IFileStorage
             {
                 FileName = file.Name,
                 Length = file.Length,
-                LastWriteTime = file.LastWriteTime
+                LastWriteTime = file.LastWriteTime,
+                FolderPath = folderPath
             })
             .ToList();
 
@@ -108,7 +109,7 @@ public class DiskFileStorage : IFileStorage
         return Path.GetFullPath(resolvedFolderPath);
     }
 
-    protected static string CombineKey(string rootKey, string childKey)
+    private static string CombineKey(string rootKey, string childKey)
     {
         return string.IsNullOrEmpty(childKey) ? rootKey : $"{rootKey.TrimEnd('/', '\\')}/{childKey}";
     }

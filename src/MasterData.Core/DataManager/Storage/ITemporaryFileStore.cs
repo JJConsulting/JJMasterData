@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataManager.Storage;
 
-public interface ITemporaryUploadStore : IFileStorage
+public interface ITemporaryFileStore : IFileStorage
 {
     string CreateDraftId();
     string GetDraftFolderPath(string draftId);

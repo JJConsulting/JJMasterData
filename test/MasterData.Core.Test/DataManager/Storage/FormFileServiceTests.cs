@@ -1,14 +1,14 @@
 using System.Text;
 using JJMasterData.Commons.Resources;
-using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
-namespace JJMasterData.Core.Test.DataManager.IO;
+namespace JJMasterData.Core.Test.DataManager.Storage;
 
 public class FormFileServiceTests
 {
@@ -16,7 +16,7 @@ public class FormFileServiceTests
     public async Task GetFilesAsync_WhenPreferTemporaryFiles_ReturnsOnlyTemporaryFiles()
     {
         var fileStorage = new DiskFileStorage();
-        var temporaryUploadStore = new TemporaryDiskUploadStore();
+        var temporaryUploadStore = new TemporaryDiskFileStore();
         var draftId = Guid.NewGuid().ToString("N");
         var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
         var service = new FormFileService(
@@ -43,8 +43,8 @@ public class FormFileServiceTests
             var allFiles = await service.GetFilesAsync(draftId, folderPath);
             var preferredFiles = await service.GetFilesAsync(draftId, folderPath, preferTemporaryFiles: true);
 
-            Assert.Equal(["new-file.txt", "old-file.txt"], allFiles.Select(file => file.Content.FileName).Order());
-            Assert.Equal(["new-file.txt"], preferredFiles.Select(file => file.Content.FileName));
+            Assert.Equal(["new-file.txt", "old-file.txt"], allFiles.Select(file => file.FileName).Order());
+            Assert.Equal(["new-file.txt"], preferredFiles.Select(file => file.FileName));
             Assert.All(preferredFiles, file => Assert.True(file.IsTemporary));
         }
         finally

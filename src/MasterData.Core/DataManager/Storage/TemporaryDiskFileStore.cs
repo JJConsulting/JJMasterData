@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataManager.Storage;
 
-public sealed class TemporaryDiskUploadStore : DiskFileStorage, ITemporaryUploadStore
+public sealed class TemporaryDiskFileStore : DiskFileStorage, ITemporaryFileStore
 {
     private readonly string _rootPath = Path.Combine(Path.GetTempPath(), "jjmasterdata", "uploads");
 

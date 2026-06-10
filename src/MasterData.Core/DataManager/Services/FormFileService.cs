@@ -10,16 +10,15 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Storage;
 using JJMasterData.Core.UI.Events.Args;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
-namespace JJMasterData.Core.DataManager.IO;
+namespace JJMasterData.Core.DataManager.Services;
 
 public class FormFileService(
     IHttpContextAccessor httpContext,
-    ITemporaryUploadStore temporaryUploadStore,
+    ITemporaryFileStore temporaryFileStore,
     IFileStorage fileStorage,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILoggerFactory loggerFactory)
@@ -38,23 +37,21 @@ public class FormFileService(
             draftId = request == null ? null : GetFirstValue(request.Query["draftId"]);
 
         return string.IsNullOrWhiteSpace(draftId)
-            ? temporaryUploadStore.CreateDraftId()
-            : temporaryUploadStore.GetDraftFolderPath(draftId);
+            ? temporaryFileStore.CreateDraftId()
+            : temporaryFileStore.GetDraftFolderPath(draftId);
     }
 
-    public async Task<List<FormFileInfo>> GetFilesAsync(string draftId, string folderPath,
-        bool preferTemporaryFiles = false)
+    public async Task<List<FileStorageItem>> GetFilesAsync(string draftId, string folderPath, bool preferTemporaryFiles = false)
     {
-        var files = new List<FormFileInfo>();
+        var files = new List<FileStorageItem>();
 
         if (!string.IsNullOrEmpty(folderPath))
             files.AddRange(await GetStorageFilesAsync(fileStorage, folderPath, false));
 
-        files.AddRange(await GetStorageFilesAsync(temporaryUploadStore, temporaryUploadStore.GetDraftFolderPath(draftId),
-            true));
+        files.AddRange(await GetStorageFilesAsync(temporaryFileStore, temporaryFileStore.GetDraftFolderPath(draftId), true));
 
         var mergedFiles = files
-            .GroupBy(file => file.Content.FileName)
+            .GroupBy(file => file.FileName)
             .Select(group => group.OrderByDescending(file => file.IsTemporary).First())
             .ToList();
 
@@ -81,7 +78,7 @@ public class FormFileService(
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
             throw new JJMasterDataException(stringLocalizer["The file extension must remain the same"]);
 
-        if ((await GetFilesAsync(draftId, folderPath)).Exists(x => x.Content.FileName.Equals(newName)))
+        if ((await GetFilesAsync(draftId, folderPath)).Exists(x => x.FileName.Equals(newName)))
             throw new JJMasterDataException(stringLocalizer["A file with the name {0} already exists", newName]);
 
         if (OnBeforeRenameFileAsync != null)
@@ -97,31 +94,31 @@ public class FormFileService(
                    ?? throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
 
         var storage = file.IsTemporary || string.IsNullOrEmpty(folderPath)
-            ? temporaryUploadStore
+            ? temporaryFileStore
             : fileStorage;
         var storageFolderPath = file.IsTemporary || string.IsNullOrEmpty(folderPath)
-            ? temporaryUploadStore.GetDraftFolderPath(draftId)
+            ? temporaryFileStore.GetDraftFolderPath(draftId)
             : folderPath;
 
         await storage.RenameAsync(storageFolderPath, currentName, newName);
     }
 
-    public async Task<FormFileInfo> GetFileAsync(string draftId, string folderPath, string fileName)
+    public async Task<FileStorageItem> GetFileAsync(string draftId, string folderPath, string fileName)
     {
         fileName = Path.GetFileName(fileName);
         return (await GetFilesAsync(draftId, folderPath))
-            .Find(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
+            .Find(x => fileName.Equals(x.FileName));
     }
 
-    public async Task<FileStorageReference> GetFileReferenceAsync(string draftId, string folderPath, string fileName)
+    public async Task<FileStorageItemKey> GetFileKeyAsync(string draftId, string folderPath, string fileName)
     {
         var file = await GetFileAsync(draftId, folderPath, fileName);
         if (file == null)
             throw new JJMasterDataException(stringLocalizer["file {0} not found!", fileName]);
 
-        return FileStorageReference.Create(
-            file.IsTemporary ? temporaryUploadStore.GetDraftFolderPath(draftId) : folderPath,
-            file.Content.FileName,
+        return new FileStorageItemKey(
+            file.IsTemporary ? temporaryFileStore.GetDraftFolderPath(draftId) : folderPath,
+            file.FileName,
             file.IsTemporary);
     }
 
@@ -156,10 +153,10 @@ public class FormFileService(
 
         var storage = autoSave && !string.IsNullOrEmpty(folderPath)
             ? fileStorage
-            : temporaryUploadStore;
+            : temporaryFileStore;
         var storageFolderPath = autoSave && !string.IsNullOrEmpty(folderPath)
             ? folderPath
-            : temporaryUploadStore.GetDraftFolderPath(draftId);
+            : temporaryFileStore.GetDraftFolderPath(draftId);
 
         await storage.SaveAsync(storageFolderPath, fileContent.FileName, fileContent.Stream, true);
     }
@@ -188,14 +185,14 @@ public class FormFileService(
         if (file == null)
             return;
 
-        var storage = file.IsTemporary ? temporaryUploadStore : fileStorage;
-        var storageFolderPath = file.IsTemporary ? temporaryUploadStore.GetDraftFolderPath(draftId) : folderPath;
+        var storage = file.IsTemporary ? temporaryFileStore : fileStorage;
+        var storageFolderPath = file.IsTemporary ? temporaryFileStore.GetDraftFolderPath(draftId) : folderPath;
         await storage.DeleteAsync(storageFolderPath, fileName);
     }
 
     public async Task DeleteAllAsync(string draftId, string folderPath, bool autoSave)
     {
-        await temporaryUploadStore.DeleteFolderAsync(temporaryUploadStore.GetDraftFolderPath(draftId));
+        await temporaryFileStore.DeleteFolderAsync(temporaryFileStore.GetDraftFolderPath(draftId));
 
         if (autoSave && !string.IsNullOrEmpty(folderPath))
             await fileStorage.DeleteFolderAsync(folderPath);
@@ -203,7 +200,7 @@ public class FormFileService(
 
     public async Task<int> CountFilesAsync(string draftId, string folderPath)
     {
-        return (await GetFilesAsync(draftId, folderPath)).Count(x => !x.Deleted);
+        return (await GetFilesAsync(draftId, folderPath)).Count;
     }
 
     public async Task PromoteTemporaryFilesAsync(string draftId, string folderPath, bool deleteExistingFiles = false)
@@ -211,12 +208,12 @@ public class FormFileService(
         if (string.IsNullOrEmpty(folderPath))
             throw new ArgumentNullException(nameof(folderPath));
 
-        await temporaryUploadStore.PromoteAsync(draftId, fileStorage, folderPath, deleteExistingFiles);
+        await temporaryFileStore.PromoteAsync(draftId, fileStorage, folderPath, deleteExistingFiles);
     }
 
-    public Task<Stream> OpenReadAsync(FileStorageReference reference)
+    public Task<Stream> OpenReadAsync(FileStorageItem reference)
     {
-        var storage = reference.IsTemporary ? temporaryUploadStore : fileStorage;
+        var storage = reference.IsTemporary ? temporaryFileStore : fileStorage;
         return storage.OpenReadAsync(reference.FolderPath, reference.FileName);
     }
 
@@ -262,7 +259,7 @@ public class FormFileService(
         return GetFirstValue(request.Form[key]);
     }
 
-    private static async Task<IEnumerable<FormFileInfo>> GetStorageFilesAsync(
+    private static async Task<IEnumerable<FileStorageItem>> GetStorageFilesAsync(
         IFileStorage storage,
         string folderPath,
         bool temporary)
@@ -271,15 +268,13 @@ public class FormFileService(
             return [];
 
         return (await storage.ListAsync(folderPath))
-            .Select(file => new FormFileInfo
+            .Select(file => new FileStorageItem
             {
                 IsTemporary = temporary,
-                Content = new FormFileContent
-                {
-                    FileName = file.FileName,
-                    Length = file.Length,
-                    LastWriteTime = file.LastWriteTime
-                }
+                FileName = file.FileName,
+                Length = file.Length,
+                LastWriteTime = file.LastWriteTime,
+                FolderPath = folderPath
             });
     }
 }

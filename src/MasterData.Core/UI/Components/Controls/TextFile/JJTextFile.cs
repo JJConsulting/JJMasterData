@@ -222,13 +222,13 @@ public sealed class JJTextFile(IHttpContextAccessor request,
     internal async Task<string> GetFileNameAsync()
     {
         string fileNames = string.Empty;
-        var listFile = (await UploadView.GetFilesAsync()).FindAll(x => !x.Deleted);
+        var listFile = await UploadView.GetFilesAsync();
         foreach (var file in listFile)
         {
             if (fileNames != string.Empty)
                 fileNames += ",";
 
-            fileNames += file.Content.FileName;
+            fileNames += file.FileName;
         }
 
         return fileNames;
@@ -236,17 +236,17 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     internal async Task<string> GetPresentationTextAsync()
     {
-        var files = (await UploadView.GetFilesAsync()).FindAll(x => !x.Deleted);
+        var files = await UploadView.GetFilesAsync();
 
         return files.Count switch
         {
             0 => string.Empty,
-            1 => files[0].Content.FileName,
+            1 => files[0].FileName,
             _ => StringLocalizer["{0} Selected Files", files.Count]
         };
     }
 
-    internal async Task<HtmlBuilder> GetButtonGroupHtmlAsync()
+    internal HtmlBuilder GetButtonGroupHtml()
     {
         if (string.IsNullOrEmpty(Text))
             return new HtmlBuilder(string.Empty);
@@ -294,7 +294,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
     private string GetDownloadLink(string fileName)
     {
         var fileDownloader = componentFactory.Downloader.Create();
-        fileDownloader.FileReference = FileStorageReference.Create(GetFolderPath(), fileName, false);
+        fileDownloader.File = new FileStorageItemKey(GetFolderPath(), fileName, false);
         return fileDownloader.GetDownloadUrl();
     }
 }

@@ -14,14 +14,14 @@ namespace JJMasterData.Core.UI.Components;
 public class JJFileDownloader(
         IHttpContextAccessor currentContext,
         IFileStorage fileStorage,
-        ITemporaryUploadStore temporaryUploadStore,
+        ITemporaryFileStore temporaryFileStore,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : HtmlComponent
 {
     public const string FileTokenParameter = "downloadFileToken";
 
-    public FileStorageReference FileReference { get; set; }
+    public FileStorageItemKey File { get; set; }
 
     internal IHttpContextAccessor CurrentContext { get; } = currentContext;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -29,7 +29,7 @@ public class JJFileDownloader(
 
     protected override HtmlBuilder BuildHtml()
     {
-        if (FileReference == null)
+        if (File == null)
             throw new JJMasterDataException(StringLocalizer["Invalid file reference"]);
 
         return new HtmlBuilder();
@@ -37,46 +37,45 @@ public class JJFileDownloader(
 
     public async Task<FileStreamComponentResult> GetDirectDownloadResultAsync()
     {
-        if (FileReference == null)
-            throw new ArgumentNullException(nameof(FileReference));
+        if (File == null)
+            throw new ArgumentNullException(nameof(File));
 
-        var storage = FileReference.IsTemporary ? temporaryUploadStore : fileStorage;
-        var stream = await storage.OpenReadAsync(FileReference.FolderPath, FileReference.FileName);
-        return new FileStreamComponentResult(stream, FileReference.FileName);
+        var storage = File.IsTemporary ? temporaryFileStore : fileStorage;
+        var stream = await storage.OpenReadAsync(File.FolderPath, File.FileName);
+        return new FileStreamComponentResult(stream, File.FileName);
     }
-
+    
     public async Task<FileStreamComponentResult> GetDownloadResultAsync()
     {
         var token = CurrentContext.HttpContext!.Request.Query[FileTokenParameter].ToString();
         if (string.IsNullOrEmpty(token))
             throw new JJMasterDataException("Invalid file token.");
 
-        var fileToken = EncryptionService.DecryptObject<FileStorageReference>(token);
-
-        FileReference = fileToken;
+        var fileKey = EncryptionService.DecryptObject<FileStorageItemKey>(token);
+        File = fileKey;
         
         return await GetDirectDownloadResultAsync();
     }
-
-    public string GetDownloadUrl()
-    {
-        return GetDownloadUrl(CurrentContext.HttpContext!.Request.GetAbsoluteUri());
-    }
-
+    
     public string GetDownloadUrl(string absoluteUri)
     {
-        if (FileReference == null)
-            throw new ArgumentNullException(nameof(FileReference));
+        if (File == null)
+            throw new ArgumentNullException(nameof(File));
 
         var uriBuilder = new UriBuilder(absoluteUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         var routeContext = new RouteContext(ComponentContext.DownloadFile);
 
         query["routeContext"] = EncryptionService.EncryptObject(routeContext);
-        query[FileTokenParameter] = EncryptionService.EncryptObject(FileReference);
+        query[FileTokenParameter] = EncryptionService.EncryptObject(File);
 
         uriBuilder.Query = query.ToString()!;
 
         return uriBuilder.Uri.PathAndQuery;
+    }
+
+    public string GetDownloadUrl()
+    {
+        return GetDownloadUrl(CurrentContext.HttpContext!.Request.GetAbsoluteUri());
     }
 }

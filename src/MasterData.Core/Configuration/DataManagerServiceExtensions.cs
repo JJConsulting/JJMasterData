@@ -1,5 +1,4 @@
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.DataManager.Storage;
@@ -29,7 +28,7 @@ public static class DataManagerServiceExtensions
         services.TryAddTransient<FormValuesService>();
         
         services.TryAddScoped<IFileStorage, DiskFileStorage>();
-        services.TryAddScoped<ITemporaryUploadStore, TemporaryDiskUploadStore>();
+        services.TryAddScoped<ITemporaryFileStore, TemporaryDiskFileStore>();
         
         services.TryAddTransient<FormFileService>();
         services.TryAddTransient<ElementFileService>();
