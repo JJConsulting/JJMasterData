@@ -31,9 +31,9 @@ public class FormFileService(
         var files = new List<FileStorageItem>();
 
         if (!string.IsNullOrEmpty(folderPath))
-            files.AddRange(await GetStorageFilesAsync(fileStorage, folderPath, false));
+            files.AddRange(await GetStorageFilesAsync(folderPath, false));
 
-        files.AddRange(await GetStorageFilesAsync(fileStorage, GetDraftFolderPath(draftId), true));
+        files.AddRange(await GetStorageFilesAsync( GetDraftFolderPath(draftId), true));
 
         var mergedFiles = files
             .GroupBy(file => file.FileName)
@@ -209,15 +209,14 @@ public class FormFileService(
         }
     }
 
-    private static async Task<IEnumerable<FileStorageItem>> GetStorageFilesAsync(
-        IFileStorage storage,
+    private async Task<IEnumerable<FileStorageItem>> GetStorageFilesAsync(
         string folderPath,
         bool temporary)
     {
         if (string.IsNullOrEmpty(folderPath))
             return [];
 
-        return (await storage.ListAsync(folderPath))
+        return (await fileStorage.ListAsync(folderPath))
             .Select(file => new FileStorageItem
             {
                 IsTemporary = temporary,
