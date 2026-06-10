@@ -231,9 +231,7 @@ public class JJDataExportation : ProcessComponent
         
         await exporter.RunWorkerAsync(CancellationToken.None);
 
-        var stream = await exporter.FileStorage.OpenReadAsync(
-            exporter.ProcessReporter.FolderPath,
-            exporter.ProcessReporter.FileName);
+        var stream = await exporter.OpenReadAsync();
         return new FileStreamComponentResult(stream, exporter.ProcessReporter.FileName);
     }
 

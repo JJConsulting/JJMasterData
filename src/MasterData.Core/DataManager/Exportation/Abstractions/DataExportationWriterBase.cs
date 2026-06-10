@@ -272,4 +272,9 @@ public abstract class DataExportationWriterBase(
 
         return $"{fileName}_{DateTime.Now:yyyMMdd_HHmmss}.{extension}";
     }
+
+    public async Task<Stream> OpenReadAsync()
+    {
+        return await FileStorage.OpenReadAsync(ProcessReporter.FolderPath, ProcessReporter.FileName);
+    }
 }
