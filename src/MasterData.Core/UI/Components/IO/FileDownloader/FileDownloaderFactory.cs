@@ -8,13 +8,12 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
         IFileStorage fileStorage,
-        ITemporaryFileStore temporaryFileStore,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public JJFileDownloader Create()
     {
-        return new JJFileDownloader(httpContext, fileStorage, temporaryFileStore, encryptionService, stringLocalizer);
+        return new JJFileDownloader(httpContext, fileStorage, encryptionService, stringLocalizer);
     }
 
     public JJFileDownloader Create(FileStorageItemKey file)
@@ -26,8 +25,7 @@ public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
 
     public JJFileDownloader Create(FormElement formElement, FormElementField field, Dictionary<string, object> values, string fileName, bool isTemporary = false)
     {
-        var storage = isTemporary ? temporaryFileStore : fileStorage;
-        var folderPath = storage.GetFolderPath(formElement, field, values);
+        var folderPath = fileStorage.GetFolderPath(formElement, field, values);
         var fullPath = FileStoragePath.Combine(folderPath, fileName);
         return Create(new FileStorageItemKey(fullPath, isTemporary));
     }

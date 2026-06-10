@@ -16,12 +16,10 @@ public class FormFileServiceTests
     public async Task GetFilesAsync_WhenPreferTemporaryFiles_ReturnsOnlyTemporaryFiles()
     {
         var fileStorage = new DiskFileStorage();
-        var temporaryUploadStore = new TemporaryDiskFileStore();
         var draftId = Guid.NewGuid().ToString("N");
         var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
         var service = new FormFileService(
             new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
-            temporaryUploadStore,
             fileStorage,
             Mock.Of<IStringLocalizer<MasterDataResources>>(),
             NullLoggerFactory.Instance);
@@ -51,7 +49,7 @@ public class FormFileServiceTests
         finally
         {
             await fileStorage.DeleteFolderAsync(folderPath, TestContext.Current.CancellationToken);
-            await temporaryUploadStore.DeleteFolderAsync(draftId, TestContext.Current.CancellationToken);
+            await fileStorage.DeleteFolderAsync(fileStorage.GetDraftFolderPath(draftId), TestContext.Current.CancellationToken);
         }
     }
 

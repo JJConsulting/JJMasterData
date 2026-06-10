@@ -12,25 +12,19 @@ using Microsoft.Extensions.Localization;
 namespace JJMasterData.Core.UI.Components;
 
 public class JJFileDownloader(
-        IHttpContextAccessor currentContext,
-        IFileStorage fileStorage,
-        ITemporaryFileStore temporaryFileStore,
-        IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
-    : HtmlComponent
+    IHttpContextAccessor httpContextAccessor,
+    IFileStorage fileStorage,
+    IEncryptionService encryptionService,
+    IStringLocalizer<MasterDataResources> stringLocalizer) : HtmlComponent
 {
-    public const string FileTokenParameter = "downloadFileToken";
+    private const string FileTokenParameter = "downloadFileToken";
 
     public FileStorageItemKey File { get; set; }
-
-    internal IHttpContextAccessor CurrentContext { get; } = currentContext;
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    internal IEncryptionService EncryptionService { get; } = encryptionService;
 
     protected override HtmlBuilder BuildHtml()
     {
         if (File == null)
-            throw new JJMasterDataException(StringLocalizer["Invalid file reference"]);
+            throw new JJMasterDataException(stringLocalizer["Invalid file reference"]);
 
         return new HtmlBuilder();
     }
@@ -40,23 +34,22 @@ public class JJFileDownloader(
         if (File == null)
             throw new ArgumentNullException(nameof(File));
 
-        var storage = File.IsTemporary ? temporaryFileStore : fileStorage;
-        var stream = await storage.OpenReadAsync(File.FullPath);
+        var stream = await fileStorage.OpenReadAsync(File.FullPath);
         return new FileStreamComponentResult(stream, File.FileName);
     }
-    
+
     public async Task<FileStreamComponentResult> GetDownloadResultAsync()
     {
-        var token = CurrentContext.HttpContext!.Request.Query[FileTokenParameter].ToString();
+        var token = httpContextAccessor.HttpContext!.Request.Query[FileTokenParameter].ToString();
         if (string.IsNullOrEmpty(token))
             throw new JJMasterDataException("Invalid file token.");
 
-        var fileKey = EncryptionService.DecryptObject<FileStorageItemKey>(token);
+        var fileKey = encryptionService.DecryptObject<FileStorageItemKey>(token);
         File = fileKey;
-        
+
         return await GetDirectDownloadResultAsync();
     }
-    
+
     public string GetDownloadUrl(string absoluteUri)
     {
         if (File == null)
@@ -66,8 +59,8 @@ public class JJFileDownloader(
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         var routeContext = new RouteContext(ComponentContext.DownloadFile);
 
-        query["routeContext"] = EncryptionService.EncryptObject(routeContext);
-        query[FileTokenParameter] = EncryptionService.EncryptObject(File);
+        query["routeContext"] = encryptionService.EncryptObject(routeContext);
+        query[FileTokenParameter] = encryptionService.EncryptObject(File);
 
         uriBuilder.Query = query.ToString()!;
 
@@ -76,6 +69,6 @@ public class JJFileDownloader(
 
     public string GetDownloadUrl()
     {
-        return GetDownloadUrl(CurrentContext.HttpContext!.Request.GetAbsoluteUri());
+        return GetDownloadUrl(httpContextAccessor.HttpContext!.Request.GetAbsoluteUri());
     }
 }

@@ -28,7 +28,6 @@ public static class DataManagerServiceExtensions
         services.TryAddTransient<FormValuesService>();
         
         services.TryAddScoped<IFileStorage, DiskFileStorage>();
-        services.TryAddScoped<ITemporaryFileStore, TemporaryDiskFileStore>();
         
         services.TryAddTransient<FormFileService>();
         services.TryAddTransient<ElementFileService>();
