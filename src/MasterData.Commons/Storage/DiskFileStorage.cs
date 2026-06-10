@@ -69,14 +69,14 @@ public class DiskFileStorage : IFileStorage
         return Task.CompletedTask;
     }
 
-    public Task<List<FileStorageItem>> ListAsync(string folderPath, CancellationToken cancellationToken = default)
+    public Task<List<FileStorageItem>> ListAsync(string folderPath, bool isRecursive = false, CancellationToken cancellationToken = default)
     {
         var resolvedFolderPath = FileStoragePath.ResolveFolderPath(folderPath);
         if (!Directory.Exists(resolvedFolderPath))
             return Task.FromResult(new List<FileStorageItem>());
 
         var files = new DirectoryInfo(resolvedFolderPath)
-            .EnumerateFiles()
+            .EnumerateFiles("*", isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
             .Select(file => new FileStorageItem
             {
                 FileName = file.Name,

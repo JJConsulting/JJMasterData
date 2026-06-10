@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.Html;
@@ -19,11 +20,11 @@ public class JJFileDownloader(
 {
     private const string FileTokenParameter = "downloadFileToken";
 
-    public FileStorageItemKey File { get; set; }
+    public string FullPath { get; set; }
 
     protected override HtmlBuilder BuildHtml()
     {
-        if (File == null)
+        if (string.IsNullOrEmpty(FullPath))
             throw new JJMasterDataException(stringLocalizer["Invalid file reference"]);
 
         return new HtmlBuilder();
@@ -31,11 +32,14 @@ public class JJFileDownloader(
 
     public async Task<FileStreamComponentResult> GetDirectDownloadResultAsync()
     {
-        if (File == null)
-            throw new ArgumentNullException(nameof(File));
+        if (string.IsNullOrEmpty(FullPath))
+            throw new ArgumentNullException(nameof(FullPath));
 
-        var stream = await fileStorage.OpenReadAsync(File.FullPath);
-        return new FileStreamComponentResult(stream, File.FileName);
+        var stream = await fileStorage.OpenReadAsync(FullPath);
+        
+        var fileName = Path.GetFileName(FullPath);
+        
+        return new FileStreamComponentResult(stream, fileName);
     }
 
     public async Task<FileStreamComponentResult> GetDownloadResultAsync()
@@ -43,24 +47,23 @@ public class JJFileDownloader(
         var token = httpContextAccessor.HttpContext!.Request.Query[FileTokenParameter].ToString();
         if (string.IsNullOrEmpty(token))
             throw new JJMasterDataException("Invalid file token.");
-
-        var fileKey = encryptionService.DecryptObject<FileStorageItemKey>(token);
-        File = fileKey;
+        
+        FullPath = encryptionService.DecryptStringWithUrlUnescape(token);
 
         return await GetDirectDownloadResultAsync();
     }
 
     public string GetDownloadUrl(string absoluteUri)
     {
-        if (File == null)
-            throw new ArgumentNullException(nameof(File));
+        if (FullPath == null)
+            throw new ArgumentNullException(nameof(FullPath));
 
         var uriBuilder = new UriBuilder(absoluteUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         var routeContext = new RouteContext(ComponentContext.DownloadFile);
 
         query["routeContext"] = encryptionService.EncryptObject(routeContext);
-        query[FileTokenParameter] = encryptionService.EncryptObject(File);
+        query[FileTokenParameter] = encryptionService.EncryptStringWithUrlEscape(FullPath);
 
         uriBuilder.Query = query.ToString()!;
 

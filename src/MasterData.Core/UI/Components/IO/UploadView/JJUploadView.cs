@@ -467,7 +467,10 @@ public class JJUploadView : AsyncComponent
     private async Task<HtmlBuilder> GetHtmlImageBox(string fileName)
     {
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.File = await FormFileService.GetFileKeyAsync(DraftId, FolderPath, fileName);
+
+        var file = await FormFileService.GetFileAsync(DraftId, FolderPath, fileName);
+        
+        downloader.FullPath = file.FullPath;
         var src = downloader.GetDownloadUrl();
         
         var html = new HtmlBuilder(HtmlTag.Img);
@@ -630,8 +633,9 @@ public class JJUploadView : AsyncComponent
 
         if (DownloadAction.IsVisible)
         {
-            var downloader = ComponentFactory.Downloader.Create();
-            downloader.File = await FormFileService.GetFileKeyAsync(DraftId, FolderPath, fileName);
+            var file = await FormFileService.GetFileAsync(DraftId, FolderPath, fileName);
+            
+            var downloader = ComponentFactory.Downloader.Create(file.FullPath);
             actions.Add(CreateActionCell(DownloadAction, urlAction: downloader.GetDownloadUrl()));
         }
 
@@ -736,8 +740,8 @@ public class JJUploadView : AsyncComponent
     public Task ClearTemporaryFilesAsync() => 
         FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
 
-    public Task PromoteTemporaryFilesAsync(string folderPath) =>
-        FormFileService.PromoteTemporaryFilesAsync(DraftId, folderPath, !UploadArea.Multiple);
+    public Task PromoteDraftFilesAsync(string folderPath) =>
+        FormFileService.PromoteDraftFilesAsync(DraftId, folderPath);
 
     public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {
@@ -754,8 +758,10 @@ public class JJUploadView : AsyncComponent
                 throw exception;
             }
         }
-        var downloader = ComponentFactory.Downloader.Create();
-        downloader.File = await FormFileService.GetFileKeyAsync(DraftId, FolderPath, fileName);
+        
+        var file = await FormFileService.GetFileAsync(DraftId, FolderPath, fileName);
+        var downloader = ComponentFactory.Downloader.Create(file.FullPath);
+
         return await downloader.GetDirectDownloadResultAsync();
     }
 

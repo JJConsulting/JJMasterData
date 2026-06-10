@@ -32,7 +32,7 @@ public static class FileStoragePath
 
         var separator = Path.DirectorySeparatorChar;
         var resolvedFolderPath = folderPath.Replace("{app.path}", FileIO.GetApplicationPath().TrimEnd(separator));
-
+        
         return Path.GetFullPath(resolvedFolderPath);
     }
 

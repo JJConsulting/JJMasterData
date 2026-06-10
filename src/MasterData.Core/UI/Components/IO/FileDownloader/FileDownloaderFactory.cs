@@ -16,17 +16,18 @@ public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
         return new JJFileDownloader(httpContext, fileStorage, encryptionService, stringLocalizer);
     }
 
-    public JJFileDownloader Create(FileStorageItemKey file)
+    public JJFileDownloader Create(string fullPath)
     {
         var downloader = Create();
-        downloader.File = file;
+        downloader.FullPath = fullPath;
         return downloader;
     }
-
+    
     public JJFileDownloader Create(FormElement formElement, FormElementField field, Dictionary<string, object> values, string fileName, bool isTemporary = false)
     {
         var folderPath = FileStoragePath.GetFolderPath(formElement, field, values);
         var fullPath = FileStoragePath.Combine(folderPath, fileName);
-        return Create(new FileStorageItemKey(fullPath, isTemporary));
+        
+        return Create(fullPath);
     }
 }

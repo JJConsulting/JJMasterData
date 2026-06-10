@@ -188,10 +188,10 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         return html;
     }
 
-    public Task PromoteTemporaryFilesAsync()
+    public Task PromoteDraftFilesAsync()
     {
         var uploadView = UploadView;
-        return uploadView.PromoteTemporaryFilesAsync(GetFolderPath());
+        return uploadView.PromoteDraftFilesAsync(GetFolderPath());
     }
 
     public Task DeleteAllAsync()
@@ -290,9 +290,8 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     private string GetDownloadLink(string fileName)
     {
-        var fileDownloader = componentFactory.Downloader.Create();
         var fullPath = FileStoragePath.Combine(GetFolderPath(), fileName);
-        fileDownloader.File = new FileStorageItemKey(fullPath, false);
+        var fileDownloader = componentFactory.Downloader.Create(fullPath);
         return fileDownloader.GetDownloadUrl();
     }
 }

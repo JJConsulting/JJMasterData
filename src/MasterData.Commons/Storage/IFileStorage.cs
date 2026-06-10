@@ -7,7 +7,7 @@ namespace JJMasterData.Commons.Storage;
 
 public interface IFileStorage
 {
-    Task<List<FileStorageItem>> ListAsync(string folderPath, CancellationToken cancellationToken = default);
+    Task<List<FileStorageItem>> ListAsync(string folderPath, bool isRecursive = false, CancellationToken cancellationToken = default);
     Task<Stream> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default);
     Task SaveAsync(string fullPath, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default);
     Task DeleteAsync(string fullPath, CancellationToken cancellationToken = default);

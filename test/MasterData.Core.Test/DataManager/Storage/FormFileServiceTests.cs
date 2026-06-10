@@ -21,8 +21,7 @@ public class FormFileServiceTests
         var service = new FormFileService(
             new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
             fileStorage,
-            Mock.Of<IStringLocalizer<MasterDataResources>>(),
-            NullLoggerFactory.Instance);
+            Mock.Of<IStringLocalizer<MasterDataResources>>());
 
         try
         {
@@ -49,7 +48,7 @@ public class FormFileServiceTests
         finally
         {
             await fileStorage.DeleteFolderAsync(folderPath, TestContext.Current.CancellationToken);
-            await fileStorage.DeleteFolderAsync(fileStorage.GetDraftFolderPath(draftId), TestContext.Current.CancellationToken);
+            await fileStorage.DeleteFolderAsync(FormFileService.GetDraftFolderPath(draftId), TestContext.Current.CancellationToken);
         }
     }
 
