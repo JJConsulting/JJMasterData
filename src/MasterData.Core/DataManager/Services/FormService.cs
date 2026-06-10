@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataManager.Services;
 
 public class FormService(
+    IHttpContextAccessor httpContextAccessor,
     IEntityRepository entityRepository,
     FormFileService formFileService,
     FieldValidationService fieldValidationService,
@@ -243,6 +244,22 @@ public class FormService(
 
 
         return letter;
+    }
+
+    public async Task DeleteDraftsAsync(FormElement formElement)
+    {
+        var formValues = httpContextAccessor.HttpContext!.Request.Form;
+        foreach (var field in formElement.Fields)
+        {
+            if (field.Component is not FormComponent.File || field.DataFile is null)
+                continue;
+
+            var draftId = formValues[$"{field.Name}-upload-view-files-draft-id"].ToString();
+            if (string.IsNullOrWhiteSpace(draftId))
+                continue;
+
+            await formFileService.DeleteAllAsync(draftId, string.Empty, autoSave: false);
+        }
     }
 
     /// <summary>

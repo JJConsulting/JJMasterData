@@ -723,11 +723,18 @@ public class JJFormView : AsyncComponent
         htmlBuilder.AppendScript(Scripts.GetShowInsertSuccessScript());
     }
 
-    private Task<ComponentResult> GetCancelActionResult()
+    private async Task<ComponentResult> GetCancelActionResult()
     {
         PageState = PageState.List;
 
-        return GridView.GetResultAsync();
+        await ClearDrafts();
+
+        return await GridView.GetResultAsync();
+    }
+    
+    private async Task ClearDrafts()
+    {
+        await _formService.DeleteDraftsAsync(FormElement);
     }
 
     private Task<ComponentResult> GetBackActionResult()
