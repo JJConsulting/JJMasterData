@@ -11,7 +11,6 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Storage;
-using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -35,7 +34,8 @@ public class ElementFileService(
         if (string.IsNullOrEmpty(fileName))
             return null;
 
-        return await fileStorage.OpenReadAsync(folderPath, fileName);
+        var fullPath = FileStoragePath.Combine(folderPath, fileName);
+        return await fileStorage.OpenReadAsync(fullPath);
     }
 
     
@@ -103,7 +103,8 @@ public class ElementFileService(
         var fileName = Path.GetFileName(file.FileName);
         
         await using var uploadStream = file.OpenReadStream();
-        await fileStorage.SaveAsync(folderPath, fileName, uploadStream, true);
+        var fullPath = FileStoragePath.Combine(folderPath, fileName);
+        await fileStorage.SaveAsync(fullPath, uploadStream, true);
     }
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
@@ -126,7 +127,8 @@ public class ElementFileService(
         fileName = Path.GetFileName(fileName);
         var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
-        await fileStorage.DeleteAsync(folderPath, fileName);
+        var fullPath = FileStoragePath.Combine(folderPath, fileName);
+        await fileStorage.DeleteAsync(fullPath);
     }
     
     private async Task DeleteEntityFileAsync(Element element, FormElementField field, string pkValues, string fileName)
@@ -176,7 +178,9 @@ public class ElementFileService(
     private async Task RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
         var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
-        await fileStorage.RenameAsync(folderPath, oldName, newName);
+        var oldFullPath = FileStoragePath.Combine(folderPath, oldName);
+        var newFullPath = FileStoragePath.Combine(folderPath, newName);
+        await fileStorage.MoveAsync(oldFullPath, newFullPath);
     }
     
     private async Task RenameEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName,

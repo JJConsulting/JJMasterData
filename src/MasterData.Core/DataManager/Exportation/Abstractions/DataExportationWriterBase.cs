@@ -164,7 +164,8 @@ public abstract class DataExportationWriterBase(
                 }
 
                 await using var readStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
-                await FileStorage.SaveAsync(FolderPath, fileName, readStream, true, token);
+                var fullPath = FileStoragePath.Combine(FolderPath, fileName);
+                await FileStorage.SaveAsync(fullPath, readStream, true, token);
             }
             finally
             {
@@ -275,6 +276,7 @@ public abstract class DataExportationWriterBase(
 
     public async Task<Stream> OpenReadAsync()
     {
-        return await FileStorage.OpenReadAsync(ProcessReporter.FolderPath, ProcessReporter.FileName);
+        var fullPath = FileStoragePath.Combine(ProcessReporter.FolderPath, ProcessReporter.FileName);
+        return await FileStorage.OpenReadAsync(fullPath);
     }
 }

@@ -1,3 +1,6 @@
 namespace JJMasterData.Core.DataManager.Storage;
 
-public sealed record FileStorageItemKey(string FolderPath, string FileName, bool IsTemporary);
+public sealed record FileStorageItemKey(string FullPath, bool IsTemporary)
+{
+    public string FileName => FileStoragePath.GetFileName(FullPath);
+}

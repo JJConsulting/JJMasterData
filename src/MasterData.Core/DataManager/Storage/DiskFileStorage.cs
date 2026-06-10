@@ -23,12 +23,13 @@ public class DiskFileStorage : IFileStorage
         return CombineKey(ResolveFolderPath(field.DataFile.FolderPath), pkValues);
     }
 
-    public async Task SaveAsync(string folderPath, string fileName, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(string fullPath, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)
     {
-        var resolvedFolderPath = ResolveFolderPath(folderPath);
-        Directory.CreateDirectory(resolvedFolderPath);
+        var filePath = ResolveFilePath(fullPath);
+        var folderPath = Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(folderPath))
+            Directory.CreateDirectory(folderPath);
 
-        var filePath = GetFilePath(resolvedFolderPath, fileName);
         var mode = replaceIfExists ? FileMode.Create : FileMode.CreateNew;
 
         if (content.CanSeek)
@@ -38,16 +39,16 @@ public class DiskFileStorage : IFileStorage
         await content.CopyToAsync(fileStream, cancellationToken);
     }
 
-    public Task<Stream> OpenReadAsync(string folderPath, string fileName, CancellationToken cancellationToken = default)
+    public Task<Stream> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
     {
-        var filePath = GetFilePath(ResolveFolderPath(folderPath), fileName);
+        var filePath = ResolveFilePath(fullPath);
         Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
         return Task.FromResult(stream);
     }
 
-    public Task DeleteAsync(string folderPath, string fileName, CancellationToken cancellationToken = default)
+    public Task DeleteAsync(string fullPath, CancellationToken cancellationToken = default)
     {
-        var filePath = GetFilePath(ResolveFolderPath(folderPath), fileName);
+        var filePath = ResolveFilePath(fullPath);
         if (File.Exists(filePath))
             File.Delete(filePath);
         else
@@ -65,16 +66,20 @@ public class DiskFileStorage : IFileStorage
         return Task.CompletedTask;
     }
 
-    public Task RenameAsync(string folderPath, string currentName, string newName, CancellationToken cancellationToken = default)
+    public Task MoveAsync(string currentFullPath, string newFullPath, CancellationToken cancellationToken = default)
     {
-        var resolvedFolderPath = ResolveFolderPath(folderPath);
-        var currentPath = GetFilePath(resolvedFolderPath, currentName);
-        var newPath = GetFilePath(resolvedFolderPath, newName);
+        var currentPath = ResolveFilePath(currentFullPath);
+        var newPath = ResolveFilePath(newFullPath);
 
         if (!File.Exists(currentPath))
             throw new KeyNotFoundException("File not found");
 
+        var newFolderPath = Path.GetDirectoryName(newPath);
+        if (!string.IsNullOrEmpty(newFolderPath))
+            Directory.CreateDirectory(newFolderPath);
+
         File.Move(currentPath, newPath, true);
+
         return Task.CompletedTask;
     }
 
@@ -109,14 +114,21 @@ public class DiskFileStorage : IFileStorage
         return Path.GetFullPath(resolvedFolderPath);
     }
 
+    private string ResolveFilePath(string fullPath)
+    {
+        if (string.IsNullOrEmpty(fullPath))
+            throw new ArgumentNullException(nameof(fullPath));
+
+        var normalizedFullPath = fullPath.Replace('\\', '/');
+        var folderPath = Path.GetDirectoryName(normalizedFullPath);
+        if (string.IsNullOrEmpty(folderPath))
+            throw new ArgumentException("File path must include a folder.", nameof(fullPath));
+
+        return FileStoragePath.GetFilePath(ResolveFolderPath(folderPath), FileStoragePath.GetFileName(normalizedFullPath));
+    }
+
     private static string CombineKey(string rootKey, string childKey)
     {
         return string.IsNullOrEmpty(childKey) ? rootKey : $"{rootKey.TrimEnd('/', '\\')}/{childKey}";
-    }
-
-    private static string GetFilePath(string folderPath, string fileName)
-    {
-        fileName = Path.GetFileName(fileName);
-        return Path.Combine(folderPath, fileName);
     }
 }

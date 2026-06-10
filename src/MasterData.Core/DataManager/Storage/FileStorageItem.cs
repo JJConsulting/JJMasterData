@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-
 namespace JJMasterData.Core.DataManager.Storage;
 
 public sealed class FileStorageItem
@@ -17,17 +15,10 @@ public sealed class FileStorageItem
     {
         get
         {
-            var safeFileName = GetSafeFileName(FileName);
-            
             if (string.IsNullOrEmpty(FolderPath))
-                return safeFileName;
+                return FileStoragePath.GetFileName(FileName);
             
-            return $"{FolderPath}/{safeFileName}";
+            return FileStoragePath.Combine(FolderPath, FileName);
         }
-    }
-
-    private static string GetSafeFileName(string value)
-    {
-        return Path.GetFileName(value?.Replace('\\', '/') ?? string.Empty);
     }
 }

@@ -28,6 +28,7 @@ public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
     {
         var storage = isTemporary ? temporaryFileStore : fileStorage;
         var folderPath = storage.GetFolderPath(formElement, field, values);
-        return Create(new FileStorageItemKey(folderPath, fileName, isTemporary));
+        var fullPath = FileStoragePath.Combine(folderPath, fileName);
+        return Create(new FileStorageItemKey(fullPath, isTemporary));
     }
 }

@@ -36,8 +36,9 @@ public sealed class TemporaryDiskFileStore : DiskFileStorage, ITemporaryFileStor
 
         foreach (var file in files)
         {
-            await using var stream = await OpenReadAsync(draftFolderPath, file.FileName, cancellationToken);
-            await destinationStorage.SaveAsync(destinationFolderPath, file.FileName, stream, true, cancellationToken);
+            await using var stream = await OpenReadAsync(file.FullPath, cancellationToken);
+            var fullPath = FileStoragePath.Combine(destinationFolderPath, file.FileName);
+            await destinationStorage.SaveAsync(fullPath, stream, true, cancellationToken);
         }
 
         await DeleteFolderAsync(draftFolderPath, cancellationToken);

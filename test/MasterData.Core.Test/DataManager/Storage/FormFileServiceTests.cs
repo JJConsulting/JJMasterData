@@ -28,7 +28,8 @@ public class FormFileServiceTests
 
         try
         {
-            await fileStorage.SaveAsync(folderPath, "old-file.txt", CreateStream("old"), true, TestContext.Current.CancellationToken);
+            var fullPath = FileStoragePath.Combine(folderPath, "old-file.txt");
+            await fileStorage.SaveAsync(fullPath, CreateStream("old"), true, TestContext.Current.CancellationToken);
             await service.CreateFileAsync(
                 draftId,
                 folderPath,

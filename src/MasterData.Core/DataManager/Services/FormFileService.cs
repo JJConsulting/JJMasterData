@@ -100,7 +100,9 @@ public class FormFileService(
             ? temporaryFileStore.GetDraftFolderPath(draftId)
             : folderPath;
 
-        await storage.RenameAsync(storageFolderPath, currentName, newName);
+        var currentFullPath = FileStoragePath.Combine(storageFolderPath, currentName);
+        var newFullPath = FileStoragePath.Combine(storageFolderPath, newName);
+        await storage.MoveAsync(currentFullPath, newFullPath);
     }
 
     public async Task<FileStorageItem> GetFileAsync(string draftId, string folderPath, string fileName)
@@ -117,8 +119,7 @@ public class FormFileService(
             throw new JJMasterDataException(stringLocalizer["file {0} not found!", fileName]);
 
         return new FileStorageItemKey(
-            file.IsTemporary ? temporaryFileStore.GetDraftFolderPath(draftId) : folderPath,
-            file.FileName,
+            file.FullPath,
             file.IsTemporary);
     }
 
@@ -158,7 +159,8 @@ public class FormFileService(
             ? folderPath
             : temporaryFileStore.GetDraftFolderPath(draftId);
 
-        await storage.SaveAsync(storageFolderPath, fileContent.FileName, fileContent.Stream, true);
+        var fullPath = FileStoragePath.Combine(storageFolderPath, fileContent.FileName);
+        await storage.SaveAsync(fullPath, fileContent.Stream, true);
     }
 
     public async Task DeleteFileAsync(
@@ -187,7 +189,8 @@ public class FormFileService(
 
         var storage = file.IsTemporary ? temporaryFileStore : fileStorage;
         var storageFolderPath = file.IsTemporary ? temporaryFileStore.GetDraftFolderPath(draftId) : folderPath;
-        await storage.DeleteAsync(storageFolderPath, fileName);
+        var fullPath = FileStoragePath.Combine(storageFolderPath, fileName);
+        await storage.DeleteAsync(fullPath);
     }
 
     public async Task DeleteAllAsync(string draftId, string folderPath, bool autoSave)
@@ -214,7 +217,7 @@ public class FormFileService(
     public Task<Stream> OpenReadAsync(FileStorageItem reference)
     {
         var storage = reference.IsTemporary ? temporaryFileStore : fileStorage;
-        return storage.OpenReadAsync(reference.FolderPath, reference.FileName);
+        return storage.OpenReadAsync(reference.FullPath);
     }
 
     public async Task SaveFormTemporaryFilesAsync(FormElement formElement, Dictionary<string, object> values)
@@ -277,4 +280,5 @@ public class FormFileService(
                 FolderPath = folderPath
             });
     }
+
 }

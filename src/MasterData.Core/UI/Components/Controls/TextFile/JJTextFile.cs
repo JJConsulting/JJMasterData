@@ -294,7 +294,8 @@ public sealed class JJTextFile(IHttpContextAccessor request,
     private string GetDownloadLink(string fileName)
     {
         var fileDownloader = componentFactory.Downloader.Create();
-        fileDownloader.File = new FileStorageItemKey(GetFolderPath(), fileName, false);
+        var fullPath = FileStoragePath.Combine(GetFolderPath(), fileName);
+        fileDownloader.File = new FileStorageItemKey(fullPath, false);
         return fileDownloader.GetDownloadUrl();
     }
 }

@@ -62,7 +62,8 @@ public class FileController(
 
         try
         {
-            var stream = await fileStorage.OpenReadAsync(folderPath, safeFileName);
+            var fullPath = FileStoragePath.Combine(folderPath, safeFileName);
+            var stream = await fileStorage.OpenReadAsync(fullPath);
             var contentType = MimeTypeUtil.GetMimeType(safeFileName);
             return File(stream, contentType, safeFileName);
         }
