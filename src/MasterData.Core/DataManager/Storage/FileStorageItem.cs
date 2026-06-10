@@ -25,11 +25,6 @@ public sealed class FileStorageItem
             return $"{FolderPath}/{safeFileName}";
         }
     }
-    
-    public FileStorageItemKey ToKey()
-    {
-        return new FileStorageItemKey(FolderPath, FileName, IsTemporary);
-    }
 
     private static string GetSafeFileName(string value)
     {
