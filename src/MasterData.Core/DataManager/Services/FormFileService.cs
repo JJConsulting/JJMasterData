@@ -26,7 +26,7 @@ public class FormFileService(
     public event AsyncEventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFileAsync;
     public event AsyncEventHandler<FormRenameFileEventArgs> OnBeforeRenameFileAsync;
 
-    public async Task<List<FileStorageItem>> GetFilesAsync(string draftId, string folderPath, bool preferTemporaryFiles = false)
+    public async Task<List<FileStorageItem>> GetFilesAsync(string draftId, string folderPath)
     {
         var files = new List<FileStorageItem>();
         var draftFolderPath = GetDraftFolderPath(draftId);
@@ -41,9 +41,7 @@ public class FormFileService(
             .Select(group => group.OrderByDescending(file => IsDraftFile(file, draftFolderPath)).First())
             .ToList();
 
-        return preferTemporaryFiles && mergedFiles.Exists(file => IsDraftFile(file, draftFolderPath))
-            ? mergedFiles.Where(file => IsDraftFile(file, draftFolderPath)).ToList()
-            : mergedFiles;
+        return mergedFiles;
     }
 
     public async Task RenameFileAsync(

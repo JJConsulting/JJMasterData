@@ -734,8 +734,19 @@ public class JJUploadView : AsyncComponent
     internal Task DeleteAllAsync() => 
         FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
 
-    public Task<List<FileStorageItem>> GetFilesAsync() => 
-        FormFileService.GetFilesAsync(DraftId, FolderPath, !UploadArea.Multiple);
+    public async Task<List<FileStorageItem>> GetFilesAsync()
+    {
+        var files = await FormFileService.GetFilesAsync(DraftId, FolderPath);
+        if (UploadArea.Multiple)
+            return files;
+
+        var draftFolderPath = FormFileService.GetDraftFolderPath(DraftId);
+        var draftFiles = files
+            .Where(file => string.Equals(file.FolderPath, draftFolderPath, StringComparison.Ordinal))
+            .ToList();
+
+        return draftFiles.Count > 0 ? draftFiles : files;
+    }
 
     public Task ClearTemporaryFilesAsync() => 
         FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
