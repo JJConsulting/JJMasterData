@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Storage;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -220,7 +220,7 @@ public class FormFileService(
         foreach (var field in uploadFields)
         {
             var draftId = GetDraftId($"{field.Name}-upload-view-files");
-            var folderPath = fileStorage.GetFolderPath(formElement, field, values);
+            var folderPath = FileStoragePath.GetFolderPath(formElement, field, values);
 
             await PromoteTemporaryFilesAsync(draftId, folderPath, deleteExistingFiles: !field.DataFile.MultipleFile);
         }
@@ -235,7 +235,7 @@ public class FormFileService(
         foreach (var field in fileFields)
         {
             var draftId = GetDraftId($"{field.Name}-upload-view-files");
-            var folderPath = fileStorage.GetFolderPath(formElement, field, primaryKeys);
+            var folderPath = FileStoragePath.GetFolderPath(formElement, field, primaryKeys);
             await DeleteAllAsync(draftId, folderPath, autoSave: true);
         }
     }

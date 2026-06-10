@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace JJMasterData.Core.DataDictionary.Services;
+namespace JJMasterData.Commons.Util;
 
 public enum CountryCode
 {

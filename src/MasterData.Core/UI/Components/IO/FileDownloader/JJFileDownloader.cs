@@ -5,7 +5,7 @@ using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Core.DataManager.Storage;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 

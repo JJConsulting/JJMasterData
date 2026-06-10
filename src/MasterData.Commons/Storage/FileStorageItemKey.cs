@@ -1,4 +1,4 @@
-namespace JJMasterData.Core.DataManager.Storage;
+namespace JJMasterData.Commons.Storage;
 
 public sealed record FileStorageItemKey(string FullPath, bool IsTemporary)
 {

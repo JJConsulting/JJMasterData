@@ -1,31 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager.Storage;
+namespace JJMasterData.Commons.Storage;
 
 public class DiskFileStorage : IFileStorage
 {
-    public virtual string GetFolderPath(FormElement formElement, FormElementField field, Dictionary<string, object> values)
-    {
-        if (field.DataFile == null)
-            throw new ArgumentException(@$"{nameof(FormElementField.DataFile)} not defined.", field.Name);
-
-        if (string.IsNullOrEmpty(field.DataFile.FolderPath))
-            throw new ArgumentException(@$"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", field.Name);
-
-        var pkValues = DataHelper.ParsePkValues(formElement, values, '_');
-        return CombineKey(ResolveFolderPath(field.DataFile.FolderPath), pkValues);
-    }
-
     public async Task SaveAsync(string fullPath, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)
     {
-        var filePath = ResolveFilePath(fullPath);
+        var filePath = FileStoragePath.ResolveFullPath(fullPath);
+        
         var folderPath = Path.GetDirectoryName(filePath);
         if (!string.IsNullOrEmpty(folderPath))
             Directory.CreateDirectory(folderPath);
@@ -41,14 +27,14 @@ public class DiskFileStorage : IFileStorage
 
     public Task<Stream> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
     {
-        var filePath = ResolveFilePath(fullPath);
+        var filePath = FileStoragePath.ResolveFullPath(fullPath);
         Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
         return Task.FromResult(stream);
     }
 
     public Task DeleteAsync(string fullPath, CancellationToken cancellationToken = default)
     {
-        var filePath = ResolveFilePath(fullPath);
+        var filePath = FileStoragePath.ResolveFullPath(fullPath);
         if (File.Exists(filePath))
             File.Delete(filePath);
         else
@@ -59,7 +45,7 @@ public class DiskFileStorage : IFileStorage
 
     public Task DeleteFolderAsync(string folderPath, CancellationToken cancellationToken = default)
     {
-        var resolvedFolderPath = ResolveFolderPath(folderPath);
+        var resolvedFolderPath = FileStoragePath.ResolveFolderPath(folderPath);
         if (Directory.Exists(resolvedFolderPath))
             Directory.Delete(resolvedFolderPath, true);
 
@@ -68,8 +54,8 @@ public class DiskFileStorage : IFileStorage
 
     public Task MoveAsync(string currentFullPath, string newFullPath, CancellationToken cancellationToken = default)
     {
-        var currentPath = ResolveFilePath(currentFullPath);
-        var newPath = ResolveFilePath(newFullPath);
+        var currentPath = FileStoragePath.ResolveFullPath(currentFullPath);
+        var newPath = FileStoragePath.ResolveFullPath(newFullPath);
 
         if (!File.Exists(currentPath))
             throw new KeyNotFoundException("File not found");
@@ -85,7 +71,7 @@ public class DiskFileStorage : IFileStorage
 
     public Task<List<FileStorageItem>> ListAsync(string folderPath, CancellationToken cancellationToken = default)
     {
-        var resolvedFolderPath = ResolveFolderPath(folderPath);
+        var resolvedFolderPath = FileStoragePath.ResolveFolderPath(folderPath);
         if (!Directory.Exists(resolvedFolderPath))
             return Task.FromResult(new List<FileStorageItem>());
 
@@ -101,34 +87,5 @@ public class DiskFileStorage : IFileStorage
             .ToList();
 
         return Task.FromResult(files);
-    }
-
-    protected virtual string ResolveFolderPath(string folderPath)
-    {
-        if (string.IsNullOrEmpty(folderPath))
-            throw new ArgumentNullException(nameof(folderPath));
-
-        var separator = Path.DirectorySeparatorChar;
-        var resolvedFolderPath = folderPath.Replace("{app.path}", FileIO.GetApplicationPath().TrimEnd(separator));
-
-        return Path.GetFullPath(resolvedFolderPath);
-    }
-
-    private string ResolveFilePath(string fullPath)
-    {
-        if (string.IsNullOrEmpty(fullPath))
-            throw new ArgumentNullException(nameof(fullPath));
-
-        var normalizedFullPath = fullPath.Replace('\\', '/');
-        var folderPath = Path.GetDirectoryName(normalizedFullPath);
-        if (string.IsNullOrEmpty(folderPath))
-            throw new ArgumentException("File path must include a folder.", nameof(fullPath));
-
-        return FileStoragePath.GetFilePath(ResolveFolderPath(folderPath), FileStoragePath.GetFileName(normalizedFullPath));
-    }
-
-    private static string CombineKey(string rootKey, string childKey)
-    {
-        return string.IsNullOrEmpty(childKey) ? rootKey : $"{rootKey.TrimEnd('/', '\\')}/{childKey}";
     }
 }

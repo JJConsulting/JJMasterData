@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.Storage;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -25,7 +25,7 @@ public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
 
     public JJFileDownloader Create(FormElement formElement, FormElementField field, Dictionary<string, object> values, string fileName, bool isTemporary = false)
     {
-        var folderPath = fileStorage.GetFolderPath(formElement, field, values);
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, values);
         var fullPath = FileStoragePath.Combine(folderPath, fileName);
         return Create(new FileStorageItemKey(fullPath, isTemporary));
     }

@@ -8,9 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Storage;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -26,7 +26,7 @@ public class ElementFileService(
         fileName = Path.GetFileName(fileName);
 
         var field = formElement.Fields.First(f => f.Name == fieldName);
-        var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
         if (string.IsNullOrEmpty(fileName))
             fileName = (await fileStorage.ListAsync(folderPath)).FirstOrDefault()?.FileName;
@@ -98,7 +98,7 @@ public class ElementFileService(
         IFormFile file)
     {
         var hashValues = DataHelper.GetPkValues(formElement, pkValues, ',');
-        var folderPath = fileStorage.GetFolderPath(formElement, field, hashValues);
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, hashValues);
 
         var fileName = Path.GetFileName(file.FileName);
         
@@ -125,7 +125,7 @@ public class ElementFileService(
     private async Task DeletePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         fileName = Path.GetFileName(fileName);
-        var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
         var fullPath = FileStoragePath.Combine(folderPath, fileName);
         await fileStorage.DeleteAsync(fullPath);
@@ -177,7 +177,7 @@ public class ElementFileService(
     
     private async Task RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
-        var folderPath = fileStorage.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
         var oldFullPath = FileStoragePath.Combine(folderPath, oldName);
         var newFullPath = FileStoragePath.Combine(folderPath, newName);
         await fileStorage.MoveAsync(oldFullPath, newFullPath);

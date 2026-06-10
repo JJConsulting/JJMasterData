@@ -3,9 +3,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JJMasterData.Core.DataManager.Storage;
+namespace JJMasterData.Commons.Storage;
 
-public static class FileStoreExtensions
+public static class FileStorageExtensions
 {
     private static readonly string RootPath = Path.Combine(Path.GetTempPath(), "jjmasterdata", "uploads");
 
@@ -27,7 +27,7 @@ public static class FileStoreExtensions
             if (string.IsNullOrWhiteSpace(draftId))
                 throw new ArgumentNullException(nameof(draftId));
 
-            return ResolveFolderPath(draftId);
+            return ResolveDraftFolderPath(draftId);
         }
 
         public async Task PromoteAsync(string draftId,
@@ -71,7 +71,7 @@ public static class FileStoreExtensions
         }
     }
 
-    private static string ResolveFolderPath(string folderPath)
+    private static string ResolveDraftFolderPath(string folderPath)
     {
         var draftId = NormalizeDraftId(folderPath);
         return Path.Combine(RootPath, draftId);

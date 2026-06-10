@@ -7,10 +7,8 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.Storage;
-using Microsoft.AspNetCore.Http;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -18,7 +16,6 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class JJTextFile(IHttpContextAccessor request,
         IComponentFactory componentFactory,
-        IFileStorage fileStorage,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEncryptionService encryptionService)
     : ControlBase(request)
@@ -214,7 +211,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     public string GetFolderPath()
     {
-        return fileStorage.GetFolderPath(FormElement, FormElementField, FormStateValues);
+        return FileStoragePath.GetFolderPath(FormElement, FormElementField, FormStateValues);
     }
 
     internal string GetDraftInputName() => $"{FormElementField.Name}-upload-view-files-draft-id";
