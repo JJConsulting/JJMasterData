@@ -43,7 +43,7 @@ public class FormFileServiceTests
 
             Assert.Equal(["new-file.txt", "old-file.txt"], allFiles.Select(file => file.FileName).Order());
             Assert.Equal(["new-file.txt"], preferredFiles.Select(file => file.FileName));
-            Assert.All(preferredFiles, file => Assert.True(file.IsTemporary));
+            Assert.All(preferredFiles, file => Assert.Equal(FormFileService.GetDraftFolderPath(draftId), file.FolderPath));
         }
         finally
         {

@@ -29,19 +29,20 @@ public class FormFileService(
     public async Task<List<FileStorageItem>> GetFilesAsync(string draftId, string folderPath, bool preferTemporaryFiles = false)
     {
         var files = new List<FileStorageItem>();
+        var draftFolderPath = GetDraftFolderPath(draftId);
 
         if (!string.IsNullOrEmpty(folderPath))
-            files.AddRange(await GetStorageFilesAsync(folderPath, false));
+            files.AddRange(await GetStorageFilesAsync(folderPath));
 
-        files.AddRange(await GetStorageFilesAsync( GetDraftFolderPath(draftId), true));
+        files.AddRange(await GetStorageFilesAsync(draftFolderPath));
 
         var mergedFiles = files
             .GroupBy(file => file.FileName)
-            .Select(group => group.OrderByDescending(file => file.IsTemporary).First())
+            .Select(group => group.OrderByDescending(file => IsDraftFile(file, draftFolderPath)).First())
             .ToList();
 
-        return preferTemporaryFiles && mergedFiles.Exists(file => file.IsTemporary)
-            ? mergedFiles.Where(file => file.IsTemporary).ToList()
+        return preferTemporaryFiles && mergedFiles.Exists(file => IsDraftFile(file, draftFolderPath))
+            ? mergedFiles.Where(file => IsDraftFile(file, draftFolderPath)).ToList()
             : mergedFiles;
     }
 
@@ -78,12 +79,8 @@ public class FormFileService(
         var file = await GetFileAsync(draftId, folderPath, currentName)
                    ?? throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
 
-        var storageFolderPath = file.IsTemporary || string.IsNullOrEmpty(folderPath)
-            ? GetDraftFolderPath(draftId)
-            : folderPath;
-
-        var currentFullPath = FileStoragePath.Combine(storageFolderPath, currentName);
-        var newFullPath = FileStoragePath.Combine(storageFolderPath, newName);
+        var currentFullPath = file.FullPath;
+        var newFullPath = FileStoragePath.Combine(file.FolderPath, newName);
         await fileStorage.MoveAsync(currentFullPath, newFullPath);
     }
 
@@ -146,9 +143,7 @@ public class FormFileService(
         if (file == null)
             return;
 
-        var storageFolderPath = file.IsTemporary ? GetDraftFolderPath(draftId) : folderPath;
-        var fullPath = FileStoragePath.Combine(storageFolderPath, fileName);
-        await fileStorage.DeleteAsync(fullPath);
+        await fileStorage.DeleteAsync(file.FullPath);
     }
 
     public async Task DeleteAllAsync(string draftId, string folderPath, bool autoSave)
@@ -209,9 +204,12 @@ public class FormFileService(
         }
     }
 
-    private async Task<IEnumerable<FileStorageItem>> GetStorageFilesAsync(
-        string folderPath,
-        bool temporary)
+    private static bool IsDraftFile(FileStorageItem file, string draftFolderPath)
+    {
+        return string.Equals(file.FolderPath, draftFolderPath, StringComparison.Ordinal);
+    }
+
+    private async Task<IEnumerable<FileStorageItem>> GetStorageFilesAsync(string folderPath)
     {
         if (string.IsNullOrEmpty(folderPath))
             return [];
@@ -219,7 +217,6 @@ public class FormFileService(
         return (await fileStorage.ListAsync(folderPath))
             .Select(file => new FileStorageItem
             {
-                IsTemporary = temporary,
                 FileName = file.FileName,
                 Length = file.Length,
                 LastWriteTime = file.LastWriteTime,

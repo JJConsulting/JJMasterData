@@ -6,7 +6,6 @@ public sealed class FileStorageItem
 {
     public required string FolderPath { get; init; }
     public required string FileName { get; init; }
-    public bool IsTemporary { get; set; }
     
     public required long Length { get; init; }
     
