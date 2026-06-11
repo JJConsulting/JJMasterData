@@ -107,6 +107,7 @@ public class JJUploadView : AsyncComponent
         }
     }
 
+
     public JJUploadArea UploadArea
     {
         get
@@ -124,7 +125,15 @@ public class JJUploadView : AsyncComponent
         }
     }
 
-    public string JsCallback { get; set; } = "getMasterDataForm().submit()";
+    public string JsCallback
+    {
+        get;
+        set
+        {
+            field = value;
+            UploadArea?.JsCallback = value;
+        }
+    } = "getMasterDataForm().submit()";
 
     public UrlRedirectAction DownloadAction =>
         field ??= new UrlRedirectAction
