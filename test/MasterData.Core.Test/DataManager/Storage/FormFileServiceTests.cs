@@ -15,7 +15,7 @@ public class FormFileServiceTests
     public async Task GetFilesAsync_WithPersistedAndDraftFiles_ReturnsMergedFiles()
     {
         var fileStorage = new DiskFileStorage();
-        var draftId = Guid.NewGuid().ToString("N");
+        var draftId = Guid.NewGuid();
         var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
         var service = new FormFileService(
             new HttpContextAccessor { HttpContext = new DefaultHttpContext() },

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.FontAwesome;
@@ -18,13 +17,12 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Events.Args;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
+// ReSharper disable MemberCanBePrivate.Global
 namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
@@ -57,32 +55,58 @@ public class JJUploadView : AsyncComponent
         add => FormFileService.OnBeforeRenameFileAsync += value;
         remove => FormFileService.OnBeforeRenameFileAsync -= value;
     }
+
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
-    
+
     internal string ParentName { get; set; }
+
     public bool ShowAddFiles { get; set; }
-    
+
     public bool IsCollapseExpandedByDefault { get; set; }
-    
+
     public string Title { get; set; }
+
     public string SubTitle { get; set; }
+
     public HeadingSize TitleSize { get; set; } = HeadingSize.H3;
+
     public FontAwesomeIcon? Icon { get; set; }
-    
+
     public bool ViewGallery { get; set; }
 
     public Dictionary<string, object> UserValues { get; set; } = new();
-    
+
     /// <summary>
     /// Always apply changes to the file system.
-    /// If false, keep it in the memory.
+    /// If false, keep it in the temp folder.
     /// (The default value is true.)
     /// </summary>
     public bool AutoSave { get; set; } = true;
 
+    /// <summary>
+    /// Full Directory Path.
+    /// (Optional) If the path is not given, all files will be stored in the temp folder.
+    /// </summary>
+    /// <remarks>
+    /// Example: C:\temp\files\ (Windows) or /tmp/Files (Linux)
+    /// </remarks>
     public string FolderPath { get; set; }
 
-    public string DraftId => field ??= FormFileService.GetDraftId($"{Name}-files");
+
+    public string TempPath => "{app.path}/MasterDataDraftFiles/" + DraftGuidId.ToString("N") +  "/";
+
+
+    internal Guid DraftGuidId
+    {
+        get
+        {
+            var draftIdStr = CurrentContext.HttpContext!.Request.GetValue($"{Name}-draft-id");
+            if (!string.IsNullOrWhiteSpace(draftIdStr))
+                return Guid.Parse(draftIdStr);
+
+            return Guid.NewGuid();
+        }
+    }
 
     public JJUploadArea UploadArea
     {
@@ -90,17 +114,17 @@ public class JJUploadView : AsyncComponent
         {
             if (field != null)
                 return field;
-            
+
             field = ComponentFactory.UploadArea.Create();
             field.OnFileUploadedAsync += OnFileUploadedAsync;
             field.JsCallback = JsCallback;
             field.Name = $"{Name}-files";
-            field.QueryStringParams["draftId"] = DraftId;
+            field.QueryStringParams[$"{Name}-draft-id"] = DraftGuidId.ToString("N");
 
             return field;
         }
     }
-    
+
     public string JsCallback { get; set; } = "getMasterDataForm().submit()";
 
     public UrlRedirectAction DownloadAction =>
@@ -117,7 +141,7 @@ public class JJUploadView : AsyncComponent
         {
             if (field != null)
                 return field;
-            
+
             field = new ScriptAction
             {
                 Icon = FontAwesomeIcon.Trash,
@@ -125,7 +149,7 @@ public class JJUploadView : AsyncComponent
                 OnClientClick = Scripts.GetDeleteFileScript(),
                 Name = "delete-file"
             };
-          
+
             return field;
         }
     }
@@ -144,9 +168,9 @@ public class JJUploadView : AsyncComponent
                 OnClientClick = Scripts.GetRenameFileScript(),
                 Name = "rename-file"
             };
-            
+
             field.SetVisible(false);
-            
+
             return field;
         }
         set;
@@ -156,7 +180,7 @@ public class JJUploadView : AsyncComponent
 
     private IHttpContextAccessor CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
-    private FormFileService FormFileService { get; }
+    private UploadViewManager FormFileService { get; }
     private IEncryptionService EncryptionService { get; }
 
     protected RouteContext RouteContext
@@ -168,34 +192,34 @@ public class JJUploadView : AsyncComponent
 
             var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             field = factory.Create();
-            
+
             return field;
         }
     }
 
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private ILoggerFactory LoggerFactory { get; }
+
     private ILogger<JJUploadView> Logger { get; }
+
     public JJUploadView(
         IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
-        FormFileService formFileService,
+        UploadViewManager manager,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
         ComponentFactory = componentFactory;
-        FormFileService = formFileService;
+        FormFileService = manager;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
-        LoggerFactory = loggerFactory;
         Logger = loggerFactory.CreateLogger<JJUploadView>();
         Name = "upload-view";
         ShowAddFiles = true;
         IsCollapseExpandedByDefault = true;
     }
-    
+
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
@@ -204,18 +228,18 @@ public class JJUploadView : AsyncComponent
             var downloader = ComponentFactory.Downloader.Create();
             return await downloader.GetDownloadResultAsync();
         }
-        
+
         var uploadAreaResult = await UploadArea.GetResultAsync();
 
         if (uploadAreaResult is JsonComponentResult)
         {
             return uploadAreaResult;
         }
-        
-        return await GetUploadViewResult();
+
+        return await GetUploadViewResult(appendHiddenInputs: true);
     }
 
-    public async Task<ComponentResult> GetUploadViewResult()
+    public async Task<ComponentResult> GetUploadViewResult(bool appendHiddenInputs)
     {
         var html = HtmlBuilder.Div();
 
@@ -248,6 +272,9 @@ public class JJUploadView : AsyncComponent
 
         html.Append(GetUploadAreaHtml());
 
+        if (appendHiddenInputs)
+            html.Append(GetHiddenInputsHtmlAsync());
+
         if (ViewGallery)
         {
             html.Append(await GetGalleryHtml());
@@ -260,7 +287,7 @@ public class JJUploadView : AsyncComponent
         html.AppendComponent(await GetPreviewModalHtml());
 
         html.WithId(Name);
-        
+
         return new RenderedComponentResult(html);
     }
 
@@ -297,10 +324,7 @@ public class JJUploadView : AsyncComponent
 
     private HtmlBuilder GetUploadAreaHtml()
     {
-        var html = new HtmlBuilder()
-           .AppendHiddenInput($"upload-view-action-{Name}")
-           .AppendHiddenInput($"upload-view-file-name-{Name}")
-           .AppendHiddenInput($"{Name}-files-draft-id", DraftId);
+        var html = new HtmlBuilder();
 
         if (!ShowAddFiles)
             return html;
@@ -315,6 +339,14 @@ public class JJUploadView : AsyncComponent
         return html;
     }
 
+    internal HtmlBuilder GetHiddenInputsHtmlAsync()
+    {
+        return new HtmlBuilder()
+            .AppendHiddenInput($"upload-view-action-{Name}")
+            .AppendHiddenInput($"upload-view-file-name-{Name}")
+            .AppendHiddenInput($"{Name}-draft-id", DraftGuidId.ToString("N"));
+    }
+
     private HtmlBuilder GetHtmlFormPanel()
     {
         var panelContent = new HtmlBuilder();
@@ -326,7 +358,7 @@ public class JJUploadView : AsyncComponent
             };
             panelContent.AppendComponent(label);
         }
-        
+
         panelContent.Append(UploadArea.GetUploadAreaHtmlBuilder());
         return panelContent;
     }
@@ -334,8 +366,8 @@ public class JJUploadView : AsyncComponent
     private async Task<HtmlBuilder> GetGalleryHtml()
     {
         var files = await GetFilesAsync();
-        if (files.Count == 0) 
-            return new JJAlert{Title = StringLocalizer["There is no files to display."]}.GetHtmlBuilder();
+        if (files.Count == 0)
+            return new JJAlert { Title = StringLocalizer["There is no files to display."] }.GetHtmlBuilder();
 
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
@@ -344,27 +376,24 @@ public class JJUploadView : AsyncComponent
         {
             var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
-            
-            var previewHtml = await GetHtmlGalleryPreview(file.FileName);
-            var actionsHtml = await GetActionsHtmlListAsync(file.FileName);
-            
+
+            var previewHtml = await GetHtmlGalleryPreview(file);
+            var actionsHtml = GetActionsHtmlList(file);
+
             col.Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("list-group list-group-flush");
                 ul.Append(previewHtml);
-                
+
                 ul.AppendRange(GetGalleryListItems(file));
-                
+
                 ul.Append(HtmlTag.Li, li =>
                 {
                     li.WithCssClass("list-group-item");
                     li.Append(HtmlTag.Table, table =>
                     {
                         table.WithCssClass("table-gallery");
-                        table.Append(HtmlTag.Tr, tr =>
-                        {
-                            tr.AppendRange(actionsHtml);
-                        });
+                        table.Append(HtmlTag.Tr, tr => { tr.AppendRange(actionsHtml); });
                     });
                 });
             });
@@ -374,7 +403,7 @@ public class JJUploadView : AsyncComponent
 
         return row;
     }
-    
+
     private IEnumerable<HtmlBuilder> GetGalleryListItems(FileStorageItem file)
     {
         yield return GetHtmlGalleryListItem("Name", file.FileName);
@@ -386,24 +415,22 @@ public class JJUploadView : AsyncComponent
     {
         return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item")
-            .Append(HtmlTag.B, b =>
-            {
-                b.AppendText(StringLocalizer[label]);
-            })
+            .Append(HtmlTag.B, b => { b.AppendText(StringLocalizer[label]); })
             .AppendText(value);
     }
 
-    private async Task<HtmlBuilder> GetHtmlGalleryPreview(string fileName)
+    private async Task<HtmlBuilder> GetHtmlGalleryPreview(FileStorageItem file)
     {
         var html = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item");
 
+        var fileName = file.FileName;
         switch (Path.GetExtension(fileName))
         {
             case ".png":
             case ".jpg":
             case ".jpeg":
-                html.Append(await GetHtmlImageBox(fileName));
+                html.Append(await GetHtmlImageBox(file));
                 break;
             case ".mp4":
                 html.WithCssClass("text-center");
@@ -411,39 +438,39 @@ public class JJUploadView : AsyncComponent
                 break;
             case ".pdf":
                 html.WithCssClass("text-center");
-                html.WithStyle( "background-color:#f5f5f5");
+                html.WithStyle("background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-pdf-o", "red"));
                 break;
             case ".pptx":
                 html.WithCssClass("text-center");
-                html.WithStyle( "background-color:#f5f5f5");
+                html.WithStyle("background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-powerpoint-o", "red"));
                 break;
             case ".docx":
                 html.WithCssClass("text-center");
-                html.WithStyle( "background-color:#f5f5f5");
+                html.WithStyle("background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-word-o", "blue"));
                 break;
             case ".csv":
             case ".txt":
                 html.WithCssClass("text-center");
-                html.WithStyle( "background-color:#f5f5f5");
+                html.WithStyle("background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-text-o", "black"));
                 break;
             case ".xls":
                 html.WithCssClass("text-center");
-                html.WithStyle( "background-color:#f5f5f5");
+                html.WithStyle("background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-excel-o", "green"));
                 break;
             case ".rar":
             case ".zip":
                 html.WithCssClass("text-center");
-                html.WithStyle( "background-color:#f5f5f5");
+                html.WithStyle("background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-zip-o", "#d2bb1c"));
                 break;
             default:
                 html.WithCssClass("text-center");
-                html.WithStyle( "background-color:#f5f5f5");
+                html.WithStyle("background-color:#f5f5f5");
                 html.Append(GetHtmlItemBox(fileName, "fa fa-file-o", "gray"));
                 break;
         }
@@ -454,33 +481,31 @@ public class JJUploadView : AsyncComponent
     private static HtmlBuilder GetHtmlItemBox(string fileName, string cssIcon, string colorIcon)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
-            .WithStyle( "height:180px;")
+            .WithStyle("height:180px;")
             .Append(HtmlTag.Span, span =>
             {
                 span.WithCssClass(cssIcon)
                     .WithToolTip(fileName)
-                    .WithStyle( $"color:{colorIcon};padding-top:45px;font-size:100px;");
+                    .WithStyle($"color:{colorIcon};padding-top:45px;font-size:100px;");
             });
         return div;
     }
 
-    private async Task<HtmlBuilder> GetHtmlImageBox(string fileName)
+    private async Task<HtmlBuilder> GetHtmlImageBox(FileStorageItem file)
     {
         var downloader = ComponentFactory.Downloader.Create();
 
-        var file = await FormFileService.GetFileAsync(DraftId, FolderPath, fileName);
-        
         downloader.FullPath = file.FullPath;
         var src = downloader.GetDownloadUrl();
-        
+
         var html = new HtmlBuilder(HtmlTag.Img);
 
         html.WithAttribute("loading", "lazy")
             .WithAttribute("src", src)
-            .WithStyle( "height:180px;")
+            .WithStyle("height:180px;")
             .WithCssClass("img-responsive")
-            .WithToolTip(fileName);
-    
+            .WithToolTip(file.FileName);
+
         return html;
     }
 
@@ -507,7 +532,7 @@ public class JJUploadView : AsyncComponent
         group.Text = "image";
 
         var groupHtml = await group.GetHtmlBuilderAsync();
-        
+
         html.Append(HtmlTag.Div, row =>
         {
             row.WithCssClass("row");
@@ -533,9 +558,9 @@ public class JJUploadView : AsyncComponent
                 col.Append(HtmlTag.Img, img =>
                 {
                     img.WithAttribute("id", "pastedimage_0")
-                       .WithStyle( "max-height:350px;")
-                       .WithAttribute("alt", StringLocalizer["Preview Image"])
-                       .WithCssClass("img-responsive");
+                        .WithStyle("max-height:350px;")
+                        .WithAttribute("alt", StringLocalizer["Preview Image"])
+                        .WithCssClass("img-responsive");
                 });
             });
         });
@@ -597,7 +622,7 @@ public class JJUploadView : AsyncComponent
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
         foreach (var file in files)
         {
-            var actionsHtml = await GetActionsHtmlListAsync(file.FileName);
+            var actionsHtml = GetActionsHtmlList(file);
             tbody.Append(HtmlTag.Tr, tr =>
             {
                 tr.Append(HtmlTag.Td, td => td.AppendText(file.FileName));
@@ -627,28 +652,27 @@ public class JJUploadView : AsyncComponent
         return count;
     }
 
-    private async Task<List<HtmlBuilder>> GetActionsHtmlListAsync(string fileName)
+    private List<HtmlBuilder> GetActionsHtmlList(FileStorageItem file)
     {
         List<HtmlBuilder> actions = [];
 
         if (DownloadAction.IsVisible)
         {
-            var file = await FormFileService.GetFileAsync(DraftId, FolderPath, fileName);
-            
             var downloader = ComponentFactory.Downloader.Create(file.FullPath);
             actions.Add(CreateActionCell(DownloadAction, urlAction: downloader.GetDownloadUrl()));
         }
 
         if (RenameAction.IsVisible)
-            actions.Add(CreateActionCell(RenameAction, onClientClick: GetActionScript(RenameAction, fileName)));
+            actions.Add(CreateActionCell(RenameAction, onClientClick: GetActionScript(RenameAction, file.FileName)));
 
         if (DeleteAction.IsVisible)
-            actions.Add(CreateActionCell(DeleteAction, onClientClick: GetActionScript(DeleteAction, fileName)));
+            actions.Add(CreateActionCell(DeleteAction, onClientClick: GetActionScript(DeleteAction, file.FileName)));
 
         return actions;
     }
 
-    private static HtmlBuilder CreateActionCell(BasicAction action, string urlAction = null, string onClientClick = null)
+    private static HtmlBuilder CreateActionCell(BasicAction action, string urlAction = null,
+        string onClientClick = null)
     {
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("table-action");
@@ -657,7 +681,8 @@ public class JJUploadView : AsyncComponent
         return td;
     }
 
-    private static JJLinkButton CreateActionButton(BasicAction action, string urlAction = null, string onClientClick = null)
+    private static JJLinkButton CreateActionButton(BasicAction action, string urlAction = null,
+        string onClientClick = null)
     {
         return new JJLinkButton
         {
@@ -711,14 +736,17 @@ public class JJUploadView : AsyncComponent
     }
 
     public Task RenameFileAsync(string currentName, string newName) =>
-      FormFileService.RenameFileAsync(DraftId, FolderPath, currentName, newName);
+        FormFileService.RenameFileAsync(TempPath, FolderPath, currentName, newName);
 
     public Task CreateFileAsync(FormFileContent file) =>
-        FormFileService.CreateFileAsync(DraftId, FolderPath, AutoSave, file, !UploadArea.Multiple);
+        FormFileService.CreateFileAsync(TempPath, FolderPath, AutoSave, file, UploadArea.Multiple);
 
-    public async Task<ComponentResult> GetDeleteFileResultAsync(string fileName)
+    public Task DeleteFileAsync(string fileName) =>
+        FormFileService.DeleteFileAsync(TempPath, FolderPath, AutoSave, fileName);
+
+    private async Task<ComponentResult> GetDeleteFileResultAsync(string fileName)
     {
-        await FormFileService.DeleteFileAsync(DraftId, FolderPath, fileName);
+        await DeleteFileAsync(fileName);
         var text = StringLocalizer["File successfully deleted."];
         var alert = new JJAlert
         {
@@ -730,29 +758,21 @@ public class JJUploadView : AsyncComponent
 
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
-    
-    internal Task DeleteAllAsync() => 
-        FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
+
+    internal Task DeleteAllAsync() =>
+        FormFileService.DeleteAllAsync(TempPath, FolderPath, AutoSave);
 
     public async Task<List<FileStorageItem>> GetFilesAsync()
     {
-        var files = await FormFileService.GetFilesAsync(DraftId, FolderPath);
-        if (UploadArea.Multiple)
-            return files;
-
-        var draftFolderPath = FormFileService.GetDraftFolderPath(DraftId);
-        var draftFiles = files
-            .Where(file => string.Equals(file.FolderPath, draftFolderPath, StringComparison.Ordinal))
-            .ToList();
-
-        return draftFiles.Count > 0 ? draftFiles : files;
+        var files = await FormFileService.GetFilesAsync(TempPath, FolderPath);
+        return files;
     }
 
-    public Task ClearTemporaryFilesAsync() => 
-        FormFileService.DeleteAllAsync(DraftId, FolderPath, AutoSave);
+    public Task ClearTemporaryFilesAsync() =>
+        FormFileService.DeleteAllAsync(TempPath, null, false);
 
-    public Task PromoteDraftFilesAsync(string folderPath) =>
-        FormFileService.PromoteDraftFilesAsync(DraftId, folderPath);
+    public Task PromoteDraftFilesAsync() =>
+        FormFileService.PromoteDraftFilesAsync(TempPath, FolderPath);
 
     public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {
@@ -761,7 +781,7 @@ public class JJUploadView : AsyncComponent
             var args = new FormDownloadFileEventArgs(fileName, null);
             OnBeforeDownloadFile(this, args);
 
-            
+
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
@@ -769,10 +789,12 @@ public class JJUploadView : AsyncComponent
                 throw exception;
             }
         }
-        
-        var file = await FormFileService.GetFileAsync(DraftId, FolderPath, fileName);
-        var downloader = ComponentFactory.Downloader.Create(file.FullPath);
 
+        var file = await FormFileService.GetFileAsync(TempPath, FolderPath, fileName);
+        if (file == null)
+            throw new JJMasterDataException(StringLocalizer["File not found."]);
+
+        var downloader = ComponentFactory.Downloader.Create(file.FullPath);
         return await downloader.GetDirectDownloadResultAsync();
     }
 
@@ -786,5 +808,4 @@ public class JJUploadView : AsyncComponent
         DeleteAction.SetVisible(false);
         DownloadAction.SetVisible(true);
     }
-
 }

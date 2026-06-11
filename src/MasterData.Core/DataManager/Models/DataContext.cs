@@ -1,8 +1,5 @@
 ﻿#nullable enable
 
-using Microsoft.AspNetCore.Http;
-using JJMasterData.Core.Extensions;
-
 namespace JJMasterData.Core.DataManager.Models;
 
 public class DataContext

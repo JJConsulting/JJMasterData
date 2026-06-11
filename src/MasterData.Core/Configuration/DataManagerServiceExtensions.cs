@@ -2,6 +2,7 @@ using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -29,7 +30,7 @@ public static class DataManagerServiceExtensions
         
         services.TryAddScoped<IFileStorage, DiskFileStorage>();
         
-        services.TryAddTransient<FormFileService>();
+        services.TryAddTransient<UploadViewManager>();
         services.TryAddTransient<ElementFileService>();
         services.TryAddTransient<ElementMapService>();
         services.TryAddTransient<UrlRedirectService>();

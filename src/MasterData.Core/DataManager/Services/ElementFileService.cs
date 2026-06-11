@@ -1,6 +1,5 @@
-#if NET
-
 #nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -209,4 +208,4 @@ public class ElementFileService(
         await entityRepository.SetValuesAsync(formElement, values);
     }
 }
-#endif
+

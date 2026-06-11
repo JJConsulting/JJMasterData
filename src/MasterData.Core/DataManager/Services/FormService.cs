@@ -16,9 +16,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataManager.Services;
 
 public class FormService(
-    IHttpContextAccessor httpContextAccessor,
     IEntityRepository entityRepository,
-    FormFileService formFileService,
     FieldValidationService fieldValidationService,
     AuditLogService auditLogService,
     IStringLocalizer<MasterDataResources> localizer,
@@ -63,7 +61,9 @@ public class FormService(
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values,
+    public async Task<FormLetter> UpdateAsync(
+        FormElement formElement, 
+        Dictionary<string, object> values,
         DataContext dataContext)
     {
         ApplyTextCaseTransform(formElement, values);
@@ -101,9 +101,6 @@ public class FormService(
 
         if (errors.Count > 0)
             return result;
-
-        if (dataContext.Source == DataContextSource.Form)
-            await formFileService.PromoteDraftFilesAsync(formElement, values);
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
@@ -158,9 +155,6 @@ public class FormService(
         if (errors.Count > 0)
             return result;
 
-        if (dataContext.Source == DataContextSource.Form)
-            await formFileService.PromoteDraftFilesAsync(formElement, values);
-
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
 
@@ -214,9 +208,6 @@ public class FormService(
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, letter.Result);
 
-        if (dataContext.Source == DataContextSource.Form)
-            await formFileService.PromoteDraftFilesAsync(formElement, values);
-
         switch (letter.Result)
         {
             case CommandOperation.Insert when OnAfterInsertAsync != null:
@@ -244,22 +235,6 @@ public class FormService(
 
 
         return letter;
-    }
-
-    public async Task DeleteDraftsAsync(FormElement formElement)
-    {
-        var formValues = httpContextAccessor.HttpContext!.Request.Form;
-        foreach (var field in formElement.Fields)
-        {
-            if (field.Component is not FormComponent.File || field.DataFile is null)
-                continue;
-
-            var draftId = formValues[$"{field.Name}-upload-view-files-draft-id"].ToString();
-            if (string.IsNullOrWhiteSpace(draftId))
-                continue;
-
-            await formFileService.DeleteAllAsync(draftId, string.Empty, autoSave: false);
-        }
     }
 
     /// <summary>
@@ -302,9 +277,6 @@ public class FormService(
 
         if (errors.Count > 0)
             return result;
-
-        if (dataContext.Source == DataContextSource.Form)
-            await formFileService.DeleteFilesAsync(formElement, primaryKeys);
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);

@@ -727,16 +727,35 @@ public class JJFormView : AsyncComponent
     {
         PageState = PageState.List;
 
-        await ClearDrafts();
+        ClearDrafts();
 
         return await GridView.GetResultAsync();
     }
     
-    private async Task ClearDrafts()
+    private void ClearDrafts()
     {
-        await _formService.DeleteDraftsAsync(FormElement);
+        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
+        uploadViews.ForEach(u => _= u.ClearTemporaryFilesAsync());
     }
 
+    private async Task PromoteDraftFilesAsync()
+    {
+        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
+        foreach (var upload in uploadViews)
+        {
+            await upload.PromoteDraftFilesAsync();
+        }
+    }
+    
+    private async Task DeleteFilesAsync()
+    {
+        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
+        foreach (var upload in uploadViews)
+        {
+            await upload.DeleteAllAsync();
+        }
+    }
+    
     private Task<ComponentResult> GetBackActionResult()
     {
         PageState = PageState.List;
@@ -1648,6 +1667,11 @@ public class JJFormView : AsyncComponent
     {
         var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
         var result = await _formService.InsertAsync(FormElement, values, dataContext, validateFields);
+        if (result.Errors.Count == 0)
+        {
+            await PromoteDraftFilesAsync();
+        }
+        
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1658,19 +1682,27 @@ public class JJFormView : AsyncComponent
     /// <returns>The list of errors.</returns>
     public async Task<Dictionary<string, string>> UpdateFormValuesAsync(Dictionary<string, object?> values)
     {
-        var result = await _formService.UpdateAsync(FormElement, values,
-            new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId));
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var result = await _formService.UpdateAsync(FormElement, values, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await PromoteDraftFilesAsync();
+        }
+        
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
     public async Task<Dictionary<string, string>> DeleteFormValuesAsync(Dictionary<string, object?>? filter)
     {
-        var values =
-            await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement,
-                new FormStateData(filter!, UserValues, PageState.Delete));
-        var result = await _formService.DeleteAsync(FormElement, values,
-            new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId));
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var formStateData = new FormStateData(filter!, UserValues, PageState.Delete);
+        var values = await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement, formStateData);
+        var result = await _formService.DeleteAsync(FormElement, values, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await DeleteFilesAsync();
+        }
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }

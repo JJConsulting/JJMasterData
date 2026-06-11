@@ -46,7 +46,6 @@ public class FormServiceTests
             .ReturnsAsync(new Dictionary<string, string>());
 
         return new FormService(
-            new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
             entityRepositoryMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
@@ -153,7 +152,6 @@ public class FormServiceTests
         var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
-            new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
             entityRepositoryMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
@@ -194,7 +192,6 @@ public class FormServiceTests
         var auditLogServiceMock = new Mock<AuditLogService>();
         var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
-            new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
             entityRepositoryMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
@@ -245,7 +242,6 @@ public class FormServiceTests
             .ReturnsAsync(new Dictionary<string, string> { { "validation:test", "Script error" } });
 
         var formService = new FormService(
-            new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
             entityRepositoryMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
