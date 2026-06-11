@@ -29,14 +29,14 @@ public class ElementFileService(
         await fileStorage.SaveAsync(fullPath, uploadStream, overwrite);
     }
 
-    public async Task DeleteStoredFileAsync(string folderPath, string fileName)
+    public async Task DeleteFileAsync(string folderPath, string fileName)
     {
         fileName = Path.GetFileName(fileName);
         var fullPath = FileStoragePath.Combine(folderPath, fileName);
         await fileStorage.DeleteAsync(fullPath);
     }
 
-    public async Task RenameStoredFileAsync(string folderPath, string oldName, string newName)
+    public async Task RenameFileAsync(string folderPath, string oldName, string newName)
     {
         oldName = Path.GetFileName(oldName);
         newName = Path.GetFileName(newName);
@@ -152,7 +152,7 @@ public class ElementFileService(
         fileName = Path.GetFileName(fileName);
         var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
-        await DeleteStoredFileAsync(folderPath, fileName);
+        await DeleteFileAsync(folderPath, fileName);
     }
     
     private async Task DeleteEntityFileAsync(Element element, FormElementField field, string pkValues, string fileName)
@@ -203,7 +203,7 @@ public class ElementFileService(
     private async Task RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
         var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
-        await RenameStoredFileAsync(folderPath, oldName, newName);
+        await RenameFileAsync(folderPath, oldName, newName);
     }
     
     private async Task RenameEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName,
