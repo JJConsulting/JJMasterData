@@ -2835,10 +2835,11 @@ class TextAreaListener {
     }
 }
 class TextFileHelper {
-    static showUploadView(fieldName, title, routeContext) {
+    static showUploadView(fieldName, title, routeContext, draftInputId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
         const modalId = fieldName + "-upload-modal";
         const modal = new Modal();
@@ -2853,10 +2854,11 @@ class TextFileHelper {
             listenAllEvents("#" + modalId);
         });
     }
-    static refresh(fieldName, routeContext) {
+    static refresh(fieldName, routeContext, draftInputId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
         postFormValues({ url: url, success: function (html) {
                 const uploadViewSelector = "#" + fieldName + "-upload-view";
@@ -2873,6 +2875,12 @@ class TextFileHelper {
         }
         if (valueElement) {
             valueElement.value = valueText;
+        }
+    }
+    static addDraftId(urlBuilder, draftInputId) {
+        const draftInput = document.getElementById(draftInputId);
+        if (draftInput === null || draftInput === void 0 ? void 0 : draftInput.value) {
+            urlBuilder.addQueryParameter("draftId", draftInput.value);
         }
     }
 }
@@ -3000,12 +3008,14 @@ class UploadAreaOptions {
             let queryStringParams = element.getAttribute("query-string-params");
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
-            const params = queryStringParams.split('&');
+            const params = queryStringParams ? queryStringParams.split('&') : [];
             for (let i = 0; i < params.length; i++) {
                 const param = params[i].split('=');
                 const key = decodeURIComponent(param[0]);
                 const value = decodeURIComponent(param[1]);
-                urlBuilder.addQueryParameter(key, value);
+                if (key) {
+                    urlBuilder.addQueryParameter(key, value);
+                }
             }
             this.url = urlBuilder.build();
         }

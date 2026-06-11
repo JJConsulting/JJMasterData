@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using Microsoft.AspNetCore.Http;
+using JJMasterData.Commons.Storage;
+using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -7,6 +9,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
+        UploadViewManager manager,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
@@ -16,8 +19,81 @@ public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         return new JJUploadView(
             currentContext, 
             componentFactory,
+            manager,
             encryptionService, 
             stringLocalizer,
             loggerFactory);
     }
+
+
+    public JJUploadView Create(
+        FormElement formElement, 
+        FormElementField field, 
+        Dictionary<string, object> values)
+    {
+        var uploadView = Create();
+
+        uploadView.Name = $"{field.Name}-upload-view";
+        uploadView.ParentName = formElement.ParentName; //Atençao verificar se he nulo no JJTextFile
+        uploadView.Title = string.Empty;
+        uploadView.AutoSave = false;
+        
+        uploadView.RenameAction.SetVisible(true);
+            
+        if (HasPk(formElement, values))
+            uploadView.FolderPath = FileStoragePath.GetFolderPath(formElement, field, values);
+        
+        var dataFile = field.DataFile!;
+        uploadView.UploadArea.Multiple = dataFile.MultipleFile;
+        uploadView.UploadArea.MaxFileSize = dataFile.MaxFileSize;
+        uploadView.UploadArea.ShowFileSize = dataFile.ExportAsLink;
+        uploadView.UploadArea.AllowedTypes = dataFile.AllowedTypes;
+        uploadView.UploadArea.EnableCopyPaste = dataFile.AllowPasting;
+        uploadView.UploadArea.RouteContext.ElementName = formElement.Name;
+        uploadView.UploadArea.RouteContext.ParentElementName = formElement.ParentName;
+        uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
+        uploadView.UploadArea.QueryStringParams["fieldName"] = field.Name;
+        uploadView.ViewGallery = dataFile.ViewGallery;
+        
+        return uploadView;
+    }
+    
+    public List<JJUploadView> CreateList(
+        FormElement formElement, 
+        Dictionary<string, object> values)
+    {
+        var list = new List<JJUploadView>();
+        foreach (var field in formElement.Fields)
+        {
+            if (field.Component is not FormComponent.File || field.DataFile is null)
+                continue;
+
+            var textFile = Create(formElement, field, values);
+            list.Add(textFile);
+        }
+        
+        return list;
+    }
+    
+    
+    private static bool HasPk(
+        FormElement formElement, 
+        Dictionary<string, object> formStateValues)
+    {
+        var pkFields = formElement.Fields.FindAll(x => x.IsPk);
+        if (pkFields.Count == 0)
+            return false;
+        
+        foreach (var field in pkFields)
+        {
+            if (!formStateValues.TryGetValue(field.Name, out object value))
+                return false;
+        
+            if (string.IsNullOrEmpty(value?.ToString()))
+                return false;    
+        }
+        
+        return true;
+    }
+    
 }

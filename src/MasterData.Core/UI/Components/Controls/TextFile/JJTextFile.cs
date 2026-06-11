@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
@@ -7,10 +6,8 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.IO;
-using Microsoft.AspNetCore.Http;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -49,8 +46,6 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     public FormElement FormElement { get; set; }
 
-    private FormFilePathBuilder PathBuilder => field ??= new FormFilePathBuilder(FormElement);
-    
     private RouteContext RouteContext
     {
         get
@@ -72,31 +67,9 @@ public sealed class JJTextFile(IHttpContextAccessor request,
             if (field is not null) 
                 return field;
             
-            field = componentFactory.UploadView.Create();
-            field.Name = $"{FormElementField.Name}-upload-view";
+            field = componentFactory.UploadView.Create(FormElement, FormElementField, FormStateValues);
             field.ParentName = FormElement.ParentName ?? ParentName;
-            field.Title = string.Empty;
-            field.AutoSave = false;
             field.JsCallback = Scripts.GetRefreshScript();
-            field.RenameAction.SetVisible(true);
-            
-            if (HasPk())
-                field.FolderPath = GetFolderPath();
-            
-            var dataFile = FormElementField.DataFile!;
-            field.UploadArea.Multiple = dataFile.MultipleFile;
-            field.UploadArea.MaxFileSize = dataFile.MaxFileSize;
-            field.UploadArea.ShowFileSize = dataFile.ExportAsLink;
-            field.UploadArea.AllowedTypes = dataFile.AllowedTypes;
-            field.UploadArea.EnableCopyPaste = dataFile.AllowPasting;
-            field.UploadArea.RouteContext.ElementName = FormElement.Name;
-            field.UploadArea.RouteContext.ParentElementName = FormElement.ParentName;
-            field.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
-            field.UploadArea.QueryStringParams["fieldName"] = FieldName;
-            field.ViewGallery = dataFile.ViewGallery;
-
-            if (dataFile.ShowAsUploadView)
-                field.GridView.EmptyDataText = null;
             
             if (!Enabled || PageState is PageState.View)
                 field.Disable();
@@ -130,12 +103,12 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         if (FormElementField.DataFile!.ShowAsUploadView)
         {
             var uploadViewHtml = ((RenderedComponentResult)await GetUploadViewResultAsync()).HtmlBuilder;
-            uploadViewHtml.Append(GetHiddenInputHtml());
+            uploadViewHtml.Append(await GetHiddenInputsHtmlAsync());
             return uploadViewHtml;
         }
         
         if (!Enabled)
-            UploadView.ClearMemoryFiles();
+            await UploadView.ClearTemporaryFilesAsync();
 
         var textGroup = componentFactory.Controls.TextGroup.Create();
         textGroup.CssClass = CssClass;
@@ -143,7 +116,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         textGroup.ReadOnly = true;
         textGroup.Tooltip = Tooltip;
         textGroup.Attributes = Attributes;
-        textGroup.Text = GetPresentationText();
+        textGroup.Text = await GetPresentationTextAsync();
 
         var button = new JJLinkButton
         {
@@ -157,83 +130,70 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
         var html = new HtmlBuilder();
         html.Append(await textGroup.GetHtmlBuilderAsync());
-        html.Append(GetHiddenInputHtml());
+        html.Append(await GetHiddenInputsHtmlAsync());
+        html.Append(UploadView.GetHiddenInputsHtmlAsync());
         
         return html;
     }
 
     private async Task<ComponentResult> GetUploadViewResultAsync()
     {
-        var result = await UploadView.GetUploadViewResult();
+        var result = await UploadView.GetUploadViewResult(appendHiddenInputs: false);
 
         if (result is not RenderedComponentResult uploadViewResult)
             return result;
         
         var html = new HtmlBuilder();
         html.Append(uploadViewResult.HtmlBuilder);
-        html.AppendScript(Scripts.GetRefreshInputsScript());
+        html.AppendScript(await Scripts.GetRefreshInputsScriptAsync());
         return new RenderedComponentResult(html);
     }
 
-    private HtmlBuilder GetHiddenInputHtml()
+    private async Task<HtmlBuilder> GetHiddenInputsHtmlAsync()
     {
-        var input = new HtmlBuilder(HtmlTag.Input);
-        input.WithAttribute("type", "hidden")
+        var fileName = await GetFileNameAsync();
+        var html = new HtmlBuilder();
+        html.Append(HtmlTag.Input, input =>
+        {
+            input.WithAttribute("type", "hidden")
             .WithNameAndId(Name)
-            .WithAttribute("value", GetFileName());
-        return input;
+            .WithAttribute("value", fileName);
+        });
+      
+        return html;
     }
 
-    public void SaveMemoryFiles()
-    {
-        string folderPath = GetFolderPath();
-        var uploadView = UploadView;
-        uploadView.SaveMemoryFiles(folderPath);
-    }
-
-    public void DeleteAll()
-    {
-        var uploadView = UploadView;
-        uploadView.FolderPath = GetFolderPath();
-        uploadView.DeleteAll();
-    }
-    private bool HasPk()
-    {
-        var pkFields = FormElement.Fields.FindAll(x => x.IsPk);
-        if (pkFields.Count == 0)
-            return false;
-
-        return pkFields.All(pkField => FormStateValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FormStateValues[pkField.Name]?.ToString()));
-    }
 
     public string GetFolderPath()
     {
-        return PathBuilder.GetFolderPath(FormElementField, FormStateValues);
+        return FileStoragePath.GetFolderPath(FormElement, FormElementField, FormStateValues);
     }
 
-    internal string GetFileName()
+    internal string GetDraftInputName() => $"{FormElementField.Name}-upload-view-files-draft-id";
+
+    internal async Task<string> GetFileNameAsync()
     {
         string fileNames = string.Empty;
-        var listFile = UploadView.GetFiles().FindAll(x => !x.Deleted);
+        var listFile = await UploadView.GetFilesAsync();
         foreach (var file in listFile)
         {
             if (fileNames != string.Empty)
                 fileNames += ",";
 
-            fileNames += file.Content.FileName;
+            fileNames += file.FileName;
         }
 
         return fileNames;
     }
 
-    internal string GetPresentationText()
+    internal async Task<string> GetPresentationTextAsync()
     {
-        var files = UploadView.GetFiles().FindAll(x => !x.Deleted);
+        var files = await UploadView.GetFilesAsync();
 
         return files.Count switch
         {
             0 => string.Empty,
-            1 => files[0].Content.FileName,
+            1 => files[0].FileName,
             _ => StringLocalizer["{0} Selected Files", files.Count]
         };
     }
@@ -270,21 +230,23 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     private JJLinkButton GetLinkButton(string filename)
     {
-        var btn = new JJLinkButton();
-        btn.IconClass = "fa fa-cloud-download";
-        btn.Text = filename;
-        btn.Attributes.Add("onclick", "event.stopPropagation()");
-        btn.UrlAction = GetDownloadLink(filename);
-        btn.IsGroup = true;
-
-        return btn;
+        return new JJLinkButton
+        {
+            IconClass = "fa fa-cloud-download",
+            Text = filename,
+            UrlAction = GetDownloadLink(filename),
+            IsGroup = true,
+            Attributes =
+            {
+                {"onclick", "event.stopPropagation()"}
+            }
+        };
     }
 
     private string GetDownloadLink(string fileName)
     {
-        var filePath = GetFolderPath() + fileName;
-        var fileDownloader = componentFactory.Downloader.Create();
-        fileDownloader.FilePath = filePath;
+        var fullPath = FileStoragePath.Combine(UploadView.FolderPath, fileName);
+        var fileDownloader = componentFactory.Downloader.Create(fullPath);
         return fileDownloader.GetDownloadUrl();
     }
 }

@@ -120,8 +120,10 @@ public class MasterApiService(ExpressionsService expressionsService,
         return result;
     }
 
-    public async Task<List<ResponseLetter>> SetFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
-        string elementName, bool replace = false)
+    public async Task<List<ResponseLetter>> SetFieldsAsync(
+        IEnumerable<Dictionary<string, object?>> paramsList,
+        string elementName, 
+        bool replace = false)
     {
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
@@ -141,7 +143,8 @@ public class MasterApiService(ExpressionsService expressionsService,
         return results;
     }
 
-    public async Task<List<ResponseLetter>> UpdateFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async Task<List<ResponseLetter>> UpdateFieldsAsync(
+        IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -179,7 +182,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         return results;
     }
 
-    private async Task<ResponseLetter> Insert(FormElement formElement, Dictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> Insert(
+        FormElement formElement, 
+        Dictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -209,7 +214,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> Update(FormElement formElement, Dictionary<string, object?> apiValues)
+    private async Task<ResponseLetter> Update(
+        FormElement formElement, 
+        Dictionary<string, object?> apiValues)
     {
         ResponseLetter ret;
         try
@@ -241,7 +248,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, Dictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(
+        FormElement formElement, 
+        Dictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;

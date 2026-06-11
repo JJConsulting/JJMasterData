@@ -1,19 +1,33 @@
+using System.Collections.Generic;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using Microsoft.AspNetCore.Http;
+using JJMasterData.Commons.Storage;
+using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
 public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
+        IFileStorage fileStorage,
         IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILoggerFactory loggerFactory)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public JJFileDownloader Create()
     {
-        return new JJFileDownloader(httpContext, encryptionService, stringLocalizer,
-            loggerFactory.CreateLogger<JJFileDownloader>());
+        return new JJFileDownloader(httpContext, fileStorage, encryptionService, stringLocalizer);
     }
-   
+
+    public JJFileDownloader Create(string fullPath)
+    {
+        var downloader = Create();
+        downloader.FullPath = fullPath;
+        return downloader;
+    }
+    
+    public JJFileDownloader Create(FormElement formElement, FormElementField field, Dictionary<string, object> values, string fileName, bool isTemporary = false)
+    {
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, values);
+        var fullPath = FileStoragePath.Combine(folderPath, fileName);
+        
+        return Create(fullPath);
+    }
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.UI.Components;
 
 public sealed class UploadAreaFactory(IHttpContextAccessor httpContext,
-        UploadAreaService uploadAreaService,
+        UploadAreaManager uploadAreaManager,
         IEncryptionService encryptionService,
         IOptions<FormOptions> requestLengthService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
@@ -16,6 +16,6 @@ public sealed class UploadAreaFactory(IHttpContextAccessor httpContext,
 {
     public JJUploadArea Create()
     {
-        return new JJUploadArea(httpContext,uploadAreaService,encryptionService,requestLengthService, stringLocalizer);
+        return new JJUploadArea(httpContext,uploadAreaManager,encryptionService,requestLengthService, stringLocalizer);
     }
 }   

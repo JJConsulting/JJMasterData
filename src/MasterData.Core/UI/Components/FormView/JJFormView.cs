@@ -531,7 +531,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.SearchBoxFilter:
                 return await GetGridViewResult();
             case ComponentContext.DownloadFile:
-                return ComponentFactory.Downloader.Create().GetDownloadResult();
+                return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
             case ComponentContext.AuditLogView:
                 return await AuditLogView.GetResultAsync();
             case ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload:
@@ -638,7 +638,9 @@ public class JJFormView : AsyncComponent
 
         Dictionary<string, string> errors;
         if (PageState is PageState.Insert || IsInsertAtGridView)
+        {
             errors = await InsertFormValuesAsync(values);
+        }
         else
             errors = await UpdateFormValuesAsync(values);
 
@@ -721,15 +723,39 @@ public class JJFormView : AsyncComponent
         htmlBuilder.AppendScript(Scripts.GetShowInsertSuccessScript());
     }
 
-    private Task<ComponentResult> GetCancelActionResult()
+    private async Task<ComponentResult> GetCancelActionResult()
     {
         PageState = PageState.List;
 
-        ClearTempFiles();
+        ClearDrafts();
 
-        return GridView.GetResultAsync();
+        return await GridView.GetResultAsync();
+    }
+    
+    private void ClearDrafts()
+    {
+        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
+        uploadViews.ForEach(u => _= u.ClearTemporaryFilesAsync());
     }
 
+    private async Task PromoteDraftFilesAsync()
+    {
+        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
+        foreach (var upload in uploadViews)
+        {
+            await upload.PromoteDraftFilesAsync();
+        }
+    }
+    
+    private async Task DeleteFilesAsync()
+    {
+        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
+        foreach (var upload in uploadViews)
+        {
+            await upload.DeleteAllAsync();
+        }
+    }
+    
     private Task<ComponentResult> GetBackActionResult()
     {
         PageState = PageState.List;
@@ -1641,6 +1667,11 @@ public class JJFormView : AsyncComponent
     {
         var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
         var result = await _formService.InsertAsync(FormElement, values, dataContext, validateFields);
+        if (result.Errors.Count == 0)
+        {
+            await PromoteDraftFilesAsync();
+        }
+        
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1651,19 +1682,27 @@ public class JJFormView : AsyncComponent
     /// <returns>The list of errors.</returns>
     public async Task<Dictionary<string, string>> UpdateFormValuesAsync(Dictionary<string, object?> values)
     {
-        var result = await _formService.UpdateAsync(FormElement, values,
-            new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId));
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var result = await _formService.UpdateAsync(FormElement, values, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await PromoteDraftFilesAsync();
+        }
+        
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
     public async Task<Dictionary<string, string>> DeleteFormValuesAsync(Dictionary<string, object?>? filter)
     {
-        var values =
-            await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement,
-                new FormStateData(filter!, UserValues, PageState.Delete));
-        var result = await _formService.DeleteAsync(FormElement, values,
-            new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId));
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var formStateData = new FormStateData(filter!, UserValues, PageState.Delete);
+        var values = await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement, formStateData);
+        var result = await _formService.DeleteAsync(FormElement, values, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await DeleteFilesAsync();
+        }
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1692,18 +1731,6 @@ public class JJFormView : AsyncComponent
         DataPanel.Values = values;
         var errors = await DataPanel.ValidateFieldsAsync(values);
         return errors;
-    }
-
-
-    private void ClearTempFiles()
-    {
-        var uploadFields = FormElement.Fields.FindAll(x => x.Component == FormComponent.File);
-        foreach (var field in uploadFields)
-        {
-            string sessionName = $"{field.Name}-upload-view_jjfiles";
-            if (CurrentContext.HttpContext!.Session.Keys.Contains(sessionName))
-                CurrentContext.HttpContext!.Session.Remove(sessionName);
-        }
     }
 
     public async ValueTask<FormStateData> GetFormStateDataAsync()

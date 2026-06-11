@@ -16,6 +16,9 @@ public static class HttpContextExtensions
             return request.PathBase.ToString();
         }
 
+        /// <summary>
+        /// Recover the value of a key from the query string or form data. Query string takes precedence over form data.
+        /// </summary>
         public string? GetValue(string key)
         {
             if (request.Query.ContainsKey(key))

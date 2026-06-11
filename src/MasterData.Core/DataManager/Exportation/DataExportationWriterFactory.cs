@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
@@ -81,12 +82,14 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
         return writer;
     }
 
-    private static void ConfigureWriter(JJDataExportation dataExportation, DataExportationWriterBase writer)
+    private void ConfigureWriter(JJDataExportation dataExportation, DataExportationWriterBase writer)
     {
         writer.FormElement = dataExportation.FormElement;
         writer.Configuration = dataExportation.ExportOptions;
         writer.UserId = dataExportation.UserId;
         writer.ProcessOptions = dataExportation.ProcessOptions;
+        writer.FileDownloaderFactory = serviceProvider.GetRequiredService<FileDownloaderFactory>();
+        writer.FileStorage = serviceProvider.GetRequiredService<IFileStorage>();
         writer.AbsoluteUri = dataExportation.CurrentContext.HttpContext!.Request.GetAbsoluteUri();
     }
 

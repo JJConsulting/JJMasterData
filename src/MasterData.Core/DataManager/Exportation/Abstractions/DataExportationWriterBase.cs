@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
@@ -15,7 +15,6 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
@@ -25,7 +24,6 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 public abstract class DataExportationWriterBase(
-    IEncryptionService encryptionService,
     ExpressionsService expressionsService,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCoreOptions> options,
@@ -35,27 +33,22 @@ public abstract class DataExportationWriterBase(
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     protected const int RecordsPerPage = 100000;
-
+    
+    private List<FormElementField> _fields;
+    
     #region "Properties"
 
     private DataExportationReporter _processReporter;
-    private List<FormElementField> _fields;
-    private FormFilePathBuilder _pathBuilder;
 
-    private IEncryptionService EncryptionService { get; } = encryptionService;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IOptionsSnapshot<MasterDataCoreOptions> Options { get; } = options;
 
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
-    private FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
 
-    public string AbsoluteUri { get; internal set; }
-
-    private string GetFolderPath(FormElementField field, Dictionary<string, object> values)
-    {
-        return PathBuilder.GetFolderPath(field, values);
-    }
+    internal FileDownloaderFactory FileDownloaderFactory { get; set; }
+    internal IFileStorage FileStorage { get; set; }
+    internal string AbsoluteUri { get; set; }
 
     protected List<FormElementField> VisibleFields
     {
@@ -138,25 +131,7 @@ public abstract class DataExportationWriterBase(
         get
         {
             var path = Options.Value.ExportationFolderPath;
-            string folderPath = DataExportationHelper.GetFolderPath(FormElement, path, UserId);
-
-            CreateFolderPathIfNotExits(folderPath);
-
-            return folderPath;
-        }
-    }
-
-    private static void CreateFolderPathIfNotExits(string folderPath)
-    {
-        try
-        {
-            if (folderPath != null && !Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-        }
-        catch (Exception ex)
-        {
-            const string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
-            throw new JJMasterDataException(message, ex);
+            return DataExportationHelper.GetExportationFolderPath(FormElement, path, UserId);
         }
     }
 
@@ -178,14 +153,28 @@ public abstract class DataExportationWriterBase(
 
             Reporter(ProcessReporter);
             
-            var filePath = Path.Combine(FolderPath, GetFilePath());
+            var fileName = GetFileName();
+            var tempFilePath = Path.GetTempFileName();
 
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
+            try
             {
-                await GenerateDocument(fs, token);
+                await using (var fs = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 81920, true))
+                {
+                    await GenerateDocument(fs, token);
+                }
+
+                await using var readStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
+                var fullPath = FileStoragePath.Combine(FolderPath, fileName);
+                await FileStorage.SaveAsync(fullPath, readStream, true, token);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
             }
 
-            ProcessReporter.FilePath = filePath;
+            ProcessReporter.FolderPath = FolderPath;
+            ProcessReporter.FileName = fileName;
 
             ProcessReporter.EndDate = DateTime.Now;
             ProcessReporter.HasError = false;
@@ -201,14 +190,6 @@ public abstract class DataExportationWriterBase(
                 case ThreadAbortException:
                     ProcessReporter.Message = StringLocalizer["Process aborted by the user."];
                     break;
-                case IOException:
-                    if (FileIO.IsFileLocked(FolderPath))
-                        ProcessReporter.Message =
-                            StringLocalizer[
-                                "File is already being used by another process. Try downloading it from \"Recently generated files\"."];
-                    else
-                        goto default;
-                    break;
                 case JJMasterDataException:
                     ProcessReporter.Message = ex.Message;
                     break;
@@ -219,8 +200,6 @@ public abstract class DataExportationWriterBase(
                     break;
             }
 
-            if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
-                File.Delete(FolderPath);
         }
         finally
         {
@@ -236,7 +215,8 @@ public abstract class DataExportationWriterBase(
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    protected string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
+    protected string GetFileLink(FormElement formElement, FormElementField field, Dictionary<string, object> row,
+        string value)
     {
         if (!field.DataFile!.ExportAsLink)
             return null;
@@ -248,11 +228,16 @@ public abstract class DataExportationWriterBase(
         if (files.Length != 1)
             return null;
 
-        var filePath = GetFolderPath(field, row) + value;
-        return JJFileDownloader.GetExternalDownloadLink(EncryptionService, AbsoluteUri, filePath);
+        var fileName = Path.GetFileName(files[0]);
+        if (string.IsNullOrEmpty(fileName))
+            return null;
+
+        var downloader = FileDownloaderFactory.Create(formElement, field, row, fileName);
+        
+        return new Uri(new Uri(AbsoluteUri), downloader.GetDownloadUrl(AbsoluteUri)).AbsoluteUri;
     }
     
-    private string GetFilePath()
+    private string GetFileName()
     {
         string fileName;
         var exportActionFileName = FormElement.Options.GridToolbarActions.ExportAction.FileName;
@@ -287,5 +272,11 @@ public abstract class DataExportationWriterBase(
         var extension = Configuration.FileExtension.ToString().ToLower();
 
         return $"{fileName}_{DateTime.Now:yyyMMdd_HHmmss}.{extension}";
+    }
+
+    public async Task<Stream> OpenReadAsync()
+    {
+        var fullPath = FileStoragePath.Combine(ProcessReporter.FolderPath, ProcessReporter.FileName);
+        return await FileStorage.OpenReadAsync(fullPath);
     }
 }
