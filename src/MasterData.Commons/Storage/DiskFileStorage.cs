@@ -75,8 +75,9 @@ public class DiskFileStorage : IFileStorage
         if (!Directory.Exists(resolvedFolderPath))
             return Task.FromResult(new List<FileStorageItem>());
 
+        var searchOption = isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
         var files = new DirectoryInfo(resolvedFolderPath)
-            .EnumerateFiles("*", isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+            .EnumerateFiles("*", searchOption)
             .Select(file => new FileStorageItem
             {
                 FileName = file.Name,
