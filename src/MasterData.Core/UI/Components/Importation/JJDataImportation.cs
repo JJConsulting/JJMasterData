@@ -337,7 +337,7 @@ public class JJDataImportation : ProcessComponent
     private void FileUploaded(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
-        using (var reader = new StreamReader(e.File.Stream))
+        using (var reader = new StreamReader(e.File.OpenReadStream()))
         {
             while (!reader.EndOfStream)
             {

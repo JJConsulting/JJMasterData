@@ -3,7 +3,6 @@ using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -32,7 +31,6 @@ public class FormServiceTests
     private static FormService GetFormService(FormElement formElement, Dictionary<string, object> values)
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
             Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
@@ -47,7 +45,6 @@ public class FormServiceTests
 
         return new FormService(
             entityRepositoryMock.Object,
-            formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
             stringLocalizerMock.Object,
@@ -143,7 +140,6 @@ public class FormServiceTests
     public async Task DeleteAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
             Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
@@ -153,7 +149,6 @@ public class FormServiceTests
         var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
             entityRepositoryMock.Object,
-            formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
             stringLocalizerMock.Object,
@@ -184,7 +179,6 @@ public class FormServiceTests
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
         var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
             Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
@@ -193,7 +187,6 @@ public class FormServiceTests
         var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
             entityRepositoryMock.Object,
-            formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
             stringLocalizerMock.Object,
@@ -228,7 +221,6 @@ public class FormServiceTests
         var values = new Dictionary<string, object?>();
 
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>(
             Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
             Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
@@ -243,7 +235,6 @@ public class FormServiceTests
 
         var formService = new FormService(
             entityRepositoryMock.Object,
-            formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
             stringLocalizerMock.Object,

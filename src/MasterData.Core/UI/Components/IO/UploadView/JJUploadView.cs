@@ -16,7 +16,6 @@ using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
@@ -40,20 +39,20 @@ public class JJUploadView : AsyncComponent
 
     public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync
     {
-        add => FormFileService.OnBeforeCreateFileAsync += value;
-        remove => FormFileService.OnBeforeCreateFileAsync -= value;
+        add => Manager.OnBeforeCreateFileAsync += value;
+        remove => Manager.OnBeforeCreateFileAsync -= value;
     }
 
     public event AsyncEventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFileAsync
     {
-        add => FormFileService.OnBeforeDeleteFileAsync += value;
-        remove => FormFileService.OnBeforeDeleteFileAsync -= value;
+        add => Manager.OnBeforeDeleteFileAsync += value;
+        remove => Manager.OnBeforeDeleteFileAsync -= value;
     }
 
     public event AsyncEventHandler<FormRenameFileEventArgs> OnBeforeRenameFileAsync
     {
-        add => FormFileService.OnBeforeRenameFileAsync += value;
-        remove => FormFileService.OnBeforeRenameFileAsync -= value;
+        add => Manager.OnBeforeRenameFileAsync += value;
+        remove => Manager.OnBeforeRenameFileAsync -= value;
     }
 
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
@@ -180,7 +179,7 @@ public class JJUploadView : AsyncComponent
 
     private IHttpContextAccessor CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
-    private UploadViewManager FormFileService { get; }
+    private UploadViewManager Manager { get; }
     private IEncryptionService EncryptionService { get; }
 
     protected RouteContext RouteContext
@@ -211,7 +210,7 @@ public class JJUploadView : AsyncComponent
     {
         CurrentContext = currentContext;
         ComponentFactory = componentFactory;
-        FormFileService = manager;
+        Manager = manager;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         Logger = loggerFactory.CreateLogger<JJUploadView>();
@@ -736,13 +735,13 @@ public class JJUploadView : AsyncComponent
     }
 
     public Task RenameFileAsync(string currentName, string newName) =>
-        FormFileService.RenameFileAsync(TempPath, FolderPath, currentName, newName);
+        Manager.RenameFileAsync(TempPath, FolderPath, currentName, newName);
 
-    public Task CreateFileAsync(FormFileContent file) =>
-        FormFileService.CreateFileAsync(TempPath, FolderPath, AutoSave, file, UploadArea.Multiple);
+    public Task CreateFileAsync(IFormFile file) =>
+        Manager.CreateFileAsync(TempPath, FolderPath, AutoSave, file, UploadArea.Multiple);
 
     public Task DeleteFileAsync(string fileName) =>
-        FormFileService.DeleteFileAsync(TempPath, FolderPath, AutoSave, fileName);
+        Manager.DeleteFileAsync(TempPath, FolderPath, AutoSave, fileName);
 
     private async Task<ComponentResult> GetDeleteFileResultAsync(string fileName)
     {
@@ -760,19 +759,26 @@ public class JJUploadView : AsyncComponent
     }
 
     internal Task DeleteAllAsync() =>
-        FormFileService.DeleteAllAsync(TempPath, FolderPath, AutoSave);
+        Manager.DeleteAllAsync(TempPath, FolderPath, AutoSave);
 
     public async Task<List<FileStorageItem>> GetFilesAsync()
     {
-        var files = await FormFileService.GetFilesAsync(TempPath, FolderPath);
+        var files = await Manager.GetFilesAsync(TempPath, FolderPath);
+        if (!UploadArea.Multiple && !AutoSave)
+        {
+            var draftFiles = files.FindAll(file => file.FolderPath.Equals(TempPath));
+            if (draftFiles.Count > 0)
+                return draftFiles;
+        }
+
         return files;
     }
 
     public Task ClearTemporaryFilesAsync() =>
-        FormFileService.DeleteAllAsync(TempPath, null, false);
+        Manager.DeleteAllAsync(TempPath, null, false);
 
     public Task PromoteDraftFilesAsync() =>
-        FormFileService.PromoteDraftFilesAsync(TempPath, FolderPath);
+        Manager.PromoteDraftFilesAsync(TempPath, FolderPath);
 
     public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {
@@ -790,7 +796,7 @@ public class JJUploadView : AsyncComponent
             }
         }
 
-        var file = await FormFileService.GetFileAsync(TempPath, FolderPath, fileName);
+        var file = await Manager.GetFileAsync(TempPath, FolderPath, fileName);
         if (file == null)
             throw new JJMasterDataException(StringLocalizer["File not found."]);
 

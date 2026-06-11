@@ -1,8 +1,9 @@
 using System.Text;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
-using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Moq;
 
 namespace JJMasterData.Core.Test.UI.Components.IO.UploadView;
@@ -21,36 +23,33 @@ public class JJUploadViewTests
     {
         var fileStorage = new DiskFileStorage();
         var contextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+        var draftId = Guid.NewGuid();
+        contextAccessor.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, StringValues>
+        {
+            ["upload-view-draft-id"] = draftId.ToString("N")
+        });
         var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
-        var formFileService = new FormFileService(
-            contextAccessor,
-            fileStorage,
-            Mock.Of<IStringLocalizer<MasterDataResources>>());
-        var uploadView = CreateUploadView(contextAccessor, formFileService);
+        var manager = CreateUploadViewManager(fileStorage);
+        var uploadView = CreateUploadView(contextAccessor, manager);
         uploadView.FolderPath = folderPath;
         uploadView.AutoSave = false;
         uploadView.UploadArea.Multiple = false;
-        var draftId = uploadView.DraftId;
 
         try
         {
             var fullPath = FileStoragePath.Combine(folderPath, "old-file.txt");
             await fileStorage.SaveAsync(fullPath, CreateStream("old"), true, TestContext.Current.CancellationToken);
-            await uploadView.CreateFileAsync(new FormFileContent
-            {
-                FileName = "new-file.txt",
-                Stream = CreateStream("new")
-            });
+            await uploadView.CreateFileAsync(CreateFormFile("new-file.txt", "new"));
 
             var files = await uploadView.GetFilesAsync();
 
             Assert.Equal(["new-file.txt"], files.Select(file => file.FileName));
-            Assert.All(files, file => Assert.Equal(FormFileService.GetDraftFolderPath(draftId), file.FolderPath));
+            Assert.All(files, file => Assert.Equal(uploadView.TempPath, file.FolderPath));
         }
         finally
         {
             await fileStorage.DeleteFolderAsync(folderPath, TestContext.Current.CancellationToken);
-            await fileStorage.DeleteFolderAsync(FormFileService.GetDraftFolderPath(draftId), TestContext.Current.CancellationToken);
+            await fileStorage.DeleteFolderAsync(uploadView.TempPath, TestContext.Current.CancellationToken);
         }
     }
 
@@ -59,14 +58,32 @@ public class JJUploadViewTests
         return new MemoryStream(Encoding.UTF8.GetBytes(value));
     }
 
+    private static FormFile CreateFormFile(string fileName, string value)
+    {
+        var stream = CreateStream(value);
+        return new FormFile(stream, 0, stream.Length, "file", fileName);
+    }
+
+    private static UploadViewManager CreateUploadViewManager(IFileStorage fileStorage)
+    {
+        var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
+        var elementFileService = new ElementFileService(
+            Mock.Of<IDataDictionaryRepository>(),
+            Mock.Of<IEntityRepository>(),
+            fileStorage,
+            new FileValidationService(stringLocalizer));
+
+        return new UploadViewManager(elementFileService, fileStorage, stringLocalizer);
+    }
+
     private static JJUploadView CreateUploadView(
         IHttpContextAccessor contextAccessor,
-        FormFileService formFileService)
+        UploadViewManager manager)
     {
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
         var uploadAreaFactory = new UploadAreaFactory(
             contextAccessor,
-            new UploadAreaService(contextAccessor, stringLocalizer),
+            new UploadAreaManager(contextAccessor, new FileValidationService(stringLocalizer)),
             Mock.Of<IEncryptionService>(),
             Options.Create(new FormOptions()),
             stringLocalizer);
@@ -79,7 +96,7 @@ public class JJUploadViewTests
         return new JJUploadView(
             contextAccessor,
             componentFactory.Object,
-            formFileService,
+            manager,
             Mock.Of<IEncryptionService>(),
             stringLocalizer,
             NullLoggerFactory.Instance);

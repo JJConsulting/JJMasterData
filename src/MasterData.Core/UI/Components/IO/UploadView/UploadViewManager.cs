@@ -9,20 +9,20 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class UploadViewManager(
+    ElementFileService elementFileService,
     IFileStorage fileStorage,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnBeforeCreateFileAsync;
     public event AsyncEventHandler<FormDeleteFileEventArgs>? OnBeforeDeleteFileAsync;
     public event AsyncEventHandler<FormRenameFileEventArgs>? OnBeforeRenameFileAsync;
-
     
     
     public async Task<List<FileStorageItem>> GetFilesAsync(string tempPath, string? folderPath)
@@ -79,9 +79,7 @@ public class UploadViewManager(
         if (file == null)
             throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
         
-        var currentFullPath = file.FullPath;
-        var newFullPath = FileStoragePath.Combine(file.FolderPath, newName);
-        await fileStorage.MoveAsync(currentFullPath, newFullPath);
+        await elementFileService.RenameStoredFileAsync(file.FolderPath, currentName, newName);
     }
 
     public async Task<FileStorageItem?> GetFileAsync(string tempPath, string folderPath, string fileName)
@@ -95,22 +93,22 @@ public class UploadViewManager(
         string tempPath,
         string folderPath,
         bool autoSave,
-        FormFileContent fileContent,
+        IFormFile file,
         bool isMultipleFiles)
     {
-        if (fileContent == null)
-            throw new ArgumentNullException(nameof(fileContent));
-
-        fileContent.FileName = Path.GetFileName(fileContent.FileName);
+        if (file == null)
+            throw new ArgumentNullException(nameof(file));
 
         if (OnBeforeCreateFileAsync != null)
         {
-            var args = new FormUploadFileEventArgs(fileContent);
+            var args = new FormUploadFileEventArgs(file);
             await OnBeforeCreateFileAsync(this, args);
             string errorMessage = args.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
                 throw new JJMasterDataException(errorMessage);
+
+            file = args.File;
         }
 
         //TODO: MANCADA TEM QUE MARCAR COMO DELETADO
@@ -121,8 +119,7 @@ public class UploadViewManager(
             ? folderPath
             : tempPath;
 
-        var fullPath = FileStoragePath.Combine(storageFolderPath, fileContent.FileName);
-        await fileStorage.SaveAsync(fullPath, fileContent.Stream);
+        await elementFileService.SaveFileAsync(storageFolderPath, file);
     }
 
     public async Task DeleteFileAsync(
@@ -142,16 +139,12 @@ public class UploadViewManager(
                 throw new JJMasterDataException(args.ErrorMessage);
         }
 
-        var files = new List<FileStorageItem>();
-        if (autoSave)
-            files.AddRange(await fileStorage.ListAsync(tempPath));
-
-        //TODO: MARCAR COMO DELETADO
-        if (!string.IsNullOrEmpty(folderPath))
-            files.AddRange(await fileStorage.ListAsync(folderPath));
-
+        var files = await GetFilesAsync(tempPath, folderPath);
         foreach (var file in files)
-            await fileStorage.DeleteAsync(file.FullPath);
+        {
+            if (file.FileName.Equals(fileName))
+                await elementFileService.DeleteStoredFileAsync(file.FolderPath, file.FileName);
+        }
     }
 
     public async Task DeleteAllAsync(string tempPath, string? folderPath, bool autoSave)
@@ -161,22 +154,17 @@ public class UploadViewManager(
         if (autoSave && !string.IsNullOrEmpty(folderPath))
             await fileStorage.DeleteFolderAsync(folderPath);
     }
-
-
-
+    
     public async Task PromoteDraftFilesAsync(string tempPath, string folderPath)
     {
         var files = await fileStorage.ListAsync(tempPath);
-        if (files.Count > 0)
+        foreach (var file in files)
         {
-            foreach (var file in files)
-            {
-                var destination = FileStoragePath.Combine(folderPath, file.FileName);
-                await fileStorage.MoveAsync(file.FullPath, destination);
-            }
-
-            await fileStorage.DeleteFolderAsync(tempPath);
+            var destination = FileStoragePath.Combine(folderPath, file.FileName);
+            await fileStorage.MoveAsync(file.FullPath, destination);
         }
+
+        await fileStorage.DeleteFolderAsync(tempPath);
     }
 
     

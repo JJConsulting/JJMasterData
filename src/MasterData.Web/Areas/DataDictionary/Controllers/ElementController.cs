@@ -88,11 +88,11 @@ public class ElementController(
     {
         if (e.File.FileName.EndsWith(".zip"))
         {
-            await elementImportService.ImportZipFile(e.File.Stream);
+            await elementImportService.ImportZipFile(e.File.OpenReadStream());
         }
         else
         {
-            await elementImportService.Import(e.File.Stream);
+            await elementImportService.Import(e.File.OpenReadStream());
         }
  
         if (ModelState.IsValid)

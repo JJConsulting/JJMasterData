@@ -19,13 +19,14 @@ public static class DataManagerServiceExtensions
         services.TryAddTransient<LookupService>();
         services.TryAddTransient<FieldFormattingService>();
         services.TryAddTransient<FieldValidationService>();
+        services.TryAddTransient<FileValidationService>();
         
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IRuleExecutor, SqlRuleExecutor>());
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IRuleExecutor, JavaScriptRuleScriptExecutor>());
         
         services.TryAddTransient<FormService>();
         services.TryAddTransient<FieldValuesService>();
-        services.TryAddTransient<UploadAreaService>();
+        services.TryAddTransient<UploadAreaManager>();
         services.TryAddTransient<FormValuesService>();
         
         services.TryAddScoped<IFileStorage, DiskFileStorage>();

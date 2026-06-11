@@ -1,8 +1,10 @@
 using System.Text;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Storage;
-using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Moq;
@@ -16,35 +18,35 @@ public class FormFileServiceTests
     {
         var fileStorage = new DiskFileStorage();
         var draftId = Guid.NewGuid();
+        var draftFolderPath = GetDraftFolderPath(draftId);
         var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
-        var service = new FormFileService(
-            new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
+        var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
+        var elementFileService = new ElementFileService(
+            Mock.Of<IDataDictionaryRepository>(),
+            Mock.Of<IEntityRepository>(),
             fileStorage,
-            Mock.Of<IStringLocalizer<MasterDataResources>>());
+            new FileValidationService(stringLocalizer));
+        var manager = new UploadViewManager(elementFileService, fileStorage, stringLocalizer);
 
         try
         {
             var fullPath = FileStoragePath.Combine(folderPath, "old-file.txt");
             await fileStorage.SaveAsync(fullPath, CreateStream("old"), true, TestContext.Current.CancellationToken);
-            await service.CreateFileAsync(
-                draftId,
+            await manager.CreateFileAsync(
+                draftFolderPath,
                 folderPath,
                 autoSave: false,
-                new FormFileContent
-                {
-                    FileName = "new-file.txt",
-                    Stream = CreateStream("new")
-                },
-                replaceIfExists: true);
+                CreateFormFile("new-file.txt", "new"),
+                isMultipleFiles: true);
 
-            var allFiles = await service.GetFilesAsync(draftId, folderPath);
+            var allFiles = await manager.GetFilesAsync(draftFolderPath, folderPath);
 
             Assert.Equal(["new-file.txt", "old-file.txt"], allFiles.Select(file => file.FileName).Order());
         }
         finally
         {
             await fileStorage.DeleteFolderAsync(folderPath, TestContext.Current.CancellationToken);
-            await fileStorage.DeleteFolderAsync(FormFileService.GetDraftFolderPath(draftId), TestContext.Current.CancellationToken);
+            await fileStorage.DeleteFolderAsync(draftFolderPath, TestContext.Current.CancellationToken);
         }
     }
 
@@ -52,4 +54,13 @@ public class FormFileServiceTests
     {
         return new MemoryStream(Encoding.UTF8.GetBytes(value));
     }
+
+    private static FormFile CreateFormFile(string fileName, string value)
+    {
+        var stream = CreateStream(value);
+        return new FormFile(stream, 0, stream.Length, "file", fileName);
+    }
+
+    private static string GetDraftFolderPath(Guid draftId) =>
+        "{app.path}/MasterDataDraftFiles/" + draftId.ToString("N") + "/";
 }

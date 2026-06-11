@@ -1,14 +1,13 @@
 ﻿using System;
-using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Events.Args;
 
-public class FormUploadFileEventArgs(FormFileContent file) : EventArgs
+public class FormUploadFileEventArgs(IFormFile file) : EventArgs
 {
     /// <summary>
     /// Arquivo recebido
     /// </summary>
-    public FormFileContent File { get; set; } = file;
+    public IFormFile File { get; set; } = file;
 
     /// <summary>
     /// Mensagem de erro referente a validação do evento (opcional)
