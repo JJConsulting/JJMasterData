@@ -1,4 +1,5 @@
 using System.Text;
+using System.Reflection;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -81,10 +82,15 @@ public class JJUploadViewTests
         UploadViewManager manager)
     {
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
+        var encryptionService = new Mock<IEncryptionService>();
+        encryptionService
+            .Setup(service => service.EncryptString(It.IsAny<string>(), It.IsAny<string>()))
+            .Returns((string value, string _) => value);
+
         var uploadAreaFactory = new UploadAreaFactory(
             contextAccessor,
             new UploadAreaManager(contextAccessor, new FileValidationService(stringLocalizer)),
-            Mock.Of<IEncryptionService>(),
+            encryptionService.Object,
             Options.Create(new FormOptions()),
             stringLocalizer);
 
@@ -97,7 +103,7 @@ public class JJUploadViewTests
             contextAccessor,
             componentFactory.Object,
             manager,
-            Mock.Of<IEncryptionService>(),
+            encryptionService.Object,
             stringLocalizer,
             NullLoggerFactory.Instance);
     }

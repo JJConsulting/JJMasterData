@@ -106,8 +106,7 @@ public class JJUploadView : AsyncComponent
             return Guid.NewGuid();
         }
     }
-
-
+    
     public JJUploadArea UploadArea
     {
         get
@@ -135,54 +134,26 @@ public class JJUploadView : AsyncComponent
         }
     } = "getMasterDataForm().submit()";
 
-    public UrlRedirectAction DownloadAction =>
-        field ??= new UrlRedirectAction
-        {
-            Icon = FontAwesomeIcon.CloudDownload,
-            Tooltip = "Download File",
-            Name = "download-file"
-        };
-
-    public ScriptAction DeleteAction
+    public UrlRedirectAction DownloadAction { get; } = new()
     {
-        get
-        {
-            if (field != null)
-                return field;
+        Icon = FontAwesomeIcon.CloudDownload,
+        Tooltip = "Download File",
+        Name = "download-file"
+    };
 
-            field = new ScriptAction
-            {
-                Icon = FontAwesomeIcon.Trash,
-                Tooltip = "Delete File",
-                OnClientClick = Scripts.GetDeleteFileScript(),
-                Name = "delete-file"
-            };
-
-            return field;
-        }
-    }
-
-    public ScriptAction RenameAction
+    public ScriptAction DeleteAction { get; } = new()
     {
-        get
-        {
-            if (field != null)
-                return field;
+        Icon = FontAwesomeIcon.Trash,
+        Tooltip = "Delete File",
+        Name = "delete-file"
+    };
 
-            field = new ScriptAction
-            {
-                Icon = FontAwesomeIcon.PencilSquareO,
-                Tooltip = "Rename File",
-                OnClientClick = Scripts.GetRenameFileScript(),
-                Name = "rename-file"
-            };
-
-            field.SetVisible(false);
-
-            return field;
-        }
-        set;
-    }
+    public ScriptAction RenameAction { get; } = new()
+    {
+        Icon = FontAwesomeIcon.PencilSquareO,
+        Tooltip = "Rename File",
+        Name = "rename-file"
+    };
 
     private UploadViewScripts Scripts => field ??= new UploadViewScripts(this);
 
@@ -226,6 +197,8 @@ public class JJUploadView : AsyncComponent
         Name = "upload-view";
         ShowAddFiles = true;
         IsCollapseExpandedByDefault = true;
+
+        RenameAction.SetVisible(false);
     }
 
 
@@ -671,10 +644,10 @@ public class JJUploadView : AsyncComponent
         }
 
         if (RenameAction.IsVisible)
-            actions.Add(CreateActionCell(RenameAction, onClientClick: GetActionScript(RenameAction, file.FileName)));
+            actions.Add(CreateActionCell(RenameAction, onClientClick: GetActionScript(Scripts.GetRenameFileScript(), file.FileName)));
 
         if (DeleteAction.IsVisible)
-            actions.Add(CreateActionCell(DeleteAction, onClientClick: GetActionScript(DeleteAction, file.FileName)));
+            actions.Add(CreateActionCell(DeleteAction, onClientClick: GetActionScript(Scripts.GetDeleteFileScript(), file.FileName)));
 
         return actions;
     }
@@ -705,10 +678,10 @@ public class JJUploadView : AsyncComponent
         };
     }
 
-    private static string GetActionScript(ScriptAction action, string fileName)
+    private static string GetActionScript(string script, string fileName)
     {
         var fileNameJs = HttpUtility.JavaScriptStringEncode(fileName);
-        return action.OnClientClick?.Replace($"{{{FileNameJs}}}", fileNameJs);
+        return script.Replace($"{{{FileNameJs}}}", fileNameJs);
     }
 
     private async ValueTask OnFileUploadedAsync(object sender, FormUploadFileEventArgs args)

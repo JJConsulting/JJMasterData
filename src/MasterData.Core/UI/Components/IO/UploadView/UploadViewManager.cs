@@ -79,7 +79,7 @@ public class UploadViewManager(
         if (file == null)
             throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
         
-        await elementFileService.RenameStoredFileAsync(file.FolderPath, currentName, newName);
+        await elementFileService.RenameFileAsync(file.FolderPath, currentName, newName);
     }
 
     public async Task<FileStorageItem?> GetFileAsync(string tempPath, string folderPath, string fileName)
@@ -143,7 +143,7 @@ public class UploadViewManager(
         foreach (var file in files)
         {
             if (file.FileName.Equals(fileName))
-                await elementFileService.DeleteStoredFileAsync(file.FolderPath, file.FileName);
+                await elementFileService.DeleteFileAsync(file.FolderPath, file.FileName);
         }
     }
 
