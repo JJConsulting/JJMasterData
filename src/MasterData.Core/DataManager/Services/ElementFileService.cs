@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Storage;
+using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
@@ -19,14 +20,17 @@ public class ElementFileService(
     IFileStorage fileStorage,
     FileValidationService fileValidationService)
 {
-    public async Task SaveFileAsync(string folderPath, IFormFile file, bool overwrite = true, string? allowedTypes = null)
+    public async Task<ValidationResult> SaveFileAsync(string folderPath, IFormFile file, bool overwrite = true, string? allowedTypes = null)
     {
         var fileName = Path.GetFileName(file.FileName);
-        fileValidationService.Validate(file, allowedTypes);
+        var validation = fileValidationService.Validate(file, allowedTypes);
+        if (!validation.IsSuccess)
+            return validation;
 
         var fullPath = FileStoragePath.Combine(folderPath, fileName);
         await using var uploadStream = file.OpenReadStream();
         await fileStorage.SaveAsync(fullPath, uploadStream, overwrite);
+        return ValidationResult.Success;
     }
 
     public async Task DeleteFileAsync(string folderPath, string fileName)
@@ -36,15 +40,18 @@ public class ElementFileService(
         await fileStorage.DeleteAsync(fullPath);
     }
 
-    public async Task RenameFileAsync(string folderPath, string oldName, string newName)
+    public async Task<ValidationResult> RenameFileAsync(string folderPath, string oldName, string newName)
     {
         oldName = Path.GetFileName(oldName);
         newName = Path.GetFileName(newName);
-        fileValidationService.ValidateFileName(newName);
+        var validation = fileValidationService.ValidateFileName(newName);
+        if (!validation.IsSuccess)
+            return validation;
 
         var oldFullPath = FileStoragePath.Combine(folderPath, oldName);
         var newFullPath = FileStoragePath.Combine(folderPath, newName);
         await fileStorage.MoveAsync(oldFullPath, newFullPath);
+        return ValidationResult.Success;
     }
 
     public async Task<Stream?> GetElementFileAsync(string elementName, string pkValues, string fieldName, string? fileName)
@@ -67,7 +74,7 @@ public class ElementFileService(
     }
 
     
-    public async Task SetElementFileAsync(
+    public async Task<ValidationResult> SetElementFileAsync(
         string elementName,
         string fieldName,
         string pkValues,
@@ -79,13 +86,18 @@ public class ElementFileService(
             throw new UnauthorizedAccessException();
         
         var field = formElement.Fields.First(f => f.Name == fieldName);
-        fileValidationService.Validate(file, field.DataFile?.AllowedTypes);
+        var validation = fileValidationService.Validate(file, field.DataFile?.AllowedTypes);
+        if (!validation.IsSuccess)
+            return validation;
 
-        await SetPhysicalFileAsync(formElement, field, pkValues, file);
+        var physicalFileResult = await SetPhysicalFileAsync(formElement, field, pkValues, file);
+        if (!physicalFileResult.IsSuccess)
+            return physicalFileResult;
 
         var fileName = Path.GetFileName(file.FileName);
         
         await SetEntityFileAsync(formElement, field, pkValues, fileName);
+        return ValidationResult.Success;
     }
     
     private async Task SetEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
@@ -120,7 +132,7 @@ public class ElementFileService(
         await entityRepository.SetValuesAsync(formElement, values);
     }
     
-    private async Task SetPhysicalFileAsync(
+    private async Task<ValidationResult> SetPhysicalFileAsync(
         FormElement formElement,
         FormElementField field,
         string pkValues,
@@ -129,7 +141,7 @@ public class ElementFileService(
         var hashValues = DataHelper.GetPkValues(formElement, pkValues, ',');
         var folderPath = FileStoragePath.GetFolderPath(formElement, field, hashValues);
 
-        await SaveFileAsync(folderPath, file, true, field.DataFile?.AllowedTypes);
+        return await SaveFileAsync(folderPath, file, true, field.DataFile?.AllowedTypes);
     }
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
@@ -184,7 +196,7 @@ public class ElementFileService(
         await entityRepository.SetValuesAsync(element, values);
     }
     
-    public async Task RenameFileAsync(string elementName, string fieldName, string pkValues, string oldName, string newName)
+    public async Task<ValidationResult> RenameFileAsync(string elementName, string fieldName, string pkValues, string oldName, string newName)
     {
         var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
         
@@ -196,14 +208,18 @@ public class ElementFileService(
         oldName = Path.GetFileName(oldName);
         newName = Path.GetFileName(newName);
         
-        await RenamePhysicalFileAsync(formElement, field, pkValues, oldName, newName);
+        var renameResult = await RenamePhysicalFileAsync(formElement, field, pkValues, oldName, newName);
+        if (!renameResult.IsSuccess)
+            return renameResult;
+
         await RenameEntityFileAsync(formElement,field, pkValues, oldName, newName);
+        return ValidationResult.Success;
     }
     
-    private async Task RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
+    private async Task<ValidationResult> RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
         var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
-        await RenameFileAsync(folderPath, oldName, newName);
+        return await RenameFileAsync(folderPath, oldName, newName);
     }
     
     private async Task RenameEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName,

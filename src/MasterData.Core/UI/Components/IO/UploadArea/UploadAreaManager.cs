@@ -2,7 +2,6 @@
 
 using System;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Events.Args;
@@ -17,37 +16,38 @@ public class UploadAreaManager(IHttpContextAccessor currentContext, FileValidati
     public async Task<UploadAreaResultDto> UploadFileAsync(IFormFile file, string? allowedTypes = null)
     {
         UploadAreaResultDto dto = new();
-
-        try
+        var message = string.Empty;
+        var validation = fileValidationService.Validate(file, allowedTypes);
+        if (!validation.IsSuccess)
         {
-            var message = string.Empty;
-
-            fileValidationService.Validate(file, allowedTypes);
-
-            var args = new FormUploadFileEventArgs(file);
-            OnFileUploaded?.Invoke(this, args);
-
-            if (OnFileUploadedAsync != null)
-                await OnFileUploadedAsync.Invoke(this, args);
-
-            fileValidationService.Validate(args.File, allowedTypes);
-
-            var errorMessage = args.ErrorMessage;
-            if (args.SuccessMessage != null)
-                message = args.SuccessMessage;
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                dto.ErrorMessage = errorMessage;
-                return dto;
-            }
-
-            dto.SuccessMessage = message;
+            dto.ErrorMessage = validation.ErrorMessage;
+            return dto;
         }
-        catch (JJMasterDataException ex)
+
+        var args = new FormUploadFileEventArgs(file);
+        OnFileUploaded?.Invoke(this, args);
+
+        if (OnFileUploadedAsync != null)
+            await OnFileUploadedAsync.Invoke(this, args);
+
+        validation = fileValidationService.Validate(args.File, allowedTypes);
+        if (!validation.IsSuccess)
         {
-            dto.ErrorMessage = ex.Message;
+            dto.ErrorMessage = validation.ErrorMessage;
+            return dto;
         }
+
+        var errorMessage = args.ErrorMessage;
+        if (args.SuccessMessage != null)
+            message = args.SuccessMessage;
+
+        if (!string.IsNullOrEmpty(errorMessage))
+        {
+            dto.ErrorMessage = errorMessage;
+            return dto;
+        }
+
+        dto.SuccessMessage = message;
 
         return dto;
     }

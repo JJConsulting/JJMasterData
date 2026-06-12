@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Extensions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Validations;
 
 namespace JJMasterData.Commons.Data;
 
@@ -302,7 +303,7 @@ public partial class DataAccess
 
     /// <inheritdoc cref="TryConnection"/>
     /// <remarks>Author: Gustavo Barros 21/08/2023</remarks>
-    public async Task<ConnectionResult> TryConnectionAsync(CancellationToken cancellationToken = default)
+    public async Task<ValidationResult> TryConnectionAsync(CancellationToken cancellationToken = default)
     {
         bool success;
         DbConnection? connection = null;
@@ -338,9 +339,9 @@ public partial class DataAccess
         }
 
         if (success)
-            return ConnectionResult.Success;
+            return ValidationResult.Success;
         
-        return ConnectionResult.Error(errorMessage);
+        return ValidationResult.Error(errorMessage);
     }
 
     /// <inheritdoc cref="ExecuteBatch(string)"/>

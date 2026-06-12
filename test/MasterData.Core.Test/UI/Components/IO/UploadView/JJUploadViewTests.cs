@@ -1,5 +1,5 @@
 using System.Text;
-using System.Reflection;
+using System.Text.Json;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -19,6 +19,22 @@ namespace JJMasterData.Core.Test.UI.Components.IO.UploadView;
 
 public class JJUploadViewTests
 {
+    [Fact]
+    public async Task UploadArea_WithBlockedExtension_ReturnsErrorDto()
+    {
+        var fileStorage = new DiskFileStorage();
+        var contextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+        var manager = CreateUploadViewManager(fileStorage);
+        var uploadView = CreateUploadView(contextAccessor, manager);
+        uploadView.UploadArea.AllowedTypes = "txt";
+
+        var result = await uploadView.UploadArea.GetFileUploadResultAsync(CreateFormFile("blocked.exe", "bad"));
+
+        var jsonResult = Assert.IsType<JsonComponentResult>(result);
+        using var document = JsonDocument.Parse(jsonResult.Content);
+        Assert.Equal("You cannot upload system files", document.RootElement.GetProperty("error").GetString());
+    }
+
     [Fact]
     public async Task GetFilesAsync_WhenSingleFileAndDraftFilesExist_ReturnsOnlyDraftFiles()
     {
@@ -67,7 +83,7 @@ public class JJUploadViewTests
 
     private static UploadViewManager CreateUploadViewManager(IFileStorage fileStorage)
     {
-        var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
+        var stringLocalizer = CreateStringLocalizer();
         var elementFileService = new ElementFileService(
             Mock.Of<IDataDictionaryRepository>(),
             Mock.Of<IEntityRepository>(),
@@ -81,7 +97,7 @@ public class JJUploadViewTests
         IHttpContextAccessor contextAccessor,
         UploadViewManager manager)
     {
-        var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
+        var stringLocalizer = CreateStringLocalizer();
         var encryptionService = new Mock<IEncryptionService>();
         encryptionService
             .Setup(service => service.EncryptString(It.IsAny<string>(), It.IsAny<string>()))
@@ -106,5 +122,17 @@ public class JJUploadViewTests
             encryptionService.Object,
             stringLocalizer,
             NullLoggerFactory.Instance);
+    }
+
+    private static IStringLocalizer<MasterDataResources> CreateStringLocalizer()
+    {
+        var localizer = new Mock<IStringLocalizer<MasterDataResources>>();
+        localizer
+            .Setup(x => x[It.IsAny<string>()])
+            .Returns((string name) => new LocalizedString(name, name));
+        localizer
+            .Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string name, object[] arguments) => new LocalizedString(name, string.Format(name, arguments)));
+        return localizer.Object;
     }
 }

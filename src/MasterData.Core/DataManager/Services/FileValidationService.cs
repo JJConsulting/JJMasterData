@@ -3,8 +3,9 @@
 using System.Collections.Frozen;
 using System.IO;
 using System.Linq;
-using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Util;
+using JJMasterData.Commons.Validations;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -65,30 +66,35 @@ public class FileValidationService(IStringLocalizer<MasterDataResources> stringL
         ".bin"
     ];
 
-    public void Validate(IFormFile file, string? allowedTypes = null)
+    public ValidationResult Validate(IFormFile file, string? allowedTypes = null)
     {
         var fileName = Path.GetFileName(file.FileName);
-        ValidateFileName(fileName);
-        ValidateAllowedExtensions(fileName, allowedTypes);
+        var fileNameValidation = ValidateFileName(fileName);
+        if (!fileNameValidation.IsSuccess)
+            return fileNameValidation;
+
+        return ValidateAllowedExtensions(fileName, allowedTypes);
     }
 
-    public void ValidateFileName(string fileName)
+    public ValidationResult ValidateFileName(string fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
-            throw new JJMasterDataException(stringLocalizer["Required file name"]);
+            return ValidationResult.Error(stringLocalizer["Required file name"]);
 
         if (Path.GetFileName(fileName).Contains(','))
-            throw new JJMasterDataException(stringLocalizer["The filename cannot contain comma."]);
+            return ValidationResult.Error(stringLocalizer["The filename cannot contain comma."]);
+
+        return ValidationResult.Success;
     }
 
-    public void ValidateAllowedExtensions(string fileName, string? allowedTypes)
+    public ValidationResult ValidateAllowedExtensions(string fileName, string? allowedTypes)
     {
         var extension = FileIO.GetFileNameExtension(fileName);
         if (BlockedExtensions.Contains(extension))
-            throw new JJMasterDataException(stringLocalizer["You cannot upload system files"]);
+            return ValidationResult.Error(stringLocalizer["You cannot upload system files"]);
 
         if (string.IsNullOrWhiteSpace(allowedTypes) || allowedTypes.Equals("*"))
-            return;
+            return ValidationResult.Success;
 
         var allowedExtensions = allowedTypes
             .Split(',')
@@ -98,7 +104,9 @@ public class FileValidationService(IStringLocalizer<MasterDataResources> stringL
             .ToHashSet();
 
         if (allowedExtensions.Count > 0 && !allowedExtensions.Contains(extension))
-            throw new JJMasterDataException(
+            return ValidationResult.Error(
                 stringLocalizer["File type is not allowed. Allowed extensions: {0}", allowedTypes]);
+
+        return ValidationResult.Success;
     }
 }
