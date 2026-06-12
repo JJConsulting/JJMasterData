@@ -15,6 +15,7 @@ using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
+using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
@@ -686,15 +687,11 @@ public class JJUploadView : AsyncComponent
 
     private async ValueTask OnFileUploadedAsync(object sender, FormUploadFileEventArgs args)
     {
-        try
-        {
-            await CreateFileAsync(args.File);
+        var result = await CreateFileAsync(args.File);
+        if (result.IsSuccess)
             args.SuccessMessage = "File successfully created.";
-        }
-        catch (Exception ex)
-        {
-            args.ErrorMessage = ex.Message;
-        }
+        else
+            args.ErrorMessage = result.ErrorMessage;
     }
 
     private async Task<RenderedComponentResult> GetRenameFileResultAsync(string fileName)
@@ -702,24 +699,19 @@ public class JJUploadView : AsyncComponent
         var names = fileName.Split(';');
         var currentName = names[0];
         var newName = names[1];
-        await RenameFileAsync(currentName, newName);
+        var result = await RenameFileAsync(currentName, newName);
+
+        if (!result.IsSuccess)
+            return CreateAlertResult(result.ErrorMessage, BootstrapColor.Danger, FontAwesomeIcon.SolidTriangleExclamation);
 
         var text = StringLocalizer["File successfully renamed."];
-        var alert = new JJAlert
-        {
-            Title = text,
-            ShowCloseButton = true,
-            Color = BootstrapColor.Info,
-            Icon = FontAwesomeIcon.SolidCircleInfo
-        };
-
-        return new RenderedComponentResult(alert.GetHtmlBuilder());
+        return CreateAlertResult(text, BootstrapColor.Info, FontAwesomeIcon.SolidCircleInfo);
     }
 
-    public Task RenameFileAsync(string currentName, string newName) =>
+    public Task<ValidationResult> RenameFileAsync(string currentName, string newName) =>
         Manager.RenameFileAsync(TempPath, FolderPath, currentName, newName);
 
-    public Task CreateFileAsync(IFormFile file) =>
+    public Task<ValidationResult> CreateFileAsync(IFormFile file) =>
         Manager.CreateFileAsync(TempPath, FolderPath, AutoSave, file, UploadArea.Multiple);
 
     public Task DeleteFileAsync(string fileName) =>
@@ -729,12 +721,17 @@ public class JJUploadView : AsyncComponent
     {
         await DeleteFileAsync(fileName);
         var text = StringLocalizer["File successfully deleted."];
+        return CreateAlertResult(text, BootstrapColor.Info, FontAwesomeIcon.SolidCircleInfo);
+    }
+
+    private static RenderedComponentResult CreateAlertResult(string text, BootstrapColor color, FontAwesomeIcon icon)
+    {
         var alert = new JJAlert
         {
             Title = text,
             ShowCloseButton = true,
-            Color = BootstrapColor.Info,
-            Icon = FontAwesomeIcon.SolidCircleInfo
+            Color = color,
+            Icon = icon
         };
 
         return new RenderedComponentResult(alert.GetHtmlBuilder());

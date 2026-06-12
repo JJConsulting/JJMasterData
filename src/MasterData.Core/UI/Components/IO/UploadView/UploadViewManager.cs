@@ -9,6 +9,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
+using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
@@ -45,7 +46,7 @@ public class UploadViewManager(
         return files;
     }
 
-    public async Task RenameFileAsync(
+    public async Task<ValidationResult> RenameFileAsync(
         string tempPath,
         string folderPath,
         string currentName,
@@ -61,10 +62,10 @@ public class UploadViewManager(
         newName = Path.GetFileName(newName);
 
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
-            throw new JJMasterDataException(stringLocalizer["The file extension must remain the same"]);
+            return ValidationResult.Error(stringLocalizer["The file extension must remain the same"]);
 
         if ((await GetFilesAsync(tempPath, folderPath)).Exists(x => x.FileName.Equals(newName)))
-            throw new JJMasterDataException(stringLocalizer["A file with the name {0} already exists", newName]);
+            return ValidationResult.Error(stringLocalizer["A file with the name {0} already exists", newName]);
 
         if (OnBeforeRenameFileAsync != null)
         {
@@ -72,14 +73,14 @@ public class UploadViewManager(
             await OnBeforeRenameFileAsync(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
-                throw new JJMasterDataException(args.ErrorMessage);
+                return ValidationResult.Error(args.ErrorMessage);
         }
 
         var file = await GetFileAsync(tempPath, folderPath, currentName);
         if (file == null)
-            throw new JJMasterDataException(stringLocalizer["file {0} not found!", currentName]);
+            return ValidationResult.Error(stringLocalizer["file {0} not found!", currentName]);
         
-        await elementFileService.RenameFileAsync(file.FolderPath, currentName, newName);
+        return await elementFileService.RenameFileAsync(file.FolderPath, currentName, newName);
     }
 
     public async Task<FileStorageItem?> GetFileAsync(string tempPath, string folderPath, string fileName)
@@ -89,7 +90,7 @@ public class UploadViewManager(
         return files.Find(x => fileName.Equals(x.FileName));
     }
 
-    public async Task CreateFileAsync(
+    public async Task<ValidationResult> CreateFileAsync(
         string tempPath,
         string folderPath,
         bool autoSave,
@@ -106,7 +107,7 @@ public class UploadViewManager(
             string errorMessage = args.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
-                throw new JJMasterDataException(errorMessage);
+                return ValidationResult.Error(errorMessage);
 
             file = args.File;
         }
@@ -119,7 +120,7 @@ public class UploadViewManager(
             ? folderPath
             : tempPath;
 
-        await elementFileService.SaveFileAsync(storageFolderPath, file);
+        return await elementFileService.SaveFileAsync(storageFolderPath, file);
     }
 
     public async Task DeleteFileAsync(
