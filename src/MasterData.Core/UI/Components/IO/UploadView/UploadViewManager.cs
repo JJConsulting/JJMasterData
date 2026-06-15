@@ -113,8 +113,7 @@ public class UploadViewManager(
 
             file = args.File;
         }
-
-        //TODO: MANCADA TEM QUE MARCAR COMO DELETADO
+        
         if (!isMultipleFiles)
             await DeleteAllAsync(tempPath, folderPath, autoSave);
 

@@ -35,7 +35,6 @@ namespace JJMasterData.Core.UI.Components;
 /// <seealso cref="JJUploadArea"/>
 public class JJUploadView : AsyncComponent
 {
-    private const string FileName = "Name";
     private const string FileNameJs = "NameJS";
 
     internal const string DownloadFileActionName = "download-file";
@@ -371,7 +370,7 @@ public class JJUploadView : AsyncComponent
             var col = HtmlBuilder.Div();
             col.WithCssClass("col-sm-3");
 
-            var previewHtml = await GetHtmlGalleryPreview(file);
+            var previewHtml = GetHtmlGalleryPreview(file);
             var actionsHtml = GetFileActions(file);
 
             col.Append(HtmlTag.Ul, ul =>
@@ -416,7 +415,7 @@ public class JJUploadView : AsyncComponent
             .AppendText(value);
     }
 
-    private async Task<HtmlBuilder> GetHtmlGalleryPreview(FileStorageItem file)
+    private HtmlBuilder GetHtmlGalleryPreview(FileStorageItem file)
     {
         var html = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item");
@@ -427,7 +426,7 @@ public class JJUploadView : AsyncComponent
             case ".png":
             case ".jpg":
             case ".jpeg":
-                html.Append(await GetHtmlImageBox(file));
+                html.Append(GetHtmlImageBox(file));
                 break;
             case ".mp4":
                 html.WithCssClass("text-center");
@@ -488,7 +487,7 @@ public class JJUploadView : AsyncComponent
         return div;
     }
 
-    private async Task<HtmlBuilder> GetHtmlImageBox(FileStorageItem file)
+    private HtmlBuilder GetHtmlImageBox(FileStorageItem file)
     {
         var downloader = ComponentFactory.Downloader.Create();
 
@@ -678,6 +677,7 @@ public class JJUploadView : AsyncComponent
             var deleteScript = !AutoSave && !isDraft
                 ? Scripts.GetMarkDeletedScript()
                 : Scripts.GetDeleteFileScript();
+            
             var actionButton = CreateActionButton(
                 DeleteAction,
                 onClientClick: GetActionScript(deleteScript, file.FileName));
@@ -779,19 +779,12 @@ public class JJUploadView : AsyncComponent
     public async Task<List<FileStorageItem>> GetFilesAsync()
     {
         var files = await Manager.GetFilesAsync(TempPath, FolderPath);
-        if (!UploadArea.Multiple && !AutoSave)
-        {
-            var draftFiles = files.FindAll(file => file.FolderPath.Equals(TempPath));
-            if (draftFiles.Count > 0)
-                files = draftFiles;
-        }
         
         var deletedFiles = GetDeletedFiles();
+        
         if (!AutoSave && deletedFiles.Count > 0)
-            files = files
-                .Where(file => file.FolderPath.Equals(TempPath) || !deletedFiles.Contains(file.FileName))
-                .ToList();
-
+            files.RemoveAll(file => !file.FolderPath.Equals(TempPath) && deletedFiles.Contains(file.FileName));
+      
         return files;
     }
 
@@ -849,7 +842,7 @@ public class JJUploadView : AsyncComponent
         var values = GetDeletedFilesByComma();
         if (string.IsNullOrWhiteSpace(values))
             return [];
-
+        
         return values
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(Path.GetFileName)
