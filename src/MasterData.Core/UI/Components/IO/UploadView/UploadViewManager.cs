@@ -155,8 +155,16 @@ public class UploadViewManager(
             await fileStorage.DeleteFolderAsync(folderPath);
     }
     
-    public async Task PromoteDraftFilesAsync(string tempPath, string folderPath)
+    public async Task PromoteDraftFilesAsync(string tempPath, string folderPath, HashSet<string> deletedFiles)
     {
+        foreach (var fileName in deletedFiles)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                continue;
+
+            await elementFileService.DeleteFileAsync(folderPath, Path.GetFileName(fileName));
+        }
+
         var files = await fileStorage.ListAsync(tempPath);
         foreach (var file in files)
         {

@@ -13,10 +13,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public sealed class JJTextFile(IHttpContextAccessor request,
-        IComponentFactory componentFactory,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IEncryptionService encryptionService)
+public sealed class JJTextFile(
+    IHttpContextAccessor request,
+    IComponentFactory componentFactory,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    IEncryptionService encryptionService)
     : ControlBase(request)
 {
     internal IEncryptionService EncryptionService { get; } = encryptionService;
@@ -35,7 +36,6 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     public override string Tooltip
     {
-        
         get => FormElementField.HelpDescription;
         set => FormElementField.HelpDescription = value;
     }
@@ -55,7 +55,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
             var factory = new RouteContextFactory(request, EncryptionService);
             field = factory.Create();
-            
+
             return field;
         }
     }
@@ -64,13 +64,13 @@ public sealed class JJTextFile(IHttpContextAccessor request,
     {
         get
         {
-            if (field is not null) 
+            if (field is not null)
                 return field;
-            
+
             field = componentFactory.UploadView.Create(FormElement, FormElementField, FormStateValues);
             field.ParentName = FormElement.ParentName ?? ParentName;
             field.JsCallback = Scripts.GetRefreshScript();
-            
+
             if (!Enabled || PageState is PageState.View)
                 field.Disable();
 
@@ -106,7 +106,7 @@ public sealed class JJTextFile(IHttpContextAccessor request,
             uploadViewHtml.Append(await GetHiddenInputsHtmlAsync());
             return uploadViewHtml;
         }
-        
+
         if (!Enabled)
             await UploadView.ClearTemporaryFilesAsync();
 
@@ -153,16 +153,14 @@ public sealed class JJTextFile(IHttpContextAccessor request,
     {
         var fileName = await GetFileNameAsync();
         var html = new HtmlBuilder();
-        html.Append(HtmlTag.Input, input =>
-        {
-            input.WithAttribute("type", "hidden")
+        var fileInput = new HtmlBuilder(HtmlTag.Input);
+        fileInput.WithAttribute("type", "hidden")
             .WithNameAndId(Name)
             .WithAttribute("value", fileName);
-        });
-      
+        html.Append(fileInput);
+
         return html;
     }
-
 
     public string GetFolderPath()
     {
@@ -173,9 +171,10 @@ public sealed class JJTextFile(IHttpContextAccessor request,
 
     internal async Task<string> GetFileNameAsync()
     {
-        string fileNames = string.Empty;
-        var listFile = await UploadView.GetFilesAsync();
-        foreach (var file in listFile)
+        var fileNames = string.Empty;
+        var files = await UploadView.GetFilesAsync();
+
+        foreach (var file in files)
         {
             if (fileNames != string.Empty)
                 fileNames += ",";
@@ -203,42 +202,40 @@ public sealed class JJTextFile(IHttpContextAccessor request,
         if (string.IsNullOrEmpty(Text))
             return new HtmlBuilder(string.Empty);
 
-        string[] files = Text.Split(',');
+        var files = Text.Split(',');
         if (files.Length == 1)
-        {
-            var btn = GetLinkButton(files[0]);
-            return btn.GetHtmlBuilder();
-        }
+            return GetLinkButton(files[0]).GetHtmlBuilder();
 
         var caretHtml = new HtmlBuilder();
         caretHtml.AppendComponent(new JJIcon(FontAwesomeIcon.CloudDownload)).WithCssClass("me-1");
         caretHtml.AppendText($"{files.Length} {StringLocalizer["Files"]}");
+
         var btnGroup = new JJLinkButtonGroup
         {
             CaretHtml = caretHtml
         };
 
-        btnGroup.Attributes.Add("onclick","event.stopPropagation()");
-   
-        foreach (var filename in files)
+        btnGroup.Attributes.Add("onclick", "event.stopPropagation()");
+
+        foreach (var fileName in files)
         {
-            btnGroup.Actions.Add(GetLinkButton(filename));
+            btnGroup.Actions.Add(GetLinkButton(fileName));
         }
 
         return btnGroup.GetHtmlBuilder();
     }
 
-    private JJLinkButton GetLinkButton(string filename)
+    private JJLinkButton GetLinkButton(string fileName)
     {
         return new JJLinkButton
         {
             IconClass = "fa fa-cloud-download",
-            Text = filename,
-            UrlAction = GetDownloadLink(filename),
+            Text = fileName,
+            UrlAction = GetDownloadLink(fileName),
             IsGroup = true,
             Attributes =
             {
-                {"onclick", "event.stopPropagation()"}
+                { "onclick", "event.stopPropagation()" }
             }
         };
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.FontAwesome;
@@ -37,6 +38,10 @@ public class JJUploadView : AsyncComponent
     private const string FileName = "Name";
     private const string FileNameJs = "NameJS";
 
+    internal const string DownloadFileActionName = "download-file";
+    internal const string DeleteFileActionName = "delete-file";
+    internal const string RenameFileActionName = "rename-file";
+    
     public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync
     {
         add => Manager.OnBeforeCreateFileAsync += value;
@@ -58,6 +63,7 @@ public class JJUploadView : AsyncComponent
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
 
     internal string ParentName { get; set; }
+    internal string DeletedFilesInputName { get; set; }
 
     public bool ShowAddFiles { get; set; }
 
@@ -138,21 +144,22 @@ public class JJUploadView : AsyncComponent
     {
         Icon = FontAwesomeIcon.CloudDownload,
         Tooltip = "Download File",
-        Name = "download-file"
+        Name = DownloadFileActionName
     };
+    
 
     public ScriptAction DeleteAction { get; } = new()
     {
         Icon = FontAwesomeIcon.Trash,
         Tooltip = "Delete File",
-        Name = "delete-file"
+        Name = DeleteFileActionName
     };
 
     public ScriptAction RenameAction { get; } = new()
     {
         Icon = FontAwesomeIcon.PencilSquareO,
         Tooltip = "Rename File",
-        Name = "rename-file"
+        Name = RenameFileActionName
     };
 
     private UploadViewScripts Scripts => field ??= new UploadViewScripts(this);
@@ -322,10 +329,15 @@ public class JJUploadView : AsyncComponent
 
     internal HtmlBuilder GetHiddenInputsHtmlAsync()
     {
-        return new HtmlBuilder()
+        var html = new HtmlBuilder()
             .AppendHiddenInput($"upload-view-action-{Name}")
             .AppendHiddenInput($"upload-view-file-name-{Name}")
             .AppendHiddenInput($"{Name}-draft-id", DraftGuidId.ToString("N"));
+
+        if (!AutoSave && !string.IsNullOrWhiteSpace(DeletedFilesInputName))
+            html.AppendHiddenInput(DeletedFilesInputName, GetDeletedFilesByComma());
+
+        return html;
     }
 
     private HtmlBuilder GetHtmlFormPanel()
@@ -359,7 +371,7 @@ public class JJUploadView : AsyncComponent
             col.WithCssClass("col-sm-3");
 
             var previewHtml = await GetHtmlGalleryPreview(file);
-            var actionsHtml = GetActionsHtmlList(file);
+            var actionsHtml = await GetActionsHtmlListAsync(file);
 
             col.Append(HtmlTag.Ul, ul =>
             {
@@ -603,7 +615,7 @@ public class JJUploadView : AsyncComponent
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
         foreach (var file in files)
         {
-            var actionsHtml = GetActionsHtmlList(file);
+            var actionsHtml = await GetActionsHtmlListAsync(file);
             tbody.Append(HtmlTag.Tr, tr =>
             {
                 tr.Append(HtmlTag.Td, td => td.AppendText(file.FileName));
@@ -633,31 +645,49 @@ public class JJUploadView : AsyncComponent
         return count;
     }
 
-    private List<HtmlBuilder> GetActionsHtmlList(FileStorageItem file)
+    private Task<List<HtmlBuilder>> GetActionsHtmlListAsync(FileStorageItem file)
     {
         List<HtmlBuilder> actions = [];
+        var isDraft = file.FolderPath.Equals(TempPath);
 
         if (DownloadAction.IsVisible)
         {
             var downloader = ComponentFactory.Downloader.Create(file.FullPath);
-            actions.Add(CreateActionCell(DownloadAction, urlAction: downloader.GetDownloadUrl()));
+            var actionButton = CreateActionButton(DownloadAction, urlAction: downloader.GetDownloadUrl());
+            actions.Add(CreateActionCell(actionButton));
         }
 
         if (RenameAction.IsVisible)
-            actions.Add(CreateActionCell(RenameAction, onClientClick: GetActionScript(Scripts.GetRenameFileScript(), file.FileName)));
+        {
+            var actionButton = CreateActionButton(
+                RenameAction,
+                onClientClick: GetActionScript(Scripts.GetRenameFileScript(), file.FileName));
+
+            if (!AutoSave && !isDraft)
+                actionButton.Enabled = false;
+
+            actions.Add(CreateActionCell(actionButton));
+        }
 
         if (DeleteAction.IsVisible)
-            actions.Add(CreateActionCell(DeleteAction, onClientClick: GetActionScript(Scripts.GetDeleteFileScript(), file.FileName)));
+        {
+            var deleteScript = !AutoSave && !isDraft
+                ? Scripts.GetMarkDeletedScript()
+                : Scripts.GetDeleteFileScript();
+            var actionButton = CreateActionButton(
+                DeleteAction,
+                onClientClick: GetActionScript(deleteScript, file.FileName));
+            actions.Add(CreateActionCell(actionButton));
+        }
 
-        return actions;
+        return Task.FromResult(actions);
     }
 
-    private static HtmlBuilder CreateActionCell(BasicAction action, string urlAction = null,
-        string onClientClick = null)
+    private static HtmlBuilder CreateActionCell(JJLinkButton actionButton)
     {
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("table-action");
-        td.AppendComponent(CreateActionButton(action, urlAction, onClientClick));
+        td.AppendComponent(actionButton);
 
         return td;
     }
@@ -750,8 +780,14 @@ public class JJUploadView : AsyncComponent
         {
             var draftFiles = files.FindAll(file => file.FolderPath.Equals(TempPath));
             if (draftFiles.Count > 0)
-                return draftFiles;
+                files = draftFiles;
         }
+        
+        var deletedFiles = GetDeletedFiles();
+        if (!AutoSave && deletedFiles.Count > 0)
+            files = files
+                .Where(file => file.FolderPath.Equals(TempPath) || !deletedFiles.Contains(file.FileName))
+                .ToList();
 
         return files;
     }
@@ -760,7 +796,7 @@ public class JJUploadView : AsyncComponent
         Manager.DeleteAllAsync(TempPath, null, false);
 
     public Task PromoteDraftFilesAsync() =>
-        Manager.PromoteDraftFilesAsync(TempPath, FolderPath);
+        Manager.PromoteDraftFilesAsync(TempPath, FolderPath, GetDeletedFiles());
 
     public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {
@@ -796,4 +832,26 @@ public class JJUploadView : AsyncComponent
         DeleteAction.SetVisible(false);
         DownloadAction.SetVisible(true);
     }
+
+    private string GetDeletedFilesByComma()
+    {
+        if (string.IsNullOrWhiteSpace(DeletedFilesInputName))
+            return string.Empty;
+
+        return CurrentContext.HttpContext!.Request.GetValue(DeletedFilesInputName) ?? string.Empty;
+    }
+
+    private HashSet<string> GetDeletedFiles()
+    {
+        var values = GetDeletedFilesByComma();
+        if (string.IsNullOrWhiteSpace(values))
+            return [];
+
+        return values
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(Path.GetFileName)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
 }

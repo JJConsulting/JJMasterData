@@ -1,7 +1,7 @@
 #nullable enable
 
-using System.Web;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
@@ -25,10 +25,12 @@ internal sealed class TextFileScripts(JJTextFile textFile)
 
         return $"TextFileHelper.refresh('{textFile.FieldName}','{textFile.EncryptionService.EncryptObject(routeContext)}','{textFile.GetDraftInputName()}')";
     }
-    
+
     public async Task<string> GetRefreshInputsScriptAsync()
     {
-        return $"TextFileHelper.refreshInputs('{textFile.Name}','{await textFile.GetPresentationTextAsync()}','{await textFile.GetFileNameAsync()}')";
+        var presentationText = HttpUtility.JavaScriptStringEncode(await textFile.GetPresentationTextAsync());
+        var fileName = HttpUtility.JavaScriptStringEncode(await textFile.GetFileNameAsync());
+
+        return $"TextFileHelper.refreshInputs('{textFile.Name}','{presentationText}','{fileName}')";
     }
-    
 }

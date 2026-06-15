@@ -37,6 +37,7 @@ public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         uploadView.ParentName = formElement.ParentName; //Atençao verificar se he nulo no JJTextFile
         uploadView.Title = string.Empty;
         uploadView.AutoSave = false;
+        uploadView.DeletedFilesInputName = GetDeletedFilesInputName(field);
         
         uploadView.RenameAction.SetVisible(true);
             
@@ -94,6 +95,11 @@ public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         }
         
         return true;
+    }
+
+    private static string GetDeletedFilesInputName(FormElementField field)
+    {
+        return $"{field.Name}-upload-view-files-deleted";
     }
     
 }
