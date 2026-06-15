@@ -21,9 +21,9 @@
   <Folder Name="/Plugins/">
     <Project Path="src\Plugins\MasterData.Brasil\MasterData.Brasil.csproj" Type="Classic C#" />
     <Project Path="src\Plugins\MasterData.Hangfire\MasterData.Hangfire.csproj" Type="Classic C#" />
-    <Project Path="src\Plugins\MasterData.MongoDB\MasterData.MongoDB.csproj" Type="Classic C#" />
+    <Project Path="src\Plugins\MasterData.Protheus\MasterData.Protheus.csproj" Type="Classic C#" />
     <Project Path="src\Plugins\MasterData.Pdf\MasterData.Pdf.csproj" Type="Classic C#" />
-    <Project Path="src\Plugins\MasterData.Python\MasterData.Python.csproj" Type="Classic C#" />
+    <Project Path="src\Plugins\MasterData.RecursiveProcedureAction\MasterData.RecursiveProcedureAction.csproj" Type="Classic C#" />
     <File Path="src\Plugins\Directory.Build.props" />
   </Folder>
   <Folder Name="/Test/">
