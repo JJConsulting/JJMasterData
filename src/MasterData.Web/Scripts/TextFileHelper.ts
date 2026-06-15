@@ -1,8 +1,9 @@
 class TextFileHelper {
-    static showUploadView(fieldName: string, title: string, routeContext: string) {
+    static showUploadView(fieldName: string, title: string, routeContext: string, draftInputId: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("fieldName", fieldName)
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
 
         const modalId = fieldName + "-upload-modal";
@@ -21,10 +22,11 @@ class TextFileHelper {
         })
     }
 
-    static refresh(fieldName: string, routeContext: string) {
+    static refresh(fieldName: string, routeContext: string, draftInputId: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("fieldName", fieldName)
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
 
         postFormValues({url:url,success:function(html){
@@ -45,6 +47,13 @@ class TextFileHelper {
 
         if (valueElement) {
             valueElement.value = valueText;
+        }
+    }
+
+    private static addDraftId(urlBuilder: UrlBuilder, draftInputId: string) {
+        const draftInput = document.getElementById(draftInputId) as HTMLInputElement;
+        if (draftInput?.value) {
+            urlBuilder.addQueryParameter("draftId", draftInput.value);
         }
     }
 }

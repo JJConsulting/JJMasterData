@@ -221,7 +221,7 @@ public class JJDataPanel(
             case ComponentContext.LookupDescription:
                 return await GetFieldResultAsync<JJLookup>();
             case ComponentContext.DownloadFile:
-                return ComponentFactory.Downloader.Create().GetDownloadResult();
+                return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
             case ComponentContext.DataPanelReload:
             {
                 var html = await GetHtmlBuilderAsync();

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -17,6 +18,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
     IMasterDataUser masterDataUser,
+    IUrlHelper urlHelper,
     ExpressionsService expressionsService,
     IOptionsSnapshot<MasterDataCoreOptions> options,
     IBackgroundTaskManager backgroundTaskManager,
@@ -25,6 +27,7 @@ internal class DataExportationFactory(
     ILoggerFactory loggerFactory,
     IComponentFactory componentFactory,
     IEncryptionService encryptionService,
+    IFileStorage fileStorage,
     DataExportationWriterFactory dataExportationWriterFactory
         ) : IFormElementComponentFactory<JJDataExportation>
 {
@@ -39,6 +42,7 @@ internal class DataExportationFactory(
         return new JJDataExportation(
             formElement,
             masterDataUser,
+            urlHelper,
             expressionsService,
             options, 
             backgroundTaskManager,
@@ -47,6 +51,7 @@ internal class DataExportationFactory(
             loggerFactory, 
             httpContext,
             encryptionService,
+            fileStorage,
             dataExportationWriterFactory);
     }
 }

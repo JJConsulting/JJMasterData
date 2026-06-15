@@ -9,7 +9,6 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -27,14 +26,11 @@ namespace JJMasterData.Core.DataManager.Exportation;
 public class ExcelWriter(
         ExpressionsService expressionsService,
         DataItemService dataItemService,
-        IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         ILoggerFactory loggerFactory,
         IEntityRepository entityRepository)
-    : DataExportationWriterBase(
-        encryptionService,
-        expressionsService,
+    : DataExportationWriterBase(expressionsService,
         stringLocalizer,
         options,
         loggerFactory.CreateLogger<DataExportationWriterBase>()), IExcelWriter
@@ -175,7 +171,7 @@ public class ExcelWriter(
 
         if (field.Component == FormComponent.File)
         {
-            string link = GetFileLink(field, row, value);
+            string link = GetFileLink(FormElement, field, row, value);
             if (link != null)
                 value = $"<a href=\"{link}\">{value}</a>";
             else

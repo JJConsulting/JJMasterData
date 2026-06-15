@@ -7,7 +7,6 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Logging;
@@ -18,7 +17,6 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FormService(
     IEntityRepository entityRepository,
-    FormFileService formFileService,
     FieldValidationService fieldValidationService,
     AuditLogService auditLogService,
     IStringLocalizer<MasterDataResources> localizer,
@@ -63,7 +61,9 @@ public class FormService(
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values,
+    public async Task<FormLetter> UpdateAsync(
+        FormElement formElement, 
+        Dictionary<string, object> values,
         DataContext dataContext)
     {
         ApplyTextCaseTransform(formElement, values);
@@ -101,9 +101,6 @@ public class FormService(
 
         if (errors.Count > 0)
             return result;
-
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
@@ -158,9 +155,6 @@ public class FormService(
         if (errors.Count > 0)
             return result;
 
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
-
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
 
@@ -213,9 +207,6 @@ public class FormService(
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, letter.Result);
-
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
 
         switch (letter.Result)
         {
@@ -286,9 +277,6 @@ public class FormService(
 
         if (errors.Count > 0)
             return result;
-
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.DeleteFiles(formElement, primaryKeys);
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);

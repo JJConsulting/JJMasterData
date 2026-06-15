@@ -1,7 +1,7 @@
 #nullable enable
 
+using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
@@ -16,19 +16,21 @@ internal sealed class TextFileScripts(JJTextFile textFile)
 
         var routeContext = RouteContext.FromFormElement(textFile.FormElement, ComponentContext.TextFileUploadView);
         
-        return $"TextFileHelper.showUploadView('{textFile.FieldName}','{title}','{textFile.EncryptionService.EncryptObject(routeContext)}');";
+        return $"TextFileHelper.showUploadView('{textFile.FieldName}','{title}','{textFile.EncryptionService.EncryptObject(routeContext)}','{textFile.GetDraftInputName()}');";
     }
 
     public string GetRefreshScript()
     {
         var routeContext = RouteContext.FromFormElement(textFile.FormElement, ComponentContext.TextFileUploadView);
 
-        return $"TextFileHelper.refresh('{textFile.FieldName}','{textFile.EncryptionService.EncryptObject(routeContext)}')";
+        return $"TextFileHelper.refresh('{textFile.FieldName}','{textFile.EncryptionService.EncryptObject(routeContext)}','{textFile.GetDraftInputName()}')";
     }
-    
-    public string GetRefreshInputsScript()
+
+    public async Task<string> GetRefreshInputsScriptAsync()
     {
-        return $"TextFileHelper.refreshInputs('{textFile.Name}','{textFile.GetPresentationText()}','{textFile.GetFileName()}')";
+        var presentationText = HttpUtility.JavaScriptStringEncode(await textFile.GetPresentationTextAsync());
+        var fileName = HttpUtility.JavaScriptStringEncode(await textFile.GetFileNameAsync());
+
+        return $"TextFileHelper.refreshInputs('{textFile.Name}','{presentationText}','{fileName}')";
     }
-    
 }
