@@ -30,7 +30,7 @@ public class JJUploadViewTests
             ["upload-view-draft-id"] = draftId.ToString("N")
         });
         var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
-        var manager = CreateUploadViewManager(fileStorage);
+        var manager = CreateUploadViewManager(contextAccessor, fileStorage);
         var uploadView = CreateUploadView(contextAccessor, manager);
         uploadView.FolderPath = folderPath;
         uploadView.AutoSave = false;
@@ -65,7 +65,9 @@ public class JJUploadViewTests
         return new FormFile(stream, 0, stream.Length, "file", fileName);
     }
 
-    private static UploadViewManager CreateUploadViewManager(IFileStorage fileStorage)
+    private static UploadViewManager CreateUploadViewManager(
+        IHttpContextAccessor contextAccessor,
+        IFileStorage fileStorage)
     {
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
         var elementFileService = new ElementFileService(
@@ -74,7 +76,7 @@ public class JJUploadViewTests
             fileStorage,
             new FileValidationService(stringLocalizer));
 
-        return new UploadViewManager(elementFileService, fileStorage, stringLocalizer);
+        return new UploadViewManager(contextAccessor, elementFileService, fileStorage, stringLocalizer);
     }
 
     private static JJUploadView CreateUploadView(

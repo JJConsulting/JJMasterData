@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -37,11 +38,11 @@ public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         uploadView.ParentName = formElement.ParentName; //Atençao verificar se he nulo no JJTextFile
         uploadView.Title = string.Empty;
         uploadView.AutoSave = false;
-        uploadView.DeletedFilesInputName = GetDeletedFilesInputName(field);
+        uploadView.DeletedFilesInputName = UploadViewManager.GetDeletedFilesInputName(field);
         
         uploadView.RenameAction.SetVisible(true);
             
-        if (HasPk(formElement, values))
+        if (DataHelper.ContainsPkValues(formElement, values))
             uploadView.FolderPath = FileStoragePath.GetFolderPath(formElement, field, values);
         
         var dataFile = field.DataFile!;
@@ -58,48 +59,4 @@ public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         
         return uploadView;
     }
-    
-    public List<JJUploadView> CreateList(
-        FormElement formElement, 
-        Dictionary<string, object> values)
-    {
-        var list = new List<JJUploadView>();
-        foreach (var field in formElement.Fields)
-        {
-            if (field.Component is not FormComponent.File || field.DataFile is null)
-                continue;
-
-            var textFile = Create(formElement, field, values);
-            list.Add(textFile);
-        }
-        
-        return list;
-    }
-    
-    
-    private static bool HasPk(
-        FormElement formElement, 
-        Dictionary<string, object> formStateValues)
-    {
-        var pkFields = formElement.Fields.FindAll(x => x.IsPk);
-        if (pkFields.Count == 0)
-            return false;
-        
-        foreach (var field in pkFields)
-        {
-            if (!formStateValues.TryGetValue(field.Name, out object value))
-                return false;
-        
-            if (string.IsNullOrEmpty(value?.ToString()))
-                return false;    
-        }
-        
-        return true;
-    }
-
-    private static string GetDeletedFilesInputName(FormElementField field)
-    {
-        return $"{field.Name}-upload-view-files-deleted";
-    }
-    
 }

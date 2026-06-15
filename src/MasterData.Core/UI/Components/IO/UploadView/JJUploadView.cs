@@ -41,6 +41,8 @@ public class JJUploadView : AsyncComponent
     internal const string DownloadFileActionName = "download-file";
     internal const string DeleteFileActionName = "delete-file";
     internal const string RenameFileActionName = "rename-file";
+
+    internal const string TempPathFolder = "{app.path}/MasterDataDraftFiles/";
     
     public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync
     {
@@ -98,10 +100,10 @@ public class JJUploadView : AsyncComponent
     public string FolderPath { get; set; }
 
 
-    public string TempPath => "{app.path}/MasterDataDraftFiles/" + DraftGuidId.ToString("N") +  "/";
+    public string TempPath => TempPathFolder + DraftId.ToString("N") +  "/";
 
 
-    internal Guid DraftGuidId
+    internal Guid DraftId
     {
         get
         {
@@ -124,7 +126,7 @@ public class JJUploadView : AsyncComponent
             field.OnFileUploadedAsync += OnFileUploadedAsync;
             field.JsCallback = JsCallback;
             field.Name = $"{Name}-files";
-            field.QueryStringParams[$"{Name}-draft-id"] = DraftGuidId.ToString("N");
+            field.QueryStringParams[$"{Name}-draft-id"] = DraftId.ToString("N");
 
             return field;
         }
@@ -332,7 +334,7 @@ public class JJUploadView : AsyncComponent
         var html = new HtmlBuilder()
             .AppendHiddenInput($"upload-view-action-{Name}")
             .AppendHiddenInput($"upload-view-file-name-{Name}")
-            .AppendHiddenInput($"{Name}-draft-id", DraftGuidId.ToString("N"));
+            .AppendHiddenInput($"{Name}-draft-id", DraftId.ToString("N"));
 
         if (!AutoSave && !string.IsNullOrWhiteSpace(DeletedFilesInputName))
             html.AppendHiddenInput(DeletedFilesInputName, GetDeletedFilesByComma());
@@ -753,7 +755,7 @@ public class JJUploadView : AsyncComponent
         Manager.CreateFileAsync(TempPath, FolderPath, AutoSave, file, UploadArea.Multiple);
 
     public Task DeleteFileAsync(string fileName) =>
-        Manager.DeleteFileAsync(TempPath, FolderPath, AutoSave, fileName);
+        Manager.DeleteFileAsync(TempPath, FolderPath, fileName);
 
     private async Task<ComponentResult> GetDeleteFileResultAsync(string fileName)
     {

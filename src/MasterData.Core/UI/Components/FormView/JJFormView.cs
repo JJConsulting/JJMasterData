@@ -147,6 +147,7 @@ public class JJFormView : AsyncComponent
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IMasterDataUser _masterDataUser;
     private readonly FormService _formService;
+    private readonly UploadViewManager _uploadViewManager;
 
     #endregion
 
@@ -432,6 +433,7 @@ public class JJFormView : AsyncComponent
         ExpressionsService expressionsService,
         HtmlTemplateService htmlTemplateService,
         IEnumerable<IPluginHandler> pluginHandlers,
+        UploadViewManager uploadViewManager,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFormView> logger,
@@ -454,6 +456,7 @@ public class JJFormView : AsyncComponent
         _fieldValuesService = fieldValuesService;
         _htmlTemplateService = htmlTemplateService;
         _pluginHandlers = pluginHandlers;
+        _uploadViewManager = uploadViewManager;
         _options = options.Value;
         _logger = logger;
         _dataDictionaryRepository = dataDictionaryRepository;
@@ -727,35 +730,11 @@ public class JJFormView : AsyncComponent
     {
         PageState = PageState.List;
 
-        ClearDrafts();
+        _ = _uploadViewManager.ClearTemporaryFilesAsync(FormElement);
 
         return await GridView.GetResultAsync();
     }
-    
-    private void ClearDrafts()
-    {
-        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
-        uploadViews.ForEach(u => _= u.ClearTemporaryFilesAsync());
-    }
 
-    private async Task PromoteDraftFilesAsync()
-    {
-        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
-        foreach (var upload in uploadViews)
-        {
-            await upload.PromoteDraftFilesAsync();
-        }
-    }
-    
-    private async Task DeleteFilesAsync()
-    {
-        var uploadViews = ComponentFactory.UploadView.CreateList(FormElement, DataPanel.Values);
-        foreach (var upload in uploadViews)
-        {
-            await upload.DeleteAllAsync();
-        }
-    }
-    
     private Task<ComponentResult> GetBackActionResult()
     {
         PageState = PageState.List;
@@ -1669,7 +1648,7 @@ public class JJFormView : AsyncComponent
         var result = await _formService.InsertAsync(FormElement, values, dataContext, validateFields);
         if (result.Errors.Count == 0)
         {
-            await PromoteDraftFilesAsync();
+            await _uploadViewManager.PromoteDraftFilesAsync(FormElement, DataPanel.Values);
         }
         
         UrlRedirect = result.UrlRedirect;
@@ -1686,7 +1665,7 @@ public class JJFormView : AsyncComponent
         var result = await _formService.UpdateAsync(FormElement, values, dataContext);
         if (result.Errors.Count == 0)
         {
-            await PromoteDraftFilesAsync();
+            await _uploadViewManager.PromoteDraftFilesAsync(FormElement, DataPanel.Values);
         }
         
         UrlRedirect = result.UrlRedirect;
@@ -1701,7 +1680,7 @@ public class JJFormView : AsyncComponent
         var result = await _formService.DeleteAsync(FormElement, values, dataContext);
         if (result.Errors.Count == 0)
         {
-            await DeleteFilesAsync();
+            await _uploadViewManager.ClearTemporaryFilesAsync(FormElement);
         }
         UrlRedirect = result.UrlRedirect;
         return result.Errors;

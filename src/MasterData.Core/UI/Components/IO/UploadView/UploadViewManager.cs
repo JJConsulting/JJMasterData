@@ -9,6 +9,8 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.Localization;
 namespace JJMasterData.Core.UI.Components;
 
 public class UploadViewManager(
+    IHttpContextAccessor currentContext,
     ElementFileService elementFileService,
     IFileStorage fileStorage,
     IStringLocalizer<MasterDataResources> stringLocalizer)
@@ -125,7 +128,6 @@ public class UploadViewManager(
     public async Task DeleteFileAsync(
         string tempPath,
         string folderPath,
-        bool autoSave,
         string fileName)
     {
         fileName = Path.GetFileName(fileName);
@@ -154,6 +156,18 @@ public class UploadViewManager(
         if (autoSave && !string.IsNullOrEmpty(folderPath))
             await fileStorage.DeleteFolderAsync(folderPath);
     }
+
+    public async Task ClearTemporaryFilesAsync(FormElement formElement)
+    {
+        foreach (var field in GetFileFields(formElement))
+        {
+            var tempPath = GetTempPath(field);
+            if (string.IsNullOrEmpty(tempPath))
+                continue;
+
+            await DeleteAllAsync(tempPath, null, false);
+        }
+    }
     
     public async Task PromoteDraftFilesAsync(string tempPath, string folderPath, HashSet<string> deletedFiles)
     {
@@ -175,6 +189,57 @@ public class UploadViewManager(
         await fileStorage.DeleteFolderAsync(tempPath);
     }
 
-    
+    public async Task PromoteDraftFilesAsync(FormElement formElement, Dictionary<string, object> values)
+    {
+        if (!DataHelper.ContainsPkValues(formElement, values!))
+            return;
 
+        foreach (var field in GetFileFields(formElement))
+        {
+            var tempPath = GetTempPath(field);
+            if (string.IsNullOrEmpty(tempPath))
+                continue;
+
+            var folderPath = FileStoragePath.GetFolderPath(formElement, field, values);
+            await PromoteDraftFilesAsync(tempPath, folderPath, GetDeletedFiles(field));
+        }
+    }
+
+    private string? GetTempPath(FormElementField field)
+    {
+        var draftIdStr = currentContext.HttpContext?.Request.GetValue($"{GetUploadViewName(field)}-draft-id");
+        if (!Guid.TryParse(draftIdStr, out var draftId))
+            return null;
+
+        return JJUploadView.TempPathFolder + draftId.ToString("N") + "/";
+    }
+
+    private HashSet<string> GetDeletedFiles(FormElementField field)
+    {
+        var values = currentContext.HttpContext?.Request.GetValue(GetDeletedFilesInputName(field));
+        if (string.IsNullOrWhiteSpace(values))
+            return [];
+
+        return values
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(Path.GetFileName)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(name => name!)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static string GetUploadViewName(FormElementField field) =>
+        $"{field.Name}-upload-view";
+
+    internal static string GetDeletedFilesInputName(FormElementField field) =>
+        $"{GetUploadViewName(field)}-files-deleted";
+
+    private static IEnumerable<FormElementField> GetFileFields(FormElement formElement)
+    {
+        foreach (var field in formElement.Fields)
+        {
+            if (field.Component is FormComponent.File && field.DataFile is not null)
+                yield return field;
+        }
+    }
 }
