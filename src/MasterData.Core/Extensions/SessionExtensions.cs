@@ -1,8 +1,5 @@
-#if NET
-
 using System.Text.Json;
 using JJMasterData.Commons.Serialization;
-using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Extensions;
 
@@ -26,4 +23,3 @@ public static class SessionExtensions
         return value == null ? default : JsonSerializer.Deserialize<T>(value, MasterDataJsonSerializerOptions.Default);
     }
 }
-#endif
