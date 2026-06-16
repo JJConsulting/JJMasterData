@@ -9,7 +9,7 @@ using JJMasterData.Core.UI.Events.Args;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class UploadAreaManager(IHttpContextAccessor currentContext, FileValidationService fileValidationService)
+public class UploadAreaManager(IHttpContextAccessor httpContextAccessor, FileValidationService fileValidationService)
 {
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
@@ -54,7 +54,13 @@ public class UploadAreaManager(IHttpContextAccessor currentContext, FileValidati
 
     public bool TryGetFile(string fileName, out IFormFile? formFile)
     {
-        formFile = currentContext.HttpContext!.Request.Form.Files[fileName];
+        if (httpContextAccessor.HttpContext?.Request.HasFormContentType is false)
+        {
+            formFile = null;
+            return false;
+        }
+        
+        formFile = httpContextAccessor.HttpContext?.Request.Form.Files[fileName];
         return formFile != null;
     }
 }
