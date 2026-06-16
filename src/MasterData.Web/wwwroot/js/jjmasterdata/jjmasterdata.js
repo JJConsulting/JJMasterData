@@ -159,13 +159,22 @@ class ActionHelper {
             }
         });
     }
-    static executeInternalRedirect(url_1, modalSize_1, confirmationMessage_1) {
-        return __awaiter(this, arguments, void 0, function* (url, modalSize, confirmationMessage, isModal = true) {
+    static executeInternalRedirect(url_1, modalSize_1, confirmationMessage_1, componentName_1) {
+        return __awaiter(this, arguments, void 0, function* (url, modalSize, confirmationMessage, componentName, isModal = true) {
             if (confirmationMessage) {
                 const confirmed = yield showConfirmationMessage(confirmationMessage);
                 if (!confirmed) {
                     return false;
                 }
+            }
+            const selectedRowsInput = document.querySelector("#grid-view-selected-rows-" + componentName);
+            console.log(selectedRowsInput);
+            if (selectedRowsInput === null || selectedRowsInput === void 0 ? void 0 : selectedRowsInput.value) {
+                const redirectUrl = new URL(url, window.location.origin);
+                console.log(redirectUrl);
+                redirectUrl.searchParams.set("multiselectValues", selectedRowsInput.value);
+                url = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
+                console.log(url);
             }
             if (isModal)
                 defaultModal.showIframe(url, "", modalSize);
@@ -2500,6 +2509,11 @@ class PhoneInputListener {
             syncHiddenInput(input, select);
             $(input).on('input', function () {
                 syncHiddenInput(this, select);
+            });
+            input.addEventListener('paste', () => {
+                setTimeout(() => {
+                    syncHiddenInput(input, select);
+                }, 0);
             });
         });
     }

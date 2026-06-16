@@ -1,7 +1,9 @@
-﻿using System.Web;
+﻿using System.Text.Json;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -23,10 +25,12 @@ public class InternalRedirectController(
     IMasterDataUser masterDataUser,
     IEncryptionService encryptionService) : MasterDataController
 {
-    public async Task<IActionResult> Index(string parameters)
+    public async Task<IActionResult> Index(string parameters, string? multiselectValues)
     {
         var state = GetInternalRedirectState(parameters);
         var userId = masterDataUser.Id;
+        var userValues = GetUserValues(userId, multiselectValues);
+        
         InternalRedirectViewModel model;
 
         switch (state.RelationshipType)
@@ -37,10 +41,10 @@ public class InternalRedirectController(
                 formView.ShowTitle = state.ShowTitle;
                 formView.RelationValues = state.RelationValues;
                 formView.FormElement.Options.Grid.MaintainValuesOnLoad = false;
+                ApplyUserValues(formView, userValues);
                 
                 if (userId != null)
                 {
-                    formView.SetUserValues("USERID", userId);
                     formView.GridView.SetCurrentFilter("USERID", userId);
                 }
                 
@@ -48,14 +52,15 @@ public class InternalRedirectController(
                 if (result is IActionResult actionResult)
                     return actionResult;
 
-                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.List))?.ToString();
+                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, userValues, PageState.List))?.ToString();
                 model = new()
                 {
                     HtmlContent = result.HtmlContent,
                     ShowToolbar = false,
                     Title = title ?? formView.Name,
                     IsModal = state.OpenInModal,
-                    ParentElementName = state.ParentElementName
+                    ParentElementName = state.ParentElementName,
+                    MultiselectValues = multiselectValues
                 };
                 break;
             }
@@ -63,9 +68,7 @@ public class InternalRedirectController(
             {
                 var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
                 formView.PageState = PageState.View;
-                
-                if (userId != null)
-                    formView.SetUserValues("USERID", userId);
+                ApplyUserValues(formView, userValues);
 
                 await formView.DataPanel.LoadValuesFromPkAsync(state.RelationValues);
                 
@@ -75,14 +78,15 @@ public class InternalRedirectController(
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, PageState.View))?.ToString();
+                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, userValues, PageState.View))?.ToString();
                 model = new()
                 {
                     HtmlContent = result.HtmlContent,
                     ShowToolbar = false,
                     Title = title ?? formView.Name,
                     IsModal = state.OpenInModal,
-                    ParentElementName = state.ParentElementName
+                    ParentElementName = state.ParentElementName,
+                    MultiselectValues = multiselectValues
                 };
                 break;
             }
@@ -95,6 +99,7 @@ public class InternalRedirectController(
                     : PageState.Insert;
                 
                 formView.PageState = pageState;
+                ApplyUserValues(formView, userValues);
 
                 if (pageState is PageState.Update)
                 {
@@ -102,9 +107,6 @@ public class InternalRedirectController(
                 }
                 
                 DataHelper.CopyIntoDictionary(formView.DataPanel.Values, state.RelationValues!);
-                
-                if (userId != null)
-                    formView.SetUserValues("USERID", userId);
 
                 formView.FormElement.Options.FormToolbarActions.Clear();
                 
@@ -112,14 +114,15 @@ public class InternalRedirectController(
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!,pageState))?.ToString();
+                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, userValues, pageState))?.ToString();
                 model = new()
                 {
                     HtmlContent = result.HtmlContent,
                     ShowToolbar = true,
                     Title = title ?? formView.Name,
                     IsModal = state.OpenInModal,
-                    ParentElementName = state.ParentElementName
+                    ParentElementName = state.ParentElementName,
+                    MultiselectValues = multiselectValues
                 };
                 break;
             }
@@ -131,10 +134,11 @@ public class InternalRedirectController(
     }
     
     [HttpPost]
-    public async Task<IActionResult> Save(string parameters)
+    public async Task<IActionResult> Save(string parameters, string? multiselectValues)
     {
-        var state = GetInternalRedirectState(parameters);
+        var state =  GetInternalRedirectState(parameters);
         var userId = masterDataUser.Id;
+        var userValues = GetUserValues(userId, multiselectValues);
         var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
 
         if (panel.PageState is PageState.Update)
@@ -149,8 +153,7 @@ public class InternalRedirectController(
             }
         }
      
-        if (userId != null)
-            panel.SetUserValues("USERID", userId);
+        ApplyUserValues(panel, userValues);
 
         var values = await panel.GetFormValuesAsync();
         var letter = await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request, DataContextSource.Form, userId));
@@ -168,7 +171,7 @@ public class InternalRedirectController(
         if (result is IActionResult actionResult)
             return actionResult;
 
-        var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, PageState.Update))?.ToString();
+        var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, userValues, PageState.Update))?.ToString();
         
         if(!hasErrors && !state.OpenInModal)
             return RedirectToAction("Render","Form", new {Area="MasterData", elementName = state.ElementName});
@@ -180,7 +183,8 @@ public class InternalRedirectController(
             IsModal = state.OpenInModal,
             ParentElementName = state.ParentElementName,
             SubmitParentWindow = !hasErrors,
-            Title = title ?? panel.Name
+            Title = title ?? panel.Name,
+            MultiselectValues = multiselectValues
         };
 
         return View("Index", model);
@@ -198,6 +202,7 @@ public class InternalRedirectController(
 
         var @params = HttpUtility.ParseQueryString(encryptionService.DecryptStringWithUrlUnescape(parameters));
         state.ElementName = @params.Get("formname");
+
 
         foreach (string key in @params)
         {
@@ -223,7 +228,57 @@ public class InternalRedirectController(
                     break;
             }
         }
-
+        
         return state;
+    }
+
+    private Dictionary<string, object?> GetUserValues(string? userId, string? encryptedMultiselectValues)
+    {
+        var userValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+
+        if (!string.IsNullOrEmpty(encryptedMultiselectValues))
+        {
+            var multiselectValues =  GetMultiselectValues(encryptedMultiselectValues);
+            userValues["MultiselectValues"] = multiselectValues;
+        }
+        
+        if (userId != null)
+            userValues["USERID"] = userId;
+
+        return userValues;
+    }
+
+    private static void ApplyUserValues(JJFormView formView, Dictionary<string, object?> userValues)
+    {
+        foreach (var kvp in userValues)
+        {
+            if (kvp.Value is string stringValue)
+                formView.SetUserValues(kvp.Key, stringValue);
+        }
+    }
+
+    private static void ApplyUserValues(JJDataPanel panel, Dictionary<string, object?> userValues)
+    {
+        foreach (var kvp in userValues)
+        {
+            if (kvp.Value is string stringValue)
+                panel.SetUserValues(kvp.Key, stringValue);
+        }
+    }
+
+    private string? GetMultiselectValues(string? selectedRows)
+    {
+        if (string.IsNullOrWhiteSpace(selectedRows))
+            return null;
+        
+        var selectedValues = new HashSet<string>();
+
+        foreach (var encryptedPk in selectedRows.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var decryptedPk = encryptionService.DecryptStringWithUrlUnescape(encryptedPk);
+            selectedValues.Add(decryptedPk);
+        }
+
+        return string.Join(',', selectedValues);
     }
 }

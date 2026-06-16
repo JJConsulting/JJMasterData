@@ -62,7 +62,7 @@ public class ActionScripts(
             });
 
         return
-            $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}', {elementRedirect.ShowAsModal.ToString().ToLowerInvariant()});";
+            $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}', '{actionContext.ParentComponentName}', {elementRedirect.ShowAsModal.ToString().ToLowerInvariant()});";
     }
 
     
