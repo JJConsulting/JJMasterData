@@ -114,7 +114,7 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad)
-                settings = currentContext.HttpContext!.Session.GetObject<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
+                settings = currentContext.HttpContext!.GetGridSettingsCookie(grid.FormElement.Name);
 
             if (settings == null)
             {

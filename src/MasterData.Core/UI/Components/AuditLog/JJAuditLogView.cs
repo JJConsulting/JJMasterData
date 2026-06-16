@@ -50,14 +50,7 @@ public class JJAuditLogView : AsyncComponent
     }
 
     private ComponentContext ComponentContext => RouteContext.ComponentContext;
-
-    /// <summary>
-    /// Id do usuário Atual
-    /// </summary>
-    /// <remarks>
-    /// Se a variavel não for atribuida diretamente,
-    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
-    /// </remarks>
+    
     internal string UserId => _masterDataUser.Id;
 
     private IHttpContextAccessor CurrentContext { get; }

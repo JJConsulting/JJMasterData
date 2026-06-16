@@ -32,9 +32,6 @@ Add the following lines to your Program.cs
 //This line will add JJMasterData required services.
 builder.Services.AddJJMasterDataWeb();
 
-//Required middleware for JJMasterData
-app.UseSession();
-
 //Add these lines before specifing default route:
 
 // Admin routes to create CRUDs

@@ -93,10 +93,6 @@ public sealed class ExpressionParser(
             else
                 parsedValue = objValue;
         }
-        else if (httpContext.HttpContext?.Session.Keys.Contains(field) == true)
-        {
-            parsedValue = httpContext.HttpContext.Session.GetString(field);
-        }
         else
         {
             parsedValue = GetClaimValue(field) ?? string.Empty;

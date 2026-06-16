@@ -95,12 +95,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<JJMasterDataLogo>();
         
         services.AddHttpContextAccessor();
-        services.AddSession(o =>
-        {
-            o.Cookie.Name =".JJMasterData.Session";
-            o.Cookie.IsEssential = true;
-        });
-        services.AddMemoryCache();
         services.AddActionFilters();
     }
     

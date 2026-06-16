@@ -86,18 +86,17 @@ internal sealed class GridFilter(JJGridView gridView)
                 return _currentFilter;
         }
 
-        var sessionFilter = _currentContext.HttpContext!.Session.GetObject<Dictionary<string, object>>(
-            $"jjcurrentfilter_{gridView.Name}");
+        var cookieFilter = _currentContext.HttpContext!.GetGridFilterCookie(gridView.Name);
 
-        if (sessionFilter != null && gridView.MaintainValuesOnLoad)
+        if (cookieFilter != null && gridView.MaintainValuesOnLoad)
         {
-            DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
+            DataHelper.CopyIntoDictionary(_currentFilter, cookieFilter);
             return _currentFilter;
         }
 
-        if (sessionFilter != null && (_currentContext.HttpContext!.Request.HasFormContentType || IsDynamicPost()))
+        if (cookieFilter != null && (_currentContext.HttpContext!.Request.HasFormContentType || IsDynamicPost()))
         {
-            DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
+            DataHelper.CopyIntoDictionary(_currentFilter, cookieFilter);
             return _currentFilter;
         }
         
@@ -149,8 +148,9 @@ internal sealed class GridFilter(JJGridView gridView)
 
         DataHelper.CopyIntoDictionary(values, defaultValues);
         DataHelper.CopyIntoDictionary(_currentFilter, values);
-
-        _currentContext.HttpContext!.Session.SetObject($"jjcurrentfilter_{gridView.Name}", _currentFilter);
+        
+        if(gridView.MaintainValuesOnLoad)
+            _currentContext.HttpContext!.SetGridFilterCookie(gridView.Name, _currentFilter);
     }
 
     private async ValueTask<HtmlBuilder> GetDefaultFilter()

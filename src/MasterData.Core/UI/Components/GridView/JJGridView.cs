@@ -239,7 +239,7 @@ public class JJGridView : AsyncComponent
             {
                 if (MaintainValuesOnLoad)
                 {
-                    var tableOrder = CurrentContext.HttpContext!.Session.GetString($"jj-grid-view-order-{Name}");
+                    var tableOrder = CurrentContext.HttpContext!.GetGridOrderCookie(Name);
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -252,7 +252,7 @@ public class JJGridView : AsyncComponent
                 _currentOrder = OrderByData.FromString(order);
                 if (_currentOrder == null)
                 {
-                    var tableOrder = CurrentContext.HttpContext!.Session.GetString($"jj-grid-view-order-{Name}");
+                    var tableOrder = CurrentContext.HttpContext!.GetGridOrderCookie(Name);
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -269,7 +269,9 @@ public class JJGridView : AsyncComponent
         }
         set
         {
-            CurrentContext.HttpContext!.Session.SetString($"jj-grid-view-order-{Name}", value.ToQueryParameter());
+            if (MaintainValuesOnLoad)
+                CurrentContext.HttpContext!.SetGridOrderCookie(Name, value.ToQueryParameter());
+            
             _currentOrder = value;
         }
     }
@@ -315,23 +317,13 @@ public class JJGridView : AsyncComponent
         set
         {
             if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
-                CurrentContext.HttpContext!.Session.SetString($"jjcurrentpage_{Name}", value.ToString());
+                CurrentContext.HttpContext!.SetGridCurrentPageCookie(Name, value);
 
             _currentPage = value;
         }
     }
 
-    private int GetPageFromPreferences()
-    {
-        var tablePage = CurrentContext.HttpContext!.Session.GetString($"jjcurrentpage_{Name}");
-        if (tablePage != null)
-        {
-            if (int.TryParse(tablePage, out var page))
-                return page;
-        }
-
-        return 1;
-    }
+    private int GetPageFromPreferences() => CurrentContext.HttpContext!.GetGridCurrentPageCookie(Name) ?? 1;
 
     public int TotalOfPages
     {
@@ -366,7 +358,7 @@ public class JJGridView : AsyncComponent
             }
 
             if (MaintainValuesOnLoad)
-                CurrentSettings = CurrentContext.HttpContext!.Session.GetObject<GridSettings>($"jjcurrentui_{FormElement.Name}");
+                CurrentSettings = CurrentContext.HttpContext!.GetGridSettingsCookie(FormElement.Name);
 
             if (_currentSettings == null)
                 CurrentSettings = GridSettingsForm.LoadFromForm();
@@ -376,7 +368,7 @@ public class JJGridView : AsyncComponent
         set
         {
             if (MaintainValuesOnLoad)
-                CurrentContext.HttpContext!.Session.SetObject($"jjcurrentui_{FormElement.Name}", value);
+                CurrentContext.HttpContext!.SetGridSettingsCookie(FormElement.Name, value);
 
             _currentSettings = value;
         }
@@ -442,12 +434,12 @@ public class JJGridView : AsyncComponent
     public bool EnableMultiSelect { get; set; }
 
     /// <summary>
-    /// Keep the grid filters, order and pagination in the session,
+    /// Keep the grid filters, order and pagination in cookies,
     /// and recover on the first page load. (Default = false)
     /// </summary>
     /// <remarks>
     /// When using this property, we recommend changing the object's [Name] parameter.
-    /// The [Name] property is used to compose the name of the session variable.
+    /// The [Name] property is used to compose the cookie names.
     /// </remarks>
     public bool MaintainValuesOnLoad { get; set; }
 
