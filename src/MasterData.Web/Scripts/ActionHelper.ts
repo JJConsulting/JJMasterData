@@ -164,12 +164,20 @@ class ActionHelper {
         })
     }
 
-    private static async executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string, isModal: boolean = true) {
+    private static async executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string, componentName: string, isModal: boolean = true) {
         if (confirmationMessage) {
             const confirmed = await showConfirmationMessage(confirmationMessage);
             if (!confirmed) {
                 return false;
             }
+        }
+
+        const selectedRowsInput = document.querySelector<HTMLInputElement>("#grid-view-selected-rows-" + componentName);
+
+        if (selectedRowsInput?.value) {
+            const redirectUrl = new URL(url, window.location.origin);
+            redirectUrl.searchParams.set("multiselectValues", selectedRowsInput.value);
+            url = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
         }
         
         if(isModal)

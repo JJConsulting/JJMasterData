@@ -159,13 +159,19 @@ class ActionHelper {
             }
         });
     }
-    static executeInternalRedirect(url_1, modalSize_1, confirmationMessage_1) {
-        return __awaiter(this, arguments, void 0, function* (url, modalSize, confirmationMessage, isModal = true) {
+    static executeInternalRedirect(url_1, modalSize_1, confirmationMessage_1, componentName_1) {
+        return __awaiter(this, arguments, void 0, function* (url, modalSize, confirmationMessage, componentName, isModal = true) {
             if (confirmationMessage) {
                 const confirmed = yield showConfirmationMessage(confirmationMessage);
                 if (!confirmed) {
                     return false;
                 }
+            }
+            const selectedRowsInput = document.querySelector("#grid-view-selected-rows-" + componentName);
+            if (selectedRowsInput === null || selectedRowsInput === void 0 ? void 0 : selectedRowsInput.value) {
+                const redirectUrl = new URL(url, window.location.origin);
+                redirectUrl.searchParams.set("multiselectValues", selectedRowsInput.value);
+                url = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
             }
             if (isModal)
                 defaultModal.showIframe(url, "", modalSize);

@@ -116,7 +116,7 @@ public class RecursiveProcedurePluginActionHandler(
             inputParameters.ExecutionSequenceParameter.Value = executionSequence;
             outputParameters.MessageContentParameter.Value = protheusResult;
             command = GetCommand(context, inputParameters, outputParameters);
-            await entityRepository.SetCommandAsync(command);
+            await entityRepository.SetCommandAsync(command, context.ActionContext.FormElement.ConnectionId);
         }
 
         var messageType = outputParameters.MessageTypeParameter.Value;
