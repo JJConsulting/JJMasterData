@@ -168,13 +168,10 @@ class ActionHelper {
                 }
             }
             const selectedRowsInput = document.querySelector("#grid-view-selected-rows-" + componentName);
-            console.log(selectedRowsInput);
             if (selectedRowsInput === null || selectedRowsInput === void 0 ? void 0 : selectedRowsInput.value) {
                 const redirectUrl = new URL(url, window.location.origin);
-                console.log(redirectUrl);
                 redirectUrl.searchParams.set("multiselectValues", selectedRowsInput.value);
                 url = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
-                console.log(url);
             }
             if (isModal)
                 defaultModal.showIframe(url, "", modalSize);
