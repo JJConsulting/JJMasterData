@@ -24,7 +24,7 @@ public static class CookieExtensions
     {
         public Dictionary<string, object> GetGridFilterCookie(string gridName)
         {
-            var cookieValue = httpContext.GetDecodedCookieValue(httpContext.GetGridCookieKey(gridName, FilterCookieSuffix));
+            var cookieValue = httpContext.GetDecodedCookieValue(GetGridCookieKey(gridName, FilterCookieSuffix));
             if (string.IsNullOrEmpty(cookieValue))
                 return null;
 
@@ -58,22 +58,22 @@ public static class CookieExtensions
                 ? null
                 : httpContext.GetGridFilterCookieProtector().Protect(serializedValue);
 
-            httpContext.SetCookieValue(httpContext.GetGridCookieKey(gridName, FilterCookieSuffix), serializedValue);
+            httpContext.SetCookieValue(GetGridCookieKey(gridName, FilterCookieSuffix), serializedValue);
         }
 
         public string GetGridOrderCookie(string gridName)
         {
-            return httpContext.GetDecodedCookieValue(httpContext.GetGridCookieKey(gridName, OrderCookieSuffix));
+            return httpContext.GetDecodedCookieValue(GetGridCookieKey(gridName, OrderCookieSuffix));
         }
 
         public void SetGridOrderCookie(string gridName, string orderBy)
         {
-            httpContext.SetCookieValue(httpContext.GetGridCookieKey(gridName, OrderCookieSuffix), string.IsNullOrEmpty(orderBy) ? null : orderBy);
+            httpContext.SetCookieValue(GetGridCookieKey(gridName, OrderCookieSuffix), string.IsNullOrEmpty(orderBy) ? null : orderBy);
         }
 
         public int? GetGridCurrentPageCookie(string gridName)
         {
-            var cookieValue = httpContext.GetDecodedCookieValue(httpContext.GetGridCookieKey(gridName, PageCookieSuffix));
+            var cookieValue = httpContext.GetDecodedCookieValue(GetGridCookieKey(gridName, PageCookieSuffix));
             if (string.IsNullOrEmpty(cookieValue))
                 return null;
 
@@ -84,12 +84,12 @@ public static class CookieExtensions
 
         public void SetGridCurrentPageCookie(string gridName, int page)
         {
-            httpContext.SetCookieValue(httpContext.GetGridCookieKey(gridName, PageCookieSuffix), page.ToString(CultureInfo.InvariantCulture));
+            httpContext.SetCookieValue(GetGridCookieKey(gridName, PageCookieSuffix), page.ToString(CultureInfo.InvariantCulture));
         }
 
         public GridSettings GetGridSettingsCookie(string gridName)
         {
-            var cookieValue = httpContext.GetDecodedCookieValue(httpContext.GetGridCookieKey(gridName, SettingsCookieSuffix));
+            var cookieValue = httpContext.GetDecodedCookieValue(GetGridCookieKey(gridName, SettingsCookieSuffix));
             if (string.IsNullOrEmpty(cookieValue))
                 return null;
 
@@ -102,12 +102,7 @@ public static class CookieExtensions
                 ? null
                 : JsonSerializer.Serialize(settings, MasterDataJsonSerializerOptions.Default);
 
-            httpContext.SetCookieValue(httpContext.GetGridCookieKey(gridName, SettingsCookieSuffix), serializedValue);
-        }
-        
-        private string GetGridCookieKey(string gridName, string suffix = null)
-        {
-            return $"{Prefix}{GridCookiePrefix}{httpContext.GetUserCookieScope()}.{gridName.ToLowerInvariant()}{suffix}";
+            httpContext.SetCookieValue(GetGridCookieKey(gridName, SettingsCookieSuffix), serializedValue);
         }
    
         private void SetCookieValue(string key, string value)
@@ -139,17 +134,15 @@ public static class CookieExtensions
             return string.IsNullOrEmpty(value) ? value : Uri.UnescapeDataString(value);
         }
 
-        private string GetUserCookieScope()
-        {
-            var userId = httpContext.User.GetUserId(ClaimTypes.NameIdentifier);
-
-            return Uri.EscapeDataString(userId!.ToLowerInvariant());
-        }
-
         private IDataProtector GetGridFilterCookieProtector()
         {
             var provider = httpContext.RequestServices.GetRequiredService<IDataProtectionProvider>();
             return provider.CreateProtector("JJMasterData GridView filter cookie.");
         }
+    }
+    
+    private static string GetGridCookieKey(string gridName, string suffix = null)
+    {
+        return $"{Prefix}{GridCookiePrefix}{gridName.ToLowerInvariant()}{suffix}";
     }
 }
