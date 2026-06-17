@@ -24,7 +24,7 @@ public static class HtmlTemplateOptions
     internal const string FormElementFieldKey = "_FormElementField";
     internal const string FormValuesKey = "FormValues";
 
-    internal static readonly TemplateOptions Value;
+    public static readonly TemplateOptions Value;
 
     static HtmlTemplateOptions()
     {
