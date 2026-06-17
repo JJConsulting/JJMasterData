@@ -8,6 +8,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Html.Templates;
 using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -28,7 +29,7 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerResolver gridEventHandlerResolver,
         UrlRedirectService urlRedirectService,
-        HtmlTemplateService htmlTemplateService,
+        HtmlTemplateRenderer htmlTemplateRenderer,
         ILoggerFactory loggerFactory,
         IComponentFactory componentFactory)
     : IFormElementComponentFactory<JJGridView>
@@ -48,7 +49,7 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
             fieldValidationService,
             stringLocalizer,
             urlRedirectService,
-            htmlTemplateService,
+            htmlTemplateRenderer,
             loggerFactory.CreateLogger<JJGridView>(),
             componentFactory);
 

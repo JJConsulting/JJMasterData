@@ -15,7 +15,6 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
 
@@ -217,7 +216,10 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
-            var replacedTemplate = await gridView.HtmlTemplateService.RenderTemplate(field.GridRenderingTemplate!, formStateData.Values);
+            var replacedTemplate = await gridView.HtmlTemplateRenderer.RenderTemplate(
+                gridView.FormElement,
+                field,
+                formStateData.Values);
             cell = new HtmlBuilder(replacedTemplate, encode:false);
         }
         else

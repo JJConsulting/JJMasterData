@@ -8,12 +8,11 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
         IFileStorage fileStorage,
-        IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
+        IEncryptionService encryptionService)
 {
     public JJFileDownloader Create()
     {
-        return new JJFileDownloader(httpContext, fileStorage, encryptionService, stringLocalizer);
+        return new JJFileDownloader(httpContext, fileStorage, encryptionService);
     }
 
     public JJFileDownloader Create(string fullPath)

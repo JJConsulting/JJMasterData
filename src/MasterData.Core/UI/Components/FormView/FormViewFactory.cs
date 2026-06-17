@@ -29,7 +29,7 @@ internal sealed class FormViewFactory(
     FormValuesService formValuesService,
     FieldValuesService fieldValuesService,
     ExpressionsService expressionsService,
-    HtmlTemplateService htmlTemplateService,
+    HtmlTemplateActionService htmlTemplateService,
     IEnumerable<IPluginHandler> pluginHandlers,
     UploadViewManager uploadViewManager,
     IStringLocalizer<MasterDataResources> stringLocalizer,

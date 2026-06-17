@@ -15,21 +15,12 @@ namespace JJMasterData.Core.UI.Components;
 public class JJFileDownloader(
     IHttpContextAccessor httpContextAccessor,
     IFileStorage fileStorage,
-    IEncryptionService encryptionService,
-    IStringLocalizer<MasterDataResources> stringLocalizer) : HtmlComponent
+    IEncryptionService encryptionService) 
 {
     private const string FileTokenParameter = "downloadFileToken";
 
     public string FullPath { get; set; }
-
-    protected override HtmlBuilder BuildHtml()
-    {
-        if (string.IsNullOrEmpty(FullPath))
-            throw new JJMasterDataException(stringLocalizer["Invalid file reference"]);
-
-        return new HtmlBuilder();
-    }
-
+    
     public async Task<FileStreamComponentResult> GetDirectDownloadResultAsync()
     {
         if (string.IsNullOrEmpty(FullPath))

@@ -140,7 +140,7 @@ public class JJFormView : AsyncComponent
 
     private readonly FormValuesService _formValuesService;
     private readonly FieldValuesService _fieldValuesService;
-    private readonly HtmlTemplateService _htmlTemplateService;
+    private readonly HtmlTemplateActionService _htmlTemplateService;
     private readonly IEnumerable<IPluginHandler> _pluginHandlers;
     private readonly MasterDataCoreOptions _options;
     private readonly ILogger<JJFormView> _logger;
@@ -431,7 +431,7 @@ public class JJFormView : AsyncComponent
         FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
-        HtmlTemplateService htmlTemplateService,
+        HtmlTemplateActionService htmlTemplateService,
         IEnumerable<IPluginHandler> pluginHandlers,
         UploadViewManager uploadViewManager,
         IOptionsSnapshot<MasterDataCoreOptions> options,

@@ -28,6 +28,7 @@ using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Html.Templates;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.UI.Events;
 using JJMasterData.Core.UI.Events.Args;
@@ -569,7 +570,7 @@ public class JJGridView : AsyncComponent
     internal FieldValuesService FieldValuesService { get; }
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    internal HtmlTemplateService HtmlTemplateService { get; }
+    internal HtmlTemplateRenderer HtmlTemplateRenderer { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
 
@@ -613,7 +614,7 @@ public class JJGridView : AsyncComponent
         FieldValidationService fieldValidationService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         UrlRedirectService urlRedirectService,
-        HtmlTemplateService htmlTemplateService,
+        HtmlTemplateRenderer htmlTemplateRenderer,
         ILogger<JJGridView> logger,
         IComponentFactory componentFactory)
     {
@@ -634,7 +635,7 @@ public class JJGridView : AsyncComponent
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         _urlRedirectService = urlRedirectService;
-        HtmlTemplateService = htmlTemplateService;
+        HtmlTemplateRenderer = htmlTemplateRenderer;
         Logger = logger;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
