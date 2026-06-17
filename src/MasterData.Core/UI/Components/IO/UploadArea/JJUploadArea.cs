@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +8,6 @@ using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.AspNetCore.Http.Features;

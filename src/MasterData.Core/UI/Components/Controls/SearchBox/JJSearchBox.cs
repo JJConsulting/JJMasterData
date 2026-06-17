@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,8 +12,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 

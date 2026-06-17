@@ -1,12 +1,10 @@
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
-
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;

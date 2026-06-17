@@ -194,7 +194,7 @@ public class ElementController(
 
         foreach (var elementName in elementNamesToDelete)
         {
-            await elementService.DeleteAsync(elementName);
+            await elementService.DeleteAsync(elementName!);
         }
 
         return RedirectToAction(nameof(Index));

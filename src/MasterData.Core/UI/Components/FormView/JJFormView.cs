@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable EventNeverSubscribedTo.Global
@@ -31,7 +30,6 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Logging;
-using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
@@ -485,7 +483,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<JJFormView> GetChildFormView()
     {
-        var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
+        var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName!);
 
 
         childFormView.FormElement.ParentName = RouteContext.ParentElementName;
@@ -524,7 +522,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.LookupDescription:
                 return await DataPanel.GetResultAsync();
             case ComponentContext.UrlRedirect:
-                return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
+                return await DataPanel.GetUrlRedirectResult(CurrentActionMap!);
             case ComponentContext.DataPanelReload:
                 return await GetReloadPanelResultAsync();
             case ComponentContext.DataExportation:
@@ -976,7 +974,7 @@ public class JJFormView : AsyncComponent
 
             var filters = await GetFiltersWithDefaultValues(PageState.Update);
 
-            var letter = await _formService.GetAsync(FormElement, filters);
+            var letter = await _formService.GetAsync(FormElement, filters!);
             values = letter.Result!;
             var errors = letter.Errors;
             if (errors.Count > 0)
@@ -1146,7 +1144,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
+        var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]!);
         var html = new HtmlBuilder(HtmlTag.Div);
 
         var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
@@ -1218,7 +1216,7 @@ public class JJFormView : AsyncComponent
         PageState = PageState.View;
         var filters = await GetFiltersWithDefaultValues(PageState.View);
 
-        var letter = await _formService.GetAsync(FormElement, filters);
+        var letter = await _formService.GetAsync(FormElement, filters!);
         var values = letter.Result!;
         var errors = letter.Errors;
         if (errors.Count > 0)
@@ -1226,7 +1224,7 @@ public class JJFormView : AsyncComponent
             return await GetGridResultWithErrors(errors);
         }
 
-        return await GetFormResult(values, PageState, false);
+        return await GetFormResult(values!, PageState, false);
     }
 
     private async Task<ComponentResult> GetDeleteResult()
@@ -1279,7 +1277,7 @@ public class JJFormView : AsyncComponent
         {
             var html = new HtmlBuilder(HtmlTag.Div);
 
-            var logDetailsHtml = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
+            var logDetailsHtml = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues!);
 
             html.Append(logDetailsHtml);
 
@@ -1624,15 +1622,15 @@ public class JJFormView : AsyncComponent
     private ValueTask InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
     {
         if (sender is not JJGridView)
-            return ValueTaskHelper.CompletedTask;
+            return ValueTask.CompletedTask;
 
         if (args.ActionName is not InsertSelectionAction.ActionName)
-            return ValueTaskHelper.CompletedTask;
+            return ValueTask.CompletedTask;
 
         args.LinkButton.Tooltip = Localizer["Select"];
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
 
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
 
@@ -1677,7 +1675,7 @@ public class JJFormView : AsyncComponent
         var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
         var formStateData = new FormStateData(filter!, UserValues, PageState.Delete);
         var values = await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement, formStateData);
-        var result = await _formService.DeleteAsync(FormElement, values, dataContext);
+        var result = await _formService.DeleteAsync(FormElement, values!, dataContext);
         if (result.Errors.Count == 0)
         {
             await _uploadViewManager.ClearTemporaryFilesAsync(FormElement);
@@ -1698,14 +1696,14 @@ public class JJFormView : AsyncComponent
         return values;
     }
     
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object?> values, PageState pageState)
     {
         DataPanel.Values = values;
         var errors = DataPanel.ValidateFields(values, pageState);
         return errors;
     }
     
-    public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object> values)
+    public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object?> values)
     {
         DataPanel.Values = values;
         var errors = await DataPanel.ValidateFieldsAsync(values);

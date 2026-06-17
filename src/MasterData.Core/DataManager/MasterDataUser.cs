@@ -1,6 +1,5 @@
+#nullable disable warnings
 using JJMasterData.Core.Configuration.Options;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager;

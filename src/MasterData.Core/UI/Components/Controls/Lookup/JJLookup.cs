@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
@@ -10,13 +9,8 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using Microsoft.AspNetCore.Http;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -236,7 +230,7 @@ public class JJLookup : ControlBase
             descriptionTextBox.CssClass = $"form-control jj-lookup {CssClass}";
             descriptionTextBox.InputType = InputType.Text;
             descriptionTextBox.MaxLength = MaxLength;
-            descriptionTextBox.Text = description;
+            descriptionTextBox.Text = description ?? string.Empty;
             descriptionTextBox.Attributes = new Dictionary<string, string>(Attributes);
             descriptionTextBox.Tooltip = Tooltip;
             descriptionTextBox.Enabled = false;

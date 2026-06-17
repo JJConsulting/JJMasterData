@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -188,7 +186,7 @@ public class UploadViewManager(
         await fileStorage.DeleteFolderAsync(tempPath);
     }
 
-    public async Task PromoteDraftFilesAsync(FormElement formElement, Dictionary<string, object> values)
+    public async Task PromoteDraftFilesAsync(FormElement formElement, Dictionary<string, object?> values)
     {
         if (!DataHelper.ContainsPkValues(formElement, values!))
             return;

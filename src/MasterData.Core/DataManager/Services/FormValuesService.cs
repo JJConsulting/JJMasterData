@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,8 +11,6 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exceptions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -56,7 +53,7 @@ public class FormValuesService(
         }
         catch (Exception ex)
         {
-            throw new FormValuesException(field, value, ex);
+            throw new FormValuesException(field, value!, ex);
         }
     }
 

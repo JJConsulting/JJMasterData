@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -17,8 +18,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Events.Args;
 
 using Microsoft.Extensions.Localization;
@@ -36,8 +35,8 @@ internal sealed class GridFilter(JJGridView gridView)
     private readonly IHttpContextAccessor _currentContext = gridView.CurrentContext;
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer = gridView.StringLocalizer;
 
-    private Dictionary<string, object> _currentFilter;
-    private Dictionary<string, object> _userFilters;
+    private Dictionary<string, object?>? _currentFilter;
+    private Dictionary<string, object?>? _userFilters;
 
     public string Name => gridView.Name + "-filter";
 
@@ -62,7 +61,7 @@ internal sealed class GridFilter(JJGridView gridView)
         return filterHtml.Append(await GetDefaultFilter());
     }
 
-    public async ValueTask<Dictionary<string, object>> GetCurrentFilterAsync()
+    public async ValueTask<Dictionary<string, object?>> GetCurrentFilterAsync()
     {
         if (_currentFilter != null)
             return _currentFilter;

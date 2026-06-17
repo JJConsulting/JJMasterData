@@ -1,4 +1,5 @@
-﻿using System;
+#nullable disable warnings
+using System;
 using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Core.DataManager.Exportation;

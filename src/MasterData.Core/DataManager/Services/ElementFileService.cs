@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,7 +52,7 @@ public class ElementFileService(
         fileName = Path.GetFileName(fileName);
 
         var field = formElement.Fields.First(f => f.Name == fieldName);
-        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ',')!);
 
         if (string.IsNullOrEmpty(fileName))
             fileName = (await fileStorage.ListAsync(folderPath)).FirstOrDefault()?.FileName;
@@ -127,7 +125,7 @@ public class ElementFileService(
         IFormFile file)
     {
         var hashValues = DataHelper.GetPkValues(formElement, pkValues, ',');
-        var folderPath = FileStoragePath.GetFolderPath(formElement, field, hashValues);
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, hashValues!);
 
         await SaveFileAsync(folderPath, file, true, field.DataFile?.AllowedTypes);
     }
@@ -150,7 +148,7 @@ public class ElementFileService(
     private async Task DeletePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         fileName = Path.GetFileName(fileName);
-        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ',')!);
 
         await DeleteFileAsync(folderPath, fileName);
     }
@@ -202,7 +200,7 @@ public class ElementFileService(
     
     private async Task RenamePhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
-        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        var folderPath = FileStoragePath.GetFolderPath(formElement, field, DataHelper.GetPkValues(formElement, pkValues, ',')!);
         await RenameFileAsync(folderPath, oldName, newName);
     }
     

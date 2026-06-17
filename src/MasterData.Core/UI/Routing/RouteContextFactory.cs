@@ -1,3 +1,4 @@
+#nullable disable warnings
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 
 namespace JJMasterData.Core.UI.Routing;

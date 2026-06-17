@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;

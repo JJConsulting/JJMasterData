@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Core.UI.Routing;

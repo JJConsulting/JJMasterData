@@ -1,10 +1,7 @@
-#nullable enable
 using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;

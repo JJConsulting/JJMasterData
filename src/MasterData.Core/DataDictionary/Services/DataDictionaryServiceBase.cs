@@ -6,7 +6,6 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;

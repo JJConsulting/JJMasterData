@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -24,27 +25,27 @@ public class FormService(
 {
     #region Events
 
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeDeleteAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeInsertAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeUpdateAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeDeleteAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync;
 
     #endregion
 
     #region Methods
 
     public async Task<FormLetter<Dictionary<string, object>>> GetAsync(FormElement formElement,
-        Dictionary<string, object> filters)
+        Dictionary<string, object?> filters)
     {
         var errors = new Dictionary<string, string>();
         var formLetter = new FormLetter<Dictionary<string, object>>(errors);
 
         try
         {
-            formLetter.Result = await entityRepository.GetFieldsAsync(formElement, filters);
+            formLetter.Result = (await entityRepository.GetFieldsAsync(formElement, filters!))!;
         }
         catch (Exception e)
         {
@@ -63,7 +64,7 @@ public class FormService(
     /// <param name="dataContext"></param>
     public async Task<FormLetter> UpdateAsync(
         FormElement formElement, 
-        Dictionary<string, object> values,
+        Dictionary<string, object?> values,
         DataContext dataContext)
     {
         ApplyTextCaseTransform(formElement, values);
@@ -115,7 +116,7 @@ public class FormService(
         return result;
     }
 
-    public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object> values,
+    public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object?> values,
         DataContext dataContext, bool validateFields = true)
     {
         ApplyTextCaseTransform(formElement, values);
@@ -175,7 +176,7 @@ public class FormService(
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,
-        Dictionary<string, object> values, DataContext dataContext)
+        Dictionary<string, object?> values, DataContext dataContext)
     {
         ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
@@ -249,7 +250,7 @@ public class FormService(
     {
         var errors = await fieldValidationService.ValidateRulesAsync(
             formElement,
-            primaryKeys,
+            primaryKeys!,
             false,
             PageState.Delete);
         
@@ -257,7 +258,7 @@ public class FormService(
 
         if (OnBeforeDeleteAsync != null)
         {
-            var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
+            var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys!, errors);
             await OnBeforeDeleteAsync(dataContext, beforeActionArgs);
         }
 
@@ -279,11 +280,11 @@ public class FormService(
             return result;
 
         if (formElement.Options.EnableAuditLog)
-            await auditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
+            await auditLogService.LogAsync(formElement, dataContext, primaryKeys!, CommandOperation.Delete);
 
         if (OnAfterDeleteAsync != null)
         {
-            var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
+            var afterEventArgs = new FormAfterActionEventArgs(primaryKeys!);
             await OnAfterDeleteAsync.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
@@ -293,7 +294,7 @@ public class FormService(
 
     #endregion
 
-    private static void ApplyTextCaseTransform(FormElement formElement, Dictionary<string, object> values)
+    private static void ApplyTextCaseTransform(FormElement formElement, Dictionary<string, object?> values)
     {
         foreach (var field in formElement.Fields)
         {

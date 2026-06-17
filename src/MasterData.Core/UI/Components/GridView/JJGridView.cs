@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -712,7 +710,7 @@ public class JJGridView : AsyncComponent
 
         if (ComponentContext is ComponentContext.UrlRedirect)
         {
-            return await _urlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
+            return await _urlRedirectService.GetUrlRedirectResult(this,CurrentActionMap!);
         }
         
         HtmlBuilder? sqlActionError = null;
@@ -932,7 +930,7 @@ public class JJGridView : AsyncComponent
         
         var gridSqlAction = new GridSqlCommandAction(this);
         
-        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, action);
+        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap!, action);
     }
 
     private void AssertProperties()
@@ -1061,7 +1059,7 @@ public class JJGridView : AsyncComponent
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var captionView = new GridCaptionView(action.Tooltip,ComponentFactory.Controls.ComboBox, StringLocalizer)
+        var captionView = new GridCaptionView(action.Tooltip!,ComponentFactory.Controls.ComboBox, StringLocalizer)
         {
             Name = Name,
             ShowAsModal = true,

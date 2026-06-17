@@ -1,14 +1,12 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web;
-using JJConsulting.Html;
-using JJConsulting.Html.Bootstrap.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.UI.Routing;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 

@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,8 +6,6 @@ using System.Security.Claims;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Logging;
 

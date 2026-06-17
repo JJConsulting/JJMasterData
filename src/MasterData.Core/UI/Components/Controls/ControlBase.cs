@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Abstractions;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 
 
 namespace JJMasterData.Core.UI.Components;
@@ -21,7 +20,7 @@ public abstract class ControlBase : ComponentBase
     /// </summary>
     public bool Enabled { get; set; } = true;
 
-    public Dictionary<string, object> UserValues { get; set; } = new();
+    public Dictionary<string, object?> UserValues { get; set; } = new();
     
     /// <summary>
     /// Property to tell if the control is readonly, but the value is sent to the server.

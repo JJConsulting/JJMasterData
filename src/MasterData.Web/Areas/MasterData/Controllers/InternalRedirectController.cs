@@ -37,7 +37,7 @@ public class InternalRedirectController(
         {
             case RelationshipViewType.List:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 formView.ShowTitle = state.ShowTitle;
                 formView.RelationValues = state.RelationValues;
                 formView.FormElement.Options.Grid.MaintainValuesOnLoad = false;
@@ -66,7 +66,7 @@ public class InternalRedirectController(
             }
             case RelationshipViewType.View:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 formView.PageState = PageState.View;
                 ApplyUserValues(formView, userValues);
 
@@ -93,7 +93,7 @@ public class InternalRedirectController(
             case RelationshipViewType.Insert:
             case RelationshipViewType.Update:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 var pageState = state.RelationshipType is RelationshipViewType.Update
                     ? PageState.Update
                     : PageState.Insert;
@@ -139,7 +139,7 @@ public class InternalRedirectController(
         var state =  GetInternalRedirectState(parameters);
         var userId = masterDataUser.Id;
         var userValues = GetUserValues(userId, multiselectValues);
-        var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
+        var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName!);
 
         if (panel.PageState is PageState.Update)
         {

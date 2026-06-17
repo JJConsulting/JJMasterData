@@ -1,11 +1,10 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Linq;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Services;
-using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.UI.Components.Phone;
 

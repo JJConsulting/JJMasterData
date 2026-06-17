@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.IO;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;

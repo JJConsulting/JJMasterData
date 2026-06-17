@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 

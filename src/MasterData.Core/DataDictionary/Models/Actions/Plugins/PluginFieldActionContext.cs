@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -18,10 +19,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
-using JJMasterData.Core.Tasks;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -316,7 +313,7 @@ public class JJAuditLogView : AsyncComponent
                 };
                 alert.Messages.Add(StringLocalizer["Audit Log is disabled. Please contact the administrator."]);
                 args.HtmlBuilder.AppendComponent(alert);
-                return ValueTaskHelper.CompletedTask;
+                return ValueTask.CompletedTask;
             };
         }
         

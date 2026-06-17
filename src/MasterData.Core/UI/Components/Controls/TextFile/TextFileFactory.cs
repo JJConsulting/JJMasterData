@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;

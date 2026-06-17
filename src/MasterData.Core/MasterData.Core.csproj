@@ -4,13 +4,12 @@
         <TargetFramework>net10.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <RuntimeFrameworkVersion>10.0</RuntimeFrameworkVersion>
-        <Nullable>disable</Nullable>
-        <ImplicitUsings>false</ImplicitUsings>
         <Product>JJMasterData.Core - Sun Version</Product>
         <Description>JJMasterData library to render JJMasterData's components.</Description>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <RootNamespace>JJMasterData.Core</RootNamespace>
         <AssemblyName>JJMasterData.Core</AssemblyName>
+        <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>$(NoWarn);CS9107</NoWarn>
     </PropertyGroup>

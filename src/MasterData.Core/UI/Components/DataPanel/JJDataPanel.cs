@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,8 +16,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Tasks;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 namespace JJMasterData.Core.UI.Components;
@@ -45,7 +44,7 @@ public class JJDataPanel(
     #endregion
     #region "Properties"
 
-    public Dictionary<string, object> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, object?> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
     /// <summary>
     /// Layout form settings
     /// </summary>
@@ -93,14 +92,13 @@ public class JJDataPanel(
     /// Field Values.
     /// Key=Field Name, Value=Field Value
     /// </summary>
-    public Dictionary<string, object> Values { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, object?> Values { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
 
     /// <summary>
     /// Values not intended to be edited at the client. They are encrypted using <see cref="IEncryptionService"/>.
     /// </summary>
-    [CanBeNull]
-    public Dictionary<string, object> SecretValues
+    public Dictionary<string, object?>? SecretValues
     {
         get
         {
@@ -318,17 +316,11 @@ public class JJDataPanel(
         script.AppendLine("});");
         return script.ToString();
     }
-
-    [Obsolete("Please use GetFormValuesAsync")]
-    public Dictionary<string,object> GetFormValues()
-    {
-        return AsyncHelper.RunSync(GetFormValuesAsync);
-    }
-
+    
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public async Task<Dictionary<string, object>> GetFormValuesAsync()
+    public async Task<Dictionary<string, object?>> GetFormValuesAsync()
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var mergedValues = await formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
@@ -369,12 +361,12 @@ public class JJDataPanel(
     }
     
     
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object?> values)
     {
         return ValidateFields(values, PageState);
     }
     
-    public ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object> values, bool enableErrorLink = true)
+    public ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object?> values, bool enableErrorLink = true)
     {
         return fieldValidationService.ValidateFieldsAsync(FormElement, values, PageState.Delete, enableErrorLink);
     }
@@ -386,7 +378,7 @@ public class JJDataPanel(
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object?> values, PageState pageState, bool enableErrorLink = true)
     {
         return fieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }

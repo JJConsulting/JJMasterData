@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -235,7 +236,7 @@ public class JJDataExportation : ProcessComponent
         return new FileStreamComponentResult(stream, exporter.ProcessReporter.FileName);
     }
 
-    internal void ExportFileInBackground(Dictionary<string, object> filter, OrderByData orderByData)
+    internal void ExportFileInBackground(Dictionary<string, object?> filter, OrderByData orderByData)
     {
         var exporter = CreateWriter();
 

@@ -3,8 +3,6 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataManager.Exportation;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;

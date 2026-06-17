@@ -1,10 +1,8 @@
+#nullable disable warnings
 using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using Microsoft.AspNetCore.Http;
 
 
 namespace JJMasterData.Core.UI.Components;

@@ -323,7 +323,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
-        var formResult = await formService.DeleteAsync(formElement, values, GetDataContext());
+        var formResult = await formService.DeleteAsync(formElement, values!, GetDataContext());
 
         if (formResult.IsValid)
         {

@@ -7,12 +7,7 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Importation;
-using JJMasterData.Core.Html;
-using Microsoft.AspNetCore.Http;
-
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;

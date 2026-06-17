@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace JJMasterData.Core.DataManager.Models;
+﻿namespace JJMasterData.Core.DataManager.Models;
 
 public class DataContext
 {

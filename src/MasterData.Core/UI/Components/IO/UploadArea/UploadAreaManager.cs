@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;

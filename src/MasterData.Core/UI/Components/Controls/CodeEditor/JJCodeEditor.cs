@@ -1,11 +1,7 @@
-#nullable enable
-
 using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 
 
 namespace JJMasterData.Core.UI.Components;
