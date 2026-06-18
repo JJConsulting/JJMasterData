@@ -1,16 +1,22 @@
 ﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
+@using System.Text.Json
 @using JJConsulting.Html.Bootstrap.Models
-@using JJMasterData.Core.UI.Components
 
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @{
     Layout = Model.IsModal ? Options.Value.ModalLayoutPath : Options.Value.LayoutPath;
+    var parameters = Context.Request.Query["parameters"].ToString();
+    var saveUrl = Url.Action("Save", new
+    {
+        multiselectValues = Model.MultiselectValues,
+        parameters
+    });
 }
 
-<master-data-form method="POST" asp-action="Index" asp-route-multiselectValues="@Model.MultiselectValues" asp-route-parameters="@Context.Request.Query["parameters"]">
+<master-data-form method="POST" asp-action="Index" asp-route-multiselectValues="@Model.MultiselectValues" asp-route-parameters="@parameters">
     <script lang="javascript" type="text/javascript">
         @if (Model.IsModal)
         {
@@ -27,7 +33,7 @@
         
         function submitForm(){
             const form = $('#masterdata-form');
-            form.attr('action', '@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })');
+            form.attr('action', @Html.Raw(JsonSerializer.Serialize(saveUrl)));
             form.trigger('submit');
         }
     </script>
