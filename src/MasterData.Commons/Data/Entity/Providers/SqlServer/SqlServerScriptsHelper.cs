@@ -5,11 +5,11 @@ using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public abstract class SqlServerScriptsBase
+internal static class SqlServerScriptsHelper
 {
-    protected const char Tab = '\t';
-    
-    protected static string GetTableName(Element element)
+    public const char Tab = '\t';
+
+    public static string GetTableName(Element element)
     {
         var sql = new StringBuilder();
 
@@ -24,7 +24,7 @@ public abstract class SqlServerScriptsBase
         return sql.ToString();
     }
 
-    private static string GetFieldDataTypeScript(ElementField field)
+    public static StringBuilder GetFieldDataTypeScript(ElementField field)
     {
         var sql = new StringBuilder();
         sql.Append(field.DataType.ToString());
@@ -55,10 +55,10 @@ public abstract class SqlServerScriptsBase
         if (field is { AutoNum: true, DataType: not FieldType.UniqueIdentifier })
             sql.Append(" IDENTITY ");
 
-        return sql.ToString();
+        return sql;
     }
     
-    protected static string GetFieldDefinition(ElementField field)
+    public static StringBuilder GetFieldDefinition(ElementField field)
     {
         var sql = new StringBuilder();
         sql.Append('[');
@@ -67,10 +67,10 @@ public abstract class SqlServerScriptsBase
 
         sql.Append(GetFieldDataTypeScript(field));
 
-        return sql.ToString();
+        return sql;
     }
 
-    protected static string GetSqlDropIfExists(string objname)
+    public static StringBuilder GetSqlDropIfExists(string objname)
     {
         var sql = new StringBuilder();
         sql.AppendLine("IF EXISTS (SELECT * ");
@@ -90,6 +90,6 @@ public abstract class SqlServerScriptsBase
         sql.AppendLine("END");
         sql.AppendLine("GO");
 
-        return sql.ToString();
+        return sql;
     }
 }
