@@ -126,10 +126,6 @@ public class FieldValidationService(
             throw new ArgumentNullException(nameof(field));
 
         var fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : localizer[field.LabelOrName];
-        var fieldName = field.LabelOrName;
-
-        if (enableErrorLink)
-            fieldName = GetFieldLinkHtml(fieldId, field.LabelOrName);
 
         string? error = null;
 
