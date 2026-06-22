@@ -60,7 +60,7 @@ public class FieldValidationService(
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        string fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : field.Label;
+        var fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : localizer[field.LabelOrName];
 
         string error = null;
 
@@ -247,13 +247,14 @@ public class FieldValidationService(
         return null;
     }
 
-    private static string GetFieldLinkHtml(string fieldName, string label)
+    private string GetFieldLinkHtml(string fieldName, string label)
     {
         var link = new HtmlBuilder(HtmlTag.A);
-        link.WithAttribute("href", "#void");
+        link.WithAttribute("href", "javascript:void(0)");
         link.WithOnClick($"javascript:$('#{fieldName}').focus();");
         link.WithCssClass("alert-link");
-        link.AppendText(label ?? fieldName);
+        
+        link.AppendText(localizer[label ?? fieldName]);
 
         return link.ToString();
     }
