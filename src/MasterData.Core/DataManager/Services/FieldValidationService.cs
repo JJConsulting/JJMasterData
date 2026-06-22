@@ -108,11 +108,11 @@ public class FieldValidationService(
                     if (enableErrorLink)
                         fieldName = GetFieldLinkHtml(field.Name, field.LabelOrName);
                     
-                    errors[error.Key] = fieldName + " - " + error.Value;
+                    errors[error.Key] = fieldName + " - " + localizer[error.Value];
                 }
                 else
                 {
-                    errors[error.Key] = error.Value;
+                    errors[error.Key] = localizer[error.Value];
                 }
             }
         }
