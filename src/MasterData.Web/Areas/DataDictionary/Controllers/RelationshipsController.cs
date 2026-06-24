@@ -135,7 +135,11 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
     public async Task<List<SelectListItem>> GetPrimaryKeysSelectList(string elementName)
     {
         var formElement = await relationshipsService.GetFormElementAsync(elementName);
-        var selectList = formElement.Fields.ConvertAll(field => new SelectListItem(field.Name, field.Name));
+        
+        var selectList = formElement.Fields
+            .Where(f=> f.IsPk)
+            .Select(field => new SelectListItem(field.Name, field.Name))
+            .ToList();
 
         return selectList;
     }
@@ -151,7 +155,10 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
         else
         {
             var formElement = await relationshipsService.GetFormElementAsync(childElementName);
-            selectList.AddRange(formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
+            selectList
+                .AddRange(formElement.Fields
+                .Where(f=> f.IsPk || f.Filter.Type is FilterMode.Equal)
+                .Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
         return selectList;

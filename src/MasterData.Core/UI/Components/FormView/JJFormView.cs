@@ -1621,14 +1621,17 @@ public class JJFormView : AsyncComponent
 
     private ValueTask InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
     {
-        if (sender is not JJGridView)
+        if (sender is not JJGridView gridView)
             return ValueTaskHelper.CompletedTask;
 
         if (args.ActionName is not InsertSelectionAction.ActionName)
             return ValueTaskHelper.CompletedTask;
 
         args.LinkButton.Tooltip = Localizer["Select"];
-        args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
+        
+        var pkValues = DataHelper.GetPkValues(gridView.FormElement, args.FieldValues);
+        
+        args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(pkValues!);
 
         return ValueTaskHelper.CompletedTask;
     }
