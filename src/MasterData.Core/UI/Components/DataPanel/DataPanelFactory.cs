@@ -5,14 +5,13 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataPanelFactory(IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IHttpContext httpContext,
+        IHttpContextAccessor httpContext,
         IEncryptionService encryptionService,
         FieldFormattingService fieldFormattingService,
         FieldValidationService fieldValidationService,

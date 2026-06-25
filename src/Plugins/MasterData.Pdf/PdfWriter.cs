@@ -22,7 +22,6 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -39,7 +38,6 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Pdf;
 
 public class PdfWriter(
-        IEncryptionService encryptionService,
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
@@ -47,7 +45,7 @@ public class PdfWriter(
         ILogger<PdfWriter> logger,
         IEntityRepository entityRepository,
         FieldFormattingService fieldFormattingService)
-    : DataExportationWriterBase(encryptionService,expressionsService, stringLocalizer, options, logger), IPdfWriter
+    : DataExportationWriterBase(expressionsService, stringLocalizer, options, logger), IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
@@ -231,7 +229,7 @@ public class PdfWriter(
 
         if (field.Component == FormComponent.File)
         {
-            string url = GetFileLink(field, row, value);
+            string url = GetFileLink(FormElement, field, row, value);
 
             if (url != null)
             {

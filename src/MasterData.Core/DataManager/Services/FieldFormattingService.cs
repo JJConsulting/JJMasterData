@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -70,7 +71,7 @@ public class FieldFormattingService(
         return stringValue ?? string.Empty;
     }
     
-    public static string FormatValue(FormElementField field, object value)
+    public static string FormatValue(FormElementField field, object? value)
     {
         var stringValue = value?.ToString();
         if (string.IsNullOrEmpty(stringValue))

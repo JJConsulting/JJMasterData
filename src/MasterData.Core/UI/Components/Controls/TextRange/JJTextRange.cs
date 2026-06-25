@@ -1,17 +1,15 @@
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
-
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
 
-public class JJTextRange(IFormValues formValues,
+public class JJTextRange(IHttpContextAccessor formValues,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : ControlBase(formValues)
 {

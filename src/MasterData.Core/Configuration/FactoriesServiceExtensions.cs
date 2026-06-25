@@ -1,4 +1,3 @@
-using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Importation;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.IO;
 
 namespace JJMasterData.Core.UI.Events.Args;

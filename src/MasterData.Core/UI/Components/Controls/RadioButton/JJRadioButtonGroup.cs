@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
@@ -8,20 +7,19 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 
 
 namespace JJMasterData.Core.UI.Components;
 
 public class JJRadioButtonGroup(
     DataItemService dataItemService,
-    IFormValues formValues) : ControlBase(formValues), IDataItemControl
+    IHttpContextAccessor formValues) : ControlBase(formValues), IDataItemControl
 {
     public string? SelectedValue
     {
         get
         {
-            if (field == null && FormValues.ContainsFormValues())
+            if (field == null && HasFormValues)
             {
                 field = FormValues[Name];
             }
@@ -57,7 +55,7 @@ public class JJRadioButtonGroup(
 
     private void AppendRadioButton(HtmlBuilder html, DataItemValue item)
     {
-        var radio = new JJRadioButton(FormValues)
+        var radio = new JJRadioButton(HttpContextAccessor)
         {
             Id = item.Id,
             Name = Name,

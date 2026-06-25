@@ -1,18 +1,16 @@
-#nullable enable
+#nullable disable warnings
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class LookupService(
-    IFormValues formValues,
+    IHttpContextAccessor httpContextAccessor,
     ExpressionsService expressionsService,
     IEncryptionService encryptionService,
     ElementMapService elementMapService,
@@ -73,6 +71,6 @@ public class LookupService(
 
     public string? GetSelectedValue(string componentName)
     {
-        return formValues[componentName];
+        return httpContextAccessor.HttpContext?.Request.GetFormValue(componentName);
     }
 }

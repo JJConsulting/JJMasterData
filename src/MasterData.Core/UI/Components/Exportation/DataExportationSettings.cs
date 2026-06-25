@@ -1,18 +1,17 @@
+#nullable disable warnings
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
-using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -21,14 +20,14 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 {
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = dataExportation.StringLocalizer;
     
-    internal HtmlBuilder GetHtmlBuilder()
+    internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         
-        var folderPath = DataExportationHelper.GetFolderPath(dataExportation);
+        var folderPath = DataExportationHelper.GetExportationFolderPath(dataExportation);
         
         html.WithCssClass("container-fluid");
-        html.Append(GetFormHtmlElement(folderPath));
+        html.Append(await GetFormHtmlElementAsync(folderPath));
         html.AppendHr();
         html.AppendDiv(div =>
         {
@@ -64,7 +63,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return html;
     }
 
-    private HtmlBuilder GetFormHtmlElement(string exportationFolderPath)
+    private async Task<HtmlBuilder> GetFormHtmlElementAsync(string exportationFolderPath)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("row");
@@ -79,7 +78,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 
         div.Append(GetFirstLineField());
 
-        div.Append(GetFilesCollapsePanelHtmlBuilder(exportationFolderPath));
+        div.Append(await GetFilesCollapsePanelHtmlBuilderAsync(exportationFolderPath));
 
         div.Append(HtmlTag.Div, div =>
         {
@@ -281,9 +280,9 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return alert;
     }
 
-    private HtmlBuilder GetFilesCollapsePanelHtmlBuilder(string exportationFolderPath)
+    private async Task<HtmlBuilder> GetFilesCollapsePanelHtmlBuilderAsync(string exportationFolderPath)
     {
-        var files = GetGeneratedFiles(exportationFolderPath);
+        var files = await GetGeneratedFilesAsync(exportationFolderPath);
         var filesCount = files.Count;
         var panel = new JJCollapsePanel
         {
@@ -298,7 +297,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return panel.GetHtmlBuilder()?.WithCssClass($"col-sm-12 {BootstrapHelper.FormGroup}");
     }
 
-    private HtmlBuilder GetLastFilesHtml(List<FileInfo> files)
+    private HtmlBuilder GetLastFilesHtml(List<FileStorageItem> files)
     {
         if (files == null || files.Count == 0)
             return new HtmlBuilder(_stringLocalizer["No recently generated files."]);
@@ -306,11 +305,8 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         var html = new HtmlBuilder(HtmlTag.Div);
         foreach (var file in files)
         {
-            if (FileIO.IsFileLocked(file))
-                continue;
-
-            var icon = JJDataExportation.GetFileIcon(file.Extension);
-            string url = dataExportation.GetDownloadUrl(file.FullName);
+            var icon = JJDataExportation.GetFileIcon(Path.GetExtension(file.FileName));
+            string url = dataExportation.GetDownloadUrl(file.FileName);
 
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");
@@ -320,7 +316,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             {
                 a.WithAttribute("href", url);
                 a.WithAttribute("title", "Download");
-                a.AppendText(file.Name);
+                a.AppendText(file.FileName);
             });
 
             html.Append(div);
@@ -329,16 +325,11 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return html;
     }
 
-    private static List<FileInfo> GetGeneratedFiles(string exportationFolderPath)
+    private async Task<List<FileStorageItem>> GetGeneratedFilesAsync(string exportationFolderPath)
     {
-        var list = new List<FileInfo>();
-
-        var oDir = new DirectoryInfo(exportationFolderPath);
-
-        if (oDir.Exists)
-            list.AddRange(oDir.GetFiles("*", SearchOption.AllDirectories));
-
-        return list.OrderByDescending(f => f.CreationTime).ToList();
+        return (await dataExportation.FileStorage.ListAsync(exportationFolderPath))
+            .OrderByDescending(f => f.LastWriteTime)
+            .ToList();
     }
 
     private bool PdfWriterExists() => dataExportation.DataExportationWriterFactory.PdfWriterExists();

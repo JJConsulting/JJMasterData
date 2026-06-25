@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -18,10 +19,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Tasks;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -42,7 +39,7 @@ public class JJAuditLogView : AsyncComponent
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             field = factory.Create();
 
             return field;
@@ -50,17 +47,10 @@ public class JJAuditLogView : AsyncComponent
     }
 
     private ComponentContext ComponentContext => RouteContext.ComponentContext;
-
-    /// <summary>
-    /// Id do usuário Atual
-    /// </summary>
-    /// <remarks>
-    /// Se a variavel não for atribuida diretamente,
-    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
-    /// </remarks>
+    
     internal string UserId => _masterDataUser.Id;
 
-    private IHttpContext CurrentContext { get; }
+    private IHttpContextAccessor CurrentContext { get; }
 
     private AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
@@ -88,7 +78,7 @@ public class JJAuditLogView : AsyncComponent
 
     public JJAuditLogView(
         FormElement formElement,
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
@@ -109,7 +99,7 @@ public class JJAuditLogView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
+        var logId = CurrentContext.HttpContext!.Request.GetFormValue($"audit-log-id-{FormElement.Name}");
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))
@@ -323,7 +313,7 @@ public class JJAuditLogView : AsyncComponent
                 };
                 alert.Messages.Add(StringLocalizer["Audit Log is disabled. Please contact the administrator."]);
                 args.HtmlBuilder.AppendComponent(alert);
-                return ValueTaskHelper.CompletedTask;
+                return ValueTask.CompletedTask;
             };
         }
         

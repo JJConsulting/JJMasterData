@@ -408,6 +408,9 @@ class CodeEditor {
         catch (_a) {
             return;
         }
+        if (!hints || typeof hints !== "object") {
+            return;
+        }
         Object.keys(hints).forEach(lang => {
             monaco.languages.registerCompletionItemProvider(lang, {
                 provideCompletionItems: function (model, position) {
@@ -2838,10 +2841,11 @@ class TextAreaListener {
     }
 }
 class TextFileHelper {
-    static showUploadView(fieldName, title, routeContext) {
+    static showUploadView(fieldName, title, routeContext, draftInputId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
         const modalId = fieldName + "-upload-modal";
         const modal = new Modal();
@@ -2856,10 +2860,11 @@ class TextFileHelper {
             listenAllEvents("#" + modalId);
         });
     }
-    static refresh(fieldName, routeContext) {
+    static refresh(fieldName, routeContext, draftInputId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
         postFormValues({ url: url, success: function (html) {
                 const uploadViewSelector = "#" + fieldName + "-upload-view";
@@ -2876,6 +2881,12 @@ class TextFileHelper {
         }
         if (valueElement) {
             valueElement.value = valueText;
+        }
+    }
+    static addDraftId(urlBuilder, draftInputId) {
+        const draftInput = document.getElementById(draftInputId);
+        if (draftInput === null || draftInput === void 0 ? void 0 : draftInput.value) {
+            urlBuilder.addQueryParameter("draftId", draftInput.value);
         }
     }
 }
@@ -3003,12 +3014,14 @@ class UploadAreaOptions {
             let queryStringParams = element.getAttribute("query-string-params");
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
-            const params = queryStringParams.split('&');
+            const params = queryStringParams ? queryStringParams.split('&') : [];
             for (let i = 0; i < params.length; i++) {
                 const param = params[i].split('=');
                 const key = decodeURIComponent(param[0]);
                 const value = decodeURIComponent(param[1]);
-                urlBuilder.addQueryParameter(key, value);
+                if (key) {
+                    urlBuilder.addQueryParameter(key, value);
+                }
             }
             this.url = urlBuilder.build();
         }
@@ -3042,13 +3055,43 @@ class UploadViewHelper {
         eval(jsCallback);
         this.clearFileAction(componentName, fileName);
     }
+    static markDeleted(componentName, fileName, confirmationMessage, jsCallback, deletedInputId) {
+        if (confirmationMessage) {
+            const confirmed = confirm(confirmationMessage);
+            if (!confirmed) {
+                return;
+            }
+        }
+        const deletedInput = document.getElementById(deletedInputId);
+        if (!deletedInput) {
+            return;
+        }
+        const deletedFiles = deletedInput.value
+            .split(",")
+            .map(value => value.trim())
+            .filter(value => value.length > 0);
+        if (deletedFiles.indexOf(fileName) === -1) {
+            deletedFiles.push(fileName);
+            deletedInput.value = deletedFiles.join(",");
+        }
+        eval(jsCallback);
+    }
     static downloadFile(componentName, fileName, jsCallback) {
         this.performFileAction(componentName, fileName, "downloadFile");
         eval(jsCallback);
         this.clearFileAction(componentName, fileName);
     }
     static renameFile(componentName, fileName, promptMessage, jsCallback) {
-        this.performFileAction(componentName, fileName, "renameFile", promptMessage);
+        const newName = prompt(promptMessage, fileName);
+        if (newName === null || newName === fileName) {
+            return;
+        }
+        const uploadActionInput = document.getElementById("upload-view-action-" + componentName);
+        const filenameInput = document.getElementById("upload-view-file-name-" + componentName);
+        if (uploadActionInput && filenameInput) {
+            uploadActionInput.value = "renameFile";
+            filenameInput.value = fileName + ";" + newName;
+        }
         eval(jsCallback);
         this.clearFileAction(componentName, fileName);
     }

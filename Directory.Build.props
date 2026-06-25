@@ -3,10 +3,15 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>4.5.31</Version>
+		<VersionPrefix>5.0.0</VersionPrefix>
+		<PreviewNumber>8</PreviewNumber>
+		<PreviewVersionSuffix>preview$(PreviewNumber)</PreviewVersionSuffix>
+		<Version>$(VersionPrefix)</Version>
+		<Version Condition="'$(VersionSuffix)' != ''">$(VersionPrefix)-$(VersionSuffix)</Version>
 		<PackageVersion>$(Version)</PackageVersion>
-		<AssemblyVersion>$(Version)</AssemblyVersion>
-		<FileVersion>$(Version)</FileVersion>
+		<AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
+		<FileVersion>$(VersionPrefix)</FileVersion>
+		<InformationalVersion>$(Version)</InformationalVersion>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
 		<IncludeSymbols>true</IncludeSymbols>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>

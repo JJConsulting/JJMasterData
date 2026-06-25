@@ -49,7 +49,6 @@ public class FormElementTest
                     AutoPostBack = true,
                     DataBehavior = FieldBehavior.Real,
                     IsPk = true,
-                    ValidateRequest = true,
                     DataItem = new FormElementDataItem
                     {
                         Command = new DataAccessCommand
@@ -191,6 +190,17 @@ public class FormElementTest
                     IsVerticalLayout = true
                 }
             },
+            Rules =
+            [
+                new FormElementRule
+                {
+                    Id = 1,
+                    Name = "BeforeInsert",
+                    RunOnBeforeImport = true,
+                    Language = RuleLanguage.Sql,
+                    Script = "return 'error'"
+                }
+            ],
             Indexes =
             [
                 new()
@@ -244,5 +254,17 @@ public class FormElementTest
         var newJson = JsonSerializer.Serialize(formElement);
 
         Assert.Equal(oldJson, newJson);
+    }
+
+    [Fact]
+    public void ShouldRun_ReturnsTrueForImport_WhenRuleRunsOnBeforeImport()
+    {
+        var rule = new FormElementRule
+        {
+            RunOnBeforeImport = true
+        };
+
+        Assert.True(rule.ShouldRun(PageState.Import));
+        Assert.False(rule.ShouldRun(PageState.Insert));
     }
 }

@@ -1,14 +1,13 @@
+#nullable disable warnings
 using System;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class ComboBoxFactory(
-        IFormValues formValues,
+        IHttpContextAccessor formValues,
         DataItemService dataItemService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJComboBox>

@@ -51,7 +51,7 @@ Where we configure the maximum size in bytes allowed in the upload. The maximum 
 ### What can you do
 
 If you want to increase the size of this field, you will need to change the setting **MaxRequestLength**
-The default size is 4 MB for .NET Framework and 30MB for .NET Core.
+The default size is 30 MB for ASP.NET Core.
 
 ## Why when enabling a MultipleFile property I cannot enable ExportAsLink?
 

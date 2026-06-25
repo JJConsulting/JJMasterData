@@ -1,16 +1,16 @@
 using JJConsulting.Html.Bootstrap.Components;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class JJMasterDataTabNav : JJTabNav
 {
-    public JJMasterDataTabNav(IFormValues formValues)
+    public JJMasterDataTabNav(IHttpContextAccessor formValues)
     {
-        if (formValues.TryGetValue("selected_tab_" + Name, out var value))
+        var request = formValues.HttpContext?.Request;
+        if (request?.HasFormContentType == true &&
+            request.Form.TryGetValue("selected_tab_" + Name, out var value))
         {
-            SelectedTabIndex = int.TryParse(value, out var intIndex) ? intIndex : 0;
+            SelectedTabIndex = int.TryParse(value.ToString(), out var intIndex) ? intIndex : 0;
         }
         else
         {

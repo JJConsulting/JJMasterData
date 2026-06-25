@@ -1,5 +1,4 @@
-#nullable enable
-
+#nullable disable warnings
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
 
@@ -217,7 +215,10 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         if (!string.IsNullOrEmpty(field.GridRenderingTemplate))
         {
-            var replacedTemplate = await gridView.HtmlTemplateService.RenderTemplate(field.GridRenderingTemplate!, formStateData.Values);
+            var replacedTemplate = await gridView.HtmlTemplateRenderer.RenderTemplate(
+                gridView.FormElement,
+                field,
+                formStateData.Values);
             cell = new HtmlBuilder(replacedTemplate, encode:false);
         }
         else
@@ -505,7 +506,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jj-checkbox");
 
-        var checkBox = new JJCheckBox(gridView.CurrentContext.Request.Form, gridView.StringLocalizer)
+        var checkBox = new JJCheckBox(gridView.CurrentContext, gridView.StringLocalizer)
         {
             Name = $"jjchk_{index}",
             Value = gridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),

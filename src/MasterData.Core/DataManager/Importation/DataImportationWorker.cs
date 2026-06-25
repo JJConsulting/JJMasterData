@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -66,14 +67,8 @@ public class DataImportationWorker(
 
     internal FormService FormService { get; } = formService;
 
-#if NETFRAMEWORK
-    private System.Web.HttpContext HttpContext { get; } = System.Web.HttpContext.Current;
-#endif
     public async Task RunWorkerAsync(CancellationToken token)
     {
-#if NETFRAMEWORK
-            System.Web.HttpContext.Current = HttpContext;
-#endif
         var currentProcess = new DataImportationReporter(StringLocalizer);
         try
         {

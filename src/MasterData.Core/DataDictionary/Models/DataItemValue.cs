@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+#nullable disable warnings
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using JJConsulting.FontAwesome;
 

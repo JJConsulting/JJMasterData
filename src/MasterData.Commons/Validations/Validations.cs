@@ -23,7 +23,7 @@ public static class Validations
     /// <param name="email">E-Mail</param>
     public static bool ValidateEmail(string email)
     {
-        if (email.Contains("'"))
+        if (email.Contains('\''))
             return false;
 
         if (email.Contains('@') && email.Contains('.') && !email.Contains(".."))

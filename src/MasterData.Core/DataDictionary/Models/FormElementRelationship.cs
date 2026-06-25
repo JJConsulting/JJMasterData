@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Data.Entity.Models;
