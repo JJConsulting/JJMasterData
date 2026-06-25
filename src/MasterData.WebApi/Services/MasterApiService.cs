@@ -10,6 +10,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
@@ -23,6 +24,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     DataItemService dataItemService,
     FieldValuesService fieldValuesService,
     FormService formService,
+    IFormEventHandlerResolver formEventHandlerResolver,
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
 
@@ -127,9 +129,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var formElement = await GetDataDictionary(elementName);
-        if (!formElement.ApiOptions.EnableAdd || !formElement.ApiOptions.EnableUpdate)
-            throw new UnauthorizedAccessException();
+        var formElement = await GetFormElementAsync(
+            elementName,
+            apiOptions => apiOptions is { EnableAdd: true, EnableUpdate: true });
 
         var results = new List<ResponseLetter>();
         foreach (var values in paramsList)
@@ -148,9 +150,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (paramsList == null)
             throw new JJMasterDataException("Invalid parameter or not a list");
 
-        var dictionary = await GetDataDictionary(elementName);
-        if (!dictionary.ApiOptions.EnableUpdate)
-            throw new UnauthorizedAccessException();
+        var dictionary = await GetFormElementAsync(
+            elementName,
+            apiOptions => apiOptions.EnableUpdate);
 
         var results = new List<ResponseLetter>();
         foreach (var values in paramsList)
@@ -167,9 +169,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var formElement = await GetDataDictionary(elementName);
-        if (!formElement.ApiOptions.EnableUpdatePart)
-            throw new UnauthorizedAccessException();
+        var formElement = await GetFormElementAsync(
+            elementName,
+            apiOptions => apiOptions.EnableUpdatePart);
 
         var results = new List<ResponseLetter>();
         foreach (var values in paramsList)
@@ -309,9 +311,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
 
-        var formElement = await GetDataDictionary(elementName);
-        if (!formElement.ApiOptions.EnableDel)
-            throw new UnauthorizedAccessException();
+        var formElement = await GetFormElementAsync(
+            elementName,
+            apiOptions => apiOptions.EnableDel);
 
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
@@ -451,6 +453,35 @@ public class MasterApiService(ExpressionsService expressionsService,
             throw new ArgumentNullException(nameof(elementName));
 
         return dataDictionaryRepository.GetFormElementAsync(elementName);
+    }
+
+    private async ValueTask<FormElement> GetFormElementAsync(
+        string elementName,
+        Func<FormElementApiOptions, bool> isActionEnabled)
+    {
+        var formElement = await GetDataDictionary(elementName);
+        if (!isActionEnabled(formElement.ApiOptions))
+            throw new UnauthorizedAccessException();
+
+        AddFormEventHandler(formElement);
+
+        return formElement;
+    }
+
+    private void AddFormEventHandler(FormElement formElement)
+    {
+        var formEventHandler = formEventHandlerResolver.GetFormEventHandler(formElement.Name);
+
+        if (formEventHandler == null)
+            return;
+
+        formService.OnBeforeInsertAsync += formEventHandler.OnBeforeInsertAsync;
+        formService.OnBeforeDeleteAsync += formEventHandler.OnBeforeDeleteAsync;
+        formService.OnBeforeUpdateAsync += formEventHandler.OnBeforeUpdateAsync;
+        formService.OnBeforeImportAsync += formEventHandler.OnBeforeImportAsync;
+        formService.OnAfterDeleteAsync += formEventHandler.OnAfterDeleteAsync;
+        formService.OnAfterInsertAsync += formEventHandler.OnAfterInsertAsync;
+        formService.OnAfterUpdateAsync += formEventHandler.OnAfterUpdateAsync;
     }
 
     /// <summary>
