@@ -42,6 +42,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label class="form-label" asp-for="ModalTitle"></label>
+                    <tooltip title="@StringLocalizer["This field support runtime values between {}."]"/>
                     <input asp-for="ModalTitle" class="form-control"/>
                 </div>
             </div>

@@ -8,6 +8,7 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -15,6 +16,7 @@ namespace JJMasterData.Core.DataManager.Services;
 public class UrlRedirectService(
     IHttpContextAccessor httpRequest,
     IEntityRepository entityRepository,
+    IStringLocalizer localizer,
     FormValuesService formValuesService,
     ExpressionsService expressionsService)
 {
@@ -59,7 +61,7 @@ public class UrlRedirectService(
     {
         var formStateData = new FormStateData(values, PageState.List);
         var parsedUrl = GetParsedUrl(action, formStateData);
-        var parsedTitle =  expressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
+        var parsedTitle = GetParsedModalTitle(action, formStateData);
         
         var model = new UrlRedirectModel
         {
@@ -83,5 +85,10 @@ public class UrlRedirectService(
         var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
         
         return expressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateDataCopy, action.EncryptParameters);
+    }
+
+    public string GetParsedModalTitle(UrlRedirectAction action, FormStateData formStateData)
+    {
+        return expressionsService.ReplaceExpressionWithParsedValues(localizer[action.ModalTitle], formStateData) ?? string.Empty;
     }
 }

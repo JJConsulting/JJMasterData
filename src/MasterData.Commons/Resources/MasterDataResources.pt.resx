@@ -191,6 +191,10 @@
     <value>Este campo oferece suporte a valores do runtime entre {}. Use {AppPath} para o caminho da raiz da aplicação.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="This field support runtime values between {}." xml:space="preserve">
+    <value>Este campo oferece suporte a valores do runtime entre {}.</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Is Modal?" xml:space="preserve">
     <value>É Modal?</value>
     <comment>JJMasterDataWeb</comment>
