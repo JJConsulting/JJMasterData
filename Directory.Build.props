@@ -23,6 +23,7 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<ResourceLanguages>en</ResourceLanguages>
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+        <NoWarn>NU1903</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="$(MSBuildThisFileDirectory)JJMasterData.png">
