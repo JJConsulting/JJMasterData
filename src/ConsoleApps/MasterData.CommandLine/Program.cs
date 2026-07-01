@@ -6,6 +6,7 @@ using Spectre.Console.Cli;
 
 var services = new ServiceCollection()
     .AddMemoryCache()
+    .AddLogging()
     .AddSingleton(AnsiConsole.Console)
     .AddSingleton<ConsoleRunner>();
 
