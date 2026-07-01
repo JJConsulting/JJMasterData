@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -21,7 +19,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -29,9 +26,7 @@ using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Html.Templates;
 using JJMasterData.Core.Logging;
 using JJMasterData.Core.UI.Events;
 using JJMasterData.Core.UI.Events.Args;
@@ -239,11 +234,11 @@ public class JJGridView : AsyncComponent
             if (_currentOrder != null)
                 return _currentOrder;
             
-            if (!CurrentContext.Request.Form.ContainsFormValues())
+            if (!CurrentContext.HttpContext!.Request.HasFormContentType)
             {
                 if (MaintainValuesOnLoad)
                 {
-                    var tableOrder = CurrentContext.Session[$"jj-grid-view-order-{Name}"];
+                    var tableOrder = CurrentContext.HttpContext!.GetGridOrderCookie(Name);
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -252,10 +247,11 @@ public class JJGridView : AsyncComponent
             }
             else
             {
-                _currentOrder = OrderByData.FromString(CurrentContext.Request[$"grid-view-order-{Name}"]);
+                var order = CurrentContext.HttpContext!.Request.GetFormValue($"grid-view-order-{Name}");
+                _currentOrder = OrderByData.FromString(order);
                 if (_currentOrder == null)
                 {
-                    var tableOrder = CurrentContext.Session[$"jj-grid-view-order-{Name}"];
+                    var tableOrder = CurrentContext.HttpContext!.GetGridOrderCookie(Name);
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -272,7 +268,9 @@ public class JJGridView : AsyncComponent
         }
         set
         {
-            CurrentContext.Session[$"jj-grid-view-order-{Name}"] = value.ToQueryParameter();
+            if (MaintainValuesOnLoad)
+                CurrentContext.HttpContext!.SetGridOrderCookie(Name, value.ToQueryParameter());
+            
             _currentOrder = value;
         }
     }
@@ -286,11 +284,11 @@ public class JJGridView : AsyncComponent
                 return _currentPage;
             }
 
-            if (CurrentContext.Request.Form.ContainsFormValues())
+            if (CurrentContext.HttpContext!.Request.HasFormContentType)
             {
                 var currentPage = 1;
                 var tablePageId = $"grid-view-page-{Name}";
-                if (CurrentContext.Request.Form.TryGetValue(tablePageId, out var pageString))
+                if (CurrentContext.HttpContext!.Request.Form.TryGetValue(tablePageId, out var pageString))
                 {
                     if (int.TryParse(pageString, out var page))
                         currentPage = page;
@@ -318,23 +316,13 @@ public class JJGridView : AsyncComponent
         set
         {
             if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
-                CurrentContext.Session[$"jjcurrentpage_{Name}"] = value.ToString();
+                CurrentContext.HttpContext!.SetGridCurrentPageCookie(Name, value);
 
             _currentPage = value;
         }
     }
 
-    private int GetPageFromPreferences()
-    {
-        var tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
-        if (tablePage != null)
-        {
-            if (int.TryParse(tablePage, out var page))
-                return page;
-        }
-
-        return 1;
-    }
+    private int GetPageFromPreferences() => CurrentContext.HttpContext!.GetGridCurrentPageCookie(Name) ?? 1;
 
     public int TotalOfPages
     {
@@ -369,7 +357,7 @@ public class JJGridView : AsyncComponent
             }
 
             if (MaintainValuesOnLoad)
-                CurrentSettings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
+                CurrentSettings = CurrentContext.HttpContext!.GetGridSettingsCookie(FormElement.Name);
 
             if (_currentSettings == null)
                 CurrentSettings = GridSettingsForm.LoadFromForm();
@@ -379,7 +367,7 @@ public class JJGridView : AsyncComponent
         set
         {
             if (MaintainValuesOnLoad)
-                CurrentContext.Session.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
+                CurrentContext.HttpContext!.SetGridSettingsCookie(FormElement.Name, value);
 
             _currentSettings = value;
         }
@@ -425,9 +413,9 @@ public class JJGridView : AsyncComponent
                 return _currentExportConfig;
 
             _currentExportConfig = new ExportOptions();
-            if (CurrentContext.Request.Form.ContainsFormValues())
+            if (CurrentContext.HttpContext!.Request.HasFormContentType)
             {
-                _currentExportConfig = ExportOptions.LoadFromForm(CurrentContext.Request.Form, Name);
+                _currentExportConfig = ExportOptions.LoadFromForm(CurrentContext, Name);
             }
 
             return _currentExportConfig;
@@ -445,12 +433,12 @@ public class JJGridView : AsyncComponent
     public bool EnableMultiSelect { get; set; }
 
     /// <summary>
-    /// Keep the grid filters, order and pagination in the session,
+    /// Keep the grid filters, order and pagination in cookies,
     /// and recover on the first page load. (Default = false)
     /// </summary>
     /// <remarks>
     /// When using this property, we recommend changing the object's [Name] parameter.
-    /// The [Name] property is used to compose the name of the session variable.
+    /// The [Name] property is used to compose the cookie names.
     /// </remarks>
     public bool MaintainValuesOnLoad { get; set; }
 
@@ -535,7 +523,7 @@ public class JJGridView : AsyncComponent
         {
             if (_currentActionMap != null || _isCustomCurrentActionMap) 
                 return _currentActionMap;
-            var encryptedActionMap = CurrentContext.Request.Form[$"grid-view-action-map-{Name}"];
+            var encryptedActionMap = CurrentContext.HttpContext!.Request.GetFormValue($"grid-view-action-map-{Name}");
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -551,7 +539,7 @@ public class JJGridView : AsyncComponent
 
     private string? SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.Form[$"grid-view-selected-rows-{Name}"];
+        get => _selectedRowsId ??= CurrentContext.HttpContext!.Request.GetFormValue($"grid-view-selected-rows-{Name}");
         set => _selectedRowsId = value ?? "";
     }
     
@@ -562,7 +550,7 @@ public class JJGridView : AsyncComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             _routeContext = factory.Create();
             
             return _routeContext;
@@ -580,13 +568,13 @@ public class JJGridView : AsyncComponent
     internal FieldValuesService FieldValuesService { get; }
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    internal HtmlTemplateService HtmlTemplateService { get; }
+    internal HtmlTemplateRenderer HtmlTemplateRenderer { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
 
     internal GridScripts Scripts => _gridScripts ??= new GridScripts(this);
 
-    internal IHttpContext CurrentContext { get; }
+    internal IHttpContextAccessor CurrentContext { get; }
     internal DataItemService DataItemService { get; }
     internal IEncryptionService EncryptionService { get; }
 
@@ -613,7 +601,7 @@ public class JJGridView : AsyncComponent
 
     internal JJGridView(
         FormElement formElement,
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IEntityRepository entityRepository,
         IEncryptionService encryptionService,
         DataItemService dataItemService,
@@ -624,7 +612,7 @@ public class JJGridView : AsyncComponent
         FieldValidationService fieldValidationService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         UrlRedirectService urlRedirectService,
-        HtmlTemplateService htmlTemplateService,
+        HtmlTemplateRenderer htmlTemplateRenderer,
         ILogger<JJGridView> logger,
         IComponentFactory componentFactory)
     {
@@ -645,7 +633,7 @@ public class JJGridView : AsyncComponent
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         _urlRedirectService = urlRedirectService;
-        HtmlTemplateService = htmlTemplateService;
+        HtmlTemplateRenderer = htmlTemplateRenderer;
         Logger = logger;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
@@ -671,11 +659,11 @@ public class JJGridView : AsyncComponent
             return await GetExportationResult();
 
         if (ComponentContext is ComponentContext.DownloadFile)
-            return ComponentFactory.Downloader.Create().GetDownloadResult();
+            return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
         
         if (ComponentContext is ComponentContext.GridViewRow)
         {
-            var rowIndex = int.Parse(CurrentContext.Request.QueryString["gridViewRowIndex"]);
+            var rowIndex = int.Parse(CurrentContext.HttpContext!.Request.Query["gridViewRowIndex"].ToString());
 
             await SetDataSource();
             
@@ -712,8 +700,8 @@ public class JJGridView : AsyncComponent
         
         if (ComponentContext is ComponentContext.SearchBoxFilter)
         {
-            var fieldName = CurrentContext.Request.QueryString["fieldName"];
-            var field = FormElement.Fields[fieldName];
+            var fieldName = CurrentContext.HttpContext!.Request.Query["fieldName"];
+            var field = FormElement.Fields[fieldName!];
             var formStateData = new FormStateData(await GetCurrentFilterAsync(), UserValues, PageState.Filter);
             var jjSearchBox = ComponentFactory.Controls.Create(FormElement,field, formStateData, Name) as JJSearchBox;
             jjSearchBox!.Name = GridFilter.FilterFieldPrefix + jjSearchBox.Name;
@@ -722,7 +710,7 @@ public class JJGridView : AsyncComponent
 
         if (ComponentContext is ComponentContext.UrlRedirect)
         {
-            return await _urlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
+            return await _urlRedirectService.GetUrlRedirectResult(this,CurrentActionMap!);
         }
         
         HtmlBuilder? sqlActionError = null;
@@ -942,7 +930,7 @@ public class JJGridView : AsyncComponent
         
         var gridSqlAction = new GridSqlCommandAction(this);
         
-        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, action);
+        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap!, action);
     }
 
     private void AssertProperties()
@@ -1071,7 +1059,7 @@ public class JJGridView : AsyncComponent
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var captionView = new GridCaptionView(action.Tooltip,ComponentFactory.Controls.ComboBox, StringLocalizer)
+        var captionView = new GridCaptionView(action.Tooltip!,ComponentFactory.Controls.ComboBox, StringLocalizer)
         {
             Name = Name,
             ShowAsModal = true,
@@ -1107,12 +1095,12 @@ public class JJGridView : AsyncComponent
     public Dictionary<string, object> GetSelectedRowId()
     {
         var values = new Dictionary<string, object>();
-        string currentRow = CurrentContext.Request[$"grid-view-row-{Name}"];
+        var currentRowValue = CurrentContext.HttpContext!.Request.GetFormValue($"grid-view-row-{Name}");
 
-        if (string.IsNullOrEmpty(currentRow))
+        if (string.IsNullOrEmpty(currentRowValue))
             return values;
 
-        var decriptId = EncryptionService.DecryptStringWithUrlUnescape(currentRow);
+        var decriptId = EncryptionService.DecryptStringWithUrlUnescape(currentRowValue);
         var @params = HttpUtility.ParseQueryString(decriptId);
 
         foreach (string key in @params)
@@ -1125,7 +1113,7 @@ public class JJGridView : AsyncComponent
 
     private async Task<ComponentResult> GetExportationResult()
     {
-        string expressionType = CurrentContext.Request.QueryString["dataExportationOperation"];
+        string expressionType = CurrentContext.HttpContext!.Request.Query["dataExportationOperation"].ToString();
         switch (expressionType)
         {
             case "showOptions":
@@ -1537,7 +1525,10 @@ public class JJGridView : AsyncComponent
 
     public bool IsExportPost()
     {
-        return "startProcess".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
+        var request = CurrentContext.HttpContext!.Request.GetValue;
+        var operation = request("dataExportationOperation");
+        var gridViewName = request("gridViewName");
+        return "startProcess".Equals(operation) && Name.Equals(gridViewName);
     }
     
     public void SetUserValues(string key, string value)

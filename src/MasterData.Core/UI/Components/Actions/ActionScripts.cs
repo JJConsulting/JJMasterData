@@ -1,4 +1,4 @@
-﻿using System;
+﻿#nullable disable warnings
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
@@ -9,8 +9,6 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -92,10 +90,10 @@ public class ActionScripts(
         ActionSource actionSource
     )
     {
-        string confirmationMessage =
+        var confirmationMessage =
             GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
 
-        string isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
+        var isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
         
         if (actionSource is ActionSource.Field or ActionSource.FormToolbar)
         {
@@ -111,11 +109,12 @@ public class ActionScripts(
         }
 
         var script = new StringBuilder();
-        string url = urlRedirectService.GetParsedUrl(action, actionContext.FormStateData);
-        string isModal = action.IsModal ? "true" : "false";
-        string isIframe = action.IsIframe ? "true" : "false";
+        var url = HttpUtility.JavaScriptStringEncode(urlRedirectService.GetParsedUrl(action, actionContext.FormStateData));
+        var isModal = action.IsModal ? "true" : "false";
+        var isIframe = action.IsIframe ? "true" : "false";
 
-        string modalTitle = action.ModalTitle;
+        var modalTitle = HttpUtility.JavaScriptStringEncode(
+            urlRedirectService.GetParsedModalTitle(action, actionContext.FormStateData));
 
         script.Append("ActionHelper.executeClientSideRedirect('");
         script.Append(url);

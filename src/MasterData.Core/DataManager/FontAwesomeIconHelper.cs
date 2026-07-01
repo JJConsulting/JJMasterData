@@ -1,4 +1,3 @@
-#nullable enable
 using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;

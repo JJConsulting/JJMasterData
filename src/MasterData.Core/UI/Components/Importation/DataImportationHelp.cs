@@ -1,7 +1,7 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
@@ -13,7 +13,6 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;

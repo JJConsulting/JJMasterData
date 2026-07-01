@@ -2,10 +2,6 @@
 using System.Collections.Frozen;
 using System.Collections.Generic;
 
-#if NET48
-using JJMasterData.Commons.Extensions;
-#endif
-
 namespace JJMasterData.Commons.Util;
 
 public static class MimeTypeUtil

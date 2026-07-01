@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +9,12 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class JJComboBox(
-    IFormValues formValues,
+    IHttpContextAccessor formValues,
     DataItemService dataItemService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : ControlBase(formValues), IDataItemControl, IFloatingLabelControl
@@ -39,7 +36,7 @@ public class JJComboBox(
     {
         get
         {
-            if (field == null && FormValues.ContainsFormValues())
+            if (field == null && HasFormValues)
             {
                 field = FormValues[Name];
             }
@@ -159,7 +156,7 @@ public class JJComboBox(
 
         var content = new HtmlBuilder();
         if (DataItem.ShowIcon)
-            content.AppendComponent(new JJIcon(value.Icon, value.IconColor));
+            content.AppendComponent(new JJIcon(value.Icon.GetValueOrDefault(), value.IconColor ?? string.Empty));
         
         var span = new HtmlBuilder(HtmlTag.Span);
         span.AppendText(label);
@@ -202,16 +199,16 @@ public class JJComboBox(
             .WithNameAndId($"cboview_{Name}")
             .WithCssClass("form-control form-select")
             .WithCssClass(CssClass)
-            .WithValue(selectedText)
+            .WithValue(selectedText!)
             .WithAttributes(Attributes)
             .WithAttribute("readonly", "readonly");
 
         yield return readonlyInput;
     }
     
-    private string GetSelectedText(IEnumerable<DataItemValue> list)
+    private string? GetSelectedText(IEnumerable<DataItemValue> list)
     {
-        string selectedText = string.Empty;
+        string? selectedText = string.Empty;
 
         if (SelectedValue == null)
             return selectedText;
@@ -241,7 +238,7 @@ public class JJComboBox(
     /// </summary>
     public async Task<string?> GetDescriptionAsync()
     {
-        string description;
+        string? description;
         var item = await GetValueAsync(SelectedValue);
         if (item == null)
             return null;
@@ -253,7 +250,7 @@ public class JJComboBox(
         {
             var div = new HtmlBuilder(HtmlTag.Div);
 
-            var icon = new JJIcon(item.Icon, item.IconColor, item.Description)
+            var icon = new JJIcon(item.Icon.GetValueOrDefault(), item.IconColor ?? string.Empty, item.Description ?? string.Empty)
             {
                 CssClass = "fa-lg fa-fw"
             }.GetHtmlBuilder();

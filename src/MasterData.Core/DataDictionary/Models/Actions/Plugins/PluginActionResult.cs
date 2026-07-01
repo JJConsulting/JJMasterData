@@ -1,5 +1,3 @@
-#nullable enable
-
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Models;
 

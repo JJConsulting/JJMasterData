@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.UI.Events.Abstractions;

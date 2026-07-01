@@ -1,4 +1,5 @@
-﻿
+#nullable disable warnings
+
 
 using System.Text.Json.Serialization;
 

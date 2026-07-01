@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -6,15 +7,16 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 
 public class UrlRedirectService(
-    IHttpRequest httpRequest,
+    IHttpContextAccessor httpRequest,
     IEntityRepository entityRepository,
+    IStringLocalizer localizer,
     FormValuesService formValuesService,
     ExpressionsService expressionsService)
 {
@@ -59,7 +61,7 @@ public class UrlRedirectService(
     {
         var formStateData = new FormStateData(values, PageState.List);
         var parsedUrl = GetParsedUrl(action, formStateData);
-        var parsedTitle =  expressionsService.ReplaceExpressionWithParsedValues(action.ModalTitle, formStateData);
+        var parsedTitle = GetParsedModalTitle(action, formStateData);
         
         var model = new UrlRedirectModel
         {
@@ -78,10 +80,15 @@ public class UrlRedirectService(
     {
         var formStateDataCopy = formStateData.DeepCopy();
         
-        formStateDataCopy.Values.Add("AppPath", httpRequest.ApplicationPath);
+        formStateDataCopy.Values.Add("AppPath", httpRequest.HttpContext?.Request.GetApplicationPath());
         
         var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
         
         return expressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateDataCopy, action.EncryptParameters);
+    }
+
+    public string GetParsedModalTitle(UrlRedirectAction action, FormStateData formStateData)
+    {
+        return expressionsService.ReplaceExpressionWithParsedValues(localizer[action.ModalTitle], formStateData) ?? string.Empty;
     }
 }

@@ -1,14 +1,14 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Linq;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.Phone;
 
-public sealed class JJPhoneGroup(IFormValues formValues) : JJTextBox(formValues)
+public sealed class JJPhoneGroup(IHttpContextAccessor formValues) : JJTextBox(formValues)
 {
     public string GroupCssClass { get; set; }
 

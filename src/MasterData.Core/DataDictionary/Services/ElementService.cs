@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
@@ -13,9 +11,6 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Components;
 
 using Microsoft.Extensions.Localization;
@@ -195,7 +190,7 @@ public class ElementService(
                     .AppendText(relativeDateFormatter.ToRelativeString(lastModified));
             }
 
-            return ValueTaskHelper.CompletedTask;
+            return ValueTask.CompletedTask;
         };
 
         formView.GridView.OnRenderActionAsync += (_, args) =>
@@ -220,7 +215,7 @@ public class ElementService(
                     break;
             }
 
-            return ValueTaskHelper.CompletedTask;
+            return ValueTask.CompletedTask;
         };
         
         return formView;
@@ -229,7 +224,7 @@ public class ElementService(
 
     #endregion
 
-    public Task DeleteAsync(string? elementName)
+    public Task DeleteAsync(string elementName)
     {
         return DataDictionaryRepository.DeleteAsync(elementName);
     }

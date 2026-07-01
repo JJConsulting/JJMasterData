@@ -1,7 +1,4 @@
-﻿#nullable enable
-
-using System;
-using System.Reflection;
+﻿using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;

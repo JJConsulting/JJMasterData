@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
@@ -10,7 +8,6 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -19,7 +16,7 @@ public class JJIconPicker(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IUrlHelper urlHelper,
     IControlFactory<JJComboBox> comboBoxFactory,
-    IFormValues formValues) : ControlBase(formValues)
+    IHttpContextAccessor formValues) : ControlBase(formValues)
 {
     public FontAwesomeIcon? SelectedIcon { get; set; }
     public string? Id { get; set; }

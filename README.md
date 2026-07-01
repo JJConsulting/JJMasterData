@@ -78,7 +78,6 @@ var app = builder.Build();
 
 //Required middlewares
 app.UseStaticFiles();
-app.UseSession(); //Session is very important
 
 app.MapDataDictionary();
 app.MapMasterData();

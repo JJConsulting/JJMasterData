@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
@@ -10,13 +9,8 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -25,7 +19,7 @@ namespace JJMasterData.Core.UI.Components;
 /// Represents a field with a value from another FormElement accessed via modal.
 public class JJLookup : ControlBase
 {
-    private IHttpRequest HttpRequest { get; }
+    private IHttpContextAccessor HttpRequest { get; }
     private RouteContextFactory RouteContextFactory { get; }
     private FormValuesService FormValuesService { get; }
     private IEncryptionService EncryptionService { get; }
@@ -66,7 +60,7 @@ public class JJLookup : ControlBase
     {
         get
         {
-            if (AutoReloadFormFields && _text is not null && FormValues.ContainsFormValues())
+            if (AutoReloadFormFields && _text is not null && HasFormValues)
             {
                 _text = FormValues[Name];
             }
@@ -109,13 +103,13 @@ public class JJLookup : ControlBase
         FormElement formElement,
         FormElementField field,
         ControlContext controlContext,
-        IHttpRequest httpRequest,
+        IHttpContextAccessor httpRequest,
         RouteContextFactory routeContextFactory,
         FormValuesService formValuesService,
         IEncryptionService encryptionService,
         LookupService lookupService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IComponentFactory componentFactory) : base(httpRequest.Form)
+        IComponentFactory componentFactory) : base(httpRequest)
     {
         RouteContext = routeContextFactory.Create();
         ElementMap = field.DataItem?.ElementMap ?? new DataElementMap
@@ -160,7 +154,7 @@ public class JJLookup : ControlBase
     
     protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
-        if (ComponentContext is ComponentContext.LookupDescription && HttpRequest.QueryString["fieldName"] == FieldName)
+        if (ComponentContext is ComponentContext.LookupDescription && HttpRequest.HttpContext?.Request.Query["fieldName"].ToString() == FieldName)
         {
             return await GetLookupDescription();
         }
@@ -236,7 +230,7 @@ public class JJLookup : ControlBase
             descriptionTextBox.CssClass = $"form-control jj-lookup {CssClass}";
             descriptionTextBox.InputType = InputType.Text;
             descriptionTextBox.MaxLength = MaxLength;
-            descriptionTextBox.Text = description;
+            descriptionTextBox.Text = description ?? string.Empty;
             descriptionTextBox.Attributes = new Dictionary<string, string>(Attributes);
             descriptionTextBox.Tooltip = Tooltip;
             descriptionTextBox.Enabled = false;

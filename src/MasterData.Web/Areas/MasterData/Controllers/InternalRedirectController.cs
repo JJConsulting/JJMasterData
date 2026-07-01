@@ -9,7 +9,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -21,7 +21,7 @@ public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
     FormService formService,
-    IHttpRequest request,
+    IHttpContextAccessor request,
     IMasterDataUser masterDataUser,
     IEncryptionService encryptionService) : MasterDataController
 {
@@ -37,7 +37,7 @@ public class InternalRedirectController(
         {
             case RelationshipViewType.List:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 formView.ShowTitle = state.ShowTitle;
                 formView.RelationValues = state.RelationValues;
                 formView.FormElement.Options.Grid.MaintainValuesOnLoad = false;
@@ -66,7 +66,7 @@ public class InternalRedirectController(
             }
             case RelationshipViewType.View:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 formView.PageState = PageState.View;
                 ApplyUserValues(formView, userValues);
 
@@ -93,7 +93,7 @@ public class InternalRedirectController(
             case RelationshipViewType.Insert:
             case RelationshipViewType.Update:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 var pageState = state.RelationshipType is RelationshipViewType.Update
                     ? PageState.Update
                     : PageState.Insert;
@@ -139,7 +139,7 @@ public class InternalRedirectController(
         var state =  GetInternalRedirectState(parameters);
         var userId = masterDataUser.Id;
         var userValues = GetUserValues(userId, multiselectValues);
-        var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
+        var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName!);
 
         if (panel.PageState is PageState.Update)
         {

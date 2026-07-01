@@ -1,11 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿#nullable disable warnings
+using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
-
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -19,7 +16,7 @@ public class JJTextArea : ControlBase, IFloatingLabelControl
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
 
-    public JJTextArea(IFormValues formValues,IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
+    public JJTextArea(IHttpContextAccessor formValues,IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
     {
         StringLocalizer = stringLocalizer;
         Attributes.Add("class", "form-control");

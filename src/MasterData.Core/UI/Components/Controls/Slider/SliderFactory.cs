@@ -1,10 +1,10 @@
+#nullable disable warnings
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class SliderFactory(
-    IFormValues formValues,
+    IHttpContextAccessor formValues,
     IControlFactory<JJTextBox> textBoxFactory)
     : IControlFactory<JJSlider>
 {

@@ -1,5 +1,4 @@
-#nullable enable
-
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +56,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
 
     private async Task<ComponentResult> GetTabRelationshipsResult()
     {
-        var tabNav = new JJMasterDataTabNav(parentFormView.FormValues)
+        var tabNav = new JJMasterDataTabNav(parentFormView.CurrentContext)
         {
             Name = $"relationships-tab-nav-{parentFormView.DataPanel.Name}"
         };
@@ -101,7 +100,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse:
-                var collapse = new JJMasterDataCollapsePanel(parentFormView.CurrentContext.Request.Form)
+                var collapse = new JJMasterDataCollapsePanel(parentFormView.CurrentContext)
                 {
                     Name = $"{relationship.ElementRelationship?.ChildElement ?? parentFormView.Name}-collapse-panel",
                     Title = GetExpressionValue(relationship.Panel.Title),

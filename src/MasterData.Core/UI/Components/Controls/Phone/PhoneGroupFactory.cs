@@ -1,10 +1,9 @@
 ﻿using System;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.Phone;
 
-internal sealed class PhoneGroupFactory(IFormValues formValues)
+internal sealed class PhoneGroupFactory(IHttpContextAccessor formValues)
     : IControlFactory<JJPhoneGroup>
 {
     public JJPhoneGroup Create()

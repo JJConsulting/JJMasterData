@@ -9,6 +9,7 @@
     <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
     <PackageVersion Include="IronPython" Version="3.4.2" />
     <PackageVersion Include="IronPython.StdLib" Version="3.4.2" />
+    <PackageVersion Include="Jint" Version="4.8.0" />
     <PackageVersion Include="JJConsulting.Html.Bootstrap" Version="1.0.21" />
     <PackageVersion Include="JJConsulting.Html.Bootstrap.TagHelpers" Version="1.0.21" />
     <PackageVersion Include="JetBrains.Annotations" Version="2025.2.4" />
@@ -27,8 +28,8 @@
     <PackageVersion Include="Microsoft.TypeScript.MSBuild" Version="5.8.3" />
     <PackageVersion Include="MongoDB.Driver" Version="3.5.2" />
     <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="NCalc.DependencyInjection" Version="6.3.2" />
-    <PackageVersion Include="NCalc.MemoryCache" Version="6.3.2" />
+    <PackageVersion Include="NCalc.DependencyInjection" Version="6.3.3" />
+    <PackageVersion Include="NCalc.MemoryCache" Version="6.3.3" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="PolySharp" Version="1.14.1" />
     <PackageVersion Include="Spectre.Console" Version="0.55.2" />
