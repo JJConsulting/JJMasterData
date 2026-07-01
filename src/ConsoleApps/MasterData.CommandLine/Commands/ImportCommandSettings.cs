@@ -1,3 +1,3 @@
 namespace JJMasterData.CommandLine.Commands;
 
-public sealed class ImportCommandSettings : PathConnectionCommandSettings;
+public sealed class ImportCommandSettings : MasterDataCommandSettings;

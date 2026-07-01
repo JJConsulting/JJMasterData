@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace JJMasterData.CommandLine.Commands;
 
-public abstract class PathConnectionCommandSettings : CommandSettings
+public abstract class MasterDataCommandSettings : CommandSettings
 {
     [CommandOption("-p|--path <PATH>")]
     [Description("Path containing the JSON dictionaries to use.")]
@@ -14,6 +14,10 @@ public abstract class PathConnectionCommandSettings : CommandSettings
     [Description("Database connection string used by the command.")]
     public string? Connection { get; init; }
 
+    [CommandOption("-t|--table <SCHEMA>.<TABLE>")]
+    [Description("Data dictionaries SQL table name.")]
+    public string? Table { get; init; }
+    
     public override ValidationResult Validate()
     {
         if (string.IsNullOrWhiteSpace(DictionaryPath))
@@ -21,7 +25,7 @@ public abstract class PathConnectionCommandSettings : CommandSettings
 
         if (string.IsNullOrWhiteSpace(Connection))
             return ValidationResult.Error("The connection string is required.");
-
+        
         return ValidationResult.Success();
     }
 }

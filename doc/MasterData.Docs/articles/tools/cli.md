@@ -9,26 +9,41 @@ dotnet tool install --global JJMasterData.CommandLine
 ---
 
 ## Why use it
+
 Typical use cases include:
 
-* Automating dictionary deployment in CI/CD pipelines
-* Creating backups of dictionary data
-* Comparing environments (for example, staging vs production)
+- Automating dictionary deployment in CI/CD pipelines
+- Creating backups of dictionary data
+- Comparing environments (for example, staging vs production)
 
 ---
 
 ## Core Concepts
 
-Most commands require two parameters:
+Most commands require three parameters:
 
-* `--path` (`-p`): Directory containing dictionary files
-* `--connection` (`-c`): Database connection string
+- `--path` (`-p`): Directory containing dictionary files
+- `--connection` (`-c`): Database connection string
+- `--table` (`-t`): Data dictionary table in the format `<schema>.<table>`
 
 You can use either the short or long form:
 
-```bash
+```text
 -p | --path
 -c | --connection
+-t | --table
+```
+
+Example:
+
+```bash
+--table dbo.MasterData
+```
+
+If omitted, the default table is:
+
+```text
+dbo.MasterData
 ```
 
 ---
@@ -40,7 +55,10 @@ You can use either the short or long form:
 Imports dictionaries from files into the database.
 
 ```bash
-jjmasterdata import --path ./dictionaries --connection "<connection_string>"
+jjmasterdata import \
+  --path ./dictionaries \
+  --connection "<connection_string>" \
+  --table "dbo.MasterData"
 ```
 
 ---
@@ -50,7 +68,10 @@ jjmasterdata import --path ./dictionaries --connection "<connection_string>"
 Exports dictionaries from the database into files.
 
 ```bash
-jjmasterdata export --path ./dictionaries --connection "<connection_string>"
+jjmasterdata export \
+  --path ./dictionaries \
+  --connection "<connection_string>" \
+  --table "dbo.MasterData"
 ```
 
 ---
@@ -60,7 +81,10 @@ jjmasterdata export --path ./dictionaries --connection "<connection_string>"
 Compares local dictionary files with the database.
 
 ```bash
-jjmasterdata diff --path ./dictionaries --connection "<connection_string>"
+jjmasterdata diff \
+  --path ./dictionaries \
+  --connection "<connection_string>" \
+  --table "dbo.MasterData"
 ```
 
 ---
@@ -74,10 +98,16 @@ Example:
 ```bash
 jjmasterdata import \
   --path ./dictionaries \
-  --connection "$DB_CONNECTION"
+  --connection "$DB_CONNECTION" \
+  --table "$MASTERDATA_TABLE"
 ```
 
-Where `DB_CONNECTION` is defined in your CI pipeline (e.g., GitHub Actions, Azure DevOps, GitLab CI).
+Where:
+
+- `DB_CONNECTION` is your database connection string.
+- `MASTERDATA_TABLE` contains the data dictionary table name (for example, `dbo.MasterData`).
+
+These variables can be defined in your CI pipeline (GitHub Actions, Azure DevOps, GitLab CI, etc.).
 
 ---
 
@@ -95,8 +125,10 @@ Run in interactive mode:
 jjmasterdata
 ```
 
-This mode guides you through available commands and parameters.
+This mode guides you through the available commands and required parameters.
+
+---
 
 ## Special Thanks
 
-Special thanks to [Spectre.Console](https://spectreconsole.net) for providing a robust and elegant foundation for building our tool.
+Special thanks to [Spectre.Console](https://spectreconsole.net) for providing a robust and elegant foundation for building the command-line interface.
