@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace JJMasterData.CommandLine.Commands;
 
-public abstract class MasterDataCommandSettings : CommandSettings
+public class MasterDataCommandSettings : CommandSettings
 {
     [CommandOption("-p|--path <PATH>")]
     [Description("Path containing the JSON dictionaries to use.")]

@@ -10,7 +10,7 @@ public sealed class ExportCommand(ConsoleRunner consoleRunner) : AsyncCommand<Ex
         ExportCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        await consoleRunner.ExportAsync(settings.DictionaryPath!, settings.Connection!, cancellationToken);
+        await consoleRunner.ExportAsync(settings, cancellationToken);
         return 0;
     }
 }

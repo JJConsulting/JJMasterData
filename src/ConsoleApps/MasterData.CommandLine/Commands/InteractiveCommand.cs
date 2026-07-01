@@ -28,14 +28,27 @@ public sealed class InteractiveCommand(IAnsiConsole console, ConsoleRunner conso
                     ? ValidationResult.Error("[red]Connection is required.[/]")
                     : ValidationResult.Success()));
 
+        var table = console.Prompt(
+            new TextPrompt<string>("Table")
+                .Validate(value => string.IsNullOrWhiteSpace(value)
+                    ? ValidationResult.Error("[red]Connection is required.[/]")
+                    : ValidationResult.Success()));
+
+        var settings = new MasterDataCommandSettings
+        {
+            DictionaryPath = path,
+            Table = table,
+            Connection = connection
+        };
+
         return action switch
         {
             "Import" => await ExecuteAsync(
-                consoleRunner.ImportAsync(path, connection, cancellationToken)),
+                consoleRunner.ImportAsync(settings, cancellationToken)),
             "Export" => await ExecuteAsync(
-                consoleRunner.ExportAsync(path, connection, cancellationToken)),
+                consoleRunner.ExportAsync(settings, cancellationToken)),
             "Diff" => await ExecuteAsync(
-                consoleRunner.DiffAsync(path, connection, cancellationToken)),
+                consoleRunner.DiffAsync(settings, cancellationToken)),
             _ => 1
         };
     }
