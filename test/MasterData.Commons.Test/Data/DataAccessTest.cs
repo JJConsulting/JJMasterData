@@ -23,7 +23,9 @@ public class DataAccessTest
     [Fact]
     public async Task GetDataTableTest()
     {
-        var dataTable = await DataAccess.GetDataTableAsync($"SELECT * FROM {TableName}");
+        var dataTable = await DataAccess.GetDataTableAsync(
+            $"SELECT * FROM {TableName}",
+            cancellationToken: TestContext.Current.CancellationToken);
         
         Assert.True(dataTable.Rows.Count > 0);
     }
