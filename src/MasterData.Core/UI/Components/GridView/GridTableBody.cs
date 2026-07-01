@@ -300,7 +300,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         if (dataItemValue != null)
         {
             cell = GetIconCell(
-                dataItemValue.Icon,
+                dataItemValue.Icon.GetValueOrDefault(),
                 dataItemValue.IconColor ?? string.Empty,
                 tooltip);
 

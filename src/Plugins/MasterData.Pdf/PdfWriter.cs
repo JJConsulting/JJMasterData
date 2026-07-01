@@ -316,7 +316,7 @@ public class PdfWriter(
             }
             if (field.DataItem!.GridBehavior is DataItemGridBehavior.Icon || field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription)  
             {
-                image = new Text(item.Icon.GetUnicode().ToString());
+                image = new Text(item.Icon.GetValueOrDefault().GetUnicode().ToString());
                 var color = ColorTranslator.FromHtml(item.IconColor);
 
                 var rgbColor = $"rgb({Convert.ToInt16(color.R)},{Convert.ToInt16(color.G)},{Convert.ToInt16(color.B)})";

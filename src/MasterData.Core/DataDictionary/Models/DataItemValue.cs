@@ -1,8 +1,8 @@
 #nullable disable warnings
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using JJConsulting.FontAwesome;
-
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -13,18 +13,17 @@ namespace JJMasterData.Core.DataDictionary.Models;
 public class DataItemValue
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     [JsonPropertyName("description")]
-    [CanBeNull] 
-    public string Description { get; set; }
+    public string? Description { get; set; }
     
     [CanBeNull]
     [JsonPropertyName("imageUrl")]
-    public string ImageUrl { get; set; }
+    public string? ImageUrl { get; set; }
     
     [JsonPropertyName("icon")]
-    public FontAwesomeIcon Icon { get; set; }
+    public FontAwesomeIcon? Icon { get; set; }
 
     /// <summary>
     /// Image color in hexadecimal.
@@ -33,19 +32,21 @@ public class DataItemValue
     /// #FF112F1
     /// </example>
     [JsonPropertyName("imagecolor")]
-    public string IconColor { get; set; }
+    public string? IconColor { get; set; }
 
-    [JsonPropertyName("group")] 
-    [CanBeNull]
-    public string Group { get; set; }
+    [JsonPropertyName("group")]
+    public string? Group { get; set; }
 
     public DataItemValue() { }
     
+    [SetsRequiredMembers]
     public DataItemValue(string id, string description)
     {
         Id = id;
         Description = description;
     }
+    
+    [SetsRequiredMembers]
     public DataItemValue(string id, string description, FontAwesomeIcon icon, string iconColor)
     {
         Id = id;

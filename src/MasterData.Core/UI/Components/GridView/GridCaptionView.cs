@@ -55,7 +55,7 @@ internal sealed class GridCaptionView(
                 {
                     div.WithStyle( "height:2.5rem");
 
-                    div.AppendComponent(new JJIcon(item.Icon, item.IconColor)
+                    div.AppendComponent(new JJIcon(item.Icon.GetValueOrDefault(), item.IconColor ?? string.Empty)
                     {
                         CssClass = "fa-fw fa-2x"
                     });

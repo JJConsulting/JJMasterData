@@ -68,7 +68,7 @@ public class JJRadioButtonGroup(
 
         if (DataItem.ShowIcon)
         {
-            radio.LabelHtml.Append(new JJIcon(item.Icon, item.IconColor).GetHtmlBuilder());
+            radio.LabelHtml.Append(new JJIcon(item.Icon.GetValueOrDefault(), item.IconColor ?? string.Empty).GetHtmlBuilder());
         }
         
         radio.LabelHtml.AppendText(item.Description!);

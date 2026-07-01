@@ -84,7 +84,7 @@ public class DataDictionaryLocalizationService(
         
         if (dataItem.HasItems())
         {
-            foreach (var item in dataItem.Items!)
+            foreach (var item in dataItem.Items)
             {
                 AddKey(keys, item.Description);
             }

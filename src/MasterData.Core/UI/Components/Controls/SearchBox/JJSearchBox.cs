@@ -419,7 +419,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
             Id = v.Id,
             Description = v.Description,
             IconCssClass = DataItem.ShowIcon
-                ? v.Icon.CssClass
+                ? v.Icon?.CssClass
                 : null,
             IconColor = DataItem.ShowIcon
                 ? v.IconColor
