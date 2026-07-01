@@ -10,7 +10,7 @@ public sealed class ImportCommand(ConsoleRunner consoleRunner) : AsyncCommand<Im
         ImportCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        await consoleRunner.ImportAsync(settings.DictionaryPath!, settings.Connection!, cancellationToken);
+        await consoleRunner.ImportAsync(settings, cancellationToken);
         return 0;
     }
 }

@@ -10,7 +10,7 @@ public sealed class DiffCommand(ConsoleRunner consoleRunner) : AsyncCommand<Diff
         DiffCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        await consoleRunner.DiffAsync(settings.DictionaryPath!, settings.Connection!, cancellationToken);
+        await consoleRunner.DiffAsync(settings, cancellationToken);
         return 0;
     }
 }
