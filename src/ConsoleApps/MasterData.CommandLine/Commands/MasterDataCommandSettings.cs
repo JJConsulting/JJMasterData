@@ -14,8 +14,8 @@ public class MasterDataCommandSettings : CommandSettings
     [Description("Database connection string used by the command.")]
     public string? Connection { get; init; }
 
-    [CommandOption("-t|--table <SCHEMA>.<TABLE>")]
-    [Description("Data dictionaries SQL table name.")]
+    [CommandOption("-t|--table <TABLE>")]
+    [Description("Data dictionaries SQL table name. Schema included.")]
     public string? Table { get; init; }
     
     public override ValidationResult Validate()
