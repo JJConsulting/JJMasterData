@@ -45,6 +45,7 @@ public sealed class ConsoleRunner(IAnsiConsole console)
         var configuration = BuildConfiguration(settings);
 
         services.AddMemoryCache();
+        services.AddLogging();
         services.AddSingleton(console);
         services.AddSingleton(configuration);
         services.AddJJMasterDataCore(configuration);
