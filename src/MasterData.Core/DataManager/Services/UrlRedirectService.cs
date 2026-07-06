@@ -16,7 +16,7 @@ namespace JJMasterData.Core.DataManager.Services;
 public class UrlRedirectService(
     IHttpContextAccessor httpRequest,
     IEntityRepository entityRepository,
-    IStringLocalizer localizer,
+    IStringLocalizer<MasterDataResources> localizer,
     FormValuesService formValuesService,
     ExpressionsService expressionsService)
 {
