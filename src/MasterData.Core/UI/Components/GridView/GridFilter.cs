@@ -98,6 +98,16 @@ internal sealed class GridFilter(JJGridView gridView)
             DataHelper.CopyIntoDictionary(_currentFilter, cookieFilter);
             return _currentFilter;
         }
+
+        if (_currentContext.HttpContext!.Request.HasFormContentType || IsDynamicPost())
+        {
+            var postedFilter = GetPostedFilterValues();
+            if (postedFilter is not null)
+            {
+                await ApplyCurrentFilter(postedFilter);
+                return _currentFilter;
+            }
+        }
         
         await ApplyCurrentFilter(null);
 
@@ -115,7 +125,7 @@ internal sealed class GridFilter(JJGridView gridView)
         return !string.IsNullOrEmpty(_currentContext.HttpContext!.Request.Query["routeContext"]);
     }
 
-    public async ValueTask ApplyCurrentFilter(Dictionary<string, object> values)
+    public async ValueTask ApplyCurrentFilter(Dictionary<string, object>? values)
     {
         _currentFilter ??= new Dictionary<string, object>();
 
@@ -355,14 +365,10 @@ internal sealed class GridFilter(JJGridView gridView)
 
         //Relation Filters
         var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-        var filters = _currentContext.HttpContext!.Request.GetFormValue($"grid-view-filters-{gridView.Name}");
-        if (!string.IsNullOrEmpty(filters))
-        {
-            var filterJson = gridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            values = JsonSerializer.Deserialize<Dictionary<string, object>>(filterJson, MasterDataJsonSerializerOptions.Default)!;
-        }
+        DataHelper.CopyIntoDictionary(values, GetPostedFilterValues());
 
         var fieldsFilter = gridView.FormElement.Fields.FindAll(x => x.Filter.Type != FilterMode.None);
+        RemoveCurrentFieldFilters(values, fieldsFilter);
 
         foreach (var field in fieldsFilter)
         {
@@ -429,8 +435,30 @@ internal sealed class GridFilter(JJGridView gridView)
         return values;
     }
 
+    private Dictionary<string, object>? GetPostedFilterValues()
+    {
+        var filters = _currentContext.HttpContext!.Request.GetFormValue($"grid-view-filters-{gridView.Name}");
+        if (string.IsNullOrEmpty(filters))
+            return null;
 
-    private Dictionary<string, object> GetFilterQueryString()
+        var filterJson = gridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
+        return JsonSerializer.Deserialize<Dictionary<string, object>>(filterJson, MasterDataJsonSerializerOptions.Default);
+    }
+
+    private static void RemoveCurrentFieldFilters(
+        Dictionary<string, object> values,
+        List<FormElementField> fieldsFilter)
+    {
+        foreach (var field in fieldsFilter)
+        {
+            values.Remove(field.Name);
+            values.Remove($"{field.Name}_from");
+            values.Remove($"{field.Name}_to");
+        }
+    }
+
+
+    private Dictionary<string, object>? GetFilterQueryString()
     {
         Dictionary<string, object> values = null;
         var fieldsFilter = gridView.FormElement.Fields.FindAll(x => x.Filter.Type != FilterMode.None);

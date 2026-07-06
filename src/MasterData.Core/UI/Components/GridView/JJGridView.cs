@@ -810,7 +810,7 @@ public class JJGridView : AsyncComponent
             html.Append(sortConfig);
         }
         
-        html.AppendRange(GetHiddenInputs());
+        html.AppendRange(await GetHiddenInputsAsync());
 
         if (CurrentPage <= 0 || (CurrentPage > totalOfPages && totalOfPages != 0))
         {
@@ -881,17 +881,23 @@ public class JJGridView : AsyncComponent
         };
     }
 
-    private IEnumerable<HtmlBuilder> GetHiddenInputs()
+    private async Task<List<HtmlBuilder>> GetHiddenInputsAsync()
     {
-        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter());
-        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString());
-        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", EncryptionService.EncryptObject(CurrentActionMap) ?? string.Empty);
-        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty);
+        var hiddenInputs = new List<HtmlBuilder>
+        {
+            new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter()),
+            new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString()),
+            new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", EncryptionService.EncryptObject(CurrentActionMap) ?? string.Empty),
+            new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty),
+            new HtmlBuilder().AppendHiddenInput($"grid-view-filters-{Name}", EncryptionService.EncryptObject(await GetCurrentFilterAsync()) ?? string.Empty)
+        };
 
         if (EnableMultiSelect)
         {
-            yield return new HtmlBuilder().AppendHiddenInput($"grid-view-selected-rows-{Name}", SelectedRowsId ?? string.Empty);
+            hiddenInputs.Add(new HtmlBuilder().AppendHiddenInput($"grid-view-selected-rows-{Name}", SelectedRowsId ?? string.Empty));
         }
+
+        return hiddenInputs;
     }
 
     private async Task<string> GetTableRowHtmlAsync(int rowIndex)
