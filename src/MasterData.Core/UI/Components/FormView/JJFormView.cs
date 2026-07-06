@@ -1716,7 +1716,10 @@ public class JJFormView : AsyncComponent
 
         if (_currentActionMap is not null)
             DataHelper.CopyIntoDictionary(initialValues, CurrentActionMap!.PkFieldValues!);
-
+        
+        if (RelationValues?.Count > 0)
+            DataHelper.CopyIntoDictionary(initialValues, RelationValues!);
+        
         var initialFormStateData = new FormStateData(initialValues, UserValues, PageState);
         var reloadFormFields = IsReloadFields();
         var values =
