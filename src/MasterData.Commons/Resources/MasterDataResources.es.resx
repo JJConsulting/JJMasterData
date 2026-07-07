@@ -790,4 +790,7 @@
   <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
     <value>Use '{0}' como separador para {1} decimales.</value>
   </data>
+  <data name="First option used in the combo. If a default value exists in the filter, this option is ignored." xml:space="preserve">
+    <value>Primera opción usada en el combo. Si existe un valor predeterminado en el filtro, esta opción se ignora.</value>
+  </data>
 </root>

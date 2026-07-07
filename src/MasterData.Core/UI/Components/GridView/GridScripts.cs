@@ -57,7 +57,7 @@ public class GridScripts
     public string GetClearFilterScript()
     {
         // language=JavaScript
-        return $"GridViewFilterHelper.clearFilter('{_gridView.Name}','{_defaultEncryptedRouteContext}',{_gridView.FilterAction.IsSubmit.ToString().ToLowerInvariant()})";
+        return $"GridViewFilterHelper.clearFilter('{_gridView.Name}','{_defaultEncryptedRouteContext}',{_gridView.FilterAction.IsSubmit.ToString().ToLowerInvariant()},'{_gridView.Filter.Name}','{GetEncryptedRouteContext(ComponentContext.GridViewFilterReload)}')";
     }
 
     public string GetSelectAllScript()

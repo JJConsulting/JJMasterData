@@ -39,6 +39,7 @@
     {
         <div class="mb-3 col-sm-4 required" id="divFirstOption">
             <label asp-for="DataItem!.FirstOption" class="form-label"></label>
+            <tooltip title="@StringLocalizer["First option used in the combo. If a default value exists in the filter, this option is ignored."]"/>
             <select asp-for="DataItem!.FirstOption" class="form-control form-select"
                     asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>

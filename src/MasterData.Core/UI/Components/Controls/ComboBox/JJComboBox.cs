@@ -75,9 +75,8 @@ public class JJComboBox(
             .WithName(Name)
             .WithId(Id ?? Name)
             .WithAttributeIf(MultiSelect, "multiple")
-            .WithAttributeIf(MultiSelect, "title", stringLocalizer["All"])
-            .WithAttributeIf(MultiSelect && FormStateData.PageState == PageState.Filter, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
+            .WithAttributeIf(MultiSelect || DataItem.ShowIcon, "data-none-selected-text", GetFirstOptionText())
             .WithAttributeIf(!Enabled, "disabled")
             .WithAttributeIf(BootstrapHelper.Version is 3, "data-style", "form-control")
             .WithAttributeIf(BootstrapHelper.Version is 5, "data-style-base", "form-select form-dropdown")
@@ -111,8 +110,8 @@ public class JJComboBox(
 
         var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
-            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, stringLocalizer["(All)"])
-            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, stringLocalizer["(Choose)"]);
+            .WithAttributeIf(MultiSelect,"disabled")
+            .AppendText(GetFirstOptionText());
 
         if (DataItem.FirstOption != FirstOptionMode.None)
             yield return firstOption;
@@ -141,6 +140,16 @@ public class JJComboBox(
                 yield return CreateOption(value);
             }
         }
+    }
+
+    private string GetFirstOptionText()
+    {
+        return DataItem.FirstOption switch
+        {
+            FirstOptionMode.All => stringLocalizer["(All)"],
+            FirstOptionMode.Choose => stringLocalizer["(Choose)"],
+            _ => string.Empty
+        };
     }
 
     private HtmlBuilder CreateOption(DataItemValue value)

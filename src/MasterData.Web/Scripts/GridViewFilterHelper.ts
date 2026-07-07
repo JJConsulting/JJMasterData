@@ -50,7 +50,7 @@ class GridViewFilterHelper {
                 currentObj.val("")
             }
 
-            if(currentObj.selectpicker){
+            if(currentObj.hasClass("selectpicker")){
                 currentObj.selectpicker("val","");
             }
 
@@ -89,16 +89,40 @@ class GridViewFilterHelper {
         GridViewHelper.clearCurrentFormAction(componentName)
     }
 
-    static clearFilter(componentName, routeContext, isSubmit) {
-        this.clearFilterInputs(componentName);
-
+    static clearFilter(componentName, routeContext, isSubmit, filterPanelName = null, filterRouteContext = null) {
         if(isSubmit) {
+            this.clearFilterInputs(componentName);
             getMasterDataForm().submit();
         }
         else{
+            document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "clear";
+            document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName).value = "";
+
+            this.clearFilterInputs(componentName);
+            
+            GridViewHelper.clearCurrentFormAction(componentName);
             GridViewHelper.setCurrentGridPage(componentName, 1)
-            GridViewHelper.refreshGrid(componentName, routeContext);
-            document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+            
+            if(filterPanelName && filterRouteContext) {
+     
+                
+                const urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", filterRouteContext);
+                
+                postFormValues({
+                    url: urlBuilder.build(),
+                    success: (content) => {
+                        HTMLHelper.setOuterHTML(filterPanelName, content);
+                        listenAllEvents("#" + filterPanelName);
+                        GridViewHelper.refreshGrid(componentName, routeContext);
+                        document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+                    }
+                });
+            }
+            else {
+                GridViewHelper.refreshGrid(componentName, routeContext);
+                document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+            }
         }
     }
 
