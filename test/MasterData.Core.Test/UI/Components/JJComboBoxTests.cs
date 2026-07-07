@@ -2,8 +2,8 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -16,7 +16,7 @@ public class JJComboBoxTests
     public async Task Selectpicker_Uses_FirstOption_Text_As_NoneSelectedText()
     {
         var comboBox = new JJComboBox(
-            new Mock<IFormValues>().Object,
+            new Mock<IHttpContextAccessor>().Object,
             GetDataItemService(),
             GetLocalizer())
         {
