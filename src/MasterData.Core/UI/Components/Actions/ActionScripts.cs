@@ -43,6 +43,14 @@ public class ActionScripts(
         
         foreach (var field in elementRedirect.RelationFields)
         {
+            if (actionContext.FormStateData.UserValues?.TryGetValue(field.InternalField, out var userValue) is true)
+            {
+                @params.Append('&');
+                @params.Append(field.RedirectField);
+                @params.Append('=');
+                @params.Append(userValue);
+            }
+            
             if (actionContext.FormStateData.Values.TryGetValue(field.InternalField, out var value))
             {
                 @params.Append('&');

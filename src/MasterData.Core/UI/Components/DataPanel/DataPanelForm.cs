@@ -225,10 +225,7 @@ internal sealed class DataPanelForm
             
             if (isRange)
             {
-                if (field.Component is FormComponent.Date)
-                    fieldClass = "col-sm-6";
-                else
-                    fieldClass = "col-sm-10";
+                fieldClass = field.Component is FormComponent.Date ? "col-sm-6" : "col-sm-10";
             }
             
             if (hasCssClass)
@@ -384,8 +381,19 @@ internal sealed class DataPanelForm
             {
                 if ((field.Filter.IsRequired || field.Filter.Type.IsMultiValues) && _isGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.None;
+                
                 else if (_isGridViewFilter)
-                    comboBox.DataItem.FirstOption = FirstOptionMode.All;
+                {
+                    var hasDefaultValue = !string.IsNullOrEmpty(field.DefaultValue);
+                    if (hasDefaultValue || value is not null)
+                    {
+                        comboBox.DataItem.FirstOption = FirstOptionMode.None;
+                    }
+                    else if (comboBox.DataItem.FirstOption is FirstOptionMode.None)
+                    {
+                        comboBox.DataItem.FirstOption = FirstOptionMode.All;
+                    }
+                }
 
                 if (field.Filter.Type == FilterMode.MultValuesEqual)
                     comboBox.MultiSelect = true;

@@ -4008,6 +4008,9 @@
   <data name="First Option" xml:space="preserve">
     <value>Primeira Opção</value>
   </data>
+  <data name="First option used in the combo. If a default value exists in the filter, this option is ignored." xml:space="preserve">
+    <value>Primeira opção usada na combo. Caso exista um valor padrão no filtro, essa opção é ignorada.</value>
+  </data>
   <data name="Choose" xml:space="preserve">
     <value>Escolha</value>
   </data>

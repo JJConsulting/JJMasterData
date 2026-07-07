@@ -1178,7 +1178,7 @@ class GridViewFilterHelper {
             if (currentObj.hasClass("flatpickr-input")) {
                 currentObj.val("");
             }
-            if (currentObj.selectpicker) {
+            if (currentObj.hasClass("selectpicker")) {
                 currentObj.selectpicker("val", "");
             }
             if (currentObj.typeahead) {
@@ -1213,15 +1213,34 @@ class GridViewFilterHelper {
         document.querySelector("#grid-view-action-map-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName);
     }
-    static clearFilter(componentName, routeContext, isSubmit) {
-        this.clearFilterInputs(componentName);
+    static clearFilter(componentName, routeContext, isSubmit, filterPanelName = null, filterRouteContext = null) {
         if (isSubmit) {
+            this.clearFilterInputs(componentName);
             getMasterDataForm().submit();
         }
         else {
+            document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
+            document.querySelector("#grid-view-action-map-" + componentName).value = "";
+            this.clearFilterInputs(componentName);
+            GridViewHelper.clearCurrentFormAction(componentName);
             GridViewHelper.setCurrentGridPage(componentName, 1);
-            GridViewHelper.refreshGrid(componentName, routeContext);
-            document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+            if (filterPanelName && filterRouteContext) {
+                const urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", filterRouteContext);
+                postFormValues({
+                    url: urlBuilder.build(),
+                    success: (content) => {
+                        HTMLHelper.setOuterHTML(filterPanelName, content);
+                        listenAllEvents("#" + filterPanelName);
+                        GridViewHelper.refreshGrid(componentName, routeContext);
+                        document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+                    }
+                });
+            }
+            else {
+                GridViewHelper.refreshGrid(componentName, routeContext);
+                document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+            }
         }
     }
     static searchOnDOM(componentName, oDom) {
