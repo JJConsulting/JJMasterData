@@ -78,17 +78,17 @@ public class JJDataExportation : ProcessComponent
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
-        IHttpContextAccessor currentContext, 
+        IHttpContextAccessor httpContextAccessor, 
         IEncryptionService encryptionService, 
         IFileStorage fileStorage,
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
+        base(httpContextAccessor, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         FileStorage = fileStorage;
         UrlHelper = urlHelper;
         DataExportationWriterFactory = dataExportationWriterFactory;
         ComponentFactory = componentFactory;
-        CurrentContext = currentContext;
+        HttpContextAccessor = httpContextAccessor;
         MasterDataOptions = masterDataOptions.Value;
         FormElement = formElement;
     }

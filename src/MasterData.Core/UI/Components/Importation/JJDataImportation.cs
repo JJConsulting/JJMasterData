@@ -88,7 +88,7 @@ public class JJDataImportation : ProcessComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
+            var factory = new RouteContextFactory(HttpContextAccessor, EncryptionService);
             _routeContext = factory.Create();
 
             return _routeContext;
@@ -113,17 +113,17 @@ public class JJDataImportation : ProcessComponent
         FormService formService,
         FieldValuesService fieldValuesService,
         IBackgroundTaskManager backgroundTaskManager,
-        IHttpContextAccessor currentContext,
+        IHttpContextAccessor httpContextAccessor,
         IComponentFactory componentFactory,
         DataItemService dataItemService,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(currentContext,masterDataUser, expressionsService, backgroundTaskManager,
+        : base(httpContextAccessor,masterDataUser, expressionsService, backgroundTaskManager,
             loggerFactory.CreateLogger<ProcessComponent>(), encryptionService, stringLocalizer)
     {
-        CurrentContext = currentContext;
+        HttpContextAccessor = httpContextAccessor;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
         FormService = formService;
         FieldValuesService = fieldValuesService;
@@ -149,7 +149,7 @@ public class JJDataImportation : ProcessComponent
             return await UploadArea.GetResultAsync();
         }
 
-        string action = CurrentContext.HttpContext!.Request.Query["dataImportationOperation"];
+        string action = HttpContextAccessor.HttpContext!.Request.Query["dataImportationOperation"];
 
         switch (action)
         {
@@ -172,7 +172,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (!IsRunning())
                 {
-                    var pasteValue = CurrentContext.HttpContext!.Request.GetFormValue("pasteValue");
+                    var pasteValue = HttpContextAccessor.HttpContext!.Request.GetFormValue("pasteValue");
                     ImportInBackground(pasteValue);
                 }
 
@@ -297,7 +297,7 @@ public class JJDataImportation : ProcessComponent
                 area.WithStyle( "display:none");
             });
         
-        var collapsePanel = new JJMasterDataCollapsePanel(CurrentContext)
+        var collapsePanel = new JJMasterDataCollapsePanel(HttpContextAccessor)
         {
             TitleIcon = new JJIcon(FontAwesomeIcon.Upload),
             Title = StringLocalizer["Upload File"],
@@ -352,7 +352,7 @@ public class JJDataImportation : ProcessComponent
 
     private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
     {
-        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Upload, UserId);
+        var dataContext = new DataContext(HttpContextAccessor.HttpContext!.Request, DataContextSource.Upload, UserId);
         var dataImportationContext = new DataImportationContext(FormElement, dataContext, RelationValues, postedText, separator);
         var worker = DataImportationWorkerFactory.Create(dataImportationContext);
         worker.UserId = UserId;

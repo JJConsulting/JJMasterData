@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.UI.Components;
 
 public abstract class ProcessComponent(
-        IHttpContextAccessor currentContext,
+        IHttpContextAccessor httpContextAccessor,
         IMasterDataUser masterDataUser,
         ExpressionsService expressionsService,
         IBackgroundTaskManager backgroundTaskManager,
@@ -43,7 +43,7 @@ public abstract class ProcessComponent(
     /// </remarks>
     internal string UserId => field ??= masterDataUser.Id;
 
-    public IHttpContextAccessor CurrentContext { get; init; } = currentContext;
+    public IHttpContextAccessor HttpContextAccessor { get; init; } = httpContextAccessor;
 
     public ProcessOptions ProcessOptions
     {

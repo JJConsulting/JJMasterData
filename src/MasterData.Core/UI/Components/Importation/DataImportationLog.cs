@@ -16,11 +16,10 @@ internal sealed class DataImportationLog
 {
     private readonly DataImportationReporter _reporter;
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-    private readonly IHttpContextAccessor _currentContext;
+
     internal DataImportationLog(JJDataImportation dataImportation)
     {
         _stringLocalizer = dataImportation.StringLocalizer;
-        _currentContext = dataImportation.CurrentContext;
         _reporter = dataImportation.GetCurrentReporter();
     }
 

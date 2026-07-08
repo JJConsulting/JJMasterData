@@ -89,7 +89,7 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
         writer.ProcessOptions = dataExportation.ProcessOptions;
         writer.FileDownloaderFactory = serviceProvider.GetRequiredService<FileDownloaderFactory>();
         writer.FileStorage = serviceProvider.GetRequiredService<IFileStorage>();
-        writer.AbsoluteUri = dataExportation.CurrentContext.HttpContext!.Request.GetAbsoluteUri();
+        writer.AbsoluteUri = dataExportation.HttpContextAccessor.HttpContext!.Request.GetAbsoluteUri();
     }
 
 
