@@ -23,7 +23,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Playwright.Xunit.v3" Version="1.59.0" />
+    <PackageVersion Include="Microsoft.Playwright.Xunit.v3" Version="1.60.0" />
     <PackageVersion Include="Microsoft.TypeScript.MSBuild" Version="5.8.3" />
     <PackageVersion Include="MongoDB.Driver" Version="3.5.2" />
     <PackageVersion Include="Moq" Version="4.20.72" />
