@@ -6,10 +6,12 @@ using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.Configuration;
 
@@ -58,23 +60,26 @@ public static class ServiceCollectionExtensions
                     "Secret key is required at JJMasterData:SecretKey at your configuration source.")
                 .ValidateOnStart();
         
-            services.AddScoped<DataAccess>();
+            services.TryAddScoped<DataAccess>();
 
             services.AddOptions<SqlServerOptions>().BindConfiguration("JJMasterData");
-            services.AddTransient<SqlServerReadProcedureScripts>();
-            services.AddTransient<SqlServerWriteProcedureScripts>();
-            services.AddTransient<SqlServerScripts>();
             
-            services.AddTransient<IEntityProvider, SqlServerProvider>();
-            services.AddTransient<IEntityRepository, EntityRepository>();
-            services.AddTransient<IConnectionRepository, ConnectionRepository>();
+            services.TryAddTransient<SqlServerReadProcedureScripts>();
+            services.TryAddTransient<SqlServerWriteProcedureScripts>();
+            services.TryAddTransient<SqlServerScripts>();
+            
+            services.TryAddTransient<IEntityProvider, SqlServerProvider>();
+            services.TryAddTransient<IEntityRepository, EntityRepository>();
+            services.TryAddTransient<IConnectionRepository, ConnectionRepository>();
         
-            services.AddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
-            services.AddTransient<IEncryptionService, EncryptionService>();
+            services.TryAddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
+            services.TryAddTransient<IEncryptionService, EncryptionService>();
+            
+            services.TryAddTransient<RelativeDateFormatter>();
+            
+            services.TryAddSingleton<IFileStorage, DiskFileStorage>();
+            services.TryAddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
 
-            services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
-        
-            services.AddScoped<RelativeDateFormatter>();
         }
     }
 }

@@ -4,6 +4,7 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -66,10 +67,21 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         return this;
     }
     
-    public MasterDataServiceBuilder WithEntityRepository(
-        Func<IServiceProvider, IEntityRepository> implementationFactory)
+    public MasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));
+        return this;
+    }
+    
+    public MasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IFileStorage> implementationFactory)
+    {
+        Services.Replace(ServiceDescriptor.Singleton(implementationFactory));
+        return this;
+    }
+    
+    public MasterDataServiceBuilder WithFileStorage<T>() where T : IFileStorage
+    {
+        Services.Replace(ServiceDescriptor.Singleton(typeof(IFileStorage),typeof(T)));
         return this;
     }
     

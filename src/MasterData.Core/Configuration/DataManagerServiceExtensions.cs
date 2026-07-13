@@ -29,8 +29,6 @@ public static class DataManagerServiceExtensions
         services.TryAddTransient<UploadAreaManager>();
         services.TryAddTransient<FormValuesService>();
         
-        services.TryAddScoped<IFileStorage, DiskFileStorage>();
-        
         services.TryAddTransient<UploadViewManager>();
         services.TryAddTransient<ElementFileService>();
         services.TryAddTransient<ElementMapService>();

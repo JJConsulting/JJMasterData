@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Commons.Storage;
 
-public class DiskFileStorage : IFileStorage
+internal sealed class DiskFileStorage : IFileStorage
 {
     public async Task SaveAsync(string fullPath, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)
     {

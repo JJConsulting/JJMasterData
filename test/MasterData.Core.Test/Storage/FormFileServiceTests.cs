@@ -13,7 +13,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Primitives;
 using Moq;
 
-namespace JJMasterData.Core.Test.DataManager.Storage;
+namespace JJMasterData.Core.Test.Storage;
 
 public class FormFileServiceTests
 {
