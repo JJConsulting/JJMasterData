@@ -73,7 +73,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         return this;
     }
     
-    public MasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IFileStorage> implementationFactory)
+    public MasterDataServiceBuilder WithFileStorage(Func<IServiceProvider, IFileStorage> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Singleton(implementationFactory));
         return this;
