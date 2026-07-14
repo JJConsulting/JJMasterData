@@ -67,16 +67,13 @@ public class JJComboBox(
     {
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass(CssClass)
-            .WithCssClass("form-control")
-            .WithCssClass(MultiSelect || DataItem.ShowIcon ? "selectpicker" : "form-select")
+            .WithCssClass("form-control form-select tom-select")
             .WithName(Name)
             .WithId(Id ?? Name)
             .WithAttributeIf(MultiSelect, "multiple")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
-            .WithAttributeIf(MultiSelect || DataItem.ShowIcon, "data-none-selected-text", GetFirstOptionText())
+            .WithAttribute("data-placeholder", GetFirstOptionText())
             .WithAttributeIf(!Enabled, "disabled")
-            .WithAttributeIf(BootstrapHelper.Version is 3, "data-style", "form-control")
-            .WithAttributeIf(BootstrapHelper.Version is 5, "data-style-base", "form-select form-dropdown")
             .WithAttributes(Attributes)
             .AppendRange(GetOptions(values));
 
@@ -184,8 +181,7 @@ public class JJComboBox(
         if (DataItem.ShowIcon)
             option.WithAttribute("data-content", content.ToString());
             
-        if (!DataItem.ShowIcon)
-            option.AppendText(label);
+        option.AppendText(label);
 
         return option;
     }

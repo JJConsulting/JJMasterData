@@ -21,14 +21,24 @@ public sealed class JJPhoneGroup(IHttpContextAccessor formValues) : JJTextBox(fo
             ?? (CountryHelper.TryGet(defaultCountry, out var configuredCountry) ? configuredCountry : null);
         var phoneValue = Text ?? string.Empty;
         var localPhoneValue = GetLocalPhoneValue(phoneValue, selectedCountry);
+        var phoneGroup = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass("jj-phone-group");
+
+        var hiddenInput = new HtmlBuilder(HtmlTag.Input)
+            .WithAttribute("type", "hidden")
+            .WithName(Name)
+            .WithId($"{Name}_hidden")
+            .WithValue(phoneValue)
+            .WithCssClass("jj-phone-hidden-input");
+
         var dropDownGroup = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("input-group jjform-action ")
             .WithCssClass(GroupCssClass)
             .AppendSelect(select =>
             {
-                select.WithCssClass("selectpicker w-auto jj-phone-select");
-                select.WithAttribute("data-live-search", "true");
-                select.WithAttribute("data-style-base", "form-select form-dropdown");
+                select.WithCssClass("form-select tom-select w-auto jj-phone-select");
+                select.WithCssClassIf(!Enabled, "disabled");
+                select.WithAttributeIf(!Enabled, "disabled");
                 foreach (var countryInfo in CountryHelper.All)
                 {
                     select.AppendOption(opt =>
@@ -37,18 +47,10 @@ public sealed class JJPhoneGroup(IHttpContextAccessor formValues) : JJTextBox(fo
                         opt.WithAttribute("dial-code", countryInfo.DialCode);
                         opt.WithValue(countryInfo.Code);
                         opt.WithAttribute("data-content", GetOptionContent(countryInfo).ToString());
+                        opt.AppendText($"{countryInfo.Name} {countryInfo.DialCode}");
                     });
                 }
             });
-
-        dropDownGroup.Append(HtmlTag.Input, hidden =>
-        {
-            hidden.WithAttribute("type", "hidden");
-            hidden.WithName(Name);
-            hidden.WithId($"{Name}_hidden");
-            hidden.WithValue(phoneValue);
-            hidden.WithCssClass("jj-phone-hidden-input");
-        });
 
         input.WithCssClass("jj-phone-input");
         input.WithAttribute("id", Name);
@@ -56,7 +58,10 @@ public sealed class JJPhoneGroup(IHttpContextAccessor formValues) : JJTextBox(fo
         input.WithAttribute("value", localPhoneValue);
         dropDownGroup.Append(input);
 
-        return dropDownGroup;
+        phoneGroup.Append(hiddenInput);
+        phoneGroup.Append(dropDownGroup);
+
+        return phoneGroup;
     }
 
     private static CountryInfo GetCountryFromPhoneValue(string phoneValue)

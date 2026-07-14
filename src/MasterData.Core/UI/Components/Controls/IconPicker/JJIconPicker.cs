@@ -40,6 +40,7 @@ public class JJIconPicker(
         comboBox.Name = Name;
         comboBox.Id =  id;
         comboBox.Enabled = Enabled;
+        comboBox.CssClass = "jj-icon-select";
         if(SelectedIcon is not null)
         {
             comboBox.SelectedValue = ((int)SelectedIcon).ToString();
@@ -52,11 +53,7 @@ public class JJIconPicker(
             ShowIcon = Enabled,
         };
         
-        comboBox.Attributes["data-live-search"] = "true";
-        comboBox.Attributes["data-virtual-scroll"] = "true";
-        comboBox.Attributes["data-size"] = "false";
-        comboBox.Attributes["data-sanitize"] = "false";
-        comboBox.Attributes["data-none-results-text"] = stringLocalizer["No icons found."];
+        comboBox.Attributes["data-no-results-text"] = stringLocalizer["No icons found."];
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClassIf(Enabled,"input-group");
         div.Append(await comboBox.GetHtmlBuilderAsync());

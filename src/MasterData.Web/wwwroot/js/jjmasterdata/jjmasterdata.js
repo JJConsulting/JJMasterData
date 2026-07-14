@@ -1178,8 +1178,9 @@ class GridViewFilterHelper {
             if (currentObj.hasClass("flatpickr-input")) {
                 currentObj.val("");
             }
-            if (currentObj.hasClass("selectpicker")) {
-                currentObj.selectpicker("val", "");
+            if (currentObj.hasClass("tom-select")) {
+                TomSelectHelper.clear(this);
+                return;
             }
             if (currentObj.typeahead) {
                 currentObj.typeahead("val", "");
@@ -1193,15 +1194,9 @@ class GridViewFilterHelper {
             if (inputType == "checkbox") {
                 currentObj.prop("checked", false);
             }
-            else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
-                currentObj.tagsinput('removeAll');
-            }
             else if (inputType != "hidden") {
                 currentObj.val(null);
-                if (currentObj.hasClass("selectpicker")) {
-                    currentObj.selectpicker("render");
-                }
-                else if (currentObj.hasClass("jj-search-box")) {
+                if (currentObj.hasClass("jj-search-box")) {
                     currentObj[0].bootstrapSearch.clear();
                 }
                 else if (currentObj.hasClass("jjlookup")) {
@@ -1246,7 +1241,7 @@ class GridViewFilterHelper {
     static searchOnDOM(componentName, oDom) {
         const value = $(oDom).val().toString().toLowerCase();
         $("#" + componentName + "-table" + " tr").filter(function () {
-            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const textValues = $(this).clone().find('.ts-wrapper, .tom-select, select').remove().end().text();
             let isSearch = textValues.toLowerCase().indexOf(value) > -1;
             if (!isSearch) {
                 var valueNew = value.replace(",", "").replace(".", "").replace("-", "");
@@ -1736,10 +1731,7 @@ class LegacySearchBoxListener {
 const listenAllEvents = (selectorPrefix = String()) => {
     var _a;
     selectorPrefix += " ";
-    $(selectorPrefix + ".selectpicker").selectpicker({
-        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon',
-        styleBase: bootstrapVersion === 5 ? "form-select form-dropdown" : "form-control"
-    });
+    TomSelectHelper.listen(selectorPrefix);
     if (bootstrapVersion === 3) {
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     }
@@ -2471,7 +2463,7 @@ class PhoneInputListener {
             }).mask(input);
         }
         function syncHiddenInput(input, select) {
-            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0];
+            const hiddenInput = $(input).closest('.jj-phone-group').find('.jj-phone-hidden-input')[0];
             if (!hiddenInput)
                 return;
             const selectedOption = select.selectedOptions[0];
@@ -2481,14 +2473,12 @@ class PhoneInputListener {
         }
         const selects = document.querySelectorAll(`${selectorPrefix}select.jj-phone-select`);
         selects.forEach(select => {
-            $(select).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-                if (isSelected) {
-                    const input = $(select).closest('.input-group').find('.jj-phone-input')[0];
-                    if (!input)
-                        return;
-                    applyMask(input);
-                    syncHiddenInput(input, select);
-                }
+            select.addEventListener('change', () => {
+                const input = $(select).closest('.input-group').find('.jj-phone-input')[0];
+                if (!input)
+                    return;
+                applyMask(input);
+                syncHiddenInput(input, select);
             });
         });
         const inputs = document.querySelectorAll(`${selectorPrefix}input.jj-phone-input`);
@@ -2496,7 +2486,7 @@ class PhoneInputListener {
             const select = $(input).closest('.input-group').find('select.jj-phone-select')[0];
             if (!select)
                 return;
-            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0];
+            const hiddenInput = $(input).closest('.jj-phone-group').find('.jj-phone-hidden-input')[0];
             const options = [...select.options];
             const longestDialCode = options.reduce((longest, current) => {
                 const dialCode = normalizeDialCode(current.getAttribute('dial-code'));
@@ -2518,7 +2508,7 @@ class PhoneInputListener {
             if (hiddenInput === null || hiddenInput === void 0 ? void 0 : hiddenInput.value.startsWith('+')) {
                 const optionCountrySelected = getCountryFromInputValue(hiddenInput.value);
                 if (optionCountrySelected)
-                    $(select).selectpicker('val', optionCountrySelected.value);
+                    TomSelectHelper.setValue(select, optionCountrySelected.value);
             }
             const selectedOption = select.selectedOptions[0] || options.find(option => option.value === $(select).val());
             if (selectedOption) {
@@ -2907,6 +2897,63 @@ class TextFileHelper {
         if (draftInput === null || draftInput === void 0 ? void 0 : draftInput.value) {
             urlBuilder.addQueryParameter("draftId", draftInput.value);
         }
+    }
+}
+class TomSelectHelper {
+    static listen(selectorPrefix = String()) {
+        document.querySelectorAll(`${selectorPrefix} select.tom-select, ${selectorPrefix} input.tom-select`)
+            .forEach(element => this.initialize(element));
+    }
+    static initialize(element) {
+        var _a, _b, _c, _d, _e;
+        if (element.tomselect)
+            return element.tomselect;
+        const isTagsInput = element instanceof HTMLInputElement && element.dataset.tomSelectTags === 'true';
+        const isMultiSelect = element instanceof HTMLSelectElement && element.multiple;
+        if (isTagsInput)
+            element.value = element.value
+                .split(',')
+                .map(value => value.trim())
+                .filter(Boolean)
+                .join(',');
+        const placeholder = (_e = (_b = (_a = element.dataset.placeholder) !== null && _a !== void 0 ? _a : element.getAttribute('placeholder')) !== null && _b !== void 0 ? _b : (element instanceof HTMLSelectElement
+            ? (_d = (_c = element.querySelector('option[value=""]')) === null || _c === void 0 ? void 0 : _c.textContent) === null || _d === void 0 ? void 0 : _d.trim()
+            : undefined)) !== null && _e !== void 0 ? _e : String();
+        return new TomSelect(element, Object.assign(Object.assign({ allowEmptyOption: !isTagsInput, hidePlaceholder: false, hideSelected: false, placeholder }, (isTagsInput
+            ? {
+                create: true,
+                delimiter: ','
+            }
+            : {
+                create: false,
+                controlInput: null,
+                plugins: isMultiSelect ? ['checkbox_options'] : []
+            })), { render: {
+                no_results: () => { var _a; return `<div class="no-results">${(_a = element.dataset.noResultsText) !== null && _a !== void 0 ? _a : 'No results found.'}</div>`; },
+                option: (data, escape) => this.renderOption(element, data, escape, true),
+                item: (data, escape) => this.renderOption(element, data, escape, false)
+            } }));
+    }
+    static destroy(element) {
+        var _a;
+        (_a = element.tomselect) === null || _a === void 0 ? void 0 : _a.destroy();
+    }
+    static setValue(element, value) {
+        const tomSelect = this.initialize(element);
+        tomSelect.setValue(value);
+    }
+    static clear(element) {
+        const tomSelect = this.initialize(element);
+        tomSelect.clear();
+    }
+    static renderOption(element, data, escape, isDropdownItem) {
+        const option = element instanceof HTMLSelectElement
+            ? [...element.options].find(item => item.value === data.value)
+            : undefined;
+        const content = option === null || option === void 0 ? void 0 : option.dataset.content;
+        const cssClass = isDropdownItem ? 'ts-option-content' : String();
+        const itemContent = content !== null && content !== void 0 ? content : escape(data.text);
+        return `<div class="${cssClass}">${itemContent}</div>`;
     }
 }
 class TooltipHelper {

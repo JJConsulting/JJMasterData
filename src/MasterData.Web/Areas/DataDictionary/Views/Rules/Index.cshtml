@@ -66,7 +66,7 @@
     function searchRules(oDom) {
         const value = $(oDom).val().toLowerCase();
         $("#rule-list a").filter(function () {
-            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const textValues = $(this).clone().find('.ts-wrapper, .tom-select, select').remove().end().text();
             const isSearch = textValues.toLowerCase().indexOf(value) > -1;
             $(this).toggle(isSearch);
         });

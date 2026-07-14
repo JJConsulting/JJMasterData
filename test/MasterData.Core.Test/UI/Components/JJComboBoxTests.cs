@@ -13,7 +13,7 @@ namespace JJMasterData.Core.Test.UI.Components;
 public class JJComboBoxTests
 {
     [Fact]
-    public async Task Selectpicker_Uses_FirstOption_Text_As_NoneSelectedText()
+    public async Task Combo_Uses_FirstOption_Text_As_Placeholder()
     {
         var comboBox = new JJComboBox(
             new Mock<IHttpContextAccessor>().Object,
@@ -35,7 +35,8 @@ public class JJComboBoxTests
 
         var result = await comboBox.GetResultAsync();
 
-        Assert.Contains("data-none-selected-text=\"(Choose)\"", result.Content);
+        Assert.Contains("class=\"form-control form-select tom-select\"", result.Content);
+        Assert.Contains("data-placeholder=\"(Choose)\"", result.Content);
         Assert.Contains("<option value=\"\" disabled=\"disabled\">(Choose)</option>", result.Content);
         Assert.DoesNotContain("title=\"", result.Content);
     }

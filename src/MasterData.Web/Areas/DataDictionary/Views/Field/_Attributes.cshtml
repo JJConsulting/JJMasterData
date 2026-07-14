@@ -88,9 +88,7 @@
         );
         <div class="col-sm-4">
             <label for="@FormElementField.DefaultFormatAttribute" class="form-label">@StringLocalizer["Default Format"]</label>
-            <select class="selectpicker form-control form-select"
-                    data-live-search="true"
-                    data-style-base="form-select form-dropdown"
+            <select class="tom-select form-control form-select"
                     id="@FormElementField.DefaultFormatAttribute"
                     name="@FormElementField.DefaultFormatAttribute"
                     >
@@ -99,7 +97,7 @@
                     bool selected = countryInfo == countrySelected;
                     <option selected="@selected" value="@countryInfo.Code" data-content="
                     <span class='fi fi-@countryInfo.Code.ToLower()'></span><span>&nbsp;@($"{countryInfo.Name} - {countryInfo.Code}")</span>
-                "></option>
+                ">@($"{countryInfo.Name} - {countryInfo.Code}")</option>
                 }
             </select>
         </div>

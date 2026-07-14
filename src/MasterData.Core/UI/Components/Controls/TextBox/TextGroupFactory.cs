@@ -243,7 +243,9 @@ public sealed class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 if (pageState == PageState.Filter && isMultiFilter)
                 {
-                    textGroup.Attributes.Add("data-role", "tagsinput");
+                    cssClassList.Add("tom-select");
+                    cssClassList.Add("tom-select-tags");
+                    textGroup.Attributes.Add("data-tom-select-tags", "true");
                     textGroup.MaxLength = 0;
                 }
                 break;
