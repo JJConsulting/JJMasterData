@@ -13,6 +13,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
 		<PackageReference Include="Microsoft.Data.SqlClient" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />

@@ -37,7 +37,7 @@ public class LookupController(
             return actionResult;
         
         LookupFormViewHtml = result.HtmlContent;
-        EncryptedLookupParameters = encryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString());
+        EncryptedLookupParameters = encryptionService.EncryptString(lookupParameters.ToQueryString());
         
         return View();
     }

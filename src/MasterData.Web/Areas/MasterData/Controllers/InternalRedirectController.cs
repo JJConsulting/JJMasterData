@@ -200,7 +200,7 @@ public class InternalRedirectController(
             RelationshipType = RelationshipViewType.List
         };
 
-        var @params = HttpUtility.ParseQueryString(encryptionService.DecryptStringWithUrlUnescape(parameters));
+        var @params = HttpUtility.ParseQueryString(encryptionService.DecryptString(parameters));
         state.ElementName = @params.Get("formname");
 
 
@@ -275,7 +275,7 @@ public class InternalRedirectController(
 
         foreach (var encryptedPk in selectedRows.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            var decryptedPk = encryptionService.DecryptStringWithUrlUnescape(encryptedPk);
+            var decryptedPk = encryptionService.DecryptString(encryptedPk);
             selectedValues.Add(decryptedPk);
         }
 

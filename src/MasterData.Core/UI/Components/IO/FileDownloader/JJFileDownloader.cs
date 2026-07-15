@@ -37,7 +37,7 @@ public class JJFileDownloader(
         if (string.IsNullOrEmpty(token))
             throw new JJMasterDataException("Invalid file token.");
         
-        FullPath = encryptionService.DecryptStringWithUrlUnescape(token);
+        FullPath = encryptionService.DecryptString(token);
 
         return await GetDirectDownloadResultAsync();
     }
@@ -52,7 +52,7 @@ public class JJFileDownloader(
         var routeContext = new RouteContext(ComponentContext.DownloadFile);
 
         query["routeContext"] = encryptionService.EncryptObject(routeContext);
-        query[FileTokenParameter] = encryptionService.EncryptStringWithUrlEscape(FullPath);
+        query[FileTokenParameter] = encryptionService.EncryptString(FullPath);
 
         uriBuilder.Query = query.ToString()!;
 

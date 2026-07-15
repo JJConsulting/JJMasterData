@@ -1106,7 +1106,7 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(currentRowValue))
             return values;
 
-        var decriptId = EncryptionService.DecryptStringWithUrlUnescape(currentRowValue);
+        var decriptId = EncryptionService.DecryptString(currentRowValue);
         var @params = HttpUtility.ParseQueryString(decriptId);
 
         foreach (string key in @params)
@@ -1315,7 +1315,7 @@ public class JJGridView : AsyncComponent
         foreach (var pk in pkList)
         {
             var values = new Dictionary<string, object>();
-            var descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
+            var descriptval = EncryptionService.DecryptString(pk);
             string[] ids = descriptval.Split(';');
             for (var i = 0; i < pkFields.Count; i++)
             {
@@ -1353,7 +1353,7 @@ public class JJGridView : AsyncComponent
                 selectedKeys.Append(',');
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            selectedKeys.Append((string?)EncryptionService.EncryptStringWithUrlEscape(values));
+            selectedKeys.Append((string?)EncryptionService.EncryptString(values));
         }
 
         return selectedKeys.ToString();

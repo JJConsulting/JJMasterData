@@ -18,7 +18,6 @@ You can replace the appsettings.json url from [here]((https://raw.githubusercont
 {
   "AllowedHosts": "*",
   "JJMasterData": {
-    "SecretKey": "My secret key for cryptography",
     "ConnectionString": "data source=localhost,1433;initial catalog=JJMasterData;Integrated Security=True"
   }
 }

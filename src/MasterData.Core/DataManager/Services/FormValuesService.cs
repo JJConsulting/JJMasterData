@@ -222,7 +222,7 @@ public class FormValuesService(
         if (string.IsNullOrEmpty(encryptedPkValues))
             return new Dictionary<string, object?>();
 
-        var pkValues = encryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
+        var pkValues = encryptionService.DecryptString(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
         var result = await entityRepository.GetFieldsAsync(element, filters);

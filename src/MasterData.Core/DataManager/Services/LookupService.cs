@@ -23,7 +23,7 @@ public class LookupService(
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
-            encryptionService.EncryptStringWithUrlEscape(
+            encryptionService.EncryptString(
                 lookupParameters.ToQueryString(expressionsService, formStateData));
 
         return urlHelper.Action("Index", "Lookup",

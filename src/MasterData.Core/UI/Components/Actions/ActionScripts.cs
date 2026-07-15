@@ -64,7 +64,7 @@ public class ActionScripts(
             new
             {
                 Area = "MasterData",
-                parameters = encryptionService.EncryptStringWithUrlEscape(@params.ToString())
+                parameters = encryptionService.EncryptString(@params.ToString())
             });
 
         return

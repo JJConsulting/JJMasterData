@@ -50,15 +50,14 @@ https://github.com/JJConsulting/JJMasterData/assets/28662273/9b874c9d-2a2f-4d3b-
 ```shell
 dotnet add package JJMasterData.Web
 ```
-3. Configure your `IConfiguration` source with a connection string at `JJMasterData:ConnectionString` and a secret key at `JJMasterData:SecretKey`
+3. Configure your `IConfiguration` source with a connection string at `JJMasterData:ConnectionString`
 ```json
 {
   "JJMasterData": {
     "DataDictionaryTableName": "MasterData",
     "ConnectionString": "Server=localhost;Database=JJMasterData;Integrated Security=True;Trust Server Certificate=true",
     "ReadProcedurePattern": "{tablename}Get",
-    "WriteProcedurePattern": "{tablename}Set",
-    "SecretKey": "ExampleSecretKey"
+    "WriteProcedurePattern": "{tablename}Set"
   }
 }
 ```

@@ -509,7 +509,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         var checkBox = new JJCheckBox(gridView.CurrentContext, gridView.StringLocalizer)
         {
             Name = $"jjchk_{index}",
-            Value = gridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),
+            Value = gridView.EncryptionService.EncryptString(pkValues),
             Text = string.Empty,
             Attributes =
             {

@@ -90,12 +90,6 @@
             "string",
             "null"
           ]
-        },
-        "SecretKey": {
-          "type": [
-            "string",
-            "null"
-          ]
         }
       },
       "required": [
@@ -111,8 +105,7 @@
         "ConnectionProvider",
         "LocalizationTableName",
         "ReadProcedurePattern",
-        "WriteProcedurePattern",
-        "SecretKey"
+        "WriteProcedurePattern"
       ]
     }
   }

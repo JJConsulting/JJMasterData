@@ -294,7 +294,7 @@ public class JJDataPanel(
     private string GetPkHiddenInput()
     {
         var pkValues = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return EncryptionService.EncryptStringWithUrlEscape(pkValues);
+        return EncryptionService.EncryptString(pkValues);
     }
 
     private string GetHtmlFormScript()

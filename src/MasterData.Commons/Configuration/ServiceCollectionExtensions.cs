@@ -56,12 +56,12 @@ public static class ServiceCollectionExtensions
                 .BindConfiguration("JJMasterData")
                 .Validate(o => !string.IsNullOrEmpty(o.ConnectionString),
                     "Connection string is required at JJMasterData:ConnectionString at your configuration source.")
-                .Validate(o => !string.IsNullOrEmpty(o.SecretKey),
-                    "Secret key is required at JJMasterData:SecretKey at your configuration source.")
                 .ValidateOnStart();
         
             services.TryAddScoped<DataAccess>();
 
+            services.AddDataProtection(); 
+            
             services.AddOptions<SqlServerOptions>().BindConfiguration("JJMasterData");
             
             services.TryAddTransient<SqlServerReadProcedureScripts>();
@@ -71,8 +71,7 @@ public static class ServiceCollectionExtensions
             services.TryAddTransient<IEntityProvider, SqlServerProvider>();
             services.TryAddTransient<IEntityRepository, EntityRepository>();
             services.TryAddTransient<IConnectionRepository, ConnectionRepository>();
-        
-            services.TryAddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
+            
             services.TryAddTransient<IEncryptionService, EncryptionService>();
             
             services.TryAddTransient<RelativeDateFormatter>();

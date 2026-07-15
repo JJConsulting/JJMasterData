@@ -45,12 +45,6 @@ public sealed class MasterDataCommonsOptions
     [Display(Name = "Write Procedure Pattern")]
     public string WriteProcedurePattern { get; set; } = "{tablename}Set";
 
-    /// <summary>
-    /// Secret key used at JJMasterDataEncryptionService
-    /// </summary>
-    [Display(Name = "Cryptography Secret Key")]
-    public string? SecretKey { get; set; }
-
     internal ConnectionString GetConnectionString(Guid? guid)
     {
         if (guid is null)

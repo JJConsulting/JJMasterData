@@ -86,7 +86,7 @@ public class JJUploadViewTests
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
         var encryptionService = new Mock<IEncryptionService>();
         encryptionService
-            .Setup(service => service.EncryptString(It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(service => service.EncryptString(It.IsAny<string>()))
             .Returns((string value, string _) => value);
 
         var uploadAreaFactory = new UploadAreaFactory(

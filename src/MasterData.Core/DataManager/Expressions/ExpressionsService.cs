@@ -56,7 +56,7 @@ public class ExpressionsService(
 
         foreach (var key in keysToUpdate)
         {
-            parsedValues[key] = encryptionService.EncryptStringWithUrlEscape(parsedValues[key]!.ToString()!);
+            parsedValues[key] = encryptionService.EncryptString(parsedValues[key]!.ToString()!);
         }
     }
 

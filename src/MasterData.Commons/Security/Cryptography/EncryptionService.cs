@@ -1,27 +1,35 @@
 #nullable enable
-using JJMasterData.Commons.Configuration.Options;
+
+using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace JJMasterData.Commons.Security.Cryptography;
 
-/// <summary>
-/// Wrapper to IEncryptionService with the secret key loaded by IOptions.
-/// </summary>
-public class EncryptionService(
-    IEncryptionAlgorithm encryptionAlgorithm,
-    IOptionsSnapshot<MasterDataCommonsOptions> options)
-    : IEncryptionService
+internal sealed class EncryptionService : IEncryptionService
 {
-    private readonly string _secretKey = options.Value.SecretKey!;
+    private const string Purpose = "JJMasterData.Commons.Security.Cryptography.EncryptionService";
 
-    public string EncryptString(string plainText, string? secretKey = null)
+    private readonly IDataProtector _protector;
+
+    public EncryptionService(IDataProtectionProvider dataProtectionProvider)
     {
-        return encryptionAlgorithm.EncryptString(plainText,secretKey ??_secretKey);
+        ArgumentNullException.ThrowIfNull(dataProtectionProvider);
+
+        _protector = dataProtectionProvider.CreateProtector(Purpose);
     }
 
-    public string DecryptString(string cipherText, string? secretKey = null)
+    public string EncryptString(string plainText)
     {
-        return encryptionAlgorithm.DecryptString(cipherText,secretKey ?? _secretKey);
+        ArgumentNullException.ThrowIfNull(plainText);
+
+        return _protector.Protect(plainText);
+    }
+
+    public string DecryptString(string cipherText)
+    {
+        ArgumentNullException.ThrowIfNull(cipherText);
+
+        return _protector.Unprotect(cipherText);
     }
 }
