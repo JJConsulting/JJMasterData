@@ -663,8 +663,11 @@
   min-width: 0;
 }
 .input-group > .ts-wrapper.w-auto {
-  flex: 0 0 auto;
-  width: auto !important;
+  // .form-select gives the wrapper width: 100%. An auto flex-basis then uses
+  // that full width and pushes the following input onto a new row.
+  flex: 0 1 max-content;
+  width: max-content !important;
+  max-width: 50%;
 }
 .input-group > .ts-wrapper.jj-phone-select,
 .input-group > .ts-wrapper.jj-icon-select,
