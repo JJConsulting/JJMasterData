@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace JJMasterData.Commons.Storage;
+namespace JJConsulting.MasterData.Abstractions;
 
 public interface IFileStorage
 {

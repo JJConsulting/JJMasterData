@@ -28,6 +28,7 @@ jobs:
     strategy:
       matrix:
         project:
+          - src/MasterData.Abstractions
           - src/MasterData.Commons
           - src/MasterData.Core
           - src/MasterData.Web

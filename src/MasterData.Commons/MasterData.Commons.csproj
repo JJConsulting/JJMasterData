@@ -36,4 +36,7 @@
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\MasterData.Abstractions\MasterData.Abstractions.csproj" />
+	</ItemGroup>
 </Project>

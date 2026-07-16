@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using JJConsulting.MasterData.Abstractions;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.Configuration;
 
-public class MasterDataServiceBuilder(IServiceCollection services)
+public class MasterDataServiceBuilder(IServiceCollection services) : IMasterDataServiceBuilder
 {
     public IServiceCollection Services { get; } = services;
 
@@ -70,18 +70,6 @@ public class MasterDataServiceBuilder(IServiceCollection services)
     public MasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));
-        return this;
-    }
-    
-    public MasterDataServiceBuilder WithFileStorage(Func<IServiceProvider, IFileStorage> implementationFactory)
-    {
-        Services.Replace(ServiceDescriptor.Singleton(implementationFactory));
-        return this;
-    }
-    
-    public MasterDataServiceBuilder WithFileStorage<T>() where T : IFileStorage
-    {
-        Services.Replace(ServiceDescriptor.Singleton(typeof(IFileStorage),typeof(T)));
         return this;
     }
     

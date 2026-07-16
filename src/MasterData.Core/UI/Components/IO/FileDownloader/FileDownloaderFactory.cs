@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JJConsulting.MasterData.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;

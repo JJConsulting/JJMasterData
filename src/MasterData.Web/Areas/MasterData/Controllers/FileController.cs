@@ -1,3 +1,4 @@
+using JJConsulting.MasterData.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
