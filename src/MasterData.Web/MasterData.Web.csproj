@@ -14,7 +14,7 @@
         <RootNamespace>JJMasterData.Web</RootNamespace>
         <PackageId>JJMasterData.Web</PackageId>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <SassCompilerEnableWatcher>false</SassCompilerEnableWatcher>
+        <EmbeddedSassSilencedDeprecations>import</EmbeddedSassSilencedDeprecations>
         <TypescriptOutDir>wwwroot</TypescriptOutDir>
         <ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
             CompileTypeScript;
@@ -27,13 +27,19 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="AspNetCore.SassCompiler" ReferenceOutputAssembly="false" />
+        <PackageReference Include="EmbeddedSass.Net.MsBuild" PrivateAssets="all" />
         <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="JJConsulting.Html.Bootstrap.TagHelpers" />
         <PackageReference Include="Microsoft.TypeScript.MSBuild">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedSass Include="Styles/jjmasterdata.scss">
+            <OutputPath>wwwroot/css/jjmasterdata/jjmasterdata.css</OutputPath>
+        </EmbeddedSass>
     </ItemGroup>
     
     <ItemGroup>
