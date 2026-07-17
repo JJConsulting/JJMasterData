@@ -160,6 +160,9 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
             await parentFormView.ComponentFactory.FormView.CreateAsync(relationship.ElementRelationship!
                 .ChildElement);
         childFormView.FormElement.ParentName = parentFormView.FormElement.ParentName ?? parentFormView.FormElement.Name;
+        
+        if (parentFormView.CurrentAction is not null)
+            childFormView.CurrentActionMap = null;
 
         var filter = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var col in relationship.ElementRelationship.Columns.Where(col =>

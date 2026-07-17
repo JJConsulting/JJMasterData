@@ -752,9 +752,9 @@ public class JJFormView : AsyncComponent
             GridSaveAction => await GetGridSaveActionResult(),
             BackAction => await GetBackActionResult(),
             CancelAction => await GetCancelActionResult(),
-            SqlCommandAction => await GetSqlCommandActionResult(),
-            HtmlTemplateAction => await GetHtmlTemplateActionResult(),
-            PluginAction => await GetPluginActionResult(),
+            SqlCommandAction sqlCommandAction => await GetSqlCommandActionResult(sqlCommandAction),
+            HtmlTemplateAction htmlTemplateAction => await GetHtmlTemplateActionResult(htmlTemplateAction),
+            PluginAction pluginAction => await GetPluginActionResult(pluginAction),
             _ => await GetDefaultResult()
         };
 
@@ -793,10 +793,8 @@ public class JJFormView : AsyncComponent
         }
     }
 
-    private async Task<ComponentResult> GetHtmlTemplateActionResult()
+    private async Task<ComponentResult> GetHtmlTemplateActionResult(HtmlTemplateAction htmlTemplateAction)
     {
-        var htmlTemplateAction = (HtmlTemplateAction)CurrentAction!;
-
         var html = await _htmlTemplateService.RenderTemplate(
             htmlTemplateAction,
             FormElement.ConnectionId,
@@ -805,13 +803,9 @@ public class JJFormView : AsyncComponent
         return new ContentComponentResult(html);
     }
 
-    private async Task<ComponentResult> GetSqlCommandActionResult()
+    private async Task<ComponentResult> GetSqlCommandActionResult(SqlCommandAction sqlAction)
     {
         JJMessageBox? messageBox = null;
-        var sqlAction = CurrentActionMap?.GetAction<SqlCommandAction>(FormElement);
-
-        if (sqlAction is null)
-            throw new JJMasterDataException("Action not found at your FormElement");
 
         var formStateData = await GetFormStateDataAsync();
         var parsedValues = ExpressionsService.ParseExpression(sqlAction.SqlCommand, formStateData);
@@ -829,7 +823,7 @@ public class JJFormView : AsyncComponent
         }
 
         //When the action is from the form toolbar
-        if (CurrentAction!.Location is not null)
+        if (sqlAction.Location is not null)
             DataPanel.Values = await EntityRepository.GetFieldsAsync(FormElement, CurrentActionMap!.PkFieldValues);
 
         if (messageBox is null)
@@ -852,22 +846,23 @@ public class JJFormView : AsyncComponent
         return result;
     }
 
-    private async Task<ComponentResult> GetPluginActionResult()
+    private async Task<ComponentResult> GetPluginActionResult(PluginAction pluginAction)
     {
-        var currentAction = (PluginAction)CurrentAction!;
-        var formStateData = await GetFormStateDataAsync(currentAction is PluginFieldAction);
+        var formStateData = await GetFormStateDataAsync(pluginAction is PluginFieldAction);
 
         PluginActionResult result;
 
         try
         {
-            result = await GetPluginActionResult(currentAction, formStateData, CurrentActionMap!.FieldName);
+            result = await GetPluginActionResult(pluginAction, formStateData, CurrentActionMap!.FieldName);
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Error while executing Plugin Action.");
             result = PluginActionResult.Error(Localizer["Error"], exception.Message);
         }
+
+        CurrentActionMap = null;
 
         var formResult = await GetDefaultResult(formStateData.Values);
 
@@ -1032,7 +1027,7 @@ public class JJFormView : AsyncComponent
         {
             case PageState.Insert:
             {
-                return await GetInsertResult(formValues);
+                return await GetInsertResult(formValues: formValues);
             }
             case PageState.Update or PageState.View:
             {
