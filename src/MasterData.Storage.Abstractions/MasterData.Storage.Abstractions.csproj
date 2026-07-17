@@ -8,9 +8,16 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Product>JJMasterData.Abstractions</Product>
-        <Description>JJMasterData abstractions.</Description>
+        <Product>JJMasterData Storage Abstractions</Product>
+        <Title>JJMasterData Storage Abstractions</Title>
+        <PackageId>JJConsulting.MasterData.Storage.Abstractions</PackageId>
+        <Authors>JJConsulting</Authors>
+        <Description>Storage contracts and models for implementing pluggable file storage providers in JJMasterData applications.</Description>
+        <PackageTags>jjmasterdata;storage;file-storage;abstractions;dependency-injection</PackageTags>
+        <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <RootNamespace>JJConsulting.MasterData.Storage.Abstractions</RootNamespace>
         <AssemblyName>JJConsulting.MasterData.Storage.Abstractions</AssemblyName>
     </PropertyGroup>
