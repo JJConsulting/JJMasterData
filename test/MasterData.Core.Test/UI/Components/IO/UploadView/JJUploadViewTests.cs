@@ -1,5 +1,5 @@
 using System.Text;
-using JJConsulting.MasterData.Abstractions;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;

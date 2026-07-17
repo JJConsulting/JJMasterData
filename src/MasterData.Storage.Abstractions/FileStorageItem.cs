@@ -1,4 +1,4 @@
-namespace JJConsulting.MasterData.Abstractions;
+namespace JJConsulting.MasterData.Storage.Abstractions;
 
 public sealed class FileStorageItem
 {

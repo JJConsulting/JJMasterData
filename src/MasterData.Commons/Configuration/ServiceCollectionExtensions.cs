@@ -1,5 +1,5 @@
 using System;
-using JJConsulting.MasterData.Abstractions;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Providers;

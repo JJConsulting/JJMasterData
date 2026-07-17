@@ -37,6 +37,6 @@
 	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\MasterData.Abstractions\MasterData.Abstractions.csproj" />
+	  <ProjectReference Include="..\MasterData.Storage.Abstractions\MasterData.Storage.Abstractions.csproj" />
 	</ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System;
-using JJConsulting.MasterData.Abstractions;
-using JJMasterData.Commons.Storage;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;

@@ -1,12 +1,14 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JJConsulting.MasterData.Abstractions;
+using JJConsulting.MasterData.Storage.Abstractions;
 
 namespace JJMasterData.Commons.Storage;
 
+[SuppressMessage("Performance", "CA1822:Marcar membros como estáticos")]
 internal sealed class DiskFileStorage : IFileStorage
 {
     public async Task SaveAsync(string fullPath, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)

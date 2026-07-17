@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using JJConsulting.MasterData.Abstractions;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Providers;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.Configuration;
 
-public class MasterDataServiceBuilder(IServiceCollection services) : IMasterDataServiceBuilder
+public class MasterDataServiceBuilder(IServiceCollection services) 
 {
     public IServiceCollection Services { get; } = services;
 

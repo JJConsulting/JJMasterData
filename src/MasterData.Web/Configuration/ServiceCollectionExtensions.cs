@@ -6,9 +6,7 @@ using JJMasterData.Web.Configuration.Options;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Utils;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

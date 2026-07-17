@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using JJConsulting.MasterData.Abstractions;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;

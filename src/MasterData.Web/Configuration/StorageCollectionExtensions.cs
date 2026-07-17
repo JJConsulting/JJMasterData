@@ -1,19 +1,21 @@
+using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace JJConsulting.MasterData.Abstractions;
+namespace JJMasterData.Web.Configuration;
 
 public static class MasterDataServiceCollectionExtensions
 {
-    extension(IMasterDataServiceBuilder builder)
+    extension(MasterDataServiceBuilder builder)
     {
-        public IMasterDataServiceBuilder WithFileStorage(Func<IServiceProvider, IFileStorage> implementationFactory)
+        public MasterDataServiceBuilder WithFileStorage(Func<IServiceProvider, IFileStorage> implementationFactory)
         {
             builder.Services.Replace(ServiceDescriptor.Singleton(implementationFactory));
             return builder;
         }
     
-        public IMasterDataServiceBuilder WithFileStorage<T>() where T : IFileStorage
+        public MasterDataServiceBuilder WithFileStorage<T>() where T : IFileStorage
         {
             builder.Services.Replace(ServiceDescriptor.Singleton(typeof(IFileStorage),typeof(T)));
             return builder;

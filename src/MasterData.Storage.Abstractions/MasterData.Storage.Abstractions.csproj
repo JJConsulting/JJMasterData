@@ -11,8 +11,8 @@
         <Product>JJMasterData.Abstractions</Product>
         <Description>JJMasterData abstractions.</Description>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
-        <RootNamespace>JJConsulting.MasterData.Abstractions</RootNamespace>
-        <AssemblyName>JJConsulting.MasterData.Abstractions</AssemblyName>
+        <RootNamespace>JJConsulting.MasterData.Storage.Abstractions</RootNamespace>
+        <AssemblyName>JJConsulting.MasterData.Storage.Abstractions</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
