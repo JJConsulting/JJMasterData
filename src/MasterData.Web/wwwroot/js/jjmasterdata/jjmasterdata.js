@@ -1227,6 +1227,7 @@ class GridViewFilterHelper {
                     success: (content) => {
                         HTMLHelper.setOuterHTML(filterPanelName, content);
                         listenAllEvents("#" + filterPanelName);
+                        document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
                         GridViewHelper.refreshGrid(componentName, routeContext);
                         document.getElementById(componentName + "-filter-icon").classList.add("d-none");
                     }
