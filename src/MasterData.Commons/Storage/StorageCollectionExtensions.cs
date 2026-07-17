@@ -1,9 +1,10 @@
+using System;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace JJMasterData.Web.Configuration;
+namespace JJMasterData.Commons.Storage;
 
 public static class MasterDataServiceCollectionExtensions
 {
