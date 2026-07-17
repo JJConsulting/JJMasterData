@@ -4,7 +4,7 @@
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
 		<VersionPrefix>5.0.0</VersionPrefix>
-		<PreviewNumber>13</PreviewNumber>
+		<PreviewNumber>14</PreviewNumber>
 		<PreviewVersionSuffix>preview$(PreviewNumber)</PreviewVersionSuffix>
 		<Version>$(VersionPrefix)</Version>
 		<Version Condition="'$(VersionSuffix)' != ''">$(VersionPrefix)-$(VersionSuffix)</Version>
