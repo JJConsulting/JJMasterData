@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="EmbeddedSass.Net.MsBuild" Version="1.0.2" />
+    <PackageVersion Include="EmbeddedSass.Net.MsBuild" Version="1.1.0" />
     <PackageVersion Include="Fluid.Core" Version="2.31.0" />
     <PackageVersion Include="Hangfire.Console" Version="1.4.3" />
     <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
