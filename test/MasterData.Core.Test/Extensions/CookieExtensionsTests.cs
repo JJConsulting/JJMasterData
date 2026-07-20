@@ -49,6 +49,37 @@ public class CookieExtensionsTests
     }
 
     [Fact]
+    public void SetGridFilterCookie_UsesApplicationPath()
+    {
+        var context = CreateHttpContext("user-1");
+        context.Request.PathBase = "/app";
+        context.Request.Path = "/customers/filter";
+
+        context.SetGridFilterCookie("Customers", new Dictionary<string, object>
+        {
+            ["Name"] = "Alice"
+        });
+
+        Assert.Contains("path=/app", context.Response.Headers.SetCookie.ToString(),
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void SetGridFilterCookie_WithoutApplicationPath_UsesRootPath()
+    {
+        var context = CreateHttpContext("user-1");
+        context.Request.Path = "/customers/filter";
+
+        context.SetGridFilterCookie("Customers", new Dictionary<string, object>
+        {
+            ["Name"] = "Alice"
+        });
+
+        Assert.Contains("path=/", context.Response.Headers.SetCookie.ToString(),
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void GetGridFilterCookie_TamperedPayload_ReturnsNull()
     {
         var writeContext = CreateHttpContext("user-1");
