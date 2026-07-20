@@ -15,7 +15,7 @@ public sealed class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExp
     public string Title => "Value";
     public object Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
-        if (expression.Contains(ExpressionHelper.Begin.ToString()))
+        if (expression.Contains(ExpressionHelper.Begin))
             return ExpressionHelper.ReplaceExpression(expression, parsedValues).Trim();
 
         return expression.Trim();
