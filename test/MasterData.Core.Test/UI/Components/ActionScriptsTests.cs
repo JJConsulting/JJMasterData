@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -12,6 +13,7 @@ using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Reflection;
 
@@ -67,9 +69,13 @@ public class ActionScriptsTests
         var urlRedirectService = new UrlRedirectService(
             CreateHttpContextAccessor(),
             Mock.Of<IEntityRepository>(),
+            CreateStringLocalizer(),
             null!,
-            null!,
-            expressionsService);
+            expressionsService,
+            new HmacHelper(Options.Create(new HmacOptions
+            {
+                SecretKey = "unit-test-secret"
+            })));
 
         return new ActionScripts(
             expressionsService,

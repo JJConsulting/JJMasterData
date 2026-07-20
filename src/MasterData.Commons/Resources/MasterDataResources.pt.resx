@@ -4271,6 +4271,10 @@
     <value>Abrir em uma Nova Aba</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Sign Parameters with HMAC" xml:space="preserve">
+    <value>Assinar Parâmetros com HMAC</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Do you want to recreate the read procedure? Any changes made to the procedure will be lost." xml:space="preserve">
     <value>Deseja recriar a procedure de leitura? Quaisquer modificações feitas na procedure serão perdidas.</value>
   </data>

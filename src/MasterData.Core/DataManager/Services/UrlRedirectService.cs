@@ -1,13 +1,17 @@
 ﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -18,7 +22,8 @@ public class UrlRedirectService(
     IEntityRepository entityRepository,
     IStringLocalizer<MasterDataResources> localizer,
     FormValuesService formValuesService,
-    ExpressionsService expressionsService)
+    ExpressionsService expressionsService,
+    HmacHelper hmacHelper)
 {
     public async Task<JsonComponentResult> GetUrlRedirectResult(
         JJDataPanel dataPanel,
@@ -84,7 +89,45 @@ public class UrlRedirectService(
         
         var decodedUrl = HttpUtility.UrlDecode(action.UrlRedirect);
         
-        return expressionsService.ReplaceExpressionWithParsedValues(decodedUrl, formStateDataCopy, action.EncryptParameters);
+        var parsedUrl = expressionsService.ReplaceExpressionWithParsedValues(
+            decodedUrl,
+            formStateDataCopy,
+            action.EncryptParameters) ?? string.Empty;
+
+        return action.SignParametersWithHmac ? SignUrlParameters(parsedUrl) : parsedUrl;
+    }
+
+    private string SignUrlParameters(string url)
+    {
+        var fragmentIndex = url.IndexOf('#');
+        var fragment = fragmentIndex >= 0 ? url[fragmentIndex..] : string.Empty;
+        var urlWithoutFragment = fragmentIndex >= 0 ? url[..fragmentIndex] : url;
+        var questionMarkIndex = urlWithoutFragment.IndexOf('?');
+
+        if (questionMarkIndex < 0)
+            return url;
+
+        var urlPath = urlWithoutFragment[..questionMarkIndex];
+        var pathToSign = Uri.TryCreate(urlPath, UriKind.Absolute, out var absoluteUri)
+            ? absoluteUri.AbsolutePath
+            : urlPath;
+        var queryPairs = QueryHelpers.ParseQuery(urlWithoutFragment[questionMarkIndex..])
+            .Where(pair => !pair.Key.Equals("signature", StringComparison.OrdinalIgnoreCase))
+            .SelectMany(pair => pair.Value.Select(value => new KeyValuePair<string, string?>(pair.Key, value)))
+            .OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(pair => pair.Value, StringComparer.Ordinal)
+            .ToList();
+
+        if (queryPairs.Count == 0)
+            return url;
+
+        var content = QueryHelpers.AddQueryString(pathToSign, queryPairs);
+        var signature = hmacHelper.Generate(content);
+        var signedUrl = QueryHelpers.AddQueryString(
+            urlPath,
+            queryPairs.Append(new KeyValuePair<string, string?>("signature", signature)));
+
+        return $"{signedUrl}{fragment}";
     }
 
     public string GetParsedModalTitle(UrlRedirectAction action, FormStateData formStateData)

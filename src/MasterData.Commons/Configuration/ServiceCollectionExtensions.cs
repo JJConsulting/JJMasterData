@@ -7,6 +7,7 @@ using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
@@ -58,7 +59,17 @@ public static class ServiceCollectionExtensions
                 .Validate(o => !string.IsNullOrEmpty(o.ConnectionString),
                     "Connection string is required at JJMasterData:ConnectionString at your configuration source.")
                 .ValidateOnStart();
-        
+
+            services.TryAddTransient<HmacHelper>();
+            
+            services.AddOptions<HmacOptions>()
+                .BindConfiguration("HmacOptions")
+                .Configure<IConfiguration>((options, configuration) =>
+                {
+                    if (string.IsNullOrWhiteSpace(options.SecretKey))
+                        options.SecretKey = configuration["JJMasterData:SecretKey"] ?? string.Empty;
+                });
+            
             services.TryAddScoped<DataAccess>();
 
             services.AddDataProtection(); 
