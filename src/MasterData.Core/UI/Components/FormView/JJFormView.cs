@@ -1113,8 +1113,9 @@ public class JJFormView : AsyncComponent
         if (_insertSelectionFormView != null)
             return _insertSelectionFormView;
 
-        _insertSelectionFormView =
-            await ComponentFactory.FormView.CreateAsync(GridView.InsertAction.ElementNameToSelect);
+        var elementNameToSelect = GridView.InsertAction.ElementNameToSelect ?? throw new JJMasterDataException("Element name to select cannot be null.");
+        
+        _insertSelectionFormView = await ComponentFactory.FormView.CreateAsync(elementNameToSelect);
         _insertSelectionFormView.FormElement.ParentName = FormElement.Name;
         _insertSelectionFormView.UserValues = UserValues;
         _insertSelectionFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
@@ -1142,7 +1143,7 @@ public class JJFormView : AsyncComponent
         var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]!);
         var html = new HtmlBuilder(HtmlTag.Div);
 
-        var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
+        var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect ?? throw new JJMasterDataException("Element name to select cannot be null.");
         var childElement = await _dataDictionaryRepository.GetFormElementAsync(childElementName);
 
         var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
