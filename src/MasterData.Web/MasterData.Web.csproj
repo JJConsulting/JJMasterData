@@ -41,6 +41,13 @@
             <OutputPath>wwwroot/css/jjmasterdata/jjmasterdata.css</OutputPath>
         </EmbeddedSass>
     </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedSass Include="Styles/jjmasterdata.scss">
+            <!-- Backward compatibility  -->
+            <OutputPath>wwwroot/_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css</OutputPath>
+        </EmbeddedSass>
+    </ItemGroup>
     
     <ItemGroup>
         <ProjectReference Include="..\MasterData.Core\MasterData.Core.csproj" />

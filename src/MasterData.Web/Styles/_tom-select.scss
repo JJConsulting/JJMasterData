@@ -695,5 +695,5 @@
 }
 
 .ts-wrapper.multi.disabled .ts-control .item {
-  background-color: var(--phoenix-tertiary-bg) !important;
+  background-color: var(--#{$prefix}tertiary-bg) !important;
 }
