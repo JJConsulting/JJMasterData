@@ -10,6 +10,7 @@ using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 
@@ -159,6 +160,11 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
             await parentFormView.ComponentFactory.FormView.CreateAsync(relationship.ElementRelationship!
                 .ChildElement);
         childFormView.FormElement.ParentName = parentFormView.FormElement.ParentName ?? parentFormView.FormElement.Name;
+
+
+        //Previne bug do Bola qndo a ação é um plugin sendo executado (setorcacao)
+        if (parentFormView.CurrentAction is PluginAction)
+            childFormView.CurrentActionMap = null;
 
         var filter = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
