@@ -105,8 +105,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ComponentFileLinkProvider>();
         services.AddScoped<IFileUrlProvider>(serviceProvider =>
             serviceProvider.GetRequiredService<ComponentFileLinkProvider>());
-        services.AddScoped<IExportFileLinkProvider>(serviceProvider =>
-            serviceProvider.GetRequiredService<ComponentFileLinkProvider>());
         services.AddActionFilters();
         services.AddHttpServices();
         services.AddActionServices();

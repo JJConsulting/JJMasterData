@@ -10,6 +10,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
@@ -23,13 +24,13 @@ public class TextWriter(
     ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
-        IExportFileLinkProvider fileLinkProvider,
+        IFileUrlProvider fileUrlProvider,
         ILoggerFactory logger,
         IEntityRepository entityRepository)
     : DataExportationWriterBase(expressionsService,
         stringLocalizer,
         options,
-        fileLinkProvider,
+        fileUrlProvider,
         logger.CreateLogger<DataExportationWriterBase>()), ITextWriter
 {
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;

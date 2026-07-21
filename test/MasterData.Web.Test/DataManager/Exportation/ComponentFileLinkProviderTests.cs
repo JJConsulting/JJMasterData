@@ -11,7 +11,7 @@ namespace JJMasterData.Web.Test.DataManager.Exportation;
 public class ComponentFileLinkProviderTests
 {
     [Fact]
-    public void GetLink_ShouldUseCurrentComponentUrl()
+    public void GetFileUrl_ShouldUseCurrentComponentUrl()
     {
         var context = new DefaultHttpContext();
         context.Request.Scheme = "https";
@@ -32,7 +32,7 @@ public class ComponentFileLinkProviderTests
         var provider = new ComponentFileLinkProvider(downloaderFactory, contextAccessor);
         var formElement = CreateFormElement();
 
-        var link = provider.GetLink(
+        var link = provider.GetFileUrl(
             formElement,
             formElement.Fields["Document"],
             new Dictionary<string, object?> { ["Id"] = 10 },

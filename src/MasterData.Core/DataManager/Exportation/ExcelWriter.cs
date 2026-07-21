@@ -12,6 +12,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
@@ -28,13 +29,13 @@ public class ExcelWriter(
         DataItemService dataItemService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
-        IExportFileLinkProvider fileLinkProvider,
+        IFileUrlProvider fileUrlProvider,
         ILoggerFactory loggerFactory,
         IEntityRepository entityRepository)
     : DataExportationWriterBase(expressionsService,
         stringLocalizer,
         options,
-        fileLinkProvider,
+        fileUrlProvider,
         loggerFactory.CreateLogger<DataExportationWriterBase>()), IExcelWriter
 {
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;

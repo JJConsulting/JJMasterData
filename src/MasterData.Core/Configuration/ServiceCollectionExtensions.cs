@@ -50,7 +50,6 @@ public static class ServiceCollectionExtensions
             services.AddOptions<MasterDataCoreOptions>().BindConfiguration("JJMasterData");
             services.TryAddScoped<IMasterDataRequestContext, EmptyMasterDataRequestContext>();
             services.TryAddScoped<IFileUrlProvider, EmptyFileUrlProvider>();
-            services.TryAddScoped<IExportFileLinkProvider, EmptyExportFileLinkProvider>();
 
             services.AddDataDictionaryServices();
             services.AddDataManagerServices();

@@ -24,6 +24,7 @@ using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
@@ -40,12 +41,12 @@ public class PdfWriter(
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
-        IExportFileLinkProvider fileLinkProvider,
+        IFileUrlProvider fileUrlProvider,
         DataItemService dataItemService,
         ILogger<PdfWriter> logger,
         IEntityRepository entityRepository,
         FieldFormattingService fieldFormattingService)
-    : DataExportationWriterBase(expressionsService, stringLocalizer, options, fileLinkProvider, logger), IPdfWriter
+    : DataExportationWriterBase(expressionsService, stringLocalizer, options, fileUrlProvider, logger), IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;

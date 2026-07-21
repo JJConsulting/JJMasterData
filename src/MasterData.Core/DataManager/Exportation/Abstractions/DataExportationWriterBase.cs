@@ -14,6 +14,7 @@ using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
@@ -29,7 +30,7 @@ public abstract class DataExportationWriterBase(
     ExpressionsService expressionsService,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCoreOptions> options,
-    IExportFileLinkProvider fileLinkProvider,
+    IFileUrlProvider fileUrlProvider,
     ILogger<DataExportationWriterBase> logger)
     : IBackgroundTaskWorker, IExportationWriter
 {
@@ -50,7 +51,7 @@ public abstract class DataExportationWriterBase(
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
 
     internal IFileStorage FileStorage { get; set; }
-    private IExportFileLinkProvider FileLinkProvider { get; } = fileLinkProvider;
+    private IFileUrlProvider FileUrlProvider { get; } = fileUrlProvider;
 
     protected List<FormElementField> VisibleFields
     {
@@ -235,7 +236,7 @@ public abstract class DataExportationWriterBase(
             return null;
 
         var values = row.ToDictionary(item => item.Key, item => (object?)item.Value);
-        return FileLinkProvider.GetLink(formElement, field, values, fileName);
+        return FileUrlProvider.GetFileUrl(formElement, field, values, fileName);
     }
     
     private string GetFileName()
