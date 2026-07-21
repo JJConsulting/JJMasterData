@@ -9,13 +9,14 @@
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
     <LangVersion>12</LangVersion>
     <RootNamespace>JJMasterData.Core.Test</RootNamespace>
-      <RootNamespace>JJMasterData.Core.Test</RootNamespace>
-      <AssemblyName>JJMasterData.Core.Test</AssemblyName>
+    <AssemblyName>JJMasterData.Core.Test</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
   <ItemGroup>

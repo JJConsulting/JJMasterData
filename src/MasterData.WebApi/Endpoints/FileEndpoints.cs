@@ -31,7 +31,8 @@ public static class FileEndpoints
             IFormFile file,
             ElementFileService service) =>
         {
-            await service.SetElementFileAsync(elementName, fieldName, id, file);
+            await using var stream = file.OpenReadStream();
+            await service.SetElementFileAsync(elementName, fieldName, id, file.FileName, stream);
             return Results.Created(
                 $"api/masterdata/{elementName}/{id}/{fieldName}/{file.FileName}/file",
                 "File successfully created.");

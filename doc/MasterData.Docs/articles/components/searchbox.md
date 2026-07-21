@@ -62,4 +62,4 @@ JJSearchBox is a searchable combobox.
 
 ## Customization
 
-You can check all properties from JJSearchBox at <xhref:JJMasterData.Core.UI.Components.JJSearchBox>
+You can check all properties from JJSearchBox at <xhref:JJMasterData.Web.Components.JJSearchBox>

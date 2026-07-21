@@ -14,11 +14,7 @@
         <NoWarn>$(NoWarn);CS9107</NoWarn>
     </PropertyGroup>
     
-    <!--Runtime dependencies-->
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <Using Include="Microsoft.AspNetCore.Mvc" />
-        <Using Include="Microsoft.AspNetCore.Http" />
         <Using Include="JJMasterData.Core.Extensions" />
     </ItemGroup>
     
@@ -39,42 +35,6 @@
         <InternalsVisibleTo Include="JJMasterData.Web" />
     </ItemGroup>
     
-    <ItemGroup>
-      <Compile Update="UI\Components\Widgets\MessageIcon.cs">
-        <DependentUpon>JJMessageBox.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\Widgets\MessageSize.cs">
-        <DependentUpon>JJMessageBox.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\Widgets\NavContent.cs">
-        <DependentUpon>JJTabNav.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\Widgets\HeadingSize.cs">
-        <DependentUpon>JJTitle.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\JsonComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\RenderedComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\ContentComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\EmptyComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\RedirectComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\HtmlComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Components\FileStreamComponentResult.cs">
-        <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-    </ItemGroup>
-
     <ItemGroup>
         <Using Include="JJMasterData.Commons.Resources"/>
     </ItemGroup>

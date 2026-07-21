@@ -18,13 +18,13 @@ public class ElementFileService(
     IFileStorage fileStorage,
     FileValidationService fileValidationService)
 {
-    public async Task SaveFileAsync(string folderPath, IFormFile file, bool overwrite = true, string? allowedTypes = null)
+    public async Task SaveFileAsync(string folderPath, string fileName, Stream uploadStream,
+        bool overwrite = true, string? allowedTypes = null)
     {
-        var fileName = Path.GetFileName(file.FileName);
-        fileValidationService.Validate(file, allowedTypes);
+        fileName = Path.GetFileName(fileName);
+        fileValidationService.Validate(fileName, allowedTypes);
 
         var fullPath = FileStoragePath.Combine(folderPath, fileName);
-        await using var uploadStream = file.OpenReadStream();
         await fileStorage.SaveAsync(fullPath, uploadStream, overwrite);
     }
 
@@ -70,7 +70,8 @@ public class ElementFileService(
         string elementName,
         string fieldName,
         string pkValues,
-        IFormFile file)
+        string fileName,
+        Stream stream)
     {
         var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
         
@@ -78,11 +79,11 @@ public class ElementFileService(
             throw new UnauthorizedAccessException();
         
         var field = formElement.Fields.First(f => f.Name == fieldName);
-        fileValidationService.Validate(file, field.DataFile?.AllowedTypes);
+        fileValidationService.Validate(fileName, field.DataFile?.AllowedTypes);
 
-        await SetPhysicalFileAsync(formElement, field, pkValues, file);
+        await SetPhysicalFileAsync(formElement, field, pkValues, fileName, stream);
 
-        var fileName = Path.GetFileName(file.FileName);
+        fileName = Path.GetFileName(fileName);
         
         await SetEntityFileAsync(formElement, field, pkValues, fileName);
     }
@@ -123,12 +124,13 @@ public class ElementFileService(
         FormElement formElement,
         FormElementField field,
         string pkValues,
-        IFormFile file)
+        string fileName,
+        Stream stream)
     {
         var hashValues = DataHelper.GetPkValues(formElement, pkValues, ',');
         var folderPath = FileStoragePath.GetFolderPath(formElement, field, hashValues!);
 
-        await SaveFileAsync(folderPath, file, true, field.DataFile?.AllowedTypes);
+        await SaveFileAsync(folderPath, fileName, stream, true, field.DataFile?.AllowedTypes);
     }
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)

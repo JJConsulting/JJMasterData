@@ -1,5 +1,5 @@
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;

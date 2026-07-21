@@ -13,4 +13,4 @@ Represents a clickable button.
 
 ## Customization
 
-You can check all properties from JJLinkButton at <xhref:JJMasterData.Core.UI.Components.JJLinkButton>
+You can check all properties from JJLinkButton at <xhref:JJMasterData.Web.Components.JJLinkButton>

@@ -5,15 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -104,69 +101,5 @@ public class AuditLogService(
         
         return element;
     }
-
-    public FormElement GetFormElement(FormElement formElement)
-    {
-        var auditLogFormElement = new FormElement(GetElement());
-        auditLogFormElement.Fields[DicId].VisibleExpression = "val:0";
-        auditLogFormElement.Fields[DicName].VisibleExpression = "val:0";
-        auditLogFormElement.Fields[DicBrowser].VisibleExpression = "val:0";
-        auditLogFormElement.Fields[DicJson].VisibleExpression = "val:0";
-        auditLogFormElement.Fields[DicModified].Component = FormComponent.DateTime;
-
-        auditLogFormElement.Options.GridTableActions.Clear();
-        auditLogFormElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
-        
-        var origin = auditLogFormElement.Fields[DicOrigin];
-        origin.Component = FormComponent.ComboBox;
-        origin.DataItem = new FormElementDataItem
-        {
-            GridBehavior = DataItemGridBehavior.Icon,
-            Items = []
-        };
-        foreach (int i in Enum.GetValues(typeof(DataContextSource)))
-        {
-            var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(DataContextSource), i));
-            origin.DataItem.Items.Add(item);
-        }
-
-        var action = auditLogFormElement.Fields[DicAction];
-        action.Component = FormComponent.ComboBox;
-        action.DataItem = new FormElementDataItem
-        {
-            GridBehavior = DataItemGridBehavior.Icon,
-            Items = [],
-            ShowIcon = true
-        };
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", FontAwesomeIcon.Plus, GetInsertColor()));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", FontAwesomeIcon.Pencil, GetUpdateColor()));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", FontAwesomeIcon.Trash, GetDeleteColor()));
-        var btnViewLog = new ScriptAction
-        {
-            Icon = FontAwesomeIcon.Eye,
-            Tooltip = "View"
-        };
-        btnViewLog.Name = nameof(btnViewLog);
-        btnViewLog.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{formElement.Name}','{{{DicId}}}');";
-
-        auditLogFormElement.Options.GridTableActions.Add(btnViewLog);
-        return auditLogFormElement;
-    }
-    
-    internal static string GetUpdateColor()
-    {
-        return BootstrapHelper.Version == 3 ? "#ffbf00" : "var(--bs-warning)";
-    }
-
-    internal static string GetInsertColor()
-    {
-        return BootstrapHelper.Version == 3 ? "#387c44" : "var(--bs-success)";
-    }
-
-    internal static string GetDeleteColor()
-    {
-        return BootstrapHelper.Version == 3 ? "#b20000" : "var(--bs-danger)";
-    }
-
 
 }

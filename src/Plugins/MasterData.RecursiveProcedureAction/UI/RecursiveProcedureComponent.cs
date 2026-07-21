@@ -2,7 +2,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 
 namespace JJMasterData.RecursiveProcedureAction.UI;
 
@@ -22,7 +22,7 @@ internal abstract class RecursiveProcedureComponent(PluginActionContext context)
     
     protected string GetRecursiveActionScript()
     {
-        return GetExecuteActionScript(Context.ActionContext.Id);
+        return GetExecuteActionScript(Context.Id);
     }
     
     protected static string GetExecuteActionScript(string actionId)

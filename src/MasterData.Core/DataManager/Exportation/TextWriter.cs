@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataManager.Exportation;
 #nullable disable warnings
 using System;
 using System.IO;
@@ -9,10 +10,10 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,11 +24,13 @@ public class TextWriter(
     ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
+        IFileUrlProvider fileUrlProvider,
         ILoggerFactory logger,
         IEntityRepository entityRepository)
     : DataExportationWriterBase(expressionsService,
         stringLocalizer,
         options,
+        fileUrlProvider,
         logger.CreateLogger<DataExportationWriterBase>()), ITextWriter
 {
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;

@@ -3,8 +3,9 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Web.Components;
+using JJMasterData.Web.DataDictionary.Services;
+using JJMasterData.Web.Events.Args;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ElementController(
     ElementService elementService,
+    ElementViewService elementViewService,
     ElementImportService elementImportService,
     ElementExportService elementExportService,
     ClassGenerationService classGenerationService,
@@ -25,7 +27,7 @@ public class ElementController(
 {
     public async Task<IActionResult> Index()
     {
-        var formView = elementService.GetFormView();
+        var formView = elementViewService.GetFormView();
         var result = await formView.GetResultAsync();
         
         if (result is IActionResult actionResult)
@@ -40,7 +42,7 @@ public class ElementController(
 
     public async Task<FileResult> Export()
     {
-        var formView = elementService.GetFormView();
+        var formView = elementViewService.GetFormView();
         var selectedRows = formView.GridView.GetSelectedGridValues();
 
         if (selectedRows.Count == 1)
@@ -185,7 +187,7 @@ public class ElementController(
     
     public async Task<IActionResult> Delete()
     {
-        var formView = elementService.GetFormView();
+        var formView = elementViewService.GetFormView();
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
 
         var elementNamesToDelete = selectedGridValues

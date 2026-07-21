@@ -13,7 +13,10 @@
         <Description>Command-line and tooling for JJMasterData.</Description>
         <PackageTags>jjmasterdata;dotnet-tool;cli</PackageTags>
     </PropertyGroup>
-    <ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
         <ProjectReference Include="..\..\MasterData.Core\MasterData.Core.csproj" />
     </ItemGroup>
     <ItemGroup>

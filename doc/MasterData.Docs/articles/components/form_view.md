@@ -58,4 +58,4 @@ if you want to programmatically change your CRUD title, your can simply call:
 ```
 
 In a nutshell, use FormElement property to customize anything from the Data Dictionary, like your fields. 
-You can check all properties from FormView at <xhref:JJMasterData.Core.UI.Components.JJFormView>
+You can check all properties from FormView at <xhref:JJMasterData.Web.Components.JJFormView>

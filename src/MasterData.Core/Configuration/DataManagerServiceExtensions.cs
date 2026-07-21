@@ -2,7 +2,6 @@ using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -26,13 +25,9 @@ public static class DataManagerServiceExtensions
         
         services.TryAddTransient<FormService>();
         services.TryAddTransient<FieldValuesService>();
-        services.TryAddTransient<UploadAreaManager>();
         services.TryAddTransient<FormValuesService>();
-        
-        services.TryAddTransient<UploadViewManager>();
         services.TryAddTransient<ElementFileService>();
         services.TryAddTransient<ElementMapService>();
-        services.TryAddTransient<UrlRedirectService>();
 
         return services;
     }

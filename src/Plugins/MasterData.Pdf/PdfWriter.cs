@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataManager.Exportation;
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -23,14 +24,13 @@ using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -41,11 +41,12 @@ public class PdfWriter(
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
+        IFileUrlProvider fileUrlProvider,
         DataItemService dataItemService,
         ILogger<PdfWriter> logger,
         IEntityRepository entityRepository,
         FieldFormattingService fieldFormattingService)
-    : DataExportationWriterBase(expressionsService, stringLocalizer, options, logger), IPdfWriter
+    : DataExportationWriterBase(expressionsService, stringLocalizer, options, fileUrlProvider, logger), IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;

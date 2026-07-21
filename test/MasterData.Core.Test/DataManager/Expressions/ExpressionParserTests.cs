@@ -1,8 +1,8 @@
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -58,9 +58,9 @@ public class ExpressionParserTests
     // Add more test cases to cover other scenarios
     // ...
 
-    private static IHttpContextAccessor MockHttpContext()
+    private static IMasterDataRequestContext MockHttpContext()
     {
-        var mockHttpContext = new Mock<IHttpContextAccessor>();
+        var mockHttpContext = new Mock<IMasterDataRequestContext>();
         return mockHttpContext.Object;
     }
 

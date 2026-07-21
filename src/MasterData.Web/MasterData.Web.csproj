@@ -44,6 +44,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\MasterData.Core\MasterData.Core.csproj" />
+        <InternalsVisibleTo Include="JJMasterData.Web.Test" />
     </ItemGroup>
     
 	<ItemGroup>
@@ -60,6 +61,12 @@
 
     <ItemGroup>
         <Using Include="JJMasterData.Commons.Resources"/>
+        <Using Include="Microsoft.AspNetCore.Http" />
+        <Using Include="Microsoft.AspNetCore.Mvc" />
+        <Using Include="JJMasterData.Web.Extensions" />
+        <Using Include="JJMasterData.Web.DataManager.Services" />
+        <Using Include="JJMasterData.Web.Utils" />
+        <Using Include="JJMasterData.Core.Extensions" />
     </ItemGroup>
 
 </Project>

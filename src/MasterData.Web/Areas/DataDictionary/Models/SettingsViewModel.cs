@@ -1,7 +1,7 @@
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Core.Configuration.Options;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 using JJMasterData.Web.Configuration.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models;

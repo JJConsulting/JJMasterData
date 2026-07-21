@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Logging;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataManager.Expressions;
 
 public sealed class ExpressionParser(
-    IHttpContextAccessor httpContext,
+    IMasterDataRequestContext requestContext,
     IMasterDataUser masterDataUser,
     ILogger<ExpressionParser> logger)
 {
@@ -65,7 +66,7 @@ public sealed class ExpressionParser(
             case "isdelete":
                 return pageState is PageState.Delete ? 1 : 0;
             case "fieldname":
-                return httpContext.HttpContext?.Request.Query["fieldName"].ToString();
+                return requestContext.GetQueryValue("fieldName");
             case "userid":
                 return masterDataUser.Id;
             case "currentculture":
@@ -99,6 +100,6 @@ public sealed class ExpressionParser(
 
     private string? GetClaimValue(string claimType)
     {
-        return httpContext.HttpContext?.User?.FindFirst(claimType)?.Value;
+        return requestContext.GetClaimValue(claimType);
     }
 }

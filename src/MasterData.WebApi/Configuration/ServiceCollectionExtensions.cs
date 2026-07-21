@@ -1,4 +1,5 @@
 using JJMasterData.Commons.Serialization;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.WebApi.Models;
@@ -13,6 +14,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddJJMasterDataWebApi(this IServiceCollection services)
     {
         services.AddScoped<MasterApiService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IMasterDataRequestContext, AspNetCoreMasterDataRequestContext>();
         services.AddScoped<DictionariesService>();
 #pragma warning disable ASPDEPR006
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

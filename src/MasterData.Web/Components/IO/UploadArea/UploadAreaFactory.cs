@@ -1,0 +1,19 @@
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+
+namespace JJMasterData.Web.Components;
+
+public sealed class UploadAreaFactory(IHttpContextAccessor httpContext,
+        UploadAreaManager uploadAreaManager,
+        IEncryptionService encryptionService,
+        IOptions<FormOptions> requestLengthService,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
+
+{
+    public JJUploadArea Create()
+    {
+        return new JJUploadArea(httpContext,uploadAreaManager,encryptionService,requestLengthService, stringLocalizer);
+    }
+}   
