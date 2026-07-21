@@ -28,7 +28,7 @@ public sealed class AuditLogFormElementFactory(AuditLogService auditLogService)
         var origin = auditLogFormElement.Fields[AuditLogService.DicOrigin];
         origin.Component = FormComponent.ComboBox;
         origin.DataItem = new FormElementDataItem { GridBehavior = DataItemGridBehavior.Icon, Items = [] };
-        foreach (int value in Enum.GetValues(typeof(DataContextSource)))
+        foreach (int value in Enum.GetValues<DataContextSource>())
             origin.DataItem.Items.Add(new DataItemValue(value.ToString(), Enum.GetName(typeof(DataContextSource), value)!));
 
         var action = auditLogFormElement.Fields[AuditLogService.DicAction];
