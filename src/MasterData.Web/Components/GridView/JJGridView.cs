@@ -416,7 +416,7 @@ public class JJGridView : AsyncComponent
             _currentExportConfig = new ExportOptions();
             if (CurrentContext.HttpContext!.Request.HasFormContentType)
             {
-                _currentExportConfig = ExportOptionsFormLoader.Load(CurrentContext, Name);
+                _currentExportConfig = ExportOptionsFactory.FromForm(CurrentContext, Name);
             }
 
             return _currentExportConfig;

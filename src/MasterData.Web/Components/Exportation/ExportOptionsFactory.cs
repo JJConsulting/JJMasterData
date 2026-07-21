@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Web.Components;
 
-internal static class ExportOptionsFormLoader
+internal static class ExportOptionsFactory
 {
-    internal static ExportOptions Load(IHttpContextAccessor httpContextAccessor, string componentName)
+    internal static ExportOptions FromForm(IHttpContextAccessor httpContextAccessor, string componentName)
     {
         var options = new ExportOptions();
         if (httpContextAccessor.HttpContext?.Request.HasFormContentType != true)
