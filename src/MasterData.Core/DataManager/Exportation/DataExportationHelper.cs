@@ -1,6 +1,5 @@
 using System.IO;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
@@ -21,9 +20,4 @@ public static class DataExportationHelper
         return folderPath;
     }
 
-    public static string GetExportationFolderPath(JJDataExportation dataExportation)
-    {
-        var path = dataExportation.MasterDataOptions.ExportationFolderPath;
-        return GetExportationFolderPath(dataExportation.FormElement , path, dataExportation.UserId);    
-    }
 }

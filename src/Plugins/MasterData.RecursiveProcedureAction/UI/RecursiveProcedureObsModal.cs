@@ -6,8 +6,8 @@ using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.UI;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Utils;
+using JJMasterData.Web.Components;
 
 namespace JJMasterData.RecursiveProcedureAction.UI;
 
@@ -22,7 +22,7 @@ internal class RecursiveProcedureObsModal(
     {
         var modalDialog = new JJModalDialog
         {
-            Name = $"executionSequenceObsModal-{Context.ActionContext.Action.Name}",
+            Name = $"executionSequenceObsModal-{Context.Action.Name}",
             Title = GetTitle(),
             Size = GetModalSize(),
             ShowAsOpened = false,

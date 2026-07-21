@@ -63,4 +63,4 @@ JJAlert also have a TagHelper
 > JJAlert does consider internationalization.
 
 
-You can check all JJAlert properties at <xhref:JJMasterData.Core.UI.Components.JJAlert>
+You can check all JJAlert properties at <xhref:JJMasterData.Web.Components.JJAlert>

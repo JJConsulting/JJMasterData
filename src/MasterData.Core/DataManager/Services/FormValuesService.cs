@@ -8,6 +8,7 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exceptions;
 using JJMasterData.Core.DataManager.Models;
@@ -20,7 +21,7 @@ public class FormValuesService(
     FieldValuesService fieldValuesService,
     IEncryptionService encryptionService,
     ILogger<FormValuesService> logger,
-    IHttpContextAccessor httpContextAccessor)
+    IMasterDataRequestContext requestContext)
 {
     private Dictionary<string, object?> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
@@ -33,7 +34,7 @@ public class FormValuesService(
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
 
-            var value = httpContextAccessor.HttpContext!.Request.GetFormValue(fieldName);
+            var value = requestContext.GetFormValue(fieldName);
             HandleFieldValue(field, values, value);
         }
 
@@ -193,24 +194,24 @@ public class FormValuesService(
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
         }
 
-        if (autoReloadFormFields && httpContextAccessor.HttpContext!.Request.HasFormContentType)
+        if (autoReloadFormFields && requestContext.HasFormContentType)
         {
             var formValues = GetFormValues(formElement, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
 
         return await fieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
-            !httpContextAccessor.HttpContext!.Request.HasFormContentType);
+            !requestContext.HasFormContentType);
     }
     
     private async Task<Dictionary<string, object?>> GetDbValues(Element element)
     {
-        var encryptedPkValues = httpContextAccessor.HttpContext!.Request.GetFormValue(
+        var encryptedPkValues = requestContext.GetFormValue(
             $"data-panel-pk-values-{element.Name}");
 
         if (string.IsNullOrEmpty(encryptedPkValues))
         {
-            var encryptedFkValues = httpContextAccessor.HttpContext!.Request.GetFormValue(
+            var encryptedFkValues = requestContext.GetFormValue(
                 $"form-view-relation-values-{element.Name}");
 
             if (!string.IsNullOrEmpty(encryptedFkValues))

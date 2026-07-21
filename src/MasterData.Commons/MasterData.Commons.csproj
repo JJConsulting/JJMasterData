@@ -29,6 +29,7 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="JJMasterData.Commons.Test" />
         <InternalsVisibleTo Include="JJMasterData.Core.Test" />
+		<InternalsVisibleTo Include="JJMasterData.Web.Test" />
 		<InternalsVisibleTo Include="JJMasterData.Core" />
 	</ItemGroup>
 	<ItemGroup>

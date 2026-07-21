@@ -9,8 +9,8 @@ using Fluid.Values;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
@@ -75,14 +75,14 @@ public static class HtmlTemplateOptions
 
     private static readonly FunctionValue UrlPath = new((_, context) =>
     {
-        var httpContextAccessor = GetRequiredService<IHttpContextAccessor>(context);
-        return StringValue.Create(httpContextAccessor.HttpContext?.Request.GetApplicationPath());
+        var requestContext = GetRequiredService<IMasterDataRequestContext>(context);
+        return StringValue.Create(requestContext.ApplicationPath);
     });
 
     private static readonly FunctionValue AppUrl = new((_, context) =>
     {
-        var httpContextAccessor = GetRequiredService<IHttpContextAccessor>(context);
-        return StringValue.Create(httpContextAccessor.HttpContext?.Request.GetApplicationUri());
+        var requestContext = GetRequiredService<IMasterDataRequestContext>(context);
+        return StringValue.Create(requestContext.ApplicationUri);
     });
 
     private static readonly FunctionValue GetFileUrl = new((args, context) =>
@@ -102,10 +102,8 @@ public static class HtmlTemplateOptions
         if(values.Count == 0)
             return StringValue.Empty;
         
-        var fileDownloaderFactory = GetRequiredService<FileDownloaderFactory>(context);
-        var url = fileDownloaderFactory
-            .Create(formElement, field, values, fileName)
-            .GetDownloadUrl();
+        var fileUrlProvider = GetRequiredService<IFileUrlProvider>(context);
+        var url = fileUrlProvider.GetFileUrl(formElement, field, values, fileName);
         
         return StringValue.Create(url);
     });

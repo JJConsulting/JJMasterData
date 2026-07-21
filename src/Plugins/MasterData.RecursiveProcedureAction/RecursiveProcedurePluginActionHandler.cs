@@ -5,7 +5,8 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Extensions;
+using JJMasterData.Web.Components;
 using JJMasterData.Protheus.Abstractions;
 using JJMasterData.RecursiveProcedureAction.UI;
 using Microsoft.AspNetCore.Http;
@@ -100,7 +101,7 @@ public class RecursiveProcedurePluginActionHandler(
 
         var command = GetCommand(context, inputParameters, outputParameters);
 
-        await entityRepository.SetCommandAsync(command, context.ActionContext.FormElement.ConnectionId);
+        await entityRepository.SetCommandAsync(command, context.FormElement.ConnectionId);
 
         var messageBox = new RecursiveProcedureMessageBox(context);
 
@@ -116,7 +117,7 @@ public class RecursiveProcedurePluginActionHandler(
             inputParameters.ExecutionSequenceParameter.Value = executionSequence;
             outputParameters.MessageContentParameter.Value = protheusResult;
             command = GetCommand(context, inputParameters, outputParameters);
-            await entityRepository.SetCommandAsync(command, context.ActionContext.FormElement.ConnectionId);
+            await entityRepository.SetCommandAsync(command, context.FormElement.ConnectionId);
         }
 
         var messageType = outputParameters.MessageTypeParameter.Value;

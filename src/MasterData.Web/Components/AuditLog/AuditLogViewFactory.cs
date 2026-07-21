@@ -1,0 +1,36 @@
+using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services;
+using Microsoft.Extensions.Localization;
+
+namespace JJMasterData.Web.Components;
+
+internal sealed class AuditLogViewFactory(
+        IHttpContextAccessor httpContext,
+        IMasterDataUser masterDataUser,
+        IEntityRepository entityRepository,
+        AuditLogService auditLogService,
+        AuditLogFormElementFactory auditLogFormElementFactory,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IComponentFactory componentFactory,
+        IEncryptionService encryptionService,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
+    : IFormElementComponentFactory<JJAuditLogView>
+{
+    public JJAuditLogView Create(FormElement formElement)
+    {
+        return new JJAuditLogView(formElement, httpContext,masterDataUser, entityRepository, auditLogService,
+            auditLogFormElementFactory, componentFactory,
+            encryptionService, stringLocalizer);
+    }
+    
+    public async ValueTask<JJAuditLogView> CreateAsync(string elementName)
+    {
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        return Create(formElement);
+    }
+}

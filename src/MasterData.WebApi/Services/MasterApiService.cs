@@ -452,7 +452,10 @@ public class MasterApiService(ExpressionsService expressionsService,
     private DataContext GetDataContext()
     {
         var userId = masterDataUser.Id;
-        return new DataContext(httpContextAccessor.HttpContext!.Request, DataContextSource.Api, userId);
+        var context = httpContextAccessor.HttpContext!;
+        return new DataContext(DataContextSource.Api, userId,
+            context.Connection.RemoteIpAddress?.ToString(),
+            context.Request.Headers.UserAgent.ToString());
     }
 
     private ValueTask<FormElement> GetDataDictionary(string elementName)

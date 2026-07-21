@@ -79,10 +79,10 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
     {
         foreach (var parameter in context.FieldMap)
         {
-            if (!context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
+            if (!context.FormElement.Fields.TryGetField(parameter.Value, out var field))
                 continue;
             
-            var isEnabled = expressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
+            var isEnabled = expressionsService.GetBoolValue(field.EnableExpression, context.FormStateData);
 
             if (!isEnabled)
                 context.SecretValues[parameter.Value] = result[parameter.Key];
@@ -123,7 +123,7 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
         {
             foreach (var parameter in context.FieldMap.Where(f=> f.Key != IsResultValidKey))
             {
-                if (context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field) )
+                if (context.FormElement.Fields.TryGetField(parameter.Value, out var field) )
                     field.EnableExpression = "val:1";
             }
         }

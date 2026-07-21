@@ -1,0 +1,89 @@
+using JJMasterData.Web.DataManager.Exportation;
+using JJMasterData.Web.DataDictionary.Structure;
+using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Web.Components;
+using JJMasterData.Web.Components.ColorPicker;
+using JJMasterData.Web.Components.Factories;
+using JJMasterData.Web.Components.Phone;
+using JJMasterData.Web.Components.TextRange;
+using JJMasterData.Web.Routing;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace JJMasterData.Web.Configuration;
+
+public static class FactoriesServiceExtensions
+{
+    extension(IServiceCollection services)
+    {
+        public IServiceCollection AddFactories()
+        {
+            return services.AddFormElementFactories()
+                .AddComponentsFactories()
+                .AddDataFactories();
+        }
+
+        private IServiceCollection AddDataFactories()
+        {
+            services.AddTransient<DataExportationWriterFactory>();
+            services.AddTransient<DataImportationWorkerFactory>();
+
+            return services;
+        }
+
+        private IServiceCollection AddFormElementFactories()
+        {
+            services.AddTransient<DataDictionaryFormElementFactory>();
+            return services;
+        }
+
+        private IServiceCollection AddComponentsFactories()
+        {
+            services.AddControlsFactories();
+            services.AddFormElementComponentsFactories();
+
+            services.AddScoped<UploadViewFactory>();
+            services.AddScoped<FileDownloaderFactory>();
+            services.AddScoped<UploadAreaFactory>();
+            services.AddScoped<TitleFactory>();
+            services.AddScoped<LabelFactory>();
+            services.AddScoped<MessageBoxFactory>();
+            services.AddScoped<RouteContextFactory>();
+            services.AddScoped<TextGroupFactory>();
+            services.AddScoped<IComponentFactory, ComponentFactory>();
+            services.AddScoped<ActionButtonFactory>();
+        
+            return services;
+        }
+
+        private void AddFormElementComponentsFactories()
+        {
+            services.AddScoped<IFormElementComponentFactory<JJAuditLogView>, AuditLogViewFactory>();
+            services.AddScoped<IFormElementComponentFactory<JJDataPanel>, DataPanelFactory>();
+            services.AddScoped<IFormElementComponentFactory<JJFormView>, FormViewFactory>();
+            services.AddScoped<IFormElementComponentFactory<JJGridView>, GridViewFactory>();
+            services.AddScoped<IFormElementComponentFactory<JJDataExportation>, DataExportationFactory>();
+            services.AddScoped<IFormElementComponentFactory<JJDataImportation>, DataImportationFactory>();
+        }
+
+        private void AddControlsFactories()
+        {
+            services.AddScoped<IControlFactory<JJComboBox>, ComboBoxFactory>();
+            services.AddScoped<IControlFactory<JJLookup>, LookupFactory>();
+            services.AddScoped<IControlFactory<JJSearchBox>, SearchBoxFactory>();
+            services.AddScoped<IControlFactory<JJTextArea>, TextAreaFactory>();
+            services.AddScoped<IControlFactory<JJSlider>, SliderFactory>();
+            services.AddScoped<IControlFactory<JJPhoneGroup>, PhoneGroupFactory>();
+            services.AddScoped<IControlFactory<JJTextGroup>, TextGroupFactory>();
+            services.AddScoped<IControlFactory<JJTextRange>, TextRangeFactory>();
+            services.AddScoped<IControlFactory<JJTextFile>, TextFileFactory>();
+            services.AddScoped<IControlFactory<JJTextBox>, TextBoxFactory>();
+            services.AddScoped<IControlFactory<JJCheckBox>, CheckboxFactory>();
+            services.AddScoped<IControlFactory<JJColorPicker>, ColorPickerFactory>();
+            services.AddScoped<IControlFactory<JJRadioButtonGroup>, RadioButtonGroupFactory>();
+            services.AddScoped<IControlFactory<JJIconPicker>, IconPickerFactory>();
+            services.AddScoped<IControlFactory<JJCodeEditor>, CodeEditorFactory>();
+            services.AddScoped<ControlFactory>();
+        }
+    }
+}

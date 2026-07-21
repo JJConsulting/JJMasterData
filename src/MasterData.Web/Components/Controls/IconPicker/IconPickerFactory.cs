@@ -1,0 +1,23 @@
+﻿using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
+using Microsoft.Extensions.Localization;
+
+namespace JJMasterData.Web.Components;
+
+public class IconPickerFactory(IStringLocalizer<MasterDataResources> stringLocalizer, IUrlHelper urlHelper, IControlFactory<JJComboBox> comboBoxFactory, IHttpContextAccessor formValues) : IControlFactory<JJIconPicker>
+{
+    public JJIconPicker Create() => new(stringLocalizer,urlHelper,comboBoxFactory,formValues);
+    
+    public JJIconPicker Create(FormElement formElement, FormElementField field, ControlContext context)
+    {
+        var picker = Create();
+        picker.Name = field.Name;
+        picker.Visible = true;
+        if (!string.IsNullOrEmpty(context.Value?.ToString()))
+        {
+            picker.SelectedIcon = FontAwesomeIconHelper.GetFontAwesomeIconFromField(field, context.Value);
+        }
+
+        return picker;
+    }
+}

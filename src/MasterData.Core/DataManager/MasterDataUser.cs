@@ -1,4 +1,5 @@
 #nullable disable warnings
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using Microsoft.Extensions.Options;
 
@@ -10,9 +11,9 @@ public interface IMasterDataUser
 }
 
 internal sealed class MasterDataUser(
-    IHttpContextAccessor httpContext,
+    IMasterDataRequestContext requestContext,
     IOptionsSnapshot<MasterDataCoreOptions> coreOptions)
     : IMasterDataUser
 {
-    public string Id { get; set; } = httpContext.HttpContext?.User.GetUserId(coreOptions.Value.UserIdClaimType);
+    public string Id { get; set; } = requestContext.GetClaimValue(coreOptions.Value.UserIdClaimType);
 }

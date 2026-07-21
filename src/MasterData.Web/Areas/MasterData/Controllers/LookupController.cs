@@ -3,7 +3,7 @@ using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Html;

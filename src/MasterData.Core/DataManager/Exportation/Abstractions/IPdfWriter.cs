@@ -1,7 +1,7 @@
+using JJMasterData.Core.DataManager.Exportation;
 ﻿using System;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Events.Args;
 
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 

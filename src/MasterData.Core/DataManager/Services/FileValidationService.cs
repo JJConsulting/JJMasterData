@@ -63,9 +63,9 @@ public class FileValidationService(IStringLocalizer<MasterDataResources> stringL
         ".bin"
     ];
 
-    public void Validate(IFormFile file, string? allowedTypes = null)
+    public void Validate(string fileName, string? allowedTypes = null)
     {
-        var fileName = Path.GetFileName(file.FileName);
+        fileName = Path.GetFileName(fileName);
         ValidateFileName(fileName);
         ValidateAllowedExtensions(fileName, allowedTypes);
     }

@@ -2,7 +2,7 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 
 namespace JJMasterData.RecursiveProcedureAction.UI;
 
@@ -70,7 +70,7 @@ internal class RecursiveProcedureMessageBox(PluginActionContext context)
 
     private string GetGoBackScript()
     {
-        var actionContext = Context.ActionContext;
+        var actionContext = Context;
         
         var backAction = actionContext.FormElement.Options.FormToolbarActions.BackAction;
 

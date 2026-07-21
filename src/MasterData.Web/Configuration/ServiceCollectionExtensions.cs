@@ -1,10 +1,18 @@
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration;
+using JJMasterData.Core.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Web.Components;
 using JJMasterData.Web.Configuration.Options;
+using JJMasterData.Web.DataDictionary.Services;
+using JJMasterData.Web.DataManager.Services;
+using JJMasterData.Web.Events;
+using JJMasterData.Web.Events.Abstractions;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
+using JJMasterData.Web.Services;
 using JJMasterData.Web.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -93,7 +101,23 @@ public static class ServiceCollectionExtensions
         services.AddTransient<JJMasterDataLogo>();
         
         services.AddHttpContextAccessor();
+        services.AddScoped<IMasterDataRequestContext, AspNetCoreMasterDataRequestContext>();
+        services.AddScoped<ComponentFileLinkProvider>();
+        services.AddScoped<IFileUrlProvider>(serviceProvider =>
+            serviceProvider.GetRequiredService<ComponentFileLinkProvider>());
+        services.AddScoped<IExportFileLinkProvider>(serviceProvider =>
+            serviceProvider.GetRequiredService<ComponentFileLinkProvider>());
         services.AddActionFilters();
+        services.AddHttpServices();
+        services.AddActionServices();
+        services.AddFactories();
+        services.AddTransient<ElementViewService>();
+        services.AddTransient<LookupRequestService>();
+        services.AddTransient<UrlRedirectService>();
+        services.AddTransient<UploadAreaManager>();
+        services.AddTransient<UploadViewManager>();
+        services.AddTransient<AuditLogFormElementFactory>();
+        services.AddScoped<IGridEventHandlerResolver, GridEventHandlerResolver>();
     }
     
     private static void AddMvcServices(

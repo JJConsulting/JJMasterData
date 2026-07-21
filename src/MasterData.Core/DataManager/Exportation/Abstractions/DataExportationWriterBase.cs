@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +19,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,6 +29,7 @@ public abstract class DataExportationWriterBase(
     ExpressionsService expressionsService,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCoreOptions> options,
+    IExportFileLinkProvider fileLinkProvider,
     ILogger<DataExportationWriterBase> logger)
     : IBackgroundTaskWorker, IExportationWriter
 {
@@ -48,9 +49,8 @@ public abstract class DataExportationWriterBase(
 
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
 
-    internal FileDownloaderFactory FileDownloaderFactory { get; set; }
     internal IFileStorage FileStorage { get; set; }
-    internal string AbsoluteUri { get; set; }
+    private IExportFileLinkProvider FileLinkProvider { get; } = fileLinkProvider;
 
     protected List<FormElementField> VisibleFields
     {
@@ -234,9 +234,8 @@ public abstract class DataExportationWriterBase(
         if (string.IsNullOrEmpty(fileName))
             return null;
 
-        var downloader = FileDownloaderFactory.Create(formElement, field, row, fileName);
-        
-        return new Uri(new Uri(AbsoluteUri), downloader.GetDownloadUrl(AbsoluteUri)).AbsoluteUri;
+        var values = row.ToDictionary(item => item.Key, item => (object?)item.Value);
+        return FileLinkProvider.GetLink(formElement, field, values, fileName);
     }
     
     private string GetFileName()

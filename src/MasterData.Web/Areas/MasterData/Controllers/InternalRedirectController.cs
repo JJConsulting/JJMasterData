@@ -10,7 +10,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using Microsoft.AspNetCore.Http;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -156,7 +156,8 @@ public class InternalRedirectController(
         ApplyUserValues(panel, userValues);
 
         var values = await panel.GetFormValuesAsync();
-        var letter = await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request, DataContextSource.Form, userId));
+        var letter = await formService.InsertOrReplaceAsync(panel.FormElement, values,
+            request.HttpContext!.Request.ToDataContext(DataContextSource.Form, userId));
         
         var hasErrors = letter.Errors.Count > 0;
         if (hasErrors)

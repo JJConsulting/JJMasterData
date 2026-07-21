@@ -1,35 +1,14 @@
 #nullable disable warnings
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class LookupService(
-    IHttpContextAccessor httpContextAccessor,
-    ExpressionsService expressionsService,
-    IEncryptionService encryptionService,
-    ElementMapService elementMapService,
-    IUrlHelper urlHelper)
+    ElementMapService elementMapService)
 {
-    public string GetFormViewUrl(DataElementMap elementMap, FormStateData? formStateData, string componentName)
-    {
-        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.IdFieldName,
-            elementMap.DescriptionFieldName,
-            elementMap.EnableElementActions, elementMap.Filters);
-
-        var encryptedLookupParameters =
-            encryptionService.EncryptString(
-                lookupParameters.ToQueryString(expressionsService, formStateData));
-
-        return urlHelper.Action("Index", "Lookup",
-            new { Area = "MasterData", lookupParameters = encryptedLookupParameters })!;
-    }
-
     public async Task<string?> GetDescriptionAsync(
         DataElementMap elementMap,
         FormStateData? formStateData,
@@ -69,8 +48,4 @@ public class LookupService(
         return null;
     }
 
-    public string? GetSelectedValue(string componentName)
-    {
-        return httpContextAccessor.HttpContext?.Request.GetFormValue(componentName);
-    }
 }

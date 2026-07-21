@@ -1,6 +1,6 @@
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 

@@ -14,16 +14,11 @@ public class DataContext
     {
     }
 
-    public DataContext(IHttpContextAccessor request, DataContextSource source, string? userId)
-        : this(request.HttpContext?.Request, source, userId)
-    {
-    }
-
-    public DataContext(HttpRequest? request, DataContextSource source, string? userId)
+    public DataContext(DataContextSource source, string? userId, string? ipAddress = null, string? browserInfo = null)
     {
         Source = source;
         UserId = userId;
-        IpAddress = request?.HttpContext.Connection.RemoteIpAddress?.ToString();
-        BrowserInfo = request?.Headers.UserAgent.ToString();
+        IpAddress = ipAddress;
+        BrowserInfo = browserInfo;
     }
 }

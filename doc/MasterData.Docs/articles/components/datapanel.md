@@ -11,7 +11,7 @@ At your Controller, create a JJDataPanel instance and use the result as your Mod
 ```csharp
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Web.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.WebEntryPoint.Controllers;

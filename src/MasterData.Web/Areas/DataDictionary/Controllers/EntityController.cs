@@ -2,7 +2,7 @@
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.Events.Abstractions;
-using JJMasterData.Core.UI.Events.Abstractions;
+using JJMasterData.Web.Events.Abstractions;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using Microsoft.AspNetCore.Mvc;
 

@@ -51,7 +51,7 @@ builder.Services.AddFormEventHandler<MyFormEventHandler>("MyElementName");
 <img alt="Customized Fields" src="../media/CustomFields.png"/>
 
 > [!TIP] 
-> If you want to also customize Grid events, you can also implement <xref:JJMasterData.Core.UI.Events.Abstractions.IGridEventHandler> at your class.
+> If you want to also customize Grid events, you can also implement <xref:JJMasterData.Web.Events.Abstractions.IGridEventHandler> at your class.
 
 ## IFormEventResolver
 

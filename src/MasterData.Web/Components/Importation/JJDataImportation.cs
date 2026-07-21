@@ -1,0 +1,474 @@
+using JJMasterData.Web.Extensions;
+﻿#nullable disable warnings
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using JJConsulting.FontAwesome;
+using JJConsulting.Html;
+using JJConsulting.Html.Bootstrap.Components;
+using JJConsulting.Html.Bootstrap.Extensions;
+using JJConsulting.Html.Bootstrap.Models;
+using JJConsulting.Html.Extensions;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Tasks.Progress;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Events.Args;
+using JJMasterData.Web.Events.Args;
+
+using JJMasterData.Web.Routing;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+
+namespace JJMasterData.Web.Components;
+
+public class JJDataImportation : ProcessComponent
+{
+    #region "Events"
+
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
+
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterProcessAsync;
+
+    #endregion
+
+    #region "Properties"
+
+    private JJUploadArea _uploadArea;
+    private JJLinkButton _backButton;
+    private JJLinkButton _helpButton;
+    private JJLinkButton _logButton;
+    private JJLinkButton _closeButton;
+    private RouteContext _routeContext;
+    private DataImportationScripts _dataImportationScripts;
+
+    public JJLinkButton BackButton => _backButton ??= GetBackButton();
+
+    public JJLinkButton HelpButton => _helpButton ??= GetHelpButton();
+
+    public JJLinkButton CloseButton => _closeButton ??= GetCloseButton();
+    
+    public JJLinkButton LogButton => _logButton ??= GetLogButton();
+
+    public JJUploadArea UploadArea => _uploadArea ??= GetUploadArea();
+
+    internal ImportAction ImportAction { get; }
+    
+    public bool EnableAuditLog { get; set; }
+
+    /// <summary>
+    /// Default: true (panel is open by default)
+    /// </summary>
+    public bool ExpandedByDefault { get; set; } = true;
+
+    internal FormService FormService { get; }
+    internal IComponentFactory ComponentFactory { get; }
+    
+    internal DataItemService DataItemService { get; }
+    
+    internal FieldValuesService FieldValuesService { get; }
+    
+    private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
+
+    private RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(HttpContextAccessor, EncryptionService);
+            _routeContext = factory.Create();
+
+            return _routeContext;
+        }
+    }
+
+    private ComponentContext ComponentContext => RouteContext.ComponentContext;
+
+    internal DataImportationScripts DataImportationScripts =>
+        _dataImportationScripts ??= new DataImportationScripts(this);
+
+    public Dictionary<string, object> RelationValues { get; set; }
+    
+    #endregion
+    
+    #region "Constructors"
+
+    public JJDataImportation(
+        FormElement formElement,
+        IMasterDataUser masterDataUser,
+        ExpressionsService expressionsService,
+        FormService formService,
+        FieldValuesService fieldValuesService,
+        IBackgroundTaskManager backgroundTaskManager,
+        IHttpContextAccessor httpContextAccessor,
+        IComponentFactory componentFactory,
+        DataItemService dataItemService,
+        DataImportationWorkerFactory dataImportationWorkerFactory,
+        IEncryptionService encryptionService,
+        ILoggerFactory loggerFactory,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
+        : base(httpContextAccessor,masterDataUser, expressionsService, backgroundTaskManager,
+            loggerFactory.CreateLogger<ProcessComponent>(), encryptionService, stringLocalizer)
+    {
+        HttpContextAccessor = httpContextAccessor;
+        DataImportationWorkerFactory = dataImportationWorkerFactory;
+        FormService = formService;
+        FieldValuesService = fieldValuesService;
+        ComponentFactory = componentFactory;
+        DataItemService = dataItemService;
+        FormElement = formElement;
+        ImportAction = formElement.Options.GridToolbarActions.ImportAction;
+        if (ImportAction is not null)
+        {
+            ProcessOptions = ImportAction.ProcessOptions;
+        }
+    }
+
+    #endregion
+
+    protected override async Task<ComponentResult> BuildResultAsync()
+    {
+        HtmlBuilder htmlBuilder;
+
+        if (ComponentContext is ComponentContext.DataImportationFileUpload)
+        {
+            UploadArea.OnFileUploaded += FileUploaded;
+            return await UploadArea.GetResultAsync();
+        }
+
+        string action = HttpContextAccessor.HttpContext!.Request.Query["dataImportationOperation"];
+
+        switch (action)
+        {
+            case "checkProgress":
+            {
+                var reporterProgress = GetCurrentProgress();
+
+                return new JsonComponentResult(reporterProgress);
+            }
+            case "stop":
+                StopImportation();
+                return new JsonComponentResult(new { IsProcessing = false });
+            case "log":
+                htmlBuilder = GetLogHtml();
+                break;
+            case "help":
+                htmlBuilder = await new DataImportationHelp(this).GetHtmlHelpAsync();
+                break;
+            case "processPastedText":
+            {
+                if (!IsRunning())
+                {
+                    var pasteValue = HttpContextAccessor.HttpContext!.Request.GetFormValue("pasteValue");
+                    ImportInBackground(pasteValue);
+                }
+
+                htmlBuilder = GetLoadingHtml();
+                break;
+            }
+            case "loading":
+                htmlBuilder = GetLoadingHtml();
+                break;
+            default:
+            {
+                if (IsRunning())
+                {
+                    htmlBuilder = new HtmlBuilder(HtmlTag.Div);
+                    htmlBuilder.WithId(Name);
+                    htmlBuilder.Append(GetLoadingHtml());
+                    htmlBuilder.AppendScript(DataImportationScripts.GetStartProgressVerificationScript());
+                }
+               
+                else
+                    htmlBuilder = GetUploadAreaCollapse(ProcessKey);
+                break;
+            }
+        }
+        
+        if (ComponentContext is not ComponentContext.RenderComponent)
+        {
+            return new ContentComponentResult(htmlBuilder);
+        }
+
+        return new RenderedComponentResult(htmlBuilder);
+    }
+
+    private HtmlBuilder GetLogHtml()
+    {
+        var html = new DataImportationLog(this).GetHtmlLog()
+            .AppendHiddenInput("filename")
+            .AppendComponent(BackButton);
+
+        html.AppendDiv(div =>
+        {
+            div.WithCssClass(BootstrapHelper.PullRight);
+            div.AppendComponent(CloseButton);
+        });
+        
+        return html;
+    }
+
+    private HtmlBuilder GetLoadingHtml()
+    {
+        var reporter = GetCurrentReporter();
+        if (reporter == null)
+            return null;
+
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .WithAttribute("id", "divProcess")
+            .WithStyle( "text-align: center;")
+            .Append(HtmlTag.Div, spin =>
+            {
+                spin.WithAttribute("id", "data-importation-spinner")
+                    .WithStyle( "position: relative; height: 80px");
+            })
+            .AppendDiv(div =>
+            {
+                div.AppendText(StringLocalizer["Waiting..."]);
+                div.WithCssClass("mt-1 mb-1");
+            })
+            .Append(HtmlTag.Div, msg =>
+            {
+                msg.WithAttribute("id", "process-status")
+                    .WithStyle( "display:none")
+                    .Append(HtmlTag.Div, status => status.WithAttribute("id", "divStatus"))
+                    .Append(HtmlTag.Span, resume => resume.WithAttribute("id", "process-message"));
+            })
+            .Append(HtmlTag.Div, div =>
+            {
+                div.WithStyle( "width:50%;")
+                    .WithCssClass(BootstrapHelper.CenterBlock)
+                    .Append(HtmlTag.Div, progress =>
+                    {
+                        progress.WithStyle("height: 15px");
+                        progress.WithCssClass("progress")
+                            .Append(HtmlTag.Div, bar =>
+                            {
+                                bar.WithCssClass("progress-bar")
+                                    .WithAttribute("role", "progressbar")
+                                    .WithStyle( "width:0;")
+                                    .WithAttribute("aria-valuemin", "0")
+                                    .WithAttribute("aria-valuemax", "100")
+                                    .AppendText("0%");
+                            });
+                    });
+            })
+            .AppendDiv(div =>
+            {
+                div.Append(new DataImportationLog(this).GetSummaryHtml());
+                div.WithCssClass("mb-2");
+            });
+
+        var btnStop = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            ShowAsButton = true,
+            Visible = reporter.UserId == UserId,
+            OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
+            Icon = FontAwesomeIcon.Stop,
+            Text = StringLocalizer["Stop the importation"]
+        };
+        html.AppendComponent(btnStop);
+
+        return html;
+    }
+
+    private HtmlBuilder GetUploadAreaCollapse(string keyprocess)
+    {
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .WithId(Name)
+            .AppendHiddenInput("filename")
+            .Append(HtmlTag.TextArea, area =>
+            {
+                area.WithNameAndId("pasteValue");
+                area.WithStyle( "display:none");
+            });
+        
+        var collapsePanel = new JJMasterDataCollapsePanel(HttpContextAccessor)
+        {
+            TitleIcon = new JJIcon(FontAwesomeIcon.Upload),
+            Title = StringLocalizer["Upload File"],
+            ExpandedByDefault = ExpandedByDefault,
+            Content = UploadArea.GetUploadAreaHtmlBuilder()
+        };
+
+        html.AppendComponent(collapsePanel);
+        html.Append(HtmlTag.Div, row =>
+        {
+            row.WithCssClass("row");
+            row.Append(HtmlTag.Div, col =>
+            {
+                col.WithCssClass("col-sm-12");
+                col.AppendComponent(HelpButton);
+
+                var pipeline = BackgroundTaskManager.GetProgress<IProgressReporter>(keyprocess);
+                if (pipeline != null)
+                {
+                    col.AppendComponent(LogButton);
+                }
+
+                col.AppendDiv(div =>
+                {
+                    div.WithCssClass(BootstrapHelper.PullRight);
+                    div.AppendComponent(CloseButton);
+                });
+            });
+        });
+
+        return html;
+    }
+
+    private void FileUploaded(object sender, FormUploadFileEventArgs e)
+    {
+        var sb = new StringBuilder();
+        using (var reader = new StreamReader(e.File.OpenReadStream()))
+        {
+            while (!reader.EndOfStream)
+            {
+                sb.AppendLine(reader.ReadLine());
+            }
+        }
+
+        if (!BackgroundTaskManager.IsRunning(ProcessKey))
+        {
+            var worker = CreateImportationTextWorker(sb.ToString(), ';');
+            BackgroundTaskManager.Run(ProcessKey, worker);
+            e.SuccessMessage = StringLocalizer["File successfuly imported."];
+        }
+    }
+
+    private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
+    {
+        var dataContext = HttpContextAccessor.HttpContext!.Request.ToDataContext(DataContextSource.Upload, UserId);
+        var dataImportationContext = new DataImportationContext(FormElement, dataContext, RelationValues, postedText, separator);
+        var worker = DataImportationWorkerFactory.Create(dataImportationContext);
+        worker.UserId = UserId;
+        worker.ProcessOptions = ProcessOptions;
+        worker.UserValues = UserValues;
+        worker.FormService.OnAfterUpdateAsync += OnAfterUpdateAsync;
+        worker.FormService.OnAfterInsertAsync += OnAfterInsertAsync;
+        worker.FormService.OnAfterDeleteAsync += OnAfterDeleteAsync;
+        worker.FormService.OnBeforeImportAsync += OnBeforeImportAsync;
+
+        worker.OnAfterProcessAsync += OnAfterProcessAsync;
+
+        return worker;
+    }
+
+    internal DataImportationReporter GetCurrentReporter()
+    {
+        var progress = BackgroundTaskManager.GetProgress<DataImportationReporter>(ProcessKey);
+        if (progress != null)
+            return progress;
+        return new DataImportationReporter(StringLocalizer);
+    }
+
+    internal void ImportInBackground(string pasteValue)
+    {
+        var worker = CreateImportationTextWorker(pasteValue, '\t');
+        BackgroundTaskManager.Run(ProcessKey, worker);
+    }
+
+    internal DataImportationDto GetCurrentProgress()
+    {
+        bool isRunning = BackgroundTaskManager.IsRunning(ProcessKey);
+        var reporter = BackgroundTaskManager.GetProgress<DataImportationReporter>(ProcessKey);
+        var dto = new DataImportationDto();
+        if (reporter != null)
+        {
+            dto.StartDate = reporter.StartDate.ToDateTimeString();
+            dto.PercentProcess = reporter.Percentage;
+            dto.Message = reporter.Message;
+            dto.Insert = reporter.Insert;
+            dto.Update = reporter.Update;
+            dto.Delete = reporter.Delete;
+            dto.Error = reporter.Error;
+            dto.Ignore = reporter.Ignore;
+            dto.IsProcessing = isRunning || reporter.EndDate.Equals(DateTime.MinValue);
+        }
+        else
+        {
+            dto.Message = StringLocalizer["Waiting..."];
+            dto.StartDate = DateTime.Now.ToDateTimeString();
+        }
+
+        return dto;
+    }
+
+    private JJLinkButton GetBackButton()
+    {
+        var button = new JJLinkButton
+        {
+            IconClass = "fa fa-arrow-left",
+            Text = StringLocalizer["Back"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetBackScript()
+        };
+        return button;
+    }
+    
+    private JJLinkButton GetCloseButton()
+    {
+        var button = new JJLinkButton
+        {
+            Icon = FontAwesomeIcon.SolidXmark,
+            Text = StringLocalizer["Close"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetCloseModalScript()
+        };
+        return button;
+    }
+
+    private JJLinkButton GetHelpButton()
+    {
+        var button = new JJLinkButton
+        {
+            IconClass = "fa fa-question-circle",
+            Text = StringLocalizer["Help"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetHelpScript()
+        };
+        return button;
+    }
+
+    private JJLinkButton GetLogButton()
+    {
+        var button = new JJLinkButton
+        {
+            IconClass = "fa fa-film",
+            Text = StringLocalizer["Last Importation"],
+            ShowAsButton = true,
+            OnClientClick = DataImportationScripts.GetLogScript()
+        };
+        return button;
+    }
+
+    private JJUploadArea GetUploadArea()
+    {
+        var area = ComponentFactory.UploadArea.Create();
+        area.RouteContext.ComponentContext = ComponentContext.DataImportationFileUpload;
+        area.Multiple = false;
+        area.EnableCopyPaste = false;
+        area.JsCallback = DataImportationScripts.GetUploadCallbackScript();
+        area.Name += "-import";
+        area.AllowedTypes = "txt,csv,log";
+        area.CustomUploadAreaLabel =
+            StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", area.AllowedTypes];
+
+        return area;
+    }
+}

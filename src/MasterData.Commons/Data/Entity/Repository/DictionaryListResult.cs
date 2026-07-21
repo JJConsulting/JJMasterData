@@ -11,6 +11,11 @@ public sealed class DictionaryListResult : ListResult<Dictionary<string, object?
     {
     }
 
+    public static DictionaryListResult FromList(List<Dictionary<string, object?>> list, int totalOfRecords)
+    {
+        return new DictionaryListResult(list, totalOfRecords);
+    }
+
     public static DictionaryListResult FromDataTable(DataTable dataTable)
     {
         var list = EnumerableHelper.ConvertToDictionaryList(dataTable);
