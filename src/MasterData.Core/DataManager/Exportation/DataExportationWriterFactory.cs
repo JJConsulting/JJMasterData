@@ -1,6 +1,5 @@
 ﻿using System;
 using JJConsulting.MasterData.Storage.Abstractions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.UI.Components;
@@ -11,7 +10,7 @@ namespace JJMasterData.Core.DataManager.Exportation;
 
 public class DataExportationWriterFactory(IServiceProvider serviceProvider)
 {
-    public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
+    public event EventHandler<GridCellEventArgs>? OnRenderCell;
 
     private IPdfWriter? GetPdfWriter()
     {
@@ -42,7 +41,7 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
             case ExportFileExtension.TXT:
                 var textWriter = GetTextWriter();
                 textWriter.Delimiter = dataExportation.ExportOptions.Delimiter;
-                textWriter.OnRenderCellAsync += OnRenderCellAsync;
+                textWriter.OnRenderCell += OnRenderCell;
                 
                 writer = (DataExportationWriterBase)textWriter;
                 break;
@@ -51,7 +50,7 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
                 var excelWriter = GetExcelWriter();
                 excelWriter.ShowRowStriped = dataExportation.ShowRowStriped;
                 excelWriter.ShowBorder = dataExportation.ShowBorder;
-                excelWriter.OnRenderCellAsync += OnRenderCellAsync;
+                excelWriter.OnRenderCell += OnRenderCell;
                 
                 writer = (DataExportationWriterBase)excelWriter;
 
@@ -64,7 +63,7 @@ public class DataExportationWriterFactory(IServiceProvider serviceProvider)
 
                 pdfWriter.ShowRowStriped = dataExportation.ShowRowStriped;
                 pdfWriter.ShowBorder = dataExportation.ShowBorder;
-                pdfWriter.OnRenderCellAsync += OnRenderCellAsync;
+                pdfWriter.OnRenderCell += OnRenderCell;
                 
                 // ReSharper disable once SuspiciousTypeConversion.Global;
                 // PdfWriter is dynamic loaded by plugin.

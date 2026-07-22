@@ -1,9 +1,12 @@
 using System.Text;
+using System.Runtime.CompilerServices;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
@@ -19,6 +22,33 @@ namespace JJMasterData.Core.Test.UI.Components.IO.UploadView;
 
 public class JJUploadViewTests
 {
+    [Fact]
+    public void GridView_WhenAccessed_ConfiguresFilesGrid()
+    {
+        var contextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+        var manager = CreateUploadViewManager(contextAccessor, Mock.Of<IFileStorage>());
+        var gridView = (JJGridView)RuntimeHelpers.GetUninitializedObject(typeof(JJGridView));
+        var uploadView = CreateUploadView(contextAccessor, manager, gridView);
+
+        var result = uploadView.GridView;
+
+        Assert.Same(gridView, result);
+        Assert.Equal(["FileName", "FileSize", "LastModified"],
+            gridView.FormElement.Fields.Select(field => field.Name));
+        Assert.True(gridView.FormElement.Options.Grid.IsCompact);
+        BasicAction[] expectedActions =
+            [uploadView.DownloadAction, uploadView.RenameAction, uploadView.DeleteAction];
+        Assert.Equal(expectedActions, gridView.TableActions);
+        Assert.False(gridView.ShowTitle);
+        Assert.False(gridView.ShowToolbar);
+        Assert.False(gridView.EnableFilter);
+        Assert.False(gridView.EnableSorting);
+        Assert.False(gridView.ShowPaging);
+        Assert.False(gridView.ShowHeaderWhenEmpty);
+        Assert.False(gridView.FilterAction.IsVisible);
+        Assert.False(gridView.SortAction.IsVisible);
+    }
+
     [Fact]
     public async Task GetFilesAsync_WhenSingleFileAndDraftFilesExist_ReturnsOnlyDraftFiles()
     {
@@ -81,13 +111,14 @@ public class JJUploadViewTests
 
     private static JJUploadView CreateUploadView(
         IHttpContextAccessor contextAccessor,
-        UploadViewManager manager)
+        UploadViewManager manager,
+        JJGridView? gridView = null)
     {
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
         var encryptionService = new Mock<IEncryptionService>();
         encryptionService
             .Setup(service => service.EncryptString(It.IsAny<string>()))
-            .Returns((string value, string _) => value);
+            .Returns((string value) => value);
 
         var uploadAreaFactory = new UploadAreaFactory(
             contextAccessor,
@@ -100,6 +131,21 @@ public class JJUploadViewTests
         componentFactory
             .SetupGet(factory => factory.UploadArea)
             .Returns(uploadAreaFactory);
+
+        if (gridView is not null)
+        {
+            var gridViewFactory = new Mock<IFormElementComponentFactory<JJGridView>>();
+            gridViewFactory
+                .Setup(factory => factory.Create(It.IsAny<FormElement>()))
+                .Returns((FormElement formElement) =>
+                {
+                    gridView.FormElement = formElement;
+                    return gridView;
+                });
+            componentFactory
+                .SetupGet(factory => factory.GridView)
+                .Returns(gridViewFactory.Object);
+        }
 
         return new JJUploadView(
             contextAccessor,

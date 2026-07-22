@@ -10,7 +10,6 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
@@ -35,7 +34,7 @@ public class ExcelWriter(
         options,
         loggerFactory.CreateLogger<DataExportationWriterBase>()), IExcelWriter
 {
-    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
+    public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public bool ShowBorder { get; set; }
 
@@ -180,7 +179,7 @@ public class ExcelWriter(
             }
         }
 
-        if (OnRenderCellAsync != null)
+        if (OnRenderCell != null)
         {
             var args = new GridCellEventArgs
             {
@@ -190,7 +189,7 @@ public class ExcelWriter(
             };
 
        
-            await OnRenderCellAsync(this, args);
+            OnRenderCell(this, args);
 
             if (args.HtmlResult is not null)
             {

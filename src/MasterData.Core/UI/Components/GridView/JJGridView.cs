@@ -54,13 +54,13 @@ public class JJGridView : AsyncComponent
     #region Events
     
 
-    public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
+    public event EventHandler<GridCellEventArgs>? OnRenderCell;
     
     /// <summary>
     /// Event fired when rendering the checkbox used to select the Grid row.
     /// <para/>Fired only when EnableMultiSelect property is enabled.
     /// </summary>
-    public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
+    public event EventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCell;
     /// <summary>
     /// Event fired to retrieve table data
     /// </summary>
@@ -72,12 +72,12 @@ public class JJGridView : AsyncComponent
     /// using the proc informed in the FormElement;
     /// </remarks>
     public event GridDataLoadEventHandler? OnDataLoadAsync;
-    public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
+    public event EventHandler<ActionEventArgs>? OnRenderAction;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
     public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
     public event AsyncEventHandler<GridRenderEventArgs>? OnBeforeTableRenderAsync;
     public event AsyncEventHandler<GridRenderEventArgs>? OnAfterTableRenderAsync;
-    public event AsyncEventHandler<GridRowEventArgs>? OnRenderRowAsync;
+    public event EventHandler<GridRowEventArgs>? OnRenderRow;
     #endregion
 
     #region Properties
@@ -137,7 +137,7 @@ public class JJGridView : AsyncComponent
             _dataExportation.ShowRowStriped = CurrentSettings.ShowRowStriped;
             _dataExportation.UserValues = UserValues;
             _dataExportation.ProcessOptions = ExportAction.ProcessOptions;
-            _dataExportation.OnRenderCellAsync += OnRenderCellAsync;
+            _dataExportation.OnRenderCell += OnRenderCell;
             
             return _dataExportation;
         }
@@ -396,10 +396,10 @@ public class JJGridView : AsyncComponent
 
             _table = new GridTable(this);
             
-            _table.Body.OnRenderActionAsync += OnRenderActionAsync;
-            _table.Body.OnRenderCellAsync += OnRenderCellAsync;
-            _table.Body.OnRenderSelectedCellAsync += OnRenderSelectedCellAsync;
-            _table.Body.OnRenderRowAsync += OnRenderRowAsync;
+            _table.Body.OnRenderAction += OnRenderAction;
+            _table.Body.OnRenderCell += OnRenderCell;
+            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
+            _table.Body.OnRenderRow += OnRenderRow;
 
             return _table;
         }

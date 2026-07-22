@@ -506,7 +506,7 @@ public class JJFormView : AsyncComponent
 
         childFormView.GridView.TableActions.Add(new InsertSelectionAction());
         childFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
-        childFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        childFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
 
         return childFormView;
     }
@@ -1118,7 +1118,7 @@ public class JJFormView : AsyncComponent
         _insertSelectionFormView = await ComponentFactory.FormView.CreateAsync(elementNameToSelect);
         _insertSelectionFormView.FormElement.ParentName = FormElement.Name;
         _insertSelectionFormView.UserValues = UserValues;
-        _insertSelectionFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        _insertSelectionFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
         _insertSelectionFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
         _insertSelectionFormView.GridView.TableActions.Add(new InsertSelectionAction());
 
@@ -1615,13 +1615,13 @@ public class JJFormView : AsyncComponent
         return toolbar;
     }
 
-    private ValueTask InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
+    private void InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
     {
         if (sender is not JJGridView gridView)
-            return ValueTask.CompletedTask;
+            return;
 
         if (args.ActionName is not InsertSelectionAction.ActionName)
-            return ValueTask.CompletedTask;
+            return;
 
         args.LinkButton.Tooltip = Localizer["Select"];
         
@@ -1629,7 +1629,6 @@ public class JJFormView : AsyncComponent
         
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(pkValues!);
 
-        return ValueTask.CompletedTask;
     }
 
     /// <summary>

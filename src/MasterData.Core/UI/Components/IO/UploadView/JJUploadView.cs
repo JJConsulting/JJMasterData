@@ -18,6 +18,7 @@ using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
@@ -38,6 +39,11 @@ namespace JJMasterData.Core.UI.Components;
 public class JJUploadView : AsyncComponent
 {
     private const string FileNameJs = "NameJS";
+    private const string FileNameField = "FileName";
+    private const string FileSizeField = "FileSize";
+    private const string LastModifiedField = "LastModified";
+    private const string FullPathField = "FullPath";
+    private const string FolderPathField = "FolderPath";
 
     internal const string DownloadFileActionName = "download-file";
     internal const string DeleteFileActionName = "delete-file";
@@ -82,7 +88,7 @@ public class JJUploadView : AsyncComponent
 
     public bool ViewGallery { get; set; }
 
-    public Dictionary<string, object> UserValues { get; set; } = new();
+    public string EmptyDataText { get; set; } = "There is no files to display.";
 
     /// <summary>
     /// Always apply changes to the file system.
@@ -132,6 +138,8 @@ public class JJUploadView : AsyncComponent
             return field;
         }
     }
+
+    public JJGridView GridView => field ??= CreateGridView();
 
     public string JsCallback
     {
@@ -272,7 +280,7 @@ public class JJUploadView : AsyncComponent
         }
         else
         {
-            html.Append(await GetFilesTableHtmlAsync());
+            html.Append(await GetFilesGridHtmlAsync());
         }
 
         html.AppendComponent(await GetPreviewModalHtml());
@@ -363,7 +371,7 @@ public class JJUploadView : AsyncComponent
     {
         var files = await GetFilesAsync();
         if (files.Count == 0)
-            return new JJAlert { Title = StringLocalizer["There is no files to display."] }.GetHtmlBuilder();
+            return new JJAlert { Title = StringLocalizer[EmptyDataText] }.GetHtmlBuilder();
 
         var row = HtmlBuilder.Div().WithCssClass("row");
 
@@ -590,64 +598,85 @@ public class JJUploadView : AsyncComponent
         return modal;
     }
 
-    private async Task<HtmlBuilder> GetFilesTableHtmlAsync()
+    private async Task<HtmlBuilder> GetFilesGridHtmlAsync()
     {
         var files = await GetFilesAsync();
 
-        if (files.Count == 0)
-            return new JJAlert { Title = StringLocalizer["There is no files to display."] }.GetHtmlBuilder();
-
-        var table = new HtmlBuilder(HtmlTag.Table)
-            .WithCssClass("table table-striped table-hover table-sm");
-
-        var visibleActionCount = GetVisibleActionsCount();
-
-        table.Append(HtmlTag.Thead, thead =>
+        GridView.EmptyDataText = EmptyDataText;
+        GridView.TotalOfRecords = files.Count;
+        GridView.DataSource = files.Select(file => new Dictionary<string, object?>
         {
-            thead.Append(HtmlTag.Tr, tr =>
-            {
-                tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Name"]));
-                tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Size"]));
-                tr.Append(HtmlTag.Th, th => th.AppendText(StringLocalizer["Last Modified"]));
+            [FileNameField] = file.FileName,
+            [FileSizeField] = Format.FormatFileSize(file.Length),
+            [LastModifiedField] = file.LastWriteTime.ToString(CultureInfo.CurrentCulture),
+            [FullPathField] = file.FullPath,
+            [FolderPathField] = file.FolderPath
+        }).ToList();
 
-                for (var i = 0; i < visibleActionCount; i++)
-                {
-                    tr.Append(HtmlTag.Th, th => th.WithCssClass("table-action"));
-                }
-            });
-        });
-
-        var tbody = new HtmlBuilder(HtmlTag.Tbody);
-        foreach (var file in files)
-        {
-            var actionsHtml = GetFileActions(file);
-            tbody.Append(HtmlTag.Tr, tr =>
-            {
-                tr.Append(HtmlTag.Td, td => td.AppendText(file.FileName));
-                tr.Append(HtmlTag.Td, td => td.AppendText(Format.FormatFileSize(file.Length)));
-                tr.Append(HtmlTag.Td, td => td.AppendText(file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
-                tr.AppendRange(actionsHtml);
-            });
-        }
-
-        table.Append(tbody);
-        return table;
+        return await GridView.GetHtmlBuilderAsync();
     }
 
-    private int GetVisibleActionsCount()
+    private JJGridView CreateGridView()
     {
-        var count = 0;
+        var gridName = $"{Name}-files-grid";
+        var formElement = new FormElement
+        {
+            Name = gridName,
+            TableName = gridName
+        };
 
-        if (DownloadAction.IsVisible)
-            count++;
+        formElement.Fields.AddRange([
+            new FormElementField { Name = FileNameField, Label = "Name" },
+            new FormElementField { Name = FileSizeField, Label = "Size" },
+            new FormElementField { Name = LastModifiedField, Label = "Last Modified" }
+        ]);
+        formElement.Options.Grid.IsCompact = true;
 
-        if (RenameAction.IsVisible)
-            count++;
+        formElement.Options.GridTableActions.Clear();
+        formElement.Options.GridTableActions.AddRange([DownloadAction, RenameAction, DeleteAction]);
 
-        if (DeleteAction.IsVisible)
-            count++;
+        var gridView = ComponentFactory.GridView.Create(formElement);
+        gridView.ShowTitle = false;
+        gridView.ShowToolbar = false;
+        gridView.EnableFilter = false;
+        gridView.EnableSorting = false;
+        gridView.ShowPaging = false;
+        gridView.ShowHeaderWhenEmpty = false;
+        gridView.FilterAction.SetVisible(false);
+        gridView.SortAction.SetVisible(false);
+        gridView.OnRenderAction += OnRenderGridAction;
 
-        return count;
+        return gridView;
+    }
+
+    private void OnRenderGridAction(object sender, ActionEventArgs args)
+    {
+        var fileName = args.FieldValues[FileNameField]?.ToString() ?? string.Empty;
+
+        switch (args.ActionName)
+        {
+            case DownloadFileActionName:
+                var fullPath = args.FieldValues[FullPathField]?.ToString();
+                args.LinkButton.UrlAction = ComponentFactory.Downloader.Create(fullPath).GetDownloadUrl();
+                args.LinkButton.OnClientClick = null;
+                break;
+            case RenameFileActionName:
+                var folderPath = args.FieldValues[FolderPathField]?.ToString();
+                args.LinkButton.OnClientClick = GetActionScript(Scripts.GetRenameFileScript(), fileName);
+                if (!AutoSave && !string.Equals(folderPath, TempPath, StringComparison.Ordinal))
+                    args.LinkButton.Enabled = false;
+                break;
+            case DeleteFileActionName:
+                var isDraft = string.Equals(
+                    args.FieldValues[FolderPathField]?.ToString(),
+                    TempPath,
+                    StringComparison.Ordinal);
+                var deleteScript = !AutoSave && !isDraft
+                    ? Scripts.GetMarkDeletedScript()
+                    : Scripts.GetDeleteFileScript();
+                args.LinkButton.OnClientClick = GetActionScript(deleteScript, fileName);
+                break;
+        }
     }
 
     private IEnumerable<HtmlBuilder> GetFileActions(FileStorageItem file)

@@ -159,7 +159,7 @@ public class ElementService(
             args.TotalOfRecords = result.TotalOfRecords;
         };
 
-        formView.GridView.OnRenderCellAsync += (_, args) =>
+        formView.GridView.OnRenderCell += (_, args) =>
         {
             if (args.Field.Name == DataDictionaryStructure.Name)
             {
@@ -190,10 +190,9 @@ public class ElementService(
                     .AppendText(relativeDateFormatter.ToRelativeString(lastModified));
             }
 
-            return ValueTask.CompletedTask;
         };
 
-        formView.GridView.OnRenderActionAsync += (_, args) =>
+        formView.GridView.OnRenderAction += (_, args) =>
         {
             var elementName = args.FieldValues["name"]?.ToString();
             
@@ -215,7 +214,6 @@ public class ElementService(
                     break;
             }
 
-            return ValueTask.CompletedTask;
         };
         
         return formView;

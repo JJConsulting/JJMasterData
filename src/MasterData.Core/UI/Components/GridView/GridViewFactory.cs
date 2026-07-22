@@ -66,12 +66,12 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
     private static void SetGridEvents(JJGridView gridView, IGridEventHandler eventHandler)
     {
         gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
-        gridView.OnRenderActionAsync += eventHandler.OnRenderActionAsync;
+        gridView.OnRenderAction += eventHandler.OnRenderAction;
         gridView.OnRenderToolbarActionAsync += eventHandler.OnRenderToolbarActionAsync;
-        gridView.OnRenderCellAsync += eventHandler.OnRenderCellAsync;
+        gridView.OnRenderCell += eventHandler.OnRenderCell;
         gridView.OnFilterLoadAsync += eventHandler.OnFilterLoadAsync;
-        gridView.OnRenderSelectedCellAsync += eventHandler.OnRenderSelectedCellAsync;
-        gridView.OnRenderRowAsync += eventHandler.OnRenderRowAsync;
+        gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
+        gridView.OnRenderRow += eventHandler.OnRenderRow;
     }
 
     public JJGridView Create(DataTable dataTable)
