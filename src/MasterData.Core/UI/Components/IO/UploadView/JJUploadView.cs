@@ -82,7 +82,7 @@ public class JJUploadView : AsyncComponent
 
     public bool ViewGallery { get; set; }
 
-    public Dictionary<string, object> UserValues { get; set; } = new();
+    public string EmptyDataText { get; set; } = "There is no files to display.";
 
     /// <summary>
     /// Always apply changes to the file system.
@@ -363,7 +363,7 @@ public class JJUploadView : AsyncComponent
     {
         var files = await GetFilesAsync();
         if (files.Count == 0)
-            return new JJAlert { Title = StringLocalizer["There is no files to display."] }.GetHtmlBuilder();
+            return new JJAlert { Title = StringLocalizer[EmptyDataText] }.GetHtmlBuilder();
 
         var row = HtmlBuilder.Div().WithCssClass("row");
 
@@ -595,7 +595,7 @@ public class JJUploadView : AsyncComponent
         var files = await GetFilesAsync();
 
         if (files.Count == 0)
-            return new JJAlert { Title = StringLocalizer["There is no files to display."] }.GetHtmlBuilder();
+            return new JJAlert { Title = StringLocalizer[EmptyDataText] }.GetHtmlBuilder();
 
         var table = new HtmlBuilder(HtmlTag.Table)
             .WithCssClass("table table-striped table-hover table-sm");
