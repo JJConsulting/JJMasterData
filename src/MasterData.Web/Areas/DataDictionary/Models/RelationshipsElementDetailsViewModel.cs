@@ -13,7 +13,7 @@ public sealed class RelationshipsElementDetailsViewModel
     public required List<SelectListItem>? ForeignKeysSelectList { get; set; }
     public required List<SelectListItem>? ElementsSelectList { get; set; }
     
-    [DisplayName("Primary Key Column")]
+    [DisplayName("Key Column")]
     public string? AddPrimaryKeyName { get; set; }
     [DisplayName("Foreign Key Column")]
     public string? AddForeignKeyName { get; set; }

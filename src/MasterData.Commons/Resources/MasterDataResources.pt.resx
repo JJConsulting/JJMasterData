@@ -1741,6 +1741,9 @@
     <value>Tipo de lista</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="Key Column" xml:space="preserve">
+    <value>Coluna da Chave</value>
+  </data>
   <data name="Primary Key Column" xml:space="preserve">
     <value>Coluna da Chave Primária</value>
   </data>
