@@ -1,4 +1,5 @@
 #nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,10 +24,10 @@ internal sealed class GridTableBody(JJGridView gridView)
 {
     private readonly string _name = $"{gridView.Name}-table";
 
-    public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
-    public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
-    public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
-    public event AsyncEventHandler<GridRowEventArgs>? OnRenderRowAsync;
+    public event EventHandler<ActionEventArgs>? OnRenderAction;
+    public event EventHandler<GridCellEventArgs>? OnRenderCell;
+    public event EventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCell;
+    public event EventHandler<GridRowEventArgs>? OnRenderRow;
 
     public async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
@@ -122,9 +123,9 @@ internal sealed class GridTableBody(JJGridView gridView)
         
         tr.AppendRange(await GetTdHtmlList(row, index));
 
-        if (OnRenderRowAsync is not null)
+        if (OnRenderRow is not null)
         {
-            await OnRenderRowAsync(gridView, new()
+            OnRenderRow(gridView, new()
             {
                 HtmlBuilder = tr,
                 RowValues = row
@@ -146,7 +147,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         
         if (gridView.EnableMultiSelect)
         {
-            var checkBox = await GetMultiSelectCheckbox(row, index, values);
+            var checkBox = GetMultiSelectCheckbox(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jj-checkbox");
 
@@ -266,7 +267,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         }
 
 
-        if (OnRenderCellAsync == null) 
+        if (OnRenderCell == null) 
             return cell;
         
         var args = new GridCellEventArgs
@@ -277,7 +278,7 @@ internal sealed class GridTableBody(JJGridView gridView)
             Sender = new JJText(stringValue)
         };
 
-        await OnRenderCellAsync(this, args);
+        OnRenderCell(this, args);
 
         return args.HtmlResult ?? cell;
     }
@@ -358,11 +359,11 @@ internal sealed class GridTableBody(JJGridView gridView)
         
         control.CssClass = field.Name;
 
-        if (OnRenderCellAsync != null)
+        if (OnRenderCell != null)
         {
             var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = control };
 
-            await OnRenderCellAsync(gridView, args);
+            OnRenderCell(gridView, args);
 
             if (args.HtmlResult is not null)
             {
@@ -414,10 +415,10 @@ internal sealed class GridTableBody(JJGridView gridView)
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
             var linkButton = factory.CreateGridTableButton(groupedAction, gridView, formStateData);
 
-            if (OnRenderActionAsync != null)
+            if (OnRenderAction != null)
             {
                 var args = new ActionEventArgs(groupedAction, linkButton, formStateData.Values);
-                await OnRenderActionAsync(gridView, args);
+                OnRenderAction(gridView, args);
             }
 
             btnGroup.Actions.Add(linkButton);
@@ -437,11 +438,11 @@ internal sealed class GridTableBody(JJGridView gridView)
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
             var link = factory.CreateGridTableButton(action, gridView, formStateData);
-            if (OnRenderActionAsync is not null)
+            if (OnRenderAction is not null)
             {
                 var args = new ActionEventArgs(action, link, formStateData.Values);
                 
-                await OnRenderActionAsync(gridView, args);
+                OnRenderAction(gridView, args);
 
                 if (args.HtmlResult != null)
                 {
@@ -499,7 +500,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return string.Empty;
     }
 
-    private async ValueTask<JJCheckBox> GetMultiSelectCheckbox(Dictionary<string, object?> row, int index,
+    private JJCheckBox GetMultiSelectCheckbox(Dictionary<string, object?> row, int index,
         Dictionary<string, object?> values)
     {
         var pkValues = DataHelper.ParsePkValues(gridView.FormElement, values, ';');
@@ -521,7 +522,7 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value.Equals(pkValues)));
 
-        if (OnRenderSelectedCellAsync is null) 
+        if (OnRenderSelectedCell is null) 
             return checkBox;
         
         var args = new GridSelectedCellEventArgs
@@ -530,7 +531,7 @@ internal sealed class GridTableBody(JJGridView gridView)
             CheckBox = checkBox
         };
 
-        await OnRenderSelectedCellAsync(gridView, args);
+        OnRenderSelectedCell(gridView, args);
 
         return checkBox;
     }
@@ -544,10 +545,10 @@ internal sealed class GridTableBody(JJGridView gridView)
 
         var actionButton = factory.CreateGridTableButton(defaultAction, gridView, formStateData);
 
-        if (OnRenderActionAsync != null)
+        if (OnRenderAction != null)
         {
             var args = new ActionEventArgs(defaultAction, actionButton, formStateData.Values);
-            await OnRenderActionAsync(gridView, args);
+            OnRenderAction(gridView, args);
 
             if (args.HtmlResult != null)
                 actionButton = null;

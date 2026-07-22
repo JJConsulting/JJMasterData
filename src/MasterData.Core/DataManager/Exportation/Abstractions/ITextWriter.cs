@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Tasks;
+﻿using System;
 using JJMasterData.Core.UI.Events.Args;
 
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
@@ -6,5 +6,5 @@ namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 public interface ITextWriter : IExportationWriter
 {
     string Delimiter { get; set; }
-    event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
+    event EventHandler<GridCellEventArgs> OnRenderCell;
 }

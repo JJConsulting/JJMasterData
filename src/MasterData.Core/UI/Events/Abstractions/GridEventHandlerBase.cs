@@ -8,10 +8,10 @@ public abstract class GridEventHandlerBase : IGridEventHandler
 {
     public abstract string ElementName { get; }
     public virtual ValueTask OnFilterLoadAsync(object sender, GridFilterLoadEventArgs eventArgs) => ValueTask.CompletedTask;
-    public virtual ValueTask OnRenderCellAsync(object sender, GridCellEventArgs eventArgs) => ValueTask.CompletedTask;
-    public virtual ValueTask OnRenderSelectedCellAsync(object sender, GridSelectedCellEventArgs eventArgs) => ValueTask.CompletedTask;
+    public virtual void OnRenderCell(object? sender, GridCellEventArgs eventArgs) { }
+    public virtual void OnRenderSelectedCell(object? sender, GridSelectedCellEventArgs eventArgs) { }
     public virtual Task OnDataLoadAsync(object sender, GridDataLoadEventArgs eventArgs) => Task.CompletedTask;
-    public virtual ValueTask OnRenderActionAsync(object sender, ActionEventArgs eventArgs) => ValueTask.CompletedTask;
+    public virtual void OnRenderAction(object? sender, ActionEventArgs eventArgs) { }
     public virtual ValueTask OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs eventArgs) => ValueTask.CompletedTask;
-    public virtual ValueTask OnRenderRowAsync(object sender, GridRowEventArgs eventArgs) => ValueTask.CompletedTask;
+    public virtual void OnRenderRow(object? sender, GridRowEventArgs eventArgs) { }
 }

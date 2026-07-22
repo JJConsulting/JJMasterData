@@ -22,7 +22,6 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
@@ -48,7 +47,6 @@ public class PdfWriter(
     : DataExportationWriterBase(expressionsService, stringLocalizer, options, logger), IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
-    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     public bool ShowBorder { get; set; }
     
     public bool ShowRowStriped { get; set; }
@@ -202,7 +200,7 @@ public class PdfWriter(
         var cell = new Cell();
         SetCellStyle(field, ref cell);
         
-        if (OnRenderCell != null || OnRenderCellAsync != null)
+        if (OnRenderCell != null)
         {
             var args = new GridCellEventArgs
             {
@@ -211,12 +209,7 @@ public class PdfWriter(
                 Sender = new JJText(value)
             };
 
-            OnRenderCell?.Invoke(this, args);
-
-            if (OnRenderCellAsync != null)
-            {
-                await OnRenderCellAsync(this, args);
-            }
+            OnRenderCell(this, args);
             
             value = args.HtmlResult.ToString();
             value = value.Replace("<br>", "\r\n");

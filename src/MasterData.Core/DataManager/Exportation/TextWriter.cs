@@ -8,7 +8,6 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
@@ -30,7 +29,7 @@ public class TextWriter(
         options,
         logger.CreateLogger<DataExportationWriterBase>()), ITextWriter
 {
-    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
+    public event EventHandler<GridCellEventArgs> OnRenderCell;
     public string Delimiter { get; set; }
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
@@ -110,7 +109,7 @@ public class TextWriter(
                         value = cellValue?.ToString();
                 }
 
-                if (OnRenderCellAsync != null)
+                if (OnRenderCell != null)
                 {
                     var args = new GridCellEventArgs
                     {
@@ -119,7 +118,7 @@ public class TextWriter(
                         Sender = new JJText(value)
                     };
 
-                    await OnRenderCellAsync(this, args);
+                    OnRenderCell(this, args);
 
                     if(args.HtmlResult != null)
                         value = args.HtmlResult.ToString();
