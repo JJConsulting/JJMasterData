@@ -28,7 +28,7 @@ class PhoneInputListener {
         }
 
         function syncHiddenInput(input: HTMLInputElement, select: HTMLSelectElement) {
-            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0] as HTMLInputElement;
+            const hiddenInput = $(input).closest('.jj-phone-group').find('.jj-phone-hidden-input')[0] as HTMLInputElement;
             if (!hiddenInput) return;
 
             const selectedOption = select.selectedOptions[0];
@@ -40,15 +40,12 @@ class PhoneInputListener {
         const selects = document.querySelectorAll<HTMLSelectElement>(`${selectorPrefix}select.jj-phone-select`);
         selects.forEach(select => 
         {
-            $(select).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) 
-            {
-                if(isSelected){
-                    const input = $(select).closest('.input-group').find('.jj-phone-input')[0] as HTMLInputElement;
-                    if (!input) return;
+            select.addEventListener('change', () => {
+                const input = $(select).closest('.input-group').find('.jj-phone-input')[0] as HTMLInputElement;
+                if (!input) return;
 
-                    applyMask(input);
-                    syncHiddenInput(input, select);
-                }
+                applyMask(input);
+                syncHiddenInput(input, select);
             });
         })
 
@@ -58,7 +55,7 @@ class PhoneInputListener {
             const select = $(input).closest('.input-group').find('select.jj-phone-select')[0] as HTMLSelectElement;
             if (!select) return;
 
-            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0] as HTMLInputElement;
+            const hiddenInput = $(input).closest('.jj-phone-group').find('.jj-phone-hidden-input')[0] as HTMLInputElement;
             
             const options = [...select.options];
             const longestDialCode = options.reduce((longest, current) => {
@@ -84,7 +81,7 @@ class PhoneInputListener {
             {
                 const optionCountrySelected = getCountryFromInputValue(hiddenInput.value);
                 if(optionCountrySelected)
-                    $(select).selectpicker('val', optionCountrySelected.value);
+                    TomSelectHelper.setValue(select, optionCountrySelected.value);
             }
 
             const selectedOption = select.selectedOptions[0] || options.find(option => option.value === $(select).val());

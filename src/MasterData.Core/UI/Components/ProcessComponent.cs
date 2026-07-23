@@ -1,19 +1,18 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Text;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
 public abstract class ProcessComponent(
-        IHttpContext currentContext,
+        IHttpContextAccessor httpContextAccessor,
         IMasterDataUser masterDataUser,
         ExpressionsService expressionsService,
         IBackgroundTaskManager backgroundTaskManager,
@@ -22,40 +21,34 @@ public abstract class ProcessComponent(
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : AsyncComponent
 {
-    private string _processKey;
-    private ProcessOptions _processOptions;
-    private string _userId;
-
     internal ExpressionsService ExpressionsService { get; } = expressionsService;
 
     internal string ProcessKey
     {
         get
         {
-            if (string.IsNullOrEmpty(_processKey))
-                _processKey = BuildProcessKey();
+            if (string.IsNullOrEmpty(field))
+                field = BuildProcessKey();
 
-            return _processKey;
+            return field;
         }
     }
 
-    public Dictionary<string, object> UserValues { get; set; } = new();
+    public Dictionary<string, object?> UserValues { get; set; } = new();
 
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
     /// <remarks>
-    /// Se a variavel não for atribuida diretamente,
-    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= masterDataUser.Id;
+    internal string UserId => field ??= masterDataUser.Id;
 
-    public IHttpContext CurrentContext { get; init; } = currentContext;
+    public IHttpContextAccessor HttpContextAccessor { get; init; } = httpContextAccessor;
 
     public ProcessOptions ProcessOptions
     {
-        get => _processOptions ??= new ProcessOptions();
-        set => _processOptions = value;
+        get => field ??= new ProcessOptions();
+        set;
     }
 
     /// <summary>

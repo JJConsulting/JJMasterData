@@ -1,14 +1,13 @@
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class LookupFactory(
-        IHttpRequest httpRequest,
+        IHttpContextAccessor httpRequest,
         FormValuesService formValuesService,
         LookupService lookupService,
         IComponentFactory componentFactory,

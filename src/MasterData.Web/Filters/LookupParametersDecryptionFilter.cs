@@ -26,7 +26,7 @@ public class LookupParametersDecryptionFilter(IEncryptionService encryptionServi
 
     private void SetLookupParameters(ActionExecutingContext context, StringValues encryptedParameters)
     {
-        var lookupQueryString = encryptionService.DecryptStringWithUrlUnescape(encryptedParameters);
+        var lookupQueryString = encryptionService.DecryptString(encryptedParameters.ToString());
         context.ActionArguments["lookupParameters"] = LookupParameters.FromQueryString(lookupQueryString);
     }
 }

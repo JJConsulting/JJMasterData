@@ -4,7 +4,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -18,9 +18,9 @@ public class ExpressionsServiceTests
     private readonly Mock<ISyncExpressionProvider> _expressionBooleanProviderMock = new();
     private readonly Mock<IEncryptionService> _encryptionServiceMock = new();
 
-    private static IHttpContext MockHttpContext()
+    private static IHttpContextAccessor MockHttpContext()
     {
-        var mockHttpContext = new Mock<IHttpContext>();
+        var mockHttpContext = new Mock<IHttpContextAccessor>();
         return mockHttpContext.Object;
     }
     

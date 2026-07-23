@@ -1,17 +1,14 @@
-#nullable enable
 using System;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class SearchBoxFactory(
         DataItemService dataItemService,
-        IHttpRequest httpRequest,
+        IHttpContextAccessor httpRequest,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJSearchBox>

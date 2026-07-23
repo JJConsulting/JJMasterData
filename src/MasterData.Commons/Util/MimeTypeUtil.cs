@@ -2,10 +2,6 @@
 using System.Collections.Frozen;
 using System.Collections.Generic;
 
-#if NET48
-using JJMasterData.Commons.Extensions;
-#endif
-
 namespace JJMasterData.Commons.Util;
 
 public static class MimeTypeUtil
@@ -248,6 +244,7 @@ public static class MimeTypeUtil
             {".manifest", "application/x-ms-manifest"},
             {".map", "text/plain"},
             {".master", "application/xml"},
+            {".md", "text/markdown"},
             {".mda", "application/msaccess"},
             {".mdb", "application/x-msaccess"},
             {".mde", "application/msaccess"},

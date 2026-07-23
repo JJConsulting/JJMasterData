@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net4.8;net10.0</TargetFrameworks>
+		<TargetFramework>net10.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>disable</Nullable>
 		<Product>JJMasterData.Commons - Sun Version</Product>
@@ -13,6 +13,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
 		<PackageReference Include="Microsoft.Data.SqlClient" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
@@ -21,28 +22,21 @@
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
-		<PackageReference Include="PolySharp">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="System.Collections.Immutable" />
-		<PackageReference Include="System.Text.Json" />
-		<PackageReference Include="System.Threading.Channels" />
-	</ItemGroup>
-	
 	<ItemGroup>
 		<Using Include="JJMasterData.Commons.Resources"/>
 	</ItemGroup>
 	
 	<ItemGroup>
 		<InternalsVisibleTo Include="JJMasterData.Commons.Test" />
+        <InternalsVisibleTo Include="JJMasterData.Core.Test" />
 		<InternalsVisibleTo Include="JJMasterData.Core" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Data\DataAccessAsync.cs">
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\MasterData.Storage.Abstractions\MasterData.Storage.Abstractions.csproj" />
 	</ItemGroup>
 </Project>

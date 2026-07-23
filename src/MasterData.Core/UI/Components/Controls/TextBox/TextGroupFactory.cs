@@ -5,14 +5,13 @@ using System.Linq;
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using static JJMasterData.Core.UI.DateFormatMapper;
 
 namespace JJMasterData.Core.UI.Components;
 
 public sealed class TextGroupFactory(
-    IFormValues formValues,
+    IHttpContextAccessor formValues,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>
@@ -244,7 +243,9 @@ public sealed class TextGroupFactory(
                 textGroup.InputType = InputType.Text;
                 if (pageState == PageState.Filter && isMultiFilter)
                 {
-                    textGroup.Attributes.Add("data-role", "tagsinput");
+                    cssClassList.Add("tom-select");
+                    cssClassList.Add("tom-select-tags");
+                    textGroup.Attributes.Add("data-tom-select-tags", "true");
                     textGroup.MaxLength = 0;
                 }
                 break;

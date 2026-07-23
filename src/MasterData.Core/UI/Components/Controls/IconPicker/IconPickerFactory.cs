@@ -1,11 +1,10 @@
 ﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class IconPickerFactory(IStringLocalizer<MasterDataResources> stringLocalizer, IUrlHelper urlHelper, IControlFactory<JJComboBox> comboBoxFactory, IFormValues formValues) : IControlFactory<JJIconPicker>
+public class IconPickerFactory(IStringLocalizer<MasterDataResources> stringLocalizer, IUrlHelper urlHelper, IControlFactory<JJComboBox> comboBoxFactory, IHttpContextAccessor formValues) : IControlFactory<JJIconPicker>
 {
     public JJIconPicker Create() => new(stringLocalizer,urlHelper,comboBoxFactory,formValues);
     

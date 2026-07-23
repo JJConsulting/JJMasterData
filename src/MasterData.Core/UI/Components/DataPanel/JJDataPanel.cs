@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,17 +16,8 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Tasks;
-
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
-#if NET48
-using JJMasterData.Commons.Configuration;
-#endif
-
 namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
@@ -33,7 +25,7 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 public class JJDataPanel(
     IEntityRepository entityRepository,
-    IHttpContext currentContext,
+    IHttpContextAccessor currentContext,
     IEncryptionService encryptionService,
     FieldFormattingService fieldFormattingService,
     FieldValidationService fieldValidationService,
@@ -52,7 +44,7 @@ public class JJDataPanel(
     #endregion
     #region "Properties"
 
-    public Dictionary<string, object> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, object?> UserValues { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
     /// <summary>
     /// Layout form settings
     /// </summary>
@@ -75,7 +67,7 @@ public class JJDataPanel(
         get
         {
             if (_pageState is null && ContainsPanelState())
-                _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"data-panel-state-{Name}"]);
+                _pageState = (PageState)int.Parse(CurrentContext.HttpContext!.Request.GetFormValue($"data-panel-state-{Name}"));
 
             return _pageState ?? PageState.View;
         }
@@ -86,7 +78,7 @@ public class JJDataPanel(
         }
     }
 
-    internal bool ContainsPanelState() => CurrentContext.Request.Form[$"data-panel-state-{Name}"] != null;
+    internal bool ContainsPanelState() => !string.IsNullOrEmpty(CurrentContext.HttpContext!.Request.GetFormValue($"data-panel-state-{Name}"));
 
     internal bool HasCustomPanelState { get; private set; }
     
@@ -100,20 +92,22 @@ public class JJDataPanel(
     /// Field Values.
     /// Key=Field Name, Value=Field Value
     /// </summary>
-    public Dictionary<string, object> Values { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, object?> Values { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
 
     /// <summary>
     /// Values not intended to be edited at the client. They are encrypted using <see cref="IEncryptionService"/>.
     /// </summary>
-    [CanBeNull]
-    public Dictionary<string, object> SecretValues
+    public Dictionary<string, object?>? SecretValues
     {
         get
         {
             if (field == null &&
-                CurrentContext.Request.Form.TryGetValue($"data-panel-secret-values-{Name}", out var secretValues))
+                CurrentContext.HttpContext!.Request.HasFormContentType && CurrentContext.HttpContext!.Request.Form.TryGetValue($"data-panel-secret-values-{Name}", out var secretValues))
+            {
                 field = EncryptionService.DecryptDictionary(secretValues);
+            }
+
             return field;
         }
         set;
@@ -144,7 +138,7 @@ public class JJDataPanel(
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
             field = factory.Create();
             
             return field;
@@ -157,15 +151,15 @@ public class JJDataPanel(
     {
         get
         {
-            if (CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"] != null)
-                field = StringManager.ParseBool(CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"]);
+            if (!string.IsNullOrEmpty(CurrentContext.HttpContext!.Request.GetFormValue($"data-panel-is-at-modal-{Name}")))
+                field = StringManager.ParseBool(CurrentContext.HttpContext!.Request.GetFormValue($"data-panel-is-at-modal-{Name}"));
 
             return field;
         }
         set;
     }
 
-    internal IHttpContext CurrentContext { get; } = currentContext;
+    internal IHttpContextAccessor CurrentContext { get; } = currentContext;
     internal IEncryptionService EncryptionService { get; } = encryptionService;
     internal FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
     internal ExpressionsService ExpressionsService { get; } = expressionsService;
@@ -179,7 +173,7 @@ public class JJDataPanel(
     public JJDataPanel(
         FormElement formElement,
         IEntityRepository entityRepository,
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IEncryptionService encryptionService,
         FieldFormattingService fieldFormattingService,
         FieldValidationService fieldValidationService,
@@ -225,7 +219,7 @@ public class JJDataPanel(
             case ComponentContext.LookupDescription:
                 return await GetFieldResultAsync<JJLookup>();
             case ComponentContext.DownloadFile:
-                return ComponentFactory.Downloader.Create().GetDownloadResult();
+                return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
             case ComponentContext.DataPanelReload:
             {
                 var html = await GetHtmlBuilderAsync();
@@ -233,7 +227,7 @@ public class JJDataPanel(
             }
             case ComponentContext.UrlRedirect:
             {
-                string encryptedActionMap = CurrentContext.Request.Form[$"current-action-map-{Name}"];
+                string encryptedActionMap = CurrentContext.HttpContext!.Request.GetFormValue($"current-action-map-{Name}");
                 if (string.IsNullOrEmpty(encryptedActionMap))
                     return null;
 
@@ -249,7 +243,7 @@ public class JJDataPanel(
 
     private async ValueTask<ComponentResult> GetFieldResultAsync<TControl>() where TControl : ControlBase
     {
-        var fieldName = CurrentContext.Request.QueryString["fieldName"];
+        var fieldName = CurrentContext.HttpContext!.Request.Query["fieldName"];
         var formStateData = new FormStateData(await GetFormValuesAsync(), UserValues, PageState);
         var controlContext = new ControlContext(formStateData, Name);
 
@@ -300,7 +294,7 @@ public class JJDataPanel(
     private string GetPkHiddenInput()
     {
         var pkValues = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return EncryptionService.EncryptStringWithUrlEscape(pkValues);
+        return EncryptionService.EncryptString(pkValues);
     }
 
     private string GetHtmlFormScript()
@@ -322,17 +316,11 @@ public class JJDataPanel(
         script.AppendLine("});");
         return script.ToString();
     }
-
-    [Obsolete("Please use GetFormValuesAsync")]
-    public Dictionary<string,object> GetFormValues()
-    {
-        return AsyncHelper.RunSync(GetFormValuesAsync);
-    }
-
+    
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public async Task<Dictionary<string, object>> GetFormValuesAsync()
+    public async Task<Dictionary<string, object?>> GetFormValuesAsync()
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var mergedValues = await formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
@@ -348,13 +336,6 @@ public class JJDataPanel(
         
         return Values;
     }
-#if NETFRAMEWORK
-    [Obsolete("Please use LoadValuesFromPkAsync")]
-    public void LoadValuesFromPK(Dictionary<string, object> pks)
-    {
-        Values = AsyncHelper.RunSync(()=>entityRepository.GetFieldsAsync(FormElement, pks));
-    }
-#endif
     public async Task LoadValuesFromPkAsync(Dictionary<string, object> pks)
     {
         Values = await entityRepository.GetFieldsAsync(FormElement, pks);
@@ -378,12 +359,16 @@ public class JJDataPanel(
 
         return LoadValuesFromPkAsync(filter);
     }
-
-
-    /// <inheritdoc cref="ValidateFields()"/>
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values)
+    
+    
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object?> values)
     {
         return ValidateFields(values, PageState);
+    }
+    
+    public ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object?> values, bool enableErrorLink = true)
+    {
+        return fieldValidationService.ValidateFieldsAsync(FormElement, values, PageState.Delete, enableErrorLink);
     }
     
     /// <summary>
@@ -393,11 +378,11 @@ public class JJDataPanel(
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink = true)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object?> values, PageState pageState, bool enableErrorLink = true)
     {
         return fieldValidationService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
-    
+
     internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
         return urlRedirectService.GetUrlRedirectResult(this, actionMap);

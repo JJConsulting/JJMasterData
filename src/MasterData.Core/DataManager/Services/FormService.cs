@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,7 +8,6 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Logging;
@@ -18,7 +18,6 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FormService(
     IEntityRepository entityRepository,
-    FormFileService formFileService,
     FieldValidationService fieldValidationService,
     AuditLogService auditLogService,
     IStringLocalizer<MasterDataResources> localizer,
@@ -26,27 +25,27 @@ public class FormService(
 {
     #region Events
 
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeDeleteAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeInsertAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeUpdateAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeDeleteAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync;
 
     #endregion
 
     #region Methods
 
     public async Task<FormLetter<Dictionary<string, object>>> GetAsync(FormElement formElement,
-        Dictionary<string, object> filters)
+        Dictionary<string, object?> filters)
     {
         var errors = new Dictionary<string, string>();
         var formLetter = new FormLetter<Dictionary<string, object>>(errors);
 
         try
         {
-            formLetter.Result = await entityRepository.GetFieldsAsync(formElement, filters);
+            formLetter.Result = (await entityRepository.GetFieldsAsync(formElement, filters!))!;
         }
         catch (Exception e)
         {
@@ -63,12 +62,19 @@ public class FormService(
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values,
+    public async Task<FormLetter> UpdateAsync(
+        FormElement formElement, 
+        Dictionary<string, object?> values,
         DataContext dataContext)
     {
         ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
+        var errors = await fieldValidationService.ValidateFieldsAsync(
+            formElement,
+            values,
+            PageState.Update,
+            isForm);
+
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdateAsync != null)
@@ -97,9 +103,6 @@ public class FormService(
         if (errors.Count > 0)
             return result;
 
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
-
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
 
@@ -113,7 +116,7 @@ public class FormService(
         return result;
     }
 
-    public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object> values,
+    public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object?> values,
         DataContext dataContext, bool validateFields = true)
     {
         ApplyTextCaseTransform(formElement, values);
@@ -121,7 +124,11 @@ public class FormService(
         var isForm = dataContext.Source is DataContextSource.Form;
         Dictionary<string, string> errors;
         if (validateFields)
-            errors = fieldValidationService.ValidateFields(formElement, values, PageState.Insert, isForm);
+            errors = await fieldValidationService.ValidateFieldsAsync(
+                formElement,
+                values,
+                PageState.Insert,
+                isForm);
         else
             errors = new Dictionary<string, string>();
 
@@ -149,9 +156,6 @@ public class FormService(
         if (errors.Count > 0)
             return result;
 
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
-
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
 
@@ -172,11 +176,11 @@ public class FormService(
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,
-        Dictionary<string, object> values, DataContext dataContext)
+        Dictionary<string, object?> values, DataContext dataContext)
     {
         ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors = fieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
+        var errors = await fieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, isForm);
         var letter = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImportAsync != null)
@@ -204,9 +208,6 @@ public class FormService(
 
         if (formElement.Options.EnableAuditLog)
             await auditLogService.LogAsync(formElement, dataContext, values, letter.Result);
-
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.SaveFormMemoryFiles(formElement, values);
 
         switch (letter.Result)
         {
@@ -247,12 +248,17 @@ public class FormService(
     public async Task<FormLetter> DeleteAsync(FormElement formElement, Dictionary<string, object> primaryKeys,
         DataContext dataContext)
     {
-        var errors = new Dictionary<string, string>();
+        var errors = await fieldValidationService.ValidateRulesAsync(
+            formElement,
+            primaryKeys!,
+            false,
+            PageState.Delete);
+        
         var result = new FormLetter(errors);
 
         if (OnBeforeDeleteAsync != null)
         {
-            var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
+            var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys!, errors);
             await OnBeforeDeleteAsync(dataContext, beforeActionArgs);
         }
 
@@ -273,15 +279,12 @@ public class FormService(
         if (errors.Count > 0)
             return result;
 
-        if (dataContext.Source == DataContextSource.Form)
-            formFileService.DeleteFiles(formElement, primaryKeys);
-
         if (formElement.Options.EnableAuditLog)
-            await auditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
+            await auditLogService.LogAsync(formElement, dataContext, primaryKeys!, CommandOperation.Delete);
 
         if (OnAfterDeleteAsync != null)
         {
-            var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
+            var afterEventArgs = new FormAfterActionEventArgs(primaryKeys!);
             await OnAfterDeleteAsync.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
@@ -291,7 +294,7 @@ public class FormService(
 
     #endregion
 
-    private static void ApplyTextCaseTransform(FormElement formElement, Dictionary<string, object> values)
+    private static void ApplyTextCaseTransform(FormElement formElement, Dictionary<string, object?> values)
     {
         foreach (var field in formElement.Fields)
         {

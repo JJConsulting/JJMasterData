@@ -1,9 +1,9 @@
+#nullable disable warnings
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class TextBoxFactory(IFormValues formValues)
+internal sealed class TextBoxFactory(IHttpContextAccessor formValues)
     : IControlFactory<JJTextBox>
 {
     public JJTextBox Create()

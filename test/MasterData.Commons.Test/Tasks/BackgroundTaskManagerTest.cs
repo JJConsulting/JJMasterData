@@ -72,7 +72,7 @@ public class BackgroundTaskManagerTest
         BackgroundTaskManager.Abort(key);
 
         //Task needs a delay to cancel itself.
-        await Task.Delay(3000);
+        await Task.Delay(3000, TestContext.Current.CancellationToken);
         Assert.False(BackgroundTaskManager.IsRunning(key));
     }
 }

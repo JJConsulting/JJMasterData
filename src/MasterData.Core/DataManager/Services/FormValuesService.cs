@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,8 +11,6 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exceptions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -23,7 +20,7 @@ public class FormValuesService(
     FieldValuesService fieldValuesService,
     IEncryptionService encryptionService,
     ILogger<FormValuesService> logger,
-    IHttpRequest httpRequest)
+    IHttpContextAccessor httpContextAccessor)
 {
     private Dictionary<string, object?> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
@@ -36,13 +33,7 @@ public class FormValuesService(
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
 
-#if NET48
-            var value = field.ValidateRequest
-                ? httpRequest.Form[fieldName]
-                : httpRequest.Form.GetUnvalidated(fieldName);
-#else
-            var value = httpRequest.Form[fieldName];
-#endif
+            var value = httpContextAccessor.HttpContext!.Request.GetFormValue(fieldName);
             HandleFieldValue(field, values, value);
         }
 
@@ -62,7 +53,7 @@ public class FormValuesService(
         }
         catch (Exception ex)
         {
-            throw new FormValuesException(field, value, ex);
+            throw new FormValuesException(field, value!, ex);
         }
     }
 
@@ -112,12 +103,6 @@ public class FormValuesService(
                 else //Legacy compatibility when FieldType.Bit didn't exist.
                     parsedValue = boolValue ? "1" : "0";
                 break;
-#if NET48
-            //.NET Framework 4.8 don't handle well multiple inputs with the same name.
-            case FormComponent.ComboBox when field.DataItem?.EnableMultiSelect is true:
-                parsedValue = string.IsNullOrEmpty(value) ? null : value?.TrimEnd(',');
-                break;
-#endif
             default:
                 parsedValue = string.IsNullOrEmpty(value) ? null : value;
                 break;
@@ -208,25 +193,25 @@ public class FormValuesService(
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
         }
 
-        if (autoReloadFormFields && httpRequest.Form.ContainsFormValues())
+        if (autoReloadFormFields && httpContextAccessor.HttpContext!.Request.HasFormContentType)
         {
             var formValues = GetFormValues(formElement, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
 
         return await fieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
-            !httpRequest.Form.ContainsFormValues());
+            !httpContextAccessor.HttpContext!.Request.HasFormContentType);
     }
     
     private async Task<Dictionary<string, object?>> GetDbValues(Element element)
     {
-        var encryptedPkValues = httpRequest.Form[
-            $"data-panel-pk-values-{element.Name}"];
+        var encryptedPkValues = httpContextAccessor.HttpContext!.Request.GetFormValue(
+            $"data-panel-pk-values-{element.Name}");
 
         if (string.IsNullOrEmpty(encryptedPkValues))
         {
-            var encryptedFkValues = httpRequest.Form[
-                $"form-view-relation-values-{element.Name}"];
+            var encryptedFkValues = httpContextAccessor.HttpContext!.Request.GetFormValue(
+                $"form-view-relation-values-{element.Name}");
 
             if (!string.IsNullOrEmpty(encryptedFkValues))
             {
@@ -234,10 +219,10 @@ public class FormValuesService(
             }
         }
 
-        if (encryptedPkValues is null)
+        if (string.IsNullOrEmpty(encryptedPkValues))
             return new Dictionary<string, object?>();
 
-        var pkValues = encryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
+        var pkValues = encryptionService.DecryptString(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
         var result = await entityRepository.GetFieldsAsync(element, filters);

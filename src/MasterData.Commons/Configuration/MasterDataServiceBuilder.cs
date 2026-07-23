@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.Configuration;
 
-public class MasterDataServiceBuilder(IServiceCollection services)
+public class MasterDataServiceBuilder(IServiceCollection services) 
 {
     public IServiceCollection Services { get; } = services;
 
@@ -66,8 +66,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         return this;
     }
     
-    public MasterDataServiceBuilder WithEntityRepository(
-        Func<IServiceProvider, IEntityRepository> implementationFactory)
+    public MasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));
         return this;

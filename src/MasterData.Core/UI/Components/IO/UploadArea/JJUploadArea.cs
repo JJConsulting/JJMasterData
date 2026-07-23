@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,23 +8,19 @@ using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataManager.IO;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
-
 using JJMasterData.Core.UI.Routing;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class JJUploadArea : AsyncComponent
 {
-    private readonly IRequestLengthService _requestLengthService;
-    private readonly IHttpContext _httpContext ;
-    private readonly UploadAreaService _uploadAreaService ;
+    private readonly IOptions<FormOptions> _requestLengthService;
+    private readonly IHttpContextAccessor _httpContext ;
+    private readonly UploadAreaManager _manager ;
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer ;
     private readonly IEncryptionService _encryptionService;
     
@@ -33,12 +28,20 @@ public class JJUploadArea : AsyncComponent
     /// <summary>
     /// Event fired when the file is posted.
     /// </summary>  
-    public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
+    public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded
+    {
+        add => _manager.OnFileUploaded += value;
+        remove => _manager.OnFileUploaded -= value;
+    }
     
     /// <summary>
     /// Async event fired when the file is posted.
     /// </summary>  
-    public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
+    public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync
+    {
+        add => _manager.OnFileUploadedAsync += value;
+        remove => _manager.OnFileUploadedAsync -= value;
+    }
     /// <summary>
     /// Allowed extension type, separated by comma.
     /// Default: *
@@ -106,34 +109,32 @@ public class JJUploadArea : AsyncComponent
     /// </summary>
     public int MaxFiles { get; set; } = int.MaxValue;
 
-    
-    private RouteContext? _routeContext;
 
     internal RouteContext RouteContext
     {
         get
         {
-            if (_routeContext != null)
-                return _routeContext;
+            if (field != null)
+                return field;
 
-            var factory = new RouteContextFactory(_httpContext.Request.QueryString, _encryptionService);
-            _routeContext = factory.Create();
+            var factory = new RouteContextFactory(_httpContext, _encryptionService);
+            field = factory.Create();
             
-            return _routeContext;
+            return field;
         }
     }
     
     public JJUploadArea(
-        IHttpContext httpContext,
-        UploadAreaService uploadAreaService,
+        IHttpContextAccessor httpContext,
+        UploadAreaManager manager,
         IEncryptionService encryptionService,
-        IRequestLengthService requestLengthService,
+        IOptions<FormOptions> requestLengthService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _requestLengthService = requestLengthService;
         Name = "upload-area";
         _httpContext = httpContext;
-        _uploadAreaService = uploadAreaService;
+        _manager = manager;
         _stringLocalizer = stringLocalizer;
         _encryptionService = encryptionService;
         MaxFileSize = _requestLengthService.GetMaxRequestBodySize();
@@ -141,21 +142,15 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (_uploadAreaService.TryGetFile(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", out var formFile))
+        if (_manager.TryGetFile(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", out var formFile))
             return await GetFileUploadResultAsync(formFile!);
         
         return new RenderedComponentResult(GetUploadAreaHtmlBuilder());
     }
 
-    public async Task<ComponentResult> GetFileUploadResultAsync(FormFileContent formFile)
+    public async Task<ComponentResult> GetFileUploadResultAsync(IFormFile formFile)
     {
-        if (OnFileUploaded != null)
-            _uploadAreaService.OnFileUploaded += OnFileUploaded;
-
-        if (OnFileUploadedAsync != null)
-            _uploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
-
-        var dto = await _uploadAreaService.UploadFileAsync(formFile, AllowedTypes);
+        var dto = await _manager.UploadFileAsync(formFile, AllowedTypes);
 
         var result = new JsonComponentResult(dto);
         
@@ -210,7 +205,7 @@ public class JJUploadArea : AsyncComponent
             if(allowedTypes.Length > 0)
                 allowedTypes.Append(',');
             
-            if (type.Trim().StartsWith("."))
+            if (type.Trim().StartsWith('.'))
                 allowedTypes.Append(type);
 
             else

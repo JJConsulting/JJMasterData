@@ -23,9 +23,6 @@
             "null"
           ]
         },
-        "SupportNetFramework": {
-          "type": "boolean"
-        },
         "EnableBundleAndMinification": {
           "type": "boolean"
         },
@@ -48,12 +45,6 @@
           ]
         },
         "AuditLogTableName": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "MasterDataUrl": {
           "type": [
             "string",
             "null"
@@ -99,31 +90,22 @@
             "string",
             "null"
           ]
-        },
-        "SecretKey": {
-          "type": [
-            "string",
-            "null"
-          ]
         }
       },
       "required": [
         "LayoutPath",
         "ModalLayoutPath",
         "CustomBootstrapPath",
-        "SupportNetFramework",
         "EnableBundleAndMinification",
         "CustomScriptsPaths",
         "DataDictionaryTableName",
         "AuditLogTableName",
-        "MasterDataUrl",
         "ExportationFolderPath",
         "ConnectionString",
         "ConnectionProvider",
         "LocalizationTableName",
         "ReadProcedurePattern",
-        "WriteProcedurePattern",
-        "SecretKey"
+        "WriteProcedurePattern"
       ]
     }
   }

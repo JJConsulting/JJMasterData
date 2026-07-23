@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,14 +10,11 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -27,19 +25,16 @@ namespace JJMasterData.Core.DataManager.Exportation;
 public class ExcelWriter(
         ExpressionsService expressionsService,
         DataItemService dataItemService,
-        IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         ILoggerFactory loggerFactory,
         IEntityRepository entityRepository)
-    : DataExportationWriterBase(
-        encryptionService,
-        expressionsService,
+    : DataExportationWriterBase(expressionsService,
         stringLocalizer,
         options,
         loggerFactory.CreateLogger<DataExportationWriterBase>()), IExcelWriter
 {
-    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
+    public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public bool ShowBorder { get; set; }
 
@@ -175,7 +170,7 @@ public class ExcelWriter(
 
         if (field.Component == FormComponent.File)
         {
-            string link = GetFileLink(field, row, value);
+            string link = GetFileLink(FormElement, field, row, value);
             if (link != null)
                 value = $"<a href=\"{link}\">{value}</a>";
             else
@@ -184,7 +179,7 @@ public class ExcelWriter(
             }
         }
 
-        if (OnRenderCellAsync != null)
+        if (OnRenderCell != null)
         {
             var args = new GridCellEventArgs
             {
@@ -194,7 +189,7 @@ public class ExcelWriter(
             };
 
        
-            await OnRenderCellAsync(this, args);
+            OnRenderCell(this, args);
 
             if (args.HtmlResult is not null)
             {

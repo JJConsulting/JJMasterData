@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -8,14 +9,14 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Html.Templates;
 using JJMasterData.Core.UI.Events.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class GridViewFactory(IHttpContext currentContext,
+internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IEncryptionService encryptionService,
@@ -28,7 +29,7 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerResolver gridEventHandlerResolver,
         UrlRedirectService urlRedirectService,
-        HtmlTemplateService htmlTemplateService,
+        HtmlTemplateRenderer htmlTemplateRenderer,
         ILoggerFactory loggerFactory,
         IComponentFactory componentFactory)
     : IFormElementComponentFactory<JJGridView>
@@ -48,7 +49,7 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
             fieldValidationService,
             stringLocalizer,
             urlRedirectService,
-            htmlTemplateService,
+            htmlTemplateRenderer,
             loggerFactory.CreateLogger<JJGridView>(),
             componentFactory);
 
@@ -65,12 +66,12 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
     private static void SetGridEvents(JJGridView gridView, IGridEventHandler eventHandler)
     {
         gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
-        gridView.OnRenderActionAsync += eventHandler.OnRenderActionAsync;
+        gridView.OnRenderAction += eventHandler.OnRenderAction;
         gridView.OnRenderToolbarActionAsync += eventHandler.OnRenderToolbarActionAsync;
-        gridView.OnRenderCellAsync += eventHandler.OnRenderCellAsync;
+        gridView.OnRenderCell += eventHandler.OnRenderCell;
         gridView.OnFilterLoadAsync += eventHandler.OnFilterLoadAsync;
-        gridView.OnRenderSelectedCellAsync += eventHandler.OnRenderSelectedCellAsync;
-        gridView.OnRenderRowAsync += eventHandler.OnRenderRowAsync;
+        gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
+        gridView.OnRenderRow += eventHandler.OnRenderRow;
     }
 
     public JJGridView Create(DataTable dataTable)
@@ -114,7 +115,7 @@ internal sealed class GridViewFactory(IHttpContext currentContext,
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad)
-                settings = currentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
+                settings = currentContext.HttpContext!.GetGridSettingsCookie(grid.FormElement.Name);
 
             if (settings == null)
             {

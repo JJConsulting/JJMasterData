@@ -119,7 +119,7 @@
         const value = $(oDom).val().toLowerCase();
         $("#sortable-grid a").filter(function () {
             //procura por textos
-            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const textValues = $(this).clone().find('.ts-wrapper, .tom-select, select').remove().end().text();
             const isSearch = textValues.toLowerCase().indexOf(value) > -1;
 
             $(this).toggle(isSearch);

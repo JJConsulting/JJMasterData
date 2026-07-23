@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
@@ -7,7 +8,6 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,14 +17,16 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
     IMasterDataUser masterDataUser,
+    IUrlHelper urlHelper,
     ExpressionsService expressionsService,
     IOptionsSnapshot<MasterDataCoreOptions> options,
     IBackgroundTaskManager backgroundTaskManager,
-    IHttpContext httpContext,
+    IHttpContextAccessor httpContext,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILoggerFactory loggerFactory,
     IComponentFactory componentFactory,
     IEncryptionService encryptionService,
+    IFileStorage fileStorage,
     DataExportationWriterFactory dataExportationWriterFactory
         ) : IFormElementComponentFactory<JJDataExportation>
 {
@@ -39,6 +41,7 @@ internal class DataExportationFactory(
         return new JJDataExportation(
             formElement,
             masterDataUser,
+            urlHelper,
             expressionsService,
             options, 
             backgroundTaskManager,
@@ -47,6 +50,7 @@ internal class DataExportationFactory(
             loggerFactory, 
             httpContext,
             encryptionService,
+            fileStorage,
             dataExportationWriterFactory);
     }
 }

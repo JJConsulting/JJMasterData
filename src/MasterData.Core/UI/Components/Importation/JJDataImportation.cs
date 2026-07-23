@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -13,7 +14,6 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -22,9 +22,6 @@ using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
@@ -91,7 +88,7 @@ public class JJDataImportation : ProcessComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(HttpContextAccessor, EncryptionService);
             _routeContext = factory.Create();
 
             return _routeContext;
@@ -116,17 +113,17 @@ public class JJDataImportation : ProcessComponent
         FormService formService,
         FieldValuesService fieldValuesService,
         IBackgroundTaskManager backgroundTaskManager,
-        IHttpContext currentContext,
+        IHttpContextAccessor httpContextAccessor,
         IComponentFactory componentFactory,
         DataItemService dataItemService,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(currentContext,masterDataUser, expressionsService, backgroundTaskManager,
+        : base(httpContextAccessor,masterDataUser, expressionsService, backgroundTaskManager,
             loggerFactory.CreateLogger<ProcessComponent>(), encryptionService, stringLocalizer)
     {
-        CurrentContext = currentContext;
+        HttpContextAccessor = httpContextAccessor;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
         FormService = formService;
         FieldValuesService = fieldValuesService;
@@ -152,7 +149,7 @@ public class JJDataImportation : ProcessComponent
             return await UploadArea.GetResultAsync();
         }
 
-        string action = CurrentContext.Request.QueryString["dataImportationOperation"];
+        string action = HttpContextAccessor.HttpContext!.Request.Query["dataImportationOperation"];
 
         switch (action)
         {
@@ -175,7 +172,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (!IsRunning())
                 {
-                    var pasteValue = CurrentContext.Request.Form["pasteValue"];
+                    var pasteValue = HttpContextAccessor.HttpContext!.Request.GetFormValue("pasteValue");
                     ImportInBackground(pasteValue);
                 }
 
@@ -300,7 +297,7 @@ public class JJDataImportation : ProcessComponent
                 area.WithStyle( "display:none");
             });
         
-        var collapsePanel = new JJMasterDataCollapsePanel(CurrentContext.Request.Form)
+        var collapsePanel = new JJMasterDataCollapsePanel(HttpContextAccessor)
         {
             TitleIcon = new JJIcon(FontAwesomeIcon.Upload),
             Title = StringLocalizer["Upload File"],
@@ -337,8 +334,7 @@ public class JJDataImportation : ProcessComponent
     private void FileUploaded(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
-        Stream stream = new MemoryStream(e.File.Bytes);
-        using (var reader = new StreamReader(stream))
+        using (var reader = new StreamReader(e.File.OpenReadStream()))
         {
             while (!reader.EndOfStream)
             {
@@ -356,7 +352,7 @@ public class JJDataImportation : ProcessComponent
 
     private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
     {
-        var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Upload, UserId);
+        var dataContext = new DataContext(HttpContextAccessor.HttpContext!.Request, DataContextSource.Upload, UserId);
         var dataImportationContext = new DataImportationContext(FormElement, dataContext, RelationValues, postedText, separator);
         var worker = DataImportationWorkerFactory.Create(dataImportationContext);
         worker.UserId = UserId;

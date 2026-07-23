@@ -39,9 +39,9 @@ function filterIcons(filterText) {
     });
 }
 function saveIcon(selectedIcon) {        
-    const picker = $('#@Model.InputId');
-    picker.selectpicker('val',selectedIcon);
-    picker.focus();
+    const picker = document.getElementById('@Model.InputId');
+    TomSelectHelper.setValue(picker, selectedIcon);
+    picker.tomselect.focus();
     
     iconsModal.hide()
 }

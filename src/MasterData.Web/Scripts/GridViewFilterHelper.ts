@@ -50,8 +50,9 @@ class GridViewFilterHelper {
                 currentObj.val("")
             }
 
-            if(currentObj.hasClass("selectpicker")){
-                currentObj.selectpicker("val","");
+            if(currentObj.hasClass("tom-select")){
+                TomSelectHelper.clear(this as HTMLInputElement | HTMLSelectElement);
+                return;
             }
 
             if(currentObj.typeahead){
@@ -69,13 +70,9 @@ class GridViewFilterHelper {
 
             if (inputType == "checkbox") {
                 currentObj.prop("checked", false);
-            } else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
-                currentObj.tagsinput('removeAll');
             } else if (inputType != "hidden") {
                 currentObj.val(null);
-                if (currentObj.hasClass("selectpicker")) {
-                    currentObj.selectpicker("render");
-                } else if (currentObj.hasClass("jj-search-box")) {
+                if (currentObj.hasClass("jj-search-box")) {
                     // @ts-ignore
                     currentObj[0].bootstrapSearch.clear();
                 } else if (currentObj.hasClass("jjlookup")) {
@@ -114,6 +111,7 @@ class GridViewFilterHelper {
                     success: (content) => {
                         HTMLHelper.setOuterHTML(filterPanelName, content);
                         listenAllEvents("#" + filterPanelName);
+                        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "clear";
                         GridViewHelper.refreshGrid(componentName, routeContext);
                         document.getElementById(componentName + "-filter-icon").classList.add("d-none");
                     }
@@ -130,7 +128,7 @@ class GridViewFilterHelper {
         const value = $(oDom).val().toString().toLowerCase();
         $("#" + componentName + "-table" + " tr").filter(<any>function () {
             //procura por textos
-            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const textValues = $(this).clone().find('.ts-wrapper, .tom-select, select').remove().end().text();
             let isSearch = textValues.toLowerCase().indexOf(value) > -1;
 
             //se não achou procura nos inputs
