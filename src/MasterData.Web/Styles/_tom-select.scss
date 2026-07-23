@@ -209,10 +209,17 @@
   }
 }
 
+
 .ts-dropdown-content {
-  overflow: hidden auto;
   max-height: 200px;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
   scroll-behavior: smooth;
+}
+
+.ts-dropdown-content .option {
+  white-space: nowrap !important;
+  min-width: max-content !important;
 }
 
 .ts-wrapper.tom-select-tags .ts-dropdown {

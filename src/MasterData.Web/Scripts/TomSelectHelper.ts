@@ -31,6 +31,7 @@ class TomSelectHelper {
             allowEmptyOption: !isTagsInput,
             hidePlaceholder: false,
             hideSelected: false,
+            maxOptions: null,
             placeholder,
             ...(isTagsInput
                 ? {

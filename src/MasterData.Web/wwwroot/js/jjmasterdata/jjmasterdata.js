@@ -2920,7 +2920,7 @@ class TomSelectHelper {
         const placeholder = (_e = (_b = (_a = element.dataset.placeholder) !== null && _a !== void 0 ? _a : element.getAttribute('placeholder')) !== null && _b !== void 0 ? _b : (element instanceof HTMLSelectElement
             ? (_d = (_c = element.querySelector('option[value=""]')) === null || _c === void 0 ? void 0 : _c.textContent) === null || _d === void 0 ? void 0 : _d.trim()
             : undefined)) !== null && _e !== void 0 ? _e : String();
-        return new TomSelect(element, Object.assign(Object.assign({ allowEmptyOption: !isTagsInput, hidePlaceholder: false, hideSelected: false, placeholder }, (isTagsInput
+        return new TomSelect(element, Object.assign(Object.assign({ allowEmptyOption: !isTagsInput, hidePlaceholder: false, hideSelected: false, maxOptions: null, placeholder }, (isTagsInput
             ? {
                 create: true,
                 delimiter: ','
