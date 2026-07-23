@@ -804,7 +804,7 @@ public class JJUploadView : AsyncComponent
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
 
-    internal Task DeleteAllAsync() =>
+    public Task DeleteAllAsync() =>
         Manager.DeleteAllAsync(TempPath, FolderPath, AutoSave);
 
     public async Task<List<FileStorageItem>> GetFilesAsync()

@@ -247,4 +247,10 @@ public sealed class JJTextFile(
         var fileDownloader = componentFactory.Downloader.Create(fullPath);
         return fileDownloader.GetDownloadUrl();
     }
+    
+    public Task PromoteDraftFilesAsync() => UploadView.PromoteDraftFilesAsync();
+    
+    public Task ClearTemporaryFilesAsync() => UploadView.DeleteAllAsync();
+
+    public Task DeleteAllAsync() => UploadView.DeleteAllAsync();
 }
