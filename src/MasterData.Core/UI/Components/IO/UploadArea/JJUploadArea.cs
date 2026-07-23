@@ -205,7 +205,7 @@ public class JJUploadArea : AsyncComponent
             if(allowedTypes.Length > 0)
                 allowedTypes.Append(',');
             
-            if (type.Trim().StartsWith("."))
+            if (type.Trim().StartsWith('.'))
                 allowedTypes.Append(type);
 
             else
