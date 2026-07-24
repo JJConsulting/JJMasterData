@@ -19,6 +19,7 @@ declare namespace Dropzone {
 
 interface JQueryStatic {
     (...args: any[]): any;
+    isFunction(value: any): boolean;
 }
 
 declare const $: JQueryStatic;
