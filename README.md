@@ -107,11 +107,7 @@ See all steps in [documentation](https://md.jjconsulting.tech/articles/getting_s
 
 5. Set the `WebEntryPoint` as startup project
 
-6. At `src/Web` run at your terminal
-```bash
-npm i
-```
-7. Run the project
+6. Run the project
 ## Special Thanks
 
 #### Code contributors

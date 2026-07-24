@@ -14,9 +14,6 @@ JJMasterData is a .NET library and web UI for generating dynamic CRUDs from data
 
 ## Build
 - Install .NET SDK
-- Install Node.js for `MasterData.Web` assets.
-- Restore web assets:
-  - `npm install --prefix src/MasterData.Web`
 - Build from repo root:
   - `dotnet build`
 
