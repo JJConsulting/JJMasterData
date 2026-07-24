@@ -1,0 +1,1 @@
+declare function flatpickr(selector: any, options?: any): any;
