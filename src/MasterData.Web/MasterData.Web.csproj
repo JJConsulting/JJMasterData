@@ -14,7 +14,7 @@
         <RootNamespace>JJMasterData.Web</RootNamespace>
         <PackageId>JJMasterData.Web</PackageId>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <EmbeddedSassSilencedDeprecations>import</EmbeddedSassSilencedDeprecations>
+        <EmbeddedSassSilencedDeprecations>import;global-builtin;if-function;color-functions</EmbeddedSassSilencedDeprecations>
         <TypescriptOutDir>wwwroot</TypescriptOutDir>
         <ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
             CompileTypeScript;
@@ -50,12 +50,6 @@
       <Content Update="Scripts\tsconfig.json" Pack="false">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Content>
-        <Content Update="package.json" Pack="false">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-        </Content>
-        <Content Update="package-lock.json" Pack="false">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 
     <ItemGroup>
