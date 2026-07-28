@@ -14,9 +14,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-        
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
 
       - name: Restore NuGet packages
         run: |
@@ -41,7 +38,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build and publish NuGet package
         run: |
-          npm install --prefix src/MasterData.Web
           cd ${{ matrix.project }}
           BASE_VERSION=$(dotnet msbuild -nologo -getProperty:VersionPrefix | tail -n 1 | tr -d '\r')
           PREVIEW_SUFFIX=$(dotnet msbuild -nologo -getProperty:PreviewVersionSuffix | tail -n 1 | tr -d '\r')
