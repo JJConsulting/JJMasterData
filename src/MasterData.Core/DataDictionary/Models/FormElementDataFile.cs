@@ -61,10 +61,6 @@ public class FormElementDataFile
     [Display(Name = "Allow pasting files")]
     public bool AllowPasting { get; set; } = true;
     
-    [JsonPropertyName("showAsUploadView")]
-    [Display(Name = "Show Upload Outside Modal")]
-    public bool ShowAsUploadView { get; set; }
-
     public FormElementDataFile DeepCopy()
     {
         return (FormElementDataFile)MemberwiseClone();

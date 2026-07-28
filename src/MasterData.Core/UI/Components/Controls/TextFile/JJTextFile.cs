@@ -101,13 +101,6 @@ public sealed class JJTextFile(
 
     protected internal override async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        if (FormElementField.DataFile!.ShowAsUploadView)
-        {
-            var uploadViewHtml = ((RenderedComponentResult)await GetUploadViewResultAsync()).HtmlBuilder;
-            uploadViewHtml.Append(await GetHiddenInputsHtmlAsync());
-            return uploadViewHtml;
-        }
-
         if (!Enabled)
             await UploadView.ClearTemporaryFilesAsync();
 
