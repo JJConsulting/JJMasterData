@@ -39,7 +39,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJUploadView : AsyncComponent
 {
     private const string FileNameJs = "NameJS";
-    private const string FileNameField = "FileName";
+    private const string FileNameField = "Name";
     private const string FileSizeField = "FileSize";
     private const string LastModifiedField = "LastModified";
     private const string FullPathField = "FullPath";
