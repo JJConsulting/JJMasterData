@@ -40,7 +40,7 @@ public class JJUploadView : AsyncComponent
 {
     private const string FileNameJs = "NameJS";
     private const string FileNameField = "Name";
-    private const string FileSizeField = "FileSize";
+    private const string FileSizeField = "Size";
     private const string LastModifiedField = "LastModified";
     private const string FullPathField = "FullPath";
     private const string FolderPathField = "FolderPath";
