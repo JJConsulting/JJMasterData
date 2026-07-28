@@ -124,7 +124,7 @@ public class FormElementTest
                     Size = 1,
                     DataFile = new()
                     {
-                        ShowAsUploadView = true
+                        AllowedTypes = "txt"
                     },
                     Actions =
                     [

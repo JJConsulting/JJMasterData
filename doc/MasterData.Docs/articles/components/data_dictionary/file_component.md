@@ -34,6 +34,3 @@ Clicking on "Manage File" will open a new tab, allowing you to attach the desire
 - **Export as Link**: This option will change the name of the attachment within the exported file when exporting through the grid.
 
 - **Allow Pasting Files**: Allows the content of the file to be pasted to perform the import, or just a part of the content. It is not necessary to insert the entire file.
-
-- **Show Upload Outside Modal**: If this option is enabled, there will be no "Manage Files" option, and the import field will be displayed alongside the information after clicking edit.
-
