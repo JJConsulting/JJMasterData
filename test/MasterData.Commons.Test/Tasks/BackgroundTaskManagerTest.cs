@@ -19,7 +19,7 @@ public class TaskWorkerTest : IBackgroundTaskWorker
                 Console.WriteLine(@"Running Worker...");
                 reporter.Percentage = i * 10;
                 OnProgressChanged?.Invoke(this, new ProgressReporter());
-                Task.Delay(1000, token).Wait(token);
+                Task.Delay(50, token).Wait(token);
             }
         }, token);
     }
@@ -37,29 +37,33 @@ public class BackgroundTaskManagerTest
     [Fact]
     public void RunTaskTest()
     {
-        var exception = Record.Exception(() => BackgroundTaskManager.Run("RunTaskTest", Worker));
+        var manager = BackgroundTaskManager;
+        var exception = Record.Exception(() => manager.Run("RunTaskTest", Worker));
+        manager.Abort("RunTaskTest");
         Assert.Null(exception);
     }
 
     [Fact]
     public void TaskIsNotRunningTest()
     {
-        Assert.False(BackgroundTaskManager.IsRunning("NonExistentTask"));
+        var manager = BackgroundTaskManager;
+        Assert.False(manager.IsRunning("NonExistentTask"));
     }
         
     [Fact(Timeout=3000)]
-    public void GetProgressTest()
+    public async Task GetProgressTest()
     {
         const string key = "TestProgressTask";
-        BackgroundTaskManager.Run(key, Worker);
-        ProgressReporter? progress;
-        do
+        var manager = BackgroundTaskManager;
+        manager.Run(key, Worker);
+        ProgressReporter? progress = null;
+        while (progress == null)
         {
-            progress = BackgroundTaskManager.GetProgress<ProgressReporter>(key);
-                
-        } while (progress == null);
-            
+            progress = manager.GetProgress<ProgressReporter>(key);
+            await Task.Delay(10, TestContext.Current.CancellationToken);
+        }
 
+        manager.Abort(key);
         Assert.NotNull(progress);
     }
            
@@ -68,11 +72,12 @@ public class BackgroundTaskManagerTest
     public async Task AbortTest()
     {
         const string key = "TaskToBeAborted";
-        BackgroundTaskManager.Run(key, Worker);
-        BackgroundTaskManager.Abort(key);
+        var manager = BackgroundTaskManager;
+        manager.Run(key, Worker);
+        manager.Abort(key);
 
         //Task needs a delay to cancel itself.
-        await Task.Delay(3000, TestContext.Current.CancellationToken);
-        Assert.False(BackgroundTaskManager.IsRunning(key));
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+        Assert.False(manager.IsRunning(key));
     }
 }

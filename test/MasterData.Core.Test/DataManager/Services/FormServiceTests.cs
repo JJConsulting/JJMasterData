@@ -1,10 +1,19 @@
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Configuration.Options;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
@@ -19,8 +28,8 @@ public class FormServiceTests
             Name = "name",
             TableName = "name"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement, values);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
         var result = await formService.UpdateAsync(formElement, values, new DataContext());
 
@@ -28,27 +37,24 @@ public class FormServiceTests
         Assert.Empty(result.Errors);
     }
 
-    private static FormService GetFormService(FormElement formElement, Dictionary<string, object> values)
+    private static FormService GetFormService(params IRuleExecutor[] ruleExecutors)
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>(
-            Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
-            Mock.Of<IStringLocalizer<MasterDataResources>>());
-        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-        var loggerMock = new Mock<ILogger<FormService>>();
-
-        fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values!, It.IsAny<PageState>(), false))
-            .ReturnsAsync(new Dictionary<string, string>());
+        var stringLocalizer = CreateStringLocalizer();
+        var fieldValidationService = new FieldValidationService(
+            CreateExpressionsService(),
+            ruleExecutors,
+            stringLocalizer);
+        var auditLogService = new AuditLogService(
+            entityRepositoryMock.Object,
+            Mock.Of<IOptionsSnapshot<MasterDataCoreOptions>>());
 
         return new FormService(
             entityRepositoryMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,
-            stringLocalizerMock.Object,
-            loggerMock.Object);
+            fieldValidationService,
+            auditLogService,
+            stringLocalizer,
+            Mock.Of<ILogger<FormService>>());
     }
 
     [Fact]
@@ -59,8 +65,9 @@ public class FormServiceTests
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement, values);
+        AddRequiredField(formElement);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
         var result = await formService.UpdateAsync(formElement, values, new DataContext());
 
@@ -76,8 +83,8 @@ public class FormServiceTests
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement, values);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
         var result = await formService.InsertAsync(formElement, values, new DataContext());
 
@@ -93,8 +100,9 @@ public class FormServiceTests
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement, values);
+        AddRequiredField(formElement);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
         var result = await formService.InsertAsync(formElement, values, new DataContext());
 
@@ -110,8 +118,8 @@ public class FormServiceTests
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement, values);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
         var result = await formService.InsertOrReplaceAsync(formElement, values, new DataContext());
 
@@ -127,8 +135,9 @@ public class FormServiceTests
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement, values);
+        AddRequiredField(formElement);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
         var result = await formService.InsertOrReplaceAsync(formElement, values, new DataContext());
 
@@ -140,19 +149,20 @@ public class FormServiceTests
     public async Task DeleteAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>(
-            Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
-            Mock.Of<IStringLocalizer<MasterDataResources>>());
-        var auditLogServiceMock = new Mock<AuditLogService>();
-        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var loggerMock = new Mock<ILogger<FormService>>();
+        var stringLocalizer = CreateStringLocalizer();
+        var fieldValidationService = new FieldValidationService(
+            CreateExpressionsService(),
+            [],
+            stringLocalizer);
+        var auditLogService = new AuditLogService(
+            entityRepositoryMock.Object,
+            Mock.Of<IOptionsSnapshot<MasterDataCoreOptions>>());
         var formService = new FormService(
             entityRepositoryMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,
-            stringLocalizerMock.Object,
-            loggerMock.Object);
+            fieldValidationService,
+            auditLogService,
+            stringLocalizer,
+            Mock.Of<ILogger<FormService>>());
 
         var formElement = new FormElement
         {
@@ -160,10 +170,6 @@ public class FormServiceTests
             TableName = "tableName"
         };
         var primaryKeys = new Dictionary<string, object>();
-
-        fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys!, PageState.Delete, false))
-            .ReturnsAsync(new Dictionary<string, string>());
 
         entityRepositoryMock.Setup(er => er.DeleteAsync(formElement, primaryKeys)).ReturnsAsync(1);
 
@@ -177,31 +183,26 @@ public class FormServiceTests
     [Fact]
     public async Task DeleteAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
-        var entityRepositoryMock = new Mock<IEntityRepository>();
-        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>(
-            Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
-            Mock.Of<IStringLocalizer<MasterDataResources>>());
-        var auditLogServiceMock = new Mock<AuditLogService>();
-        var loggerMock = new Mock<ILogger<FormService>>();
-        var formService = new FormService(
-            entityRepositoryMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,
-            stringLocalizerMock.Object,
-            loggerMock.Object);
-
         var formElement = new FormElement
         {
             Name = "name",
-            TableName = "name"
+            TableName = "name",
+            Rules =
+            [
+                new FormElementRule
+                {
+                    Name = "DeleteRule",
+                    Language = RuleLanguage.Sql,
+                    RunOnBeforeDelete = true
+                }
+            ]
         };
-        var primaryKeys = new Dictionary<string, object?>();
-
-        fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false))
-            .ReturnsAsync(new Dictionary<string, string> { { "Field1", "Validation Error" } });
+        var primaryKeys = new Dictionary<string, object>();
+        var formService = GetFormService(
+            new TestRuleExecutor(new Dictionary<string, string>
+            {
+                ["Field1"] = "Validation Error"
+            }));
 
         var result = await formService.DeleteAsync(formElement, primaryKeys, new DataContext());
 
@@ -221,28 +222,85 @@ public class FormServiceTests
         var values = new Dictionary<string, object?>();
 
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>(
-            Mock.Of<JJMasterData.Core.DataManager.Expressions.ExpressionsService>(),
-            Enumerable.Empty<JJMasterData.Core.DataManager.Services.Abstractions.IRuleExecutor>(),
-            Mock.Of<IStringLocalizer<MasterDataResources>>());
-        var auditLogServiceMock = new Mock<AuditLogService>();
-        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var loggerMock = new Mock<ILogger<FormService>>();
-
-        fieldValidationServiceMock
-            .Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Insert, false))
-            .ReturnsAsync(new Dictionary<string, string> { { "validation:test", "Script error" } });
-
+        formElement.Rules.Add(new FormElementRule
+        {
+            Name = "InsertRule",
+            Language = RuleLanguage.Sql,
+            RunOnBeforeInsert = true
+        });
+        var stringLocalizer = CreateStringLocalizer();
+        var fieldValidationService = new FieldValidationService(
+            CreateExpressionsService(),
+            [
+                new TestRuleExecutor(new Dictionary<string, string>
+                {
+                    ["validation:test"] = "Script error"
+                })
+            ],
+            stringLocalizer);
         var formService = new FormService(
             entityRepositoryMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,
-            stringLocalizerMock.Object,
-            loggerMock.Object);
+            fieldValidationService,
+            new AuditLogService(
+                entityRepositoryMock.Object,
+                Mock.Of<IOptionsSnapshot<MasterDataCoreOptions>>()),
+            stringLocalizer,
+            Mock.Of<ILogger<FormService>>());
 
         var result = await formService.InsertAsync(formElement, values, new DataContext());
 
         Assert.Single(result.Errors);
         entityRepositoryMock.Verify(r => r.InsertAsync(It.IsAny<FormElement>(), It.IsAny<Dictionary<string, object?>>()), Times.Never);
+    }
+
+    private static void AddRequiredField(FormElement formElement)
+    {
+        formElement.Fields.Add(new FormElementField
+        {
+            Name = "RequiredField",
+            Label = "Required field",
+            IsRequired = true
+        });
+    }
+
+    private static ExpressionsService CreateExpressionsService()
+    {
+        IExpressionProvider[] providers = [new ValueExpressionProvider()];
+        var expressionParser = new ExpressionParser(
+            Mock.Of<IHttpContextAccessor>(),
+            Mock.Of<IMasterDataUser>(),
+            Mock.Of<ILogger<ExpressionParser>>());
+
+        return new ExpressionsService(
+            providers,
+            expressionParser,
+            Mock.Of<IEncryptionService>(),
+            Mock.Of<ILogger<ExpressionsService>>());
+    }
+
+    private static IStringLocalizer<MasterDataResources> CreateStringLocalizer()
+    {
+        var localizer = new Mock<IStringLocalizer<MasterDataResources>>();
+        localizer
+            .Setup(value => value[It.IsAny<string>()])
+            .Returns((string name) => new LocalizedString(name, name));
+        localizer
+            .Setup(value => value[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string name, object[] arguments) =>
+                new LocalizedString(name, string.Format(name, arguments)));
+        return localizer.Object;
+    }
+
+    private sealed class TestRuleExecutor(Dictionary<string, string> errors) : IRuleExecutor
+    {
+        public RuleLanguage Language => RuleLanguage.Sql;
+
+        public Task<Dictionary<string, string>> ExecuteAsync(
+            FormElement formElement,
+            FormElementRule rule,
+            Dictionary<string, object?> values)
+        {
+            return Task.FromResult(errors);
+        }
     }
 }

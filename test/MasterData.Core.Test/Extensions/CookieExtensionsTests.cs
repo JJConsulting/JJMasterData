@@ -20,7 +20,7 @@ public class CookieExtensionsTests
     }
 
     [Fact]
-    public void GetGridOrderCookie_DifferentUserOnNextRequest_IgnoresCookieValue()
+    public void GetGridOrderCookie_DifferentUserOnNextRequest_ReadsCookieValue()
     {
         var writeContext = CreateHttpContext("user-1");
 
@@ -28,7 +28,7 @@ public class CookieExtensionsTests
 
         var readContext = CreateHttpContext("user-2", GetRequestCookieHeader(writeContext));
 
-        Assert.Null(readContext.GetGridOrderCookie("Customers"));
+        Assert.Equal("Name asc", readContext.GetGridOrderCookie("Customers"));
     }
 
     [Fact]

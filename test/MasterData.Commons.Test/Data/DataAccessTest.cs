@@ -5,22 +5,31 @@ namespace JJMasterData.Commons.Test.Data;
 public class DataAccessTest
 {
     private const string TableName = "DataAccessTest";
+    private const string ConnectionStringEnvironmentVariable = "JJMASTERDATA_TEST_CONNECTION_STRING";
 
     private DataAccess DataAccess { get; }
 
     public DataAccessTest()
     {
-        DataAccess = new DataAccess("data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456;Encrypt=True;Trust Server Certificate=True", DataAccessProvider.SqlServer);
+        DataAccess = new DataAccess(
+            Environment.GetEnvironmentVariable(ConnectionStringEnvironmentVariable)!,
+            DataAccessProvider.SqlServer);
         ConfigureSeedValues();
     }
+
+    public static bool IsDatabaseConfigured =>
+        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ConnectionStringEnvironmentVariable));
     
     private void ConfigureSeedValues()
     {
-        var sql = new StreamReader("Dao/Seed/DataAccessTest.sql").ReadToEnd();
+        var seedPath = Path.Combine(AppContext.BaseDirectory, "Data", "Seed", "DataAccessTest.sql");
+        var sql = File.ReadAllText(seedPath);
         DataAccess.ExecuteBatch(sql);
     }
 
-    [Fact]
+    [Fact(
+        Skip = $"Set {ConnectionStringEnvironmentVariable} to run this database test.",
+        SkipUnless = nameof(IsDatabaseConfigured))]
     public async Task GetDataTableTest()
     {
         var dataTable = await DataAccess.GetDataTableAsync(

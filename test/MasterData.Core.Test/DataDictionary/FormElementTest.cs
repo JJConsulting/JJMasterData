@@ -261,7 +261,8 @@ public class FormElementTest
     {
         var rule = new FormElementRule
         {
-            RunOnBeforeImport = true
+            RunOnBeforeImport = true,
+            RunOnBeforeInsert = false
         };
 
         Assert.True(rule.ShouldRun(PageState.Import));

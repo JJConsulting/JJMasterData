@@ -33,7 +33,7 @@ public class JJUploadViewTests
         var result = uploadView.GridView;
 
         Assert.Same(gridView, result);
-        Assert.Equal(["FileName", "FileSize", "LastModified"],
+        Assert.Equal(["Name", "Size", "LastModified"],
             gridView.FormElement.Fields.Select(field => field.Name));
         Assert.True(gridView.FormElement.Options.Grid.IsCompact);
         BasicAction[] expectedActions =
@@ -50,7 +50,7 @@ public class JJUploadViewTests
     }
 
     [Fact]
-    public async Task GetFilesAsync_WhenSingleFileAndDraftFilesExist_ReturnsOnlyDraftFiles()
+    public async Task GetFilesAsync_WhenSingleFileAndDraftFilesExist_ReturnsDraftAndSavedFiles()
     {
         var fileStorage = new DiskFileStorage();
         var contextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
@@ -74,8 +74,9 @@ public class JJUploadViewTests
 
             var files = await uploadView.GetFilesAsync();
 
-            Assert.Equal(["new-file.txt"], files.Select(file => file.FileName));
-            Assert.All(files, file => Assert.Equal(uploadView.TempPath, file.FolderPath));
+            Assert.Equal(["new-file.txt", "old-file.txt"], files.Select(file => file.FileName));
+            Assert.Equal(uploadView.TempPath, files[0].FolderPath);
+            Assert.Equal(folderPath, files[1].FolderPath);
         }
         finally
         {
