@@ -43,16 +43,25 @@ public sealed class MasterDataCoreOptions
     public string UserIdClaimType { get; set; } = ClaimTypes.NameIdentifier;
     
     /// <summary>
+    /// Configuration of expression 
+    /// </summary>
+    public ExpressionConfiguration ExpressionConfiguration { get; set; } = new()
+    {
+        Evaluation = new ExpressionEvaluationOptions
+        {
+            AllowNullParameter = true,
+            AllowNullOrEmptyExpressions = true,
+            IgnoreCaseAtBuiltInFunctions = true,
+            ArithmeticNullOrEmptyStringAsZero = true,
+            StringComparer = StringComparer.OrdinalIgnoreCase,
+        }
+    };
+    
+    /// <summary>
     /// Context of expressions starting with "exp:". Declare here custom parameters and functions.
     /// </summary>
     public ExpressionContext ExpressionContext { get; set; } = new()
     {
-        Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions
-                  | ExpressionOptions.AllowNullParameter
-                  | ExpressionOptions.OrdinalStringComparer
-                  | ExpressionOptions.AllowNullOrEmptyExpressions
-                  | ExpressionOptions.ArithmeticNullOrEmptyStringAsZero
-                  | ExpressionOptions.CaseInsensitiveStringComparer,
         Functions = new Dictionary<string, ExpressionFunction>(StringComparer.InvariantCultureIgnoreCase)
         {
             {
@@ -67,7 +76,7 @@ public sealed class MasterDataCoreOptions
             {
                 "iif", args =>
                 {
-                    if (args.Count() != 3)
+                    if (args.Count != 3)
                         throw new NCalcEvaluationException("iif() takes exactly 3 arguments.");
                     var conditional = StringManager.ParseBool(args.Evaluate(0));
                     return conditional ? args.Evaluate(1) : args.Evaluate(2);
@@ -76,7 +85,7 @@ public sealed class MasterDataCoreOptions
             {
                 "len", args =>
                 {
-                    if (args.Count() != 1)
+                    if (args.Count != 1)
                     {
                         throw new NCalcEvaluationException("len() takes exactly 1 argument.");
                     }
