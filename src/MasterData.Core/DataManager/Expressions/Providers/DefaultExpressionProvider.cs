@@ -29,11 +29,8 @@ public sealed class DefaultExpressionProvider(
         var parameters = new Dictionary<string, object?>(parsedValues.Count, StringComparer.InvariantCultureIgnoreCase);
         var preparedExpression = PrepareExpressionWithParameters(expression, parsedValues, parameters);
 
-        var expressionContext = new ExpressionContext
+        var expressionContext = new ExpressionContext(options.Value.ExpressionContext)
         {
-            AsyncFunctions = new Dictionary<string, AsyncExpressionFunction>(options.Value.ExpressionContext.AsyncFunctions, StringComparer.InvariantCultureIgnoreCase),
-            Functions = new Dictionary<string, ExpressionFunction>(options.Value.ExpressionContext.Functions, StringComparer.InvariantCultureIgnoreCase),
-            AsyncParameters = new Dictionary<string, AsyncExpressionParameter>(options.Value.ExpressionContext.AsyncParameters, StringComparer.InvariantCultureIgnoreCase),
             Parameters = new Dictionary<string, object?>(parameters, StringComparer.InvariantCultureIgnoreCase)
             {
                 ["ServiceProvider"] = serviceProvider
