@@ -12,13 +12,13 @@ public static class MasterDataServiceCollectionExtensions
     {
         public MasterDataServiceBuilder WithFileStorage(Func<IServiceProvider, IFileStorage> implementationFactory)
         {
-            builder.Services.Replace(ServiceDescriptor.Singleton(implementationFactory));
+            builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
             return builder;
         }
     
         public MasterDataServiceBuilder WithFileStorage<T>() where T : IFileStorage
         {
-            builder.Services.Replace(ServiceDescriptor.Singleton(typeof(IFileStorage),typeof(T)));
+            builder.Services.Replace(ServiceDescriptor.Transient(typeof(IFileStorage),typeof(T)));
             return builder;
         }
     }

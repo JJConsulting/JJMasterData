@@ -88,9 +88,8 @@ public static class ServiceCollectionExtensions
             
             services.TryAddTransient<RelativeDateFormatter>();
             
-            services.TryAddSingleton<IFileStorage, DiskFileStorage>();
+            services.TryAddTransient<IFileStorage, DiskFileStorage>();
             services.TryAddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
-
         }
     }
 }
