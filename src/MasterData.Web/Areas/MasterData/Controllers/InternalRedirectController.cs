@@ -1,15 +1,10 @@
-﻿using System.Text.Json;
-using System.Web;
+﻿using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -20,8 +15,6 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
-    FormService formService,
-    IHttpContextAccessor request,
     IMasterDataUser masterDataUser,
     IEncryptionService encryptionService) : MasterDataController
 {
@@ -139,39 +132,39 @@ public class InternalRedirectController(
         var state =  GetInternalRedirectState(parameters);
         var userId = masterDataUser.Id;
         var userValues = GetUserValues(userId, multiselectValues);
-        var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName!);
+        var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
 
-        if (panel.PageState is PageState.Update)
+        if (formView.DataPanel.PageState is PageState.Update)
         {
-            await panel.LoadValuesFromPkAsync(state.RelationValues);
+            await formView.DataPanel.LoadValuesFromPkAsync(state.RelationValues);
         }
         else
         {
             foreach (var kvp in state.RelationValues)
             {
-                panel.Values[kvp.Key] = kvp.Value;
+                formView.DataPanel.Values[kvp.Key] = kvp.Value;
             }
         }
      
-        ApplyUserValues(panel, userValues);
+        ApplyUserValues(formView, userValues);
 
-        var values = await panel.GetFormValuesAsync();
-        var letter = await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request, DataContextSource.Form, userId));
+        var values = await formView.GetFormValuesAsync();
+        var letter = await formView.InsertOrReplaceFormValuesAsync(values);
         
-        var hasErrors = letter.Errors.Count > 0;
+        var hasErrors = letter.Count > 0;
         if (hasErrors)
         {
-            foreach (var error in letter.Errors)
+            foreach (var error in letter)
             {
                 ModelState.AddModelError(error.Key, error.Value);
             }
         }
 
-        var result = await panel.GetResultAsync();
+        var result = await formView.GetResultAsync();
         if (result is IActionResult actionResult)
             return actionResult;
 
-        var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, userValues, PageState.Update))?.ToString();
+        var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, userValues, PageState.Update))?.ToString();
         
         if(!hasErrors && !state.OpenInModal)
             return RedirectToAction("Render","Form", new {Area="MasterData", elementName = state.ElementName});
@@ -183,7 +176,7 @@ public class InternalRedirectController(
             IsModal = state.OpenInModal,
             ParentElementName = state.ParentElementName,
             SubmitParentWindow = !hasErrors,
-            Title = title ?? panel.Name,
+            Title = title ?? formView.Name,
             MultiselectValues = multiselectValues
         };
 
@@ -254,15 +247,6 @@ public class InternalRedirectController(
         {
             if (kvp.Value is string stringValue)
                 formView.SetUserValues(kvp.Key, stringValue);
-        }
-    }
-
-    private static void ApplyUserValues(JJDataPanel panel, Dictionary<string, object?> userValues)
-    {
-        foreach (var kvp in userValues)
-        {
-            if (kvp.Value is string stringValue)
-                panel.SetUserValues(kvp.Key, stringValue);
         }
     }
 

@@ -175,12 +175,17 @@ public class FormService(
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,
-        Dictionary<string, object?> values, DataContext dataContext)
+    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, Dictionary<string, object?> values, DataContext dataContext, bool validateFields = true)
     {
         ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
-        var errors = await fieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, isForm);
+        
+        Dictionary<string, string> errors;
+        if (validateFields)
+            errors = await fieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, isForm);
+        else
+            errors = new();
+        
         var letter = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImportAsync != null)
