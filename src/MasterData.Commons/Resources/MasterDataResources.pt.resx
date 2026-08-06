@@ -441,6 +441,10 @@
     <value>Limpar Filtro</value>
     <comment>JJMasterDataCore</comment>
   </data>
+    <data name="Clear Filters" xml:space="preserve">
+    <value>Limpar Filtros</value>
+        <comment>JJMasterDataCore</comment>
+  </data>
   <data name="Clear Log" xml:space="preserve">
     <value>Limpar Log</value>
     <comment>JJMasterDataWeb</comment>
