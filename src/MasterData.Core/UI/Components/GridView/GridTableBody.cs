@@ -19,7 +19,9 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class GridTableBody(JJGridView gridView)
+internal sealed class GridTableBody(
+    JJGridView gridView,
+    List<FormElementField> visibleFields)
 {
     private readonly string _name = $"{gridView.Name}-table";
 
@@ -177,7 +179,7 @@ internal sealed class GridTableBody(JJGridView gridView)
     {
         var result = new List<HtmlBuilder>();
         var formStateData = new FormStateData(values, gridView.UserValues, PageState.List);
-        foreach (var field in await gridView.GetVisibleFieldsAsync())
+        foreach (var field in visibleFields)
         {
             var formattedValue = string.Empty;
             var stringValue = string.Empty;

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
@@ -13,17 +12,20 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class GridTableHeader(JJGridView gridView)
+internal sealed class GridTableHeader(
+    JJGridView gridView,
+    List<FormElementField> visibleFields,
+    Dictionary<string, object?> filters)
 {
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = gridView.StringLocalizer;
 
-    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
+    public HtmlBuilder GetHtmlBuilder()
     {
         var html = new HtmlBuilder(HtmlTag.Thead);
         if (gridView.DataSource?.Count == 0 && !gridView.ShowHeaderWhenEmpty)
             return html;
 
-        var visibleFieldsThList = await GetVisibleFieldsThList();
+        var visibleFieldsThList = GetVisibleFieldsThList();
 
         var tr = new HtmlBuilder(HtmlTag.Tr);
 
@@ -57,13 +59,11 @@ internal sealed class GridTableHeader(JJGridView gridView)
         }
     }
 
-    private async Task<List<HtmlBuilder>> GetVisibleFieldsThList()
+    private List<HtmlBuilder> GetVisibleFieldsThList()
     {
         var thList = new List<HtmlBuilder>();
         var hasIcon = false;
-        var currentFilter = await gridView.GetCurrentFilterAsync();
-        
-        foreach (var field in await gridView.GetVisibleFieldsAsync())
+        foreach (var field in visibleFields)
         {
             var th = new HtmlBuilder(HtmlTag.Th);
             var style = GetThStyle(field);
@@ -141,7 +141,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 }
             }
 
-            if (IsAppliedFilter(field, currentFilter))
+            if (IsAppliedFilter(field))
             {
                 hasIcon = true;
                 th.AppendComponent(new JJIcon("fa fa-filter text-info")
@@ -161,12 +161,12 @@ internal sealed class GridTableHeader(JJGridView gridView)
         return thList;
     }
 
-    private static bool IsAppliedFilter(ElementField field, Dictionary<string, object> currentFilter)
+    private bool IsAppliedFilter(ElementField field)
     {
         if (field.Filter.Type is FilterMode.None)
             return false;
         
-        var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");
+        var hasFieldOrFromKey = filters.ContainsKey(field.Name) || filters.ContainsKey($"{field.Name}_from");
 
         return hasFieldOrFromKey;
     }

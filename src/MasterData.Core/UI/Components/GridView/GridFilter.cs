@@ -226,7 +226,7 @@ internal sealed class GridFilter(JJGridView gridView)
 
         if (action.ShowAsCollapse)
         {
-            var hasFilter = await HasFilter();
+            var hasFilter = HasFilter(values);
             var filterIcon = new JJIcon(FontAwesomeIcon.Filter)
             {
                 CssClass = "text-info",
@@ -498,11 +498,11 @@ internal sealed class GridFilter(JJGridView gridView)
         return values;
     }
 
-    public async ValueTask<bool> HasFilter()
+    public bool HasFilter(Dictionary<string, object?> filters)
     {
-        foreach (var item in await GetCurrentFilterAsync())
+        foreach (var item in filters)
         {
-            if (string.IsNullOrEmpty(item.Value.ToString()))
+            if (string.IsNullOrEmpty(item.Value?.ToString()))
                 continue;
 
             if (!gridView.FormElement.Fields.TryGetField(item.Key, out var field))

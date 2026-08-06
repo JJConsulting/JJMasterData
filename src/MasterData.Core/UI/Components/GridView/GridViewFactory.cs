@@ -67,7 +67,7 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
     {
         gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
         gridView.OnRenderAction += eventHandler.OnRenderAction;
-        gridView.OnRenderToolbarActionAsync += eventHandler.OnRenderToolbarActionAsync;
+        gridView.OnRenderToolbarAction += eventHandler.OnRenderToolbarAction;
         gridView.OnRenderCell += eventHandler.OnRenderCell;
         gridView.OnFilterLoadAsync += eventHandler.OnFilterLoadAsync;
         gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
