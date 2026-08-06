@@ -26,8 +26,10 @@ internal sealed class GridTableHeader(JJGridView gridView)
         var visibleFieldsThList = await GetVisibleFieldsThList();
 
         var tr = new HtmlBuilder(HtmlTag.Tr);
+
+        if (gridView.EnableMultiSelect)
+            tr.Append(GetMultSelectThHtmlElement());
         
-        tr.AppendIf(gridView.EnableMultiSelect, GetMultSelectThHtmlElement);
         tr.AppendRange(visibleFieldsThList);
         tr.AppendRange(GetActionsThList());
         
@@ -106,7 +108,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                     if (string.IsNullOrWhiteSpace(order))
                         break;
 
-                    if (order.StartsWith("["))
+                    if (order.StartsWith('['))
                     {
                         order = order.Replace("[", "");
                         order = order.Replace("]", "");
@@ -170,11 +172,15 @@ internal sealed class GridTableHeader(JJGridView gridView)
         return hasFieldOrFromKey;
     }
 
-    private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc text-info").GetHtmlBuilder()
-        .WithToolTip(_stringLocalizer["Ascending order"]);
+    private JJIcon GetAscendingIcon() => new("fa fa-sort-amount-asc text-info")
+    {
+        Tooltip = _stringLocalizer["Ascending order"]
+    };
 
-    private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc text-info").GetHtmlBuilder()
-        .WithToolTip(_stringLocalizer["Descending order"]);
+    private JJIcon GetDescendingIcon() => new("fa fa-sort-amount-desc text-info")
+    {
+        Tooltip = _stringLocalizer["Descending order"]
+    };
 
     private static string GetThStyle(FormElementField field)
     {
@@ -202,7 +208,6 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 break;
             }
             case FormComponent.CheckBox:
-                return "text-align:center;";
             case FormComponent.Icon:
                 return "text-align:center;";
             default:
@@ -224,16 +229,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
     {
         var th = new HtmlBuilder(HtmlTag.Th);
 
-        var hasPages = true;
-        if (!gridView.IsPagingEnabled())
-        {
-            hasPages = false;
-        }
-        else
-        {
-            if (gridView.TotalOfPages <= 1)
-                hasPages = false;
-        }
+        var hasPages = gridView.IsPagingEnabled() && gridView.TotalOfPages > 1;
 
         th.WithCssClass("jj-checkbox")
             .Append(HtmlTag.Input, input =>

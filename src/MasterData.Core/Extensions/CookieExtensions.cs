@@ -23,7 +23,7 @@ public static class CookieExtensions
 
     extension(HttpContext httpContext)
     {
-        public Dictionary<string, object> GetGridFilterCookie(string gridName)
+        public Dictionary<string, object>? GetGridFilterCookie(string gridName)
         {
             var cookieValue = httpContext.GetDecodedCookieValue(GetGridCookieKey(gridName, FilterCookieSuffix));
             if (string.IsNullOrEmpty(cookieValue))
@@ -49,7 +49,7 @@ public static class CookieExtensions
             }
         }
 
-        public void SetGridFilterCookie(string gridName, Dictionary<string, object> filterValues)
+        public void SetGridFilterCookie(string gridName, Dictionary<string, object?> filterValues)
         {
             var serializedValue = filterValues is { Count: > 0 }
                 ? JsonSerializer.Serialize(filterValues, MasterDataJsonSerializerOptions.Default)

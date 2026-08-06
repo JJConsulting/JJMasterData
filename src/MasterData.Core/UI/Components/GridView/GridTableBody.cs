@@ -9,7 +9,6 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -141,7 +140,8 @@ internal sealed class GridTableBody(JJGridView gridView)
         var formStateData = new FormStateData(values, gridView.UserValues, PageState.List);
         var basicActions = gridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order);
         var defaultAction = basicActions.FirstOrDefault(x => x is { IsVisible: true, IsDefaultOption: true });
-        var onClickScript = await GetOnClickScript(formStateData, defaultAction);
+        
+        var onClickScript = GetOnClickScript(formStateData, defaultAction);
 
         var tdList = new List<HtmlBuilder>();
         
@@ -163,7 +163,8 @@ internal sealed class GridTableBody(JJGridView gridView)
         }
 
         tdList.AddRange(await GetVisibleFieldsHtmlList(row, index, values, onClickScript));
-        tdList.AddRange(await GetActionsHtmlListAsync(formStateData));
+        
+        tdList.AddRange( GetActionsHtmlList(formStateData));
 
         return tdList;
     }
@@ -231,7 +232,7 @@ internal sealed class GridTableBody(JJGridView gridView)
             
             if (isDataIconWithIcon)
             {
-                cell = await GetDataItemIconCell(field.DataItem!, formStateData, stringValue);
+                cell = await GetDataItemIconCell(field.DataItem, formStateData, stringValue);
             }
             else if (field.DataFile is not null)
             {
@@ -258,8 +259,7 @@ internal sealed class GridTableBody(JJGridView gridView)
                     {
                         var selector = new FormElementFieldSelector(gridView.FormElement, field.Name);
                         var gridValue = await gridView.FieldFormattingService.FormatGridValueAsync(selector, formStateData);
-                        var gridStringValue = gridValue?.Trim() ?? string.Empty;
-                        cell = new HtmlBuilder(gridStringValue, encode: false);
+                        cell = new HtmlBuilder(gridValue, encode: false);
                         break;
                     }
                 }
@@ -382,24 +382,24 @@ internal sealed class GridTableBody(JJGridView gridView)
         return div;
     }
 
-    public async ValueTask<List<HtmlBuilder>> GetActionsHtmlListAsync(FormStateData formStateData)
+    private List<HtmlBuilder> GetActionsHtmlList(FormStateData formStateData)
     {
         List<HtmlBuilder> result = [];
         var basicActions = gridView.TableActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.Where(x => x is { IsVisible: true, IsGroup: false });
         var groupedActions = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: true });
         
-        result.AddRange(await GetActionsWithoutGroupHtmlAsync(actionsWithoutGroup, formStateData));
+        result.AddRange( GetActionsWithoutGroupHtml(actionsWithoutGroup, formStateData));
 
         if (groupedActions.Count > 0)
         {
-            result.Add(await GetActionsGroupHtmlAsync(groupedActions, formStateData));
+            result.Add(GetActionsGroupHtml(groupedActions, formStateData));
         }
 
         return result;
     }
     
-    private async ValueTask<HtmlBuilder> GetActionsGroupHtmlAsync(
+    private HtmlBuilder GetActionsGroupHtml(
         List<BasicAction> actions,
         FormStateData formStateData)
     {
@@ -425,14 +425,14 @@ internal sealed class GridTableBody(JJGridView gridView)
         }
 
         td.AppendComponent(btnGroup);
+        
         return td;
     }
     
-    private async ValueTask<List<HtmlBuilder>> GetActionsWithoutGroupHtmlAsync(
-        IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
+    private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
         var factory = gridView.ComponentFactory.ActionButton;
-        List<HtmlBuilder> result = [];
+
         foreach (var action in actionsWithoutGroup)
         {
             var td = new HtmlBuilder(HtmlTag.Td);
@@ -454,10 +454,8 @@ internal sealed class GridTableBody(JJGridView gridView)
             if (link != null)
                 td.AppendComponent(link);
 
-            result.Add(td);
+            yield return td;
         }
-
-        return result;
     }
 
     private static string GetTdStyle(FormElementField field)
@@ -536,7 +534,7 @@ internal sealed class GridTableBody(JJGridView gridView)
         return checkBox;
     }
 
-    private async ValueTask<string> GetOnClickScript(FormStateData formStateData, BasicAction? defaultAction)
+    private string GetOnClickScript(FormStateData formStateData, BasicAction? defaultAction)
     {
         if (gridView.EnableEditMode || defaultAction == null)
             return string.Empty;
@@ -557,11 +555,10 @@ internal sealed class GridTableBody(JJGridView gridView)
         if (actionButton is { Visible: true })
         {
             if (!string.IsNullOrEmpty(actionButton.OnClientClick))
-                return actionButton.OnClientClick!;
+                return actionButton.OnClientClick;
 
-            return !string.IsNullOrEmpty(actionButton.UrlAction)
-                ? $"window.location.href = '{actionButton.UrlAction}'"
-                : string.Empty;
+            if (!string.IsNullOrEmpty(actionButton.UrlAction))
+                return $"window.location.href = '{actionButton.UrlAction}'";
         }
 
         return string.Empty;
