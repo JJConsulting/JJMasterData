@@ -61,6 +61,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
     {
         var thList = new List<HtmlBuilder>();
         var hasIcon = false;
+        var currentFilter = await gridView.GetCurrentFilterAsync();
         
         foreach (var field in await gridView.GetVisibleFieldsAsync())
         {
@@ -139,8 +140,6 @@ internal sealed class GridTableHeader(JJGridView gridView)
                     hasIcon = true;
                 }
             }
-
-            var currentFilter = await gridView.GetCurrentFilterAsync();
 
             if (IsAppliedFilter(field, currentFilter))
             {
