@@ -208,7 +208,7 @@ internal sealed class GridFilter(JJGridView gridView)
         {
             Enabled = gridView.EnableFilter,
             Text = _stringLocalizer["Filter"],
-            IconClass = "fa fa-search",
+            IconClass = "fa fa-search text-primary",
             ShowAsButton = true,
             Type = LinkButtonType.Submit,
             OnClientClick = $"{gridView.Scripts.GetFilterScript()};"
@@ -217,7 +217,7 @@ internal sealed class GridFilter(JJGridView gridView)
         var btnCancel = new JJLinkButton
         {
             Enabled = gridView.EnableFilter,
-            Text = _stringLocalizer["Clear Filter"],
+            Text = _stringLocalizer["Clear Filters"],
             IconClass = "fa fa-trash",
             ShowAsButton = true,
             Type = LinkButtonType.Button,
