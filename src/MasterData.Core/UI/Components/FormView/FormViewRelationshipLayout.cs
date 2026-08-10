@@ -167,13 +167,13 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
             childFormView.CurrentActionMap = null;
 
         var filter = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-        foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
-                     parentPanel.Values.ContainsKey(col.PkColumn)))
-        {
-            var value = parentPanel.Values[col.PkColumn];
-            filter[col.FkColumn] = value;
-        }
         
+        foreach (var col in relationship.ElementRelationship.Columns)
+        {
+            if (parentPanel.Values.TryGetValue(col.PkColumn, out var value))
+                filter[col.FkColumn] = value;
+        }
+
         switch (relationship.ViewType)
         {
             case RelationshipViewType.Insert:

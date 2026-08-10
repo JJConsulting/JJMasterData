@@ -292,7 +292,11 @@ public class JJFormView : AsyncComponent
 
         DataPanel.PageState = PageState.Insert;
 
-        var result = await GetFormResult(formStateData.Values, DataPanel.Errors, PageState.Insert, true);
+        var values = new Dictionary<string, object?>(formStateData.Values, StringComparer.InvariantCultureIgnoreCase);
+
+        DataHelper.CopyIntoDictionary(values, formStateData.UserValues);
+        
+        var result = await GetFormResult(values, DataPanel.Errors, PageState.Insert, true);
 
         if (result is HtmlComponentResult htmlComponentResult)
             args.HtmlBuilder.Append(htmlComponentResult.HtmlBuilder);
