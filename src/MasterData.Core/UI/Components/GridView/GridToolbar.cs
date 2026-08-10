@@ -1,12 +1,11 @@
-#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Events.Args;
 
 
@@ -14,25 +13,24 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class GridToolbar(JJGridView gridView)
 {
-    internal event AsyncEventHandler<GridToolbarActionEventArgs> OnRenderToolbarActionAsync;
+    internal event EventHandler<GridToolbarActionEventArgs>? OnRenderToolbarAction;
     
-    public async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
+    public HtmlBuilder GetHtmlBuilder(FormStateData formStateData)
     {
         var toolbar = new JJToolbar();
 
-        await AddActionsToToolbar(toolbar);
+        AddActionsToToolbar(toolbar, formStateData);
             
         return toolbar.GetHtmlBuilder().WithCssClass("mb-1");
     }
 
-    private async ValueTask AddActionsToToolbar(JJToolbar toolbar)
+    private void AddActionsToToolbar(JJToolbar toolbar, FormStateData formStateData)
     {
         var actions = gridView
             .ToolbarActions
             .OrderBy(a => a.Order);
         
         var actionButtonFactory = gridView.ComponentFactory.ActionButton;
-        var formStateData = await gridView.GetFormStateDataAsync();
 
         var groupedActions = new List<JJLinkButton>();
         
@@ -66,10 +64,10 @@ internal sealed class GridToolbar(JJGridView gridView)
                     break;
             }
 
-            if (OnRenderToolbarActionAsync is not null)
+            if (OnRenderToolbarAction is not null)
             {
                 var args = new GridToolbarActionEventArgs(action, linkButton);
-                await OnRenderToolbarActionAsync(gridView, args);
+                OnRenderToolbarAction(gridView, args);
 
                 if (args.HtmlResult is not null)
                 {

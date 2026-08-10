@@ -74,7 +74,7 @@ public class JJGridView : AsyncComponent
     public event GridDataLoadEventHandler? OnDataLoadAsync;
     public event EventHandler<ActionEventArgs>? OnRenderAction;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
-    public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
+    public event EventHandler<GridToolbarActionEventArgs>? OnRenderToolbarAction;
     public event AsyncEventHandler<GridRenderEventArgs>? OnBeforeTableRenderAsync;
     public event AsyncEventHandler<GridRenderEventArgs>? OnAfterTableRenderAsync;
     public event EventHandler<GridRowEventArgs>? OnRenderRow;
@@ -90,7 +90,6 @@ public class JJGridView : AsyncComponent
     private GridSettingsForm? _gridSettingsForm;
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
-    private GridTable? _table;
     private List<Dictionary<string,object?>>? _dataSource;
     private List<FormElementField>? _pkFields;
     private Dictionary<string, object?>? _defaultValues;
@@ -100,7 +99,6 @@ public class JJGridView : AsyncComponent
     private JJDataImportation? _dataImportation;
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
-    private GridToolbar? _toolbar;
     
     private readonly FieldValidationService _fieldValidationService;
     private readonly UrlRedirectService _urlRedirectService;
@@ -387,24 +385,6 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    internal GridTable Table
-    {
-        get
-        {
-            if (_table != null)
-                return _table;
-
-            _table = new GridTable(this);
-            
-            _table.Body.OnRenderAction += OnRenderAction;
-            _table.Body.OnRenderCell += OnRenderCell;
-            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
-            _table.Body.OnRenderRow += OnRenderRow;
-
-            return _table;
-        }
-    }
-
     public ExportOptions CurrentExportConfig
     {
         get
@@ -577,21 +557,6 @@ public class JJGridView : AsyncComponent
     internal IHttpContextAccessor CurrentContext { get; }
     internal DataItemService DataItemService { get; }
     internal IEncryptionService EncryptionService { get; }
-
-    private GridToolbar Toolbar
-    {
-        get
-        {
-            if (_toolbar is null)
-            {
-                _toolbar = new GridToolbar(this);
-                _toolbar.OnRenderToolbarActionAsync += OnRenderToolbarActionAsync;
-            }
-
-            return _toolbar;
-        }
-    }
-
     internal ILogger<JJGridView> Logger { get; }
     internal FieldFormattingService FieldFormattingService { get; }
 
@@ -664,8 +629,9 @@ public class JJGridView : AsyncComponent
         if (ComponentContext is ComponentContext.GridViewRow)
         {
             var rowIndex = int.Parse(CurrentContext.HttpContext!.Request.Query["gridViewRowIndex"].ToString());
+            var filters = await GetCurrentFilterAsync();
 
-            await SetDataSource();
+            await SetDataSource(filters);
             
             var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
 
@@ -674,11 +640,12 @@ public class JJGridView : AsyncComponent
         
         if (ComponentContext is ComponentContext.GridViewScrollPagination)
         {
-            await SetDataSource();
+            var filters = await GetCurrentFilterAsync();
+            await SetDataSource(filters);
 
             var htmlBuilder = new HtmlBuilder();
-            
-            var rows = await Table.Body.GetRowsList();
+            var visibleFields = await GetVisibleFieldsAsync();
+            var rows = await CreateTableBody(visibleFields).GetRowsList();
             htmlBuilder.AppendRange(rows);
             
             return new ContentComponentResult(htmlBuilder);
@@ -765,7 +732,7 @@ public class JJGridView : AsyncComponent
         }
 
         if (ShowToolbar)
-            div.Append(await GetToolbarHtmlBuilder());
+            div.Append(await GetToolbarHtmlAsync());
 
         div.Append(await GetTableHtmlBuilder());
             
@@ -797,8 +764,9 @@ public class JJGridView : AsyncComponent
         AssertProperties();
         
         var html = new HtmlBuilder(HtmlTag.Div);
+        var filters = await GetCurrentFilterAsync();
 
-        await SetDataSource();
+        await SetDataSource(filters);
 
         var totalOfPages = TotalOfPages;
         
@@ -810,7 +778,7 @@ public class JJGridView : AsyncComponent
             html.Append(sortConfig);
         }
         
-        html.AppendRange(await GetHiddenInputsAsync());
+        html.AppendRange(GetHiddenInputs(filters));
 
         if (CurrentPage <= 0 || (CurrentPage > totalOfPages && totalOfPages != 0))
         {
@@ -835,10 +803,10 @@ public class JJGridView : AsyncComponent
                     });
                 html.Append(wrapper);
             }
-            html.Append(await Table.GetHtmlBuilder());
+            html.Append(await GetGridTableHtmlBuilder(filters));
             
             if (DataSource?.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
-                html.Append(await GetNoRecordsAlert());
+                html.Append(GetNoRecordsAlert(filters));
             
             if (IsPagingEnabled() && PaginationType == GridPaginationType.Buttons)
             {
@@ -861,6 +829,41 @@ public class JJGridView : AsyncComponent
 
         return html;
     }
+    
+    private GridToolbar CreateToolbar()
+    {
+        var toolbar = new GridToolbar(this);
+        toolbar.OnRenderToolbarAction += OnRenderToolbarAction;
+
+        return toolbar;
+    }
+    
+    private async ValueTask<HtmlBuilder> GetGridTableHtmlBuilder(Dictionary<string, object?> filters)
+    {
+        var visibleFields = await GetVisibleFieldsAsync();
+
+        var table = new GridTable(this, visibleFields, filters);
+
+        ConfigureTableBody(table.Body);
+
+        return await table.GetHtmlBuilderAsync();
+    }
+
+    private GridTableBody CreateTableBody(List<FormElementField> visibleFields)
+    {
+        var body = new GridTableBody(this, visibleFields);
+        ConfigureTableBody(body);
+
+        return body;
+    }
+
+    private void ConfigureTableBody(GridTableBody body)
+    {
+        body.OnRenderAction += OnRenderAction;
+        body.OnRenderCell += OnRenderCell;
+        body.OnRenderSelectedCell += OnRenderSelectedCell;
+        body.OnRenderRow += OnRenderRow;
+    }
 
     public GridPaginationType PaginationType => FormElement.Options.Grid.PaginationType;
 
@@ -881,7 +884,7 @@ public class JJGridView : AsyncComponent
         };
     }
 
-    private async Task<List<HtmlBuilder>> GetHiddenInputsAsync()
+    private List<HtmlBuilder> GetHiddenInputs(Dictionary<string, object?> filters)
     {
         var hiddenInputs = new List<HtmlBuilder>
         {
@@ -889,7 +892,7 @@ public class JJGridView : AsyncComponent
             new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString()),
             new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", EncryptionService.EncryptObject(CurrentActionMap) ?? string.Empty),
             new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty),
-            new HtmlBuilder().AppendHiddenInput($"grid-view-filters-{Name}", EncryptionService.EncryptObject(await GetCurrentFilterAsync()) ?? string.Empty)
+            new HtmlBuilder().AppendHiddenInput($"grid-view-filters-{Name}", EncryptionService.EncryptObject(filters) ?? string.Empty)
         };
 
         if (EnableMultiSelect)
@@ -903,9 +906,11 @@ public class JJGridView : AsyncComponent
     private async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
         var row = DataSource?[rowIndex];
+        var visibleFields = await GetVisibleFieldsAsync();
 
         string result = string.Empty;
-        foreach (var td in await Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
+        foreach (var td in await CreateTableBody(visibleFields)
+                     .GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
             result += td;
         
         return result;
@@ -921,11 +926,16 @@ public class JJGridView : AsyncComponent
         return ComponentFactory.Title.Create(FormElement, new FormStateData(RelationValues!,UserValues, PageState.List), TitleActions);
     }
 
-    internal ValueTask<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
+    internal HtmlBuilder GetToolbarHtmlBuilder(FormStateData formStateData) =>
+        CreateToolbar().GetHtmlBuilder(formStateData);
 
     public ValueTask<HtmlBuilder> GetFilterHtmlAsync() => Filter.GetFilterHtml();
 
-    public ValueTask<HtmlBuilder> GetToolbarHtmlAsync() => GetToolbarHtmlBuilder();
+    public async ValueTask<HtmlBuilder> GetToolbarHtmlAsync()
+    {
+        var formStateData = await GetFormStateDataAsync();
+        return GetToolbarHtmlBuilder(formStateData);
+    }
 
     private Task<HtmlBuilder> GetSortingConfigAsync() => new GridSortingConfig(this).GetHtmlBuilderAsync();
 
@@ -949,7 +959,7 @@ public class JJGridView : AsyncComponent
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary");
     }
 
-    private async Task<HtmlBuilder> GetNoRecordsAlert()
+    private HtmlBuilder GetNoRecordsAlert(Dictionary<string, object?> filters)
     {
         var alert = new JJAlert
         {
@@ -959,7 +969,7 @@ public class JJGridView : AsyncComponent
             Icon = FontAwesomeIcon.InfoCircle
         };
 
-        var hasFilter = await Filter.HasFilter();
+        var hasFilter = Filter.HasFilter(filters);
 
         if (!hasFilter)
             return alert.GetHtmlBuilder();
@@ -1007,18 +1017,22 @@ public class JJGridView : AsyncComponent
             Title = StringLocalizer["Configure Grid"]
         };
 
-        var btnOk = new JJLinkButton();
-        btnOk.Text = StringLocalizer["Ok"];
-        btnOk.IconClass = "fa fa-check";
-        btnOk.ShowAsButton = true;
-        btnOk.OnClientClick = Scripts.GetGridSettingsScript(ConfigAction, RelationValues);
+        var btnOk = new JJLinkButton
+        {
+            Text = StringLocalizer["Ok"],
+            IconClass = "fa fa-check",
+            ShowAsButton = true,
+            OnClientClick = Scripts.GetGridSettingsScript(ConfigAction, RelationValues)
+        };
         modal.Buttons.Add(btnOk);
 
-        var btnCancel = new JJLinkButton();
-        btnCancel.Text = StringLocalizer["Cancel"];
-        btnCancel.IconClass = "fa fa-times";
-        btnCancel.ShowAsButton = true;
-        btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();
+        var btnCancel = new JJLinkButton
+        {
+            Text = StringLocalizer["Cancel"],
+            IconClass = "fa fa-times",
+            ShowAsButton = true,
+            OnClientClick = Scripts.GetCloseConfigUIScript()
+        };
         modal.Buttons.Add(btnCancel);
         modal.Content = GridSettingsForm.GetHtmlBuilder(CanCustomPaging(), CurrentSettings);
 
@@ -1176,16 +1190,16 @@ public class JJGridView : AsyncComponent
     
     public async Task<List<Dictionary<string,object?>>?> GetDictionaryListAsync()
     {
-        await SetDataSource();
+        var filters = await GetCurrentFilterAsync();
+        await SetDataSource(filters);
 
         return DataSource;
     }
     
-    private async Task SetDataSource()
+    private async Task SetDataSource(Dictionary<string, object?> filters)
     {
         if (DataSource == null && !IsUserSetDataSource)
         {
-            var filters = await GetCurrentFilterAsync();
             var result = await GetDataSourceAsync(new EntityParameters
             {
                 Filters = filters,
@@ -1201,7 +1215,7 @@ public class JJGridView : AsyncComponent
                 CurrentPage = 1;
                 result = await GetDataSourceAsync(new EntityParameters
                 {
-                    Filters = await GetCurrentFilterAsync(),
+                    Filters = filters,
                     OrderBy = CurrentOrder,
                     RecordsPerPage = CurrentSettings.RecordsPerPage,
                     CurrentPage = CurrentPage
@@ -1334,7 +1348,7 @@ public class JJGridView : AsyncComponent
         SelectedRowsId = string.Empty;
     }
 
-    internal async Task<string> GetEncryptedSelectedRowsAsync()
+    private async Task<string> GetEncryptedSelectedRowsAsync()
     {
         var result = await GetDataSourceAsync(new EntityParameters
         {

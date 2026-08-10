@@ -12,5 +12,5 @@ public class GridToolbarActionEventArgs(BasicAction action, JJLinkButton linkBut
 
     public JJLinkButton LinkButton { get; set; } = linkButton;
 
-    public string HtmlResult { get; set; } = null;
+    public string? HtmlResult { get; set; } = null;
 }

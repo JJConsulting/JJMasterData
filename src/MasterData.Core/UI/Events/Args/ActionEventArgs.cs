@@ -1,12 +1,11 @@
-﻿#nullable disable warnings
-using System;
+﻿using System;
 using System.Collections.Generic;
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 
 namespace JJMasterData.Core.UI.Events.Args;
 
-public class ActionEventArgs(BasicAction action, JJLinkButton linkButton, Dictionary<string, object> fieldValues)
+public class ActionEventArgs(BasicAction action, JJLinkButton linkButton, Dictionary<string, object?> fieldValues)
     : EventArgs
 {
     public string ActionName { get; init; } = action.Name ?? throw new ArgumentNullException(nameof(action));
@@ -15,5 +14,5 @@ public class ActionEventArgs(BasicAction action, JJLinkButton linkButton, Dictio
 
     public Dictionary<string, object?> FieldValues { get; internal set; } = fieldValues;
 
-    public string HtmlResult { get; set; } = null!;
+    public string? HtmlResult { get; set; }
 }

@@ -46,10 +46,9 @@ public interface IGridEventHandler : IEventHandler
 #else
         ;
 #endif
-    ValueTask OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs e)
+    void OnRenderToolbarAction(object? sender, GridToolbarActionEventArgs e)
 #if NET
     {
-        return ValueTask.CompletedTask;
     }
 #else
         ;
