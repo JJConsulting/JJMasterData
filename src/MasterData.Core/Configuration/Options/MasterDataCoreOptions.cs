@@ -103,6 +103,28 @@ public sealed class MasterDataCoreOptions
 
                     return args.Evaluate(0)?.ToString()?.Trim();
                 }
+            },
+            {
+                "coalesce", args =>
+                {
+                    if (args.Count == 0)
+                        throw new NCalcEvaluationException("coalesce() takes at least 1 argument.");
+
+                    for (var i = 0; i < args.Count; i++)
+                    {
+                        var value = args.Evaluate(i);
+
+                        if (value == null)
+                            continue;
+
+                        if (value is string str && string.IsNullOrEmpty(str))
+                            continue;
+
+                        return value;
+                    }
+
+                    return null;
+                }
             }
         }
     };
