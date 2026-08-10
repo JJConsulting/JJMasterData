@@ -1632,6 +1632,23 @@ public class JJFormView : AsyncComponent
     }
 
     /// <summary>
+    /// Insert or updates the records in the database.
+    /// </summary>
+    /// <returns>The list of errors.</returns>
+    public async Task<Dictionary<string, string>> InsertOrReplaceFormValuesAsync(Dictionary<string, object?> values)
+    {
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var result = await _formService.InsertOrReplaceAsync(FormElement, values, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await _uploadViewManager.PromoteDraftFilesAsync(FormElement, DataPanel.Values);
+        }
+        
+        UrlRedirect = result.UrlRedirect;
+        return result.Errors;
+    }
+    
+    /// <summary>
     /// Insert the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
