@@ -18,6 +18,20 @@ namespace JJMasterData.Core.Test.Storage;
 public class FormFileServiceTests
 {
     [Fact]
+    public void GetFolderPath_ShouldPreserveApplicationPathPlaceholder()
+    {
+        var formElement = CreateFormElement("{app.path}/Documents");
+        var values = new Dictionary<string, object?> { ["Id"] = "10" };
+
+        var folderPath = FileStoragePathExtensions.GetFolderPath(
+            formElement,
+            formElement.Fields["Document"],
+            values);
+
+        Assert.Equal("{app.path}/Documents/10", folderPath);
+    }
+
+    [Fact]
     public async Task GetFilesAsync_WithPersistedAndDraftFiles_ReturnsMergedFiles()
     {
         var fileStorage = new DiskFileStorage();
@@ -121,7 +135,7 @@ public class FormFileServiceTests
     private static string GetDraftFolderPath(Guid draftId) =>
         "{app.path}/MasterDataDraftFiles/" + draftId.ToString("N") + "/";
 
-    private static FormElement CreateFormElement()
+    private static FormElement CreateFormElement(string? folderPath = null)
     {
         return new FormElement
         {
@@ -139,7 +153,10 @@ public class FormFileServiceTests
                     Component = FormComponent.File,
                     DataFile = new FormElementDataFile
                     {
-                        FolderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"))
+                        FolderPath = folderPath ?? Path.Combine(
+                            Path.GetTempPath(),
+                            "jjmasterdata-tests",
+                            Guid.NewGuid().ToString("N"))
                     }
                 }
             ]

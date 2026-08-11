@@ -22,9 +22,7 @@ public static class FileStoragePathExtensions
 
             var pkValues = DataHelper.ParsePkValues(formElement, values, '_');
 
-            var folderPath = FileStoragePath.ResolveFolderPath(field.DataFile.FolderPath);
-
-            return FileStoragePath.CombineKey(folderPath, pkValues);
+            return FileStoragePath.CombineKey(field.DataFile.FolderPath, pkValues);
         }
 
         private static string CombineKey(string rootKey, string childKey)

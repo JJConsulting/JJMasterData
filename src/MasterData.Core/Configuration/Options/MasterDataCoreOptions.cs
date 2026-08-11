@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using JJMasterData.Commons.Util;
 using NCalc;
@@ -35,10 +33,10 @@ public sealed class MasterDataCoreOptions
     public bool EnableDataDictionaryCaching { get; set; } = true;
 
     /// <summary>
-    /// Default value: {ApplicationPath}/JJExportationFiles
+    /// Default value: {app.path}/JJExportationFiles
     /// </summary>
     [Display(Name = "Exportation Folder Path")]
-    public string ExportationFolderPath { get; set; } = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
+    public string ExportationFolderPath { get; set; } = "{app.path}/JJExportationFiles";
 
     public string UserIdClaimType { get; set; } = ClaimTypes.NameIdentifier;
     
