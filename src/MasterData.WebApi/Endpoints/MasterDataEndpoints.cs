@@ -50,10 +50,10 @@ public static class MasterDataApiEndpoints
         group.MapPost("/", async (
             [FromBody] Dictionary<string, object?>[] listParam,
             string elementName,
-            [FromQuery] bool replace,
+            [FromQuery] bool? replace,
             MasterApiService service) =>
         {
-            var result = await service.SetFieldsAsync(listParam, elementName, replace);
+            var result = await service.SetFieldsAsync(listParam, elementName, replace ?? false);
             return GetResponseMessage(result);
         });
 
