@@ -73,9 +73,9 @@ public sealed class ExpressionParser(
             case "currentculture":
                 return CultureInfo.CurrentCulture.Name;
             case "useremail":
-                return httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
+                return GetClaimValue(ClaimTypes.Email);
             case "legacyid":
-                return httpContextAccessor.HttpContext?.User.FindFirst("LegacyId")?.Value;
+                return GetClaimValue("LegacyId");
         }
 
         if (formStateData.UserValues != null && formStateData.UserValues.TryGetValue(field, out var value))
@@ -95,6 +95,11 @@ public sealed class ExpressionParser(
         if (session != null && session.TryGetValue(field, out var sessionValue))
             return Encoding.UTF8.GetString(sessionValue);
        
-        return httpContextAccessor.HttpContext?.User.FindFirst(field)?.Value;
+        return GetClaimValue(field);
+    }
+
+    private string? GetClaimValue(string claimType)
+    {
+        return httpContextAccessor.HttpContext?.User.FindFirst(claimType)?.Value;
     }
 }
