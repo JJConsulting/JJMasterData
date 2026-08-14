@@ -95,7 +95,7 @@ public sealed class ExpressionParser(
 
         var session = httpContextAccessor.HttpContext?.Features.Get<ISessionFeature>()?.Session;
 
-        if (session != null && session.TryGetValue(field, out var sessionValue))
+        if (session is { IsAvailable: true } && session.TryGetValue(field, out var sessionValue))
             return Encoding.UTF8.GetString(sessionValue);
        
         return GetClaimValue(field);
