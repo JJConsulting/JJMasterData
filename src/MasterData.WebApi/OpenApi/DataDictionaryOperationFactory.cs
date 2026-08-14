@@ -61,12 +61,6 @@ internal sealed class DataDictionaryOperationFactory
         TagReference = tagReference;
     }
 
-    private OpenApiOperation WithTag(OpenApiOperation operation)
-    {
-        operation.Tags = new HashSet<OpenApiTagReference> { TagReference };
-        return operation;
-    }
-
     internal OpenApiOperation Get()
     {
         var nameFields = PrimaryKeysNames;
@@ -117,7 +111,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses?.AddDefaultValues();
 
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     internal OpenApiOperation GetAll()
@@ -308,7 +302,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     internal OpenApiOperation Post()
@@ -398,7 +392,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     internal OpenApiOperation Put()
@@ -472,7 +466,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     internal OpenApiOperation Patch()
@@ -547,7 +541,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     internal OpenApiOperation Delete()
@@ -603,7 +597,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses?.AddDefaultValues();
 
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     #region File
@@ -663,7 +657,7 @@ internal sealed class DataDictionaryOperationFactory
         });
 
         operation.Responses.AddDefaultValues();
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     internal OpenApiOperation PostFile(FormElementField field)
@@ -746,7 +740,7 @@ internal sealed class DataDictionaryOperationFactory
 
 
         operation.Responses.AddDefaultValues();
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     internal OpenApiOperation DeleteFile(FormElementField field)
@@ -805,7 +799,7 @@ internal sealed class DataDictionaryOperationFactory
 
 
         operation.Responses.AddDefaultValues();
-        return WithTag(operation);
+        return operation.WithTag(TagReference);
     }
 
     public OpenApiOperation RenameFile(FormElementField field)
@@ -876,7 +870,8 @@ internal sealed class DataDictionaryOperationFactory
         });
 
         operation.Responses.AddDefaultValues();
-        return WithTag(operation);
+        
+        return operation.WithTag(TagReference);
     }
 
     #endregion
