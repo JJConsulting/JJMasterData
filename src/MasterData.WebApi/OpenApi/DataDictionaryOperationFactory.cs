@@ -116,7 +116,7 @@ internal sealed class DataDictionaryOperationFactory
 
     internal OpenApiOperation GetAll()
     {
-        var listResponseSchema = new OpenApiSchema
+        var responseSchemaList = new OpenApiSchema
         {
             Title = $"{ModelName}ListResponse",
             Type = JsonSchemaType.Object,
@@ -156,7 +156,7 @@ internal sealed class DataDictionaryOperationFactory
                             {
                                 "application/json", new OpenApiMediaType
                                 {
-                                    Schema = listResponseSchema
+                                    Schema = responseSchemaList
                                 }
                             }
                         }
