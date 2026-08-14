@@ -27,7 +27,7 @@ class TomSelectHelper {
                 : undefined)
             ?? String();
 
-        return new TomSelect(element, {
+        const tomSelect = new TomSelect(element, {
             allowEmptyOption: !isTagsInput,
             hidePlaceholder: false,
             hideSelected: false,
@@ -41,6 +41,7 @@ class TomSelectHelper {
                 : {
                     create: false,
                     controlInput: null,
+                    searchField: [],
                     plugins: isMultiSelect ? [ 'checkbox_options'] : []
                 }),
             render: {
@@ -49,6 +50,11 @@ class TomSelectHelper {
                 item: (data, escape) => this.renderOption(element, data, escape, false)
             }
         });
+
+        if (!isTagsInput)
+            this.enableTypeAhead(tomSelect);
+
+        return tomSelect;
     }
 
     static destroy(element: TomSelectElement) {
@@ -63,6 +69,82 @@ class TomSelectHelper {
     static clear(element: TomSelectElement) {
         const tomSelect = this.initialize(element);
         tomSelect.clear();
+    }
+
+    private static enableTypeAhead(tomSelect: any) {
+        const typeAheadTimeout = 750;
+        let typedText = String();
+        let resetTimeout: number | undefined;
+
+        const resetTypedText = () => {
+            typedText = String();
+            if (resetTimeout !== undefined) {
+                window.clearTimeout(resetTimeout);
+                resetTimeout = undefined;
+            }
+        };
+
+        tomSelect.control.addEventListener('keydown', (event: KeyboardEvent) => {
+            if (event.defaultPrevented
+                || event.ctrlKey
+                || event.metaKey
+                || event.altKey
+                || event.key.length !== 1
+                || tomSelect.isLocked
+                || tomSelect.isDisabled
+                || tomSelect.isReadOnly)
+                return;
+
+            event.preventDefault();
+
+            const typedCharacter = this.normalizeSearchText(event.key);
+            if (!typedCharacter)
+                return;
+
+            if (resetTimeout !== undefined)
+                window.clearTimeout(resetTimeout);
+
+            typedText += typedCharacter;
+            let matchingOption = this.findTypeAheadOption(tomSelect, typedText);
+
+            if (!matchingOption && typedText.length > typedCharacter.length) {
+                typedText = typedCharacter;
+                matchingOption = this.findTypeAheadOption(tomSelect, typedText);
+            }
+
+            resetTimeout = window.setTimeout(resetTypedText, typeAheadTimeout);
+
+            if (!matchingOption)
+                return;
+
+            if (!tomSelect.isOpen)
+                tomSelect.open();
+
+            tomSelect.setActiveOption(matchingOption);
+        });
+
+        tomSelect.on('blur', resetTypedText);
+        tomSelect.on('destroy', resetTypedText);
+    }
+
+    private static findTypeAheadOption(tomSelect: any, typedText: string): HTMLElement | undefined {
+        const labelField = tomSelect.settings.labelField;
+
+        return Array.from(tomSelect.selectable() as NodeListOf<HTMLElement>)
+            .find(option => {
+                const value = option.dataset.value;
+                const label = value === undefined ? undefined : tomSelect.options[value]?.[labelField];
+
+                return this.normalizeSearchText(String(label ?? option.textContent ?? String()))
+                    .startsWith(typedText);
+            });
+    }
+
+    private static normalizeSearchText(value: string) {
+        return value
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, String())
+            .toLocaleLowerCase();
     }
 
     private static renderOption(

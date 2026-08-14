@@ -2920,7 +2920,7 @@ class TomSelectHelper {
         const placeholder = (_e = (_b = (_a = element.dataset.placeholder) !== null && _a !== void 0 ? _a : element.getAttribute('placeholder')) !== null && _b !== void 0 ? _b : (element instanceof HTMLSelectElement
             ? (_d = (_c = element.querySelector('option[value=""]')) === null || _c === void 0 ? void 0 : _c.textContent) === null || _d === void 0 ? void 0 : _d.trim()
             : undefined)) !== null && _e !== void 0 ? _e : String();
-        return new TomSelect(element, Object.assign(Object.assign({ allowEmptyOption: !isTagsInput, hidePlaceholder: false, hideSelected: false, maxOptions: null, placeholder }, (isTagsInput
+        const tomSelect = new TomSelect(element, Object.assign(Object.assign({ allowEmptyOption: !isTagsInput, hidePlaceholder: false, hideSelected: false, maxOptions: null, placeholder }, (isTagsInput
             ? {
                 create: true,
                 delimiter: ','
@@ -2928,12 +2928,16 @@ class TomSelectHelper {
             : {
                 create: false,
                 controlInput: null,
+                searchField: [],
                 plugins: isMultiSelect ? ['checkbox_options'] : []
             })), { render: {
                 no_results: () => { var _a; return `<div class="no-results">${(_a = element.dataset.noResultsText) !== null && _a !== void 0 ? _a : 'No results found.'}</div>`; },
                 option: (data, escape) => this.renderOption(element, data, escape, true),
                 item: (data, escape) => this.renderOption(element, data, escape, false)
             } }));
+        if (!isTagsInput)
+            this.enableTypeAhead(tomSelect);
+        return tomSelect;
     }
     static destroy(element) {
         var _a;
@@ -2946,6 +2950,66 @@ class TomSelectHelper {
     static clear(element) {
         const tomSelect = this.initialize(element);
         tomSelect.clear();
+    }
+    static enableTypeAhead(tomSelect) {
+        const typeAheadTimeout = 750;
+        let typedText = String();
+        let resetTimeout;
+        const resetTypedText = () => {
+            typedText = String();
+            if (resetTimeout !== undefined) {
+                window.clearTimeout(resetTimeout);
+                resetTimeout = undefined;
+            }
+        };
+        tomSelect.control.addEventListener('keydown', (event) => {
+            if (event.defaultPrevented
+                || event.ctrlKey
+                || event.metaKey
+                || event.altKey
+                || event.key.length !== 1
+                || tomSelect.isLocked
+                || tomSelect.isDisabled
+                || tomSelect.isReadOnly)
+                return;
+            event.preventDefault();
+            const typedCharacter = this.normalizeSearchText(event.key);
+            if (!typedCharacter)
+                return;
+            if (resetTimeout !== undefined)
+                window.clearTimeout(resetTimeout);
+            typedText += typedCharacter;
+            let matchingOption = this.findTypeAheadOption(tomSelect, typedText);
+            if (!matchingOption && typedText.length > typedCharacter.length) {
+                typedText = typedCharacter;
+                matchingOption = this.findTypeAheadOption(tomSelect, typedText);
+            }
+            resetTimeout = window.setTimeout(resetTypedText, typeAheadTimeout);
+            if (!matchingOption)
+                return;
+            if (!tomSelect.isOpen)
+                tomSelect.open();
+            tomSelect.setActiveOption(matchingOption);
+        });
+        tomSelect.on('blur', resetTypedText);
+        tomSelect.on('destroy', resetTypedText);
+    }
+    static findTypeAheadOption(tomSelect, typedText) {
+        const labelField = tomSelect.settings.labelField;
+        return Array.from(tomSelect.selectable())
+            .find(option => {
+            var _a, _b;
+            const value = option.dataset.value;
+            const label = value === undefined ? undefined : (_a = tomSelect.options[value]) === null || _a === void 0 ? void 0 : _a[labelField];
+            return this.normalizeSearchText(String((_b = label !== null && label !== void 0 ? label : option.textContent) !== null && _b !== void 0 ? _b : String()))
+                .startsWith(typedText);
+        });
+    }
+    static normalizeSearchText(value) {
+        return value
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, String())
+            .toLocaleLowerCase();
     }
     static renderOption(element, data, escape, isDropdownItem) {
         const option = element instanceof HTMLSelectElement
