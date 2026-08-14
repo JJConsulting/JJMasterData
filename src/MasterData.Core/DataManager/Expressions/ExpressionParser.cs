@@ -85,9 +85,12 @@ public sealed class ExpressionParser(
         {
             if (objValue is bool boolValue)
                 return boolValue ? "1" : "0";
-
+            
             if (objValue is string stringValue && !string.IsNullOrEmpty(stringValue))
                 return stringValue;
+            
+            if (objValue is not null)
+                return objValue;
         }
 
         var session = httpContextAccessor.HttpContext?.Features.Get<ISessionFeature>()?.Session;
