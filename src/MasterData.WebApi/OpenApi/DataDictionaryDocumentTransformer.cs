@@ -22,7 +22,11 @@ public class DataDictionaryDocumentTransformer(
         {
             try
             {
-                TransformWithFormElement(document, formElement);
+
+                if (formElement.ApiOptions.HasMethod())
+                {
+                    TransformWithFormElement(document, formElement);
+                }
             }
             catch (Exception e)
             {
@@ -35,11 +39,14 @@ public class DataDictionaryDocumentTransformer(
 
     private static void TransformWithFormElement(OpenApiDocument document, FormElement formElement)
     {
+        var tag = new OpenApiTag { Name = formElement.Name };
+        document.Tags!.Add(tag);
+
+        var tagReference = new OpenApiTagReference(formElement.Name, document, null);
+
         var defaultPathItem = new DataDictionaryPathItem($"/api/masterdata/{formElement.Name}");
         var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
-        var factory = new DataDictionaryOperationFactory(formElement, formElement.ApiOptions);
-        
-        document.Tags!.Add(new OpenApiTag { Name = formElement.Name });
+        var factory = new DataDictionaryOperationFactory(formElement, formElement.ApiOptions, tagReference);
         
         if (formElement.ApiOptions.EnableGetAll)
             defaultPathItem.AddOperation(HttpMethod.Get, factory.GetAll());

@@ -25,6 +25,7 @@ internal sealed class DataDictionaryOperationFactory
 
     private FormElement FormElement { get; }
     private List<FormElementField> PrimaryKeyFields { get; }
+    private OpenApiTagReference TagReference { get; }
 
     private string? _primaryKeyNames;
 
@@ -51,12 +52,19 @@ internal sealed class DataDictionaryOperationFactory
     private FormElementApiOptions Options { get; }
     private string ModelName { get; }
 
-    internal DataDictionaryOperationFactory(FormElement formElement, FormElementApiOptions options)
+    internal DataDictionaryOperationFactory(FormElement formElement, FormElementApiOptions options, OpenApiTagReference tagReference)
     {
         FormElement = formElement;
         ModelName = formElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
         PrimaryKeyFields = formElement.Fields.FindAll(f => f.IsPk);
         Options = options;
+        TagReference = tagReference;
+    }
+
+    private OpenApiOperation WithTag(OpenApiOperation operation)
+    {
+        operation.Tags = new HashSet<OpenApiTagReference> { TagReference };
+        return operation;
     }
 
     internal OpenApiOperation Get()
@@ -83,7 +91,7 @@ internal sealed class DataDictionaryOperationFactory
                                     {
                                         { "utf-8", new OpenApiEncoding { ContentType = "application/json" } }
                                     },
-                                    Schema = GetResponseSchema(ModelName)
+                                    Schema = GetDictionarySchema(FormElement, Options, ModelName)
                                 }
                             }
                         }
@@ -109,11 +117,36 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses?.AddDefaultValues();
 
-        return operation;
+        return WithTag(operation);
     }
 
     internal OpenApiOperation GetAll()
     {
+        var listResponseSchema = new OpenApiSchema
+        {
+            Title = $"{ModelName}ListResponse",
+            Type = JsonSchemaType.Object,
+            Properties = new Dictionary<string, IOpenApiSchema>
+            {
+                {
+                    "tot", new OpenApiSchema
+                    {
+                        Description = "Total number of records",
+                        Type = JsonSchemaType.Integer,
+                        Format = "int32"
+                    }
+                },
+                {
+                    "fields", new OpenApiSchema
+                    {
+                        Description = "Records",
+                        Type = JsonSchemaType.Array,
+                        Items = GetDictionarySchema(FormElement, Options, ModelName)
+                    }
+                }
+            }
+        };
+
         var operation = new OpenApiOperation
         {
             Summary = "Get all records",
@@ -129,7 +162,7 @@ internal sealed class DataDictionaryOperationFactory
                             {
                                 "application/json", new OpenApiMediaType
                                 {
-                                    Schema = GetResponseSchema(ModelName)
+                                    Schema = listResponseSchema
                                 }
                             }
                         }
@@ -275,7 +308,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return operation;
+        return WithTag(operation);
     }
 
     internal OpenApiOperation Post()
@@ -289,15 +322,13 @@ internal sealed class DataDictionaryOperationFactory
             "if sending a list of records the return can be 201(all right) or 207(error in some record) ");
         description.Append("in this case you can check the status of each record in the response return.");
 
-        var id = $"{ModelName}List";
-
-        var items = GetDictionarySchema(FormElement, Options, id, true);
+        var itemSchema = GetDictionarySchema(FormElement, Options, ModelName, ignoreIdentity: true);
 
         OpenApiSchema listSchema = new()
         {
             Title = $"{ModelName}List",
             Type = JsonSchemaType.Array,
-            Items = items,
+            Items = itemSchema,
             Description = "List of records"
         };
 
@@ -367,7 +398,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return operation;
+        return WithTag(operation);
     }
 
     internal OpenApiOperation Put()
@@ -381,14 +412,13 @@ internal sealed class DataDictionaryOperationFactory
         description.Append("in this case you can check the status of each record in the response return.");
         description.Append("<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)");
 
-        var id = $"{ModelName}List";
-        var items = GetDictionarySchema(FormElement, Options, id, true);
+        var itemSchema = GetDictionarySchema(FormElement, Options, ModelName, ignoreIdentity: false);
 
         OpenApiSchema listSchema = new()
         {
-            Title = id,
+            Title = $"{ModelName}List",
             Type = JsonSchemaType.Array,
-            Items = items,
+            Items = itemSchema,
             Description = "List of records"
         };
 
@@ -442,7 +472,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return operation;
+        return WithTag(operation);
     }
 
     internal OpenApiOperation Patch()
@@ -456,15 +486,13 @@ internal sealed class DataDictionaryOperationFactory
             "if sending a list of records the return can be 201(all right) or 207(error in some record) ");
         description.Append("in this case you can check the status of each record in the response return.");
 
-        var id = $"{ModelName}List";
-
-        var items = GetDictionarySchema(FormElement, Options, id, true);
+        var itemSchema = GetDictionarySchema(FormElement, Options, ModelName, ignoreIdentity: false);
 
         OpenApiSchema listSchema = new()
         {
-            Title = id,
+            Title = $"{ModelName}List",
             Type = JsonSchemaType.Array,
-            Items = items,
+            Items = itemSchema,
             Description = "List of records"
         };
 
@@ -490,7 +518,7 @@ internal sealed class DataDictionaryOperationFactory
                         Content = new Dictionary<string, OpenApiMediaType>
                         {
                             {
-                                "responseSchema", new OpenApiMediaType
+                                "application/json", new OpenApiMediaType
                                 {
                                     Schema = responseSchema
                                 }
@@ -519,7 +547,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses.AddDefaultValues();
 
-        return operation;
+        return WithTag(operation);
     }
 
     internal OpenApiOperation Delete()
@@ -549,7 +577,7 @@ internal sealed class DataDictionaryOperationFactory
                             {
                                 "application/json", new OpenApiMediaType
                                 {
-                                    Schema = GetResponseSchema(ModelName)
+                                    Schema = GetValidationLetterSchema(true)
                                 }
                             }
                         }
@@ -575,7 +603,7 @@ internal sealed class DataDictionaryOperationFactory
 
         operation.Responses?.AddDefaultValues();
 
-        return operation;
+        return WithTag(operation);
     }
 
     #region File
@@ -618,7 +646,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
-                    Schema = GetResponseSchema(ModelName),
+                    Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" },
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
@@ -635,7 +663,7 @@ internal sealed class DataDictionaryOperationFactory
         });
 
         operation.Responses.AddDefaultValues();
-        return operation;
+        return WithTag(operation);
     }
 
     internal OpenApiOperation PostFile(FormElementField field)
@@ -700,7 +728,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
-                    Schema = GetResponseSchema(ModelName),
+                    Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" },
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
@@ -718,7 +746,7 @@ internal sealed class DataDictionaryOperationFactory
 
 
         operation.Responses.AddDefaultValues();
-        return operation;
+        return WithTag(operation);
     }
 
     internal OpenApiOperation DeleteFile(FormElementField field)
@@ -759,7 +787,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
-                    Schema = GetResponseSchema(ModelName),
+                    Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" },
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
@@ -777,7 +805,7 @@ internal sealed class DataDictionaryOperationFactory
 
 
         operation.Responses.AddDefaultValues();
-        return operation;
+        return WithTag(operation);
     }
 
     public OpenApiOperation RenameFile(FormElementField field)
@@ -831,7 +859,7 @@ internal sealed class DataDictionaryOperationFactory
             {
                 "application/octet-stream", new OpenApiMediaType
                 {
-                    Schema = GetResponseSchema(ModelName),
+                    Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" },
                     Encoding = new Dictionary<string, OpenApiEncoding>
                     {
                         { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
@@ -848,7 +876,7 @@ internal sealed class DataDictionaryOperationFactory
         });
 
         operation.Responses.AddDefaultValues();
-        return operation;
+        return WithTag(operation);
     }
 
     #endregion
