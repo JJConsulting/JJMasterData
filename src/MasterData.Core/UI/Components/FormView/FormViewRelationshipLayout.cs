@@ -90,13 +90,11 @@ internal sealed class FormViewRelationshipLayout(
     {
         var value = parentFormView
             .ExpressionsService.GetExpressionValue(expression,
-            GetFormStateData()
+            parentFormState
             )?.ToString() ?? string.Empty;
 
         return parentFormView.Localizer[value];
     }
-
-    private FormStateData GetFormStateData() => parentFormState;
 
     private HtmlBuilder? GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder? content)
     {
@@ -271,5 +269,5 @@ internal sealed class FormViewRelationshipLayout(
         childFormView.DataPanel.FormUI = childFormView.FormElement.Options.Form;
     }
 
-    private bool IsRelationshipDisabled(FormElementRelationship relationship) => !parentFormView.ExpressionsService.GetBoolValue(relationship.Panel.EnableExpression, GetFormStateData());
+    private bool IsRelationshipDisabled(FormElementRelationship relationship) => !parentFormView.ExpressionsService.GetBoolValue(relationship.Panel.EnableExpression, parentFormState);
 }
