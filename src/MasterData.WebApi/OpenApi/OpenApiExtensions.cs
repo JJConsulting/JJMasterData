@@ -4,52 +4,67 @@ namespace JJMasterData.WebApi.OpenApi;
 
 internal static class OpenApiExtensions
 {
-    internal static void AddDataDictionaryPath(this OpenApiPaths paths, DataDictionaryPathItem pathItem)
+    extension(OpenApiOperation operation)
     {
-        paths.Add(pathItem.Key, pathItem.PathItem);
+        public OpenApiOperation WithTag(OpenApiTagReference tagReference)
+        {
+            operation.Tags = new HashSet<OpenApiTagReference> { tagReference };
+            return operation;
+        }
+    }
+    
+    extension(OpenApiPaths paths)
+    {
+        internal void AddDataDictionaryPath(DataDictionaryPathItem pathItem)
+        {
+            paths.Add(pathItem.Key, pathItem.PathItem);
+        }
     }
 
-    internal static void AddDefaultValues(this OpenApiResponses responses)
+    extension(OpenApiResponses responses)
     {
-        responses.Add("207",
-            new OpenApiResponse
-            {
-                Description = "Multi Status"
-            }
-        );
-        responses.Add("400",
-            new OpenApiResponse
-            {
-                Description = "Bad Request"
-            }
-        );
+        internal void AddDefaultValues()
+        {
+            responses.Add("207",
+                new OpenApiResponse
+                {
+                    Description = "Multi Status"
+                }
+            );
+            responses.Add("400",
+                new OpenApiResponse
+                {
+                    Description = "Bad Request"
+                }
+            );
 
-        responses.Add("401",
-            new OpenApiResponse
-            {
-                Description = "Unauthorized"
-            }
-        );
+            responses.Add("401",
+                new OpenApiResponse
+                {
+                    Description = "Unauthorized"
+                }
+            );
 
-        responses.Add("403",
-            new OpenApiResponse
-            {
-                Description = "Token Expired"
-            }
-        );
+            responses.Add("403",
+                new OpenApiResponse
+                {
+                    Description = "Token Expired"
+                }
+            );
 
-        responses.Add("404",
-            new OpenApiResponse
-            {
-                Description = "Not Found"
-            }
-        );
+            responses.Add("404",
+                new OpenApiResponse
+                {
+                    Description = "Not Found"
+                }
+            );
 
-        responses.Add("500",
-            new OpenApiResponse
-            {
-                Description = "Internal Server Error"
-            }
-        );
+            responses.Add("500",
+                new OpenApiResponse
+                {
+                    Description = "Internal Server Error"
+                }
+            );
+        }
     }
 }
