@@ -1375,7 +1375,7 @@ public class JJFormView : AsyncComponent
         if (ShowTitle)
             html.AppendComponent(GetTitle(formStateData));
 
-        var layout = new FormViewRelationshipLayout(this, visibleRelationships);
+        var layout = new FormViewRelationshipLayout(this, visibleRelationships, formStateData);
 
         var relationshipsResult = await layout.GetRelationshipsResult();
 
