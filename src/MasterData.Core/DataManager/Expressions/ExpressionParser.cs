@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Logging;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
 public sealed class ExpressionParser(
-    IHttpContextAccessor httpContext,
+    IHttpContextAccessor httpContextAccessor,
     IMasterDataUser masterDataUser,
     ILogger<ExpressionParser> logger)
 {
@@ -24,7 +26,7 @@ public sealed class ExpressionParser(
             return new(StringComparer.InvariantCultureIgnoreCase);
 
         var fields = StringManager.FindValuesByInterval(
-            expression!,
+            expression,
             ExpressionHelper.Begin,
             ExpressionHelper.End).ToHashSet();
 
@@ -44,7 +46,7 @@ public sealed class ExpressionParser(
 
     private object? GetParsedValue(string field, FormStateData formStateData)
     {
-        var (values, userValues, pageState) = formStateData;
+        var pageState = formStateData.PageState;
 
         switch (field.ToLowerInvariant())
         {
@@ -65,7 +67,7 @@ public sealed class ExpressionParser(
             case "isdelete":
                 return pageState is PageState.Delete ? 1 : 0;
             case "fieldname":
-                return httpContext.HttpContext?.Request.Query["fieldName"].ToString();
+                return httpContextAccessor.HttpContext?.Request.Query["fieldName"].ToString();
             case "userid":
                 return masterDataUser.Id;
             case "currentculture":
@@ -76,29 +78,31 @@ public sealed class ExpressionParser(
                 return GetClaimValue("LegacyId");
         }
 
-        object? parsedValue;
+        if (formStateData.UserValues != null && formStateData.UserValues.TryGetValue(field, out var value))
+            return value;
 
-        if (userValues != null && userValues.TryGetValue(field, out var value))
-        {
-            parsedValue = value;
-        }
-        else if (values.TryGetValue(field, out var objValue) && !string.IsNullOrEmpty(objValue?.ToString()))
+        if (formStateData.Values.TryGetValue(field, out var objValue))
         {
             if (objValue is bool boolValue)
-                parsedValue = boolValue ? "1" : "0";
-            else
-                parsedValue = objValue;
-        }
-        else
-        {
-            parsedValue = GetClaimValue(field) ?? string.Empty;
+                return boolValue ? "1" : "0";
+            
+            if (objValue is string stringValue && !string.IsNullOrEmpty(stringValue))
+                return stringValue;
+            
+            if (objValue is not null)
+                return objValue;
         }
 
-        return parsedValue;
+        var session = httpContextAccessor.HttpContext?.Features.Get<ISessionFeature>()?.Session;
+
+        if (session is { IsAvailable: true } && session.TryGetValue(field, out var sessionValue))
+            return Encoding.UTF8.GetString(sessionValue);
+       
+        return GetClaimValue(field);
     }
 
     private string? GetClaimValue(string claimType)
     {
-        return httpContext.HttpContext?.User?.FindFirst(claimType)?.Value;
+        return httpContextAccessor.HttpContext?.User.FindFirst(claimType)?.Value;
     }
 }
