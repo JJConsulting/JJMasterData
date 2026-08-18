@@ -386,18 +386,9 @@ public class JJDataImportation : ProcessComponent
             var worker = CreateImportationWorker(filePath, separator, detectDelimiter);
             BackgroundTaskManager.Run(ProcessKey, worker);
         }
-        catch
+        finally
         {
-            try
-            {
-                await FileStorage.DeleteAsync(filePath);
-            }
-            catch (KeyNotFoundException)
-            {
-                // The save failed before the file was created.
-            }
-
-            throw;
+            await FileStorage.DeleteAsync(filePath);
         }
     }
 
