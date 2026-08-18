@@ -36,7 +36,7 @@ public abstract class DataExportationWriterBase(
 
     protected const int RecordsPerPage = 100000;
     
-    private List<FormElementField> _fields;
+    private List<FormElementField>? _fields;
     
     #region "Properties"
 
@@ -116,7 +116,7 @@ public abstract class DataExportationWriterBase(
     /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
     /// utilizando a proc informada no FormElement;
     /// </remarks>
-    public IList<Dictionary<string, object>> DataSource { get; set; }
+    public IList<Dictionary<string, object>>? DataSource { get; set; }
 
     public int TotalOfRecords { get; set; }
 
@@ -217,7 +217,7 @@ public abstract class DataExportationWriterBase(
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    protected string GetFileLink(FormElement formElement, FormElementField field, Dictionary<string, object> row,
+    protected string? GetFileLink(FormElement formElement, FormElementField field, Dictionary<string, object> row,
         string value)
     {
         if (!field.DataFile!.ExportAsLink)

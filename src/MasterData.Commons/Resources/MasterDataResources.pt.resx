@@ -2432,8 +2432,8 @@
     <value>Ponto e Virgula (;)</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="separated by semicolons (;), following the layout below:" xml:space="preserve">
-    <value>separadas por ponto e virgula (;), seguindo o layout abaixo:</value>
+  <data name="with automatically detected delimiters (comma, semicolon, pipe or tab), following the layout below:" xml:space="preserve">
+    <value>com delimitadores detectados automaticamente (vírgula, ponto e vírgula, pipe ou tabulação), seguindo o layout abaixo:</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Session expired" xml:space="preserve">
@@ -2962,7 +2962,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
-    <value>Utilizar vírgula como separador de {1} casas decimais</value>
+    <value>Utilizar '{0}' como separador de {1} casas decimais.</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator." xml:space="preserve">

@@ -8,5 +8,6 @@ public record DataImportationContext(
     FormElement FormElement,
     DataContext DataContext,
     Dictionary<string,object> RelationValues,
-    string RawData,
-    char Separator);
+    string FilePath,
+    char Separator,
+    bool DetectDelimiter = false);

@@ -1,9 +1,12 @@
 #nullable disable warnings
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration;
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -34,20 +37,24 @@ public class TextWriter(
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
-        using var sw = new StreamWriter(stream, Encoding.UTF8);
+        await using var streamWriter = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        await using var csvWriter = new CsvWriter(streamWriter, new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            Delimiter = Delimiter,
+            HasHeaderRecord = false
+        });
 
         if (Configuration.ExportFirstLine)
         {
-            await GenerateHeader(sw);
+            await GenerateHeader(csvWriter);
         }
 
-        await GenerateBody(sw, token);
-
-        sw.Close();
+        await GenerateBody(csvWriter, token);
+        await streamWriter.FlushAsync(token);
     }
 
 
-    private async Task GenerateBody(StreamWriter sw, CancellationToken token)
+    private async Task GenerateBody(CsvWriter csvWriter, CancellationToken token)
     {
 
         if (DataSource == null)
@@ -64,7 +71,7 @@ public class TextWriter(
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...",  result.TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
-            await GenerateRows(sw, token);
+            await GenerateRows(csvWriter, token);
 
             var totalOfPages = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
             
@@ -80,28 +87,22 @@ public class TextWriter(
                 result = await entityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
                 DataSource = result.Data;
                 TotalOfRecords = result.TotalOfRecords;
-                await GenerateRows(sw, token);
+                await GenerateRows(csvWriter, token);
             }
         }
         else
         {
             ProcessReporter.TotalOfRecords = TotalOfRecords;
-            await GenerateRows(sw, token);
+            await GenerateRows(csvWriter, token);
         }
     }
 
-    private async Task GenerateRows(StreamWriter sw, CancellationToken token)
+    private async Task GenerateRows(CsvWriter csvWriter, CancellationToken token)
     {
-        foreach (var row in DataSource)
+        foreach (var row in DataSource ?? [])
         {
-            bool isFirst = true;
             foreach (var field in VisibleFields)
             {
-                if (isFirst)
-                    isFirst = false;
-                else
-                    await sw.WriteAsync(Delimiter);
-
                 string value = string.Empty;
                 if (field.DataBehavior is not FieldBehavior.Virtual && field.DataBehavior is not FieldBehavior.WriteOnly)
                 {
@@ -124,10 +125,9 @@ public class TextWriter(
                         value = args.HtmlResult.ToString();
                 }
 
-                await sw.WriteAsync(value);
+                csvWriter.WriteField(value);
             }
-            await sw.WriteLineAsync("");
-            await sw.FlushAsync();
+            await csvWriter.NextRecordAsync();
 
             ProcessReporter.TotalProcessed++;
             Reporter(ProcessReporter);
@@ -135,19 +135,12 @@ public class TextWriter(
         }
     }
 
-    private async Task GenerateHeader(StreamWriter sw)
+    private async Task GenerateHeader(CsvWriter csvWriter)
     {
-        bool isFirst = true;
         foreach (var field in VisibleFields)
         {
-            if (isFirst)
-                isFirst = false;
-            else
-                await sw.WriteAsync(Delimiter);
-
-            await sw.WriteAsync(string.IsNullOrEmpty(field.Label) ? field.Name : StringLocalizer[field.Label]);
+            csvWriter.WriteField(string.IsNullOrEmpty(field.Label) ? field.Name : StringLocalizer[field.Label]);
         }
-        await sw.WriteLineAsync("");
-        await sw.FlushAsync();
+        await csvWriter.NextRecordAsync();
     }
 }

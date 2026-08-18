@@ -775,8 +775,8 @@
   <data name="the file must contain" xml:space="preserve">
     <value>el archivo debe contener</value>
   </data>
-  <data name="separated by semicolons (;), following the layout below:" xml:space="preserve">
-    <value>separadas por punto y coma (;), siguiendo el diseño a continuación:</value>
+  <data name="with automatically detected delimiters (comma, semicolon, pipe or tab), following the layout below:" xml:space="preserve">
+    <value>con delimitadores detectados automáticamente (coma, punto y coma, barra vertical o tabulación), siguiendo el diseño a continuación:</value>
   </data>
   <data name="To select more than one item, enter the desired values separated by a comma." xml:space="preserve">
     <value>Para seleccionar más de un elemento, ingrese los valores deseados separados por una coma.</value>

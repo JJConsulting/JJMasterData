@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="bootstrap.sass" Version="5.3.8" />
+    <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <PackageVersion Include="EmbeddedSass.Net.MsBuild" Version="1.2.0" />
     <PackageVersion Include="Fluid.Core" Version="2.31.0" />
     <PackageVersion Include="Hangfire.Console" Version="1.4.3" />

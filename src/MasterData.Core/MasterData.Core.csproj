@@ -23,6 +23,7 @@
     </ItemGroup>
     
     <ItemGroup>
+        <PackageReference Include="CsvHelper" />
         <PackageReference Include="Fluid.Core" />
         <PackageReference Include="Jint" />
         <PackageReference Include="JJConsulting.Html.Bootstrap" />
@@ -36,6 +37,7 @@
     <ItemGroup>
         <ProjectReference Include="..\MasterData.Commons\MasterData.Commons.csproj" />
         <InternalsVisibleTo Include="JJMasterData.ConsoleApp" />
+        <InternalsVisibleTo Include="JJMasterData.Core.Test" />
         <InternalsVisibleTo Include="JJMasterData.Web" />
     </ItemGroup>
     
