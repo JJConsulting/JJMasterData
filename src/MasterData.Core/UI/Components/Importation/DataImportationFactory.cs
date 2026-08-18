@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
@@ -28,6 +29,7 @@ internal sealed class DataImportationFactory(
     IComponentFactory componentFactory,
     DataItemService dataItemService,
     DataImportationWorkerFactory dataImportationWorkerFactory,
+    IFileStorage fileStorage,
     IEncryptionService encryptionService,
     ILoggerFactory loggerFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer)
@@ -46,6 +48,7 @@ internal sealed class DataImportationFactory(
             componentFactory, 
             dataItemService,
             dataImportationWorkerFactory,
+            fileStorage,
             encryptionService,
             loggerFactory,
             stringLocalizer);

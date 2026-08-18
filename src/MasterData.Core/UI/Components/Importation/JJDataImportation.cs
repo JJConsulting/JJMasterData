@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
@@ -10,8 +9,10 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary.Models;
@@ -32,6 +33,8 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJDataImportation : ProcessComponent
 {
+    private const string ImportationFolderPath = "{app.path}/MasterDataImportFiles/";
+
     #region "Events"
 
     internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
@@ -81,6 +84,8 @@ public class JJDataImportation : ProcessComponent
     
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
+    private IFileStorage FileStorage { get; }
+
     private RouteContext RouteContext
     {
         get
@@ -117,6 +122,7 @@ public class JJDataImportation : ProcessComponent
         IComponentFactory componentFactory,
         DataItemService dataItemService,
         DataImportationWorkerFactory dataImportationWorkerFactory,
+        IFileStorage fileStorage,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
@@ -125,6 +131,7 @@ public class JJDataImportation : ProcessComponent
     {
         HttpContextAccessor = httpContextAccessor;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
+        FileStorage = fileStorage;
         FormService = formService;
         FieldValuesService = fieldValuesService;
         ComponentFactory = componentFactory;
@@ -145,7 +152,7 @@ public class JJDataImportation : ProcessComponent
 
         if (ComponentContext is ComponentContext.DataImportationFileUpload)
         {
-            UploadArea.OnFileUploaded += FileUploaded;
+            UploadArea.OnFileUploadedAsync += FileUploadedAsync;
             return await UploadArea.GetResultAsync();
         }
 
@@ -172,8 +179,11 @@ public class JJDataImportation : ProcessComponent
             {
                 if (!IsRunning())
                 {
-                    var pasteValue = HttpContextAccessor.HttpContext!.Request.GetFormValue("pasteValue");
-                    ImportInBackground(pasteValue);
+                    var form = await HttpContextAccessor.HttpContext!.Request.ReadFormAsync();
+                    var pastedFile = form.Files.GetFile("pastedFile") ??
+                                     throw new InvalidOperationException("Pasted content was not provided.");
+                    await using var source = pastedFile.OpenReadStream();
+                    await ImportInBackgroundAsync(source);
                 }
 
                 htmlBuilder = GetLoadingHtml();
@@ -290,12 +300,7 @@ public class JJDataImportation : ProcessComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithId(Name)
-            .AppendHiddenInput("filename")
-            .Append(HtmlTag.TextArea, area =>
-            {
-                area.WithNameAndId("pasteValue");
-                area.WithStyle( "display:none");
-            });
+            .AppendHiddenInput("filename");
         
         var collapsePanel = new JJMasterDataCollapsePanel(HttpContextAccessor)
         {
@@ -331,29 +336,21 @@ public class JJDataImportation : ProcessComponent
         return html;
     }
 
-    private void FileUploaded(object sender, FormUploadFileEventArgs e)
+    private async ValueTask FileUploadedAsync(object sender, FormUploadFileEventArgs e)
     {
-        var sb = new StringBuilder();
-        using (var reader = new StreamReader(e.File.OpenReadStream()))
-        {
-            while (!reader.EndOfStream)
-            {
-                sb.AppendLine(reader.ReadLine());
-            }
-        }
+        if (BackgroundTaskManager.IsRunning(ProcessKey))
+            return;
 
-        if (!BackgroundTaskManager.IsRunning(ProcessKey))
-        {
-            var worker = CreateImportationTextWorker(sb.ToString(), ';');
-            BackgroundTaskManager.Run(ProcessKey, worker);
-            e.SuccessMessage = StringLocalizer["File successfuly imported."];
-        }
+        await using var source = e.File.OpenReadStream();
+        await ImportInBackgroundAsync(source, ';', true);
+        e.SuccessMessage = StringLocalizer["File successfuly imported."];
     }
 
-    private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
+    private DataImportationWorker CreateImportationWorker(string filePath, char separator, bool detectDelimiter)
     {
         var dataContext = new DataContext(HttpContextAccessor.HttpContext!.Request, DataContextSource.Upload, UserId);
-        var dataImportationContext = new DataImportationContext(FormElement, dataContext, RelationValues, postedText, separator);
+        var dataImportationContext = new DataImportationContext(
+            FormElement, dataContext, RelationValues, filePath, separator, detectDelimiter);
         var worker = DataImportationWorkerFactory.Create(dataImportationContext);
         worker.UserId = UserId;
         worker.ProcessOptions = ProcessOptions;
@@ -376,9 +373,15 @@ public class JJDataImportation : ProcessComponent
         return new DataImportationReporter(StringLocalizer);
     }
 
-    internal void ImportInBackground(string pasteValue)
+    internal Task ImportInBackgroundAsync(Stream source) => ImportInBackgroundAsync(source, '\t', false);
+
+    private async Task ImportInBackgroundAsync(Stream source, char separator, bool detectDelimiter)
     {
-        var worker = CreateImportationTextWorker(pasteValue, '\t');
+        var filePath = FileStoragePath.Combine(ImportationFolderPath, $"{Guid.NewGuid():N}.csv");
+
+        await FileStorage.SaveAsync(filePath, source, cancellationToken: HttpContextAccessor.HttpContext!.RequestAborted);
+
+        var worker = CreateImportationWorker(filePath, separator, detectDelimiter);
         BackgroundTaskManager.Run(ProcessKey, worker);
     }
 

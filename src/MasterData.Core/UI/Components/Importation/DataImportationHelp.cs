@@ -267,7 +267,7 @@ internal sealed class DataImportationHelp
         });
 
         infoHtml.AppendText(" ");
-        infoHtml.AppendText(StringLocalizer["separated by semicolons (;), following the layout below:"]);
+        infoHtml.AppendText(StringLocalizer["with automatically detected delimiters (comma, semicolon, pipe or tab), following the layout below:"]);
 
         return infoHtml;
     }

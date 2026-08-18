@@ -974,17 +974,18 @@ class DataImportationHelper {
             }
             e.preventDefault();
             if (pastedText != undefined) {
-                document.querySelector("#pasteValue").value = pastedText;
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", routeContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText");
-                const requestOptions = getRequestOptions();
-                postFormValues({
+                const formData = new FormData(getMasterDataForm());
+                const pastedFile = new Blob([pastedText], { type: "text/tab-separated-values" });
+                formData.append("pastedFile", pastedFile, "clipboard.tsv");
+                postContent({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector("#" + componentName).innerHTML = html;
                         DataImportationHelper.startProgressVerification(componentName, routeContext);
                     }
-                });
+                }, formData);
             }
             return false;
         };
@@ -2565,8 +2566,19 @@ function getRequestOptions() {
     };
 }
 function postFormValues(options) {
+    postValues(options, getRequestOptions());
+}
+function postContent(options, body) {
+    postValues(options, {
+        method: "POST",
+        body: body,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    });
+}
+function postValues(options, requestOptions) {
     SpinnerOverlay.show();
-    const requestOptions = getRequestOptions();
     const event = new Event("postFormValuesCompleted");
     fetch(options.url, requestOptions)
         .then(response => {

@@ -247,19 +247,19 @@
             }
             e.preventDefault();
             if (pastedText != undefined) {
-                document.querySelector<HTMLInputElement>("#pasteValue").value = pastedText;
-                
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", routeContext)
                 urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText")
-                const requestOptions = getRequestOptions();
+                const formData = new FormData(getMasterDataForm());
+                const pastedFile = new Blob([pastedText], {type: "text/tab-separated-values"});
+                formData.append("pastedFile", pastedFile, "clipboard.tsv");
 
-                postFormValues({
+                postContent({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
                         DataImportationHelper.startProgressVerification(componentName, routeContext);
                     }
-                })
+                }, formData)
             }
             return false;
         }
@@ -287,4 +287,3 @@
         }
     }
 }
-

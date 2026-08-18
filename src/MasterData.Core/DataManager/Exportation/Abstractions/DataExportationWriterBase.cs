@@ -36,7 +36,7 @@ public abstract class DataExportationWriterBase(
 
     protected const int RecordsPerPage = 100000;
     
-    private List<FormElementField> _fields;
+    private List<FormElementField>? _fields;
     
     #region "Properties"
 
@@ -116,7 +116,7 @@ public abstract class DataExportationWriterBase(
     /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
     /// utilizando a proc informada no FormElement;
     /// </remarks>
-    public IList<Dictionary<string, object>> DataSource { get; set; }
+    public IList<Dictionary<string, object>>? DataSource { get; set; }
 
     public int TotalOfRecords { get; set; }
 
@@ -141,7 +141,7 @@ public abstract class DataExportationWriterBase(
 
     #endregion
 
-    public async Task RunWorkerAsync(CancellationToken token)
+    public async Task RunWorkerAsync(CancellationToken cancellationToken)
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
@@ -162,12 +162,12 @@ public abstract class DataExportationWriterBase(
             {
                 await using (var fs = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 81920, true))
                 {
-                    await GenerateDocument(fs, token);
+                    await GenerateDocument(fs, cancellationToken);
                 }
 
                 await using var readStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
                 var fullPath = FileStoragePath.Combine(FolderPath, fileName);
-                await FileStorage.SaveAsync(fullPath, readStream, true, token);
+                await FileStorage.SaveAsync(fullPath, readStream, true, cancellationToken);
             }
             finally
             {
@@ -217,7 +217,7 @@ public abstract class DataExportationWriterBase(
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    protected string GetFileLink(FormElement formElement, FormElementField field, Dictionary<string, object> row,
+    protected string? GetFileLink(FormElement formElement, FormElementField field, Dictionary<string, object> row,
         string value)
     {
         if (!field.DataFile!.ExportAsLink)

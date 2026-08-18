@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -28,6 +30,7 @@ public class DataImportationWorker(
     ExpressionsService expressionsService,
     IEntityRepository entityRepository,
     FieldValuesService fieldValuesService,
+    IFileStorage fileStorage,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILogger<DataImportationWorker> logger)
     : IBackgroundTaskWorker
@@ -50,8 +53,9 @@ public class DataImportationWorker(
     public FormElement FormElement { get; } = context.FormElement;
     private DataContext DataContext { get; } = context.DataContext;
 
-    private string RawData { get; } = context.RawData;
     private char Separator { get; } = context.Separator;
+    private string FilePath { get; } = context.FilePath;
+    private bool DetectDelimiter { get; } = context.DetectDelimiter;
 
     private Dictionary<string, object> RelationValues { get; } = context.RelationValues;
 
@@ -61,13 +65,15 @@ public class DataImportationWorker(
 
     private FieldValuesService FieldValuesService { get; } = fieldValuesService;
 
+    private IFileStorage FileStorage { get; } = fileStorage;
+
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     private ILogger<DataImportationWorker> Logger { get; } = logger;
 
     internal FormService FormService { get; } = formService;
 
-    public async Task RunWorkerAsync(CancellationToken token)
+    public async Task RunWorkerAsync(CancellationToken cancellationToken)
     {
         var currentProcess = new DataImportationReporter(StringLocalizer);
         try
@@ -75,7 +81,7 @@ public class DataImportationWorker(
             currentProcess.StartDate = DateTime.Now;
             currentProcess.UserId = UserId;
             Reporter(currentProcess);
-            await RunWorker(currentProcess, token);
+            await RunWorker(currentProcess, cancellationToken);
 
             if (currentProcess.Error > 0)
                 currentProcess.Message = StringLocalizer["File imported with errors!"];
@@ -109,6 +115,8 @@ public class DataImportationWorker(
         {
             currentProcess.EndDate = DateTime.Now;
             Reporter(currentProcess);
+
+            await FileStorage.DeleteAsync(FilePath, cancellationToken);
         }
     }
 
@@ -122,47 +130,50 @@ public class DataImportationWorker(
         Thread.CurrentThread.CurrentUICulture = Culture;
         Thread.CurrentThread.CurrentCulture = Culture;
 
-        //recuperando campos a serem importados
         var fieldList = GetImportationFields();
-        
-        string[] stringSeparators = ["\r\n"];
-        string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
-        currentProcess.TotalRecords = rows.Length;
-        currentProcess.Message =
-            StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
+
+        currentProcess.Message = StringLocalizer["Importing {0} records...", 0.ToString("N0")];
 
         var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData(new(), UserValues,PageState.Import));
         var formStateData = new FormStateData(defaultValues, UserValues, PageState.Import);
-        
-        //Execute before process events
-        if (currentProcess.TotalRecords > 0 &&
-            !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
+
+        using var textReader = new StreamReader(
+            await FileStorage.OpenReadAsync(FilePath, token), Encoding.UTF8, true);
+        var csvReader = new CsvImportationReader(textReader, CultureInfo.CurrentCulture, Separator, DetectDelimiter);
+        await using var records = csvReader.ReadRecordsAsync(token).GetAsyncEnumerator(token);
+
+        if (!await records.MoveNextAsync())
         {
-            var parsedSql =
-                ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandBeforeProcess,
-                    formStateData);
+            currentProcess.TotalRecords = 0;
+            await RunAfterProcessEventAsync();
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
+        {
+            var parsedSql = ExpressionsService.ReplaceExpressionWithParsedValues(
+                ProcessOptions.CommandBeforeProcess, formStateData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!), FormElement.ConnectionId);
         }
 
         token.ThrowIfCancellationRequested();
-        for (var index = 0; index < rows.Length; index++)
+        var index = 0;
+        do
         {
-            var line = rows[index];
+            var currentIndex = index++;
+            var cols = records.Current;
             currentProcess.TotalProcessed++;
-            
-            if (string.IsNullOrWhiteSpace(line))
+
+            if (cols.Length == 0 || (cols.Length == 1 && string.IsNullOrWhiteSpace(cols[0])))
                 continue;
-            
-            if (string.IsNullOrWhiteSpace(line.Replace(Separator.ToString(), string.Empty)))
+
+            if (Array.TrueForAll(cols, string.IsNullOrWhiteSpace))
             {
                 currentProcess.AddError(StringLocalizer["Empty line ignored"]);
                 currentProcess.Ignore++;
                 continue;
             }
 
-            var cols = line.Split(Separator);
-
-            //Check if the row count is valid.
             if (cols.Length != fieldList.Count)
             {
                 currentProcess.Error++;
@@ -176,9 +187,8 @@ public class DataImportationWorker(
                 errorBuilder.Append(StringLocalizer["Click on the Help button for more information regarding the file layout."]);
                 throw new JJMasterDataException(errorBuilder.ToString());
             }
-
             //Verify if it's first row.
-            if (index == 0)
+            if (currentIndex == 0)
             {
                 string firstColumnName = StringLocalizer[fieldList[0].LabelOrName];
 
@@ -204,24 +214,31 @@ public class DataImportationWorker(
             }
             catch (Exception exception)
             {
-                Logger.LogError(exception, "Error while processing line {Line} of {FormElement} at Data Importation.",index, FormElement.Name);
+                Logger.LogError(exception, "Error while processing line {Line} of {FormElement} at Data Importation.", currentIndex, FormElement.Name);
                 currentProcess.Error++;
                 currentProcess.AddError(StringLocalizer.GetExceptionMessage(exception));
             }
 
             Reporter(currentProcess);
             token.ThrowIfCancellationRequested();
-        }
+            currentProcess.Message = StringLocalizer["Importing {0} records...",
+                currentProcess.TotalProcessed.ToString("N0")];
+        } while (await records.MoveNextAsync());
 
-        //Execute success events
-        if (currentProcess.TotalRecords > 0 &&
-            !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
+        currentProcess.TotalRecords = currentProcess.TotalProcessed;
+
+        if (!string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
             var parsedSql =
                 ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandAfterProcess, formStateData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!), FormElement.ConnectionId);
         }
 
+        await RunAfterProcessEventAsync();
+    }
+
+    private async Task RunAfterProcessEventAsync()
+    {
         if (OnAfterProcessAsync != null)
             await OnAfterProcessAsync(this, new FormAfterActionEventArgs());
     }

@@ -8,20 +8,20 @@ public class TaskWorkerTest : IBackgroundTaskWorker
 {
     public event EventHandler<IProgressReporter>? OnProgressChanged;
 
-    public Task RunWorkerAsync(CancellationToken token)
+    public Task RunWorkerAsync(CancellationToken cancellationToken)
     {
         return Task.Run(() =>
         {
             var reporter = new ProgressReporter();
             for (int i = 0; i < 10; i++)
             {
-                token.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
                 Console.WriteLine(@"Running Worker...");
                 reporter.Percentage = i * 10;
                 OnProgressChanged?.Invoke(this, new ProgressReporter());
-                Task.Delay(50, token).Wait(token);
+                Task.Delay(50, cancellationToken).Wait(cancellationToken);
             }
-        }, token);
+        }, cancellationToken);
     }
 }
 
