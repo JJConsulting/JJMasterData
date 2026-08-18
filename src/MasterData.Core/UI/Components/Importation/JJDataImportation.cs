@@ -378,18 +378,11 @@ public class JJDataImportation : ProcessComponent
     private async Task ImportInBackgroundAsync(Stream source, char separator, bool detectDelimiter)
     {
         var filePath = FileStoragePath.Combine(ImportationFolderPath, $"{Guid.NewGuid():N}.csv");
-        try
-        {
-            await FileStorage.SaveAsync(filePath, source,
-                cancellationToken: HttpContextAccessor.HttpContext!.RequestAborted);
 
-            var worker = CreateImportationWorker(filePath, separator, detectDelimiter);
-            BackgroundTaskManager.Run(ProcessKey, worker);
-        }
-        finally
-        {
-            await FileStorage.DeleteAsync(filePath);
-        }
+        await FileStorage.SaveAsync(filePath, source, cancellationToken: HttpContextAccessor.HttpContext!.RequestAborted);
+
+        var worker = CreateImportationWorker(filePath, separator, detectDelimiter);
+        BackgroundTaskManager.Run(ProcessKey, worker);
     }
 
     internal DataImportationDto GetCurrentProgress()

@@ -141,7 +141,7 @@ public abstract class DataExportationWriterBase(
 
     #endregion
 
-    public async Task RunWorkerAsync(CancellationToken token)
+    public async Task RunWorkerAsync(CancellationToken cancellationToken)
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
@@ -162,12 +162,12 @@ public abstract class DataExportationWriterBase(
             {
                 await using (var fs = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 81920, true))
                 {
-                    await GenerateDocument(fs, token);
+                    await GenerateDocument(fs, cancellationToken);
                 }
 
                 await using var readStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
                 var fullPath = FileStoragePath.Combine(FolderPath, fileName);
-                await FileStorage.SaveAsync(fullPath, readStream, true, token);
+                await FileStorage.SaveAsync(fullPath, readStream, true, cancellationToken);
             }
             finally
             {

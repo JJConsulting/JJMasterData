@@ -73,7 +73,7 @@ public class DataImportationWorker(
 
     internal FormService FormService { get; } = formService;
 
-    public async Task RunWorkerAsync(CancellationToken token)
+    public async Task RunWorkerAsync(CancellationToken cancellationToken)
     {
         var currentProcess = new DataImportationReporter(StringLocalizer);
         try
@@ -81,7 +81,7 @@ public class DataImportationWorker(
             currentProcess.StartDate = DateTime.Now;
             currentProcess.UserId = UserId;
             Reporter(currentProcess);
-            await RunWorker(currentProcess, token);
+            await RunWorker(currentProcess, cancellationToken);
 
             if (currentProcess.Error > 0)
                 currentProcess.Message = StringLocalizer["File imported with errors!"];
@@ -116,7 +116,7 @@ public class DataImportationWorker(
             currentProcess.EndDate = DateTime.Now;
             Reporter(currentProcess);
 
-            await FileStorage.DeleteAsync(FilePath);
+            await FileStorage.DeleteAsync(FilePath, cancellationToken);
         }
     }
 

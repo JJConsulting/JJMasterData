@@ -9,5 +9,5 @@ public interface IBackgroundTaskWorker
 {
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
-    public Task RunWorkerAsync(CancellationToken token);
+    public Task RunWorkerAsync(CancellationToken cancellationToken);
 }
