@@ -58,15 +58,16 @@ public sealed class DefaultExpressionProvider(
         {
             var token = $"{ExpressionHelper.Begin}{kvp.Key}{ExpressionHelper.End}";
             var quotedToken = $"'{token}'";
+            var value = kvp.Value is DBNull ? null : kvp.Value;
 
             if (expression.Contains(quotedToken, StringComparison.InvariantCultureIgnoreCase))
             {
                 expression = expression.Replace(quotedToken, kvp.Key);
-                parameters[kvp.Key] = kvp.Value?.ToString();
+                parameters[kvp.Key] = value?.ToString();
             }
             else
             {
-                parameters[kvp.Key] = kvp.Value;
+                parameters[kvp.Key] = value;
             }
         }
 
