@@ -60,6 +60,11 @@ public sealed class MasterDataCoreOptions
     /// </summary>
     public ExpressionContext ExpressionContext { get; set; } = new()
     {
+        EvaluateParameterHandler = (_, args) =>
+        {
+            if (args.Result == DBNull.Value)
+                args.Result = null;
+        },
         Functions = new Dictionary<string, ExpressionFunction>(StringComparer.InvariantCultureIgnoreCase)
         {
             {
