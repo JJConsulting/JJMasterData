@@ -1098,7 +1098,6 @@ class FormViewHelper {
         setTimeout(function () {
             insertAlertDiv.style.display = "none";
         }, 3000);
-        GridViewHelper.refresh(componentName, gridViewRouteContext);
     }
     static refreshFormView(componentName, routeContext) {
         const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
