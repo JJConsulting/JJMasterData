@@ -570,6 +570,8 @@ public static class MimeTypeUtil
             {".xss", "application/xml"},
             {".xtp", "application/octet-stream"},
             {".xwd", "image/x-xwindowdump"},
+            {".yml", "application/yaml"},
+            {".yaml", "application/yaml"},
             {".z", "application/x-compress"},
             {".zip", "application/x-zip-compressed"},
             #endregion
@@ -580,7 +582,7 @@ public static class MimeTypeUtil
         if (extension == null)
             throw new ArgumentNullException(nameof(extension));
 
-        if (extension.Contains("."))
+        if (extension.Contains('.'))
         {
             var aux = extension.Split('.');
             if (aux.Length > 1)
