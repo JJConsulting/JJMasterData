@@ -1,5 +1,5 @@
 using JJMasterData.Commons.Resources;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -129,7 +130,7 @@ public class FieldValidationServiceTests
         return new ExpressionsService(
             providers,
             expressionParser,
-            Mock.Of<IEncryptionService>(),
+            new DataProtectionService(new EphemeralDataProtectionProvider()),
             Mock.Of<ILogger<ExpressionsService>>());
     }
 

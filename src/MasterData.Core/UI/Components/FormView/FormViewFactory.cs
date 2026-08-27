@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -23,7 +23,7 @@ internal sealed class FormViewFactory(
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
     FormService formService,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     FormValuesService formValuesService,
     FieldValuesService fieldValuesService,
     ExpressionsService expressionsService,

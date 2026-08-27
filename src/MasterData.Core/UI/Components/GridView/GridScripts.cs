@@ -1,7 +1,7 @@
 ﻿#nullable disable warnings
 using System.Collections.Generic;
 using System.Text;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.UI.Routing;
@@ -10,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class GridScripts
 {
-    private readonly IEncryptionService _encryptionService;
+    private readonly DataProtectionService _encryptionService;
     private readonly JJGridView _gridView;
     private readonly string _defaultEncryptedRouteContext;
 

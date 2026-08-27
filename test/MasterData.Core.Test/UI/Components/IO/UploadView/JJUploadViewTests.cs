@@ -3,13 +3,14 @@ using System.Runtime.CompilerServices;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Localization;
@@ -116,15 +117,12 @@ public class JJUploadViewTests
         JJGridView? gridView = null)
     {
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
-        var encryptionService = new Mock<IEncryptionService>();
-        encryptionService
-            .Setup(service => service.EncryptString(It.IsAny<string>()))
-            .Returns((string value) => value);
+        var encryptionService = new DataProtectionService(new EphemeralDataProtectionProvider());
 
         var uploadAreaFactory = new UploadAreaFactory(
             contextAccessor,
             new UploadAreaManager(contextAccessor, new FileValidationService(stringLocalizer)),
-            encryptionService.Object,
+            encryptionService,
             Options.Create(new FormOptions()),
             stringLocalizer);
 
@@ -152,7 +150,7 @@ public class JJUploadViewTests
             contextAccessor,
             componentFactory.Object,
             manager,
-            encryptionService.Object,
+            encryptionService,
             stringLocalizer,
             NullLoggerFactory.Instance);
     }

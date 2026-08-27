@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -7,7 +7,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class UploadAreaFactory(IHttpContextAccessor httpContext,
         UploadAreaManager uploadAreaManager,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IOptions<FormOptions> requestLengthService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
 

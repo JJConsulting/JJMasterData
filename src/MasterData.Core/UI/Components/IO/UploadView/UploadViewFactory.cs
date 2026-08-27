@@ -1,6 +1,6 @@
 #nullable disable warnings
 using System.Collections.Generic;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
@@ -12,7 +12,7 @@ namespace JJMasterData.Core.UI.Components;
 public sealed class UploadViewFactory(IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
         UploadViewManager manager,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
 {

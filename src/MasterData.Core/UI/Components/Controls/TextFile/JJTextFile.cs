@@ -6,7 +6,7 @@ using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Routing;
@@ -18,10 +18,10 @@ public sealed class JJTextFile(
     IHttpContextAccessor request,
     IComponentFactory componentFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IEncryptionService encryptionService)
+    DataProtectionService encryptionService)
     : ControlBase(request)
 {
-    internal IEncryptionService EncryptionService { get; } = encryptionService;
+    internal DataProtectionService EncryptionService { get; } = encryptionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     internal string ParentName { get; set; }

@@ -13,7 +13,7 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
@@ -53,7 +53,7 @@ public class JJAuditLogView : AsyncComponent
     private IHttpContextAccessor CurrentContext { get; }
 
     private AuditLogService AuditLogService { get; }
-    private IEncryptionService EncryptionService { get; }
+    private DataProtectionService EncryptionService { get; }
 
     public JJGridView GridView => field ??= CreateGridViewLog();
 
@@ -83,7 +83,7 @@ public class JJAuditLogView : AsyncComponent
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
         IComponentFactory componentFactory,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         Name = $"{formElement.Name.ToLowerInvariant()}-audit-log-view";

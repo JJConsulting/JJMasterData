@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Routing;
@@ -11,7 +11,7 @@ internal sealed class LookupFactory(
         FormValuesService formValuesService,
         LookupService lookupService,
         IComponentFactory componentFactory,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         RouteContextFactory routeContextFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJLookup>

@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
@@ -9,7 +9,7 @@ internal sealed class DataImportationScripts(
     string name,
     FormElement formElement, 
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IEncryptionService encryptionService)
+    DataProtectionService encryptionService)
 {
     private readonly string _modalTitle = formElement.Options.GridToolbarActions.ImportAction.Tooltip ?? string.Empty;
 

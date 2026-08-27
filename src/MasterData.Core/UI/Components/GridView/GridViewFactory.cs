@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -19,7 +19,7 @@ namespace JJMasterData.Core.UI.Components;
 internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         DataItemService dataItemService,
         ExpressionsService expressionsService,
         FieldFormattingService fieldFormattingService,

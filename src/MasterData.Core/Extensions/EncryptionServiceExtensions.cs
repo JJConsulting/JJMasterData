@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Routing;
@@ -11,16 +11,16 @@ namespace JJMasterData.Core.Extensions;
 
 public static class EncryptionServiceExtensions
 {
-    extension(IEncryptionService service)
+    extension(DataProtectionService service)
     {
         public string EncryptObject<T>(T @object)
         {
-            return service.EncryptString(JsonSerializer.Serialize(@object, MasterDataJsonSerializerOptions.Default));
+            return service.Protect(JsonSerializer.Serialize(@object, MasterDataJsonSerializerOptions.Default));
         }
 
         public T DecryptObject<T>(string encryptedObject)
         {
-            return JsonSerializer.Deserialize<T>(service.DecryptString(encryptedObject), MasterDataJsonSerializerOptions.Default);
+            return JsonSerializer.Deserialize<T>(service.Unprotect(encryptedObject), MasterDataJsonSerializerOptions.Default);
         }
 
         public Dictionary<string,object> DecryptDictionary(string encryptedDictionary)

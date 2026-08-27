@@ -11,7 +11,7 @@ using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
@@ -123,7 +123,7 @@ public class JJDataImportation : ProcessComponent
         DataItemService dataItemService,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IFileStorage fileStorage,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(httpContextAccessor,masterDataUser, expressionsService, backgroundTaskManager,

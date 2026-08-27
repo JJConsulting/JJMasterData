@@ -1,9 +1,9 @@
 #nullable disable warnings
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 
 namespace JJMasterData.Core.UI.Routing;
 
-public class RouteContextFactory(IHttpContextAccessor httpContextAccessor, IEncryptionService encryptionService)
+public class RouteContextFactory(IHttpContextAccessor httpContextAccessor, DataProtectionService encryptionService)
 {
     public RouteContext Create()
     {

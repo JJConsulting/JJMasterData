@@ -17,7 +17,7 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -411,7 +411,7 @@ public class JJFormView : AsyncComponent
 
     internal IHttpContextAccessor CurrentContext { get; }
     internal IFormCollection FormValues => CurrentContext.HttpContext!.Request.Form;
-    internal IEncryptionService EncryptionService { get; }
+    internal DataProtectionService EncryptionService { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
     internal ExpressionsService ExpressionsService { get; }
@@ -429,7 +429,7 @@ public class JJFormView : AsyncComponent
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         FormService formService,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,

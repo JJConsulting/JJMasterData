@@ -9,7 +9,7 @@ using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
@@ -26,7 +26,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJDataPanel(
     IEntityRepository entityRepository,
     IHttpContextAccessor currentContext,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     FieldFormattingService fieldFormattingService,
     FieldValidationService fieldValidationService,
     FormValuesService formValuesService,
@@ -96,7 +96,7 @@ public class JJDataPanel(
 
 
     /// <summary>
-    /// Values not intended to be edited at the client. They are encrypted using <see cref="IEncryptionService"/>.
+    /// Values not intended to be edited at the client. They are encrypted using <see cref="DataProtectionService"/>.
     /// </summary>
     public Dictionary<string, object?>? SecretValues
     {
@@ -160,7 +160,7 @@ public class JJDataPanel(
     }
 
     internal IHttpContextAccessor CurrentContext { get; } = currentContext;
-    internal IEncryptionService EncryptionService { get; } = encryptionService;
+    internal DataProtectionService EncryptionService { get; } = encryptionService;
     internal FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
     internal ExpressionsService ExpressionsService { get; } = expressionsService;
     internal IComponentFactory ComponentFactory { get; } = componentFactory;
@@ -174,7 +174,7 @@ public class JJDataPanel(
         FormElement formElement,
         IEntityRepository entityRepository,
         IHttpContextAccessor currentContext,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         FieldFormattingService fieldFormattingService,
         FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
@@ -294,7 +294,7 @@ public class JJDataPanel(
     private string GetPkHiddenInput()
     {
         var pkValues = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return EncryptionService.EncryptString(pkValues);
+        return EncryptionService.Protect(pkValues);
     }
 
     private string GetHtmlFormScript()

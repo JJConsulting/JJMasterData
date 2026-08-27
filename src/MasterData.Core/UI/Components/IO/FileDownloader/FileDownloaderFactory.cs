@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using JJConsulting.MasterData.Storage.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
 
@@ -8,7 +8,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public sealed class FileDownloaderFactory(IHttpContextAccessor httpContext,
         IFileStorage fileStorage,
-        IEncryptionService encryptionService)
+        DataProtectionService encryptionService)
 {
     public JJFileDownloader Create()
     {

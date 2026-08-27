@@ -1,5 +1,4 @@
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Core.Extensions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Primitives;
 namespace JJMasterData.Web.Filters;
 
 
-public class LookupParametersDecryptionFilter(IEncryptionService encryptionService) : ActionFilterAttribute
+public class LookupParametersDecryptionFilter(DataProtectionService encryptionService) : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {
@@ -26,7 +25,7 @@ public class LookupParametersDecryptionFilter(IEncryptionService encryptionServi
 
     private void SetLookupParameters(ActionExecutingContext context, StringValues encryptedParameters)
     {
-        var lookupQueryString = encryptionService.DecryptString(encryptedParameters.ToString());
+        var lookupQueryString = encryptionService.Unprotect(encryptedParameters.ToString());
         context.ActionArguments["lookupParameters"] = LookupParameters.FromQueryString(lookupQueryString);
     }
 }

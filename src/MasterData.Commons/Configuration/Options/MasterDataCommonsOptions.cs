@@ -45,6 +45,9 @@ public sealed class MasterDataCommonsOptions
     [Display(Name = "Write Procedure Pattern")]
     public string WriteProcedurePattern { get; set; } = "{tablename}Set";
 
+    [Obsolete("Please use Microsoft Data Protection Provider")]
+    public string SecretKey { get; set; } = null!;
+    
     internal ConnectionString GetConnectionString(Guid? guid)
     {
         if (guid is null)

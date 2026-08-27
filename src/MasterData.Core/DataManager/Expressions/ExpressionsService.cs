@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -18,7 +18,7 @@ namespace JJMasterData.Core.DataManager.Expressions;
 public class ExpressionsService(
     IEnumerable<IExpressionProvider> expressionProviders,
     ExpressionParser expressionParser,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     ILogger<ExpressionsService> logger)
 {
     private readonly record struct Expression(string Prefix, string Content);
@@ -56,7 +56,7 @@ public class ExpressionsService(
 
         foreach (var key in keysToUpdate)
         {
-            parsedValues[key] = encryptionService.EncryptString(parsedValues[key]!.ToString()!);
+            parsedValues[key] = encryptionService.Protect(parsedValues[key]!.ToString()!);
         }
     }
 

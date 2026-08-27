@@ -1,7 +1,7 @@
 ﻿#nullable disable warnings
 using System.Collections.Generic;
 using System.Text;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
@@ -17,7 +17,7 @@ public abstract class ProcessComponent(
         ExpressionsService expressionsService,
         IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : AsyncComponent
 {
@@ -58,7 +58,7 @@ public abstract class ProcessComponent(
     
     internal IBackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
     private ILogger<ProcessComponent> Logger { get; } = logger;
-    internal IEncryptionService EncryptionService { get; } = encryptionService;
+    internal DataProtectionService EncryptionService { get; } = encryptionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     internal bool IsRunning() => BackgroundTaskManager.IsRunning(ProcessKey);

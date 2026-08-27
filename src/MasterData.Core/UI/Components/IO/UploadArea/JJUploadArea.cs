@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Routing;
@@ -22,7 +22,7 @@ public class JJUploadArea : AsyncComponent
     private readonly IHttpContextAccessor _httpContext ;
     private readonly UploadAreaManager _manager ;
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer ;
-    private readonly IEncryptionService _encryptionService;
+    private readonly DataProtectionService _encryptionService;
     
     
     /// <summary>
@@ -127,7 +127,7 @@ public class JJUploadArea : AsyncComponent
     public JJUploadArea(
         IHttpContextAccessor httpContext,
         UploadAreaManager manager,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IOptions<FormOptions> requestLengthService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {

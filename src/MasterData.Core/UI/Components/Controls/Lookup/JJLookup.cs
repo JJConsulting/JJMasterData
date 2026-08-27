@@ -7,7 +7,7 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -22,7 +22,7 @@ public class JJLookup : ControlBase
     private IHttpContextAccessor HttpRequest { get; }
     private RouteContextFactory RouteContextFactory { get; }
     private FormValuesService FormValuesService { get; }
-    private IEncryptionService EncryptionService { get; }
+    private DataProtectionService EncryptionService { get; }
     private LookupService LookupService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IComponentFactory ComponentFactory { get; }
@@ -106,7 +106,7 @@ public class JJLookup : ControlBase
         IHttpContextAccessor httpRequest,
         RouteContextFactory routeContextFactory,
         FormValuesService formValuesService,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         LookupService lookupService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory) : base(httpRequest)

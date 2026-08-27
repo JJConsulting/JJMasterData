@@ -7,7 +7,7 @@ using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -182,7 +182,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     public bool AutoReloadFormFields { get; set; }
 
     private IHttpContextAccessor Request { get; }
-    private IEncryptionService EncryptionService { get; }
+    private DataProtectionService EncryptionService { get; }
     private DataItemService DataItemService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     
@@ -219,7 +219,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     public JJSearchBox(
         IHttpContextAccessor request,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         DataItemService dataItemService,
         IStringLocalizer<MasterDataResources> stringLocalizer) : base(request)
     {

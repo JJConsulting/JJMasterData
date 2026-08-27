@@ -1,7 +1,7 @@
 #nullable disable warnings
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -12,7 +12,7 @@ namespace JJMasterData.Core.DataManager.Services;
 public class LookupService(
     IHttpContextAccessor httpContextAccessor,
     ExpressionsService expressionsService,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     ElementMapService elementMapService,
     IUrlHelper urlHelper)
 {
@@ -23,7 +23,7 @@ public class LookupService(
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
-            encryptionService.EncryptString(
+            encryptionService.Protect(
                 lookupParameters.ToQueryString(expressionsService, formStateData));
 
         return urlHelper.Action("Index", "Lookup",

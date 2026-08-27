@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Security.Cryptography.Abstractions;
+﻿using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Routing;
 
@@ -7,7 +7,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationScripts(
     string componentName,
     FormElement formElement,
-    IEncryptionService encryptionService)
+    DataProtectionService encryptionService)
 {
     public DataExportationScripts(JJDataExportation dataExportation) : this(dataExportation.Name,
         dataExportation.FormElement, dataExportation.EncryptionService)

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using JJConsulting.MasterData.Storage.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -30,7 +30,7 @@ internal sealed class DataImportationFactory(
     DataItemService dataItemService,
     DataImportationWorkerFactory dataImportationWorkerFactory,
     IFileStorage fileStorage,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     ILoggerFactory loggerFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : IFormElementComponentFactory<JJDataImportation>

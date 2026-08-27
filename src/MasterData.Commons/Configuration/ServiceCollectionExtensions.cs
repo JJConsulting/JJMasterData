@@ -5,8 +5,6 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
@@ -83,10 +81,10 @@ public static class ServiceCollectionExtensions
             services.TryAddTransient<IEntityProvider, SqlServerProvider>();
             services.TryAddTransient<IEntityRepository, EntityRepository>();
             services.TryAddTransient<IConnectionRepository, ConnectionRepository>();
-            
-            services.TryAddTransient<IEncryptionService, EncryptionService>();
-            
+
             services.TryAddTransient<RelativeDateFormatter>();
+            
+            services.TryAddSingleton<DataProtectionService>();
             
             services.TryAddTransient<IFileStorage, DiskFileStorage>();
             services.TryAddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();

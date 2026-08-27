@@ -1,7 +1,6 @@
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -10,6 +9,7 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -81,7 +81,7 @@ public class ActionScriptsTests
             expressionsService,
             urlRedirectService,
             Mock.Of<Microsoft.AspNetCore.Mvc.IUrlHelper>(),
-            Mock.Of<IEncryptionService>(),
+            new DataProtectionService(new EphemeralDataProtectionProvider()),
             CreateStringLocalizer());
     }
 
@@ -93,7 +93,7 @@ public class ActionScriptsTests
                 CreateHttpContextAccessor(),
                 Mock.Of<IMasterDataUser>(),
                 Mock.Of<ILogger<ExpressionParser>>()),
-            Mock.Of<IEncryptionService>(),
+            new DataProtectionService(new EphemeralDataProtectionProvider()),
             Mock.Of<ILogger<ExpressionsService>>());
     }
 

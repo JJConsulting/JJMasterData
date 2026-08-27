@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exceptions;
@@ -18,7 +18,7 @@ namespace JJMasterData.Core.DataManager.Services;
 public class FormValuesService(
     IEntityRepository entityRepository,
     FieldValuesService fieldValuesService,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     ILogger<FormValuesService> logger,
     IHttpContextAccessor httpContextAccessor)
 {
@@ -222,7 +222,7 @@ public class FormValuesService(
         if (string.IsNullOrEmpty(encryptedPkValues))
             return new Dictionary<string, object?>();
 
-        var pkValues = encryptionService.DecryptString(encryptedPkValues)!;
+        var pkValues = encryptionService.Unprotect(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
         var result = await entityRepository.GetFieldsAsync(element, filters);

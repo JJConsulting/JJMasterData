@@ -1,6 +1,6 @@
 #nullable disable warnings
 using System;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.Extensions.Localization;
 
@@ -9,7 +9,7 @@ namespace JJMasterData.Core.UI.Components;
 internal sealed class TextFileFactory(
         IHttpContextAccessor request,
         IComponentFactory componentFactory,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJTextFile>
 {

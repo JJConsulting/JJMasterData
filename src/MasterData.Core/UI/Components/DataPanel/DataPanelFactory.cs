@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
@@ -12,7 +12,7 @@ namespace JJMasterData.Core.UI.Components;
 internal sealed class DataPanelFactory(IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IHttpContextAccessor httpContext,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         FieldFormattingService fieldFormattingService,
         FieldValidationService fieldValidationService,
         FormValuesService formValuesService,

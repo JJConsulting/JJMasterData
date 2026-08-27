@@ -14,7 +14,7 @@ using JJConsulting.Html.Extensions;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
@@ -79,7 +79,7 @@ public class JJDataExportation : ProcessComponent
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor, 
-        IEncryptionService encryptionService, 
+        DataProtectionService encryptionService,
         IFileStorage fileStorage,
         DataExportationWriterFactory dataExportationWriterFactory) : 
         base(httpContextAccessor, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)

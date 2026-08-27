@@ -14,7 +14,7 @@ using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
@@ -178,7 +178,7 @@ public class JJUploadView : AsyncComponent
     private IHttpContextAccessor CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
     private UploadViewManager Manager { get; }
-    private IEncryptionService EncryptionService { get; }
+    private DataProtectionService EncryptionService { get; }
 
     protected RouteContext RouteContext
     {
@@ -202,7 +202,7 @@ public class JJUploadView : AsyncComponent
         IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
         UploadViewManager manager,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {

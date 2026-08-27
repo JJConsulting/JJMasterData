@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
@@ -16,7 +16,7 @@ public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
     IMasterDataUser masterDataUser,
-    IEncryptionService encryptionService) : MasterDataController
+    DataProtectionService encryptionService) : MasterDataController
 {
     public async Task<IActionResult> Index(string parameters, string? multiselectValues)
     {
@@ -193,7 +193,7 @@ public class InternalRedirectController(
             RelationshipType = RelationshipViewType.List
         };
 
-        var @params = HttpUtility.ParseQueryString(encryptionService.DecryptString(parameters));
+        var @params = HttpUtility.ParseQueryString(encryptionService.Unprotect(parameters));
         state.ElementName = @params.Get("formname");
 
 
@@ -259,7 +259,7 @@ public class InternalRedirectController(
 
         foreach (var encryptedPk in selectedRows.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            var decryptedPk = encryptionService.DecryptString(encryptedPk);
+            var decryptedPk = encryptionService.Unprotect(encryptedPk);
             selectedValues.Add(decryptedPk);
         }
 

@@ -1,35 +1,86 @@
 #nullable enable
 
 using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using JetBrains.Annotations;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Security.Cryptography;
 
-internal sealed class EncryptionService : IEncryptionService
+[Obsolete("Please use Microsoft IDataProtectionProvider")]
+public class EncryptionService(IOptionsSnapshot<MasterDataCommonsOptions> options) : IEncryptionService
 {
-    private const string Purpose = "JJMasterData.Commons.Security.Cryptography.EncryptionService";
-
-    private readonly IDataProtector _protector;
-
-    public EncryptionService(IDataProtectionProvider dataProtectionProvider)
-    {
-        ArgumentNullException.ThrowIfNull(dataProtectionProvider);
-
-        _protector = dataProtectionProvider.CreateProtector(Purpose);
-    }
+    private readonly string _secretKey = options.Value.SecretKey!;
 
     public string EncryptString(string plainText)
     {
-        ArgumentNullException.ThrowIfNull(plainText);
-
-        return _protector.Protect(plainText);
+        return AesEncryptionAlgorithm.EncryptString(plainText, _secretKey);
     }
 
     public string DecryptString(string cipherText)
     {
-        ArgumentNullException.ThrowIfNull(cipherText);
+        return AesEncryptionAlgorithm.DecryptString(cipherText, _secretKey);
+    }
+}
 
-        return _protector.Unprotect(cipherText);
+internal sealed class AesEncryptionAlgorithm
+{
+    public static string EncryptString(string plainText, string secretKey)
+    {
+        using var aes = CreateAes(secretKey);
+
+        using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+        using var memoryStream = new MemoryStream();
+        using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+        using (var streamWriter = new StreamWriter(cryptoStream))
+        {
+            streamWriter.Write(plainText);
+        }
+
+        return Convert.ToBase64String(memoryStream.ToArray());
+    }
+    
+    public static string DecryptString(string cipherText, string secretKey)
+    {
+        try
+        {
+            using var aes = CreateAes(secretKey);
+            var buffer = Convert.FromBase64String(cipherText);
+            using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+            using var memoryStream = new MemoryStream(buffer);
+            using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+            using var streamReader = new StreamReader(cryptoStream);
+
+            return streamReader.ReadToEnd();
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+    
+    [MustDisposeResource]
+    private static Aes CreateAes(string secretKey)
+    {
+        var keyBytes = Encoding.UTF8.GetBytes(secretKey);
+        var aesKey = SHA256.HashData(keyBytes);
+        var aesIv = MD5.HashData(keyBytes);
+
+        return CreateAes(aesKey, aesIv);
+    }
+
+    [MustDisposeResource]
+    private static Aes CreateAes(byte[] key, byte[] iv)
+    {
+        var aes = Aes.Create();
+        aes.Key = key;
+        aes.IV = iv;
+        return aes;
     }
 }

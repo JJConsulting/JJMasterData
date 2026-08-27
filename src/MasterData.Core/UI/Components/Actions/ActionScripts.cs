@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using JJConsulting.Html.Bootstrap.Components;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
@@ -18,7 +18,7 @@ public class ActionScripts(
     ExpressionsService expressionsService,
     UrlRedirectService urlRedirectService,
     IUrlHelper urlHelper,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
@@ -64,7 +64,7 @@ public class ActionScripts(
             new
             {
                 Area = "MasterData",
-                parameters = encryptionService.EncryptString(@params.ToString())
+                parameters = encryptionService.Protect(@params.ToString())
             });
 
         return

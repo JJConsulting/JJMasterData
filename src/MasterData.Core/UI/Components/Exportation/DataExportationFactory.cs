@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using JJConsulting.MasterData.Storage.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -25,7 +25,7 @@ internal class DataExportationFactory(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILoggerFactory loggerFactory,
     IComponentFactory componentFactory,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     IFileStorage fileStorage,
     DataExportationWriterFactory dataExportationWriterFactory
         ) : IFormElementComponentFactory<JJDataExportation>

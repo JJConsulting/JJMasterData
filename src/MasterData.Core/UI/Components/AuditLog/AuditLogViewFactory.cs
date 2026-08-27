@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
@@ -16,7 +16,7 @@ internal sealed class AuditLogViewFactory(
         AuditLogService auditLogService,
         IDataDictionaryRepository dataDictionaryRepository,
         IComponentFactory componentFactory,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : IFormElementComponentFactory<JJAuditLogView>
 {

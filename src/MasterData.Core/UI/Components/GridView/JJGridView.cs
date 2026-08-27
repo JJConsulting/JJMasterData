@@ -16,7 +16,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
@@ -556,7 +556,7 @@ public class JJGridView : AsyncComponent
 
     internal IHttpContextAccessor CurrentContext { get; }
     internal DataItemService DataItemService { get; }
-    internal IEncryptionService EncryptionService { get; }
+    internal DataProtectionService EncryptionService { get; }
     internal ILogger<JJGridView> Logger { get; }
     internal FieldFormattingService FieldFormattingService { get; }
 
@@ -568,7 +568,7 @@ public class JJGridView : AsyncComponent
         FormElement formElement,
         IHttpContextAccessor currentContext,
         IEntityRepository entityRepository,
-        IEncryptionService encryptionService,
+        DataProtectionService encryptionService,
         DataItemService dataItemService,
         ExpressionsService expressionsService,
         FormValuesService formValuesService,
@@ -1120,7 +1120,7 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(currentRowValue))
             return values;
 
-        var decriptId = EncryptionService.DecryptString(currentRowValue);
+        var decriptId = EncryptionService.Unprotect(currentRowValue);
         var @params = HttpUtility.ParseQueryString(decriptId);
 
         foreach (string key in @params)
@@ -1329,7 +1329,7 @@ public class JJGridView : AsyncComponent
         foreach (var pk in pkList)
         {
             var values = new Dictionary<string, object>();
-            var descriptval = EncryptionService.DecryptString(pk);
+            var descriptval = EncryptionService.Unprotect(pk);
             string[] ids = descriptval.Split(';');
             for (var i = 0; i < pkFields.Count; i++)
             {
@@ -1367,7 +1367,7 @@ public class JJGridView : AsyncComponent
                 selectedKeys.Append(',');
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            selectedKeys.Append((string?)EncryptionService.EncryptString(values));
+            selectedKeys.Append((string?)EncryptionService.Protect(values));
         }
 
         return selectedKeys.ToString();
