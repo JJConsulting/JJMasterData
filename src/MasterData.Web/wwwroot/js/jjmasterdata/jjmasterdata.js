@@ -1173,70 +1173,40 @@ class GridViewFilterHelper {
     static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
         const selector = divId + " input:enabled, " + divId + " select:enabled";
-        $(selector).each(function () {
-            let currentObj = $(this);
-            if (currentObj.hasClass("flatpickr-input")) {
-                currentObj.val("");
-            }
-            if (currentObj.hasClass("tom-select")) {
-                TomSelectHelper.clear(this);
-                return;
-            }
-            if (currentObj.typeahead) {
-                currentObj.typeahead("val", "");
-                currentObj.typeahead("destroy");
-            }
-            if (currentObj.hasClass("jj-numeric")) {
-                const autoNumeric = AutoNumeric.getAutoNumericElement(currentObj[0]);
-                autoNumeric.clear();
-            }
-            let inputType = this.type;
-            if (inputType == "checkbox") {
-                currentObj.prop("checked", false);
-            }
-            else if (inputType != "hidden") {
-                currentObj.val(null);
-                if (currentObj.hasClass("jj-search-box")) {
-                    currentObj[0].bootstrapSearch.clear();
-                }
-                else if (currentObj.hasClass("jjlookup")) {
-                    currentObj.blur();
-                }
-            }
-        });
+        const inputNames = Array.from(document.querySelectorAll(selector))
+            .map(input => input.name)
+            .filter(Boolean);
+        getMasterDataForm().addEventListener("formdata", (event) => {
+            inputNames.forEach(name => event.formData.delete(name));
+        }, { once: true });
+    }
+    static clearFilter(componentName, routeContext, isSubmit, filterPanelName = null, filterRouteContext = null) {
         document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
         document.querySelector("#grid-view-action-map-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName);
-    }
-    static clearFilter(componentName, routeContext, isSubmit, filterPanelName = null, filterRouteContext = null) {
+        this.clearFilterInputs(componentName);
         if (isSubmit) {
-            this.clearFilterInputs(componentName);
             getMasterDataForm().submit();
+            return;
+        }
+        GridViewHelper.setCurrentGridPage(componentName, 1);
+        if (filterPanelName && filterRouteContext) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", filterRouteContext);
+            postFormValues({
+                url: urlBuilder.build(),
+                success: (content) => {
+                    HTMLHelper.setOuterHTML(filterPanelName, content);
+                    listenAllEvents("#" + filterPanelName);
+                    document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
+                    GridViewHelper.refreshGrid(componentName, routeContext);
+                    document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+                }
+            });
         }
         else {
-            document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
-            document.querySelector("#grid-view-action-map-" + componentName).value = "";
-            this.clearFilterInputs(componentName);
-            GridViewHelper.clearCurrentFormAction(componentName);
-            GridViewHelper.setCurrentGridPage(componentName, 1);
-            if (filterPanelName && filterRouteContext) {
-                const urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("routeContext", filterRouteContext);
-                postFormValues({
-                    url: urlBuilder.build(),
-                    success: (content) => {
-                        HTMLHelper.setOuterHTML(filterPanelName, content);
-                        listenAllEvents("#" + filterPanelName);
-                        document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
-                        GridViewHelper.refreshGrid(componentName, routeContext);
-                        document.getElementById(componentName + "-filter-icon").classList.add("d-none");
-                    }
-                });
-            }
-            else {
-                GridViewHelper.refreshGrid(componentName, routeContext);
-                document.getElementById(componentName + "-filter-icon").classList.add("d-none");
-            }
+            GridViewHelper.refreshGrid(componentName, routeContext);
+            document.getElementById(componentName + "-filter-icon").classList.add("d-none");
         }
     }
     static searchOnDOM(componentName, oDom) {
