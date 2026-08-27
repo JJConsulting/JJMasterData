@@ -6,6 +6,8 @@ using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security;
+using JJMasterData.Commons.Security.Cryptography;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
@@ -83,6 +85,10 @@ public static class ServiceCollectionExtensions
             services.TryAddTransient<IConnectionRepository, ConnectionRepository>();
 
             services.TryAddTransient<RelativeDateFormatter>();
+            
+#pragma warning disable CS0618 // Type or member is obsolete
+            services.TryAddTransient<IEncryptionService, EncryptionService>();
+#pragma warning restore CS0618 // Type or member is obsolete
             
             services.TryAddSingleton<DataProtectionService>();
             
