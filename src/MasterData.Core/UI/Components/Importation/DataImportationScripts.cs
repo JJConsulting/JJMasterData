@@ -16,11 +16,11 @@ internal sealed class DataImportationScripts(
     private string GetEncryptedRouteContext()
     {
         var routeContext = RouteContext.FromFormElement(formElement, ComponentContext.DataImportation);
-        var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
+        var encryptedRouteContext = encryptionService.ProtectObject(routeContext);
         return encryptedRouteContext;
     }
 
-    public DataImportationScripts(JJDataImportation dataImportation) : this(dataImportation.Name, dataImportation.FormElement, dataImportation.StringLocalizer, dataImportation.EncryptionService)
+    public DataImportationScripts(JJDataImportation dataImportation) : this(dataImportation.Name, dataImportation.FormElement, dataImportation.StringLocalizer, dataImportation.DataProtectionService)
     {
     }
     

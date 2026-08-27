@@ -18,10 +18,10 @@ public sealed class JJTextFile(
     IHttpContextAccessor request,
     IComponentFactory componentFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    DataProtectionService encryptionService)
+    DataProtectionService dataProtectionService)
     : ControlBase(request)
 {
-    internal DataProtectionService EncryptionService { get; } = encryptionService;
+    internal DataProtectionService DataProtectionService { get; } = dataProtectionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     internal string ParentName { get; set; }
@@ -54,7 +54,7 @@ public sealed class JJTextFile(
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(request, EncryptionService);
+            var factory = new RouteContextFactory(request, DataProtectionService);
             field = factory.Create();
 
             return field;

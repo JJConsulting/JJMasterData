@@ -215,7 +215,7 @@ public class FormValuesService(
 
             if (!string.IsNullOrEmpty(encryptedFkValues))
             {
-                return encryptionService.DecryptDictionary(encryptedFkValues)!;
+                return encryptionService.ProtectDictionary(encryptedFkValues)!;
             }
         }
 

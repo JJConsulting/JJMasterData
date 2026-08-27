@@ -182,7 +182,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
     public bool AutoReloadFormFields { get; set; }
 
     private IHttpContextAccessor Request { get; }
-    private DataProtectionService EncryptionService { get; }
+    private DataProtectionService DataProtectionService { get; }
     private DataItemService DataItemService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     
@@ -204,7 +204,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(Request, EncryptionService);
+            var factory = new RouteContextFactory(Request, DataProtectionService);
             _routeContext = factory.Create();
             
             return _routeContext;
@@ -219,13 +219,13 @@ public class JJSearchBox : ControlBase, IDataItemControl
 
     public JJSearchBox(
         IHttpContextAccessor request,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         DataItemService dataItemService,
         IStringLocalizer<MasterDataResources> stringLocalizer) : base(request)
     {
         HtmlId = Name;
         Request = request;
-        EncryptionService = encryptionService;
+        DataProtectionService = dataProtectionService;
         DataItemService = dataItemService;
         StringLocalizer = stringLocalizer;
         Enabled = true;
@@ -327,7 +327,7 @@ public class JJSearchBox : ControlBase, IDataItemControl
         
         var context = new RouteContext(ElementName, ParentElementName, componentContext);
         
-        var encryptedRoute = EncryptionService.EncryptObject(context);
+        var encryptedRoute = DataProtectionService.ProtectObject(context);
 
         url.Append($"routeContext={encryptedRoute}");
         url.Append($"&fieldName={FieldName}");

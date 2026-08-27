@@ -17,7 +17,7 @@ public abstract class ProcessComponent(
         ExpressionsService expressionsService,
         IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : AsyncComponent
 {
@@ -58,7 +58,7 @@ public abstract class ProcessComponent(
     
     internal IBackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
     private ILogger<ProcessComponent> Logger { get; } = logger;
-    internal DataProtectionService EncryptionService { get; } = encryptionService;
+    internal DataProtectionService DataProtectionService { get; } = dataProtectionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     internal bool IsRunning() => BackgroundTaskManager.IsRunning(ProcessKey);

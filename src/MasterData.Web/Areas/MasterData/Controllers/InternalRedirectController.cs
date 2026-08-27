@@ -16,7 +16,7 @@ public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
     IMasterDataUser masterDataUser,
-    DataProtectionService encryptionService) : MasterDataController
+    DataProtectionService dataProtectionService) : MasterDataController
 {
     public async Task<IActionResult> Index(string parameters, string? multiselectValues)
     {
@@ -193,7 +193,7 @@ public class InternalRedirectController(
             RelationshipType = RelationshipViewType.List
         };
 
-        var @params = HttpUtility.ParseQueryString(encryptionService.Unprotect(parameters));
+        var @params = HttpUtility.ParseQueryString(dataProtectionService.Unprotect(parameters));
         state.ElementName = @params.Get("formname");
 
 
@@ -259,7 +259,7 @@ public class InternalRedirectController(
 
         foreach (var encryptedPk in selectedRows.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            var decryptedPk = encryptionService.Unprotect(encryptedPk);
+            var decryptedPk = dataProtectionService.Unprotect(encryptedPk);
             selectedValues.Add(decryptedPk);
         }
 

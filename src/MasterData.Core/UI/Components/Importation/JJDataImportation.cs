@@ -93,7 +93,7 @@ public class JJDataImportation : ProcessComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(HttpContextAccessor, EncryptionService);
+            var factory = new RouteContextFactory(HttpContextAccessor, DataProtectionService);
             _routeContext = factory.Create();
 
             return _routeContext;
@@ -123,11 +123,11 @@ public class JJDataImportation : ProcessComponent
         DataItemService dataItemService,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IFileStorage fileStorage,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(httpContextAccessor,masterDataUser, expressionsService, backgroundTaskManager,
-            loggerFactory.CreateLogger<ProcessComponent>(), encryptionService, stringLocalizer)
+            loggerFactory.CreateLogger<ProcessComponent>(), dataProtectionService, stringLocalizer)
     {
         HttpContextAccessor = httpContextAccessor;
         DataImportationWorkerFactory = dataImportationWorkerFactory;

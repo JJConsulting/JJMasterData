@@ -507,7 +507,7 @@ public class JJGridView : AsyncComponent
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
-            _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
+            _currentActionMap = DataProtectionService.UnprotectActionMap(encryptedActionMap);
             return _currentActionMap;
         }
         set
@@ -530,7 +530,7 @@ public class JJGridView : AsyncComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, DataProtectionService);
             _routeContext = factory.Create();
             
             return _routeContext;
@@ -556,7 +556,7 @@ public class JJGridView : AsyncComponent
 
     internal IHttpContextAccessor CurrentContext { get; }
     internal DataItemService DataItemService { get; }
-    internal DataProtectionService EncryptionService { get; }
+    internal DataProtectionService DataProtectionService { get; }
     internal ILogger<JJGridView> Logger { get; }
     internal FieldFormattingService FieldFormattingService { get; }
 
@@ -568,7 +568,7 @@ public class JJGridView : AsyncComponent
         FormElement formElement,
         IHttpContextAccessor currentContext,
         IEntityRepository entityRepository,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         DataItemService dataItemService,
         ExpressionsService expressionsService,
         FormValuesService formValuesService,
@@ -595,7 +595,7 @@ public class JJGridView : AsyncComponent
         TitleSize = formElement.TitleSize;
         
         ExpressionsService = expressionsService;
-        EncryptionService = encryptionService;
+        DataProtectionService = dataProtectionService;
         StringLocalizer = stringLocalizer;
         _urlRedirectService = urlRedirectService;
         HtmlTemplateRenderer = htmlTemplateRenderer;
@@ -890,9 +890,9 @@ public class JJGridView : AsyncComponent
         {
             new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter()),
             new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString()),
-            new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", EncryptionService.EncryptObject(CurrentActionMap) ?? string.Empty),
+            new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", DataProtectionService.ProtectObject(CurrentActionMap) ?? string.Empty),
             new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty),
-            new HtmlBuilder().AppendHiddenInput($"grid-view-filters-{Name}", EncryptionService.EncryptObject(filters) ?? string.Empty)
+            new HtmlBuilder().AppendHiddenInput($"grid-view-filters-{Name}", DataProtectionService.ProtectObject(filters) ?? string.Empty)
         };
 
         if (EnableMultiSelect)
@@ -1120,7 +1120,7 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(currentRowValue))
             return values;
 
-        var decriptId = EncryptionService.Unprotect(currentRowValue);
+        var decriptId = DataProtectionService.Unprotect(currentRowValue);
         var @params = HttpUtility.ParseQueryString(decriptId);
 
         foreach (string key in @params)
@@ -1329,7 +1329,7 @@ public class JJGridView : AsyncComponent
         foreach (var pk in pkList)
         {
             var values = new Dictionary<string, object>();
-            var descriptval = EncryptionService.Unprotect(pk);
+            var descriptval = DataProtectionService.Unprotect(pk);
             string[] ids = descriptval.Split(';');
             for (var i = 0; i < pkFields.Count; i++)
             {
@@ -1367,7 +1367,7 @@ public class JJGridView : AsyncComponent
                 selectedKeys.Append(',');
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            selectedKeys.Append((string?)EncryptionService.Protect(values));
+            selectedKeys.Append((string?)DataProtectionService.Protect(values));
         }
 
         return selectedKeys.ToString();

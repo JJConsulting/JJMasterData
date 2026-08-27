@@ -17,11 +17,11 @@ public class GridScripts
     public GridScripts(JJGridView gridView)
     {
         _gridView = gridView;
-        _encryptionService = gridView.EncryptionService;
+        _encryptionService = gridView.DataProtectionService;
         
         var defaultRouteContext = RouteContext.FromFormElement(_gridView.FormElement, ComponentContext.GridViewReload);
         
-        _defaultEncryptedRouteContext = _encryptionService.EncryptObject(defaultRouteContext);
+        _defaultEncryptedRouteContext = _encryptionService.ProtectObject(defaultRouteContext);
     }
 
     public string GetSortingScript(string fieldName)
@@ -70,7 +70,7 @@ public class GridScripts
     public string GetGridSettingsScript(ConfigAction action, Dictionary<string, object> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
-        string encryptedActionMap = _encryptionService.EncryptObject(actionMap);
+        string encryptedActionMap = _encryptionService.ProtectObject(actionMap);
 
         // language=JavaScript
         return $"GridViewHelper.setGridSettings('{_gridView.Name}','{_defaultEncryptedRouteContext}','{encryptedActionMap}');";
@@ -125,6 +125,6 @@ public class GridScripts
     private string GetEncryptedRouteContext(ComponentContext componentContext)
     {
         var routeContext = RouteContext.FromFormElement(_gridView.FormElement, componentContext);
-        return _encryptionService.EncryptObject(routeContext);
+        return _encryptionService.ProtectObject(routeContext);
     }
 }

@@ -79,10 +79,10 @@ public class ActionScripts(
     {
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.ProtectObject(actionMap);
 
         var encryptedRouteContext =
-            encryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
+            encryptionService.ProtectObject(RouteContext.FromFormElement(actionContext.FormElement,
                 ComponentContext.FormViewReload));
 
         var confirmationMessage =
@@ -106,11 +106,11 @@ public class ActionScripts(
         if (actionSource is ActionSource.Field or ActionSource.FormToolbar)
         {
             var actionMap = actionContext.ToActionMap(actionSource);
-            var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+            var encryptedActionMap = encryptionService.ProtectObject(actionMap);
 
             var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
 
-            var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
+            var encryptedRouteContext = encryptionService.ProtectObject(routeContext);
 
             return
                 $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}', {isOpenNewTabPage} {(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
@@ -163,7 +163,7 @@ public class ActionScripts(
         var formElement = actionContext.FormElement;
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.ProtectObject(actionMap);
         var confirmationMessage =
             GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
     
@@ -211,7 +211,7 @@ public class ActionScripts(
     private string GetGridRouteContext(FormElement formElement)
     {
         var gridRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
-        var encryptedRouteContext = encryptionService.EncryptObject(gridRouteContext);
+        var encryptedRouteContext = encryptionService.ProtectObject(gridRouteContext);
         return encryptedRouteContext;
     }
 
@@ -244,10 +244,10 @@ public class ActionScripts(
     {
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.ProtectObject(actionMap);
 
         var encryptedRouteContext =
-            encryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
+            encryptionService.ProtectObject(RouteContext.FromFormElement(actionContext.FormElement,
                 ComponentContext.FormViewReload));
 
         var confirmationMessage =

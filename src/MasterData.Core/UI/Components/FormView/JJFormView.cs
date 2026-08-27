@@ -339,7 +339,7 @@ public class JJFormView : AsyncComponent
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
-            _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
+            _currentActionMap = DataProtectionService.UnprotectActionMap(encryptedActionMap);
 
             return _currentActionMap;
         }
@@ -372,7 +372,7 @@ public class JJFormView : AsyncComponent
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, DataProtectionService);
             field = factory.Create();
 
             return field;
@@ -411,7 +411,7 @@ public class JJFormView : AsyncComponent
 
     internal IHttpContextAccessor CurrentContext { get; }
     internal IFormCollection FormValues => CurrentContext.HttpContext!.Request.Form;
-    internal DataProtectionService EncryptionService { get; }
+    internal DataProtectionService DataProtectionService { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
     internal ExpressionsService ExpressionsService { get; }
@@ -429,7 +429,7 @@ public class JJFormView : AsyncComponent
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         FormService formService,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
@@ -447,7 +447,7 @@ public class JJFormView : AsyncComponent
 
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
-        EncryptionService = encryptionService;
+        DataProtectionService = dataProtectionService;
         ExpressionsService = expressionsService;
         ComponentFactory = componentFactory;
         Localizer = stringLocalizer;
@@ -788,11 +788,11 @@ public class JJFormView : AsyncComponent
             html.AppendHiddenInput($"form-view-relationship-type-{Name}", ((int)RelationshipType).ToString());
             
             html.AppendHiddenInput($"current-action-map-{Name}",
-                EncryptionService.EncryptObject(CurrentActionMap));
+                DataProtectionService.ProtectObject(CurrentActionMap));
             html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
-                EncryptionService.EncryptObject(RelationValues));
+                DataProtectionService.ProtectObject(RelationValues));
             html.AppendHiddenInput($"form-view-route-context-{Name}",
-                EncryptionService.EncryptObject(RouteContext.FromFormElement(FormElement,
+                DataProtectionService.ProtectObject(RouteContext.FromFormElement(FormElement,
                     ComponentContext.FormViewReload)));
         }
     }
@@ -1144,7 +1144,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]!);
+        var insertValues = DataProtectionService.ProtectDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]!);
         var html = new HtmlBuilder(HtmlTag.Div);
 
         var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect ?? throw new JJMasterDataException("Element name to select cannot be null.");
@@ -1780,7 +1780,7 @@ public class JJFormView : AsyncComponent
         if (string.IsNullOrEmpty(encryptedRelationValues))
             return new Dictionary<string, object>();
 
-        return EncryptionService.DecryptDictionary(encryptedRelationValues);
+        return DataProtectionService.ProtectDictionary(encryptedRelationValues);
     }
 
     internal void DisableActionsAtViewMode()

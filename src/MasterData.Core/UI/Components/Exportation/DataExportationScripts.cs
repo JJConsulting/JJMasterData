@@ -10,7 +10,7 @@ internal class DataExportationScripts(
     DataProtectionService encryptionService)
 {
     public DataExportationScripts(JJDataExportation dataExportation) : this(dataExportation.Name,
-        dataExportation.FormElement, dataExportation.EncryptionService)
+        dataExportation.FormElement, dataExportation.DataProtectionService)
     {
     }
 
@@ -19,7 +19,7 @@ internal class DataExportationScripts(
         get
         {
             var routeContext = RouteContext.FromFormElement(formElement, ComponentContext.DataExportation);
-            var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
+            var encryptedRouteContext = encryptionService.ProtectObject(routeContext);
             return encryptedRouteContext;
         }
     }

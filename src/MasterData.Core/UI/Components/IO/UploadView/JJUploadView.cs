@@ -178,7 +178,7 @@ public class JJUploadView : AsyncComponent
     private IHttpContextAccessor CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
     private UploadViewManager Manager { get; }
-    private DataProtectionService EncryptionService { get; }
+    private DataProtectionService DataProtectionService { get; }
 
     protected RouteContext RouteContext
     {
@@ -187,7 +187,7 @@ public class JJUploadView : AsyncComponent
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, DataProtectionService);
             field = factory.Create();
 
             return field;
@@ -202,14 +202,14 @@ public class JJUploadView : AsyncComponent
         IHttpContextAccessor currentContext,
         IComponentFactory componentFactory,
         UploadViewManager manager,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
         ComponentFactory = componentFactory;
         Manager = manager;
-        EncryptionService = encryptionService;
+        DataProtectionService = dataProtectionService;
         StringLocalizer = stringLocalizer;
         Logger = loggerFactory.CreateLogger<JJUploadView>();
         Name = "upload-view";

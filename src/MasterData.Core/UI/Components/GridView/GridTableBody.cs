@@ -106,7 +106,7 @@ internal sealed class GridTableBody(
             RouteContext.FromFormElement(gridView.FormElement, ComponentContext.GridViewScrollPagination);
 
         row.WithAttribute("grid-pagination-route-context",
-            gridView.EncryptionService.EncryptObject(routeContext));
+            gridView.DataProtectionService.ProtectObject(routeContext));
     }
 
     private async ValueTask<HtmlBuilder> GetRowHtml(Dictionary<string, object?> row, int index)
@@ -510,7 +510,7 @@ internal sealed class GridTableBody(
         var checkBox = new JJCheckBox(gridView.CurrentContext, gridView.StringLocalizer)
         {
             Name = $"jjchk_{index}",
-            Value = gridView.EncryptionService.Protect(pkValues),
+            Value = gridView.DataProtectionService.Protect(pkValues),
             Text = string.Empty,
             Attributes =
             {

@@ -1,26 +1,46 @@
-#nullable disable warnings
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Serialization;
+using JJMasterData.Core.UI.Components;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using JJMasterData.Commons.Security;
-using JJMasterData.Commons.Serialization;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.Extensions;
 
+[Obsolete("Please use Microsoft IDataProtectionProvider")]
 public static class EncryptionServiceExtensions
 {
-    extension(DataProtectionService service)
+    extension(IEncryptionService service)
     {
+        /// <summary>
+        /// Encrypts the string with URL escape to prevent errors in parsing, algorithms like AES generate characters like '/'
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
+        public string EncryptStringWithUrlEscape(string plainText)
+        {
+            return Uri.EscapeDataString(service.EncryptString(plainText));
+        }
+
+        /// <summary>
+        /// Decrypts the string with URL unescape to prevent errors in parsing, algorithms like AES generate characters like '/'
+        /// </summary>
+        /// <param name="cipherText"></param>
+        /// <returns></returns>
+        public string DecryptStringWithUrlUnescape(string cipherText)
+        {
+            return service.DecryptString(Uri.UnescapeDataString(cipherText));
+        }
+
         public string EncryptObject<T>(T @object)
         {
-            return service.Protect(JsonSerializer.Serialize(@object, MasterDataJsonSerializerOptions.Default));
+            return service.EncryptStringWithUrlEscape(JsonSerializer.Serialize(@object, MasterDataJsonSerializerOptions.Default));
         }
 
         public T DecryptObject<T>(string encryptedObject)
         {
-            return JsonSerializer.Deserialize<T>(service.Unprotect(encryptedObject), MasterDataJsonSerializerOptions.Default);
+            return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, MasterDataJsonSerializerOptions.Default)!;
         }
 
         public Dictionary<string,object> DecryptDictionary(string encryptedDictionary)

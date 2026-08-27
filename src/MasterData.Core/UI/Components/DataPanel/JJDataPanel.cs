@@ -26,7 +26,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJDataPanel(
     IEntityRepository entityRepository,
     IHttpContextAccessor currentContext,
-    DataProtectionService encryptionService,
+    DataProtectionService dataProtectionService,
     FieldFormattingService fieldFormattingService,
     FieldValidationService fieldValidationService,
     FormValuesService formValuesService,
@@ -96,7 +96,7 @@ public class JJDataPanel(
 
 
     /// <summary>
-    /// Values not intended to be edited at the client. They are encrypted using <see cref="DataProtectionService"/>.
+    /// Values not intended to be edited at the client. They are encrypted using <see cref="Commons.Security.DataProtectionService"/>.
     /// </summary>
     public Dictionary<string, object?>? SecretValues
     {
@@ -105,7 +105,7 @@ public class JJDataPanel(
             if (field == null &&
                 CurrentContext.HttpContext!.Request.HasFormContentType && CurrentContext.HttpContext!.Request.Form.TryGetValue($"data-panel-secret-values-{Name}", out var secretValues))
             {
-                field = EncryptionService.DecryptDictionary(secretValues);
+                field = DataProtectionService.ProtectDictionary(secretValues);
             }
 
             return field;
@@ -138,7 +138,7 @@ public class JJDataPanel(
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, DataProtectionService);
             field = factory.Create();
             
             return field;
@@ -160,7 +160,7 @@ public class JJDataPanel(
     }
 
     internal IHttpContextAccessor CurrentContext { get; } = currentContext;
-    internal DataProtectionService EncryptionService { get; } = encryptionService;
+    internal DataProtectionService DataProtectionService { get; } = dataProtectionService;
     internal FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
     internal ExpressionsService ExpressionsService { get; } = expressionsService;
     internal IComponentFactory ComponentFactory { get; } = componentFactory;
@@ -174,7 +174,7 @@ public class JJDataPanel(
         FormElement formElement,
         IEntityRepository entityRepository,
         IHttpContextAccessor currentContext,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         FieldFormattingService fieldFormattingService,
         FieldValidationService fieldValidationService,
         FormValuesService formValuesService,
@@ -185,7 +185,7 @@ public class JJDataPanel(
     ) : this(
         entityRepository, 
         currentContext, 
-        encryptionService, 
+        dataProtectionService, 
         fieldFormattingService, 
         fieldValidationService,
         formValuesService, 
@@ -231,7 +231,7 @@ public class JJDataPanel(
                 if (string.IsNullOrEmpty(encryptedActionMap))
                     return null;
 
-                var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
+                var actionMap = DataProtectionService.UnprotectActionMap(encryptedActionMap);
                 
                 return await GetUrlRedirectResult(actionMap);
             }
@@ -288,13 +288,13 @@ public class JJDataPanel(
         html.AppendHiddenInput($"data-panel-is-at-modal-{Name}", IsAtModal.ToString());
         
         if (SecretValues?.Count > 0)
-            html.AppendHiddenInput($"data-panel-secret-values-{Name}", EncryptionService.EncryptObject(SecretValues));
+            html.AppendHiddenInput($"data-panel-secret-values-{Name}", DataProtectionService.ProtectObject(SecretValues));
     }
     
     private string GetPkHiddenInput()
     {
         var pkValues = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return EncryptionService.Protect(pkValues);
+        return DataProtectionService.Protect(pkValues);
     }
 
     private string GetHtmlFormScript()

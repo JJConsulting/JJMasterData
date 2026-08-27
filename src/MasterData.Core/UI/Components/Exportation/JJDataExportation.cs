@@ -79,10 +79,10 @@ public class JJDataExportation : ProcessComponent
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor, 
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         IFileStorage fileStorage,
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(httpContextAccessor, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
+        base(httpContextAccessor, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),dataProtectionService,stringLocalizer)
     {
         FileStorage = fileStorage;
         UrlHelper = urlHelper;

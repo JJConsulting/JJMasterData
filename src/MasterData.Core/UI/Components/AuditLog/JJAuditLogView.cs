@@ -39,7 +39,7 @@ public class JJAuditLogView : AsyncComponent
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, DataProtectionService);
             field = factory.Create();
 
             return field;
@@ -53,7 +53,7 @@ public class JJAuditLogView : AsyncComponent
     private IHttpContextAccessor CurrentContext { get; }
 
     private AuditLogService AuditLogService { get; }
-    private DataProtectionService EncryptionService { get; }
+    private DataProtectionService DataProtectionService { get; }
 
     public JJGridView GridView => field ??= CreateGridViewLog();
 
@@ -83,7 +83,7 @@ public class JJAuditLogView : AsyncComponent
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
         IComponentFactory componentFactory,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         Name = $"{formElement.Name.ToLowerInvariant()}-audit-log-view";
@@ -93,7 +93,7 @@ public class JJAuditLogView : AsyncComponent
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
-        EncryptionService = encryptionService;
+        DataProtectionService = dataProtectionService;
         StringLocalizer = stringLocalizer;
     }
 
@@ -395,7 +395,7 @@ public class JJAuditLogView : AsyncComponent
             {
                 var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.AuditLogView);
 
-                var encryptedRouteContext = EncryptionService.EncryptObject(routeContext);
+                var encryptedRouteContext = DataProtectionService.ProtectObject(routeContext);
 
                 a.WithAttribute("href",
                     $"javascript:AuditLogViewHelper.loadAuditLog('{FormElement.ParentName}','{logId}', '{encryptedRouteContext}')");

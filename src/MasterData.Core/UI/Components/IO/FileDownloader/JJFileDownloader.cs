@@ -51,7 +51,7 @@ public class JJFileDownloader(
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         var routeContext = new RouteContext(ComponentContext.DownloadFile);
 
-        query["routeContext"] = encryptionService.EncryptObject(routeContext);
+        query["routeContext"] = encryptionService.ProtectObject(routeContext);
         query[FileTokenParameter] = encryptionService.Protect(FullPath);
 
         uriBuilder.Query = query.ToString()!;

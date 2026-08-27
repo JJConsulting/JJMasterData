@@ -22,7 +22,7 @@ public class JJLookup : ControlBase
     private IHttpContextAccessor HttpRequest { get; }
     private RouteContextFactory RouteContextFactory { get; }
     private FormValuesService FormValuesService { get; }
-    private DataProtectionService EncryptionService { get; }
+    private DataProtectionService DataProtectionService { get; }
     private LookupService LookupService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IComponentFactory ComponentFactory { get; }
@@ -106,7 +106,7 @@ public class JJLookup : ControlBase
         IHttpContextAccessor httpRequest,
         RouteContextFactory routeContextFactory,
         FormValuesService formValuesService,
-        DataProtectionService encryptionService,
+        DataProtectionService dataProtectionService,
         LookupService lookupService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory) : base(httpRequest)
@@ -121,7 +121,7 @@ public class JJLookup : ControlBase
         HttpRequest = httpRequest;
         RouteContextFactory = routeContextFactory;
         FormValuesService = formValuesService;
-        EncryptionService = encryptionService;
+        DataProtectionService = dataProtectionService;
         LookupService = lookupService;
         StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
@@ -188,7 +188,7 @@ public class JJLookup : ControlBase
         var routeContext = new RouteContext(ElementName, ParentElementName,
             ComponentContext.LookupDescription);
         
-        Attributes["route-context"] = EncryptionService.EncryptObject(routeContext);
+        Attributes["route-context"] = DataProtectionService.ProtectObject(routeContext);
 
         var flexLayout = GetFlexLayout();
 

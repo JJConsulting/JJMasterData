@@ -40,7 +40,7 @@ internal sealed class DataPanelForm
     private DataPanelScripts Scripts => field ??= new DataPanelScripts(this);
     
     internal ExpressionsService ExpressionsService { get; }
-    internal DataProtectionService EncryptionService { get; }
+    internal DataProtectionService DataProtectionService { get; }
     
     internal string? FieldNamePrefix { get; init; }
     public string Name { get; }
@@ -58,7 +58,7 @@ internal sealed class DataPanelForm
         _isGridViewFilter = false;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
         
-        EncryptionService = dataPanel.EncryptionService;
+        DataProtectionService = dataPanel.DataProtectionService;
         ExpressionsService = dataPanel.ExpressionsService;
 
         FormElement = dataPanel.FormElement;
@@ -80,7 +80,7 @@ internal sealed class DataPanelForm
         };
         _isGridViewFilter = true;
         
-        EncryptionService = gridView.EncryptionService;
+        DataProtectionService = gridView.DataProtectionService;
         ExpressionsService = gridView.ExpressionsService;
         FormElement = gridView.FormElement;
         Name = gridView.Name;

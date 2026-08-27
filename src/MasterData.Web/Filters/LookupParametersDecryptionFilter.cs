@@ -6,7 +6,7 @@ using Microsoft.Extensions.Primitives;
 namespace JJMasterData.Web.Filters;
 
 
-public class LookupParametersDecryptionFilter(DataProtectionService encryptionService) : ActionFilterAttribute
+public class LookupParametersDecryptionFilter(DataProtectionService dataProtectionService) : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {
@@ -25,7 +25,7 @@ public class LookupParametersDecryptionFilter(DataProtectionService encryptionSe
 
     private void SetLookupParameters(ActionExecutingContext context, StringValues encryptedParameters)
     {
-        var lookupQueryString = encryptionService.Unprotect(encryptedParameters.ToString());
+        var lookupQueryString = dataProtectionService.Unprotect(encryptedParameters.ToString());
         context.ActionArguments["lookupParameters"] = LookupParameters.FromQueryString(lookupQueryString);
     }
 }

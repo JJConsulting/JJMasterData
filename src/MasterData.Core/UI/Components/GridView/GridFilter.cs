@@ -441,7 +441,7 @@ internal sealed class GridFilter(JJGridView gridView)
         if (string.IsNullOrEmpty(filters))
             return null;
 
-        var filterJson = gridView.EncryptionService.Unprotect(filters);
+        var filterJson = gridView.DataProtectionService.Unprotect(filters);
         return JsonSerializer.Deserialize<Dictionary<string, object>>(filterJson, MasterDataJsonSerializerOptions.Default);
     }
 
