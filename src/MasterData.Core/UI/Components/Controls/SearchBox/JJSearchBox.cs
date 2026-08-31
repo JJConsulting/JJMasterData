@@ -329,7 +329,8 @@ public class JJSearchBox : ControlBase, IDataItemControl
         
         var encryptedRoute = DataProtectionService.ProtectObject(context);
 
-        url.Append($"routeContext={encryptedRoute}");
+        url.Append($"&elementName={ElementName}");
+        url.Append($"&routeContext={encryptedRoute}");
         url.Append($"&fieldName={FieldName}");
 
         return url.ToString();
