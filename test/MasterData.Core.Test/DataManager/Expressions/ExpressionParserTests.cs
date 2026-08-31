@@ -1,3 +1,4 @@
+using System.Text;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
@@ -55,8 +56,32 @@ public class ExpressionParserTests
         Assert.Null(result["UnknownField"]);
     }
 
-    // Add more test cases to cover other scenarios
-    // ...
+    [Fact]
+    public void ParseExpression_WithSessionField_ShouldKeepValueAfterRequestEnds()
+    {
+        var sessionValue = Encoding.UTF8.GetBytes("BU-SESSION");
+        var session = new Mock<ISession>();
+        session.SetupGet(value => value.IsAvailable).Returns(true);
+        session
+            .Setup(value => value.TryGetValue("UNID_NEG", out sessionValue))
+            .Returns(true);
+        var httpContextAccessor = new HttpContextAccessor
+        {
+            HttpContext = new DefaultHttpContext { Session = session.Object }
+        };
+        var parser = new ExpressionParser(httpContextAccessor, MockMasterDataUser(), MockLogger());
+        var formStateData = new FormStateData(PageState.Import);
+
+        var firstRow = parser.ParseExpression("{UNID_NEG}", formStateData);
+        httpContextAccessor.HttpContext = null;
+        var remainingRows = Enumerable.Range(0, 3)
+            .Select(_ => parser.ParseExpression("{UNID_NEG}", formStateData))
+            .ToList();
+
+        Assert.Equal("BU-SESSION", firstRow["UNID_NEG"]);
+        Assert.All(remainingRows, row => Assert.Equal("BU-SESSION", row["UNID_NEG"]));
+    }
+
 
     private static IHttpContextAccessor MockHttpContext()
     {

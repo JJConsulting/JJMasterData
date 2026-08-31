@@ -18,6 +18,9 @@ public sealed class ExpressionParser(
     IMasterDataUser masterDataUser,
     ILogger<ExpressionParser> logger)
 {
+    private readonly ISession? _session =
+        httpContextAccessor.HttpContext?.Features.Get<ISessionFeature>()?.Session;
+
     public Dictionary<string, object?> ParseExpression(
         string? expression,
         FormStateData formStateData)
@@ -93,7 +96,7 @@ public sealed class ExpressionParser(
                 return objValue;
         }
 
-        var session = httpContextAccessor.HttpContext?.Features.Get<ISessionFeature>()?.Session;
+        var session = _session ?? httpContextAccessor.HttpContext?.Features.Get<ISessionFeature>()?.Session;
 
         if (session is { IsAvailable: true } && session.TryGetValue(field, out var sessionValue))
             return Encoding.UTF8.GetString(sessionValue);
