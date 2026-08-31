@@ -52,7 +52,7 @@ public class ExpressionParserTests
 
         // Assert
         Assert.Single(result);
-        Assert.Empty(result["UnknownField"]!.ToString()!);
+        Assert.Null(result["UnknownField"]);
     }
 
     // Add more test cases to cover other scenarios

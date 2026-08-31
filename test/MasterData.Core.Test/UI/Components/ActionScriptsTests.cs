@@ -1,6 +1,7 @@
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Security;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -93,7 +94,7 @@ public class ActionScriptsTests
                 CreateHttpContextAccessor(),
                 Mock.Of<IMasterDataUser>(),
                 Mock.Of<ILogger<ExpressionParser>>()),
-            new DataProtectionService(new EphemeralDataProtectionProvider()),
+            Mock.Of<IEncryptionService>(),
             Mock.Of<ILogger<ExpressionsService>>());
     }
 
