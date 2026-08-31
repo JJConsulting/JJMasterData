@@ -1,9 +1,9 @@
 #nullable enable
-using System;
-
 namespace JJMasterData.Commons.Security.Cryptography.Abstractions;
 
-[Obsolete("Please use Microsoft Data Protection Provider")]
+/// <summary>
+/// Prefer using <see cref="DataProtectionService"/>.
+/// </summary>
 public interface IEncryptionService
 {
     string EncryptString(string plainText);
