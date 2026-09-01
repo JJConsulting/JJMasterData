@@ -567,6 +567,7 @@ class DataExportationHelper {
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
+            urlBuilder.addQueryParameter("jobId", DataExportationHelper.getJobId(componentName));
             const url = urlBuilder.build();
             var isCompleted = false;
             while (!isCompleted) {
@@ -581,6 +582,7 @@ class DataExportationHelper {
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
+            urlBuilder.addQueryParameter("jobId", DataExportationHelper.getJobId(componentName));
             yield DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
         });
     }
@@ -723,40 +725,13 @@ class DataExportationHelper {
         });
     }
     static showOptions(componentName, exportType) {
-        const orientationDiv = document.getElementById(`${componentName}-div-export-orientation`);
-        const allDiv = document.getElementById(`${componentName}-div-export-all`);
-        const delimiterDiv = document.getElementById(`${componentName}-div-export-delimiter`);
-        const firstlineDiv = document.getElementById(`${componentName}-div-export-firstline`);
-        if (exportType === "1") {
-            if (orientationDiv)
-                orientationDiv.style.display = "none";
-            if (allDiv)
-                allDiv.style.display = "block";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "none";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "block";
-        }
-        else if (exportType === "2") {
-            if (orientationDiv)
-                orientationDiv.style.display = "block";
-            if (allDiv)
-                allDiv.style.display = "none";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "none";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "none";
-        }
-        else {
-            if (orientationDiv)
-                orientationDiv.style.display = "none";
-            if (allDiv)
-                allDiv.style.display = "block";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "block";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "block";
-        }
+        document.querySelectorAll(".data-export-format-option").forEach(element => {
+            element.style.display = element.dataset.exportFormat === exportType ? "block" : "none";
+        });
+    }
+    static getJobId(componentName) {
+        var _a, _b;
+        return (_b = (_a = document.querySelector(`#${componentName}-export-job-id`)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "";
     }
 }
 class DataImportationHelper {
@@ -804,6 +779,7 @@ class DataImportationHelper {
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
         urlBuilder.addQueryParameter("componentName", componentName);
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         const url = urlBuilder.build();
         fetch(url, {
             method: 'GET',
@@ -886,6 +862,7 @@ class DataImportationHelper {
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
+                urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         $("body").on('hidden.bs.modal', "#" + DataImportationModal.getInstance().modalId, function () {
@@ -925,6 +902,7 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         postFormValues({
             url: urlBuilder.build(), success: html => {
                 DataImportationHelper.removePasteListener();
@@ -955,6 +933,7 @@ class DataImportationHelper {
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "stop");
         urlBuilder.addQueryParameter("componentName", componentName);
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         const url = urlBuilder.build();
         fetch(url).then(response => response.json()).then(data => {
             if (data.isProcessing === false) {
@@ -991,10 +970,11 @@ class DataImportationHelper {
         };
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, { once: true });
     }
-    static uploadCallback(componentName, routeContext, gridRouteContext) {
+    static uploadCallback(componentName, routeContext, jobId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "loading");
+        urlBuilder.addQueryParameter("jobId", jobId);
         postFormValues({
             url: urlBuilder.build(),
             success: html => {
@@ -1007,6 +987,10 @@ class DataImportationHelper {
         if (DataImportationHelper.pasteEventListener) {
             document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
         }
+    }
+    static getJobId(componentName) {
+        var _a, _b;
+        return (_b = (_a = document.querySelector(`#${componentName}-import-job-id`)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "";
     }
 }
 DataImportationHelper.insertCount = 0;
@@ -3060,6 +3044,7 @@ class UploadAreaListener {
         const onSuccess = (files = null) => {
             const processFile = (file) => {
                 const jsonResponse = JSON.parse(file.xhr.responseText);
+                const uploadResult = jsonResponse;
                 if (jsonResponse.error) {
                     const previewElement = file.previewElement;
                     previewElement.classList.remove("dz-success");

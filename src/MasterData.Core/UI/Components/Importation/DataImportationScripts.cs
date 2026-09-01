@@ -64,7 +64,7 @@ internal sealed class DataImportationScripts(
     public string GetUploadCallbackScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.uploadCallback('{name}','{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.uploadCallback('{name}','{GetEncryptedRouteContext()}', uploadResult.jobId)";
     }
 
     public static string GetCloseModalScript()

@@ -9,4 +9,7 @@ public class UploadAreaResultDto
 
     [JsonPropertyName("error")]
     public string? ErrorMessage { get; set; }
+
+    [JsonPropertyName("jobId")]
+    public string? JobId { get; set; }
 }

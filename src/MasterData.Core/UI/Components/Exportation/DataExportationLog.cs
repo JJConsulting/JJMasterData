@@ -2,7 +2,6 @@ using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.DataManager.Exportation;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -39,12 +38,11 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             div.Append(HtmlTag.Br);
             div.WithCssClass("mb-1");
             var stopExportationScript = _scripts.GetStopExportationScript(_stringLocalizer["Stopping Processing..."]);
-            var reporter = dataExportation.BackgroundTaskManager.GetProgress<DataExportationReporter>(dataExportation.ProcessKey);
             div.AppendComponent(new JJLinkButton
             {
                 IconClass = "fa fa-stop",
                 OnClientClick = stopExportationScript,
-                Visible = reporter?.UserId == dataExportation.UserId,
+                Visible = true,
                 Text = _stringLocalizer["Stop the exportation"],
                 ShowAsButton = true
             });

@@ -1,9 +1,16 @@
-﻿using JJMasterData.Commons.Configuration;
+﻿using System.Linq;
+using JJMasterData.Commons.Background;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation.Background;
+using JJMasterData.Core.DataManager.Exportation.Formats;
+using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.DataManager.Importation.Abstractions;
+using JJMasterData.Core.DataManager.Importation.Background;
 using JJMasterData.Core.Html.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,9 +62,20 @@ public static class ServiceCollectionExtensions
 
             services.AddTransient<HtmlTemplateRenderer>();
         
-            services.AddScoped<IExcelWriter, ExcelWriter>();
-            services.AddScoped<ITextWriter, TextWriter>();
-
+            services.AddScoped<CsvExportFormat>();
+            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<CsvExportFormat, DelimitedTextExportOptions>>();
+            services.AddScoped<TextExportFormat>();
+            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<TextExportFormat, DelimitedTextExportOptions>>();
+            services.AddScoped<ExcelXlsExportFormat>();
+            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<ExcelXlsExportFormat, ExcelExportOptions>>();
+            services.AddScoped(provider => new ExportFormatCatalog(provider.GetServices<IExportFormatRegistration>()));
+            services.AddScoped<ExportJobService>();
+            services.AddScoped<BackgroundJobHandler<ExportRequest>, ExportJobHandler>();
+            services.AddScoped<CsvImportReader>();
+            services.AddScoped<IImportReaderRegistration, ImportReaderRegistration<CsvImportReader, CsvImportOptions>>();
+            services.AddScoped(provider => new ImportFormatCatalog(provider.GetServices<IImportReaderRegistration>()));
+            services.AddScoped<ImportJobService>();
+            services.AddScoped<BackgroundJobHandler<ImportRequest>, ImportJobHandler>();
             services.AddFactories();
         }
     }

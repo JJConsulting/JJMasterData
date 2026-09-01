@@ -12,16 +12,17 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation.Background;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.UI.Events.Args;
@@ -41,7 +42,6 @@ public class JJDataExportation : ProcessComponent
     /// <summary>
     /// Event fired when the cell is rendered.
     /// </summary>
-    public event EventHandler<GridCellEventArgs> OnRenderCell;
     #endregion
 
     #region "Properties"
@@ -54,16 +54,14 @@ public class JJDataExportation : ProcessComponent
         internal set => _exportOptions = value;
     }
     
-    public bool ShowBorder { get; set; }
-
-    public bool ShowRowStriped { get; set; }
     internal MasterDataCoreOptions MasterDataOptions { get; }
 
     internal DataExportationScripts Scripts => field ??= new DataExportationScripts(this);
     internal IComponentFactory ComponentFactory { get; }
     internal IFileStorage FileStorage { get; }
     public IUrlHelper UrlHelper { get; }
-    public DataExportationWriterFactory DataExportationWriterFactory { get; }
+    internal ExportJobService ExportJobService { get; }
+    internal ExportFormatCatalog ExportFormatCatalog { get; }
 
     #endregion
 
@@ -74,19 +72,20 @@ public class JJDataExportation : ProcessComponent
         IUrlHelper urlHelper,
         ExpressionsService expressionsService,
         IOptionsSnapshot<MasterDataCoreOptions> masterDataOptions,
-        IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor, 
         DataProtectionService dataProtectionService,
         IFileStorage fileStorage,
-        DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(httpContextAccessor, masterDataUser, expressionsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),dataProtectionService,stringLocalizer)
+        ExportJobService exportJobService,
+        ExportFormatCatalog exportFormatCatalog) :
+        base(httpContextAccessor, masterDataUser, expressionsService, loggerFactory.CreateLogger<ProcessComponent>(),dataProtectionService,stringLocalizer)
     {
         FileStorage = fileStorage;
         UrlHelper = urlHelper;
-        DataExportationWriterFactory = dataExportationWriterFactory;
+        ExportJobService = exportJobService;
+        ExportFormatCatalog = exportFormatCatalog;
         ComponentFactory = componentFactory;
         HttpContextAccessor = httpContextAccessor;
         MasterDataOptions = masterDataOptions.Value;
@@ -98,10 +97,7 @@ public class JJDataExportation : ProcessComponent
     {
         ComponentResult result;
         
-        if (IsRunning())
-            result = new ContentComponentResult(new DataExportationLog(this).GetLoadingHtml());
-        else
-            result = new ContentComponentResult(await new DataExportationSettings(this).GetHtmlBuilderAsync());
+        result = new ContentComponentResult(await new DataExportationSettings(this).GetHtmlBuilderAsync());
         
         return result;
     }
@@ -120,25 +116,15 @@ public class JJDataExportation : ProcessComponent
         return UrlHelper.ActionLink("Exportation", "File", new { Area = "MasterData", elementName = FormElement.Name, fileName });
     }
 
-    private string GetFinishedMessageHtml(DataExportationReporter reporter)
+    private string GetFinishedMessageHtml(ExportJobStatus status)
     {
-        if (!reporter.HasError)
+        if (status.State == BackgroundJobState.Succeeded && status.Result is not null)
         {
-            string url = GetDownloadUrl(reporter.FileName);
+            string url = GetDownloadUrl(status.Result.FileName);
             var html = new HtmlBuilder(HtmlTag.Div);
 
-            if (reporter.HasError)
             {
-                var panel = new JJValidationSummary
-                {
-                    ShowCloseButton = false,
-                    Title = reporter.Message
-                };
-                html.AppendComponent(panel);
-            }
-            else
-            {
-                var icon = GetFileIcon(Path.GetExtension(reporter.FileName));
+                var icon = GetFileIcon(Path.GetExtension(status.Result.FileName));
                 icon.CssClass = "fa-3x ";
 
                 html.Append(HtmlTag.Div, div =>
@@ -158,7 +144,9 @@ public class JJDataExportation : ProcessComponent
                     });
                     div.Append(HtmlTag.Br);
 
-                    string elapsedTime = Format.FormatTimeSpan(reporter.StartDate, reporter.EndDate);
+                    string elapsedTime = status.StartedAt.HasValue && status.CompletedAt.HasValue
+                        ? Format.FormatTimeSpan(status.StartedAt.Value.DateTime, status.CompletedAt.Value.DateTime)
+                        : string.Empty;
 
                     div.AppendText(StringLocalizer["Process performed on {0}", elapsedTime]);
 
@@ -180,7 +168,7 @@ public class JJDataExportation : ProcessComponent
                         a.WithAttribute("href", url);
                         a.AppendComponent(icon);
                         a.Append(HtmlTag.Br);
-                        a.AppendText(reporter.FileName);
+                        a.AppendText(status.Result.FileName);
                     });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.Br);
@@ -210,63 +198,67 @@ public class JJDataExportation : ProcessComponent
 
         var alert = new JJAlert
         {
-            Title = reporter.Message,
+            Title = status.State == BackgroundJobState.Cancelled
+                ? StringLocalizer["Process aborted by user"]
+                : status.Error ?? StringLocalizer["Unexpected error"],
             Icon = FontAwesomeIcon.Warning,
-            Color = BootstrapColor.Danger
+            Color = status.State == BackgroundJobState.Cancelled ? BootstrapColor.Warning : BootstrapColor.Danger
         };
 
         return alert.GetHtml();
     }
 
-    private DataExportationWriterBase CreateWriter()
+    internal ValueTask<Guid> ExportFileInBackground(
+        Dictionary<string, object?> filter,
+        OrderByData orderByData,
+        List<Dictionary<string, object?>>? rows = null)
     {
-        DataExportationWriterFactory.OnRenderCell += OnRenderCell;
-        return DataExportationWriterFactory.GetInstance(this);
-    }
-
-    public async Task<ComponentResult> ExecuteExportationAsync(DictionaryListResult result)
-    {
-        var exporter = CreateWriter();
-        exporter.DataSource = result.Data;
-        exporter.TotalOfRecords = result.TotalOfRecords;
-        
-        await exporter.RunWorkerAsync(CancellationToken.None);
-
-        var stream = await exporter.OpenReadAsync();
-        return new FileStreamComponentResult(stream, exporter.ProcessReporter.FileName);
-    }
-
-    internal void ExportFileInBackground(Dictionary<string, object?> filter, OrderByData orderByData)
-    {
-        var exporter = CreateWriter();
-
-        exporter.CurrentFilter = filter;
-        exporter.CurrentOrder = orderByData;
-        BackgroundTaskManager.Run(ProcessKey, exporter);
-    }
-
-    internal DataExportationProgressDto GetCurrentProgress()
-    {
-        bool isRunning = BackgroundTaskManager.IsRunning(ProcessKey);
-        var reporter = BackgroundTaskManager.GetProgress<DataExportationReporter>(ProcessKey);
-        var dto = new DataExportationProgressDto();
-        if (reporter != null)
+        var request = new ExportRequest
         {
-            dto.Message = reporter.Message;
-            dto.HasError = reporter.HasError;
-            dto.StartDate = reporter.StartDate.ToDateTimeString();
-            dto.PercentProcess = reporter.Percentage;
-            dto.IsProcessing = isRunning;
+            ElementName = FormElement.Name,
+            UserId = UserId,
+            FormatId = ExportOptions.FormatId,
+            IncludeHeader = ExportOptions.ExportFirstLine,
+            ExportAllFields = ExportOptions.ExportAllFields,
+            FormatOptions = ExportOptions.FormatOptions,
+            Filters = filter,
+            OrderBy = orderByData.ToQueryParameter(),
+            UserValues = UserValues,
+            Rows = rows,
+            BaseUri = HttpContextAccessor.HttpContext?.Request.GetAbsoluteUri()
+        };
+        return ExportJobService.EnqueueAsync(request, HttpContextAccessor.HttpContext?.RequestAborted ?? default);
+    }
 
-            if (!isRunning && !reporter.EndDate.Equals(DateTime.MinValue))
-                dto.FinishedMessage = GetFinishedMessageHtml(reporter);
+    internal DataExportationProgressDto GetCurrentProgress(Guid jobId)
+    {
+        var status = ExportJobService.GetStatus(jobId, UserId);
+        var dto = new DataExportationProgressDto();
+        if (status != null)
+        {
+            dto.Message = status.Progress?.Message ?? StringLocalizer["Waiting..."];
+            dto.HasError = status.State == BackgroundJobState.Failed;
+            dto.StartDate = status.CreatedAt.LocalDateTime.ToDateTimeString();
+            dto.PercentProcess = status.Progress?.Percentage ?? 0;
+            dto.IsProcessing = status.State is BackgroundJobState.Queued or BackgroundJobState.Running;
+            if (!dto.IsProcessing)
+                dto.FinishedMessage = GetFinishedMessageHtml(status);
         }
         else
         {
-            dto.Message = StringLocalizer["Waiting..."];
+            dto.Message = StringLocalizer["Background job was not found."];
             dto.StartDate = DateTime.Now.ToShortDateString();
+            dto.HasError = true;
+            dto.FinishedMessage = new JJAlert
+            {
+                Title = dto.Message,
+                Icon = FontAwesomeIcon.Warning,
+                Color = BootstrapColor.Danger
+            }.GetHtml();
         }
 
         return dto;
     }
+
+    internal bool Cancel(Guid jobId) => ExportJobService.Cancel(jobId, UserId);
 }

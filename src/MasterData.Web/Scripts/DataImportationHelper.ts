@@ -55,6 +55,7 @@
         urlBuilder.addQueryParameter("routeContext", importationRouteContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
         urlBuilder.addQueryParameter("componentName", componentName)
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName))
         const url = urlBuilder.build()
         
         
@@ -144,6 +145,7 @@
                     const urlBuilder = new UrlBuilder();
                     urlBuilder.addQueryParameter("routeContext", importationRouteContext)
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
+                    urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName))
 
                     postFormValues({
                         url: urlBuilder.build(), success: html => {
@@ -190,6 +192,7 @@
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         postFormValues({
             url: urlBuilder.build(), success: html => {
                 DataImportationHelper.removePasteListener();
@@ -227,6 +230,7 @@
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "stop")
         urlBuilder.addQueryParameter("componentName", componentName)
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName))
         const url = urlBuilder.build()
 
         fetch(url).then(response => response.json()).then(data => {
@@ -267,10 +271,11 @@
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, {once: true});
     }
     
-    static uploadCallback(componentName: string, routeContext: string, gridRouteContext: string){
+    static uploadCallback(componentName: string, routeContext: string, jobId: string){
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "loading")
+        urlBuilder.addQueryParameter("jobId", jobId)
 
         postFormValues({
             url: urlBuilder.build(),
@@ -285,5 +290,9 @@
         if (DataImportationHelper.pasteEventListener) {
             document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
         }
+    }
+
+    private static getJobId(componentName: string): string {
+        return document.querySelector<HTMLInputElement>(`#${componentName}-import-job-id`)?.value ?? "";
     }
 }

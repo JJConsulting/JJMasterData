@@ -1,6 +1,6 @@
 ﻿using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Tasks.Progress;
+using JJMasterData.Commons.Background.Progress;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Importation;

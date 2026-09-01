@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Events.Args;
 
@@ -41,6 +41,7 @@ public class UploadAreaManager(IHttpContextAccessor httpContextAccessor, FileVal
             }
 
             dto.SuccessMessage = message;
+            dto.JobId = args.JobId;
         }
         catch (JJMasterDataException ex)
         {

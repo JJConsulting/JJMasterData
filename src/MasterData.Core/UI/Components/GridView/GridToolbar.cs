@@ -51,13 +51,6 @@ internal sealed class GridToolbar(JJGridView gridView)
 
             switch (action)
             {
-                case ExportAction when gridView.DataExportation.IsRunning():
-                    linkButton.Spinner.Name = $"data-exportation-spinner-{gridView.DataExportation.Name}";
-                    linkButton.Spinner.Visible = true;
-                    break;
-                case ImportAction when gridView.DataImportation.IsRunning():
-                    linkButton.Spinner.Visible = true;
-                    break;
                 case FilterAction fAction:
                     if (fAction.ShowAsCollapse)
                         linkButton.Visible = false;

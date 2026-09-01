@@ -1,12 +1,13 @@
 using System.Threading.Tasks;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Security;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation.Background;
 using JJMasterData.Core.DataManager.Expressions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -20,14 +21,14 @@ internal class DataExportationFactory(
     IUrlHelper urlHelper,
     ExpressionsService expressionsService,
     IOptionsSnapshot<MasterDataCoreOptions> options,
-    IBackgroundTaskManager backgroundTaskManager,
     IHttpContextAccessor httpContext,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILoggerFactory loggerFactory,
     IComponentFactory componentFactory,
     DataProtectionService encryptionService,
     IFileStorage fileStorage,
-    DataExportationWriterFactory dataExportationWriterFactory
+    ExportJobService exportJobService,
+    ExportFormatCatalog exportFormatCatalog
         ) : IFormElementComponentFactory<JJDataExportation>
 {
     public async ValueTask<JJDataExportation> CreateAsync(string elementName)
@@ -44,13 +45,13 @@ internal class DataExportationFactory(
             urlHelper,
             expressionsService,
             options, 
-            backgroundTaskManager,
             stringLocalizer, 
             componentFactory,
             loggerFactory, 
             httpContext,
             encryptionService,
             fileStorage,
-            dataExportationWriterFactory);
+            exportJobService,
+            exportFormatCatalog);
     }
 }

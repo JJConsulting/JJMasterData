@@ -7,6 +7,9 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.DataManager.Importation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Events.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,6 +24,24 @@ public static class MasterDataServiceBuilderExtensions
 {
     extension(MasterDataServiceBuilder builder)
     {
+        public MasterDataServiceBuilder AddExportFormat<TFormat, TOptions>()
+            where TFormat : class, IExportFormat<TOptions>
+            where TOptions : class, new()
+        {
+            builder.Services.AddScoped<TFormat>();
+            builder.Services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<TFormat, TOptions>>();
+            return builder;
+        }
+
+        public MasterDataServiceBuilder AddImportReader<TReader, TOptions>()
+            where TReader : class, IImportReader<TOptions>
+            where TOptions : class, new()
+        {
+            builder.Services.AddScoped<TReader>();
+            builder.Services.AddScoped<IImportReaderRegistration, ImportReaderRegistration<TReader, TOptions>>();
+            return builder;
+        }
+
         public MasterDataServiceBuilder WithFormEventHandlerFactory(Func<IServiceProvider, IDataDictionaryRepository> implementationFactory)
         {
             builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
@@ -32,12 +53,6 @@ public static class MasterDataServiceBuilderExtensions
         {
             builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerResolver, T>());
 
-            return builder;
-        }
-
-        public MasterDataServiceBuilder WithPdfExportation<T>() where T : IPdfWriter
-        {
-            builder.Services.AddTransient(typeof(IPdfWriter), typeof(T));
             return builder;
         }
 
@@ -84,18 +99,6 @@ public static class MasterDataServiceBuilderExtensions
         {
             builder.Services.AddOptions<FileSystemDataDictionaryOptions>().Bind(configuration);
             builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
-            return builder;
-        }
-
-        public MasterDataServiceBuilder WithExcelExportation<T>() where T : class, IExcelWriter
-        {
-            builder.Services.Replace(ServiceDescriptor.Transient<IExcelWriter, T>());
-            return builder;
-        }
-
-        public MasterDataServiceBuilder WithTextExportation<T>() where T : class, ITextWriter
-        {
-            builder.Services.Replace(ServiceDescriptor.Transient<ITextWriter, T>());
             return builder;
         }
 

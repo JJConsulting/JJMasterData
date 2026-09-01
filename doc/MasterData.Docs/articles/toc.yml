@@ -6,6 +6,8 @@
     href: getting_started.md
   - name: Configurations
     href: configurations.md
+  - name: Background import and export
+    href: background_import_export.md
   - name: Actions
     items:
     - name: HTML Template

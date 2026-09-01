@@ -6,6 +6,7 @@ class DataExportationHelper {
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","checkProgress")
+        urlBuilder.addQueryParameter("jobId",DataExportationHelper.getJobId(componentName))
         const url = urlBuilder.build();
         
         var isCompleted : boolean = false;
@@ -21,6 +22,7 @@ class DataExportationHelper {
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","stopProcess")
+        urlBuilder.addQueryParameter("jobId",DataExportationHelper.getJobId(componentName))
         
         await DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
     }
@@ -185,27 +187,13 @@ class DataExportationHelper {
 
 
     static showOptions(componentName: string, exportType: string) {
-        const orientationDiv = document.getElementById(`${componentName}-div-export-orientation`);
-        const allDiv = document.getElementById(`${componentName}-div-export-all`);
-        const delimiterDiv = document.getElementById(`${componentName}-div-export-delimiter`);
-        const firstlineDiv = document.getElementById(`${componentName}-div-export-firstline`);
+        document.querySelectorAll<HTMLElement>(".data-export-format-option").forEach(element => {
+            element.style.display = element.dataset.exportFormat === exportType ? "block" : "none";
+        });
+    }
 
-        if (exportType === "1") { // XLS
-            if (orientationDiv) orientationDiv.style.display = "none";
-            if (allDiv) allDiv.style.display = "block";
-            if (delimiterDiv) delimiterDiv.style.display = "none";
-            if (firstlineDiv) firstlineDiv.style.display = "block";
-        } else if (exportType === "2") { // PDF
-            if (orientationDiv) orientationDiv.style.display = "block";
-            if (allDiv) allDiv.style.display = "none";
-            if (delimiterDiv) delimiterDiv.style.display = "none";
-            if (firstlineDiv) firstlineDiv.style.display = "none";
-        } else {
-            if (orientationDiv) orientationDiv.style.display = "none";
-            if (allDiv) allDiv.style.display = "block";
-            if (delimiterDiv) delimiterDiv.style.display = "block";
-            if (firstlineDiv) firstlineDiv.style.display = "block";
-        }
+    private static getJobId(componentName: string): string {
+        return document.querySelector<HTMLInputElement>(`#${componentName}-export-job-id`)?.value ?? "";
     }
 
 

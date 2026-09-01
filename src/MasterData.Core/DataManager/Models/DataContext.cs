@@ -26,4 +26,12 @@ public class DataContext
         IpAddress = request?.HttpContext.Connection.RemoteIpAddress?.ToString();
         BrowserInfo = request?.Headers.UserAgent.ToString();
     }
+
+    public DataContext(DataContextSource source, string? userId, string? ipAddress, string? browserInfo)
+    {
+        Source = source;
+        UserId = userId;
+        IpAddress = ipAddress;
+        BrowserInfo = browserInfo;
+    }
 }

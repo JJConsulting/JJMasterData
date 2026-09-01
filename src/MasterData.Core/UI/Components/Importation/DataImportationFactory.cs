@@ -2,12 +2,12 @@ using System;
 using System.Threading.Tasks;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Security;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.DataManager.Importation.Background;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
@@ -19,16 +19,14 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataImportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
-    IFormEventHandlerResolver formEventHandlerResolver,
     ExpressionsService expressionsService,
     FieldValuesService fieldValuesService,
     FormService formService,
-    IBackgroundTaskManager backgroundTaskManager,
     IHttpContextAccessor httpContext,
     IMasterDataUser masterDataUser,
     IComponentFactory componentFactory,
     DataItemService dataItemService,
-    DataImportationWorkerFactory dataImportationWorkerFactory,
+    ImportJobService importJobService,
     IFileStorage fileStorage,
     DataProtectionService encryptionService,
     ILoggerFactory loggerFactory,
@@ -43,11 +41,10 @@ internal sealed class DataImportationFactory(
             expressionsService, 
             formService, 
             fieldValuesService,
-            backgroundTaskManager,
             httpContext, 
             componentFactory, 
             dataItemService,
-            dataImportationWorkerFactory,
+            importJobService,
             fileStorage,
             encryptionService,
             loggerFactory,
@@ -61,18 +58,7 @@ internal sealed class DataImportationFactory(
 
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
-        var dataContext = new DataContext(httpContext.HttpContext?.Request, DataContextSource.Upload, masterDataUser.Id);
-
-        var formEvent = formEventHandlerResolver.GetFormEventHandler(elementName);
-
         var dataImp = Create(formElement);
-
-        if (formEvent != null)
-        {
-            await formEvent.OnFormElementLoadAsync(dataContext, new FormElementLoadEventArgs(formElement));
-
-            dataImp.OnBeforeImportAsync += formEvent.OnBeforeImportAsync;
-        }
 
         dataImp.Name = elementName + "-importation";
 
