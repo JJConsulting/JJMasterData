@@ -68,6 +68,8 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<TextExportFormat, DelimitedTextExportOptions>>();
             services.AddScoped<ExcelXlsExportFormat>();
             services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<ExcelXlsExportFormat, ExcelExportOptions>>();
+            services.AddScoped<ExcelXlsxExportFormat>();
+            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<ExcelXlsxExportFormat, ExcelXlsxExportOptions>>();
             services.AddScoped(provider => new ExportFormatCatalog(provider.GetServices<IExportFormatRegistration>()));
             services.AddScoped<ExportJobService>();
             services.AddScoped<BackgroundJobHandler<ExportRequest>, ExportJobHandler>();

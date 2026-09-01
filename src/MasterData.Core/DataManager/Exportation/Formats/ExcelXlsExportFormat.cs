@@ -13,7 +13,7 @@ public sealed class ExcelXlsExportFormat : IExportFormat<ExcelExportOptions>
     public ExportFormatConfiguration Configuration { get; } = new()
     {
         Id = "excel",
-        DisplayName = "Excel",
+        DisplayName = "Excel (.xls)",
         FileExtension = "xls",
         ContentType = "application/vnd.ms-excel",
         Options =

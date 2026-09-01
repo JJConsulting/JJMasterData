@@ -15,7 +15,7 @@ public class ExportOptions
     internal const string ExportTableFirstLine = "_export_table_firstline";
     internal const string ExportAll = "_export_table_all";
 
-    public string FormatId { get; set; } = "excel";
+    public string FormatId { get; set; } = "xlsx";
     public bool ExportFirstLine { get; set; } = true;
     public bool ExportAllFields { get; set; } = true;
     public Dictionary<string, string?> FormatOptions { get; set; } = new(StringComparer.OrdinalIgnoreCase);

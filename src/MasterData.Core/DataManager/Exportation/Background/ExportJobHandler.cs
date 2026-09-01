@@ -70,7 +70,7 @@ internal sealed class ExportJobHandler(
         var tempFile = Path.GetTempFileName();
         try
         {
-            await using (var output = new FileStream(tempFile, FileMode.Create, FileAccess.Write, FileShare.None, 81920, true))
+            await using (var output = new FileStream(tempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 81920, true))
                 await format.WriteAsync(context, request.FormatOptions, output, cancellationToken);
 
             var fileName = GetFileName(formElement, format.Configuration.FileExtension);
