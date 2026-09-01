@@ -34,7 +34,7 @@ public static class ExpressionDataAccessCommandFactory
             if (oldExpression != expression)
             {
                 dbType = DbType.AnsiString;
-                value = keyValuePair.Value?.ToString();
+                value = keyValuePair.Value?.ToString() ?? string.Empty;
             }
             else
             {
