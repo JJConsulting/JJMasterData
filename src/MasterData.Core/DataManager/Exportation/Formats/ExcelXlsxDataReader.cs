@@ -20,10 +20,10 @@ internal sealed class ExcelXlsxDataReader(
 
     public override bool IsClosed => _disposed;
 
-    public override string GetName(int i) => context.Columns[i].DisplayName;
+    public override string GetName(int i) => context.Columns[i].LabelOrName;
 
     public override int GetOrdinal(string name) => context.Columns.FindIndex(column =>
-        string.Equals(column.DisplayName, name, StringComparison.OrdinalIgnoreCase));
+        string.Equals(column.LabelOrName, name, StringComparison.OrdinalIgnoreCase));
 
     public override object? GetValue(int i)
     {

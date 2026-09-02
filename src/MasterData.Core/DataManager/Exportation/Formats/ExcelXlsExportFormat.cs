@@ -50,7 +50,7 @@ public sealed class ExcelXlsExportFormat(FieldFormattingService fieldFormattingS
         {
             await writer.WriteAsync("<thead><tr>");
             foreach (var column in context.Columns)
-                await writer.WriteAsync($"<th>{HttpUtility.HtmlEncode(column.DisplayName)}</th>");
+                await writer.WriteAsync($"<th>{HttpUtility.HtmlEncode(column.LabelOrName)}</th>");
             await writer.WriteAsync("</tr></thead>");
         }
         await writer.WriteAsync("<tbody>");

@@ -27,7 +27,7 @@ internal static class DelimitedTextWriter
         if (context.IncludeHeader)
         {
             foreach (var column in context.Columns)
-                csv.WriteField(column.DisplayName);
+                csv.WriteField(column.LabelOrName);
             await csv.NextRecordAsync();
         }
 

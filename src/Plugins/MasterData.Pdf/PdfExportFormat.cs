@@ -81,7 +81,7 @@ public sealed class PdfExportFormat(FieldFormattingService fieldFormattingServic
         if (context.IncludeHeader)
         {
             foreach (var column in context.Columns)
-                table.AddHeaderCell(Style(new Cell().Add(new Paragraph(column.DisplayName)), options, true, false));
+                table.AddHeaderCell(Style(new Cell().Add(new Paragraph(column.LabelOrName)), options, true, false));
         }
 
         long processed = 0;

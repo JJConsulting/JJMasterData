@@ -91,16 +91,18 @@ internal sealed class ExportJobHandler(
         }
     }
 
-    private List<ExportColumn> GetColumns(FormElement formElement, bool exportAllFields)
+    private List<FormElementField> GetColumns(FormElement formElement, bool exportAllFields)
     {
         var formState = new FormStateData(new Dictionary<string, object?>(), PageState.List);
         return formElement.Fields
             .Where(field => field.Export && (exportAllFields ||
                 expressionsService.GetBoolValue(field.VisibleExpression, formState)))
-            .Select(field => new ExportColumn(
-                field.Name,
-                string.IsNullOrEmpty(field.Label) ? field.Name : localizer[field.Label],
-                field))
+            .Select(field =>
+            {
+                var exportField = field.DeepCopy();
+                exportField.Label = string.IsNullOrEmpty(field.Label) ? field.Name : localizer[field.Label];
+                return exportField;
+            })
             .ToList();
     }
 

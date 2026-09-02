@@ -241,7 +241,7 @@ public sealed class ExcelXlsxExportFormatTests
     }
 
     private static ExportContext CreateContext(
-        List<ExportColumn> columns,
+        List<FormElementField> columns,
         IAsyncEnumerable<Dictionary<string, object?>> rows,
         bool includeHeader,
         long totalRecords,
@@ -259,11 +259,12 @@ public sealed class ExcelXlsxExportFormatTests
         };
     }
 
-    private static List<ExportColumn> CreateColumns(params (string Name, string DisplayName)[] columns) =>
-        columns.Select(column => new ExportColumn(column.Name, column.DisplayName, new FormElementField
+    private static List<FormElementField> CreateColumns(params (string Name, string DisplayName)[] columns) =>
+        columns.Select(column => new FormElementField
         {
-            Name = column.Name
-        })).ToList();
+            Name = column.Name,
+            Label = column.DisplayName
+        }).ToList();
 
     private static async Task<byte[]> WriteAsync(
         ExportContext context,
