@@ -15,5 +15,4 @@ public sealed class ExportRequest : BackgroundJobRequest
     public string? OrderBy { get; init; }
     public required Dictionary<string, object?> UserValues { get; init; }
     public List<Dictionary<string, object?>>? Rows { get; init; }
-    public string? BaseUri { get; init; }
 }

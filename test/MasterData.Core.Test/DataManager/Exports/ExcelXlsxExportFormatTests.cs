@@ -33,6 +33,14 @@ public sealed class ExcelXlsxExportFormatTests
 
         var formats = scope.ServiceProvider.GetRequiredService<ExportFormatCatalog>().Formats;
 
+        var csv = Assert.Single(formats, format => format.Id == "csv");
+        Assert.Equal("csv", csv.FileExtension);
+        Assert.Equal(";", Assert.Single(csv.Options!).DefaultValue);
+
+        var text = Assert.Single(formats, format => format.Id == "txt");
+        Assert.Equal("txt", text.FileExtension);
+        Assert.Equal("\\t", Assert.Single(text.Options!).DefaultValue);
+
         var legacy = Assert.Single(formats, format => format.Id == "excel");
         Assert.Equal("xls", legacy.FileExtension);
         Assert.Equal("application/vnd.ms-excel", legacy.ContentType);

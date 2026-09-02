@@ -119,15 +119,15 @@ public class JJDataExportation : ProcessComponent
         return UrlHelper.ActionLink("Exportation", "File", new { Area = "MasterData", elementName = FormElement.Name, fileName });
     }
 
-    private string GetFinishedMessageHtml(ExportJobStatus status)
+    private string GetFinishedMessageHtml(BackgroundJobSnapshot status)
     {
-        if (status.State == BackgroundJobState.Succeeded && status.Result is not null)
+        if (status.State == BackgroundJobState.Succeeded && status.Result is string fileName)
         {
-            string url = GetDownloadUrl(status.Result.FileName);
+            string url = GetDownloadUrl(fileName);
             var html = new HtmlBuilder(HtmlTag.Div);
 
             {
-                var icon = GetFileIcon(Path.GetExtension(status.Result.FileName));
+                var icon = GetFileIcon(Path.GetExtension(fileName));
                 icon.CssClass = "fa-3x ";
 
                 html.Append(HtmlTag.Div, div =>
@@ -171,7 +171,7 @@ public class JJDataExportation : ProcessComponent
                         a.WithAttribute("href", url);
                         a.AppendComponent(icon);
                         a.Append(HtmlTag.Br);
-                        a.AppendText(status.Result.FileName);
+                        a.AppendText(fileName);
                     });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.Br);
@@ -227,8 +227,7 @@ public class JJDataExportation : ProcessComponent
             Filters = filter,
             OrderBy = orderByData.ToQueryParameter(),
             UserValues = UserValues,
-            Rows = rows,
-            BaseUri = HttpContextAccessor.HttpContext?.Request.GetAbsoluteUri()
+            Rows = rows
         };
         return ExportJobService.EnqueueAsync(request, HttpContextAccessor.HttpContext?.RequestAborted ?? default);
     }

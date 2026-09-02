@@ -11,6 +11,7 @@ using JJMasterData.Core.DataManager.Exportation.Formats;
 using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.DataManager.Importation.Abstractions;
 using JJMasterData.Core.DataManager.Importation.Background;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Html.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,10 +63,12 @@ public static class ServiceCollectionExtensions
 
             services.AddTransient<HtmlTemplateRenderer>();
         
-            services.AddScoped<CsvExportFormat>();
-            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<CsvExportFormat, DelimitedTextExportOptions>>();
-            services.AddScoped<TextExportFormat>();
-            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<TextExportFormat, DelimitedTextExportOptions>>();
+            services.AddScoped<IExportFormatRegistration>(provider =>
+                new ExportFormatRegistration<DelimitedTextExportFormat, DelimitedTextExportOptions>(
+                    DelimitedTextExportFormat.CreateCsv(provider.GetRequiredService<FieldFormattingService>())));
+            services.AddScoped<IExportFormatRegistration>(provider =>
+                new ExportFormatRegistration<DelimitedTextExportFormat, DelimitedTextExportOptions>(
+                    DelimitedTextExportFormat.CreateText(provider.GetRequiredService<FieldFormattingService>())));
             services.AddScoped<ExcelXlsExportFormat>();
             services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<ExcelXlsExportFormat, ExcelXlsExportOptions>>();
             services.AddScoped<ExcelXlsxExportFormat>();

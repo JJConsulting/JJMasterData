@@ -37,30 +37,12 @@ public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCata
         return jobs.EnqueueAsync(snapshot, cancellationToken);
     }
 
-    public ImportJobStatus? GetStatus(Guid id, string userId)
-    {
-        return MapStatus(jobs.GetStatus(id, userId));
-    }
+    public BackgroundJobSnapshot? GetStatus(Guid id, string userId) => jobs.GetStatus(id, userId);
 
-    public ImportJobStatus? GetCurrentStatus(string elementName, string userId)
+    public BackgroundJobSnapshot? GetCurrentStatus(string elementName, string userId)
     {
         var status = GetStatus(BackgroundJobId.Create(OperationName, elementName, userId), userId);
         return status?.State is BackgroundJobState.Queued or BackgroundJobState.Running ? status : null;
-    }
-
-    private static ImportJobStatus? MapStatus(BackgroundJobSnapshot? status)
-    {
-        return status is null ? null : new ImportJobStatus
-        {
-            Id = status.Id,
-            State = status.State,
-            Progress = status.Progress,
-            Result = status.Result as ImportJobResult,
-            Error = status.Error,
-            CreatedAt = status.CreatedAt,
-            StartedAt = status.StartedAt,
-            CompletedAt = status.CompletedAt
-        };
     }
 
     public bool Cancel(Guid id, string userId) => jobs.Cancel(id, userId);

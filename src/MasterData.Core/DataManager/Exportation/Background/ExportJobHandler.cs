@@ -46,7 +46,6 @@ internal sealed class ExportJobHandler(
         var format = formats.GetRequired(request.FormatId);
         var columns = GetColumns(formElement, request.ExportAllFields);
         var source = await CreateSourceAsync(formElement, request, cancellationToken);
-        long processed = 0;
 
         var exportProgress = new MasterDataProgress<ExportProgress>(current => progress.Report(
             new BackgroundJobProgress(current.Percentage, current.Message, current)));
@@ -54,8 +53,7 @@ internal sealed class ExportJobHandler(
         {
             FormElement = formElement,
             Columns = columns,
-            Rows = GetRowsAsync(
-                formElement, source, value => processed = value, cancellationToken),
+            Rows = GetRowsAsync(formElement, source, cancellationToken),
             UserValues = new Dictionary<string, object?>(request.UserValues),
             IncludeHeader = request.IncludeHeader,
             TotalRecords = source.Total,
@@ -76,13 +74,7 @@ internal sealed class ExportJobHandler(
             await using var input = new FileStream(tempFile, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
             await fileStorage.SaveAsync(storagePath, input, true, cancellationToken);
             progress.Report(new BackgroundJobProgress(100, localizer["File generated successfully!"]));
-            return new ExportJobResult
-            {
-                FileName = fileName,
-                ContentType = format.Configuration.ContentType,
-                StoragePath = storagePath,
-                TotalRecords = source.Total ?? processed
-            };
+            return fileName;
         }
         finally
         {
@@ -132,10 +124,8 @@ internal sealed class ExportJobHandler(
     private async IAsyncEnumerable<Dictionary<string, object?>> GetRowsAsync(
         FormElement formElement,
         ExportSource source,
-        Action<long> setProcessed,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        long processed = 0;
         var totalPages = source.Parameters is null ? 1 :
             (int)Math.Ceiling((source.Total ?? 0) / (double)RecordsPerPage);
 
@@ -161,8 +151,6 @@ internal sealed class ExportJobHandler(
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var row = new Dictionary<string, object?>(sourceRow, StringComparer.OrdinalIgnoreCase);
-                processed++;
-                setProcessed(processed);
                 yield return row;
             }
         }

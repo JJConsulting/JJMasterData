@@ -227,10 +227,6 @@ public class JJDataImportation : ProcessComponent
 
     private HtmlBuilder GetLoadingHtml()
     {
-        var reporter = GetCurrentReporter();
-        if (reporter == null)
-            return null;
-
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithStyle( "text-align: center;")
@@ -280,7 +276,6 @@ public class JJDataImportation : ProcessComponent
         {
             Type = LinkButtonType.Button,
             ShowAsButton = true,
-            Visible = reporter.UserId == UserId,
             OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
             Icon = FontAwesomeIcon.Stop,
             Text = StringLocalizer["Stop the importation"]
@@ -337,36 +332,6 @@ public class JJDataImportation : ProcessComponent
         e.SuccessMessage = StringLocalizer["File uploaded. Importation was queued."];
     }
 
-    internal DataImportationReporter GetCurrentReporter()
-    {
-        var reporter = new DataImportationReporter(StringLocalizer) { UserId = UserId };
-        if (!TryGetJobId(out var jobId))
-            return reporter;
-        var status = ImportJobService.GetStatus(jobId, UserId);
-        var details = status?.Result ?? status?.Progress?.Details as ImportJobResult;
-        if (status is null)
-            return reporter;
-        reporter.StartDate = status.StartedAt?.LocalDateTime ?? status.CreatedAt.LocalDateTime;
-        reporter.EndDate = status.CompletedAt?.LocalDateTime ?? DateTime.MinValue;
-        reporter.Message = status.State == BackgroundJobState.Cancelled
-            ? StringLocalizer["Process aborted by user"]
-            : status.Progress?.Message ?? status.Error ?? StringLocalizer["Waiting..."];
-        reporter.HasError = status.State == BackgroundJobState.Failed;
-        if (details is not null)
-        {
-            reporter.TotalProcessed = (int)details.TotalProcessed;
-            reporter.TotalRecords = status.State is BackgroundJobState.Succeeded ? (int)details.TotalProcessed : 0;
-            reporter.Insert = details.Inserted;
-            reporter.Update = details.Updated;
-            reporter.Delete = details.Deleted;
-            reporter.Ignore = details.Ignored;
-            reporter.Error = details.Errors;
-            foreach (var error in details.ErrorMessages)
-                reporter.AddError(error);
-        }
-        return reporter;
-    }
-
     private async Task<Guid> ImportInBackgroundAsync(
         Stream source,
         string fileName,
@@ -416,31 +381,27 @@ public class JJDataImportation : ProcessComponent
 
     internal DataImportationDto GetCurrentProgress()
     {
-        var reporter = GetCurrentReporter();
-        ImportJobStatus? status = null;
-        if (TryGetJobId(out var jobId))
-            status = ImportJobService.GetStatus(jobId, UserId);
-        var dto = new DataImportationDto();
-        if (reporter != null)
+        var status = GetCurrentStatus();
+        var details = status?.Result as ImportJobResult ?? status?.Progress?.Details as ImportJobResult;
+        return new DataImportationDto
         {
-            dto.StartDate = reporter.StartDate.ToDateTimeString();
-            dto.PercentProcess = reporter.Percentage;
-            dto.Message = reporter.Message;
-            dto.Insert = reporter.Insert;
-            dto.Update = reporter.Update;
-            dto.Delete = reporter.Delete;
-            dto.Error = reporter.Error;
-            dto.Ignore = reporter.Ignore;
-            dto.IsProcessing = status?.State is BackgroundJobState.Queued or BackgroundJobState.Running;
-        }
-        else
-        {
-            dto.Message = StringLocalizer["Waiting..."];
-            dto.StartDate = DateTime.Now.ToDateTimeString();
-        }
-
-        return dto;
+            StartDate = (status?.StartedAt?.LocalDateTime ?? status?.CreatedAt.LocalDateTime ?? DateTime.Now)
+                .ToDateTimeString(),
+            PercentProcess = status?.Progress?.Percentage ?? 0,
+            Message = status?.State == BackgroundJobState.Cancelled
+                ? StringLocalizer["Process aborted by user"]
+                : status?.Progress?.Message ?? status?.Error ?? StringLocalizer["Waiting..."],
+            Insert = details?.Inserted ?? 0,
+            Update = details?.Updated ?? 0,
+            Delete = details?.Deleted ?? 0,
+            Error = details?.Errors ?? 0,
+            Ignore = details?.Ignored ?? 0,
+            IsProcessing = status?.State is BackgroundJobState.Queued or BackgroundJobState.Running
+        };
     }
+
+    internal BackgroundJobSnapshot? GetCurrentStatus() =>
+        TryGetJobId(out var jobId) ? ImportJobService.GetStatus(jobId, UserId) : null;
 
     private bool TryGetJobId(out Guid jobId)
     {

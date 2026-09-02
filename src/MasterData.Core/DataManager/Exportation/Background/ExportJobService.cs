@@ -24,30 +24,12 @@ public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCata
         return jobs.EnqueueAsync(snapshot, cancellationToken);
     }
 
-    public ExportJobStatus? GetStatus(Guid id, string userId)
-    {
-        return MapStatus(jobs.GetStatus(id, userId));
-    }
+    public BackgroundJobSnapshot? GetStatus(Guid id, string userId) => jobs.GetStatus(id, userId);
 
-    public ExportJobStatus? GetCurrentStatus(string elementName, string userId)
+    public BackgroundJobSnapshot? GetCurrentStatus(string elementName, string userId)
     {
         var status = GetStatus(BackgroundJobId.Create(OperationName, elementName, userId), userId);
         return status?.State is BackgroundJobState.Queued or BackgroundJobState.Running ? status : null;
-    }
-
-    private static ExportJobStatus? MapStatus(BackgroundJobSnapshot? status)
-    {
-        return status is null ? null : new ExportJobStatus
-        {
-            Id = status.Id,
-            State = status.State,
-            Progress = status.Progress,
-            Result = status.Result as ExportJobResult,
-            Error = status.Error,
-            CreatedAt = status.CreatedAt,
-            StartedAt = status.StartedAt,
-            CompletedAt = status.CompletedAt
-        };
     }
 
     public bool Cancel(Guid id, string userId) => jobs.Cancel(id, userId);
@@ -69,8 +51,7 @@ public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCata
             Filters = new Dictionary<string, object?>(request.Filters, StringComparer.OrdinalIgnoreCase),
             OrderBy = request.OrderBy,
             UserValues = new Dictionary<string, object?>(request.UserValues, StringComparer.OrdinalIgnoreCase),
-            Rows = rows,
-            BaseUri = request.BaseUri
+            Rows = rows
         };
     }
 
