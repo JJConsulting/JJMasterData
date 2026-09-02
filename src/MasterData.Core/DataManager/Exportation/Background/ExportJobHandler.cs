@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -21,8 +20,6 @@ using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.UI.Events.Abstractions;
-using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
@@ -32,8 +29,6 @@ internal sealed class ExportJobHandler(
     IDataDictionaryRepository dataDictionaryRepository,
     IEntityRepository entityRepository,
     ExpressionsService expressionsService,
-    FieldFormattingService fieldFormattingService,
-    IGridEventHandlerResolver gridEventHandlerResolver,
     ExportFormatCatalog formats,
     IFileStorage fileStorage,
     IOptions<MasterDataCoreOptions> options,
@@ -60,7 +55,8 @@ internal sealed class ExportJobHandler(
             FormElement = formElement,
             Columns = columns,
             Rows = GetRowsAsync(
-                formElement, columns, source, request, value => processed = value, cancellationToken),
+                formElement, source, value => processed = value, cancellationToken),
+            UserValues = new Dictionary<string, object?>(request.UserValues),
             IncludeHeader = request.IncludeHeader,
             TotalRecords = source.Total,
             Progress = exportProgress
@@ -131,15 +127,12 @@ internal sealed class ExportJobHandler(
             parameters);
     }
 
-    private async IAsyncEnumerable<ExportRow> GetRowsAsync(
+    private async IAsyncEnumerable<Dictionary<string, object?>> GetRowsAsync(
         FormElement formElement,
-        List<ExportColumn> columns,
         ExportSource source,
-        ExportRequest request,
         Action<long> setProcessed,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gridHandler = gridEventHandlerResolver.GetGridEventHandler(formElement.Name);
         long processed = 0;
         var totalPages = source.Parameters is null ? 1 :
             (int)Math.Ceiling((source.Total ?? 0) / (double)RecordsPerPage);
@@ -159,39 +152,16 @@ internal sealed class ExportJobHandler(
                     CurrentPage = page
                 };
                 var result = await entityRepository.GetDictionaryListResultAsync(formElement, pageParameters);
-                rows = result.Data
-                    .Select(row => new Dictionary<string, object?>(row, StringComparer.OrdinalIgnoreCase))
-                    .ToList();
+                rows = result.Data;
             }
 
             foreach (var sourceRow in rows)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var row = new Dictionary<string, object?>(sourceRow, StringComparer.OrdinalIgnoreCase);
-                var formatted = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                foreach (var column in columns)
-                {
-                    var value = await fieldFormattingService.FormatGridValueAsync(
-                        new FormElementFieldSelector(formElement, column.Name),
-                        new FormStateData(row, new Dictionary<string, object?>(request.UserValues), PageState.List));
-                    if (gridHandler is not null)
-                    {
-                        var eventArgs = new GridCellEventArgs
-                        {
-                            Field = column.Field,
-                            DataRow = row,
-                            Sender = new JJText(value)
-                        };
-                        gridHandler.OnRenderCell(this, eventArgs);
-                        if (eventArgs.HtmlResult is not null)
-                            value = eventArgs.HtmlResult.ToString();
-                    }
-                    formatted[column.Name] = value;
-                }
-
                 processed++;
                 setProcessed(processed);
-                yield return new ExportRow(row, formatted);
+                yield return row;
             }
         }
     }

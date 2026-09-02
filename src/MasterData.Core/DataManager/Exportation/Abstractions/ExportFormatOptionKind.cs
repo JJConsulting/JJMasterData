@@ -1,6 +1,6 @@
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
-public enum FormatOptionKind
+public enum ExportFormatOptionKind
 {
     Text,
     Boolean,

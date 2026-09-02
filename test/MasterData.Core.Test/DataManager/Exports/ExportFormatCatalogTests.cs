@@ -18,6 +18,7 @@ public sealed class ExportFormatCatalogTests
             FormElement = new FormElement { Name = "customers" },
             Columns = [],
             Rows = Rows(TestContext.Current.CancellationToken),
+            UserValues = [],
             IncludeHeader = true,
             TotalRecords = 1,
             Progress = new Progress<ExportProgress>()
@@ -42,13 +43,11 @@ public sealed class ExportFormatCatalogTests
         Assert.Throws<InvalidOperationException>(() => new ExportFormatCatalog([first, second]));
     }
 
-    private static async IAsyncEnumerable<ExportRow> Rows(
+    private static async IAsyncEnumerable<Dictionary<string, object?>> Rows(
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        yield return new ExportRow(
-            new Dictionary<string, object?> { ["name"] = "Ada" },
-            new Dictionary<string, string> { ["name"] = "Ada" });
+        yield return new Dictionary<string, object?> { ["name"] = "Ada" };
         await Task.CompletedTask;
     }
 
@@ -71,7 +70,7 @@ public sealed class ExportFormatCatalogTests
                 {
                     Name = nameof(JsonExportOptions.Indented),
                     DisplayName = "Indented",
-                    Kind = FormatOptionKind.Boolean,
+                    Kind = ExportFormatOptionKind.Boolean,
                     DefaultValue = "false"
                 }
             ]
@@ -85,7 +84,7 @@ public sealed class ExportFormatCatalogTests
         {
             var rows = new List<Dictionary<string, object?>>();
             await foreach (var row in context.Rows.WithCancellation(cancellationToken))
-                rows.Add(row.Values);
+                rows.Add(row);
             await JsonSerializer.SerializeAsync(output, rows, new JsonSerializerOptions
             {
                 WriteIndented = options.Indented

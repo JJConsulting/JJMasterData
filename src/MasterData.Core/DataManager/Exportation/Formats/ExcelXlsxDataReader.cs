@@ -11,8 +11,8 @@ internal sealed class ExcelXlsxDataReader(
     ExportContext context,
     CancellationToken cancellationToken) : MiniExcelDataReaderBase
 {
-    private IAsyncEnumerator<ExportRow>? _enumerator;
-    private ExportRow? _current;
+    private IAsyncEnumerator<Dictionary<string, object?>>? _enumerator;
+    private Dictionary<string, object?>? _current;
     private long _processed;
     private bool _disposed;
 
@@ -33,7 +33,7 @@ internal sealed class ExcelXlsxDataReader(
             throw new InvalidOperationException("No export row is currently available.");
 
         var column = context.Columns[i];
-        return _current.Values.GetValueOrDefault(column.Name);
+        return _current.GetValueOrDefault(column.Name);
     }
 
     public override Task<object> GetValueAsync(int i, CancellationToken token = default)

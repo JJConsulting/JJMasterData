@@ -4309,4 +4309,8 @@
     <value>Padroniza automaticamente o texto ao salvar, aplicando o formato escolhido. Útil para integrações case-sensitive (ex.: Protheus).</value>
   </data>
 
+  <data name="Show table style" xml:space="preserve">
+    <value>Exibir decorações na tabela</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
 </root>

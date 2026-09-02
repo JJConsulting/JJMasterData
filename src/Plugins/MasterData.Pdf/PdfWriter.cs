@@ -9,7 +9,10 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Pdf;
 
@@ -20,7 +23,7 @@ public sealed class PdfExportOptions
     public bool ShowRowStriped { get; set; }
 }
 
-public sealed class PdfWriter : IExportFormat<PdfExportOptions>
+public sealed class PdfWriter(FieldFormattingService fieldFormattingService) : IExportFormat<PdfExportOptions>
 {
     public ExportFormatConfiguration Configuration { get; } = new()
     {
@@ -34,21 +37,21 @@ public sealed class PdfWriter : IExportFormat<PdfExportOptions>
             {
                 Name = nameof(PdfExportOptions.Landscape),
                 DisplayName = "Landscape",
-                Kind = FormatOptionKind.Boolean,
+                Kind = ExportFormatOptionKind.Boolean,
                 DefaultValue = "true"
             },
             new ExportFormatOption
             {
                 Name = nameof(PdfExportOptions.ShowBorder),
                 DisplayName = "Show borders",
-                Kind = FormatOptionKind.Boolean,
+                Kind = ExportFormatOptionKind.Boolean,
                 DefaultValue = "false"
             },
             new ExportFormatOption
             {
                 Name = nameof(PdfExportOptions.ShowRowStriped),
                 DisplayName = "Striped rows",
-                Kind = FormatOptionKind.Boolean,
+                Kind = ExportFormatOptionKind.Boolean,
                 DefaultValue = "false"
             }
         ]
@@ -84,10 +87,11 @@ public sealed class PdfWriter : IExportFormat<PdfExportOptions>
         await foreach (var row in context.Rows.WithCancellation(cancellationToken))
         {
             var striped = options.ShowRowStriped && processed % 2 == 1;
+            var formState = new FormStateData(row, context.UserValues, PageState.List);
             foreach (var column in context.Columns)
             {
-                row.FormattedValues.TryGetValue(column.Name, out var value);
-                value ??= string.Empty;
+                var value = await fieldFormattingService.FormatGridValueAsync(
+                    new FormElementFieldSelector(context.FormElement, column.Name), formState);
                 table.AddCell(Style(new Cell().Add(new Paragraph(value)), options, false, striped));
             }
             processed++;

@@ -793,4 +793,8 @@
   <data name="First option used in the combo. If a default value exists in the filter, this option is ignored." xml:space="preserve">
     <value>Primera opción usada en el combo. Si existe un valor predeterminado en el filtro, esta opción se ignora.</value>
   </data>
+  <data name="Show table style" xml:space="preserve">
+    <value>Mostrar estilo de tabla</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
 </root>

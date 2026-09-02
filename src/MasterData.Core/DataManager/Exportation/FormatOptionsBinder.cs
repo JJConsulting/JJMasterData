@@ -23,7 +23,7 @@ internal static class FormatOptionsBinder
         {
             if (!definitionMap.TryGetValue(option.Key, out var definition))
                 throw new InvalidOperationException($"Option '{option.Key}' is not supported.");
-            if (definition.Kind == FormatOptionKind.Select &&
+            if (definition.Kind == ExportFormatOptionKind.Select &&
                 definition.Choices?.Any(choice => choice.Value == option.Value) is false)
                 throw new InvalidOperationException($"Value '{option.Value}' is invalid for option '{option.Key}'.");
             values[option.Key] = option.Value;

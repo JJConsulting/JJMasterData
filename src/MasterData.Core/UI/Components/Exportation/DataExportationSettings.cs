@@ -150,7 +150,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                         label.AppendText(_stringLocalizer[definition.DisplayName]);
                     });
                     var name = $"{dataExportation.Name}{ExportOptions.FormatOptionPrefix}{format.Id}_{definition.Name}";
-                    if (definition.Kind == FormatOptionKind.Select)
+                    if (definition.Kind == ExportFormatOptionKind.Select)
                     {
                         div.Append(HtmlTag.Select, select =>
                         {
@@ -167,7 +167,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                             }
                         });
                     }
-                    else if (definition.Kind == FormatOptionKind.Boolean)
+                    else if (definition.Kind == ExportFormatOptionKind.Boolean)
                     {
                         div.Append(HtmlTag.Select, select =>
                         {

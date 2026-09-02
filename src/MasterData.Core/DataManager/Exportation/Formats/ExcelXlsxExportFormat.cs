@@ -14,7 +14,17 @@ internal sealed class ExcelXlsxExportFormat : IExportFormat<ExcelXlsxExportOptio
         Id = "xlsx",
         DisplayName = "Excel (.xlsx)",
         FileExtension = "xlsx",
-        ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        Options =
+        [
+            new ExportFormatOption
+            {
+                Name = nameof(ExcelXlsxExportOptions.ShowTableStyle),
+                DisplayName = "Show table style",
+                Kind = ExportFormatOptionKind.Boolean,
+                DefaultValue = "true"
+            }
+        ]
     };
 
     public async Task WriteAsync(
@@ -29,7 +39,9 @@ internal sealed class ExcelXlsxExportFormat : IExportFormat<ExcelXlsxExportOptio
             AutoFilter = context.IncludeHeader,
             FastMode = true,
             FreezeRowCount = context.IncludeHeader ? 1 : 0,
-            TableStyles = context.IncludeHeader ? TableStyles.Default : TableStyles.None
+            TableStyles = context.IncludeHeader && options.ShowTableStyle
+                ? TableStyles.Default
+                : TableStyles.None
         };
 
         await output.SaveAsAsync(

@@ -5,6 +5,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Formats;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MiniExcelLibs;
 
@@ -16,6 +17,16 @@ public sealed class ExcelXlsxExportFormatTests
     public void XlsxFormatIsRegisteredAlongsideLegacyExcelFormat()
     {
         var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddMemoryCache();
+        services.AddLocalization();
+        services.AddRouting();
+        services.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration>(new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["JJMasterData:ConnectionString"] = "Server=(local);Database=master;Integrated Security=true"
+            })
+            .Build());
         services.AddJJMasterDataCore();
         using var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
@@ -31,7 +42,11 @@ public sealed class ExcelXlsxExportFormatTests
         Assert.Equal("Excel (.xlsx)", xlsx.DisplayName);
         Assert.Equal("xlsx", xlsx.FileExtension);
         Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", xlsx.ContentType);
-        Assert.Null(xlsx.Options);
+        var option = Assert.Single(xlsx.Options!);
+        Assert.Equal(nameof(ExcelXlsxExportOptions.ShowTableStyle), option.Name);
+        Assert.Equal("Show table style", option.DisplayName);
+        Assert.Equal(ExportFormatOptionKind.Boolean, option.Kind);
+        Assert.Equal("true", option.DefaultValue);
     }
 
     [Fact]
@@ -109,6 +124,27 @@ public sealed class ExcelXlsxExportFormatTests
         var sheetXml = ReadSheetXml(bytes);
         Assert.DoesNotContain("autoFilter", sheetXml);
         Assert.DoesNotContain("state=\"frozen\"", sheetXml);
+    }
+
+    [Fact]
+    public async Task WriteAsyncOmitsTableStyleWhenDisabled()
+    {
+        var context = CreateContext(
+            CreateColumns(("name", "Name")),
+            Rows(
+                [new Dictionary<string, object?> { ["name"] = "Ada" }],
+                cancellationToken: TestContext.Current.CancellationToken),
+            true,
+            1);
+
+        var bytes = await WriteAsync(
+            context,
+            TestContext.Current.CancellationToken,
+            new ExcelXlsxExportOptions { ShowTableStyle = false });
+
+        using var stream = new MemoryStream(bytes);
+        using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+        Assert.DoesNotContain(archive.Entries, entry => entry.FullName.StartsWith("xl/tables/"));
     }
 
     [Fact]
@@ -206,7 +242,7 @@ public sealed class ExcelXlsxExportFormatTests
 
     private static ExportContext CreateContext(
         List<ExportColumn> columns,
-        IAsyncEnumerable<ExportRow> rows,
+        IAsyncEnumerable<Dictionary<string, object?>> rows,
         bool includeHeader,
         long totalRecords,
         IProgress<ExportProgress>? progress = null)
@@ -216,6 +252,7 @@ public sealed class ExcelXlsxExportFormatTests
             FormElement = new FormElement { Name = "customers" },
             Columns = columns,
             Rows = rows,
+            UserValues = [],
             IncludeHeader = includeHeader,
             TotalRecords = totalRecords,
             Progress = progress ?? new RecordingProgress()
@@ -228,12 +265,15 @@ public sealed class ExcelXlsxExportFormatTests
             Name = column.Name
         })).ToList();
 
-    private static async Task<byte[]> WriteAsync(ExportContext context, CancellationToken cancellationToken)
+    private static async Task<byte[]> WriteAsync(
+        ExportContext context,
+        CancellationToken cancellationToken,
+        ExcelXlsxExportOptions? options = null)
     {
         await using var output = new MemoryStream();
         await new ExcelXlsxExportFormat().WriteAsync(
             context,
-            new ExcelXlsxExportOptions(),
+            options ?? new ExcelXlsxExportOptions(),
             output,
             cancellationToken);
         return output.ToArray();
@@ -257,7 +297,7 @@ public sealed class ExcelXlsxExportFormatTests
         return reader.ReadToEnd();
     }
 
-    private static async IAsyncEnumerable<ExportRow> Rows(
+    private static async IAsyncEnumerable<Dictionary<string, object?>> Rows(
         IReadOnlyList<Dictionary<string, object?>> values,
         Action? onDisposed = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -267,7 +307,7 @@ public sealed class ExcelXlsxExportFormatTests
             foreach (var value in values)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                yield return new ExportRow(value, []);
+                yield return value;
                 await Task.Yield();
             }
         }

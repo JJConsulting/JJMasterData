@@ -30,7 +30,7 @@ public sealed class CsvImportReader : IImportReader<CsvImportOptions>
             {
                 Name = nameof(CsvImportOptions.Delimiter),
                 DisplayName = "Delimiter",
-                Kind = FormatOptionKind.Select,
+                Kind = ExportFormatOptionKind.Select,
                 DefaultValue = ";",
                 Choices =
                     [new(";", "Semicolon (;)"), new(",", "Comma (,)"), new("|", "Pipe (|)"), new("\\t", "Tab")]
@@ -39,7 +39,7 @@ public sealed class CsvImportReader : IImportReader<CsvImportOptions>
             {
                 Name = nameof(CsvImportOptions.DetectDelimiter),
                 DisplayName = "Detect delimiter",
-                Kind = FormatOptionKind.Boolean,
+                Kind = ExportFormatOptionKind.Boolean,
                 DefaultValue = "true"
             }
         ]

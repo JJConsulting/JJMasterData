@@ -2,10 +2,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.DataManager.Exportation.Formats;
 
-public sealed class TextExportFormat : IExportFormat<DelimitedTextExportOptions>
+public sealed class TextExportFormat(FieldFormattingService fieldFormattingService) : IExportFormat<DelimitedTextExportOptions>
 {
     public ExportFormatConfiguration Configuration { get; } = new()
     {
@@ -19,7 +20,7 @@ public sealed class TextExportFormat : IExportFormat<DelimitedTextExportOptions>
             {
                 Name = nameof(DelimitedTextExportOptions.Delimiter),
                 DisplayName = "Delimiter",
-                Kind = FormatOptionKind.Select,
+                Kind = ExportFormatOptionKind.Select,
                 DefaultValue = "\\t",
                 Choices = [new("\t", "Tab"), new(";", "Semicolon (;)"), new(",", "Comma (,)")]
             }
@@ -27,5 +28,6 @@ public sealed class TextExportFormat : IExportFormat<DelimitedTextExportOptions>
     };
 
     public Task WriteAsync(ExportContext context, DelimitedTextExportOptions options, Stream output,
-        CancellationToken cancellationToken) => DelimitedTextWriter.WriteAsync(context, options, output, cancellationToken);
+        CancellationToken cancellationToken) =>
+        DelimitedTextWriter.WriteAsync(context, options, fieldFormattingService, output, cancellationToken);
 }
