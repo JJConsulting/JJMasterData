@@ -17,6 +17,14 @@ declare namespace Dropzone {
     type DropzoneFile = any;
 }
 
+interface JQueryStatic {
+    (...args: any[]): any;
+    isFunction(value: any): boolean;
+}
+
+declare const $: JQueryStatic;
+declare const jQuery: JQueryStatic;
+
 interface JQuery{
     bootstrapToggle : Function
     typeahead : Function
