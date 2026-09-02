@@ -30,14 +30,14 @@ public sealed class HangfireJobExecutor<TRequest>(
             HangfireBackgroundJobClient.StartedAtParameter,
             SerializationHelper.Serialize(DateTimeOffset.UtcNow, SerializationOption.User));
 
-        var progress = new SynchronousProgress<BackgroundJobProgress>(value =>
+        var jobId = context.BackgroundJob.Id;
+        var progress = new Progress<BackgroundJobProgress>(value =>
         {
-            var normalized = new BackgroundJobProgress(
-                Math.Clamp(value.Percentage, 0, 100), value.Message, value.Details);
-            context.Connection.SetJobParameter(
-                context.BackgroundJob.Id,
+            using var connection = JobStorage.Current.GetConnection();
+            connection.SetJobParameter(
+                jobId,
                 ProgressParameter,
-                SerializationHelper.Serialize(normalized, SerializationOption.User));
+                SerializationHelper.Serialize(value, SerializationOption.User));
         });
 
         try
@@ -60,11 +60,6 @@ public sealed class HangfireJobExecutor<TRequest>(
             HangfireBackgroundJobClient.ScheduleMappingRemoval(
                 publicId, context.BackgroundJob.Id, options.Value.CompletedJobRetention);
         }
-    }
-
-    private sealed class SynchronousProgress<T>(Action<T> report) : IProgress<T>
-    {
-        public void Report(T value) => report(value);
     }
 }
 

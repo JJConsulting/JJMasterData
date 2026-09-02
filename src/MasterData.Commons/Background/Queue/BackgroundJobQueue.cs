@@ -60,7 +60,7 @@ internal sealed class BackgroundJobQueue : IBackgroundJobClient
         if (!_channel.Writer.TryWrite(new BackgroundJobWorkItem<TRequest>(id, request)))
         {
             _jobs.TryRemove(id, out _);
-            throw new BackgroundJobQueueFullException("The background job queue is full.");
+            throw new InvalidOperationException("The background job queue is full.");
         }
 
         return ValueTask.FromResult(id);

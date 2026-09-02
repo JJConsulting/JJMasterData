@@ -8,13 +8,22 @@ namespace JJMasterData.Commons.Test.Tasks;
 
 public sealed class BackgroundJobQueueTests
 {
+    [Theory]
+    [InlineData(-1, 0)]
+    [InlineData(50, 50)]
+    [InlineData(101, 100)]
+    public void ProgressPercentageIsClamped(int percentage, int expected)
+    {
+        Assert.Equal(expected, new BackgroundJobProgress(percentage, "working").Percentage);
+    }
+
     [Fact]
     public async Task FullQueueIsRejected()
     {
         var queue = CreateQueue(capacity: 1);
         await queue.EnqueueAsync(new TestRequest("user", "first"), TestContext.Current.CancellationToken);
 
-        await Assert.ThrowsAsync<BackgroundJobQueueFullException>(async () =>
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await queue.EnqueueAsync(new TestRequest("user", "second"), TestContext.Current.CancellationToken));
     }
 
@@ -72,7 +81,7 @@ public sealed class BackgroundJobQueueTests
 
         await worker.StartAsync(TestContext.Current.CancellationToken);
         var id = await queue.EnqueueAsync(new TestRequest("owner", "result"), TestContext.Current.CancellationToken);
-        var status = await WaitForCompletionAsync(queue, id);
+        var status = await WaitForCompletionAsync(queue, id, waitForProgress: true);
         await worker.StopAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(BackgroundJobState.Succeeded, status.State);
@@ -132,13 +141,15 @@ public sealed class BackgroundJobQueueTests
 
     private static async Task<BackgroundJobSnapshot> WaitForCompletionAsync(
         BackgroundJobQueue queue,
-        Guid id)
+        Guid id,
+        bool waitForProgress = false)
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         while (!timeout.IsCancellationRequested)
         {
             var status = queue.GetStatus(id, "owner")!;
-            if (status.State is not (BackgroundJobState.Queued or BackgroundJobState.Running))
+            if (status.State is not (BackgroundJobState.Queued or BackgroundJobState.Running) &&
+                (!waitForProgress || status.Progress is not null))
                 return status;
             await Task.Delay(10, timeout.Token);
         }

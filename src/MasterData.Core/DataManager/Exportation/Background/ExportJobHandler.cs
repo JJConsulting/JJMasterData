@@ -47,8 +47,6 @@ internal sealed class ExportJobHandler(
         var columns = GetColumns(formElement, request.ExportAllFields);
         var source = await CreateSourceAsync(formElement, request, cancellationToken);
 
-        var exportProgress = new MasterDataProgress<ExportProgress>(current => progress.Report(
-            new BackgroundJobProgress(current.Percentage, current.Message, current)));
         var context = new ExportContext
         {
             FormElement = formElement,
@@ -57,7 +55,8 @@ internal sealed class ExportJobHandler(
             UserValues = new Dictionary<string, object?>(request.UserValues),
             IncludeHeader = request.IncludeHeader,
             TotalRecords = source.Total,
-            Progress = exportProgress
+            Progress = new Progress<ExportProgress>(current => progress.Report(
+                new BackgroundJobProgress(current.Percentage, current.Message, current)))
         };
 
         progress.Report(new BackgroundJobProgress(0, localizer["Retrieving records..."]));

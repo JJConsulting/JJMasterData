@@ -35,9 +35,8 @@ internal sealed class BackgroundJobEntry(Guid id, string userId)
     {
         lock (_lock)
         {
-            if (_state == BackgroundJobState.Running)
-                _progress = new BackgroundJobProgress(
-                    Math.Clamp(progress.Percentage, 0, 100), progress.Message, progress.Details);
+            if (_state != BackgroundJobState.Queued)
+                _progress = progress;
         }
     }
 

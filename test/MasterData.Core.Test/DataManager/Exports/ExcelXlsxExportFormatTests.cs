@@ -263,7 +263,7 @@ public sealed class ExcelXlsxExportFormatTests
             UserValues = [],
             IncludeHeader = includeHeader,
             TotalRecords = totalRecords,
-            Progress = progress ?? new RecordingProgress()
+            Progress = progress ?? new Progress<ExportProgress>()
         };
     }
 

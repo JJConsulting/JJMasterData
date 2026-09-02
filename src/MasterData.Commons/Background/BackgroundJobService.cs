@@ -52,7 +52,7 @@ internal sealed class BackgroundJobService(
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var result = await workItem.ExecuteAsync(
                     scope.ServiceProvider,
-                    new MasterDataProgress<BackgroundJobProgress>(entry.Report),
+                    new Progress<BackgroundJobProgress>(entry.Report),
                     linkedCancellation.Token);
                 entry.Succeed(result);
             }
