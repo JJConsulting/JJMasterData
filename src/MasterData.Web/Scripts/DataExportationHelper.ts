@@ -1,6 +1,14 @@
 class DataExportationHelper {
+    private static progressVerifications = new Set<string>();
+
     static async startProgressVerification(componentName: string, routeContext: string) {
         DataExportationHelper.setSpinner();
+        DataExportationHelper.setActionProcessing(componentName, true);
+
+        if (DataExportationHelper.progressVerifications.has(componentName))
+            return;
+
+        DataExportationHelper.progressVerifications.add(componentName);
 
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
@@ -11,9 +19,15 @@ class DataExportationHelper {
         
         var isCompleted : boolean = false;
 
-        while(!isCompleted){
-            isCompleted = await DataExportationHelper.checkProgress(url, componentName);
-            await sleep(3000);
+        try {
+            while(!isCompleted){
+                isCompleted = await DataExportationHelper.checkProgress(url, componentName);
+                if (!isCompleted)
+                    await sleep(3000);
+            }
+        } finally {
+            DataExportationHelper.progressVerifications.delete(componentName);
+            DataExportationHelper.setActionProcessing(componentName, false);
         }
     }
 
@@ -117,6 +131,8 @@ class DataExportationHelper {
     
     private static setSpinner() {
         const target = document.getElementById('data-exportation-spinner-');
+        if (!target || target.childElementCount > 0)
+            return;
 
         if(bootstrapVersion < 5){
             const options = {
@@ -156,6 +172,32 @@ class DataExportationHelper {
         }
     }
 
+    private static setActionProcessing(componentName: string, isProcessing: boolean) {
+        const button = Array.from(document.querySelectorAll<HTMLElement>('[onclick*="DataExportationHelper.openExportPopup"]'))
+            .find(element => element.getAttribute('onclick')?.includes(`'${componentName}'`));
+        if (!button)
+            return;
+
+        button.setAttribute('aria-busy', isProcessing.toString());
+        const indicatorId = `data-exportation-action-spinner-${componentName}`;
+        const existingIndicator = document.getElementById(indicatorId);
+        if (!isProcessing) {
+            existingIndicator?.remove();
+            button.querySelector('.data-exportation-action-indicator')?.remove();
+            return;
+        }
+
+        if (existingIndicator || button.querySelector('.data-exportation-action-indicator'))
+            return;
+
+        const indicator = document.createElement('span');
+        indicator.id = indicatorId;
+        indicator.classList.add('spinner-border', 'data-operation-action-indicator', 'data-exportation-action-indicator');
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
+    }
+
     
     private static setSettingsHTML(componentName, html) {
         const modalBody: HTMLElement = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
@@ -164,9 +206,9 @@ class DataExportationHelper {
         const qtdElement = document.querySelector("#" + componentName + "-total-of-records");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
-            if (totRows > 50000) {
-                document.querySelector<HTMLElement>("#data-exportation-warning" + componentName).style.display = "block";
-            }
+            const warningElement = document.querySelector<HTMLElement>("#data-exportation-warning" + componentName);
+            if (totRows > 50000 && warningElement)
+                warningElement.style.display = "block";
         }
         
         if (bootstrapVersion < 5) {

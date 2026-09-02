@@ -17,7 +17,7 @@ namespace JJMasterData.Hangfire;
 
 public sealed class HangfireBackgroundJobClient(IOptions<BackgroundJobOptions> options) : IBackgroundJobClient
 {
-    private const string HangfireIdField = "HangfireId";
+    internal const string HangfireIdField = "HangfireId";
     private const string UserField = "UserId";
     private const string ProgressParameter = "JJMasterData.Progress";
     private const string ResultParameter = "JJMasterData.Result";
@@ -33,7 +33,19 @@ public sealed class HangfireBackgroundJobClient(IOptions<BackgroundJobOptions> o
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
 
-        var publicId = Guid.NewGuid();
+        var publicId = request.Id ?? Guid.NewGuid();
+        using (var validationConnection = _getStorage().GetConnection())
+        {
+            var mapping = validationConnection.GetAllEntriesFromHash(GetMappingKey(publicId));
+            if (mapping is not null && mapping.TryGetValue(UserField, out var mappedUser) &&
+                !string.Equals(mappedUser, request.UserId, StringComparison.Ordinal))
+                throw new InvalidOperationException("The requested background job identifier is already in use.");
+        }
+
+        var current = GetStatus(publicId, request.UserId);
+        if (current?.State is BackgroundJobState.Queued or BackgroundJobState.Running)
+            return ValueTask.FromResult(publicId);
+
         var hangfireId = BackgroundJob.Enqueue<HangfireJobExecutor<TRequest>>(
             executor => executor.ExecuteAsync(publicId, request, null!, CancellationToken.None));
         using var connection = _getStorage().GetConnection();
@@ -90,14 +102,14 @@ public sealed class HangfireBackgroundJobClient(IOptions<BackgroundJobOptions> o
             return false;
         var cancelled = BackgroundJob.Delete(hangfireId);
         if (cancelled)
-            ScheduleMappingRemoval(id, _completedJobRetention);
+            ScheduleMappingRemoval(id, hangfireId, _completedJobRetention);
         return cancelled;
     }
 
     internal static string GetMappingKey(Guid id) => $"jjmasterdata:background-job:{id:N}";
 
-    internal static void ScheduleMappingRemoval(Guid id, TimeSpan retention) =>
-        BackgroundJob.Schedule(() => HangfireMappingCleaner.Delete(id), retention);
+    internal static void ScheduleMappingRemoval(Guid id, string hangfireId, TimeSpan retention) =>
+        BackgroundJob.Schedule(() => HangfireMappingCleaner.Delete(id, hangfireId), retention);
 
     private static object? GetResult(IStorageConnection connection, string jobId)
     {

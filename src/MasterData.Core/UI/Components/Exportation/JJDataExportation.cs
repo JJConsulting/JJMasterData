@@ -95,12 +95,16 @@ public class JJDataExportation : ProcessComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        ComponentResult result;
-        
-        result = new ContentComponentResult(await new DataExportationSettings(this).GetHtmlBuilderAsync());
-        
-        return result;
+        var currentJob = ExportJobService.GetCurrentStatus(FormElement.Name, UserId);
+        if (currentJob is null)
+            return new ContentComponentResult(await new DataExportationSettings(this).GetHtmlBuilderAsync());
+
+        var html = new DataExportationLog(this).GetLoadingHtml();
+        html.AppendHiddenInput($"{Name}-export-job-id", currentJob.Id.ToString());
+        return new ContentComponentResult(html);
     }
+
+    internal bool IsRunning() => ExportJobService.GetCurrentStatus(FormElement.Name, UserId) is not null;
 
     internal static JJIcon GetFileIcon(string ext)
     {

@@ -40,7 +40,19 @@ internal sealed class BackgroundJobQueue : IBackgroundJobClient
         cancellationToken.ThrowIfCancellationRequested();
         CleanupExpired();
 
-        var id = Guid.NewGuid();
+        var id = request.Id ?? Guid.NewGuid();
+        if (_jobs.TryGetValue(id, out var currentEntry))
+        {
+            if (!string.Equals(currentEntry.UserId, request.UserId, StringComparison.Ordinal))
+                throw new InvalidOperationException("The requested background job identifier is already in use.");
+
+            var current = currentEntry.Snapshot();
+            if (current.State is BackgroundJobState.Queued or BackgroundJobState.Running)
+                return ValueTask.FromResult(id);
+
+            _jobs.TryRemove(id, out _);
+        }
+
         var entry = new BackgroundJobEntry(id, request.UserId);
         if (!_jobs.TryAdd(id, entry))
             throw new InvalidOperationException("Unable to allocate a background job identifier.");

@@ -184,7 +184,18 @@ public class JJDataImportation : ProcessComponent
                 break;
             default:
             {
-                htmlBuilder = GetUploadAreaCollapse();
+                var currentJob = ImportJobService.GetCurrentStatus(FormElement.Name, UserId);
+                if (currentJob is null)
+                {
+                    htmlBuilder = GetUploadAreaCollapse();
+                    break;
+                }
+
+                htmlBuilder = new HtmlBuilder(HtmlTag.Div)
+                    .WithId(Name)
+                    .Append(GetLoadingHtml())
+                    .AppendHiddenInput($"{Name}-import-job-id", currentJob.Id.ToString())
+                    .AppendScript(DataImportationScripts.GetStartProgressVerificationScript());
                 break;
             }
         }
@@ -196,6 +207,8 @@ public class JJDataImportation : ProcessComponent
 
         return new RenderedComponentResult(htmlBuilder);
     }
+
+    internal bool IsRunning() => ImportJobService.GetCurrentStatus(FormElement.Name, UserId) is not null;
 
     private HtmlBuilder GetLogHtml()
     {
@@ -361,6 +374,10 @@ public class JJDataImportation : ProcessComponent
         char separator,
         bool detectDelimiter)
     {
+        var currentJob = ImportJobService.GetCurrentStatus(FormElement.Name, UserId);
+        if (currentJob is not null)
+            return currentJob.Id;
+
         var filePath = FileStoragePath.Combine(ImportationFolderPath, $"{Guid.NewGuid():N}.csv");
 
         await FileStorage.SaveAsync(filePath, source, cancellationToken: HttpContextAccessor.HttpContext!.RequestAborted);

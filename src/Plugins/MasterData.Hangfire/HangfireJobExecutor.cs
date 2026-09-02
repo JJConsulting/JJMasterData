@@ -58,7 +58,7 @@ public sealed class HangfireJobExecutor<TRequest>(
         finally
         {
             HangfireBackgroundJobClient.ScheduleMappingRemoval(
-                publicId, options.Value.CompletedJobRetention);
+                publicId, context.BackgroundJob.Id, options.Value.CompletedJobRetention);
         }
     }
 
@@ -71,9 +71,14 @@ public sealed class HangfireJobExecutor<TRequest>(
 public static class HangfireMappingCleaner
 {
     [AutomaticRetry(Attempts = 3)]
-    public static void Delete(Guid publicId)
+    public static void Delete(Guid publicId, string hangfireId)
     {
         using var connection = JobStorage.Current.GetConnection();
+        var mapping = connection.GetAllEntriesFromHash(HangfireBackgroundJobClient.GetMappingKey(publicId));
+        if (mapping is null || !mapping.TryGetValue(HangfireBackgroundJobClient.HangfireIdField, out var currentHangfireId) ||
+            !string.Equals(currentHangfireId, hangfireId, StringComparison.Ordinal))
+            return;
+
         using var transaction = connection.CreateWriteTransaction();
         transaction.RemoveHash(HangfireBackgroundJobClient.GetMappingKey(publicId));
         transaction.Commit();

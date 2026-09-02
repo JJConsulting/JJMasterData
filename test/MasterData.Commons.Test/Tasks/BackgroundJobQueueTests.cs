@@ -31,6 +31,35 @@ public sealed class BackgroundJobQueueTests
     }
 
     [Fact]
+    public async Task StatusCanBeRecoveredByTheRequestedJobIdForTheOwner()
+    {
+        var queue = CreateQueue();
+        var requestedId = BackgroundJobId.Create("export", "customers", "owner");
+        var request = new TestRequest("owner", "value") { Id = requestedId };
+        var id = await queue.EnqueueAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.Equal(requestedId, id);
+        Assert.Equal(id, queue.GetStatus(requestedId, "owner")!.Id);
+        Assert.Null(queue.GetStatus(requestedId, "other"));
+    }
+
+    [Fact]
+    public async Task ActiveRequestedJobIdDoesNotQueueTheSameOperationTwice()
+    {
+        var queue = CreateQueue(capacity: 2);
+        var requestedId = BackgroundJobId.Create("import", "customers", "owner");
+        var firstId = await queue.EnqueueAsync(
+            new TestRequest("owner", "first") { Id = requestedId },
+            TestContext.Current.CancellationToken);
+        var secondId = await queue.EnqueueAsync(
+            new TestRequest("owner", "second") { Id = requestedId },
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(firstId, secondId);
+        Assert.Equal(requestedId, queue.GetStatus(requestedId, "owner")!.Id);
+    }
+
+    [Fact]
     public async Task HostedServiceCreatesAndDisposesAScopeForEveryJob()
     {
         ScopedDependency.DisposeCount = 0;

@@ -9,6 +9,8 @@ namespace JJMasterData.Core.DataManager.Exportation.Background;
 
 public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCatalog formats)
 {
+    private const string OperationName = "export";
+
     public ValueTask<Guid> EnqueueAsync(
         ExportRequest request,
         CancellationToken cancellationToken = default)
@@ -24,7 +26,17 @@ public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCata
 
     public ExportJobStatus? GetStatus(Guid id, string userId)
     {
-        var status = jobs.GetStatus(id, userId);
+        return MapStatus(jobs.GetStatus(id, userId));
+    }
+
+    public ExportJobStatus? GetCurrentStatus(string elementName, string userId)
+    {
+        var status = GetStatus(BackgroundJobId.Create(OperationName, elementName, userId), userId);
+        return status?.State is BackgroundJobState.Queued or BackgroundJobState.Running ? status : null;
+    }
+
+    private static ExportJobStatus? MapStatus(BackgroundJobSnapshot? status)
+    {
         return status is null ? null : new ExportJobStatus
         {
             Id = status.Id,
@@ -47,6 +59,7 @@ public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCata
             .ToList();
         return new ExportRequest
         {
+            Id = BackgroundJobId.Create(OperationName, request.ElementName, request.UserId),
             ElementName = request.ElementName,
             UserId = request.UserId,
             FormatId = request.FormatId,
@@ -60,4 +73,5 @@ public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCata
             BaseUri = request.BaseUri
         };
     }
+
 }

@@ -8,6 +8,8 @@ namespace JJMasterData.Core.DataManager.Importation.Background;
 
 public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCatalog formats)
 {
+    private const string OperationName = "import";
+
     public ValueTask<Guid> EnqueueAsync(ImportRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(request.ElementName);
@@ -17,6 +19,7 @@ public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCata
         cancellationToken.ThrowIfCancellationRequested();
         var snapshot = new ImportRequest
         {
+            Id = BackgroundJobId.Create(OperationName, request.ElementName, request.UserId),
             ElementName = request.ElementName,
             UserId = request.UserId,
             FilePath = request.FilePath,
@@ -36,7 +39,17 @@ public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCata
 
     public ImportJobStatus? GetStatus(Guid id, string userId)
     {
-        var status = jobs.GetStatus(id, userId);
+        return MapStatus(jobs.GetStatus(id, userId));
+    }
+
+    public ImportJobStatus? GetCurrentStatus(string elementName, string userId)
+    {
+        var status = GetStatus(BackgroundJobId.Create(OperationName, elementName, userId), userId);
+        return status?.State is BackgroundJobState.Queued or BackgroundJobState.Running ? status : null;
+    }
+
+    private static ImportJobStatus? MapStatus(BackgroundJobSnapshot? status)
+    {
         return status is null ? null : new ImportJobStatus
         {
             Id = status.Id,
@@ -51,4 +64,5 @@ public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCata
     }
 
     public bool Cancel(Guid id, string userId) => jobs.Cancel(id, userId);
+
 }
