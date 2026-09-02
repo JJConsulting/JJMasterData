@@ -1,6 +1,6 @@
 using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 public sealed class ExportColumn(string name, string displayName, FormElementField field)
 {

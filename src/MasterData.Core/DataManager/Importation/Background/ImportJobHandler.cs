@@ -13,7 +13,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exceptions;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.DataManager.Importation.Abstractions;
+using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;

@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Importation.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Importation;

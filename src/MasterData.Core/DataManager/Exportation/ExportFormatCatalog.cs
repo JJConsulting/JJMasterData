@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 

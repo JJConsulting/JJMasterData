@@ -1,4 +1,4 @@
-namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 public sealed class ExportFormatOptionChoice(string value, string displayName)
 {

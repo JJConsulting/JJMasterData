@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 public sealed class ExportFormatConfiguration
 {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation;
 using MiniExcelLibs;
 
 namespace JJMasterData.Core.DataManager.Exportation.Formats;

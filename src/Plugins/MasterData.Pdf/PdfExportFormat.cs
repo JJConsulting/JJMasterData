@@ -10,6 +10,7 @@ using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -23,7 +24,7 @@ public sealed class PdfExportOptions
     public bool ShowRowStriped { get; set; }
 }
 
-public sealed class PdfWriter(FieldFormattingService fieldFormattingService) : IExportFormat<PdfExportOptions>
+public sealed class PdfExportFormat(FieldFormattingService fieldFormattingService) : IExportFormat<PdfExportOptions>
 {
     public ExportFormatConfiguration Configuration { get; } = new()
     {

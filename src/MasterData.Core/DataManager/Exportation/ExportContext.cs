@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 public sealed class ExportContext
 {

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
