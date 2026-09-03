@@ -360,7 +360,7 @@ public class JJDataImportation : ProcessComponent
                     ? new Dictionary<string, string?>()
                     : new Dictionary<string, string?>
                     {
-                        [nameof(CsvImportOptions.Delimiter)] = separator.ToString(),
+                        [nameof(CsvImportOptions.Delimiter)] = separator == '\t' ? "\\t" : separator.ToString(),
                         [nameof(CsvImportOptions.DetectDelimiter)] = detectDelimiter.ToString()
                     },
                 RelationValues = RelationValues?.ToDictionary(item => item.Key, item => (object?)item.Value) ??

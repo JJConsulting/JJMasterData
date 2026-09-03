@@ -7,7 +7,7 @@ using JJMasterData.Commons.Background;
 
 namespace JJMasterData.Core.DataManager.Exportation.Background;
 
-public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCatalog formats)
+public sealed class ExportJobService(IBackgroundJobClient jobs)
 {
     private const string OperationName = "export";
 
@@ -15,10 +15,6 @@ public sealed class ExportJobService(IBackgroundJobClient jobs, ExportFormatCata
         ExportRequest request,
         CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(request.ElementName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(request.UserId);
-        ArgumentException.ThrowIfNullOrWhiteSpace(request.FormatId);
-        formats.GetRequired(request.FormatId).ValidateOptions(request.FormatOptions);
         cancellationToken.ThrowIfCancellationRequested();
         var snapshot = Snapshot(request);
         return jobs.EnqueueAsync(snapshot, cancellationToken);

@@ -14,7 +14,7 @@ public sealed class ImportFormatCatalogTests
 
         var resolved = catalog.Resolve(null, "customers.json", "application/octet-stream");
 
-        Assert.Equal("json", resolved.Definition.Id);
+        Assert.Equal("json", resolved.Metadata.Id);
         Assert.Equal("json", Assert.Single(catalog.Formats).Id);
     }
 
@@ -27,18 +27,16 @@ public sealed class ImportFormatCatalogTests
         Assert.Throws<InvalidOperationException>(() => new ImportFormatCatalog([first, second]));
     }
 
-    public sealed class JsonImportOptions;
+    public sealed class JsonImportOptions : ImportFormatOptions
+    {
+        protected internal override string Id => "json";
+        protected internal override string DisplayName => "JSON";
+        protected internal override IReadOnlyList<string> FileExtensions => [".json"];
+        protected internal override IReadOnlyList<string> ContentTypes => ["application/json"];
+    }
 
     private sealed class JsonReader : IImportReader<JsonImportOptions>
     {
-        public ImportFormatDefinition Definition { get; } = new()
-        {
-            Id = "json",
-            DisplayName = "JSON",
-            FileExtensions = [".json"],
-            ContentTypes = ["application/json"]
-        };
-
         public async IAsyncEnumerable<ImportRecord> ReadAsync(
             ImportContext context,
             JsonImportOptions options,

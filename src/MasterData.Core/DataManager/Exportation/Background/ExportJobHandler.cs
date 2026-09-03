@@ -66,7 +66,7 @@ internal sealed class ExportJobHandler(
             await using (var output = new FileStream(tempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 81920, true))
                 await format.WriteAsync(context, request.FormatOptions, output, cancellationToken);
 
-            var fileName = GetFileName(formElement, format.Configuration.FileExtension);
+            var fileName = GetFileName(formElement, format.Metadata.FileExtension);
             var folder = DataExportationHelper.GetExportationFolderPath(
                 formElement, options.Value.ExportationFolderPath, request.UserId);
             var storagePath = FileStoragePath.Combine(folder, fileName);

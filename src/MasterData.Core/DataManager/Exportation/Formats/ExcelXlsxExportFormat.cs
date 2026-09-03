@@ -10,24 +10,6 @@ namespace JJMasterData.Core.DataManager.Exportation.Formats;
 
 internal sealed class ExcelXlsxExportFormat : IExportFormat<ExcelXlsxExportOptions>
 {
-    public ExportFormatConfiguration Configuration { get; } = new()
-    {
-        Id = "xlsx",
-        DisplayName = "Excel (.xlsx)",
-        FileExtension = "xlsx",
-        ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        Options =
-        [
-            new ExportFormatOption
-            {
-                Name = nameof(ExcelXlsxExportOptions.ShowTableStyle),
-                DisplayName = "Show table style",
-                Kind = ExportFormatOptionKind.Boolean,
-                DefaultValue = "true"
-            }
-        ]
-    };
-
     public async Task WriteAsync(
         ExportContext context,
         ExcelXlsxExportOptions options,

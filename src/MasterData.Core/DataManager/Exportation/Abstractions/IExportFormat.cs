@@ -5,8 +5,7 @@ using JJMasterData.Core.DataManager.Exportation;
 
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
-public interface IExportFormat<in TOptions> where TOptions : class, new()
+public interface IExportFormat<in TOptions> where TOptions : ExportFormatOptions, new()
 {
-    ExportFormatConfiguration Configuration { get; }
     Task WriteAsync(ExportContext context, TOptions options, Stream output, CancellationToken cancellationToken);
 }

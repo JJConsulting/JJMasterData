@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,47 +18,25 @@ using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Pdf;
 
-public sealed class PdfExportOptions
+public sealed class PdfExportOptions : ExportFormatOptions
 {
+    protected override string Id => "pdf";
+    protected override string DisplayName => "PDF";
+    protected override string FileExtension => "pdf";
+    protected override string ContentType => "application/pdf";
+
+    [Display(Name = "Landscape")]
     public bool Landscape { get; set; } = true;
+
+    [Display(Name = "Show borders")]
     public bool ShowBorder { get; set; }
+
+    [Display(Name = "Striped rows")]
     public bool ShowRowStriped { get; set; }
 }
 
 public sealed class PdfExportFormat(FieldFormattingService fieldFormattingService) : IExportFormat<PdfExportOptions>
 {
-    public ExportFormatConfiguration Configuration { get; } = new()
-    {
-        Id = "pdf",
-        DisplayName = "PDF",
-        FileExtension = "pdf",
-        ContentType = "application/pdf",
-        Options =
-        [
-            new ExportFormatOption
-            {
-                Name = nameof(PdfExportOptions.Landscape),
-                DisplayName = "Landscape",
-                Kind = ExportFormatOptionKind.Boolean,
-                DefaultValue = "true"
-            },
-            new ExportFormatOption
-            {
-                Name = nameof(PdfExportOptions.ShowBorder),
-                DisplayName = "Show borders",
-                Kind = ExportFormatOptionKind.Boolean,
-                DefaultValue = "false"
-            },
-            new ExportFormatOption
-            {
-                Name = nameof(PdfExportOptions.ShowRowStriped),
-                DisplayName = "Striped rows",
-                Kind = ExportFormatOptionKind.Boolean,
-                DefaultValue = "false"
-            }
-        ]
-    };
-
     public async Task WriteAsync(
         ExportContext context,
         PdfExportOptions options,

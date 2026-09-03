@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 
 namespace JJMasterData.Core.DataManager.Exportation;
@@ -10,40 +9,26 @@ namespace JJMasterData.Core.DataManager.Exportation;
 internal static class FormatOptionsBinder
 {
     public static TOptions Bind<TOptions>(
-        List<ExportFormatOption>? definitions,
-        Dictionary<string, string?> suppliedValues) where TOptions : class, new()
+        IReadOnlyList<FormatOptionMetadata> definitions,
+        Dictionary<string, string?> suppliedValues) where TOptions : FormatOptions, new()
     {
-        var definitionMap = (definitions ?? []).ToDictionary(
-            definition => definition.Name, StringComparer.OrdinalIgnoreCase);
-        var values = definitionMap.Values
-            .Where(option => option.DefaultValue is not null)
-            .ToDictionary(option => option.Name, option => option.DefaultValue, StringComparer.OrdinalIgnoreCase);
+        var definitionMap = new Dictionary<string, FormatOptionMetadata>(StringComparer.OrdinalIgnoreCase);
+        foreach (var definition in definitions)
+            definitionMap.Add(definition.Name, definition);
+
+        var result = new TOptions();
         foreach (var option in suppliedValues)
         {
             if (!definitionMap.TryGetValue(option.Key, out var definition))
                 throw new InvalidOperationException($"Option '{option.Key}' is not supported.");
-            if (definition.Kind == ExportFormatOptionKind.Select &&
-                definition.Choices?.Any(choice => choice.Value == option.Value) is false)
-                throw new InvalidOperationException($"Value '{option.Value}' is invalid for option '{option.Key}'.");
-            values[option.Key] = option.Value;
-        }
-        return Bind<TOptions>(values);
-    }
-
-    public static TOptions Bind<TOptions>(Dictionary<string, string?> values)
-        where TOptions : class, new()
-    {
-        var result = new TOptions();
-        foreach (var property in typeof(TOptions).GetProperties(BindingFlags.Instance | BindingFlags.Public))
-        {
-            if (!property.CanWrite || !values.TryGetValue(property.Name, out var value))
-                continue;
-            property.SetValue(result, ConvertValue(property.PropertyType, value));
+            var property = typeof(TOptions).GetProperty(definition.Name,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)!;
+            property.SetValue(result, ConvertValue(property.PropertyType, option.Value, definition));
         }
         return result;
     }
 
-    private static object? ConvertValue(Type targetType, string? value)
+    private static object? ConvertValue(Type targetType, string? value, FormatOptionMetadata definition)
     {
         var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
         if (value is null && Nullable.GetUnderlyingType(targetType) is not null)
@@ -51,7 +36,15 @@ internal static class FormatOptionsBinder
         if (underlyingType == typeof(string))
             return value;
         if (underlyingType.IsEnum)
-            return Enum.Parse(underlyingType, value!, true);
+        {
+            foreach (var field in underlyingType.GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                if (string.Equals(FormatOptionsMetadataFactory.GetEnumValue(field), value,
+                        StringComparison.OrdinalIgnoreCase))
+                    return field.GetValue(null);
+            }
+            throw new InvalidOperationException($"Value '{value}' is invalid for option '{definition.Name}'.");
+        }
 
         var converter = TypeDescriptor.GetConverter(underlyingType);
         if (converter.CanConvertFrom(typeof(string)))

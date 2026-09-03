@@ -11,6 +11,7 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using Microsoft.Extensions.Localization;
@@ -134,7 +135,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     {
         foreach (var format in dataExportation.ExportFormatCatalog.Formats)
         {
-            foreach (var definition in format.Options ?? [])
+            foreach (var definition in format.Options)
             {
                 html.Append(HtmlTag.Div, div =>
                 {
@@ -149,12 +150,12 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                         label.AppendText(_stringLocalizer[definition.DisplayName]);
                     });
                     var name = $"{dataExportation.Name}{ExportOptions.FormatOptionPrefix}{format.Id}_{definition.Name}";
-                    if (definition.Kind == ExportFormatOptionKind.Select)
+                    if (definition.Kind == FormatOptionKind.Select)
                     {
                         div.Append(HtmlTag.Select, select =>
                         {
                             select.WithNameAndId(name).WithCssClass("form-control form-select");
-                            foreach (var choice in definition.Choices ?? [])
+                            foreach (var choice in definition.Choices)
                             {
                                 select.Append(HtmlTag.Option, option =>
                                 {
@@ -166,7 +167,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                             }
                         });
                     }
-                    else if (definition.Kind == ExportFormatOptionKind.Boolean)
+                    else if (definition.Kind == FormatOptionKind.Boolean)
                     {
                         div.Append(HtmlTag.Select, select =>
                         {

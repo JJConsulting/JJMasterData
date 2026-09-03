@@ -18,34 +18,22 @@ Configure capacity, concurrency, and completed-job retention under `JJMasterData
 
 ## Adding an export format
 
-Export formats are regular scoped services. Their descriptor supplies the stable format id and the metadata used to generate the export modal. The format only serializes the supplied columns and asynchronous rows; data retrieval, paging, progress, file naming, and storage belong to the export pipeline.
+Export formats are regular scoped services. Their options type supplies the stable format id, file metadata, defaults, and the properties used to generate the export modal. The format only serializes the supplied columns and asynchronous rows; data retrieval, paging, progress, file naming, and storage belong to the export pipeline.
 
 ```csharp
-public sealed class JsonExportOptions
+public sealed class JsonExportOptions : ExportFormatOptions
 {
+    protected override string Id => "json";
+    protected override string DisplayName => "JSON";
+    protected override string FileExtension => "json";
+    protected override string ContentType => "application/json";
+
+    [Display(Name = "Indented")]
     public bool Indented { get; set; }
 }
 
 public sealed class JsonExportFormat : IExportFormat<JsonExportOptions>
 {
-    public ExportFormatDefinition Definition { get; } = new()
-    {
-        Id = "json",
-        DisplayName = "JSON",
-        FileExtension = "json",
-        ContentType = "application/json",
-        Options =
-        [
-            new FormatOptionDefinition
-            {
-                Name = nameof(JsonExportOptions.Indented),
-                DisplayName = "Indented",
-                Kind = FormatOptionKind.Boolean,
-                DefaultValue = "false"
-            }
-        ]
-    };
-
     public async Task WriteAsync(
         ExportContext context,
         JsonExportOptions options,
@@ -70,5 +58,9 @@ Registering it is enough for the format to appear in the standard UI:
 ```csharp
 builder.AddExportFormat<JsonExportFormat, JsonExportOptions>();
 ```
+
+Every public writable option is included in the UI. Use `DisplayAttribute.Name` to customize its label. Boolean
+properties render as Yes/No fields, while enum properties render as selects. On enum members, `Name` is the visible
+choice label and `ShortName` is the value posted by the form.
 
 Import readers follow the equivalent `IImportReader<TOptions>` and `AddImportReader<TReader, TOptions>()` contracts. Readers turn a stream into normalized `ImportRecord` instances; validation, expressions, persistence, events, reporting, and cleanup remain in the shared import pipeline.

@@ -13,8 +13,8 @@ public sealed class ExportFormatCatalog
         _registrations = Build(registrations.ToList());
     }
 
-    public List<ExportFormatConfiguration> Formats => _registrations.Values
-        .Select(registration => registration.Configuration)
+    public List<ExportFormatMetadata> Formats => _registrations.Values
+        .Select(registration => registration.Metadata)
         .OrderBy(definition => definition.DisplayName, StringComparer.CurrentCultureIgnoreCase)
         .ToList();
 
@@ -31,7 +31,7 @@ public sealed class ExportFormatCatalog
         var result = new Dictionary<string, IExportFormatRegistration>(StringComparer.OrdinalIgnoreCase);
         foreach (var registration in registrations)
         {
-            var definition = registration.Configuration;
+            var definition = registration.Metadata;
             if (string.IsNullOrWhiteSpace(definition.Id))
                 throw new InvalidOperationException("Export format identifiers cannot be empty.");
             if (!result.TryAdd(definition.Id, registration))

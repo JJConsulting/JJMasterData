@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using JJMasterData.Core.Configuration;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
@@ -35,25 +36,27 @@ public sealed class ExcelXlsxExportFormatTests
 
         var csv = Assert.Single(formats, format => format.Id == "csv");
         Assert.Equal("csv", csv.FileExtension);
-        Assert.Equal(";", Assert.Single(csv.Options!).DefaultValue);
+        var csvOption = Assert.Single(csv.Options);
+        Assert.Equal(";", csvOption.DefaultValue);
+        Assert.Equal([";", ",", "|"], csvOption.Choices.Select(choice => choice.Value));
 
         var text = Assert.Single(formats, format => format.Id == "txt");
         Assert.Equal("txt", text.FileExtension);
-        Assert.Equal("\\t", Assert.Single(text.Options!).DefaultValue);
+        Assert.Equal("\\t", Assert.Single(text.Options).DefaultValue);
 
         var legacy = Assert.Single(formats, format => format.Id == "excel");
         Assert.Equal("xls", legacy.FileExtension);
         Assert.Equal("application/vnd.ms-excel", legacy.ContentType);
-        Assert.Equal(2, legacy.Options?.Count);
+        Assert.Equal(2, legacy.Options.Count);
 
         var xlsx = Assert.Single(formats, format => format.Id == "xlsx");
         Assert.Equal("Excel (.xlsx)", xlsx.DisplayName);
         Assert.Equal("xlsx", xlsx.FileExtension);
         Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", xlsx.ContentType);
-        var option = Assert.Single(xlsx.Options!);
+        var option = Assert.Single(xlsx.Options);
         Assert.Equal(nameof(ExcelXlsxExportOptions.ShowTableStyle), option.Name);
         Assert.Equal("Show table style", option.DisplayName);
-        Assert.Equal(ExportFormatOptionKind.Boolean, option.Kind);
+        Assert.Equal(FormatOptionKind.Boolean, option.Kind);
         Assert.Equal("true", option.DefaultValue);
     }
 

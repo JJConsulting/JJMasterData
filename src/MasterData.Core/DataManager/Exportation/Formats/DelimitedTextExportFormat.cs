@@ -11,59 +11,14 @@ using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.DataManager.Exportation.Formats;
 
-internal sealed class DelimitedTextExportFormat(
-    FieldFormattingService fieldFormattingService,
-    ExportFormatConfiguration configuration) : IExportFormat<DelimitedTextExportOptions>
+internal abstract class DelimitedTextExportFormat<TOptions>(FieldFormattingService fieldFormattingService)
+    : IExportFormat<TOptions> where TOptions : ExportFormatOptions, new()
 {
-    public ExportFormatConfiguration Configuration { get; } = configuration;
-
-    public static DelimitedTextExportFormat CreateCsv(FieldFormattingService fieldFormattingService)
-    {
-        return new DelimitedTextExportFormat(fieldFormattingService, new ExportFormatConfiguration
-        {
-            Id = "csv",
-            DisplayName = "CSV",
-            FileExtension = "csv",
-            ContentType = "text/csv",
-            Options =
-            [
-                new ExportFormatOption
-                {
-                    Name = nameof(DelimitedTextExportOptions.Delimiter),
-                    DisplayName = "Delimiter",
-                    Kind = ExportFormatOptionKind.Select,
-                    DefaultValue = ";",
-                    Choices = [new(";", "Semicolon (;)"), new(",", "Comma (,)"), new("|", "Pipe (|)")]
-                }
-            ]
-        });
-    }
-
-    public static DelimitedTextExportFormat CreateText(FieldFormattingService fieldFormattingService)
-    {
-        return new DelimitedTextExportFormat(fieldFormattingService, new ExportFormatConfiguration
-        {
-            Id = "txt",
-            DisplayName = "Text",
-            FileExtension = "txt",
-            ContentType = "text/plain",
-            Options =
-            [
-                new ExportFormatOption
-                {
-                    Name = nameof(DelimitedTextExportOptions.Delimiter),
-                    DisplayName = "Delimiter",
-                    Kind = ExportFormatOptionKind.Select,
-                    DefaultValue = "\\t",
-                    Choices = [new("\t", "Tab"), new(";", "Semicolon (;)"), new(",", "Comma (,)")]
-                }
-            ]
-        });
-    }
+    protected abstract string GetDelimiter(TOptions options);
 
     public async Task WriteAsync(
         ExportContext context,
-        DelimitedTextExportOptions options,
+        TOptions options,
         Stream output,
         CancellationToken cancellationToken)
     {
@@ -71,7 +26,7 @@ internal sealed class DelimitedTextExportFormat(
         await using var csv = new CsvWriter(textWriter,
             new CsvConfiguration(System.Globalization.CultureInfo.CurrentCulture)
             {
-                Delimiter = options.Delimiter.Replace("\\t", "\t"),
+                Delimiter = GetDelimiter(options),
                 HasHeaderRecord = false
             });
 

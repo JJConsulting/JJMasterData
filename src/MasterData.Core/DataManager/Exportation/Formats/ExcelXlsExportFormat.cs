@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -14,31 +13,6 @@ namespace JJMasterData.Core.DataManager.Exportation.Formats;
 
 public sealed class ExcelXlsExportFormat(FieldFormattingService fieldFormattingService) : IExportFormat<ExcelXlsExportOptions>
 {
-    public ExportFormatConfiguration Configuration { get; } = new()
-    {
-        Id = "excel",
-        DisplayName = "Excel (.xls)",
-        FileExtension = "xls",
-        ContentType = "application/vnd.ms-excel",
-        Options =
-        [
-            new ExportFormatOption
-            {
-                Name = nameof(ExcelXlsExportOptions.ShowBorder),
-                DisplayName = "Show borders",
-                Kind = ExportFormatOptionKind.Boolean,
-                DefaultValue = "false"
-            },
-            new ExportFormatOption
-            {
-                Name = nameof(ExcelXlsExportOptions.ShowRowStriped),
-                DisplayName = "Striped rows",
-                Kind = ExportFormatOptionKind.Boolean,
-                DefaultValue = "false"
-            }
-        ]
-    };
-
     public async Task WriteAsync(ExportContext context, ExcelXlsExportOptions options, Stream output,
         CancellationToken cancellationToken)
     {

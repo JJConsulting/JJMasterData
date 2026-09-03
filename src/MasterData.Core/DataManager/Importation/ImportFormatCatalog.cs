@@ -10,7 +10,7 @@ namespace JJMasterData.Core.DataManager.Importation;
 
 internal interface IImportReaderRegistration
 {
-    ImportFormatDefinition Definition { get; }
+    ImportFormatMetadata Metadata { get; }
     void ValidateOptions(Dictionary<string, string?> options);
     IAsyncEnumerable<ImportRecord> ReadAsync(
         ImportContext context,
@@ -21,9 +21,16 @@ internal interface IImportReaderRegistration
 
 internal sealed class ImportReaderRegistration<TReader, TOptions>(TReader reader) : IImportReaderRegistration
     where TReader : class, IImportReader<TOptions>
-    where TOptions : class, new()
+    where TOptions : ImportFormatOptions, new()
 {
-    public ImportFormatDefinition Definition => reader.Definition;
+    private static readonly TOptions Defaults = new();
+
+    public ImportFormatMetadata Metadata { get; } = new(
+        Defaults.Id,
+        Defaults.DisplayName,
+        Defaults.FileExtensions,
+        Defaults.ContentTypes,
+        FormatOptionsMetadataFactory.CreateOptions(Defaults));
 
     public IAsyncEnumerable<ImportRecord> ReadAsync(
         ImportContext context,
@@ -33,13 +40,13 @@ internal sealed class ImportReaderRegistration<TReader, TOptions>(TReader reader
     {
         return reader.ReadAsync(
             context,
-            FormatOptionsBinder.Bind<TOptions>(Definition.Options, options),
+            FormatOptionsBinder.Bind<TOptions>(Metadata.Options, options),
             input,
             cancellationToken);
     }
 
     public void ValidateOptions(Dictionary<string, string?> options) =>
-        _ = FormatOptionsBinder.Bind<TOptions>(Definition.Options, options);
+        _ = FormatOptionsBinder.Bind<TOptions>(Metadata.Options, options);
 }
 
 public sealed class ImportFormatCatalog
@@ -51,8 +58,8 @@ public sealed class ImportFormatCatalog
         _registrations = Build(registrations.ToList());
     }
 
-    public List<ImportFormatDefinition> Formats => _registrations.Values
-        .Select(registration => registration.Definition)
+    public List<ImportFormatMetadata> Formats => _registrations.Values
+        .Select(registration => registration.Metadata)
         .OrderBy(definition => definition.DisplayName, StringComparer.CurrentCultureIgnoreCase)
         .ToList();
 
@@ -67,9 +74,9 @@ public sealed class ImportFormatCatalog
 
         var extension = Path.GetExtension(fileName);
         var matches = _registrations.Values.Where(registration =>
-                registration.Definition.FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase) ||
+                registration.Metadata.FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase) ||
                 (!string.IsNullOrWhiteSpace(contentType) &&
-                 registration.Definition.ContentTypes.Contains(contentType, StringComparer.OrdinalIgnoreCase)))
+                 registration.Metadata.ContentTypes.Contains(contentType, StringComparer.OrdinalIgnoreCase)))
             .ToArray();
         return matches.Length switch
         {
@@ -85,10 +92,10 @@ public sealed class ImportFormatCatalog
         var result = new Dictionary<string, IImportReaderRegistration>(StringComparer.OrdinalIgnoreCase);
         foreach (var registration in registrations)
         {
-            if (string.IsNullOrWhiteSpace(registration.Definition.Id))
+            if (string.IsNullOrWhiteSpace(registration.Metadata.Id))
                 throw new InvalidOperationException("Import format identifiers cannot be empty.");
-            if (!result.TryAdd(registration.Definition.Id, registration))
-                throw new InvalidOperationException($"Import format '{registration.Definition.Id}' is registered more than once.");
+            if (!result.TryAdd(registration.Metadata.Id, registration))
+                throw new InvalidOperationException($"Import format '{registration.Metadata.Id}' is registered more than once.");
         }
         return result;
     }

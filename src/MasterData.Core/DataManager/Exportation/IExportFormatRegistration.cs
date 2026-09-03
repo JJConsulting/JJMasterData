@@ -7,8 +7,7 @@ namespace JJMasterData.Core.DataManager.Exportation;
 
 internal interface IExportFormatRegistration
 {
-    ExportFormatConfiguration Configuration { get; }
-    void ValidateOptions(Dictionary<string, string?> options);
+    ExportFormatMetadata Metadata { get; }
     Task WriteAsync(
         ExportContext context,
         Dictionary<string, string?> options,

@@ -26,7 +26,7 @@ public static class MasterDataServiceBuilderExtensions
     {
         public MasterDataServiceBuilder AddExportFormat<TFormat, TOptions>()
             where TFormat : class, IExportFormat<TOptions>
-            where TOptions : class, new()
+            where TOptions : ExportFormatOptions, new()
         {
             builder.Services.AddScoped<TFormat>();
             builder.Services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<TFormat, TOptions>>();
@@ -35,7 +35,7 @@ public static class MasterDataServiceBuilderExtensions
 
         public MasterDataServiceBuilder AddImportReader<TReader, TOptions>()
             where TReader : class, IImportReader<TOptions>
-            where TOptions : class, new()
+            where TOptions : ImportFormatOptions, new()
         {
             builder.Services.AddScoped<TReader>();
             builder.Services.AddScoped<IImportReaderRegistration, ImportReaderRegistration<TReader, TOptions>>();

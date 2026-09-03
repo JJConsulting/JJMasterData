@@ -63,12 +63,10 @@ public static class ServiceCollectionExtensions
 
             services.AddTransient<HtmlTemplateRenderer>();
         
-            services.AddScoped<IExportFormatRegistration>(provider =>
-                new ExportFormatRegistration<DelimitedTextExportFormat, DelimitedTextExportOptions>(
-                    DelimitedTextExportFormat.CreateCsv(provider.GetRequiredService<FieldFormattingService>())));
-            services.AddScoped<IExportFormatRegistration>(provider =>
-                new ExportFormatRegistration<DelimitedTextExportFormat, DelimitedTextExportOptions>(
-                    DelimitedTextExportFormat.CreateText(provider.GetRequiredService<FieldFormattingService>())));
+            services.AddScoped<CsvExportFormat>();
+            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<CsvExportFormat, CsvExportOptions>>();
+            services.AddScoped<TextExportFormat>();
+            services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<TextExportFormat, TextExportOptions>>();
             services.AddScoped<ExcelXlsExportFormat>();
             services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<ExcelXlsExportFormat, ExcelXlsExportOptions>>();
             services.AddScoped<ExcelXlsxExportFormat>();

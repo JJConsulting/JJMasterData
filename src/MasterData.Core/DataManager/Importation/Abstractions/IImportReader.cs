@@ -5,9 +5,8 @@ using JJMasterData.Core.DataManager.Importation;
 
 namespace JJMasterData.Core.DataManager.Importation.Abstractions;
 
-public interface IImportReader<in TOptions> where TOptions : class, new()
+public interface IImportReader<in TOptions> where TOptions : ImportFormatOptions, new()
 {
-    ImportFormatDefinition Definition { get; }
     IAsyncEnumerable<ImportRecord> ReadAsync(
         ImportContext context,
         TOptions options,

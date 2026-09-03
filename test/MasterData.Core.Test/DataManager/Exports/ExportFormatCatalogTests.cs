@@ -1,6 +1,8 @@
 using System.Runtime.CompilerServices;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
@@ -28,7 +30,13 @@ public sealed class ExportFormatCatalogTests
         await catalog.GetRequired("json").WriteAsync(context, new Dictionary<string, string?>(), output,
             TestContext.Current.CancellationToken);
 
-        Assert.Equal("json", Assert.Single(catalog.Formats).Id);
+        var metadata = Assert.Single(catalog.Formats);
+        Assert.Equal("json", metadata.Id);
+        Assert.Equal("application/json", metadata.ContentType);
+        var option = Assert.Single(metadata.Options);
+        Assert.Equal(nameof(JsonExportOptions.Indented), option.Name);
+        Assert.Equal("Pretty JSON", option.DisplayName);
+        Assert.Equal(FormatOptionKind.Boolean, option.Kind);
         output.Position = 0;
         using var document = await JsonDocument.ParseAsync(output, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal("Ada", document.RootElement[0].GetProperty("name").GetString());
@@ -51,31 +59,19 @@ public sealed class ExportFormatCatalogTests
         await Task.CompletedTask;
     }
 
-    private sealed class JsonExportOptions
+    private sealed class JsonExportOptions : ExportFormatOptions
     {
+        protected internal override string Id => "json";
+        protected internal override string DisplayName => "JSON";
+        protected internal override string FileExtension => "json";
+        protected internal override string ContentType => "application/json";
+
+        [Display(Name = "Pretty JSON")]
         public bool Indented { get; set; }
     }
 
     private sealed class JsonExportFormat : IExportFormat<JsonExportOptions>
     {
-        public ExportFormatConfiguration Configuration { get; } = new()
-        {
-            Id = "json",
-            DisplayName = "JSON",
-            FileExtension = "json",
-            ContentType = "application/json",
-            Options =
-            [
-                new ExportFormatOption
-                {
-                    Name = nameof(JsonExportOptions.Indented),
-                    DisplayName = "Indented",
-                    Kind = ExportFormatOptionKind.Boolean,
-                    DefaultValue = "false"
-                }
-            ]
-        };
-
         public async Task WriteAsync(
             ExportContext context,
             JsonExportOptions options,
