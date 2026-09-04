@@ -21,7 +21,7 @@ public static class MasterDataServiceBuilderExtensions
 {
     extension(MasterDataServiceBuilder builder)
     {
-        public MasterDataServiceBuilder AddExportFormat<TFormat>() where TFormat : class, IExportFormat
+        public MasterDataServiceBuilder WithExportFormat<TFormat>() where TFormat : class, IExportFormat
         {
             builder.Services.AddScoped<IExportFormat, TFormat>();
             return builder;

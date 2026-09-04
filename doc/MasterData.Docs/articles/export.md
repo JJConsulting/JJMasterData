@@ -58,7 +58,7 @@ public sealed class JsonExportFormat : IExportFormat<JsonExportOptions>
 Registering it is enough for the format to appear in the standard UI:
 
 ```csharp
-builder.AddExportFormat<JsonExportFormat>();
+builder.Services.AddJJMasterDataWeb().WithExportFormat<JsonExportFormat>();
 ```
 
 ## Option metadata
