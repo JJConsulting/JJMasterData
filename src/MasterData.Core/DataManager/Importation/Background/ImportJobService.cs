@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Background;
@@ -17,24 +16,7 @@ public sealed class ImportJobService(IBackgroundJobClient jobs)
         ArgumentException.ThrowIfNullOrWhiteSpace(request.FilePath);
 
         cancellationToken.ThrowIfCancellationRequested();
-        var snapshot = new ImportRequest
-        {
-            Id = BackgroundJobId.Create(OperationName, request.ElementName, request.UserId),
-            ElementName = request.ElementName,
-            UserId = request.UserId,
-            FilePath = request.FilePath,
-            FileName = request.FileName,
-            ContentType = request.ContentType,
-            FormatId = request.FormatId,
-            Options = request.Options,
-            RelationValues = new Dictionary<string, object?>(request.RelationValues, StringComparer.OrdinalIgnoreCase),
-            UserValues = new Dictionary<string, object?>(request.UserValues, StringComparer.OrdinalIgnoreCase),
-            IpAddress = request.IpAddress,
-            BrowserInfo = request.BrowserInfo,
-            CommandBeforeProcess = request.CommandBeforeProcess,
-            CommandAfterProcess = request.CommandAfterProcess
-        };
-        return jobs.EnqueueAsync(snapshot, cancellationToken);
+        return jobs.EnqueueAsync(request, cancellationToken);
     }
 
     public BackgroundJobSnapshot? GetStatus(Guid id, string userId) => jobs.GetStatus(id, userId);

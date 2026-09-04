@@ -218,6 +218,7 @@ public class JJDataExportation : ProcessComponent
     {
         var request = new ExportRequest
         {
+            Id = BackgroundJobId.Create("export", FormElement.Name, UserId),
             ElementName = FormElement.Name,
             UserId = UserId,
             FormatId = ExportOptions.FormatId,

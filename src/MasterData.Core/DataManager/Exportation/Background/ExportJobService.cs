@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Background;
@@ -16,8 +14,7 @@ public sealed class ExportJobService(IBackgroundJobClient jobs)
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var snapshot = Snapshot(request);
-        return jobs.EnqueueAsync(snapshot, cancellationToken);
+        return jobs.EnqueueAsync(request, cancellationToken);
     }
 
     public BackgroundJobSnapshot? GetStatus(Guid id, string userId) => jobs.GetStatus(id, userId);
@@ -29,25 +26,5 @@ public sealed class ExportJobService(IBackgroundJobClient jobs)
     }
 
     public bool Cancel(Guid id, string userId) => jobs.Cancel(id, userId);
-
-    private static ExportRequest Snapshot(ExportRequest request)
-    {
-        var rows = request.Rows?.Select(row =>
-                new Dictionary<string, object?>(row, StringComparer.OrdinalIgnoreCase))
-            .ToList();
-        return new ExportRequest
-        {
-            Id = BackgroundJobId.Create(OperationName, request.ElementName, request.UserId),
-            ElementName = request.ElementName,
-            UserId = request.UserId,
-            FormatId = request.FormatId,
-            ExportAllFields = request.ExportAllFields,
-            FormatOptions = new Dictionary<string, string?>(request.FormatOptions, StringComparer.OrdinalIgnoreCase),
-            Filters = new Dictionary<string, object?>(request.Filters, StringComparer.OrdinalIgnoreCase),
-            OrderBy = request.OrderBy,
-            UserValues = new Dictionary<string, object?>(request.UserValues, StringComparer.OrdinalIgnoreCase),
-            Rows = rows
-        };
-    }
 
 }

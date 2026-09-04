@@ -351,6 +351,7 @@ public class JJDataImportation : ProcessComponent
         {
             return await ImportJobService.EnqueueAsync(new ImportRequest
             {
+                Id = BackgroundJobId.Create("import", FormElement.Name, UserId),
                 ElementName = FormElement.Name,
                 UserId = UserId,
                 FilePath = filePath,
