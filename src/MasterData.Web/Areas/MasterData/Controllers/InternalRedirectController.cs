@@ -1,15 +1,10 @@
-﻿using System.Text.Json;
-using System.Web;
+﻿using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -20,10 +15,8 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
-    FormService formService,
-    IHttpRequest request,
     IMasterDataUser masterDataUser,
-    IEncryptionService encryptionService) : MasterDataController
+    DataProtectionService dataProtectionService) : MasterDataController
 {
     public async Task<IActionResult> Index(string parameters, string? multiselectValues)
     {
@@ -37,7 +30,7 @@ public class InternalRedirectController(
         {
             case RelationshipViewType.List:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 formView.ShowTitle = state.ShowTitle;
                 formView.RelationValues = state.RelationValues;
                 formView.FormElement.Options.Grid.MaintainValuesOnLoad = false;
@@ -66,7 +59,7 @@ public class InternalRedirectController(
             }
             case RelationshipViewType.View:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 formView.PageState = PageState.View;
                 ApplyUserValues(formView, userValues);
 
@@ -93,7 +86,7 @@ public class InternalRedirectController(
             case RelationshipViewType.Insert:
             case RelationshipViewType.Update:
             {
-                var formView = await componentFactory.FormView.CreateAsync(state.ElementName);
+                var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
                 var pageState = state.RelationshipType is RelationshipViewType.Update
                     ? PageState.Update
                     : PageState.Insert;
@@ -139,39 +132,39 @@ public class InternalRedirectController(
         var state =  GetInternalRedirectState(parameters);
         var userId = masterDataUser.Id;
         var userValues = GetUserValues(userId, multiselectValues);
-        var panel = await componentFactory.DataPanel.CreateAsync(state.ElementName);
+        var formView = await componentFactory.FormView.CreateAsync(state.ElementName!);
 
-        if (panel.PageState is PageState.Update)
+        if (formView.DataPanel.PageState is PageState.Update)
         {
-            await panel.LoadValuesFromPkAsync(state.RelationValues);
+            await formView.DataPanel.LoadValuesFromPkAsync(state.RelationValues);
         }
         else
         {
             foreach (var kvp in state.RelationValues)
             {
-                panel.Values[kvp.Key] = kvp.Value;
+                formView.DataPanel.Values[kvp.Key] = kvp.Value;
             }
         }
      
-        ApplyUserValues(panel, userValues);
+        ApplyUserValues(formView, userValues);
 
-        var values = await panel.GetFormValuesAsync();
-        var letter = await formService.InsertOrReplaceAsync(panel.FormElement, values, new DataContext(request, DataContextSource.Form, userId));
+        var values = await formView.GetFormValuesAsync();
+        var letter = await formView.InsertOrReplaceFormValuesAsync(values);
         
-        var hasErrors = letter.Errors.Count > 0;
+        var hasErrors = letter.Count > 0;
         if (hasErrors)
         {
-            foreach (var error in letter.Errors)
+            foreach (var error in letter)
             {
                 ModelState.AddModelError(error.Key, error.Value);
             }
         }
 
-        var result = await panel.GetResultAsync();
+        var result = await formView.GetResultAsync();
         if (result is IActionResult actionResult)
             return actionResult;
 
-        var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(state.RelationValues!, userValues, PageState.Update))?.ToString();
+        var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(state.RelationValues!, userValues, PageState.Update))?.ToString();
         
         if(!hasErrors && !state.OpenInModal)
             return RedirectToAction("Render","Form", new {Area="MasterData", elementName = state.ElementName});
@@ -183,7 +176,7 @@ public class InternalRedirectController(
             IsModal = state.OpenInModal,
             ParentElementName = state.ParentElementName,
             SubmitParentWindow = !hasErrors,
-            Title = title ?? panel.Name,
+            Title = title ?? formView.Name,
             MultiselectValues = multiselectValues
         };
 
@@ -200,7 +193,7 @@ public class InternalRedirectController(
             RelationshipType = RelationshipViewType.List
         };
 
-        var @params = HttpUtility.ParseQueryString(encryptionService.DecryptStringWithUrlUnescape(parameters));
+        var @params = HttpUtility.ParseQueryString(dataProtectionService.Unprotect(parameters));
         state.ElementName = @params.Get("formname");
 
 
@@ -257,15 +250,6 @@ public class InternalRedirectController(
         }
     }
 
-    private static void ApplyUserValues(JJDataPanel panel, Dictionary<string, object?> userValues)
-    {
-        foreach (var kvp in userValues)
-        {
-            if (kvp.Value is string stringValue)
-                panel.SetUserValues(kvp.Key, stringValue);
-        }
-    }
-
     private string? GetMultiselectValues(string? selectedRows)
     {
         if (string.IsNullOrWhiteSpace(selectedRows))
@@ -275,7 +259,7 @@ public class InternalRedirectController(
 
         foreach (var encryptedPk in selectedRows.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            var decryptedPk = encryptionService.DecryptStringWithUrlUnescape(encryptedPk);
+            var decryptedPk = dataProtectionService.Unprotect(encryptedPk);
             selectedValues.Add(decryptedPk);
         }
 

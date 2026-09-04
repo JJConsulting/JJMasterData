@@ -97,7 +97,7 @@
 @if (isForm)
 {
     <div class="modal fade" id="copyFromModal" tabindex="-1" aria-labelledby="copyFromModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="copyFromModalLabel">@StringLocalizer["Copy From..."]</h5>
@@ -116,11 +116,7 @@
                                             asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
                                             onchange="populateCopyFromFields(this)"
                                             required
-                                            class="form-control selectpicker"
-                                            data-style-base="form-select form-dropdown"
-                                            data-live-search="true"
-                                            data-virtual-scroll="true"
-                                            data-none-results-text="@StringLocalizer["No elements found."]">
+                                            class="form-select">
                                     </select>
                                 </div>
                             </div>
@@ -132,12 +128,7 @@
                                             id="copyFromFieldNames"
                                             required
                                             multiple
-                                            class="form-control selectpicker"
-                                            data-style-base="form-select form-dropdown"
-                                            data-live-search="true"
-                                            data-none-selected-text="@StringLocalizer["--Select--"]"
-                                            data-virtual-scroll="true"
-                                            data-none-results-text="@StringLocalizer["No fields found."]">
+                                            class="form-select">
                                     </select>
                                 </div>
                             </div>
@@ -304,12 +295,6 @@
             return;
 
         fieldNamesSelect.innerHTML = await response.text();
-        const $fieldNames = $('#copyFromFieldNames');
-        $fieldNames.selectpicker('destroy');
-        $fieldNames.selectpicker({
-            iconBase:  'fa' ,
-            styleBase:"form-select form-dropdown"
-        });
     }
 </script>
 
@@ -410,7 +395,7 @@
     function searchFields(oDom) {
         const value = $(oDom).val().toLowerCase();
         $("#sortable-grid a").filter(function () {
-            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const textValues = $(this).clone().find('select').remove().end().text();
             const isSearch = textValues.toLowerCase().indexOf(value) > -1;
 
             $(this).toggle(isSearch);

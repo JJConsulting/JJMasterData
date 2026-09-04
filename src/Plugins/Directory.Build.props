@@ -1,4 +1,6 @@
 <Project>
+    <Import Project="$(MSBuildThisFileDirectory)../../Directory.Build.props" />
+
     <ItemGroup>
         <None Include="../../../JJMasterData.png">
             <Pack>True</Pack>
@@ -10,4 +12,3 @@
         </None>
     </ItemGroup>
 </Project>
-

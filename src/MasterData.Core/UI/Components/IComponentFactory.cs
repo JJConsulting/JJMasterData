@@ -1,4 +1,3 @@
-#nullable enable
 using JJMasterData.Core.UI.Components.Factories;
 using JJMasterData.Core.UI.Routing;
 

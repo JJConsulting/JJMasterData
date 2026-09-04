@@ -1,7 +1,9 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
@@ -9,22 +11,20 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
+using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Tasks;
-using JJMasterData.Commons.Tasks.Progress;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Security;
+using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.DataManager.Importation.Background;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
@@ -35,16 +35,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJDataImportation : ProcessComponent
 {
-    #region "Events"
-
-    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
-    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
-    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
-
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterProcessAsync;
-
-    #endregion
+    private const string ImportationFolderPath = "{app.path}/MasterDataImportFiles/";
 
     #region "Properties"
 
@@ -82,7 +73,9 @@ public class JJDataImportation : ProcessComponent
     
     internal FieldValuesService FieldValuesService { get; }
     
-    private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
+    private ImportJobService ImportJobService { get; }
+
+    private IFileStorage FileStorage { get; }
 
     private RouteContext RouteContext
     {
@@ -91,7 +84,7 @@ public class JJDataImportation : ProcessComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(HttpContextAccessor, DataProtectionService);
             _routeContext = factory.Create();
 
             return _routeContext;
@@ -115,19 +108,20 @@ public class JJDataImportation : ProcessComponent
         ExpressionsService expressionsService,
         FormService formService,
         FieldValuesService fieldValuesService,
-        IBackgroundTaskManager backgroundTaskManager,
-        IHttpContext currentContext,
+        IHttpContextAccessor httpContextAccessor,
         IComponentFactory componentFactory,
         DataItemService dataItemService,
-        DataImportationWorkerFactory dataImportationWorkerFactory,
-        IEncryptionService encryptionService,
+        ImportJobService importJobService,
+        IFileStorage fileStorage,
+        DataProtectionService dataProtectionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(currentContext,masterDataUser, expressionsService, backgroundTaskManager,
-            loggerFactory.CreateLogger<ProcessComponent>(), encryptionService, stringLocalizer)
+        : base(httpContextAccessor,masterDataUser, expressionsService,
+            loggerFactory.CreateLogger<ProcessComponent>(), dataProtectionService, stringLocalizer)
     {
-        CurrentContext = currentContext;
-        DataImportationWorkerFactory = dataImportationWorkerFactory;
+        HttpContextAccessor = httpContextAccessor;
+        ImportJobService = importJobService;
+        FileStorage = fileStorage;
         FormService = formService;
         FieldValuesService = fieldValuesService;
         ComponentFactory = componentFactory;
@@ -148,11 +142,11 @@ public class JJDataImportation : ProcessComponent
 
         if (ComponentContext is ComponentContext.DataImportationFileUpload)
         {
-            UploadArea.OnFileUploaded += FileUploaded;
+            UploadArea.OnFileUploadedAsync += FileUploadedAsync;
             return await UploadArea.GetResultAsync();
         }
 
-        string action = CurrentContext.Request.QueryString["dataImportationOperation"];
+        string action = HttpContextAccessor.HttpContext!.Request.Query["dataImportationOperation"];
 
         switch (action)
         {
@@ -163,7 +157,8 @@ public class JJDataImportation : ProcessComponent
                 return new JsonComponentResult(reporterProgress);
             }
             case "stop":
-                StopImportation();
+                if (TryGetJobId(out var stopJobId))
+                    ImportJobService.Cancel(stopJobId, UserId);
                 return new JsonComponentResult(new { IsProcessing = false });
             case "log":
                 htmlBuilder = GetLogHtml();
@@ -173,30 +168,34 @@ public class JJDataImportation : ProcessComponent
                 break;
             case "processPastedText":
             {
-                if (!IsRunning())
-                {
-                    var pasteValue = CurrentContext.Request.Form["pasteValue"];
-                    ImportInBackground(pasteValue);
-                }
-
+                var form = await HttpContextAccessor.HttpContext!.Request.ReadFormAsync();
+                var pastedFile = form.Files.GetFile("pastedFile") ??
+                                 throw new InvalidOperationException("Pasted content was not provided.");
+                await using var source = pastedFile.OpenReadStream();
+                var jobId = await ImportInBackgroundAsync(source, pastedFile.FileName, pastedFile.ContentType, '\t', false);
                 htmlBuilder = GetLoadingHtml();
+                htmlBuilder.AppendHiddenInput($"{Name}-import-job-id", jobId.ToString());
                 break;
             }
             case "loading":
                 htmlBuilder = GetLoadingHtml();
+                if (TryGetJobId(out var loadingJobId))
+                    htmlBuilder.AppendHiddenInput($"{Name}-import-job-id", loadingJobId.ToString());
                 break;
             default:
             {
-                if (IsRunning())
+                var currentJob = ImportJobService.GetCurrentStatus(FormElement.Name, UserId);
+                if (currentJob is null)
                 {
-                    htmlBuilder = new HtmlBuilder(HtmlTag.Div);
-                    htmlBuilder.WithId(Name);
-                    htmlBuilder.Append(GetLoadingHtml());
-                    htmlBuilder.AppendScript(DataImportationScripts.GetStartProgressVerificationScript());
+                    htmlBuilder = GetUploadAreaCollapse();
+                    break;
                 }
-               
-                else
-                    htmlBuilder = GetUploadAreaCollapse(ProcessKey);
+
+                htmlBuilder = new HtmlBuilder(HtmlTag.Div)
+                    .WithId(Name)
+                    .Append(GetLoadingHtml())
+                    .AppendHiddenInput($"{Name}-import-job-id", currentJob.Id.ToString())
+                    .AppendScript(DataImportationScripts.GetStartProgressVerificationScript());
                 break;
             }
         }
@@ -208,6 +207,8 @@ public class JJDataImportation : ProcessComponent
 
         return new RenderedComponentResult(htmlBuilder);
     }
+
+    internal bool IsRunning() => ImportJobService.GetCurrentStatus(FormElement.Name, UserId) is not null;
 
     private HtmlBuilder GetLogHtml()
     {
@@ -226,10 +227,6 @@ public class JJDataImportation : ProcessComponent
 
     private HtmlBuilder GetLoadingHtml()
     {
-        var reporter = GetCurrentReporter();
-        if (reporter == null)
-            return null;
-
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithStyle( "text-align: center;")
@@ -279,7 +276,6 @@ public class JJDataImportation : ProcessComponent
         {
             Type = LinkButtonType.Button,
             ShowAsButton = true,
-            Visible = reporter.UserId == UserId,
             OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
             Icon = FontAwesomeIcon.Stop,
             Text = StringLocalizer["Stop the importation"]
@@ -289,18 +285,13 @@ public class JJDataImportation : ProcessComponent
         return html;
     }
 
-    private HtmlBuilder GetUploadAreaCollapse(string keyprocess)
+    private HtmlBuilder GetUploadAreaCollapse()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithId(Name)
-            .AppendHiddenInput("filename")
-            .Append(HtmlTag.TextArea, area =>
-            {
-                area.WithNameAndId("pasteValue");
-                area.WithStyle( "display:none");
-            });
+            .AppendHiddenInput("filename");
         
-        var collapsePanel = new JJMasterDataCollapsePanel(CurrentContext.Request.Form)
+        var collapsePanel = new JJMasterDataCollapsePanel(HttpContextAccessor)
         {
             TitleIcon = new JJIcon(FontAwesomeIcon.Upload),
             Title = StringLocalizer["Upload File"],
@@ -317,8 +308,7 @@ public class JJDataImportation : ProcessComponent
                 col.WithCssClass("col-sm-12");
                 col.AppendComponent(HelpButton);
 
-                var pipeline = BackgroundTaskManager.GetProgress<IProgressReporter>(keyprocess);
-                if (pipeline != null)
+                if (TryGetJobId(out _))
                 {
                     col.AppendComponent(LogButton);
                 }
@@ -334,82 +324,88 @@ public class JJDataImportation : ProcessComponent
         return html;
     }
 
-    private void FileUploaded(object sender, FormUploadFileEventArgs e)
+    private async ValueTask FileUploadedAsync(object sender, FormUploadFileEventArgs e)
     {
-        var sb = new StringBuilder();
-        Stream stream = new MemoryStream(e.File.Bytes);
-        using (var reader = new StreamReader(stream))
+        await using var source = e.File.OpenReadStream();
+        var jobId = await ImportInBackgroundAsync(source, e.File.FileName, e.File.ContentType, ';', true);
+        e.JobId = jobId.ToString();
+        e.SuccessMessage = StringLocalizer["File uploaded. Importation was queued."];
+    }
+
+    private async Task<Guid> ImportInBackgroundAsync(
+        Stream source,
+        string fileName,
+        string? contentType,
+        char separator,
+        bool detectDelimiter)
+    {
+        var currentJob = ImportJobService.GetCurrentStatus(FormElement.Name, UserId);
+        if (currentJob is not null)
+            return currentJob.Id;
+
+        var filePath = FileStoragePath.Combine(ImportationFolderPath, $"{Guid.NewGuid():N}.csv");
+
+        await FileStorage.SaveAsync(filePath, source, cancellationToken: HttpContextAccessor.HttpContext!.RequestAborted);
+        var httpContext = HttpContextAccessor.HttpContext!;
+        try
         {
-            while (!reader.EndOfStream)
+            return await ImportJobService.EnqueueAsync(new ImportRequest
             {
-                sb.AppendLine(reader.ReadLine());
-            }
+                Id = BackgroundJobId.Create("import", FormElement.Name, UserId),
+                ElementName = FormElement.Name,
+                UserId = UserId,
+                FilePath = filePath,
+                FileName = fileName,
+                ContentType = contentType,
+                Options = new CsvImportOptions
+                {
+                    Delimiter =  CsvImportDelimiter.From(separator),
+                    DetectDelimiter = detectDelimiter,
+                },
+                RelationValues = RelationValues?.ToDictionary(item => item.Key, item => (object?)item.Value) ??
+                                 new Dictionary<string, object?>(),
+                UserValues = UserValues,
+                IpAddress = httpContext.Connection.RemoteIpAddress?.ToString(),
+                BrowserInfo = httpContext.Request.Headers.UserAgent.ToString(),
+                CommandBeforeProcess = ProcessOptions.CommandBeforeProcess,
+                CommandAfterProcess = ProcessOptions.CommandAfterProcess
+            }, httpContext.RequestAborted);
         }
-
-        if (!BackgroundTaskManager.IsRunning(ProcessKey))
+        catch
         {
-            var worker = CreateImportationTextWorker(sb.ToString(), ';');
-            BackgroundTaskManager.Run(ProcessKey, worker);
-            e.SuccessMessage = StringLocalizer["File successfuly imported."];
+            await FileStorage.DeleteAsync(filePath, CancellationToken.None);
+            throw;
         }
-    }
-
-    private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
-    {
-        var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Upload, UserId);
-        var dataImportationContext = new DataImportationContext(FormElement, dataContext, RelationValues, postedText, separator);
-        var worker = DataImportationWorkerFactory.Create(dataImportationContext);
-        worker.UserId = UserId;
-        worker.ProcessOptions = ProcessOptions;
-        worker.UserValues = UserValues;
-        worker.FormService.OnAfterUpdateAsync += OnAfterUpdateAsync;
-        worker.FormService.OnAfterInsertAsync += OnAfterInsertAsync;
-        worker.FormService.OnAfterDeleteAsync += OnAfterDeleteAsync;
-        worker.FormService.OnBeforeImportAsync += OnBeforeImportAsync;
-
-        worker.OnAfterProcessAsync += OnAfterProcessAsync;
-
-        return worker;
-    }
-
-    internal DataImportationReporter GetCurrentReporter()
-    {
-        var progress = BackgroundTaskManager.GetProgress<DataImportationReporter>(ProcessKey);
-        if (progress != null)
-            return progress;
-        return new DataImportationReporter(StringLocalizer);
-    }
-
-    internal void ImportInBackground(string pasteValue)
-    {
-        var worker = CreateImportationTextWorker(pasteValue, '\t');
-        BackgroundTaskManager.Run(ProcessKey, worker);
     }
 
     internal DataImportationDto GetCurrentProgress()
     {
-        bool isRunning = BackgroundTaskManager.IsRunning(ProcessKey);
-        var reporter = BackgroundTaskManager.GetProgress<DataImportationReporter>(ProcessKey);
-        var dto = new DataImportationDto();
-        if (reporter != null)
+        var status = GetCurrentStatus();
+        var details = status?.Result as ImportJobResult ?? status?.Progress?.Details as ImportJobResult;
+        return new DataImportationDto
         {
-            dto.StartDate = reporter.StartDate.ToDateTimeString();
-            dto.PercentProcess = reporter.Percentage;
-            dto.Message = reporter.Message;
-            dto.Insert = reporter.Insert;
-            dto.Update = reporter.Update;
-            dto.Delete = reporter.Delete;
-            dto.Error = reporter.Error;
-            dto.Ignore = reporter.Ignore;
-            dto.IsProcessing = isRunning || reporter.EndDate.Equals(DateTime.MinValue);
-        }
-        else
-        {
-            dto.Message = StringLocalizer["Waiting..."];
-            dto.StartDate = DateTime.Now.ToDateTimeString();
-        }
+            StartDate = (status?.StartedAt?.LocalDateTime ?? status?.CreatedAt.LocalDateTime ?? DateTime.Now)
+                .ToDateTimeString(),
+            PercentProcess = status?.Progress?.Percentage ?? 0,
+            Message = status?.State == BackgroundJobState.Cancelled
+                ? StringLocalizer["Process aborted by user"]
+                : status?.Progress?.Message ?? status?.Error ?? StringLocalizer["Waiting..."],
+            Insert = details?.Inserted ?? 0,
+            Update = details?.Updated ?? 0,
+            Delete = details?.Deleted ?? 0,
+            Error = details?.Errors ?? 0,
+            Ignore = details?.Ignored ?? 0,
+            IsProcessing = status?.State is BackgroundJobState.Queued or BackgroundJobState.Running
+        };
+    }
 
-        return dto;
+    internal BackgroundJobSnapshot? GetCurrentStatus() =>
+        TryGetJobId(out var jobId) ? ImportJobService.GetStatus(jobId, UserId) : null;
+
+    private bool TryGetJobId(out Guid jobId)
+    {
+        var value = HttpContextAccessor.HttpContext?.Request.Query["jobId"].ToString();
+        return Guid.TryParse(value, out jobId);
     }
 
     private JJLinkButton GetBackButton()

@@ -1,10 +1,6 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using JJMasterData.Commons.Util;
 using NCalc;
@@ -33,37 +29,42 @@ public sealed class MasterDataCoreOptions
     [Display(Name = "Audit Log Table Name")]
     public string AuditLogTableName { get; set; } = "tb_masterdata_auditlog";
 
-#if !NET
-    /// <summary>
-    /// Default value: null
-    /// </summary>
-    public string? MasterDataUrl { get; set; }
-
-    public bool EnableCultureProviderAtUrl { get; set; } = true;
-#endif
-
     [Display(Name = "Enable Data Dictionary Caching")]
     public bool EnableDataDictionaryCaching { get; set; } = true;
 
     /// <summary>
-    /// Default value: {ApplicationPath}/JJExportationFiles
+    /// Default value: {app.path}/JJExportationFiles
     /// </summary>
     [Display(Name = "Exportation Folder Path")]
-    public string ExportationFolderPath { get; set; } = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
+    public string ExportationFolderPath { get; set; } = "{app.path}/JJExportationFiles";
 
     public string UserIdClaimType { get; set; } = ClaimTypes.NameIdentifier;
+    
+    /// <summary>
+    /// Configuration of expression 
+    /// </summary>
+    public ExpressionConfiguration ExpressionConfiguration { get; set; } = new()
+    {
+        Evaluation = new ExpressionEvaluationOptions
+        {
+            AllowNullParameter = true,
+            AllowNullOrEmptyExpressions = true,
+            IgnoreCaseAtBuiltInFunctions = true,
+            ArithmeticNullOrEmptyStringAsZero = true,
+            StringComparer = StringComparer.OrdinalIgnoreCase,
+        }
+    };
     
     /// <summary>
     /// Context of expressions starting with "exp:". Declare here custom parameters and functions.
     /// </summary>
     public ExpressionContext ExpressionContext { get; set; } = new()
     {
-        Options = ExpressionOptions.IgnoreCaseAtBuiltInFunctions
-                  | ExpressionOptions.AllowNullParameter
-                  | ExpressionOptions.OrdinalStringComparer
-                  | ExpressionOptions.AllowNullOrEmptyExpressions
-                  | ExpressionOptions.ArithmeticNullOrEmptyStringAsZero
-                  | ExpressionOptions.CaseInsensitiveStringComparer,
+        EvaluateParameterHandler = (_, args) =>
+        {
+            if (args.Result == DBNull.Value)
+                args.Result = null;
+        },
         Functions = new Dictionary<string, ExpressionFunction>(StringComparer.InvariantCultureIgnoreCase)
         {
             {
@@ -78,7 +79,7 @@ public sealed class MasterDataCoreOptions
             {
                 "iif", args =>
                 {
-                    if (args.Count() != 3)
+                    if (args.Count != 3)
                         throw new NCalcEvaluationException("iif() takes exactly 3 arguments.");
                     var conditional = StringManager.ParseBool(args.Evaluate(0));
                     return conditional ? args.Evaluate(1) : args.Evaluate(2);
@@ -87,7 +88,7 @@ public sealed class MasterDataCoreOptions
             {
                 "len", args =>
                 {
-                    if (args.Count() != 1)
+                    if (args.Count != 1)
                     {
                         throw new NCalcEvaluationException("len() takes exactly 1 argument.");
                     }
@@ -104,6 +105,28 @@ public sealed class MasterDataCoreOptions
                     }
 
                     return args.Evaluate(0)?.ToString()?.Trim();
+                }
+            },
+            {
+                "coalesce", args =>
+                {
+                    if (args.Count == 0)
+                        throw new NCalcEvaluationException("coalesce() takes at least 1 argument.");
+
+                    for (var i = 0; i < args.Count; i++)
+                    {
+                        var value = args.Evaluate(i);
+
+                        if (value == null)
+                            continue;
+
+                        if (value is string str && string.IsNullOrEmpty(str))
+                            continue;
+
+                        return value;
+                    }
+
+                    return null;
                 }
             }
         }

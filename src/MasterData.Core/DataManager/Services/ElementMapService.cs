@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;

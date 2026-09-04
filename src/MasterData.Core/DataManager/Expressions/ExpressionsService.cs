@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Logging;
 using Microsoft.Extensions.Logging;
 

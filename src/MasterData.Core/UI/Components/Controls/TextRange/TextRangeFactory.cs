@@ -1,12 +1,12 @@
+#nullable disable warnings
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
 
 internal sealed class TextRangeFactory(
-        IHttpContext httpContext,
+        IHttpContextAccessor httpContext,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         TextGroupFactory textGroupFactory
         )
@@ -14,7 +14,7 @@ internal sealed class TextRangeFactory(
 {
     public JJTextRange Create()
     {
-        return new JJTextRange(httpContext.Request.Form,stringLocalizer);
+        return new JJTextRange(httpContext, stringLocalizer);
     }
 
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)

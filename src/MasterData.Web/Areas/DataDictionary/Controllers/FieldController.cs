@@ -100,7 +100,7 @@ public class FieldController(
     }
 
     [HttpPost]
-    public async Task<ViewResult> Copy(string elementName, FormElementField? field)
+    public async Task<ViewResult> Copy(string elementName, FormElementField field)
     {
         var dictionary = await fieldService.GetFormElementAsync(elementName);
         await fieldService.CopyFieldAsync(dictionary, field);

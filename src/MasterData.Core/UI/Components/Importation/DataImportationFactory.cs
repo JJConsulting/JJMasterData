@@ -1,17 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Tasks;
+using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.DataManager.Importation.Background;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -19,17 +19,16 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataImportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
-    IFormEventHandlerResolver formEventHandlerResolver,
     ExpressionsService expressionsService,
     FieldValuesService fieldValuesService,
     FormService formService,
-    IBackgroundTaskManager backgroundTaskManager,
-    IHttpContext httpContext,
+    IHttpContextAccessor httpContext,
     IMasterDataUser masterDataUser,
     IComponentFactory componentFactory,
     DataItemService dataItemService,
-    DataImportationWorkerFactory dataImportationWorkerFactory,
-    IEncryptionService encryptionService,
+    ImportJobService importJobService,
+    IFileStorage fileStorage,
+    DataProtectionService encryptionService,
     ILoggerFactory loggerFactory,
     IStringLocalizer<MasterDataResources> stringLocalizer)
     : IFormElementComponentFactory<JJDataImportation>
@@ -42,11 +41,11 @@ internal sealed class DataImportationFactory(
             expressionsService, 
             formService, 
             fieldValuesService,
-            backgroundTaskManager,
             httpContext, 
             componentFactory, 
             dataItemService,
-            dataImportationWorkerFactory,
+            importJobService,
+            fileStorage,
             encryptionService,
             loggerFactory,
             stringLocalizer);
@@ -59,18 +58,7 @@ internal sealed class DataImportationFactory(
 
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
-        var dataContext = new DataContext(httpContext.Request, DataContextSource.Upload, masterDataUser.Id);
-
-        var formEvent = formEventHandlerResolver.GetFormEventHandler(elementName);
-
         var dataImp = Create(formElement);
-
-        if (formEvent != null)
-        {
-            await formEvent.OnFormElementLoadAsync(dataContext, new FormElementLoadEventArgs(formElement));
-
-            dataImp.OnBeforeImportAsync += formEvent.OnBeforeImportAsync;
-        }
 
         dataImp.Name = elementName + "-importation";
 

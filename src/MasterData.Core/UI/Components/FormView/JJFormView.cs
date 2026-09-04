@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable EventNeverSubscribedTo.Global
@@ -15,11 +14,11 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -30,20 +29,13 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Logging;
-using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-#if NET48
-using JJMasterData.Commons.Configuration;
-#endif
-
 namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
@@ -60,16 +52,8 @@ public class JJFormView : AsyncComponent
 
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync
     {
-        add
-        {
-            _formService.OnBeforeImportAsync += value;
-            DataImportation.OnBeforeImportAsync += value;
-        }
-        remove
-        {
-            _formService.OnBeforeImportAsync -= value;
-            DataImportation.OnBeforeImportAsync -= value;
-        }
+        add => _formService.OnBeforeImportAsync += value;
+        remove => _formService.OnBeforeImportAsync -= value;
     }
 
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync
@@ -92,44 +76,20 @@ public class JJFormView : AsyncComponent
 
     public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync
     {
-        add
-        {
-            _formService.OnAfterInsertAsync += value;
-            DataImportation.OnAfterInsertAsync += value;
-        }
-        remove
-        {
-            _formService.OnAfterInsertAsync -= value;
-            DataImportation.OnAfterInsertAsync -= value;
-        }
+        add => _formService.OnAfterInsertAsync += value;
+        remove => _formService.OnAfterInsertAsync -= value;
     }
 
     public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync
     {
-        add
-        {
-            _formService.OnAfterUpdateAsync += value;
-            DataImportation.OnAfterUpdateAsync += value;
-        }
-        remove
-        {
-            _formService.OnAfterUpdateAsync -= value;
-            DataImportation.OnAfterUpdateAsync -= value;
-        }
+        add => _formService.OnAfterUpdateAsync += value;
+        remove => _formService.OnAfterUpdateAsync -= value;
     }
 
     public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync
     {
-        add
-        {
-            _formService.OnAfterDeleteAsync += value;
-            DataImportation.OnAfterDeleteAsync += value;
-        }
-        remove
-        {
-            _formService.OnAfterDeleteAsync -= value;
-            DataImportation.OnAfterDeleteAsync -= value;
-        }
+        add => _formService.OnAfterDeleteAsync += value;
+        remove => _formService.OnAfterDeleteAsync -= value;
     }
 
     #endregion
@@ -146,13 +106,14 @@ public class JJFormView : AsyncComponent
 
     private readonly FormValuesService _formValuesService;
     private readonly FieldValuesService _fieldValuesService;
-    private readonly HtmlTemplateService _htmlTemplateService;
+    private readonly HtmlTemplateActionService _htmlTemplateService;
     private readonly IEnumerable<IPluginHandler> _pluginHandlers;
     private readonly MasterDataCoreOptions _options;
     private readonly ILogger<JJFormView> _logger;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IMasterDataUser _masterDataUser;
     private readonly FormService _formService;
+    private readonly UploadViewManager _uploadViewManager;
 
     #endregion
 
@@ -299,7 +260,11 @@ public class JJFormView : AsyncComponent
 
         DataPanel.PageState = PageState.Insert;
 
-        var result = await GetFormResult(formStateData.Values, DataPanel.Errors, PageState.Insert, true);
+        var values = new Dictionary<string, object?>(formStateData.Values, StringComparer.InvariantCultureIgnoreCase);
+
+        DataHelper.CopyIntoDictionary(values, formStateData.UserValues);
+        
+        var result = await GetFormResult(values, DataPanel.Errors, PageState.Insert, true);
 
         if (result is HtmlComponentResult htmlComponentResult)
             args.HtmlBuilder.Append(htmlComponentResult.HtmlBuilder);
@@ -312,12 +277,14 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_pageState is null &&
-                CurrentContext.Request.Form.TryGetValue($"form-view-page-state-{Name}", out var formPageState))
-                _pageState = (PageState)int.Parse(formPageState);
+            if (_pageState is null && CurrentContext.HttpContext!.Request.HasFormContentType &&
+                CurrentContext.HttpContext!.Request.Form.TryGetValue($"form-view-page-state-{Name}", out var formPageState))
+            {
+                _pageState = (PageState)int.Parse(formPageState.ToString());
+            }
 
             if (_pageState is null &&
-                CurrentContext.Request.QueryString.TryGetValue($"{FormElement.Name}_PageState",
+                CurrentContext.HttpContext!.Request.Query.TryGetValue($"{FormElement.Name}_PageState",
                     out var queryStringPageState))
             {
                 if (Enum.TryParse(queryStringPageState, ignoreCase: true, out PageState pageState))
@@ -335,12 +302,12 @@ public class JJFormView : AsyncComponent
         {
             if (_currentActionMap != null || _isCustomCurrentAction)
                 return _currentActionMap;
-
-            var encryptedActionMap = CurrentContext.Request.Form[$"current-action-map-{Name}"];
+            
+            var encryptedActionMap = CurrentContext.HttpContext!.Request.GetFormValue($"current-action-map-{Name}");
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
-            _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
+            _currentActionMap = DataProtectionService.UnprotectActionMap(encryptedActionMap);
 
             return _currentActionMap;
         }
@@ -373,7 +340,7 @@ public class JJFormView : AsyncComponent
             if (field != null)
                 return field;
 
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            var factory = new RouteContextFactory(CurrentContext, DataProtectionService);
             field = factory.Create();
 
             return field;
@@ -397,9 +364,10 @@ public class JJFormView : AsyncComponent
         get
         {
             if (_relationshipType is null &&
-                CurrentContext.Request.Form.TryGetValue($"form-view-relationship-type-{Name}",
+                CurrentContext.HttpContext!.Request.HasFormContentType &&
+                CurrentContext.HttpContext!.Request.Form.TryGetValue($"form-view-relationship-type-{Name}",
                     out var relationshipType))
-                _relationshipType = (RelationshipType)int.Parse(relationshipType);
+                _relationshipType = (RelationshipType)int.Parse(relationshipType.ToString());
 
             return _relationshipType ?? RelationshipType.Parent;
         }
@@ -409,9 +377,9 @@ public class JJFormView : AsyncComponent
     internal bool IsInsertAtGridView => PageState is PageState.List &&
                                         FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid;
 
-    internal IHttpContext CurrentContext { get; }
-    internal IFormValues FormValues => CurrentContext.Request.Form;
-    internal IEncryptionService EncryptionService { get; }
+    internal IHttpContextAccessor CurrentContext { get; }
+    internal IFormCollection FormValues => CurrentContext.HttpContext!.Request.Form;
+    internal DataProtectionService DataProtectionService { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
     internal ExpressionsService ExpressionsService { get; }
@@ -424,17 +392,18 @@ public class JJFormView : AsyncComponent
 
     public JJFormView(
         FormElement formElement,
-        IHttpContext currentContext,
+        IHttpContextAccessor currentContext,
         IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         FormService formService,
-        IEncryptionService encryptionService,
+        DataProtectionService dataProtectionService,
         FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
-        HtmlTemplateService htmlTemplateService,
+        HtmlTemplateActionService htmlTemplateService,
         IEnumerable<IPluginHandler> pluginHandlers,
+        UploadViewManager uploadViewManager,
         IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFormView> logger,
@@ -446,7 +415,7 @@ public class JJFormView : AsyncComponent
 
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
-        EncryptionService = encryptionService;
+        DataProtectionService = dataProtectionService;
         ExpressionsService = expressionsService;
         ComponentFactory = componentFactory;
         Localizer = stringLocalizer;
@@ -457,6 +426,7 @@ public class JJFormView : AsyncComponent
         _fieldValuesService = fieldValuesService;
         _htmlTemplateService = htmlTemplateService;
         _pluginHandlers = pluginHandlers;
+        _uploadViewManager = uploadViewManager;
         _options = options.Value;
         _logger = logger;
         _dataDictionaryRepository = dataDictionaryRepository;
@@ -485,7 +455,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<JJFormView> GetChildFormView()
     {
-        var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
+        var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName!);
 
 
         childFormView.FormElement.ParentName = RouteContext.ParentElementName;
@@ -508,7 +478,7 @@ public class JJFormView : AsyncComponent
 
         childFormView.GridView.TableActions.Add(new InsertSelectionAction());
         childFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
-        childFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        childFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
 
         return childFormView;
     }
@@ -524,7 +494,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.LookupDescription:
                 return await DataPanel.GetResultAsync();
             case ComponentContext.UrlRedirect:
-                return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
+                return await DataPanel.GetUrlRedirectResult(CurrentActionMap!);
             case ComponentContext.DataPanelReload:
                 return await GetReloadPanelResultAsync();
             case ComponentContext.DataExportation:
@@ -534,7 +504,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.SearchBoxFilter:
                 return await GetGridViewResult();
             case ComponentContext.DownloadFile:
-                return ComponentFactory.Downloader.Create().GetDownloadResult();
+                return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
             case ComponentContext.AuditLogView:
                 return await AuditLogView.GetResultAsync();
             case ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload:
@@ -555,9 +525,9 @@ public class JJFormView : AsyncComponent
         else
             values = await GetFormValuesAsync();
 
-        var fieldName = CurrentContext.Request.QueryString["fieldName"];
+        var fieldName = CurrentContext.HttpContext!.Request.Query["fieldName"];
 
-        var field = FormElement.Fields[fieldName];
+            var field = FormElement.Fields[fieldName!];
 
         var scripts = new HtmlBuilder();
 
@@ -641,7 +611,9 @@ public class JJFormView : AsyncComponent
 
         Dictionary<string, string> errors;
         if (PageState is PageState.Insert || IsInsertAtGridView)
+        {
             errors = await InsertFormValuesAsync(values);
+        }
         else
             errors = await UpdateFormValuesAsync(values);
 
@@ -724,13 +696,13 @@ public class JJFormView : AsyncComponent
         htmlBuilder.AppendScript(Scripts.GetShowInsertSuccessScript());
     }
 
-    private Task<ComponentResult> GetCancelActionResult()
+    private async Task<ComponentResult> GetCancelActionResult()
     {
         PageState = PageState.List;
 
-        ClearTempFiles();
+        _ = _uploadViewManager.ClearTemporaryFilesAsync(FormElement);
 
-        return GridView.GetResultAsync();
+        return await GridView.GetResultAsync();
     }
 
     private Task<ComponentResult> GetBackActionResult()
@@ -784,11 +756,11 @@ public class JJFormView : AsyncComponent
             html.AppendHiddenInput($"form-view-relationship-type-{Name}", ((int)RelationshipType).ToString());
             
             html.AppendHiddenInput($"current-action-map-{Name}",
-                EncryptionService.EncryptObject(CurrentActionMap));
+                DataProtectionService.ProtectObject(CurrentActionMap));
             html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
-                EncryptionService.EncryptObject(RelationValues));
+                DataProtectionService.ProtectObject(RelationValues));
             html.AppendHiddenInput($"form-view-route-context-{Name}",
-                EncryptionService.EncryptObject(RouteContext.FromFormElement(FormElement,
+                DataProtectionService.ProtectObject(RouteContext.FromFormElement(FormElement,
                     ComponentContext.FormViewReload)));
         }
     }
@@ -951,7 +923,7 @@ public class JJFormView : AsyncComponent
 
     private bool ContainsHiddenPkValues()
     {
-        return CurrentContext.Request.Form[$"data-panel-pk-values-{FormElement.Name}"] is not null;
+        return !string.IsNullOrEmpty(CurrentContext.HttpContext!.Request.GetFormValue($"data-panel-pk-values-{FormElement.Name}"));
     }
 
     private async Task<ComponentResult> GetUpdateResult()
@@ -969,7 +941,7 @@ public class JJFormView : AsyncComponent
 
             var filters = await GetFiltersWithDefaultValues(PageState.Update);
 
-            var letter = await _formService.GetAsync(FormElement, filters);
+            var letter = await _formService.GetAsync(FormElement, filters!);
             values = letter.Result!;
             var errors = letter.Errors;
             if (errors.Count > 0)
@@ -1017,7 +989,7 @@ public class JJFormView : AsyncComponent
         var containsGridAction = false;
         if (GridView.TableActions.Any(a => a is InsertSelectionAction))
         {
-            containsGridAction = !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);
+            containsGridAction = !string.IsNullOrEmpty(CurrentContext.HttpContext!.Request.GetFormValue($"grid-view-action-map-{Name}"));
         }
         
         if (PageState is PageState.List || containsGridAction)
@@ -1042,7 +1014,7 @@ public class JJFormView : AsyncComponent
 
     private bool IsReloadFields()
     {
-        return CurrentContext.Request.Form.ContainsFormValues() &&
+        return CurrentContext.HttpContext!.Request.HasFormContentType &&
                DataPanel.PageState is not PageState.View &&
                CurrentAction is not PluginAction;
     }
@@ -1113,11 +1085,12 @@ public class JJFormView : AsyncComponent
         if (_insertSelectionFormView != null)
             return _insertSelectionFormView;
 
-        _insertSelectionFormView =
-            await ComponentFactory.FormView.CreateAsync(GridView.InsertAction.ElementNameToSelect);
+        var elementNameToSelect = GridView.InsertAction.ElementNameToSelect ?? throw new JJMasterDataException("Element name to select cannot be null.");
+        
+        _insertSelectionFormView = await ComponentFactory.FormView.CreateAsync(elementNameToSelect);
         _insertSelectionFormView.FormElement.ParentName = FormElement.Name;
         _insertSelectionFormView.UserValues = UserValues;
-        _insertSelectionFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
+        _insertSelectionFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
         _insertSelectionFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
         _insertSelectionFormView.GridView.TableActions.Add(new InsertSelectionAction());
 
@@ -1139,10 +1112,10 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
+        var insertValues = DataProtectionService.ProtectDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]!);
         var html = new HtmlBuilder(HtmlTag.Div);
 
-        var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
+        var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect ?? throw new JJMasterDataException("Element name to select cannot be null.");
         var childElement = await _dataDictionaryRepository.GetFormElementAsync(childElementName);
 
         var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
@@ -1211,7 +1184,7 @@ public class JJFormView : AsyncComponent
         PageState = PageState.View;
         var filters = await GetFiltersWithDefaultValues(PageState.View);
 
-        var letter = await _formService.GetAsync(FormElement, filters);
+        var letter = await _formService.GetAsync(FormElement, filters!);
         var values = letter.Result!;
         var errors = letter.Errors;
         if (errors.Count > 0)
@@ -1219,7 +1192,7 @@ public class JJFormView : AsyncComponent
             return await GetGridResultWithErrors(errors);
         }
 
-        return await GetFormResult(values, PageState, false);
+        return await GetFormResult(values!, PageState, false);
     }
 
     private async Task<ComponentResult> GetDeleteResult()
@@ -1272,7 +1245,7 @@ public class JJFormView : AsyncComponent
         {
             var html = new HtmlBuilder(HtmlTag.Div);
 
-            var logDetailsHtml = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
+            var logDetailsHtml = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues!);
 
             html.Append(logDetailsHtml);
 
@@ -1370,7 +1343,7 @@ public class JJFormView : AsyncComponent
         if (ShowTitle)
             html.AppendComponent(GetTitle(formStateData));
 
-        var layout = new FormViewRelationshipLayout(this, visibleRelationships);
+        var layout = new FormViewRelationshipLayout(this, visibleRelationships, formStateData);
 
         var relationshipsResult = await layout.GetRelationshipsResult();
 
@@ -1614,13 +1587,13 @@ public class JJFormView : AsyncComponent
         return toolbar;
     }
 
-    private ValueTask InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
+    private void InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
     {
         if (sender is not JJGridView gridView)
-            return ValueTaskHelper.CompletedTask;
+            return;
 
         if (args.ActionName is not InsertSelectionAction.ActionName)
-            return ValueTaskHelper.CompletedTask;
+            return;
 
         args.LinkButton.Tooltip = Localizer["Select"];
         
@@ -1628,10 +1601,25 @@ public class JJFormView : AsyncComponent
         
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(pkValues!);
 
-        return ValueTaskHelper.CompletedTask;
     }
 
-
+    /// <summary>
+    /// Insert or updates the records in the database.
+    /// </summary>
+    /// <returns>The list of errors.</returns>
+    public async Task<Dictionary<string, string>> InsertOrReplaceFormValuesAsync(Dictionary<string, object?> values)
+    {
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var result = await _formService.InsertOrReplaceAsync(FormElement, values, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await _uploadViewManager.PromoteDraftFilesAsync(FormElement, DataPanel.Values);
+        }
+        
+        UrlRedirect = result.UrlRedirect;
+        return result.Errors;
+    }
+    
     /// <summary>
     /// Insert the records in the database.
     /// </summary>
@@ -1640,8 +1628,13 @@ public class JJFormView : AsyncComponent
         Dictionary<string, object?> values,
         bool validateFields = true)
     {
-        var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Form, UserId);
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
         var result = await _formService.InsertAsync(FormElement, values, dataContext, validateFields);
+        if (result.Errors.Count == 0)
+        {
+            await _uploadViewManager.PromoteDraftFilesAsync(FormElement, DataPanel.Values);
+        }
+        
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1652,19 +1645,27 @@ public class JJFormView : AsyncComponent
     /// <returns>The list of errors.</returns>
     public async Task<Dictionary<string, string>> UpdateFormValuesAsync(Dictionary<string, object?> values)
     {
-        var result = await _formService.UpdateAsync(FormElement, values,
-            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var result = await _formService.UpdateAsync(FormElement, values, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await _uploadViewManager.PromoteDraftFilesAsync(FormElement, DataPanel.Values);
+        }
+        
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
     public async Task<Dictionary<string, string>> DeleteFormValuesAsync(Dictionary<string, object?>? filter)
     {
-        var values =
-            await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement,
-                new FormStateData(filter!, UserValues, PageState.Delete));
-        var result = await _formService.DeleteAsync(FormElement, values,
-            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
+        var dataContext = new DataContext(CurrentContext.HttpContext!.Request, DataContextSource.Form, UserId);
+        var formStateData = new FormStateData(filter!, UserValues, PageState.Delete);
+        var values = await _fieldValuesService.MergeWithExpressionValuesAsync(FormElement, formStateData);
+        var result = await _formService.DeleteAsync(FormElement, values!, dataContext);
+        if (result.Errors.Count == 0)
+        {
+            await _uploadViewManager.ClearTemporaryFilesAsync(FormElement);
+        }
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1680,23 +1681,19 @@ public class JJFormView : AsyncComponent
 
         return values;
     }
-
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
+    
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object?> values, PageState pageState)
     {
         DataPanel.Values = values;
         var errors = DataPanel.ValidateFields(values, pageState);
         return errors;
     }
-
-    private void ClearTempFiles()
+    
+    public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(Dictionary<string, object?> values)
     {
-        var uploadFields = FormElement.Fields.FindAll(x => x.Component == FormComponent.File);
-        foreach (var field in uploadFields)
-        {
-            string sessionName = $"{field.Name}-upload-view_jjfiles";
-            if (CurrentContext.Session.HasKey(sessionName))
-                CurrentContext.Session[sessionName] = null;
-        }
+        DataPanel.Values = values;
+        var errors = await DataPanel.ValidateFieldsAsync(values);
+        return errors;
     }
 
     public async ValueTask<FormStateData> GetFormStateDataAsync()
@@ -1746,12 +1743,12 @@ public class JJFormView : AsyncComponent
 
     public Dictionary<string, object> GetRelationValuesFromForm()
     {
-        var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{FormElement.Name}"];
+        var encryptedRelationValues = CurrentContext.HttpContext!.Request.GetFormValue($"form-view-relation-values-{FormElement.Name}");
 
         if (string.IsNullOrEmpty(encryptedRelationValues))
             return new Dictionary<string, object>();
 
-        return EncryptionService.DecryptDictionary(encryptedRelationValues);
+        return DataProtectionService.ProtectDictionary(encryptedRelationValues);
     }
 
     internal void DisableActionsAtViewMode()

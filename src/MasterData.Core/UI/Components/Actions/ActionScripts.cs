@@ -1,16 +1,14 @@
-﻿using System;
+﻿#nullable disable warnings
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using JJConsulting.Html.Bootstrap.Components;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -20,7 +18,7 @@ public class ActionScripts(
     ExpressionsService expressionsService,
     UrlRedirectService urlRedirectService,
     IUrlHelper urlHelper,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
@@ -66,7 +64,7 @@ public class ActionScripts(
             new
             {
                 Area = "MasterData",
-                parameters = encryptionService.EncryptStringWithUrlEscape(@params.ToString())
+                parameters = encryptionService.Protect(@params.ToString())
             });
 
         return
@@ -81,10 +79,10 @@ public class ActionScripts(
     {
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.ProtectObject(actionMap);
 
         var encryptedRouteContext =
-            encryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
+            encryptionService.ProtectObject(RouteContext.FromFormElement(actionContext.FormElement,
                 ComponentContext.FormViewReload));
 
         var confirmationMessage =
@@ -100,30 +98,31 @@ public class ActionScripts(
         ActionSource actionSource
     )
     {
-        string confirmationMessage =
+        var confirmationMessage =
             GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
 
-        string isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
+        var isOpenNewTabPage = action.OpenInNewTab ? "true" : "false";
         
         if (actionSource is ActionSource.Field or ActionSource.FormToolbar)
         {
             var actionMap = actionContext.ToActionMap(actionSource);
-            var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+            var encryptedActionMap = encryptionService.ProtectObject(actionMap);
 
             var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
 
-            var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
+            var encryptedRouteContext = encryptionService.ProtectObject(routeContext);
 
             return
                 $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}', {isOpenNewTabPage} {(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
 
         var script = new StringBuilder();
-        string url = urlRedirectService.GetParsedUrl(action, actionContext.FormStateData);
-        string isModal = action.IsModal ? "true" : "false";
-        string isIframe = action.IsIframe ? "true" : "false";
+        var url = HttpUtility.JavaScriptStringEncode(urlRedirectService.GetParsedUrl(action, actionContext.FormStateData));
+        var isModal = action.IsModal ? "true" : "false";
+        var isIframe = action.IsIframe ? "true" : "false";
 
-        string modalTitle = action.ModalTitle;
+        var modalTitle = HttpUtility.JavaScriptStringEncode(
+            urlRedirectService.GetParsedModalTitle(action, actionContext.FormStateData));
 
         script.Append("ActionHelper.executeClientSideRedirect('");
         script.Append(url);
@@ -164,7 +163,7 @@ public class ActionScripts(
         var formElement = actionContext.FormElement;
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.ProtectObject(actionMap);
         var confirmationMessage =
             GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
     
@@ -212,7 +211,7 @@ public class ActionScripts(
     private string GetGridRouteContext(FormElement formElement)
     {
         var gridRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
-        var encryptedRouteContext = encryptionService.EncryptObject(gridRouteContext);
+        var encryptedRouteContext = encryptionService.ProtectObject(gridRouteContext);
         return encryptedRouteContext;
     }
 
@@ -245,10 +244,10 @@ public class ActionScripts(
     {
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = encryptionService.EncryptObject(actionMap);
+        var encryptedActionMap = encryptionService.ProtectObject(actionMap);
 
         var encryptedRouteContext =
-            encryptionService.EncryptObject(RouteContext.FromFormElement(actionContext.FormElement,
+            encryptionService.ProtectObject(RouteContext.FromFormElement(actionContext.FormElement,
                 ComponentContext.FormViewReload));
 
         var confirmationMessage =

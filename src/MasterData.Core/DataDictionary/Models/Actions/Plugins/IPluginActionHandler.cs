@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;

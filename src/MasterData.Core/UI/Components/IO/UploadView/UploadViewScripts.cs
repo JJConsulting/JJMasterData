@@ -12,6 +12,13 @@ public class UploadViewScripts(JJUploadView uploadView)
         //language=Javascript
         return $"UploadViewHelper.deleteFile('{uploadView.Name}','{{NameJS}}','{message}','{JsCallBack}');";
     }
+
+    public string GetMarkDeletedScript()
+    {
+        string message = uploadView.StringLocalizer["Would you like to delete this record?"];
+        //language=Javascript
+        return $"UploadViewHelper.markDeleted('{uploadView.Name}','{{NameJS}}','{message}','{JsCallBack}','{uploadView.DeletedFilesInputName}');";
+    }
     
     public string GetDownloadFileScript()
     {

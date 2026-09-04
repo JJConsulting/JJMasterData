@@ -1,19 +1,18 @@
 ﻿using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataPanelFactory(IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IHttpContext httpContext,
-        IEncryptionService encryptionService,
+        IHttpContextAccessor httpContext,
+        DataProtectionService encryptionService,
         FieldFormattingService fieldFormattingService,
         FieldValidationService fieldValidationService,
         FormValuesService formValuesService,

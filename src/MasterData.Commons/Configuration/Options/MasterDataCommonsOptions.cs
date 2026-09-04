@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -16,7 +15,6 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// <summary>
 /// JJMasterData key/value configurations.
 /// They're populated from JJMasterData section on <see cref="IConfiguration"/>, following its implementations.
-/// On .NET Framework, add an <see cref="IConfiguration"/> builder to your application.
 /// </summary>
 public sealed class MasterDataCommonsOptions
 {
@@ -47,15 +45,9 @@ public sealed class MasterDataCommonsOptions
     [Display(Name = "Write Procedure Pattern")]
     public string WriteProcedurePattern { get; set; } = "{tablename}Set";
 
-    /// <summary>
-    /// Secret key used at JJMasterDataEncryptionService
-    /// </summary>
-    [Display(Name = "Cryptography Secret Key")]
-    public string? SecretKey { get; set; }
-
-    [JsonIgnore]
-    public static bool IsNetFramework { get; } = RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
-
+    [Obsolete("Please use Microsoft Data Protection Provider")]
+    public string SecretKey { get; set; } = null!;
+    
     internal ConnectionString GetConnectionString(Guid? guid)
     {
         if (guid is null)

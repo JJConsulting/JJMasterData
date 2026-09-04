@@ -1,6 +1,3 @@
-#nullable enable
-
-
 using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.UI.Components;

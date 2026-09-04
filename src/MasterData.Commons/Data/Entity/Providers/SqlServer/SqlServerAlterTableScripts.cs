@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerAlterTableScripts : SqlServerScriptsBase
+public static class SqlServerAlterTableScripts
 {
     [CanBeNull]
     public static string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
@@ -13,21 +14,26 @@ public class SqlServerAlterTableScripts : SqlServerScriptsBase
         var elementFields = fields.ToList();
     
         if (elementFields.Count == 0)
-        {
             return null;
+        
+        var tableName = SqlServerScriptsHelper.GetTableName(element);
+
+        var sb = new StringBuilder();
+
+        var first = true;
+        foreach (var field in elementFields)
+        {
+            if (!first)
+            {
+                sb.Append(",\n");
+            }
+
+            sb.Append(SqlServerScriptsHelper.GetFieldDefinition(field));
+            first = false;
         }
 
-        var fieldDefinitions =
-            from field in elementFields
-            let fieldName = field.Name
-            let dataType = GetFieldDefinition(field)
-            select $"{dataType}";
-
-        var tableName = GetTableName(element);
+        var alterTableScript = $"ALTER TABLE {tableName}\nADD {sb};";
         
-        var fieldDefinitionsString = string.Join(",\n", fieldDefinitions);
-        var alterTableScript = $"ALTER TABLE {tableName}\nADD {fieldDefinitionsString};";
-    
         return alterTableScript;
     }
 }

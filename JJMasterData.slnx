@@ -13,7 +13,6 @@
   </Folder>
   <Folder Name="/ConsoleApps/">
     <Project Path="src\ConsoleApps\MasterData.CommandLine\MasterData.CommandLine.csproj" Type="Classic C#" />
-    <Project Path="src\ConsoleApps\MasterData.LegacyMetadataMigrator\MasterData.LegacyMetadataMigrator.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Docs/">
     <Project Path="doc\MasterData.Docs\MasterData.Docs.csproj" Type="Classic C#" />

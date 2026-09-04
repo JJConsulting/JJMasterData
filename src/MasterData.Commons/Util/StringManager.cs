@@ -462,21 +462,12 @@ public static class StringManager
 
     public static string FirstCharToUpper(this string input)
     {
-        //Since .NET Core 3.0 / .NET Standard 2.1 String.Concat()
-        //supports ReadonlySpan<char> which saves one allocation if we use .AsSpan(1) instead of .Substring(1).
-#if NET
         return input switch
         {
             null => throw new ArgumentNullException(nameof(input)),
             "" => throw new ArgumentException(@$"{nameof(input)} cannot be empty", nameof(input)),
             _ => string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1))
         };
-#else
-        if (!string.IsNullOrEmpty(input))
-            return input[0].ToString().ToUpper() + input[1..].ToLower();
-        return input;
-#endif
-
     }
 
     public static string ToParamCase(string input)

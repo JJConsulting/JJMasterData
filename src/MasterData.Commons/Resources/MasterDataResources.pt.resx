@@ -191,6 +191,10 @@
     <value>Este campo oferece suporte a valores do runtime entre {}. Use {AppPath} para o caminho da raiz da aplicação.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="This field support runtime values between {}." xml:space="preserve">
+    <value>Este campo oferece suporte a valores do runtime entre {}.</value>
+        <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Is Modal?" xml:space="preserve">
     <value>É Modal?</value>
     <comment>JJMasterDataWeb</comment>
@@ -436,6 +440,10 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Limpar Filtro</value>
     <comment>JJMasterDataCore</comment>
+  </data>
+    <data name="Clear Filters" xml:space="preserve">
+    <value>Limpar Filtros</value>
+        <comment>JJMasterDataCore</comment>
   </data>
   <data name="Clear Log" xml:space="preserve">
     <value>Limpar Log</value>
@@ -1737,6 +1745,9 @@
     <value>Tipo de lista</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+    <data name="Key Column" xml:space="preserve">
+    <value>Coluna da Chave</value>
+  </data>
   <data name="Primary Key Column" xml:space="preserve">
     <value>Coluna da Chave Primária</value>
   </data>
@@ -2421,8 +2432,8 @@
     <value>Ponto e Virgula (;)</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="separated by semicolons (;), following the layout below:" xml:space="preserve">
-    <value>separadas por ponto e virgula (;), seguindo o layout abaixo:</value>
+  <data name="with automatically detected delimiters (comma, semicolon, pipe or tab), following the layout below:" xml:space="preserve">
+    <value>com delimitadores detectados automaticamente (vírgula, ponto e vírgula, pipe ou tabulação), seguindo o layout abaixo:</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Session expired" xml:space="preserve">
@@ -2604,6 +2615,52 @@
   <data name="Sync" xml:space="preserve">
     <value>Sincronizar</value>
     <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Validations" xml:space="preserve">
+    <value>Validações</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Rules" xml:space="preserve">
+    <value>Regras</value>
+  </data>
+  <data name="Validation Type" xml:space="preserve">
+    <value>Tipo de validação</value>
+  </data>
+  <data name="Rule Type" xml:space="preserve">
+    <value>Tipo de regra</value>
+  </data>
+  <data name="Read more" xml:space="preserve">
+    <value>Ler mais</value>
+  </data>
+  <data name="Run On Before Insert" xml:space="preserve">
+    <value>Executa antes do insert</value>
+  </data>
+  <data name="Run On Before Update" xml:space="preserve">
+    <value>Executa antes do update</value>
+  </data>
+  <data name="Run On Before Delete" xml:space="preserve">
+    <value>Executa antes do delete</value>
+  </data>
+  <data name="Are you sure you want to delete this rule?" xml:space="preserve">
+    <value>Tem certeza que deseja deletar esta regra?</value>
+  </data>
+  <data name="Select at least one operation." xml:space="preserve">
+    <value>Selecione pelo menos uma operação.</value>
+  </data>
+  <data name="JavaScript rules run server-side with Jint. Use addError(message) for a general error or addError(name, message) for a field error." xml:space="preserve">
+    <value>As regras em JavaScript rodam no servidor com Jint. Use addError(message) para um erro geral ou addError(name, message) para um erro de campo.</value>
+  </data>
+  <data name="Before insert and update" xml:space="preserve">
+    <value>Antes de inserir e atualizar</value>
+  </data>
+  <data name="Return one column with the error message or two columns with field and message. Column names do not matter." xml:space="preserve">
+    <value>Retorne uma coluna com a mensagem de erro ou duas colunas com campo e mensagem. Os nomes das colunas não importam.</value>
+  </data>
+  <data name="There is already a validation with this name." xml:space="preserve">
+    <value>Já existe uma validação com esse nome.</value>
+  </data>
+  <data name="There is already a rule with this name." xml:space="preserve">
+    <value>Já existe uma regra com esse nome.</value>
   </data>
   <data name="Sync Mode" xml:space="preserve">
     <value>Modo do Sincronismo</value>
@@ -2905,7 +2962,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
-    <value>Utilizar vírgula como separador de {1} casas decimais</value>
+    <value>Utilizar '{0}' como separador de {1} casas decimais.</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator." xml:space="preserve">
@@ -3502,6 +3559,15 @@
   <data name="Show Border" xml:space="preserve">
     <value>Mostrar Borda</value>
   </data>
+    <data name="Show Borders" xml:space="preserve">
+    <value>Mostrar Bordas</value>
+  </data>
+    <data name="Show Striped Rows" xml:space="preserve">
+    <value>Mostrar Linhas Zebradas</value>
+  </data>
+    <data name="Include First Row as Header" xml:space="preserve">
+    <value>Incluir Primeira Linha como Cabeçalho</value>
+  </data>
   <data name="6. Mask" xml:space="preserve">
     <value>6. Máscara</value>
   </data>
@@ -3696,9 +3762,6 @@
   </data>
   <data name="When the panel is in PageState.View show only the values without the components." xml:space="preserve">
     <value>Quando o painel está no modo visualuização, mostra apenas os valores sem os componentes.</value>
-  </data>
-  <data name="Validates possibly dangerous values on request on .NET Framework 4.8." xml:space="preserve">
-    <value>Valida valores potencialmente perigosos na requisição no .NET Framework 4.8</value>
   </data>
   <data name="Defines the field size. Use -1 to specify MAX keyword." xml:space="preserve">
     <value>Tamanho do campo. Utilize -1 para utilizar a keyword MAX.</value>
@@ -3900,9 +3963,6 @@
   </data>
   <data name="Export Action" xml:space="preserve">
     <value>Ação de Exportação</value>
-  </data>
-  <data name="Show Upload Outside Modal" xml:space="preserve">
-    <value>Mostrar Upload Fora do Modal</value>
   </data>
   <data name="[Name] field cannot start with a number" xml:space="preserve">
     <value>Campo [Nome] não pode começar com número</value>
@@ -4224,6 +4284,10 @@
     <value>Abrir em uma Nova Aba</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Sign Parameters with HMAC" xml:space="preserve">
+    <value>Assinar Parâmetros com HMAC</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Do you want to recreate the read procedure? Any changes made to the procedure will be lost." xml:space="preserve">
     <value>Deseja recriar a procedure de leitura? Quaisquer modificações feitas na procedure serão perdidas.</value>
   </data>
@@ -4254,4 +4318,13 @@
     <value>Padroniza automaticamente o texto ao salvar, aplicando o formato escolhido. Útil para integrações case-sensitive (ex.: Protheus).</value>
   </data>
 
+  <data name="Show Table Style" xml:space="preserve">
+    <value>Exibir Decorações na Tabela</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+
+    <data name="Process aborted by user" xml:space="preserve">
+    <value>Processo abortado pelo usuário</value>
+        <comment>JJMasterDataCore</comment>
+  </data>
 </root>

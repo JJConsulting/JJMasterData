@@ -1,8 +1,6 @@
 ﻿using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.Http.Abstractions;
-
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -12,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 internal sealed class GridSettingsForm(
     string name,
-    IHttpContext currentContext,
+    IHttpContextAccessor currentContext,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private readonly string _tableTotalPerPage = $"{name}-table-regperpage";
@@ -26,13 +24,14 @@ internal sealed class GridSettingsForm(
     public GridSettings LoadFromForm()
     {
         var gridSettings = new GridSettings();
-        var tableRegPerPage = currentContext.Request[_tableTotalPerPage];
-        var tableTotalPageButtons = currentContext.Request[_tableTotalPaginationButtons];
-        var tableBorder = currentContext.Request[_tableBorder];
-        var tableRowsStriped = currentContext.Request[_tableRowsStriped];
-        var tableRowHover = currentContext.Request[_tableRowHover];
-        var tableIsHeaderFixed = currentContext.Request[_tableIsHeaderFixed];
-        var tableIsCompact = currentContext.Request[_tableIsCompact];
+        var form = currentContext.HttpContext!.Request.GetFormValue;
+        var tableRegPerPage = form(_tableTotalPerPage);
+        var tableTotalPageButtons = form(_tableTotalPaginationButtons);
+        var tableBorder = form(_tableBorder);
+        var tableRowsStriped = form(_tableRowsStriped);
+        var tableRowHover = form(_tableRowHover);
+        var tableIsHeaderFixed = form(_tableIsHeaderFixed);
+        var tableIsCompact = form(_tableIsCompact);
 
         if (int.TryParse(tableRegPerPage, out var totalPerPage))
             gridSettings.RecordsPerPage = totalPerPage;
@@ -49,7 +48,7 @@ internal sealed class GridSettingsForm(
     }
 
     internal bool HasFormValues() =>
-        currentContext.Request[_tableTotalPerPage] != null;
+       currentContext.HttpContext!.Request.HasFormContentType && currentContext.HttpContext!.Request.Form.TryGetValue(_tableTotalPerPage, out _);
 
     internal HtmlBuilder GetHtmlBuilder(bool isPaginationEnabled, GridSettings gridSettings)
     {
@@ -178,7 +177,7 @@ internal sealed class GridSettingsForm(
 
     private HtmlBuilder GetDataToggleElement(string name, string label, bool isChecked)
     {
-        var checkbox = new JJCheckBox(currentContext.Request.Form, stringLocalizer)
+        var checkbox = new JJCheckBox(currentContext, stringLocalizer)
         {
             Name = name,
             IsChecked = isChecked,

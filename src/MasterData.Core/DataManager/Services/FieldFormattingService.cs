@@ -35,10 +35,7 @@ public class FieldFormattingService(
             case FormComponent.Percentage:
                 stringValue = GetNumericValueAsString(field, value, $"N{field.NumberOfDecimalPlaces}");
                 if (!string.IsNullOrEmpty(stringValue))
-                {
-                    stringValue += "%";
-                }
-                
+                    stringValue += '%';
                 break;
             case FormComponent.Number:
             case FormComponent.Slider:
@@ -51,12 +48,12 @@ public class FieldFormattingService(
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float or FieldType.Decimal;
                 stringValue = await lookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formStateData,
-                    value.ToString(), allowOnlyNumerics);
+                    value.ToString(), allowOnlyNumerics) ?? string.Empty;
                 break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? stringLocalizer["Yes"] : stringLocalizer["No"];
                 break;
-            case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
+            case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup 
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
                 return await dataItemService.GetDescriptionAsync(fieldSelector.FormElement, field, formStateData, value);
             default:
@@ -67,10 +64,10 @@ public class FieldFormattingService(
         if (field.EncodeHtml)
             stringValue = HttpUtility.HtmlEncode(stringValue);
         
-        return stringValue ?? string.Empty;
+        return stringValue.Trim();
     }
     
-    public static string FormatValue(FormElementField field, object value)
+    public static string FormatValue(FormElementField field, object? value)
     {
         var stringValue = value?.ToString();
         if (string.IsNullOrEmpty(stringValue))
@@ -133,7 +130,7 @@ public class FieldFormattingService(
         return stringValue;
     }
 
-    private static string GetNumericValueAsString(FormElementField field, object value, [StringSyntax("NumericFormat")] string decimalFormat)
+    private static string GetNumericValueAsString(FormElementField field, object? value, [StringSyntax("NumericFormat")] string decimalFormat)
     {
         CultureInfo cultureInfo;
         if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName)
@@ -142,24 +139,24 @@ public class FieldFormattingService(
         else
             cultureInfo = CultureInfo.CurrentUICulture;
         
-        string stringValue = null;
+        string? stringValue = null;
         switch (field.DataType)
         {
             case FieldType.Float:
             {
-                if (value is double doubleValue || double.TryParse(value.ToString(), out doubleValue))
+                if (value is double doubleValue || double.TryParse(value?.ToString(), out doubleValue))
                     stringValue = doubleValue.ToString(decimalFormat, cultureInfo);
                 break;
             }
             case FieldType.Int:
             {
-                if (value is int intValue || int.TryParse(value.ToString(), out intValue))
+                if (value is int intValue || int.TryParse(value?.ToString(), out intValue))
                     stringValue = intValue.ToString("0", cultureInfo);
                 break;
             }
             case FieldType.Decimal:
             {
-                if (value is decimal decimalValue || decimal.TryParse(value.ToString(), out decimalValue))
+                if (value is decimal decimalValue || decimal.TryParse(value?.ToString(), out decimalValue))
                     stringValue = decimalValue.ToString(decimalFormat, cultureInfo);
                 break;
             }
@@ -167,6 +164,6 @@ public class FieldFormattingService(
                 throw new JJMasterDataException($"Invalid FieldType for numeric component [{field.Name}]");
         }
 
-        return stringValue;
+        return stringValue ?? string.Empty;
     }
 }

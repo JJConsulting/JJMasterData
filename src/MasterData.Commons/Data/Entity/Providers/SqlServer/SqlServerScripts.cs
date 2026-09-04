@@ -28,7 +28,7 @@ public class SqlServerScripts(
     {
         var fields = element.Fields.FindAll(f => f.DataBehavior is FieldBehavior.Real);
         
-        return readProcedureScripts.GetReadScript(element, fields);
+        return readProcedureScripts.GetReadScript(element, fields).ToString();
     }
     
     public static string GetCreateTableScript(Element element, List<RelationshipReference> relationships)

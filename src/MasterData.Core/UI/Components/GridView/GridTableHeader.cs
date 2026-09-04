@@ -1,33 +1,37 @@
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class GridTableHeader(JJGridView gridView)
+internal sealed class GridTableHeader(
+    JJGridView gridView,
+    List<FormElementField> visibleFields,
+    Dictionary<string, object?> filters)
 {
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = gridView.StringLocalizer;
 
-    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
+    public HtmlBuilder GetHtmlBuilder()
     {
         var html = new HtmlBuilder(HtmlTag.Thead);
         if (gridView.DataSource?.Count == 0 && !gridView.ShowHeaderWhenEmpty)
             return html;
 
-        var visibleFieldsThList = await GetVisibleFieldsThList();
+        var visibleFieldsThList = GetVisibleFieldsThList();
 
         var tr = new HtmlBuilder(HtmlTag.Tr);
+
+        if (gridView.EnableMultiSelect)
+            tr.Append(GetMultSelectThHtmlElement());
         
-        tr.AppendIf(gridView.EnableMultiSelect, GetMultSelectThHtmlElement);
         tr.AppendRange(visibleFieldsThList);
         tr.AppendRange(GetActionsThList());
         
@@ -55,12 +59,11 @@ internal sealed class GridTableHeader(JJGridView gridView)
         }
     }
 
-    private async Task<List<HtmlBuilder>> GetVisibleFieldsThList()
+    private List<HtmlBuilder> GetVisibleFieldsThList()
     {
         var thList = new List<HtmlBuilder>();
         var hasIcon = false;
-        
-        foreach (var field in await gridView.GetVisibleFieldsAsync())
+        foreach (var field in visibleFields)
         {
             var th = new HtmlBuilder(HtmlTag.Th);
             var style = GetThStyle(field);
@@ -106,7 +109,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                     if (string.IsNullOrWhiteSpace(order))
                         break;
 
-                    if (order.StartsWith("["))
+                    if (order.StartsWith('['))
                     {
                         order = order.Replace("[", "");
                         order = order.Replace("]", "");
@@ -138,9 +141,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 }
             }
 
-            var currentFilter = await gridView.GetCurrentFilterAsync();
-
-            if (IsAppliedFilter(field, currentFilter))
+            if (IsAppliedFilter(field))
             {
                 hasIcon = true;
                 th.AppendComponent(new JJIcon("fa fa-filter text-info")
@@ -160,21 +161,25 @@ internal sealed class GridTableHeader(JJGridView gridView)
         return thList;
     }
 
-    private static bool IsAppliedFilter(ElementField field, Dictionary<string, object> currentFilter)
+    private bool IsAppliedFilter(ElementField field)
     {
         if (field.Filter.Type is FilterMode.None)
             return false;
         
-        var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");
+        var hasFieldOrFromKey = filters.ContainsKey(field.Name) || filters.ContainsKey($"{field.Name}_from");
 
         return hasFieldOrFromKey;
     }
 
-    private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc text-info").GetHtmlBuilder()
-        .WithToolTip(_stringLocalizer["Ascending order"]);
+    private JJIcon GetAscendingIcon() => new("fa fa-sort-amount-asc text-info")
+    {
+        Tooltip = _stringLocalizer["Ascending order"]
+    };
 
-    private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc text-info").GetHtmlBuilder()
-        .WithToolTip(_stringLocalizer["Descending order"]);
+    private JJIcon GetDescendingIcon() => new("fa fa-sort-amount-desc text-info")
+    {
+        Tooltip = _stringLocalizer["Descending order"]
+    };
 
     private static string GetThStyle(FormElementField field)
     {
@@ -202,7 +207,6 @@ internal sealed class GridTableHeader(JJGridView gridView)
                 break;
             }
             case FormComponent.CheckBox:
-                return "text-align:center;";
             case FormComponent.Icon:
                 return "text-align:center;";
             default:
@@ -224,16 +228,7 @@ internal sealed class GridTableHeader(JJGridView gridView)
     {
         var th = new HtmlBuilder(HtmlTag.Th);
 
-        var hasPages = true;
-        if (!gridView.IsPagingEnabled())
-        {
-            hasPages = false;
-        }
-        else
-        {
-            if (gridView.TotalOfPages <= 1)
-                hasPages = false;
-        }
+        var hasPages = gridView.IsPagingEnabled() && gridView.TotalOfPages > 1;
 
         th.WithCssClass("jj-checkbox")
             .Append(HtmlTag.Input, input =>

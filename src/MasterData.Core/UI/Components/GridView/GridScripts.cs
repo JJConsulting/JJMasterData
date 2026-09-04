@@ -1,27 +1,27 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Text;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class GridScripts
 {
-    private readonly IEncryptionService _encryptionService;
+    private readonly DataProtectionService _encryptionService;
     private readonly JJGridView _gridView;
     private readonly string _defaultEncryptedRouteContext;
 
     public GridScripts(JJGridView gridView)
     {
         _gridView = gridView;
-        _encryptionService = gridView.EncryptionService;
+        _encryptionService = gridView.DataProtectionService;
         
         var defaultRouteContext = RouteContext.FromFormElement(_gridView.FormElement, ComponentContext.GridViewReload);
         
-        _defaultEncryptedRouteContext = _encryptionService.EncryptObject(defaultRouteContext);
+        _defaultEncryptedRouteContext = _encryptionService.ProtectObject(defaultRouteContext);
     }
 
     public string GetSortingScript(string fieldName)
@@ -70,7 +70,7 @@ public class GridScripts
     public string GetGridSettingsScript(ConfigAction action, Dictionary<string, object> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
-        string encryptedActionMap = _encryptionService.EncryptObject(actionMap);
+        string encryptedActionMap = _encryptionService.ProtectObject(actionMap);
 
         // language=JavaScript
         return $"GridViewHelper.setGridSettings('{_gridView.Name}','{_defaultEncryptedRouteContext}','{encryptedActionMap}');";
@@ -125,6 +125,6 @@ public class GridScripts
     private string GetEncryptedRouteContext(ComponentContext componentContext)
     {
         var routeContext = RouteContext.FromFormElement(_gridView.FormElement, componentContext);
-        return _encryptionService.EncryptObject(routeContext);
+        return _encryptionService.ProtectObject(routeContext);
     }
 }

@@ -7,7 +7,7 @@ using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerCreateTableScripts : SqlServerScriptsBase
+public static class SqlServerCreateTableScripts
 {
     public static string GetCreateTableScript(Element element,  List<RelationshipReference> relationships)
     {
@@ -21,7 +21,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         var keys = new StringBuilder();
 
         sql.Append("CREATE TABLE ");
-        sql.Append(GetTableName(element));
+        sql.Append(SqlServerScriptsHelper.GetTableName(element));
         sql.AppendLine(" (");
 
         var fields = element.Fields
@@ -35,8 +35,8 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
             else
                 sql.AppendLine(",");
 
-            sql.Append(Tab);
-            sql.Append(GetFieldDefinition(f));
+            sql.Append(SqlServerScriptsHelper.Tab);
+            sql.Append(SqlServerScriptsHelper.GetFieldDefinition(f));
 
             if (!f.IsPk) continue;
             if (keys.Length > 0)
@@ -50,7 +50,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         if (keys.Length > 0)
         {
             sql.AppendLine(", ");
-            sql.Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab);
             sql.Append("CONSTRAINT [PK_");
             sql.Append(element.TableName);
             sql.Append("] PRIMARY KEY NONCLUSTERED (");
@@ -79,21 +79,21 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 sql.Append('_');
                 sql.Append(counter);
                 sql.Append("] ON ");
-                sql.AppendLine(GetTableName(element));
+                sql.AppendLine(SqlServerScriptsHelper.GetTableName(element));
 
-                sql.Append(Tab);
+                sql.Append(SqlServerScriptsHelper.Tab);
                 sql.AppendLine("(");
                 for (int i = 0; i < index.Columns.Count; i++)
                 {
                     if (i > 0)
                         sql.AppendLine(", ");
 
-                    sql.Append(Tab);
+                    sql.Append(SqlServerScriptsHelper.Tab);
                     sql.Append(index.Columns[i]);
                 }
 
                 sql.AppendLine();
-                sql.Append(Tab);
+                sql.Append(SqlServerScriptsHelper.Tab);
                 sql.AppendLine(")");
                 sql.AppendLine("GO");
                 counter++;
@@ -143,7 +143,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 sql.Append("ADD CONSTRAINT [");
                 sql.Append(contraintName);
                 sql.AppendLine("] ");
-                sql.Append(Tab);
+                sql.Append(SqlServerScriptsHelper.Tab);
                 sql.Append("FOREIGN KEY (");
 
                 for (int rc = 0; rc < relationship.Columns.Count; rc++)
@@ -157,7 +157,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 }
 
                 sql.AppendLine(")");
-                sql.Append(Tab);
+                sql.Append(SqlServerScriptsHelper.Tab);
                 sql.Append("REFERENCES ");
                 sql.Append(element.TableName);
                 sql.Append(" (");
@@ -176,14 +176,14 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 if (relationship.UpdateOnCascade)
                 {
                     sql.AppendLine();
-                    sql.Append(Tab).Append(Tab);
+                    sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
                     sql.Append("ON UPDATE CASCADE ");
                 }
 
                 if (relationship.DeleteOnCascade)
                 {
                     sql.AppendLine();
-                    sql.Append(Tab).Append(Tab);
+                    sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
                     sql.Append("ON DELETE CASCADE ");
                 }
 

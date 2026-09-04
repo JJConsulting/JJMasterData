@@ -1,4 +1,5 @@
-﻿using JJConsulting.Html.Bootstrap.Components;
+﻿#nullable disable warnings
+using JJConsulting.Html.Bootstrap.Components;
 
 namespace JJMasterData.Core.UI.Components;
 

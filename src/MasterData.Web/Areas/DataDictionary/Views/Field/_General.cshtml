@@ -7,7 +7,6 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
     var isForm = ViewData["IsForm"] is true;
@@ -143,15 +142,6 @@
             <checkbox
                 tooltip="@StringLocalizer["Option used to prevent XSS attacks. Uncheck this option if you really trust the origin of your data."]"
                 for="EncodeHtml" layout="Switch"/>
-        </div>
-    }
-
-    @if (Options.Value.SupportNetFramework)
-    {
-        <div class="mb-3 col-sm-4 required">
-            <checkbox
-                tooltip="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]"
-                for="ValidateRequest" layout="Switch"/>
         </div>
     }
 </div>

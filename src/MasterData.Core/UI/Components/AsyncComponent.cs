@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Threading.Tasks;
 using JJConsulting.Html.Bootstrap.Abstractions;
 

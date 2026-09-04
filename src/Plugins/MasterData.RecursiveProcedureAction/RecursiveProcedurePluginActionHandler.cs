@@ -4,17 +4,18 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Protheus.Abstractions;
 using JJMasterData.RecursiveProcedureAction.UI;
+using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.RecursiveProcedureAction;
 
 public class RecursiveProcedurePluginActionHandler(
     IComponentFactory componentFactory,
     IProtheusService protheusService,
-    IFormValues formValues,
+    IHttpContextAccessor httpContextAccessor,
     IEntityRepository entityRepository,
     IMasterDataUser masterDataUser) : IPluginActionHandler
 {
@@ -165,7 +166,7 @@ public class RecursiveProcedurePluginActionHandler(
         PluginActionContext context,
         int executionSequence)
     {
-        var observationFormValue = formValues["ExecutionSequenceObs"];
+        var observationFormValue = httpContextAccessor.HttpContext?.Request.GetFormValue("ExecutionSequenceObs");
         var inputParameters = new RecursiveProcedureInputParameters
         {
             UserIdParameter =
@@ -202,7 +203,7 @@ public class RecursiveProcedurePluginActionHandler(
 
     private int GetExecutionSequence()
     {
-        var executionSequenceString = formValues["ExecutionSequence"];
+        var executionSequenceString = httpContextAccessor.HttpContext?.Request.GetFormValue("ExecutionSequence");
 
 #pragma warning disable CA1806
         int.TryParse(executionSequenceString, out var executionSequence);

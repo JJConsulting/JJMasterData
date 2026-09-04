@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace JJMasterData.Core.DataDictionary.Models;

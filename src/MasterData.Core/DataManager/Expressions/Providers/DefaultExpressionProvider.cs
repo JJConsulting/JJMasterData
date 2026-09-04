@@ -1,8 +1,5 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -11,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCalc;
 using NCalc.Factories;
+using NCalc.Handlers;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
@@ -21,14 +19,6 @@ public sealed class DefaultExpressionProvider(
     ILogger<DefaultExpressionProvider> logger)
     : ISyncExpressionProvider, IAsyncExpressionProvider
 {
-    private readonly ExpressionContext _expressionContext = options.Value.ExpressionContext with
-    {
-        StaticParameters = new Dictionary<string, object?>(options.Value.ExpressionContext.StaticParameters, StringComparer.InvariantCultureIgnoreCase)
-        {
-            ["ServiceProvider"] = serviceProvider
-        }
-    };
-
     public string Prefix => "exp";
     public string Title => "Expression";
 
@@ -38,11 +28,16 @@ public sealed class DefaultExpressionProvider(
     {
         var parameters = new Dictionary<string, object?>(parsedValues.Count, StringComparer.InvariantCultureIgnoreCase);
         var preparedExpression = PrepareExpressionWithParameters(expression, parsedValues, parameters);
+
+        var expressionContext = new ExpressionContext(options.Value.ExpressionContext)
+        {
+            Parameters = new Dictionary<string, object?>(parameters, StringComparer.InvariantCultureIgnoreCase)
+            {
+                ["ServiceProvider"] = serviceProvider
+            }
+        };
         
-        foreach (var parameter in parameters)
-            _expressionContext.StaticParameters[parameter.Key] = parameter.Value;
-        
-        var ncalcExpression = expressionFactory.Create(preparedExpression, _expressionContext);
+        var ncalcExpression = expressionFactory.Create(preparedExpression, options.Value.ExpressionConfiguration, expressionContext);
         
         logger.LogExpression(preparedExpression);
         
@@ -63,15 +58,16 @@ public sealed class DefaultExpressionProvider(
         {
             var token = $"{ExpressionHelper.Begin}{kvp.Key}{ExpressionHelper.End}";
             var quotedToken = $"'{token}'";
+            var value = kvp.Value is DBNull ? null : kvp.Value;
 
             if (expression.Contains(quotedToken, StringComparison.InvariantCultureIgnoreCase))
             {
                 expression = expression.Replace(quotedToken, kvp.Key);
-                parameters[kvp.Key] = kvp.Value?.ToString();
+                parameters[kvp.Key] = value?.ToString();
             }
             else
             {
-                parameters[kvp.Key] = kvp.Value;
+                parameters[kvp.Key] = value;
             }
         }
 

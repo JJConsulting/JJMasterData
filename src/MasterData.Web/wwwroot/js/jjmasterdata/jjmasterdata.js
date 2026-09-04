@@ -408,6 +408,9 @@ class CodeEditor {
         catch (_a) {
             return;
         }
+        if (!hints || typeof hints !== "object") {
+            return;
+        }
         Object.keys(hints).forEach(lang => {
             monaco.languages.registerCompletionItemProvider(lang, {
                 provideCompletionItems: function (model, position) {
@@ -560,15 +563,27 @@ class DataExportationHelper {
     static startProgressVerification(componentName, routeContext) {
         return __awaiter(this, void 0, void 0, function* () {
             DataExportationHelper.setSpinner();
+            DataExportationHelper.setActionProcessing(componentName, true);
+            if (DataExportationHelper.progressVerifications.has(componentName))
+                return;
+            DataExportationHelper.progressVerifications.add(componentName);
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
+            urlBuilder.addQueryParameter("jobId", DataExportationHelper.getJobId(componentName));
             const url = urlBuilder.build();
             var isCompleted = false;
-            while (!isCompleted) {
-                isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
-                yield sleep(3000);
+            try {
+                while (!isCompleted) {
+                    isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
+                    if (!isCompleted)
+                        yield sleep(3000);
+                }
+            }
+            finally {
+                DataExportationHelper.progressVerifications.delete(componentName);
+                DataExportationHelper.setActionProcessing(componentName, false);
             }
         });
     }
@@ -578,6 +593,7 @@ class DataExportationHelper {
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
+            urlBuilder.addQueryParameter("jobId", DataExportationHelper.getJobId(componentName));
             yield DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
         });
     }
@@ -657,6 +673,8 @@ class DataExportationHelper {
     }
     static setSpinner() {
         const target = document.getElementById('data-exportation-spinner-');
+        if (!target || target.childElementCount > 0)
+            return;
         if (bootstrapVersion < 5) {
             const options = {
                 className: "spinner",
@@ -693,15 +711,38 @@ class DataExportationHelper {
             target.append(spinnerDiv);
         }
     }
+    static setActionProcessing(componentName, isProcessing) {
+        var _a;
+        const button = Array.from(document.querySelectorAll('[onclick*="DataExportationHelper.openExportPopup"]'))
+            .find(element => { var _a; return (_a = element.getAttribute('onclick')) === null || _a === void 0 ? void 0 : _a.includes(`'${componentName}'`); });
+        if (!button)
+            return;
+        button.setAttribute('aria-busy', isProcessing.toString());
+        const indicatorId = `data-exportation-action-spinner-${componentName}`;
+        const existingIndicator = document.getElementById(indicatorId);
+        if (!isProcessing) {
+            existingIndicator === null || existingIndicator === void 0 ? void 0 : existingIndicator.remove();
+            (_a = button.querySelector('.data-exportation-action-indicator')) === null || _a === void 0 ? void 0 : _a.remove();
+            return;
+        }
+        if (existingIndicator || button.querySelector('.data-exportation-action-indicator'))
+            return;
+        const indicator = document.createElement('span');
+        indicator.id = indicatorId;
+        indicator.classList.add('spinner-border', 'data-operation-action-indicator', 'data-exportation-action-indicator');
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
+    }
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         HTMLHelper.setInnerHTML(modalBody, html);
         const qtdElement = document.querySelector("#" + componentName + "-total-of-records");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
-            if (totRows > 50000) {
-                document.querySelector("#data-exportation-warning" + componentName).style.display = "block";
-            }
+            const warningElement = document.querySelector("#data-exportation-warning" + componentName);
+            if (totRows > 50000 && warningElement)
+                warningElement.style.display = "block";
         }
         if (bootstrapVersion < 5) {
             $("#data-exportation-modal-" + componentName).modal();
@@ -720,45 +761,21 @@ class DataExportationHelper {
         });
     }
     static showOptions(componentName, exportType) {
-        const orientationDiv = document.getElementById(`${componentName}-div-export-orientation`);
-        const allDiv = document.getElementById(`${componentName}-div-export-all`);
-        const delimiterDiv = document.getElementById(`${componentName}-div-export-delimiter`);
-        const firstlineDiv = document.getElementById(`${componentName}-div-export-firstline`);
-        if (exportType === "1") {
-            if (orientationDiv)
-                orientationDiv.style.display = "none";
-            if (allDiv)
-                allDiv.style.display = "block";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "none";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "block";
-        }
-        else if (exportType === "2") {
-            if (orientationDiv)
-                orientationDiv.style.display = "block";
-            if (allDiv)
-                allDiv.style.display = "none";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "none";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "none";
-        }
-        else {
-            if (orientationDiv)
-                orientationDiv.style.display = "none";
-            if (allDiv)
-                allDiv.style.display = "block";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "block";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "block";
-        }
+        document.querySelectorAll(".data-export-format-option").forEach(element => {
+            element.style.display = element.dataset.exportFormat === exportType ? "block" : "none";
+        });
+    }
+    static getJobId(componentName) {
+        var _a, _b;
+        return (_b = (_a = document.querySelector(`#${componentName}-export-job-id`)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "";
     }
 }
+DataExportationHelper.progressVerifications = new Set();
 class DataImportationHelper {
     static setSpinner() {
         const target = document.getElementById('data-importation-spinner');
+        if (!target || target.childElementCount > 0)
+            return;
         if (bootstrapVersion < 5) {
             const options = {
                 className: "spinner",
@@ -801,6 +818,7 @@ class DataImportationHelper {
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
         urlBuilder.addQueryParameter("componentName", componentName);
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         const url = urlBuilder.build();
         fetch(url, {
             method: 'GET',
@@ -880,9 +898,12 @@ class DataImportationHelper {
             }
             if (!result.IsProcessing) {
                 clearInterval(intervalId);
+                DataImportationHelper.progressVerifications.delete(componentName);
+                DataImportationHelper.setActionProcessing(componentName, false);
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
+                urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         $("body").on('hidden.bs.modal', "#" + DataImportationModal.getInstance().modalId, function () {
@@ -922,6 +943,7 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         postFormValues({
             url: urlBuilder.build(), success: html => {
                 DataImportationHelper.removePasteListener();
@@ -931,9 +953,40 @@ class DataImportationHelper {
     }
     static startProgressVerification(componentName, routeContext) {
         DataImportationHelper.setSpinner();
+        DataImportationHelper.setActionProcessing(componentName, true);
+        if (DataImportationHelper.progressVerifications.has(componentName))
+            return;
         let intervalId = setInterval(function () {
             DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
         }, 3000);
+        DataImportationHelper.progressVerifications.set(componentName, intervalId);
+        DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
+    }
+    static setActionProcessing(componentName, isProcessing) {
+        var _a;
+        const button = Array.from(document.querySelectorAll('[onclick*="DataImportationHelper.show"]'))
+            .find(element => { var _a; return (_a = element.getAttribute('onclick')) === null || _a === void 0 ? void 0 : _a.includes(`'${componentName}'`); });
+        if (!button)
+            return;
+        button.setAttribute('aria-busy', isProcessing.toString());
+        const gridName = componentName.endsWith('-importation')
+            ? componentName.substring(0, componentName.length - '-importation'.length)
+            : componentName;
+        const indicatorId = `data-importation-action-spinner-${gridName}`;
+        const existingIndicator = document.getElementById(indicatorId);
+        if (!isProcessing) {
+            existingIndicator === null || existingIndicator === void 0 ? void 0 : existingIndicator.remove();
+            (_a = button.querySelector('.data-importation-action-indicator')) === null || _a === void 0 ? void 0 : _a.remove();
+            return;
+        }
+        if (existingIndicator || button.querySelector('.data-importation-action-indicator'))
+            return;
+        const indicator = document.createElement('span');
+        indicator.id = indicatorId;
+        indicator.classList.add('spinner-border', 'data-operation-action-indicator', 'data-importation-action-indicator');
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
     }
     static help(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -952,6 +1005,7 @@ class DataImportationHelper {
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "stop");
         urlBuilder.addQueryParameter("componentName", componentName);
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         const url = urlBuilder.build();
         fetch(url).then(response => response.json()).then(data => {
             if (data.isProcessing === false) {
@@ -971,26 +1025,28 @@ class DataImportationHelper {
             }
             e.preventDefault();
             if (pastedText != undefined) {
-                document.querySelector("#pasteValue").value = pastedText;
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", routeContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText");
-                const requestOptions = getRequestOptions();
-                postFormValues({
+                const formData = new FormData(getMasterDataForm());
+                const pastedFile = new Blob([pastedText], { type: "text/tab-separated-values" });
+                formData.append("pastedFile", pastedFile, "clipboard.tsv");
+                postContent({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector("#" + componentName).innerHTML = html;
                         DataImportationHelper.startProgressVerification(componentName, routeContext);
                     }
-                });
+                }, formData);
             }
             return false;
         };
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, { once: true });
     }
-    static uploadCallback(componentName, routeContext, gridRouteContext) {
+    static uploadCallback(componentName, routeContext, jobId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "loading");
+        urlBuilder.addQueryParameter("jobId", jobId);
         postFormValues({
             url: urlBuilder.build(),
             success: html => {
@@ -1004,12 +1060,17 @@ class DataImportationHelper {
             document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
         }
     }
+    static getJobId(componentName) {
+        var _a, _b;
+        return (_b = (_a = document.querySelector(`#${componentName}-import-job-id`)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "";
+    }
 }
 DataImportationHelper.insertCount = 0;
 DataImportationHelper.updateCount = 0;
 DataImportationHelper.deleteCount = 0;
 DataImportationHelper.ignoreCount = 0;
 DataImportationHelper.errorCount = 0;
+DataImportationHelper.progressVerifications = new Map();
 class DataImportationModal {
     static getInstance() {
         if (this.instance === undefined) {
@@ -1094,7 +1155,6 @@ class FormViewHelper {
         setTimeout(function () {
             insertAlertDiv.style.display = "none";
         }, 3000);
-        GridViewHelper.refresh(componentName, gridViewRouteContext);
     }
     static refreshFormView(componentName, routeContext) {
         const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
@@ -1170,80 +1230,46 @@ class GridViewFilterHelper {
     static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
         const selector = divId + " input:enabled, " + divId + " select:enabled";
-        $(selector).each(function () {
-            let currentObj = $(this);
-            if (currentObj.hasClass("flatpickr-input")) {
-                currentObj.val("");
-            }
-            if (currentObj.hasClass("selectpicker")) {
-                currentObj.selectpicker("val", "");
-            }
-            if (currentObj.typeahead) {
-                currentObj.typeahead("val", "");
-                currentObj.typeahead("destroy");
-            }
-            if (currentObj.hasClass("jj-numeric")) {
-                const autoNumeric = AutoNumeric.getAutoNumericElement(currentObj[0]);
-                autoNumeric.clear();
-            }
-            let inputType = this.type;
-            if (inputType == "checkbox") {
-                currentObj.prop("checked", false);
-            }
-            else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
-                currentObj.tagsinput('removeAll');
-            }
-            else if (inputType != "hidden") {
-                currentObj.val(null);
-                if (currentObj.hasClass("selectpicker")) {
-                    currentObj.selectpicker("render");
-                }
-                else if (currentObj.hasClass("jj-search-box")) {
-                    currentObj[0].bootstrapSearch.clear();
-                }
-                else if (currentObj.hasClass("jjlookup")) {
-                    currentObj.blur();
-                }
-            }
-        });
+        const inputNames = Array.from(document.querySelectorAll(selector))
+            .map(input => input.name)
+            .filter(Boolean);
+        getMasterDataForm().addEventListener("formdata", (event) => {
+            inputNames.forEach(name => event.formData.delete(name));
+        }, { once: true });
+    }
+    static clearFilter(componentName, routeContext, isSubmit, filterPanelName = null, filterRouteContext = null) {
         document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
         document.querySelector("#grid-view-action-map-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName);
-    }
-    static clearFilter(componentName, routeContext, isSubmit, filterPanelName = null, filterRouteContext = null) {
+        this.clearFilterInputs(componentName);
         if (isSubmit) {
-            this.clearFilterInputs(componentName);
             getMasterDataForm().submit();
+            return;
+        }
+        GridViewHelper.setCurrentGridPage(componentName, 1);
+        if (filterPanelName && filterRouteContext) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", filterRouteContext);
+            postFormValues({
+                url: urlBuilder.build(),
+                success: (content) => {
+                    HTMLHelper.setOuterHTML(filterPanelName, content);
+                    listenAllEvents("#" + filterPanelName);
+                    document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
+                    GridViewHelper.refreshGrid(componentName, routeContext);
+                    document.getElementById(componentName + "-filter-icon").classList.add("d-none");
+                }
+            });
         }
         else {
-            document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
-            document.querySelector("#grid-view-action-map-" + componentName).value = "";
-            this.clearFilterInputs(componentName);
-            GridViewHelper.clearCurrentFormAction(componentName);
-            GridViewHelper.setCurrentGridPage(componentName, 1);
-            if (filterPanelName && filterRouteContext) {
-                const urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("routeContext", filterRouteContext);
-                postFormValues({
-                    url: urlBuilder.build(),
-                    success: (content) => {
-                        HTMLHelper.setOuterHTML(filterPanelName, content);
-                        listenAllEvents("#" + filterPanelName);
-                        GridViewHelper.refreshGrid(componentName, routeContext);
-                        document.getElementById(componentName + "-filter-icon").classList.add("d-none");
-                    }
-                });
-            }
-            else {
-                GridViewHelper.refreshGrid(componentName, routeContext);
-                document.getElementById(componentName + "-filter-icon").classList.add("d-none");
-            }
+            GridViewHelper.refreshGrid(componentName, routeContext);
+            document.getElementById(componentName + "-filter-icon").classList.add("d-none");
         }
     }
     static searchOnDOM(componentName, oDom) {
         const value = $(oDom).val().toString().toLowerCase();
         $("#" + componentName + "-table" + " tr").filter(function () {
-            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const textValues = $(this).clone().find('.ts-wrapper, .tom-select, select').remove().end().text();
             let isSearch = textValues.toLowerCase().indexOf(value) > -1;
             if (!isSearch) {
                 var valueNew = value.replace(",", "").replace(".", "").replace("-", "");
@@ -1733,10 +1759,7 @@ class LegacySearchBoxListener {
 const listenAllEvents = (selectorPrefix = String()) => {
     var _a;
     selectorPrefix += " ";
-    $(selectorPrefix + ".selectpicker").selectpicker({
-        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon',
-        styleBase: bootstrapVersion === 5 ? "form-select form-dropdown" : "form-control"
-    });
+    TomSelectHelper.listen(selectorPrefix);
     if (bootstrapVersion === 3) {
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     }
@@ -2468,7 +2491,7 @@ class PhoneInputListener {
             }).mask(input);
         }
         function syncHiddenInput(input, select) {
-            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0];
+            const hiddenInput = $(input).closest('.jj-phone-group').find('.jj-phone-hidden-input')[0];
             if (!hiddenInput)
                 return;
             const selectedOption = select.selectedOptions[0];
@@ -2478,14 +2501,12 @@ class PhoneInputListener {
         }
         const selects = document.querySelectorAll(`${selectorPrefix}select.jj-phone-select`);
         selects.forEach(select => {
-            $(select).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-                if (isSelected) {
-                    const input = $(select).closest('.input-group').find('.jj-phone-input')[0];
-                    if (!input)
-                        return;
-                    applyMask(input);
-                    syncHiddenInput(input, select);
-                }
+            select.addEventListener('change', () => {
+                const input = $(select).closest('.input-group').find('.jj-phone-input')[0];
+                if (!input)
+                    return;
+                applyMask(input);
+                syncHiddenInput(input, select);
             });
         });
         const inputs = document.querySelectorAll(`${selectorPrefix}input.jj-phone-input`);
@@ -2493,7 +2514,7 @@ class PhoneInputListener {
             const select = $(input).closest('.input-group').find('select.jj-phone-select')[0];
             if (!select)
                 return;
-            const hiddenInput = $(input).closest('.input-group').find('.jj-phone-hidden-input')[0];
+            const hiddenInput = $(input).closest('.jj-phone-group').find('.jj-phone-hidden-input')[0];
             const options = [...select.options];
             const longestDialCode = options.reduce((longest, current) => {
                 const dialCode = normalizeDialCode(current.getAttribute('dial-code'));
@@ -2515,7 +2536,7 @@ class PhoneInputListener {
             if (hiddenInput === null || hiddenInput === void 0 ? void 0 : hiddenInput.value.startsWith('+')) {
                 const optionCountrySelected = getCountryFromInputValue(hiddenInput.value);
                 if (optionCountrySelected)
-                    $(select).selectpicker('val', optionCountrySelected.value);
+                    TomSelectHelper.setValue(select, optionCountrySelected.value);
             }
             const selectedOption = select.selectedOptions[0] || options.find(option => option.value === $(select).val());
             if (selectedOption) {
@@ -2571,8 +2592,19 @@ function getRequestOptions() {
     };
 }
 function postFormValues(options) {
+    postValues(options, getRequestOptions());
+}
+function postContent(options, body) {
+    postValues(options, {
+        method: "POST",
+        body: body,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    });
+}
+function postValues(options, requestOptions) {
     SpinnerOverlay.show();
-    const requestOptions = getRequestOptions();
     const event = new Event("postFormValuesCompleted");
     fetch(options.url, requestOptions)
         .then(response => {
@@ -2857,10 +2889,11 @@ class TextAreaListener {
     }
 }
 class TextFileHelper {
-    static showUploadView(fieldName, title, routeContext) {
+    static showUploadView(fieldName, title, routeContext, draftInputId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
         const modalId = fieldName + "-upload-modal";
         const modal = new Modal();
@@ -2875,10 +2908,11 @@ class TextFileHelper {
             listenAllEvents("#" + modalId);
         });
     }
-    static refresh(fieldName, routeContext) {
+    static refresh(fieldName, routeContext, draftInputId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
+        this.addDraftId(urlBuilder, draftInputId);
         const url = urlBuilder.build();
         postFormValues({ url: url, success: function (html) {
                 const uploadViewSelector = "#" + fieldName + "-upload-view";
@@ -2896,6 +2930,133 @@ class TextFileHelper {
         if (valueElement) {
             valueElement.value = valueText;
         }
+    }
+    static addDraftId(urlBuilder, draftInputId) {
+        const draftInput = document.getElementById(draftInputId);
+        if (draftInput === null || draftInput === void 0 ? void 0 : draftInput.value) {
+            urlBuilder.addQueryParameter("draftId", draftInput.value);
+        }
+    }
+}
+class TomSelectHelper {
+    static listen(selectorPrefix = String()) {
+        document.querySelectorAll(`${selectorPrefix} select.tom-select, ${selectorPrefix} input.tom-select`)
+            .forEach(element => this.initialize(element));
+    }
+    static initialize(element) {
+        var _a, _b, _c, _d, _e;
+        if (element.tomselect)
+            return element.tomselect;
+        const isTagsInput = element instanceof HTMLInputElement && element.dataset.tomSelectTags === 'true';
+        const isMultiSelect = element instanceof HTMLSelectElement && element.multiple;
+        if (isTagsInput)
+            element.value = element.value
+                .split(',')
+                .map(value => value.trim())
+                .filter(Boolean)
+                .join(',');
+        const placeholder = (_e = (_b = (_a = element.dataset.placeholder) !== null && _a !== void 0 ? _a : element.getAttribute('placeholder')) !== null && _b !== void 0 ? _b : (element instanceof HTMLSelectElement
+            ? (_d = (_c = element.querySelector('option[value=""]')) === null || _c === void 0 ? void 0 : _c.textContent) === null || _d === void 0 ? void 0 : _d.trim()
+            : undefined)) !== null && _e !== void 0 ? _e : String();
+        const tomSelect = new TomSelect(element, Object.assign(Object.assign({ allowEmptyOption: !isTagsInput, hidePlaceholder: false, hideSelected: false, maxOptions: null, placeholder }, (isTagsInput
+            ? {
+                create: true,
+                delimiter: ','
+            }
+            : {
+                create: false,
+                controlInput: null,
+                searchField: [],
+                plugins: isMultiSelect ? ['checkbox_options'] : []
+            })), { render: {
+                no_results: () => { var _a; return `<div class="no-results">${(_a = element.dataset.noResultsText) !== null && _a !== void 0 ? _a : 'No results found.'}</div>`; },
+                option: (data, escape) => this.renderOption(element, data, escape, true),
+                item: (data, escape) => this.renderOption(element, data, escape, false)
+            } }));
+        if (!isTagsInput)
+            this.enableTypeAhead(tomSelect);
+        return tomSelect;
+    }
+    static destroy(element) {
+        var _a;
+        (_a = element.tomselect) === null || _a === void 0 ? void 0 : _a.destroy();
+    }
+    static setValue(element, value) {
+        const tomSelect = this.initialize(element);
+        tomSelect.setValue(value);
+    }
+    static clear(element) {
+        const tomSelect = this.initialize(element);
+        tomSelect.clear();
+    }
+    static enableTypeAhead(tomSelect) {
+        const typeAheadTimeout = 750;
+        let typedText = String();
+        let resetTimeout;
+        const resetTypedText = () => {
+            typedText = String();
+            if (resetTimeout !== undefined) {
+                window.clearTimeout(resetTimeout);
+                resetTimeout = undefined;
+            }
+        };
+        tomSelect.control.addEventListener('keydown', (event) => {
+            if (event.defaultPrevented
+                || event.ctrlKey
+                || event.metaKey
+                || event.altKey
+                || event.key.length !== 1
+                || tomSelect.isLocked
+                || tomSelect.isDisabled
+                || tomSelect.isReadOnly)
+                return;
+            event.preventDefault();
+            const typedCharacter = this.normalizeSearchText(event.key);
+            if (!typedCharacter)
+                return;
+            if (resetTimeout !== undefined)
+                window.clearTimeout(resetTimeout);
+            typedText += typedCharacter;
+            let matchingOption = this.findTypeAheadOption(tomSelect, typedText);
+            if (!matchingOption && typedText.length > typedCharacter.length) {
+                typedText = typedCharacter;
+                matchingOption = this.findTypeAheadOption(tomSelect, typedText);
+            }
+            resetTimeout = window.setTimeout(resetTypedText, typeAheadTimeout);
+            if (!matchingOption)
+                return;
+            if (!tomSelect.isOpen)
+                tomSelect.open();
+            tomSelect.setActiveOption(matchingOption);
+        });
+        tomSelect.on('blur', resetTypedText);
+        tomSelect.on('destroy', resetTypedText);
+    }
+    static findTypeAheadOption(tomSelect, typedText) {
+        const labelField = tomSelect.settings.labelField;
+        return Array.from(tomSelect.selectable())
+            .find(option => {
+            var _a, _b;
+            const value = option.dataset.value;
+            const label = value === undefined ? undefined : (_a = tomSelect.options[value]) === null || _a === void 0 ? void 0 : _a[labelField];
+            return this.normalizeSearchText(String((_b = label !== null && label !== void 0 ? label : option.textContent) !== null && _b !== void 0 ? _b : String()))
+                .startsWith(typedText);
+        });
+    }
+    static normalizeSearchText(value) {
+        return value
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, String())
+            .toLocaleLowerCase();
+    }
+    static renderOption(element, data, escape, isDropdownItem) {
+        const option = element instanceof HTMLSelectElement
+            ? [...element.options].find(item => item.value === data.value)
+            : undefined;
+        const content = option === null || option === void 0 ? void 0 : option.dataset.content;
+        const cssClass = isDropdownItem ? 'ts-option-content' : String();
+        const itemContent = content !== null && content !== void 0 ? content : escape(data.text);
+        return `<div class="${cssClass}">${itemContent}</div>`;
     }
 }
 class TooltipHelper {
@@ -2956,6 +3117,7 @@ class UploadAreaListener {
         const onSuccess = (files = null) => {
             const processFile = (file) => {
                 const jsonResponse = JSON.parse(file.xhr.responseText);
+                const uploadResult = jsonResponse;
                 if (jsonResponse.error) {
                     const previewElement = file.previewElement;
                     previewElement.classList.remove("dz-success");
@@ -3022,12 +3184,14 @@ class UploadAreaOptions {
             let queryStringParams = element.getAttribute("query-string-params");
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
-            const params = queryStringParams.split('&');
+            const params = queryStringParams ? queryStringParams.split('&') : [];
             for (let i = 0; i < params.length; i++) {
                 const param = params[i].split('=');
                 const key = decodeURIComponent(param[0]);
                 const value = decodeURIComponent(param[1]);
-                urlBuilder.addQueryParameter(key, value);
+                if (key) {
+                    urlBuilder.addQueryParameter(key, value);
+                }
             }
             this.url = urlBuilder.build();
         }
@@ -3061,13 +3225,43 @@ class UploadViewHelper {
         eval(jsCallback);
         this.clearFileAction(componentName, fileName);
     }
+    static markDeleted(componentName, fileName, confirmationMessage, jsCallback, deletedInputId) {
+        if (confirmationMessage) {
+            const confirmed = confirm(confirmationMessage);
+            if (!confirmed) {
+                return;
+            }
+        }
+        const deletedInput = document.getElementById(deletedInputId);
+        if (!deletedInput) {
+            return;
+        }
+        const deletedFiles = deletedInput.value
+            .split(",")
+            .map(value => value.trim())
+            .filter(value => value.length > 0);
+        if (deletedFiles.indexOf(fileName) === -1) {
+            deletedFiles.push(fileName);
+            deletedInput.value = deletedFiles.join(",");
+        }
+        eval(jsCallback);
+    }
     static downloadFile(componentName, fileName, jsCallback) {
         this.performFileAction(componentName, fileName, "downloadFile");
         eval(jsCallback);
         this.clearFileAction(componentName, fileName);
     }
     static renameFile(componentName, fileName, promptMessage, jsCallback) {
-        this.performFileAction(componentName, fileName, "renameFile", promptMessage);
+        const newName = prompt(promptMessage, fileName);
+        if (newName === null || newName === fileName) {
+            return;
+        }
+        const uploadActionInput = document.getElementById("upload-view-action-" + componentName);
+        const filenameInput = document.getElementById("upload-view-file-name-" + componentName);
+        if (uploadActionInput && filenameInput) {
+            uploadActionInput.value = "renameFile";
+            filenameInput.value = fileName + ";" + newName;
+        }
         eval(jsCallback);
         this.clearFileAction(componentName, fileName);
     }

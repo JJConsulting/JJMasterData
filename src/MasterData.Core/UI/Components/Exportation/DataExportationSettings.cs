@@ -1,18 +1,19 @@
+#nullable disable warnings
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
+using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
-using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -21,14 +22,14 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 {
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer  = dataExportation.StringLocalizer;
     
-    internal HtmlBuilder GetHtmlBuilder()
+    internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         
-        var folderPath = DataExportationHelper.GetFolderPath(dataExportation);
+        var folderPath = DataExportationHelper.GetExportationFolderPath(dataExportation);
         
         html.WithCssClass("container-fluid");
-        html.Append(GetFormHtmlElement(folderPath));
+        html.Append(await GetFormHtmlElementAsync(folderPath));
         html.AppendHr();
         html.AppendDiv(div =>
         {
@@ -64,22 +65,18 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return html;
     }
 
-    private HtmlBuilder GetFormHtmlElement(string exportationFolderPath)
+    private async Task<HtmlBuilder> GetFormHtmlElementAsync(string exportationFolderPath)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("row");
 
         div.Append(GetFileExtensionField());
 
-        div.Append(GetOrientationField());
-
         div.Append(GetExportAllField());
 
-        div.Append(GetDelimiterField());
+        AppendFormatOptionsFields(div);
 
-        div.Append(GetFirstLineField());
-
-        div.Append(GetFilesCollapsePanelHtmlBuilder(exportationFolderPath));
+        div.Append(await GetFilesCollapsePanelHtmlBuilderAsync(exportationFolderPath));
 
         div.Append(HtmlTag.Div, div =>
         {
@@ -105,7 +102,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     private HtmlBuilder GetFileExtensionField()
     {
         return new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass("col-sm-4")
+            .WithCssClass("col-sm-3")
             .WithCssClass(BootstrapHelper.FormGroup)
             .Append(HtmlTag.Label, label =>
             {
@@ -118,71 +115,88 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                 select.WithNameAndId($"{dataExportation.Name}{ExportOptions.FileName}");
                 select.WithOnChange($"DataExportationHelper.showOptions('{dataExportation.Name}',this.value);");
                 select.WithCssClass("form-control form-select");
-                select.Append(HtmlTag.Option, option =>
-                {
-                    option.WithValue($"{(int)ExportFileExtension.XLS}");
-                    option.WithAttribute("selected", "selected");
-                    option.AppendText("Excel");
-                });
-                if (PdfWriterExists())
+                foreach (var formatMetadata in dataExportation.ExportFormatCatalog.GetFormats())
                 {
                     select.Append(HtmlTag.Option, option =>
                     {
-                        option.WithValue($"{(int)ExportFileExtension.PDF}");
-                        option.AppendText("PDF");
+                        option.WithValue(formatMetadata.Format.Id);
+                        if (formatMetadata.Format.Id.Equals(dataExportation.ExportOptions.FormatId, System.StringComparison.OrdinalIgnoreCase))
+                            option.WithAttribute("selected", "selected");
+                        option.AppendText(formatMetadata.Format.DisplayName);
                     });
                 }
-
-                select.Append(HtmlTag.Option, option =>
-                {
-                    option.WithValue($"{(int)ExportFileExtension.CSV}");
-                    option.AppendText("CSV");
-                });
-                select.Append(HtmlTag.Option, option =>
-                {
-                    option.WithValue($"{(int)ExportFileExtension.TXT}");
-                    option.AppendText("TXT");
-                });
             }
         );
     }
 
-    private HtmlBuilder GetOrientationField()
+    private void AppendFormatOptionsFields(HtmlBuilder html)
     {
-        return new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass("col-sm-4")
-            .WithAttribute("id", $"{dataExportation.Name}-div-export-orientation")
-            .WithStyle( "display:none")
-            .WithCssClass(BootstrapHelper.FormGroup)
-            .Append(HtmlTag.Label, label =>
-            {
-                label.WithAttribute("for", $"{dataExportation.Name}{ExportOptions.TableOrientation}");
-                label.WithCssClass(BootstrapHelper.Label);
-                label.AppendText(_stringLocalizer["Orientation"]);
-            })
-        .Append(HtmlTag.Select, select =>
+        foreach (var format in dataExportation.ExportFormatCatalog.GetFormats())
         {
-            select.WithNameAndId($"{dataExportation.Name}{ExportOptions.TableOrientation}");
-            select.WithCssClass("form-control form-select");
-            select.Append(HtmlTag.Option, option =>
+            foreach (var definition in format.Options)
             {
-                option.WithValue("1");
-                option.WithAttribute("selected", "selected");
-                option.AppendText("Landscape");
-            });
-            select.Append(HtmlTag.Option, option =>
-            {
-                option.WithValue("0");
-                option.AppendText("Portrait");
-            });
-        });
+                html.Append(HtmlTag.Div, div =>
+                {
+                    div.WithCssClass("col-sm-3 data-export-format-option");
+                    div.WithCssClass(BootstrapHelper.FormGroup);
+                    div.WithAttribute("data-export-format", format.Format.Id);
+                    div.WithStyle(format.Format.Id.Equals(dataExportation.ExportOptions.FormatId,
+                        System.StringComparison.OrdinalIgnoreCase) ? string.Empty : "display:none;");
+                    div.Append(HtmlTag.Label, label =>
+                    {
+                        label.WithCssClass(BootstrapHelper.Label);
+                        label.AppendText(_stringLocalizer[definition.DisplayName]);
+                    });
+                    var name = $"{dataExportation.Name}{ExportOptions.FormatOptionPrefix}{format.Format.Id}_{definition.Name}";
+                    if (definition.Kind == ExportFormatOptionKind.Select)
+                    {
+                        div.Append(HtmlTag.Select, select =>
+                        {
+                            select.WithNameAndId(name).WithCssClass("form-control form-select");
+                            foreach (var choice in definition.Choices)
+                            {
+                                select.Append(HtmlTag.Option, option =>
+                                {
+                                    option.WithValue(choice.Value);
+                                    if (choice.Value == definition.DefaultValue)
+                                        option.WithAttribute("selected", "selected");
+                                    option.AppendText(_stringLocalizer[choice.DisplayName]);
+                                });
+                            }
+                        });
+                    }
+                    else if (definition.Kind == ExportFormatOptionKind.Boolean)
+                    {
+                        div.Append(HtmlTag.Select, select =>
+                        {
+                            select.WithNameAndId(name).WithCssClass("form-control form-select");
+                            select.Append(HtmlTag.Option, option =>
+                            {
+                                option.WithValue("true").AppendText(_stringLocalizer["Yes"]);
+                                if (definition.DefaultValue == "true") option.WithAttribute("selected", "selected");
+                            });
+                            select.Append(HtmlTag.Option, option =>
+                            {
+                                option.WithValue("false").AppendText(_stringLocalizer["No"]);
+                                if (definition.DefaultValue != "true") option.WithAttribute("selected", "selected");
+                            });
+                        });
+                    }
+                    else
+                    {
+                        div.Append(HtmlTag.Input, input => input.WithNameAndId(name)
+                            .WithCssClass("form-control").WithValue(definition.DefaultValue ?? string.Empty));
+                    }
+                });
+            }
+        }
     }
 
     private HtmlBuilder GetExportAllField()
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", $"{dataExportation.Name}-div-export-all")
-            .WithCssClass("col-sm-4")
+            .WithCssClass("col-sm-3")
             .WithCssClass(BootstrapHelper.FormGroup)
             .Append(HtmlTag.Label, label =>
             {
@@ -208,57 +222,6 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             });
     }
 
-    private HtmlBuilder GetDelimiterField()
-    {
-        return new HtmlBuilder(HtmlTag.Div)
-            .WithStyle( "display:none;")
-            .WithCssClass("col-sm-4")
-            .WithCssClass(BootstrapHelper.FormGroup)
-            .WithAttribute("id", $"{dataExportation.Name}-div-export-delimiter")
-            .Append(HtmlTag.Label, label =>
-            {
-                label.WithAttribute("for", $"{dataExportation.Name}{ExportOptions.ExportDelimiter}");
-                label.WithCssClass(BootstrapHelper.Label);
-                label.AppendText(_stringLocalizer["Delimiter"]);
-            })
-            .Append(HtmlTag.Select, select =>
-            {
-                select.WithNameAndId($"{dataExportation.Name}{ExportOptions.ExportDelimiter}");
-                select.WithCssClass("form-control form-select");
-                select.Append(HtmlTag.Option, option =>
-                {
-                    option.WithValue(";");
-                    option.WithAttribute("selected", "selected");
-                    option.AppendText(_stringLocalizer["Semicolon (;)"]);
-                });
-                select.Append(HtmlTag.Option, option =>
-                {
-                    option.WithValue(",");
-                    option.AppendText(_stringLocalizer["Comma (,)"]);
-                });
-                select.Append(HtmlTag.Option, option =>
-                {
-                    option.WithValue("|");
-                    option.AppendText(_stringLocalizer["Pipe (|)"]);
-                });
-            });
-    }
-
-    private HtmlBuilder GetFirstLineField()
-    {
-        var div = new HtmlBuilder(HtmlTag.Div);
-        div.WithCssClass("col-sm-12");
-        div.WithCssClass(BootstrapHelper.FormGroup);
-        var exportFirstLineCheckbox = dataExportation.ComponentFactory.Controls.CheckBox.Create();
-        exportFirstLineCheckbox.Name = $"{dataExportation.Name}{ExportOptions.ExportTableFirstLine}";
-        exportFirstLineCheckbox.IsChecked = dataExportation.ExportOptions.ExportFirstLine;
-        exportFirstLineCheckbox.Layout = CheckboxLayout.Switch;
-        exportFirstLineCheckbox.Text = _stringLocalizer["Export first line as title"];
-        div.Append(exportFirstLineCheckbox.GetHtmlBuilder());
-        
-        return div;
-    }
-
     private JJAlert GetTooManyRecordsAlert(string name)
     {
         var alert = new JJAlert
@@ -281,9 +244,9 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return alert;
     }
 
-    private HtmlBuilder GetFilesCollapsePanelHtmlBuilder(string exportationFolderPath)
+    private async Task<HtmlBuilder> GetFilesCollapsePanelHtmlBuilderAsync(string exportationFolderPath)
     {
-        var files = GetGeneratedFiles(exportationFolderPath);
+        var files = await GetGeneratedFilesAsync(exportationFolderPath);
         var filesCount = files.Count;
         var panel = new JJCollapsePanel
         {
@@ -298,7 +261,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return panel.GetHtmlBuilder()?.WithCssClass($"col-sm-12 {BootstrapHelper.FormGroup}");
     }
 
-    private HtmlBuilder GetLastFilesHtml(List<FileInfo> files)
+    private HtmlBuilder GetLastFilesHtml(List<FileStorageItem> files)
     {
         if (files == null || files.Count == 0)
             return new HtmlBuilder(_stringLocalizer["No recently generated files."]);
@@ -306,11 +269,8 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         var html = new HtmlBuilder(HtmlTag.Div);
         foreach (var file in files)
         {
-            if (FileIO.IsFileLocked(file))
-                continue;
-
-            var icon = JJDataExportation.GetFileIcon(file.Extension);
-            string url = dataExportation.GetDownloadUrl(file.FullName);
+            var icon = JJDataExportation.GetFileIcon(Path.GetExtension(file.FileName));
+            string url = dataExportation.GetDownloadUrl(file.FileName);
 
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");
@@ -320,7 +280,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
             {
                 a.WithAttribute("href", url);
                 a.WithAttribute("title", "Download");
-                a.AppendText(file.Name);
+                a.AppendText(file.FileName);
             });
 
             html.Append(div);
@@ -329,17 +289,11 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
         return html;
     }
 
-    private static List<FileInfo> GetGeneratedFiles(string exportationFolderPath)
+    private async Task<List<FileStorageItem>> GetGeneratedFilesAsync(string exportationFolderPath)
     {
-        var list = new List<FileInfo>();
-
-        var oDir = new DirectoryInfo(exportationFolderPath);
-
-        if (oDir.Exists)
-            list.AddRange(oDir.GetFiles("*", SearchOption.AllDirectories));
-
-        return list.OrderByDescending(f => f.CreationTime).ToList();
+        return (await dataExportation.FileStorage.ListAsync(exportationFolderPath))
+            .OrderByDescending(f => f.LastWriteTime)
+            .ToList();
     }
 
-    private bool PdfWriterExists() => dataExportation.DataExportationWriterFactory.PdfWriterExists();
 }

@@ -1,7 +1,4 @@
-﻿#nullable enable
-
-using System;
-using System.Reflection;
+﻿using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -24,6 +21,12 @@ public static class MasterDataServiceBuilderExtensions
 {
     extension(MasterDataServiceBuilder builder)
     {
+        public MasterDataServiceBuilder WithExportFormat<TFormat>() where TFormat : class, IExportFormat
+        {
+            builder.Services.AddScoped<IExportFormat, TFormat>();
+            return builder;
+        }
+
         public MasterDataServiceBuilder WithFormEventHandlerFactory(Func<IServiceProvider, IDataDictionaryRepository> implementationFactory)
         {
             builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
@@ -35,12 +38,6 @@ public static class MasterDataServiceBuilderExtensions
         {
             builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerResolver, T>());
 
-            return builder;
-        }
-
-        public MasterDataServiceBuilder WithPdfExportation<T>() where T : IPdfWriter
-        {
-            builder.Services.AddTransient(typeof(IPdfWriter), typeof(T));
             return builder;
         }
 
@@ -87,18 +84,6 @@ public static class MasterDataServiceBuilderExtensions
         {
             builder.Services.AddOptions<FileSystemDataDictionaryOptions>().Bind(configuration);
             builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
-            return builder;
-        }
-
-        public MasterDataServiceBuilder WithExcelExportation<T>() where T : class, IExcelWriter
-        {
-            builder.Services.Replace(ServiceDescriptor.Transient<IExcelWriter, T>());
-            return builder;
-        }
-
-        public MasterDataServiceBuilder WithTextExportation<T>() where T : class, ITextWriter
-        {
-            builder.Services.Replace(ServiceDescriptor.Transient<ITextWriter, T>());
             return builder;
         }
 

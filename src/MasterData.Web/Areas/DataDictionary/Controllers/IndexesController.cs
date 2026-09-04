@@ -57,7 +57,7 @@ public class IndexesController(IndexesService indexesService) : DataDictionaryCo
 
         elementIndex.Columns = indexColumns;
 
-        if (await indexesService.SaveAsync(elementName, index, elementIndex))
+        if (await indexesService.SaveAsync(elementName, index!, elementIndex))
         {
             return Json(new { success = true });
         }

@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Tasks;
+using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Exportation.Background;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,15 +17,17 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
     IMasterDataUser masterDataUser,
+    IUrlHelper urlHelper,
     ExpressionsService expressionsService,
     IOptionsSnapshot<MasterDataCoreOptions> options,
-    IBackgroundTaskManager backgroundTaskManager,
-    IHttpContext httpContext,
+    IHttpContextAccessor httpContext,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILoggerFactory loggerFactory,
     IComponentFactory componentFactory,
-    IEncryptionService encryptionService,
-    DataExportationWriterFactory dataExportationWriterFactory
+    DataProtectionService encryptionService,
+    IFileStorage fileStorage,
+    ExportJobService exportJobService,
+    ExportFormatCatalog exportFormatCatalog
         ) : IFormElementComponentFactory<JJDataExportation>
 {
     public async ValueTask<JJDataExportation> CreateAsync(string elementName)
@@ -39,14 +41,16 @@ internal class DataExportationFactory(
         return new JJDataExportation(
             formElement,
             masterDataUser,
+            urlHelper,
             expressionsService,
             options, 
-            backgroundTaskManager,
             stringLocalizer, 
             componentFactory,
             loggerFactory, 
             httpContext,
             encryptionService,
-            dataExportationWriterFactory);
+            fileStorage,
+            exportJobService,
+            exportFormatCatalog);
     }
 }

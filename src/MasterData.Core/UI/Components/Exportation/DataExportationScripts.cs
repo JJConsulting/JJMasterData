@@ -1,6 +1,5 @@
-﻿using JJMasterData.Commons.Security.Cryptography.Abstractions;
+﻿using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
@@ -8,10 +7,10 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationScripts(
     string componentName,
     FormElement formElement,
-    IEncryptionService encryptionService)
+    DataProtectionService encryptionService)
 {
     public DataExportationScripts(JJDataExportation dataExportation) : this(dataExportation.Name,
-        dataExportation.FormElement, dataExportation.EncryptionService)
+        dataExportation.FormElement, dataExportation.DataProtectionService)
     {
     }
 
@@ -20,7 +19,7 @@ internal class DataExportationScripts(
         get
         {
             var routeContext = RouteContext.FromFormElement(formElement, ComponentContext.DataExportation);
-            var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
+            var encryptedRouteContext = encryptionService.ProtectObject(routeContext);
             return encryptedRouteContext;
         }
     }

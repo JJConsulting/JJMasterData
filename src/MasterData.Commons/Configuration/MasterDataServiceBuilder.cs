@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace JJMasterData.Commons.Configuration;
 
-public class MasterDataServiceBuilder(IServiceCollection services)
+public class MasterDataServiceBuilder(IServiceCollection services) 
 {
     public IServiceCollection Services { get; } = services;
-
-    public MasterDataServiceBuilder WithBackgroundTaskManager<T>() where T : class, IBackgroundTaskManager
-    {
-        Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskManager, T>());
-        return this;
-    }
 
     public MasterDataServiceBuilder WithEntityProvider(string connectionString, DataAccessProvider provider)
     {
@@ -66,8 +62,7 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         return this;
     }
     
-    public MasterDataServiceBuilder WithEntityRepository(
-        Func<IServiceProvider, IEntityRepository> implementationFactory)
+    public MasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));
         return this;
@@ -79,6 +74,18 @@ public class MasterDataServiceBuilder(IServiceCollection services)
         {
             options.AdditionalConnectionStrings = connectionStrings;
         });
+        return this;
+    }
+
+    public MasterDataServiceBuilder WithBackgroundJobClient<TClient>()
+        where TClient : class, IBackgroundJobClient
+    {
+        Services.Replace(ServiceDescriptor.Singleton<IBackgroundJobClient, TClient>());
+        var memoryWorker = Services.FirstOrDefault(descriptor =>
+            descriptor.ServiceType == typeof(IHostedService) &&
+            descriptor.ImplementationType == typeof(BackgroundJobService));
+        if (memoryWorker is not null)
+            Services.Remove(memoryWorker);
         return this;
     }
 }

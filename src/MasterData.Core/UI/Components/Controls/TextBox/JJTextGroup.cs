@@ -1,17 +1,15 @@
+#nullable disable warnings
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 
 
 namespace JJMasterData.Core.UI.Components;
 
-public sealed class JJTextGroup(IFormValues formValues)
+public sealed class JJTextGroup(IHttpContextAccessor formValues)
     : JJTextBox(formValues), IFloatingLabelControl
 {
     public string FloatingLabel { get; set; }

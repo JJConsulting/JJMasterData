@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Util;
@@ -89,10 +90,6 @@ internal sealed class DataPanelExpressionScripts(JJDataPanel dataPanel)
             if (dataPanel.UserValues.TryGetValue(fieldName, out var value))
             {
                 val = $"'{value}'";
-            }
-            else if (dataPanel.CurrentContext.Session.HasKey(fieldName))
-            {
-                val = $"'{dataPanel.CurrentContext.Session[fieldName]}'";
             }
             //Hidden fields
             else if (dataPanel.Values.TryGetValue(fieldName, out var panelValue))

@@ -15,7 +15,7 @@ public static class ActionsServiceExtensions
             AllowParentheses = true
         }));
 
-        services.AddScoped<HtmlTemplateService>();
+        services.AddScoped<HtmlTemplateActionService>();
         services.AddScoped<ActionScripts>();
         return services;
     }

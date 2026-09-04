@@ -9,8 +9,6 @@ namespace JJMasterData.CommandLine.Hosting;
 
 public sealed class ConsoleRunner(IAnsiConsole console)
 {
-    private const string SecretKey = "jjmasterdata-console-tool";
-
     public Task ImportAsync(MasterDataCommandSettings settings, CancellationToken cancellationToken)
     {
         return ExecuteAsync<ImportService>(
@@ -68,7 +66,6 @@ public sealed class ConsoleRunner(IAnsiConsole console)
         {
             ["JJMasterData:ConnectionString"] = settings.Connection,
             ["JJMasterData:ConnectionProvider"] = nameof(DataAccessProvider.SqlServer),
-            ["JJMasterData:SecretKey"] = SecretKey,
             ["JJMasterData:DataDictionaryTableSchema"] = schema,
             ["JJMasterData:DataDictionaryTableName"] = table
         };

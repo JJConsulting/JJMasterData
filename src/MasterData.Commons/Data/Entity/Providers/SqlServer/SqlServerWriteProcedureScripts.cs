@@ -11,7 +11,6 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 public class SqlServerWriteProcedureScripts(
     IOptionsSnapshot<MasterDataCommonsOptions> options,
     IOptionsSnapshot<SqlServerOptions> sqlServerOptions)
-    : SqlServerScriptsBase
 {
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
@@ -34,7 +33,8 @@ public class SqlServerWriteProcedureScripts(
         }
         else
         {
-            sql.AppendLine(GetSqlDropIfExists(procedureName));
+            sql.Append(SqlServerScriptsHelper.GetSqlDropIfExists(procedureName));
+            sql.AppendLine();
             sql.Append("CREATE PROCEDURE ");
         }
 
@@ -90,35 +90,35 @@ public class SqlServerWriteProcedureScripts(
         var sql = new StringBuilder();
         var pks = element.Fields.FindAll(x => x.IsPk);
         bool updateScript = HasUpdateFields(element);
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("DECLARE @TYPEACTION VARCHAR(1) ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("SET @TYPEACTION = @action ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("IF @TYPEACTION = ' ' ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("BEGIN ");
-        sql.Append(Tab).Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine($"SET @TYPEACTION = '{InsertInitial}' ");
 
         bool isFirst = true;
         if (pks.Count > 0)
         {
-            sql.Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine("DECLARE @NCOUNT INT ");
             sql.AppendLine(" ");
 
             //Check
-            sql.Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine("SELECT @NCOUNT = COUNT(*) ");
-            sql.Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.Append("FROM ");
-            sql.Append(GetTableName(element));
+            sql.Append(SqlServerScriptsHelper.GetTableName(element));
             sql.AppendLine(" WITH (NOLOCK) ");
 
             foreach (var f in pks)
             {
-                sql.Append(Tab).Append(Tab);
+                sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
                 if (isFirst)
                 {
                     sql.Append("WHERE ");
@@ -135,29 +135,29 @@ public class SqlServerWriteProcedureScripts(
             }
 
             sql.AppendLine(" ");
-            sql.Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine("IF @NCOUNT > 0 ");
-            sql.Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine("BEGIN ");
-            sql.Append(Tab).Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine($"SET @TYPEACTION = '{UpdateInitial}'");
-            sql.Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine("END ");
         }
 
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("END ");
         sql.AppendLine(" ");
 
 
         //Insert Script
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine($"IF @TYPEACTION = '{InsertInitial}' ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("BEGIN ");
-        sql.Append(Tab).Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         sql.Append("INSERT INTO ");
-        sql.Append(GetTableName(element));
+        sql.Append(SqlServerScriptsHelper.GetTableName(element));
         sql.AppendLine(" (");
 
         isFirst = true;
@@ -180,7 +180,7 @@ public class SqlServerWriteProcedureScripts(
 
         if (autonumericFields.Count > 0)
         {
-            sql.Append(Tab, 2);
+            sql.Append(SqlServerScriptsHelper.Tab, 2);
             sql.Append("OUTPUT ");
         }
 
@@ -197,7 +197,7 @@ public class SqlServerWriteProcedureScripts(
         }
 
         sql.AppendLine();
-        sql.Append(Tab, 2);
+        sql.Append(SqlServerScriptsHelper.Tab, 2);
         sql.AppendLine("VALUES (");
 
         isFirst = true;
@@ -208,28 +208,28 @@ public class SqlServerWriteProcedureScripts(
             else
                 sql.AppendLine(",");
 
-            sql.Append(Tab).Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.Append('@');
             sql.Append(f.Name);
         }
 
         sql.AppendLine(")");
-        sql.Append(Tab).Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("SET @RET = 0; ");
 
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("END ");
 
         //Update Script
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine($"ELSE IF @TYPEACTION = '{UpdateInitial}' ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("BEGIN ");
-        sql.Append(Tab).Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         if (updateScript)
         {
             sql.Append("UPDATE ");
-            sql.Append(GetTableName(element));
+            sql.Append(SqlServerScriptsHelper.GetTableName(element));
             sql.AppendLine(" SET ");
 
             isFirst = true;
@@ -240,7 +240,7 @@ public class SqlServerWriteProcedureScripts(
                 else
                     sql.AppendLine(", ");
 
-                sql.Append(Tab).Append(Tab).Append(Tab);
+                sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
                 sql.Append($"[{field.Name}]");
                 sql.Append(" = @");
                 sql.Append(field.Name);
@@ -251,7 +251,7 @@ public class SqlServerWriteProcedureScripts(
             isFirst = true;
             foreach (var f in fields.Where(f => f.IsPk))
             {
-                sql.Append(Tab).Append(Tab);
+                sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
                 if (isFirst)
                 {
                     sql.Append("WHERE ");
@@ -272,25 +272,25 @@ public class SqlServerWriteProcedureScripts(
             sql.AppendLine("--NO UPDATABLED");
         }
 
-        sql.Append(Tab).Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("SET @RET = 1; ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("END ");
 
         //Delete Script
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine($"ELSE IF @TYPEACTION = '{DeleteInitial}' ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("BEGIN ");
-        sql.Append(Tab).Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         sql.Append("DELETE FROM ");
-        sql.Append(GetTableName(element));
+        sql.Append(SqlServerScriptsHelper.GetTableName(element));
         sql.AppendLine(" ");
 
         isFirst = true;
         foreach (var field in fields.Where(f => f.IsPk && f.EnableOnDelete))
         {
-            sql.Append(Tab).Append(Tab);
+            sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             if (isFirst)
             {
                 sql.Append("WHERE ");
@@ -306,9 +306,9 @@ public class SqlServerWriteProcedureScripts(
             sql.AppendLine(field.Name);
         }
 
-        sql.Append(Tab).Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("SET @RET = 2; ");
-        sql.Append(Tab);
+        sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("END ");
         sql.AppendLine(" ");
 

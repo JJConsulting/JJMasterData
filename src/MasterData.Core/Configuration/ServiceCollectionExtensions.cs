@@ -1,10 +1,13 @@
-﻿using JJMasterData.Commons.Configuration;
+﻿using JJMasterData.Commons.Background;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
-using JJMasterData.Core.Html;
+using JJMasterData.Core.DataManager.Exportation.Background;
+using JJMasterData.Core.DataManager.Exportation.Formats;
+using JJMasterData.Core.DataManager.Importation.Background;
 using JJMasterData.Core.Html.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,54 +16,61 @@ namespace JJMasterData.Core.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddMasterDataCoreServices();
+        public MasterDataServiceBuilder AddJJMasterDataCore()
+        {
+            services.AddMasterDataCoreServices();
 
-        return services.AddJJMasterDataCommons();
-    }
+            return services.AddJJMasterDataCommons();
+        }
 
-    public static MasterDataServiceBuilder AddJJMasterDataCore(
-        this IServiceCollection services,
-        MasterDataCoreOptionsConfiguration optionsConfiguration
+        public MasterDataServiceBuilder AddJJMasterDataCore(MasterDataCoreOptionsConfiguration optionsConfiguration
         )
-    {
-        if (optionsConfiguration.ConfigureCore != null) 
-            services.PostConfigure(optionsConfiguration.ConfigureCore);
+        {
+            if (optionsConfiguration.ConfigureCore != null) 
+                services.PostConfigure(optionsConfiguration.ConfigureCore);
 
-        services.AddMasterDataCoreServices();
-        return services.AddJJMasterDataCommons(optionsConfiguration.ConfigureCommons);
-    }
+            services.AddMasterDataCoreServices();
+            return services.AddJJMasterDataCommons(optionsConfiguration.ConfigureCommons);
+        }
 
-    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.Configure<MasterDataCoreOptions>(configuration.GetJJMasterData());
+        public MasterDataServiceBuilder AddJJMasterDataCore(IConfiguration configuration)
+        {
+            services.Configure<MasterDataCoreOptions>(configuration.GetJJMasterData());
 
-        services.AddMasterDataCoreServices();
+            services.AddMasterDataCoreServices();
 
-        return services.AddJJMasterDataCommons(configuration);
-    }
+            return services.AddJJMasterDataCommons(configuration);
+        }
 
-    private static void AddMasterDataCoreServices(this IServiceCollection services)
-    {
-        services.AddOptions<MasterDataCoreOptions>().BindConfiguration("JJMasterData");
+        private void AddMasterDataCoreServices()
+        {
+            services.AddOptions<MasterDataCoreOptions>().BindConfiguration("JJMasterData");
 
-        services.AddHttpServices();
-        services.AddDataDictionaryServices();
-        services.AddDataManagerServices();
-        services.AddEventHandlers();
-        services.AddExpressionServices();
-        services.AddActionServices();
+            services.AddHttpServices();
+            services.AddDataDictionaryServices();
+            services.AddDataManagerServices();
+            services.AddEventHandlers();
+            services.AddExpressionServices();
+            services.AddActionServices();
 
-        services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
+            services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
 
-        services.AddTransient<HtmlTemplateFunctions>();
-        services.AddTransient<HtmlTemplateHelper>();
+            services.AddTransient<HtmlTemplateRenderer>();
         
-        services.AddScoped<IExcelWriter, ExcelWriter>();
-        services.AddScoped<ITextWriter, TextWriter>();
-
-        services.AddFactories();
+            services.AddScoped<IExportFormat, CsvExportFormat>();
+            services.AddScoped<IExportFormat, TextExportFormat>();
+            services.AddScoped<IExportFormat, ExcelXlsExportFormat>();
+            services.AddScoped<IExportFormat, ExcelXlsxExportFormat>();
+            
+            services.AddScoped<ExportFormatCatalog>();
+            services.AddScoped<ExportJobService>();
+            services.AddScoped<BackgroundJobHandler<ExportRequest>, ExportJobHandler>();
+         
+            services.AddScoped<ImportJobService>();
+            services.AddScoped<BackgroundJobHandler<ImportRequest>, ImportJobHandler>();
+            services.AddFactories();
+        }
     }
 }

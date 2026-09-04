@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Serialization;
 using JJMasterData.Core.UI.Components;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.Extensions;
 
+[Obsolete("Please use Microsoft IDataProtectionProvider")]
 public static class EncryptionServiceExtensions
 {
     extension(IEncryptionService service)
@@ -39,7 +40,7 @@ public static class EncryptionServiceExtensions
 
         public T DecryptObject<T>(string encryptedObject)
         {
-            return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, MasterDataJsonSerializerOptions.Default);
+            return JsonSerializer.Deserialize<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!, MasterDataJsonSerializerOptions.Default)!;
         }
 
         public Dictionary<string,object> DecryptDictionary(string encryptedDictionary)

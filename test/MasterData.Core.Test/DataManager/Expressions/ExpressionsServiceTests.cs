@@ -4,7 +4,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -16,11 +16,10 @@ public class ExpressionsServiceTests
     private readonly Mock<ILogger<ExpressionsService>> _loggerMock = new();
     private readonly Mock<IAsyncExpressionProvider> _expressionAsyncProviderMock = new();
     private readonly Mock<ISyncExpressionProvider> _expressionBooleanProviderMock = new();
-    private readonly Mock<IEncryptionService> _encryptionServiceMock = new();
 
-    private static IHttpContext MockHttpContext()
+    private static IHttpContextAccessor MockHttpContext()
     {
-        var mockHttpContext = new Mock<IHttpContext>();
+        var mockHttpContext = new Mock<IHttpContextAccessor>();
         return mockHttpContext.Object;
     }
     
@@ -46,7 +45,7 @@ public class ExpressionsServiceTests
                 _expressionBooleanProviderMock.Object
             },
              new ExpressionParser(MockHttpContext(), MockMasterDataUser(),MockLogger()),
-            _encryptionServiceMock.Object,
+            Mock.Of<IEncryptionService>(),
             _loggerMock.Object
         );
     }
@@ -61,7 +60,11 @@ public class ExpressionsServiceTests
             TableName = "tableName",
             Fields =
             {
-                new FormElementField { TriggerExpression = "example:sampleExpression" }
+                new FormElementField
+                {
+                    Name = "field",
+                    DefaultValue = "example:sampleExpression"
+                }
             }
         }, "field");
 
@@ -73,7 +76,8 @@ public class ExpressionsServiceTests
             new PageState()
         );
         
-        _expressionAsyncProviderMock.Setup(p => p.EvaluateAsync("example:sampleExpression", values))
+        _expressionAsyncProviderMock
+            .Setup(p => p.EvaluateAsync("sampleExpression", It.IsAny<Dictionary<string, object?>>()))
             .ReturnsAsync("ExpressionResult");
 
         // Act
@@ -96,7 +100,8 @@ public class ExpressionsServiceTests
             new PageState()
         );
 
-        _expressionBooleanProviderMock.Setup(p => p.Evaluate("bool_example:sampleExpression", values))
+        _expressionBooleanProviderMock
+            .Setup(p => p.Evaluate("sampleExpression", It.IsAny<Dictionary<string, object?>>()))
             .Returns(true);
 
         // Act
@@ -117,6 +122,7 @@ public class ExpressionsServiceTests
             {
                 new FormElementField
                 {
+                    Name = "field",
                     TriggerExpression = "example:sampleExpression"
                 }
             },
@@ -129,7 +135,8 @@ public class ExpressionsServiceTests
             new PageState()
         );
         
-        _expressionAsyncProviderMock.Setup(p => p.EvaluateAsync("example:sampleExpression", values))
+        _expressionAsyncProviderMock
+            .Setup(p => p.EvaluateAsync("sampleExpression", It.IsAny<Dictionary<string, object?>>()))
             .ReturnsAsync("TriggerExpressionResult");
 
         // Act
