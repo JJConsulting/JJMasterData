@@ -563,15 +563,27 @@ class DataExportationHelper {
     static startProgressVerification(componentName, routeContext) {
         return __awaiter(this, void 0, void 0, function* () {
             DataExportationHelper.setSpinner();
+            DataExportationHelper.setActionProcessing(componentName, true);
+            if (DataExportationHelper.progressVerifications.has(componentName))
+                return;
+            DataExportationHelper.progressVerifications.add(componentName);
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
+            urlBuilder.addQueryParameter("jobId", DataExportationHelper.getJobId(componentName));
             const url = urlBuilder.build();
             var isCompleted = false;
-            while (!isCompleted) {
-                isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
-                yield sleep(3000);
+            try {
+                while (!isCompleted) {
+                    isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
+                    if (!isCompleted)
+                        yield sleep(3000);
+                }
+            }
+            finally {
+                DataExportationHelper.progressVerifications.delete(componentName);
+                DataExportationHelper.setActionProcessing(componentName, false);
             }
         });
     }
@@ -581,6 +593,7 @@ class DataExportationHelper {
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
+            urlBuilder.addQueryParameter("jobId", DataExportationHelper.getJobId(componentName));
             yield DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
         });
     }
@@ -660,6 +673,8 @@ class DataExportationHelper {
     }
     static setSpinner() {
         const target = document.getElementById('data-exportation-spinner-');
+        if (!target || target.childElementCount > 0)
+            return;
         if (bootstrapVersion < 5) {
             const options = {
                 className: "spinner",
@@ -696,15 +711,38 @@ class DataExportationHelper {
             target.append(spinnerDiv);
         }
     }
+    static setActionProcessing(componentName, isProcessing) {
+        var _a;
+        const button = Array.from(document.querySelectorAll('[onclick*="DataExportationHelper.openExportPopup"]'))
+            .find(element => { var _a; return (_a = element.getAttribute('onclick')) === null || _a === void 0 ? void 0 : _a.includes(`'${componentName}'`); });
+        if (!button)
+            return;
+        button.setAttribute('aria-busy', isProcessing.toString());
+        const indicatorId = `data-exportation-action-spinner-${componentName}`;
+        const existingIndicator = document.getElementById(indicatorId);
+        if (!isProcessing) {
+            existingIndicator === null || existingIndicator === void 0 ? void 0 : existingIndicator.remove();
+            (_a = button.querySelector('.data-exportation-action-indicator')) === null || _a === void 0 ? void 0 : _a.remove();
+            return;
+        }
+        if (existingIndicator || button.querySelector('.data-exportation-action-indicator'))
+            return;
+        const indicator = document.createElement('span');
+        indicator.id = indicatorId;
+        indicator.classList.add('spinner-border', 'data-operation-action-indicator', 'data-exportation-action-indicator');
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
+    }
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         HTMLHelper.setInnerHTML(modalBody, html);
         const qtdElement = document.querySelector("#" + componentName + "-total-of-records");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
-            if (totRows > 50000) {
-                document.querySelector("#data-exportation-warning" + componentName).style.display = "block";
-            }
+            const warningElement = document.querySelector("#data-exportation-warning" + componentName);
+            if (totRows > 50000 && warningElement)
+                warningElement.style.display = "block";
         }
         if (bootstrapVersion < 5) {
             $("#data-exportation-modal-" + componentName).modal();
@@ -723,45 +761,21 @@ class DataExportationHelper {
         });
     }
     static showOptions(componentName, exportType) {
-        const orientationDiv = document.getElementById(`${componentName}-div-export-orientation`);
-        const allDiv = document.getElementById(`${componentName}-div-export-all`);
-        const delimiterDiv = document.getElementById(`${componentName}-div-export-delimiter`);
-        const firstlineDiv = document.getElementById(`${componentName}-div-export-firstline`);
-        if (exportType === "1") {
-            if (orientationDiv)
-                orientationDiv.style.display = "none";
-            if (allDiv)
-                allDiv.style.display = "block";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "none";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "block";
-        }
-        else if (exportType === "2") {
-            if (orientationDiv)
-                orientationDiv.style.display = "block";
-            if (allDiv)
-                allDiv.style.display = "none";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "none";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "none";
-        }
-        else {
-            if (orientationDiv)
-                orientationDiv.style.display = "none";
-            if (allDiv)
-                allDiv.style.display = "block";
-            if (delimiterDiv)
-                delimiterDiv.style.display = "block";
-            if (firstlineDiv)
-                firstlineDiv.style.display = "block";
-        }
+        document.querySelectorAll(".data-export-format-option").forEach(element => {
+            element.style.display = element.dataset.exportFormat === exportType ? "block" : "none";
+        });
+    }
+    static getJobId(componentName) {
+        var _a, _b;
+        return (_b = (_a = document.querySelector(`#${componentName}-export-job-id`)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "";
     }
 }
+DataExportationHelper.progressVerifications = new Set();
 class DataImportationHelper {
     static setSpinner() {
         const target = document.getElementById('data-importation-spinner');
+        if (!target || target.childElementCount > 0)
+            return;
         if (bootstrapVersion < 5) {
             const options = {
                 className: "spinner",
@@ -804,6 +818,7 @@ class DataImportationHelper {
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
         urlBuilder.addQueryParameter("componentName", componentName);
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         const url = urlBuilder.build();
         fetch(url, {
             method: 'GET',
@@ -883,9 +898,12 @@ class DataImportationHelper {
             }
             if (!result.IsProcessing) {
                 clearInterval(intervalId);
+                DataImportationHelper.progressVerifications.delete(componentName);
+                DataImportationHelper.setActionProcessing(componentName, false);
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
+                urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         $("body").on('hidden.bs.modal', "#" + DataImportationModal.getInstance().modalId, function () {
@@ -925,6 +943,7 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         postFormValues({
             url: urlBuilder.build(), success: html => {
                 DataImportationHelper.removePasteListener();
@@ -934,9 +953,40 @@ class DataImportationHelper {
     }
     static startProgressVerification(componentName, routeContext) {
         DataImportationHelper.setSpinner();
+        DataImportationHelper.setActionProcessing(componentName, true);
+        if (DataImportationHelper.progressVerifications.has(componentName))
+            return;
         let intervalId = setInterval(function () {
             DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
         }, 3000);
+        DataImportationHelper.progressVerifications.set(componentName, intervalId);
+        DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
+    }
+    static setActionProcessing(componentName, isProcessing) {
+        var _a;
+        const button = Array.from(document.querySelectorAll('[onclick*="DataImportationHelper.show"]'))
+            .find(element => { var _a; return (_a = element.getAttribute('onclick')) === null || _a === void 0 ? void 0 : _a.includes(`'${componentName}'`); });
+        if (!button)
+            return;
+        button.setAttribute('aria-busy', isProcessing.toString());
+        const gridName = componentName.endsWith('-importation')
+            ? componentName.substring(0, componentName.length - '-importation'.length)
+            : componentName;
+        const indicatorId = `data-importation-action-spinner-${gridName}`;
+        const existingIndicator = document.getElementById(indicatorId);
+        if (!isProcessing) {
+            existingIndicator === null || existingIndicator === void 0 ? void 0 : existingIndicator.remove();
+            (_a = button.querySelector('.data-importation-action-indicator')) === null || _a === void 0 ? void 0 : _a.remove();
+            return;
+        }
+        if (existingIndicator || button.querySelector('.data-importation-action-indicator'))
+            return;
+        const indicator = document.createElement('span');
+        indicator.id = indicatorId;
+        indicator.classList.add('spinner-border', 'data-operation-action-indicator', 'data-importation-action-indicator');
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
     }
     static help(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -955,6 +1005,7 @@ class DataImportationHelper {
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "stop");
         urlBuilder.addQueryParameter("componentName", componentName);
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         const url = urlBuilder.build();
         fetch(url).then(response => response.json()).then(data => {
             if (data.isProcessing === false) {
@@ -991,10 +1042,11 @@ class DataImportationHelper {
         };
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, { once: true });
     }
-    static uploadCallback(componentName, routeContext, gridRouteContext) {
+    static uploadCallback(componentName, routeContext, jobId) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "loading");
+        urlBuilder.addQueryParameter("jobId", jobId);
         postFormValues({
             url: urlBuilder.build(),
             success: html => {
@@ -1008,12 +1060,17 @@ class DataImportationHelper {
             document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
         }
     }
+    static getJobId(componentName) {
+        var _a, _b;
+        return (_b = (_a = document.querySelector(`#${componentName}-import-job-id`)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "";
+    }
 }
 DataImportationHelper.insertCount = 0;
 DataImportationHelper.updateCount = 0;
 DataImportationHelper.deleteCount = 0;
 DataImportationHelper.ignoreCount = 0;
 DataImportationHelper.errorCount = 0;
+DataImportationHelper.progressVerifications = new Map();
 class DataImportationModal {
     static getInstance() {
         if (this.instance === undefined) {
@@ -3060,6 +3117,7 @@ class UploadAreaListener {
         const onSuccess = (files = null) => {
             const processFile = (file) => {
                 const jsonResponse = JSON.parse(file.xhr.responseText);
+                const uploadResult = jsonResponse;
                 if (jsonResponse.error) {
                     const previewElement = file.previewElement;
                     previewElement.classList.remove("dz-success");

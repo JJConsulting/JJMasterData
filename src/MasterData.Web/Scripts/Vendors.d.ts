@@ -30,4 +30,6 @@ interface JQuery{
     typeahead : Function
     valid: Function
     sortable: Function
+    modal: Function
+    tooltip: Function
 }

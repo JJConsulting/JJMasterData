@@ -12,12 +12,12 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -131,12 +131,8 @@ public class JJGridView : AsyncComponent
             _dataExportation = ComponentFactory.DataExportation.Create(FormElement);
             _dataExportation.Name = Name;
             _dataExportation.ExportOptions = CurrentExportConfig;
-            _dataExportation.ShowBorder = CurrentSettings.ShowBorder;
-            _dataExportation.ShowRowStriped = CurrentSettings.ShowRowStriped;
             _dataExportation.UserValues = UserValues;
             _dataExportation.ProcessOptions = ExportAction.ProcessOptions;
-            _dataExportation.OnRenderCell += OnRenderCell;
-            
             return _dataExportation;
         }
     }
@@ -1064,7 +1060,8 @@ public class JJGridView : AsyncComponent
         var modal = new JJModalDialog
         {
             Name = $"data-exportation-modal-{Name}",
-            Title = StringLocalizer["Export"]
+            Title = StringLocalizer["Export"],
+            Size = ModalSize.Large
         };
 
         return modal.GetHtmlBuilder();
@@ -1140,22 +1137,26 @@ public class JJGridView : AsyncComponent
                 return await DataExportation.GetResultAsync();
             case "startProcess":
                 {
-                    if (IsUserSetDataSource)
-                    {
-                        var result = await GetDataSourceAsync(new EntityParameters
-                        {
-                            Filters = await GetCurrentFilterAsync(),
-                            OrderBy = CurrentOrder,
-                            RecordsPerPage = int.MaxValue,
-                            CurrentPage = 1
-                        });
-                        var exportationResult = await DataExportation.ExecuteExportationAsync(result);
-                        return exportationResult;
-                    }
-
                     try
                     {
-                        await ExportFileInBackground();
+                        List<Dictionary<string, object?>>? rows = null;
+                        if (IsUserSetDataSource)
+                        {
+                            var result = await GetDataSourceAsync(new EntityParameters
+                            {
+                                Filters = await GetCurrentFilterAsync(),
+                                OrderBy = CurrentOrder,
+                                RecordsPerPage = int.MaxValue,
+                                CurrentPage = 1
+                            });
+                            rows = result.Data
+                                .Select(row => new Dictionary<string, object?>(row, StringComparer.OrdinalIgnoreCase))
+                                .ToList();
+                        }
+                        var jobId = await ExportFileInBackground(rows);
+                        var html = new DataExportationLog(DataExportation).GetLoadingHtml();
+                        html.AppendHiddenInput($"{Name}-export-job-id", jobId.ToString());
+                        return new ContentComponentResult(html);
                     }
                     catch (Exception ex)
                     {
@@ -1166,26 +1167,33 @@ public class JJGridView : AsyncComponent
                         validationSummary.Title = StringLocalizer["Error"];
                         return new ContentComponentResult(validationSummary.GetHtmlBuilder());
                     }
-
-                    var html = new DataExportationLog(DataExportation).GetLoadingHtml();
-                    return new ContentComponentResult(html);
                 }
             case "checkProgress":
                 {
-                    var dto = DataExportation.GetCurrentProgress();
+                if (!TryGetJobId(out var statusJobId))
+                    return new JsonComponentResult(new { Message = StringLocalizer["Invalid background job identifier"], HasError = true });
+                var dto = DataExportation.GetCurrentProgress(statusJobId);
                     return new JsonComponentResult(dto);
                 }
             case "stopProcess":
-                DataExportation.StopImportation();
+                if (TryGetJobId(out var stopJobId))
+                    DataExportation.Cancel(stopJobId);
                 return new JsonComponentResult(new {});
         }
 
         return EmptyComponentResult.Value;
     }
 
-    public async ValueTask ExportFileInBackground()
+    public async ValueTask<Guid> ExportFileInBackground(
+        List<Dictionary<string, object?>>? rows = null)
     {
-        DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder);
+        return await DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder, rows);
+    }
+
+    private bool TryGetJobId(out Guid jobId)
+    {
+        var value = CurrentContext.HttpContext?.Request.Query["jobId"].ToString();
+        return Guid.TryParse(value, out jobId);
     }
     
     public async Task<List<Dictionary<string,object?>>?> GetDictionaryListAsync()

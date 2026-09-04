@@ -9,6 +9,7 @@
     "removeComments": true,
     "target": "ES6",
     "moduleResolution": "node",
+    "types": [],
     "outFile": "../wwwroot/js/jjmasterdata/jjmasterdata.js"
   },
   "include": ["**/*.ts"],

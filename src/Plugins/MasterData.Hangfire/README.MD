@@ -1,38 +1,16 @@
-# Hangfire Plugin
+# JJMasterData Hangfire
 
-Hangfire support for background tasks.
+This optional package replaces JJMasterData's default in-memory job queue with Hangfire.
 
-## How to configure?
+Configure a Hangfire storage and server in the host application, then register the backend:
 
 ```csharp
+services.AddHangfire(configuration =>
+    configuration.UseSqlServerStorage(connectionString));
+services.AddHangfireServer();
 
-// Add Hangfire services.
-builder.Services.AddHangfire(configuration => configuration
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection")));
-
-// Add the processing server as IHostedService
-builder.Services.AddHangfireServer();
-
-
-builder.Services.AddJJMasterDataWeb().WithHangfire();
-
-///...
-
-app.UseHangfireDashboard();
-
-app.MapDataDictionary();
-app.MapMasterData();
-
-await app.UseMasterDataSeedingAsync();
+services.AddJJMasterDataCore()
+    .WithHangfire();
 ```
 
-## Usage
-Simply use exportation and importation like you would use normally.
-Check [Hangfire docs](https://docs.hangfire.io/en/latest/getting-started/aspnet-core-applications.html) for more information.
-
-> [!WARNING] 
-> User values from session will not work inside Hangfire jobs
-
+Import and export requests remain serializable values. Scoped handlers and registered export/import formats are resolved by Hangfire when each job executes.

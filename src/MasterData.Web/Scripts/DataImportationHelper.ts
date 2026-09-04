@@ -6,9 +6,12 @@
     private static errorCount = 0;
 
     private static pasteEventListener;
+    private static progressVerifications = new Map<string, number>();
 
     private static setSpinner() {
         const target = document.getElementById('data-importation-spinner');
+        if (!target || target.childElementCount > 0)
+            return;
         
         if(bootstrapVersion < 5){
             const options = {
@@ -55,6 +58,7 @@
         urlBuilder.addQueryParameter("routeContext", importationRouteContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
         urlBuilder.addQueryParameter("componentName", componentName)
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName))
         const url = urlBuilder.build()
         
         
@@ -140,10 +144,13 @@
 
                 if (!result.IsProcessing) {
                     clearInterval(intervalId)
+                    DataImportationHelper.progressVerifications.delete(componentName);
+                    DataImportationHelper.setActionProcessing(componentName, false);
                     
                     const urlBuilder = new UrlBuilder();
                     urlBuilder.addQueryParameter("routeContext", importationRouteContext)
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
+                    urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName))
 
                     postFormValues({
                         url: urlBuilder.build(), success: html => {
@@ -190,6 +197,7 @@
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName));
         postFormValues({
             url: urlBuilder.build(), success: html => {
                 DataImportationHelper.removePasteListener();
@@ -201,11 +209,46 @@
     static startProgressVerification(componentName, routeContext) {
 
         DataImportationHelper.setSpinner();
+        DataImportationHelper.setActionProcessing(componentName, true);
+
+        if (DataImportationHelper.progressVerifications.has(componentName))
+            return;
 
         let intervalId = setInterval(function () {
             DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
         }, 3000);
+        DataImportationHelper.progressVerifications.set(componentName, intervalId);
+        DataImportationHelper.checkProgress(componentName, routeContext, intervalId);
 
+    }
+
+    private static setActionProcessing(componentName: string, isProcessing: boolean) {
+        const button = Array.from(document.querySelectorAll<HTMLElement>('[onclick*="DataImportationHelper.show"]'))
+            .find(element => element.getAttribute('onclick')?.includes(`'${componentName}'`));
+        if (!button)
+            return;
+
+        button.setAttribute('aria-busy', isProcessing.toString());
+        const gridName = componentName.endsWith('-importation')
+            ? componentName.substring(0, componentName.length - '-importation'.length)
+            : componentName;
+        const indicatorId = `data-importation-action-spinner-${gridName}`;
+        const existingIndicator = document.getElementById(indicatorId);
+        if (!isProcessing) {
+            existingIndicator?.remove();
+            button.querySelector('.data-importation-action-indicator')?.remove();
+            return;
+        }
+
+        if (existingIndicator || button.querySelector('.data-importation-action-indicator'))
+            return;
+
+        const indicator = document.createElement('span');
+        indicator.id = indicatorId;
+        indicator.classList.add('spinner-border', 'data-operation-action-indicator', 'data-importation-action-indicator');
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
     }
 
     static help(componentName, routeContext) {
@@ -227,6 +270,7 @@
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "stop")
         urlBuilder.addQueryParameter("componentName", componentName)
+        urlBuilder.addQueryParameter("jobId", DataImportationHelper.getJobId(componentName))
         const url = urlBuilder.build()
 
         fetch(url).then(response => response.json()).then(data => {
@@ -267,10 +311,11 @@
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, {once: true});
     }
     
-    static uploadCallback(componentName: string, routeContext: string, gridRouteContext: string){
+    static uploadCallback(componentName: string, routeContext: string, jobId: string){
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "loading")
+        urlBuilder.addQueryParameter("jobId", jobId)
 
         postFormValues({
             url: urlBuilder.build(),
@@ -285,5 +330,9 @@
         if (DataImportationHelper.pasteEventListener) {
             document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
         }
+    }
+
+    private static getJobId(componentName: string): string {
+        return document.querySelector<HTMLInputElement>(`#${componentName}-import-job-id`)?.value ?? "";
     }
 }

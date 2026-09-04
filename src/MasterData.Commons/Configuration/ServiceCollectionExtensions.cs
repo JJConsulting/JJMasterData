@@ -1,5 +1,7 @@
 using System;
 using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons.Background;
+using JJMasterData.Commons.Background.Queue;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Providers;
@@ -9,7 +11,6 @@ using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Security.Cryptography;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Storage;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -93,7 +94,16 @@ public static class ServiceCollectionExtensions
             services.TryAddSingleton<DataProtectionService>();
             
             services.TryAddTransient<IFileStorage, DiskFileStorage>();
-            services.TryAddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
+            services.AddOptions<BackgroundJobOptions>()
+                .BindConfiguration(BackgroundJobOptions.SectionName)
+                .Validate(options => options.Capacity > 0, "Background job capacity must be greater than zero.")
+                .Validate(options => options.MaxConcurrency > 0, "Background job concurrency must be greater than zero.")
+                .Validate(options => options.CompletedJobRetention > TimeSpan.Zero,
+                    "Background job retention must be greater than zero.")
+                .ValidateOnStart();
+            services.TryAddSingleton<BackgroundJobQueue>();
+            services.TryAddSingleton<IBackgroundJobClient>(provider => provider.GetRequiredService<BackgroundJobQueue>());
+            services.AddHostedService<BackgroundJobService>();
         }
     }
 }

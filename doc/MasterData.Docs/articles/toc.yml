@@ -6,6 +6,12 @@
     href: getting_started.md
   - name: Configurations
     href: configurations.md
+  - name: Export
+    href: export.md
+  - name: Import
+    href: import.md
+  - name: Background Jobs
+    href: background.md
   - name: Actions
     items:
     - name: HTML Template

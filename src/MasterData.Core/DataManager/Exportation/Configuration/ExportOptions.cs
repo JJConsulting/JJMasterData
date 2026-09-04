@@ -1,4 +1,6 @@
 #nullable disable warnings
+using System;
+using System.Collections.Generic;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.DataManager.Exportation.Configuration;
@@ -9,16 +11,13 @@ namespace JJMasterData.Core.DataManager.Exportation.Configuration;
 public class ExportOptions
 {
     internal const string FileName = "_export_table_file";
-    internal const string TableOrientation = "_export_table_orientation";
+    internal const string FormatOptionPrefix = "_export_option_";
     internal const string ExportTableFirstLine = "_export_table_firstline";
     internal const string ExportAll = "_export_table_all";
-    internal const string ExportDelimiter = "_export_table_delimiter";
 
-    public ExportFileExtension FileExtension { get; set; } = ExportFileExtension.CSV;
-    public bool ExportFirstLine { get; set; } = true;
+    public string FormatId { get; set; } = "xlsx";
     public bool ExportAllFields { get; set; } = true;
-    public bool IsLandScape { get; set; } = false;
-    public string Delimiter { get; set; } = ";";
+    public Dictionary<string, string?> FormatOptions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     internal static ExportOptions LoadFromForm(IHttpContextAccessor httpContextAccessor, string componentName)
     {
@@ -30,11 +29,14 @@ public class ExportOptions
         var form = httpContextAccessor.HttpContext!.Request.Form;
         if (form.TryGetValue(componentName + FileName, out var fileName))
         {
-            expConfig.FileExtension = (ExportFileExtension)int.Parse(fileName.ToString());
-            expConfig.IsLandScape = StringManager.ParseBool(form[componentName + TableOrientation]);
-            expConfig.ExportFirstLine = StringManager.ParseBool(form[componentName + ExportTableFirstLine]);
+            expConfig.FormatId = fileName.ToString();
             expConfig.ExportAllFields = StringManager.ParseBool(form[componentName + ExportAll]);
-            expConfig.Delimiter = form[componentName + ExportDelimiter];
+            var prefix = componentName + FormatOptionPrefix + expConfig.FormatId + "_";
+            foreach (var value in form)
+            {
+                if (value.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    expConfig.FormatOptions[value.Key[prefix.Length..]] = value.Value.ToString();
+            }
         }
 
         return expConfig;

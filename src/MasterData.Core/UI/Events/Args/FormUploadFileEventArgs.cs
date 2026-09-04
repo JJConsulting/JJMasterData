@@ -19,4 +19,6 @@ public class FormUploadFileEventArgs(IFormFile file) : EventArgs
     /// Mensagem referente a validação do evento (opcional)
     /// </summary>
     public string SuccessMessage { get; set; }
+
+    public string JobId { get; set; }
 }
