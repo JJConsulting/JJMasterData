@@ -53,7 +53,6 @@ internal sealed class ExportJobHandler(
             Columns = columns,
             Rows = GetRowsAsync(formElement, source, cancellationToken),
             UserValues = new Dictionary<string, object?>(request.UserValues),
-            IncludeHeader = request.IncludeHeader,
             TotalRecords = source.Total,
             Progress = new Progress<ExportProgress>(current => progress.Report(
                 new BackgroundJobProgress(current.Percentage, current.Message, current)))
@@ -63,10 +62,16 @@ internal sealed class ExportJobHandler(
         var tempFile = Path.GetTempFileName();
         try
         {
-            await using (var output = new FileStream(tempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 81920, true))
-                await format.WriteAsync(context, request.FormatOptions, output, cancellationToken);
+            await using (var output = new FileStream(tempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None,
+                             81920, true))
+            {
+                var definitions = ExportFormatOptionsMetadataFactory.CreateOptions(format);
+                var typedOptions = ExportFormatOptionsBinder.Bind(definitions, format.OptionsType, request.FormatOptions);                
+                await format.WriteAsync(context, typedOptions, output, cancellationToken);     
+            }
+                
 
-            var fileName = GetFileName(formElement, format.Metadata.FileExtension);
+            var fileName = GetFileName(formElement, format.FileExtension);
             var folder = DataExportationHelper.GetExportationFolderPath(
                 formElement, options.Value.ExportationFolderPath, request.UserId);
             var storagePath = FileStoragePath.Combine(folder, fileName);

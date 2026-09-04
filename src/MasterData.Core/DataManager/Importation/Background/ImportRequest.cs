@@ -11,7 +11,7 @@ public sealed class ImportRequest : BackgroundJobRequest
     public required string FileName { get; init; }
     public string? ContentType { get; init; }
     public string? FormatId { get; init; }
-    public required Dictionary<string, string?> FormatOptions { get; init; }
+    public required CsvImportOptions Options { get; init; }
     public required Dictionary<string, object?> RelationValues { get; init; }
     public required Dictionary<string, object?> UserValues { get; init; }
     public string? IpAddress { get; init; }

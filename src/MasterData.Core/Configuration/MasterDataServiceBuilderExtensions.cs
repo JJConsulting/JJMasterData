@@ -7,9 +7,6 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
-using JJMasterData.Core.DataManager.Exportation;
-using JJMasterData.Core.DataManager.Importation;
-using JJMasterData.Core.DataManager.Importation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Events.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
@@ -24,21 +21,9 @@ public static class MasterDataServiceBuilderExtensions
 {
     extension(MasterDataServiceBuilder builder)
     {
-        public MasterDataServiceBuilder AddExportFormat<TFormat, TOptions>()
-            where TFormat : class, IExportFormat<TOptions>
-            where TOptions : ExportFormatOptions, new()
+        public MasterDataServiceBuilder AddExportFormat<TFormat>() where TFormat : class, IExportFormat
         {
-            builder.Services.AddScoped<TFormat>();
-            builder.Services.AddScoped<IExportFormatRegistration, ExportFormatRegistration<TFormat, TOptions>>();
-            return builder;
-        }
-
-        public MasterDataServiceBuilder AddImportReader<TReader, TOptions>()
-            where TReader : class, IImportReader<TOptions>
-            where TOptions : ImportFormatOptions, new()
-        {
-            builder.Services.AddScoped<TReader>();
-            builder.Services.AddScoped<IImportReaderRegistration, ImportReaderRegistration<TReader, TOptions>>();
+            builder.Services.AddScoped<IExportFormat, TFormat>();
             return builder;
         }
 

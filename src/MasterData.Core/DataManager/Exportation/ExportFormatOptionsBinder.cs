@@ -3,32 +3,34 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
-internal static class FormatOptionsBinder
+internal static class ExportFormatOptionsBinder
 {
-    public static TOptions Bind<TOptions>(
-        IReadOnlyList<FormatOptionMetadata> definitions,
-        Dictionary<string, string?> suppliedValues) where TOptions : FormatOptions, new()
+    public static ExportFormatOptions Bind(
+        IReadOnlyList<ExportFormatOptionMetadata> definitions,
+        Type type,
+        Dictionary<string, string?> suppliedValues)
     {
-        var definitionMap = new Dictionary<string, FormatOptionMetadata>(StringComparer.OrdinalIgnoreCase);
+        var definitionMap = new Dictionary<string, ExportFormatOptionMetadata>(StringComparer.OrdinalIgnoreCase);
         foreach (var definition in definitions)
             definitionMap.Add(definition.Name, definition);
 
-        var result = new TOptions();
+        var result = (ExportFormatOptions)Activator.CreateInstance(type)!;
         foreach (var option in suppliedValues)
         {
             if (!definitionMap.TryGetValue(option.Key, out var definition))
                 throw new InvalidOperationException($"Option '{option.Key}' is not supported.");
-            var property = typeof(TOptions).GetProperty(definition.Name,
+            var property = type.GetProperty(definition.Name,
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)!;
             property.SetValue(result, ConvertValue(property.PropertyType, option.Value, definition));
         }
         return result;
     }
 
-    private static object? ConvertValue(Type targetType, string? value, FormatOptionMetadata definition)
+    private static object? ConvertValue(Type targetType, string? value, ExportFormatOptionMetadata definition)
     {
         var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
         if (value is null && Nullable.GetUnderlyingType(targetType) is not null)
@@ -39,7 +41,7 @@ internal static class FormatOptionsBinder
         {
             foreach (var field in underlyingType.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
-                if (string.Equals(FormatOptionsMetadataFactory.GetEnumValue(field), value,
+                if (string.Equals(ExportFormatOptionsMetadataFactory.GetEnumValue(field), value,
                         StringComparison.OrdinalIgnoreCase))
                     return field.GetValue(null);
             }

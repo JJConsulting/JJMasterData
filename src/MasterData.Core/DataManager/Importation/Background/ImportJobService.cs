@@ -6,7 +6,7 @@ using JJMasterData.Commons.Background;
 
 namespace JJMasterData.Core.DataManager.Importation.Background;
 
-public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCatalog formats)
+public sealed class ImportJobService(IBackgroundJobClient jobs)
 {
     private const string OperationName = "import";
 
@@ -15,7 +15,7 @@ public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCata
         ArgumentException.ThrowIfNullOrWhiteSpace(request.ElementName);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.UserId);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.FilePath);
-        formats.Resolve(request.FormatId, request.FileName, request.ContentType).ValidateOptions(request.FormatOptions);
+
         cancellationToken.ThrowIfCancellationRequested();
         var snapshot = new ImportRequest
         {
@@ -26,7 +26,7 @@ public sealed class ImportJobService(IBackgroundJobClient jobs, ImportFormatCata
             FileName = request.FileName,
             ContentType = request.ContentType,
             FormatId = request.FormatId,
-            FormatOptions = new Dictionary<string, string?>(request.FormatOptions, StringComparer.OrdinalIgnoreCase),
+            Options = request.Options,
             RelationValues = new Dictionary<string, object?>(request.RelationValues, StringComparer.OrdinalIgnoreCase),
             UserValues = new Dictionary<string, object?>(request.UserValues, StringComparer.OrdinalIgnoreCase),
             IpAddress = request.IpAddress,

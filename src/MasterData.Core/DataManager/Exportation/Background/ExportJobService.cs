@@ -41,7 +41,6 @@ public sealed class ExportJobService(IBackgroundJobClient jobs)
             ElementName = request.ElementName,
             UserId = request.UserId,
             FormatId = request.FormatId,
-            IncludeHeader = request.IncludeHeader,
             ExportAllFields = request.ExportAllFields,
             FormatOptions = new Dictionary<string, string?>(request.FormatOptions, StringComparer.OrdinalIgnoreCase),
             Filters = new Dictionary<string, object?>(request.Filters, StringComparer.OrdinalIgnoreCase),

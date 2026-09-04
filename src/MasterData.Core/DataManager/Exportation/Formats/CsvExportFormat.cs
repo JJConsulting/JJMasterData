@@ -6,6 +6,11 @@ namespace JJMasterData.Core.DataManager.Exportation.Formats;
 internal sealed class CsvExportFormat(FieldFormattingService fieldFormattingService)
     : DelimitedTextExportFormat<CsvExportOptions>(fieldFormattingService)
 {
+    public override string Id => "csv";
+    public override string DisplayName => "CSV";
+    public override string FileExtension => "csv";
+    public override string ContentType => "text/csv";
+    
     protected override string GetDelimiter(CsvExportOptions options) => options.Delimiter switch
     {
         CsvExportDelimiter.Semicolon => ";",

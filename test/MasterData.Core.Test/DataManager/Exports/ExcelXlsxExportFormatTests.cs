@@ -32,7 +32,7 @@ public sealed class ExcelXlsxExportFormatTests
         using var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
 
-        var formats = scope.ServiceProvider.GetRequiredService<ExportFormatCatalog>().Formats;
+        var formats = scope.ServiceProvider.GetRequiredService<ExportFormatCatalog>().GetFormats();
 
         var csv = Assert.Single(formats, format => format.Id == "csv");
         Assert.Equal("csv", csv.FileExtension);
@@ -56,7 +56,7 @@ public sealed class ExcelXlsxExportFormatTests
         var option = Assert.Single(xlsx.Options);
         Assert.Equal(nameof(ExcelXlsxExportOptions.ShowTableStyle), option.Name);
         Assert.Equal("Show table style", option.DisplayName);
-        Assert.Equal(FormatOptionKind.Boolean, option.Kind);
+        Assert.Equal(ExportFormatOptionKind.Boolean, option.Kind);
         Assert.Equal("true", option.DefaultValue);
     }
 

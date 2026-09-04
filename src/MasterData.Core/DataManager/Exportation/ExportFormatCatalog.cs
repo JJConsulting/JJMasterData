@@ -1,41 +1,49 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
 public sealed class ExportFormatCatalog
 {
-    private readonly Dictionary<string, IExportFormatRegistration> _registrations;
+    private readonly Dictionary<string, IExportFormat> _formats;
 
-    internal ExportFormatCatalog(IEnumerable<IExportFormatRegistration> registrations)
+    public ExportFormatCatalog(IEnumerable<IExportFormat> registrations)
     {
-        _registrations = Build(registrations.ToList());
+        _formats = Build(registrations.ToList());
     }
 
-    public List<ExportFormatMetadata> Formats => _registrations.Values
-        .Select(registration => registration.Metadata)
-        .OrderBy(definition => definition.DisplayName, StringComparer.CurrentCultureIgnoreCase)
-        .ToList();
-
-    internal IExportFormatRegistration GetRequired(string id)
+    public IEnumerable<ExportFormatMetadata> GetFormats()
     {
-        if (_registrations.TryGetValue(id, out var registration))
+        foreach (var format in _formats.Values)
+        {
+            var options = ExportFormatOptionsMetadataFactory.CreateOptions(format);
+
+            yield return new ExportFormatMetadata
+            {
+                Format = format,
+                Options = options
+            };
+        }
+    }
+
+    internal IExportFormat GetRequired(string id)
+    {
+        if (_formats.TryGetValue(id, out var registration))
             return registration;
         throw new InvalidOperationException($"Export format '{id}' is not registered.");
     }
 
-    private static Dictionary<string, IExportFormatRegistration> Build(
-        List<IExportFormatRegistration> registrations)
+    private static Dictionary<string, IExportFormat> Build(List<IExportFormat> registrations)
     {
-        var result = new Dictionary<string, IExportFormatRegistration>(StringComparer.OrdinalIgnoreCase);
+        var result = new Dictionary<string, IExportFormat>(StringComparer.OrdinalIgnoreCase);
         foreach (var registration in registrations)
         {
-            var definition = registration.Metadata;
-            if (string.IsNullOrWhiteSpace(definition.Id))
+            if (string.IsNullOrWhiteSpace(registration.Id))
                 throw new InvalidOperationException("Export format identifiers cannot be empty.");
-            if (!result.TryAdd(definition.Id, registration))
-                throw new InvalidOperationException($"Export format '{definition.Id}' is registered more than once.");
+            if (!result.TryAdd(registration.Id, registration))
+                throw new InvalidOperationException($"Export format '{registration.Id}' is registered more than once.");
         }
         return result;
     }

@@ -32,7 +32,7 @@ public sealed class ImportFormatCatalogTests
         protected internal override string Id => "json";
         protected internal override string DisplayName => "JSON";
         protected internal override IReadOnlyList<string> FileExtensions => [".json"];
-        protected internal override IReadOnlyList<string> ContentTypes => ["application/json"];
+        protected internal IReadOnlyList<string> ContentTypes => ["application/json"];
     }
 
     private sealed class JsonReader : IImportReader<JsonImportOptions>

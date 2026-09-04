@@ -4,14 +4,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using JJMasterData.Core.DataManager.Importation.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Importation;
 
-public sealed class CsvImportReader : IImportReader<CsvImportOptions>
+public static class CsvImportReader
 {
-    public async IAsyncEnumerable<ImportRecord> ReadAsync(
-        ImportContext context,
+    public static async IAsyncEnumerable<ImportRecord> ReadAsync(
         CsvImportOptions options,
         Stream input,
         [EnumeratorCancellation] CancellationToken cancellationToken)

@@ -76,8 +76,6 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 
         AppendFormatOptionsFields(div);
 
-        div.Append(GetFirstLineField());
-
         div.Append(await GetFilesCollapsePanelHtmlBuilderAsync(exportationFolderPath));
 
         div.Append(HtmlTag.Div, div =>
@@ -104,7 +102,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     private HtmlBuilder GetFileExtensionField()
     {
         return new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass("col-sm-4")
+            .WithCssClass("col-sm-3")
             .WithCssClass(BootstrapHelper.FormGroup)
             .Append(HtmlTag.Label, label =>
             {
@@ -117,14 +115,14 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                 select.WithNameAndId($"{dataExportation.Name}{ExportOptions.FileName}");
                 select.WithOnChange($"DataExportationHelper.showOptions('{dataExportation.Name}',this.value);");
                 select.WithCssClass("form-control form-select");
-                foreach (var format in dataExportation.ExportFormatCatalog.Formats)
+                foreach (var formatMetadata in dataExportation.ExportFormatCatalog.GetFormats())
                 {
                     select.Append(HtmlTag.Option, option =>
                     {
-                        option.WithValue(format.Id);
-                        if (format.Id.Equals(dataExportation.ExportOptions.FormatId, System.StringComparison.OrdinalIgnoreCase))
+                        option.WithValue(formatMetadata.Format.Id);
+                        if (formatMetadata.Format.Id.Equals(dataExportation.ExportOptions.FormatId, System.StringComparison.OrdinalIgnoreCase))
                             option.WithAttribute("selected", "selected");
-                        option.AppendText(format.DisplayName);
+                        option.AppendText(formatMetadata.Format.DisplayName);
                     });
                 }
             }
@@ -133,24 +131,24 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
 
     private void AppendFormatOptionsFields(HtmlBuilder html)
     {
-        foreach (var format in dataExportation.ExportFormatCatalog.Formats)
+        foreach (var format in dataExportation.ExportFormatCatalog.GetFormats())
         {
             foreach (var definition in format.Options)
             {
                 html.Append(HtmlTag.Div, div =>
                 {
-                    div.WithCssClass("col-sm-4 data-export-format-option");
+                    div.WithCssClass("col-sm-3 data-export-format-option");
                     div.WithCssClass(BootstrapHelper.FormGroup);
-                    div.WithAttribute("data-export-format", format.Id);
-                    div.WithStyle(format.Id.Equals(dataExportation.ExportOptions.FormatId,
+                    div.WithAttribute("data-export-format", format.Format.Id);
+                    div.WithStyle(format.Format.Id.Equals(dataExportation.ExportOptions.FormatId,
                         System.StringComparison.OrdinalIgnoreCase) ? string.Empty : "display:none;");
                     div.Append(HtmlTag.Label, label =>
                     {
                         label.WithCssClass(BootstrapHelper.Label);
                         label.AppendText(_stringLocalizer[definition.DisplayName]);
                     });
-                    var name = $"{dataExportation.Name}{ExportOptions.FormatOptionPrefix}{format.Id}_{definition.Name}";
-                    if (definition.Kind == FormatOptionKind.Select)
+                    var name = $"{dataExportation.Name}{ExportOptions.FormatOptionPrefix}{format.Format.Id}_{definition.Name}";
+                    if (definition.Kind == ExportFormatOptionKind.Select)
                     {
                         div.Append(HtmlTag.Select, select =>
                         {
@@ -167,7 +165,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                             }
                         });
                     }
-                    else if (definition.Kind == FormatOptionKind.Boolean)
+                    else if (definition.Kind == ExportFormatOptionKind.Boolean)
                     {
                         div.Append(HtmlTag.Select, select =>
                         {
@@ -198,7 +196,7 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", $"{dataExportation.Name}-div-export-all")
-            .WithCssClass("col-sm-4")
+            .WithCssClass("col-sm-3")
             .WithCssClass(BootstrapHelper.FormGroup)
             .Append(HtmlTag.Label, label =>
             {
@@ -222,22 +220,6 @@ internal sealed class DataExportationSettings(JJDataExportation dataExportation)
                     option.AppendText(_stringLocalizer["Only the fields visible on the screen"]);
                 });
             });
-    }
-
-    private HtmlBuilder GetFirstLineField()
-    {
-        var div = new HtmlBuilder(HtmlTag.Div);
-        div.WithAttribute("id", $"{dataExportation.Name}-div-export-firstline");
-        div.WithCssClass("col-sm-12");
-        div.WithCssClass(BootstrapHelper.FormGroup);
-        var exportFirstLineCheckbox = dataExportation.ComponentFactory.Controls.CheckBox.Create();
-        exportFirstLineCheckbox.Name = $"{dataExportation.Name}{ExportOptions.ExportTableFirstLine}";
-        exportFirstLineCheckbox.IsChecked = dataExportation.ExportOptions.ExportFirstLine;
-        exportFirstLineCheckbox.Layout = CheckboxLayout.Switch;
-        exportFirstLineCheckbox.Text = _stringLocalizer["Export first line as title"];
-        div.Append(exportFirstLineCheckbox.GetHtmlBuilder());
-        
-        return div;
     }
 
     private JJAlert GetTooManyRecordsAlert(string name)

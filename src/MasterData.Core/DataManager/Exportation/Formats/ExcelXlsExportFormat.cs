@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -13,14 +12,16 @@ namespace JJMasterData.Core.DataManager.Exportation.Formats;
 
 public sealed class ExcelXlsExportFormat(FieldFormattingService fieldFormattingService) : IExportFormat<ExcelXlsExportOptions>
 {
-    public async Task WriteAsync(ExportContext context, ExcelXlsExportOptions options, Stream output,
-        CancellationToken cancellationToken)
+    public string Id => "excel";
+    public string DisplayName => "Excel (.xls)";
+    public string FileExtension => "xls";
+    public async Task WriteAsync(ExportContext context, ExcelXlsExportOptions options, Stream output, CancellationToken cancellationToken)
     {
         await using var writer = new StreamWriter(output, new UTF8Encoding(true), leaveOpen: true);
-        var tableClass = options.ShowRowStriped ? " class=\"striped\"" : string.Empty;
-        var border = options.ShowBorder ? " border=\"1\"" : string.Empty;
+        var tableClass = options.ShowStripedRows ? " class=\"striped\"" : string.Empty;
+        var border = options.ShowBorders ? " border=\"1\"" : string.Empty;
         await writer.WriteAsync($"<html><head><meta charset=\"utf-8\"></head><body><table{tableClass}{border}>");
-        if (context.IncludeHeader)
+        if (options.IncludeFirstRowAsHeader)
         {
             await writer.WriteAsync("<thead><tr>");
             foreach (var column in context.Columns)

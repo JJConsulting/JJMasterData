@@ -356,13 +356,11 @@ public class JJDataImportation : ProcessComponent
                 FilePath = filePath,
                 FileName = fileName,
                 ContentType = contentType,
-                FormatOptions = separator == ';' && detectDelimiter
-                    ? new Dictionary<string, string?>()
-                    : new Dictionary<string, string?>
-                    {
-                        [nameof(CsvImportOptions.Delimiter)] = separator == '\t' ? "\\t" : separator.ToString(),
-                        [nameof(CsvImportOptions.DetectDelimiter)] = detectDelimiter.ToString()
-                    },
+                Options = new CsvImportOptions
+                {
+                    Delimiter =  CsvImportDelimiter.From(separator),
+                    DetectDelimiter = detectDelimiter,
+                },
                 RelationValues = RelationValues?.ToDictionary(item => item.Key, item => (object?)item.Value) ??
                                  new Dictionary<string, object?>(),
                 UserValues = UserValues,

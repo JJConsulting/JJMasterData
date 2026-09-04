@@ -3559,6 +3559,15 @@
   <data name="Show Border" xml:space="preserve">
     <value>Mostrar Borda</value>
   </data>
+    <data name="Show Borders" xml:space="preserve">
+    <value>Mostrar Bordas</value>
+  </data>
+    <data name="Show Striped Rows" xml:space="preserve">
+    <value>Mostrar Linhas Zebradas</value>
+  </data>
+    <data name="Include First Row as Header" xml:space="preserve">
+    <value>Incluir Primeira Linha como Cabeçalho</value>
+  </data>
   <data name="6. Mask" xml:space="preserve">
     <value>6. Máscara</value>
   </data>
@@ -4309,8 +4318,8 @@
     <value>Padroniza automaticamente o texto ao salvar, aplicando o formato escolhido. Útil para integrações case-sensitive (ex.: Protheus).</value>
   </data>
 
-  <data name="Show table style" xml:space="preserve">
-    <value>Exibir decorações na tabela</value>
+  <data name="Show Table Style" xml:space="preserve">
+    <value>Exibir Decorações na Tabela</value>
     <comment>JJMasterDataCore</comment>
   </data>
 </root>

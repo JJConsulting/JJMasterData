@@ -5,18 +5,23 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.Exportation;
 
-internal static class FormatOptionsMetadataFactory
+internal static class ExportFormatOptionsMetadataFactory
 {
-    internal static IReadOnlyList<FormatOptionMetadata> CreateOptions(FormatOptions defaults)
+    internal static IReadOnlyList<ExportFormatOptionMetadata> CreateOptions(IExportFormat exportFormat)
     {
-        return defaults.GetType()
+        var optionsType = exportFormat.OptionsType;
+
+        var defaultOptionsValues = (ExportFormatOptions)Activator.CreateInstance(optionsType)!;
+        
+        return exportFormat.OptionsType
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
             .Where(property => property.GetMethod?.IsPublic == true && property.SetMethod?.IsPublic == true &&
                                property.GetIndexParameters().Length == 0)
-            .Select(property => CreateOption(property, defaults))
+            .Select(property => CreateOption(property, defaultOptionsValues))
             .ToArray();
     }
 
@@ -25,31 +30,31 @@ internal static class FormatOptionsMetadataFactory
             ? shortName
             : field.Name;
 
-    private static FormatOptionMetadata CreateOption(PropertyInfo property, FormatOptions defaults)
+    private static ExportFormatOptionMetadata CreateOption(PropertyInfo property, ExportFormatOptions defaultOptions)
     {
         var displayName = property.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? property.Name;
         var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-        var defaultValue = ConvertToString(propertyType, property.GetValue(defaults));
+        var defaultValue = ConvertToString(propertyType, property.GetValue(defaultOptions));
 
         if (propertyType == typeof(bool))
-            return new FormatOptionMetadata(property.Name, displayName, FormatOptionKind.Boolean, defaultValue, []);
+            return new ExportFormatOptionMetadata(property.Name, displayName, ExportFormatOptionKind.Boolean, defaultValue, []);
 
         if (propertyType.IsEnum)
         {
             var choices = propertyType.GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Select(field => new FormatOptionChoiceMetadata(
+                .Select(field => new ExportFormatOptionChoiceMetadata(
                     GetEnumValue(field),
                     field.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? field.Name))
                 .ToArray();
-            return new FormatOptionMetadata(property.Name, displayName, FormatOptionKind.Select, defaultValue, choices);
+            return new ExportFormatOptionMetadata(property.Name, displayName, ExportFormatOptionKind.Select, defaultValue, choices);
         }
 
         var converter = TypeDescriptor.GetConverter(propertyType);
         if (propertyType != typeof(string) && !converter.CanConvertFrom(typeof(string)))
             throw new InvalidOperationException(
-                $"Option property '{defaults.GetType().Name}.{property.Name}' has unsupported type '{property.PropertyType.Name}'.");
+                $"Option property '{defaultOptions.GetType().Name}.{property.Name}' has unsupported type '{property.PropertyType.Name}'.");
 
-        return new FormatOptionMetadata(property.Name, displayName, FormatOptionKind.Input, defaultValue, []);
+        return new ExportFormatOptionMetadata(property.Name, displayName, ExportFormatOptionKind.Input, defaultValue, []);
     }
 
     private static string? ConvertToString(Type type, object? value)

@@ -10,6 +10,10 @@ namespace JJMasterData.Core.DataManager.Exportation.Formats;
 
 internal sealed class ExcelXlsxExportFormat : IExportFormat<ExcelXlsxExportOptions>
 {
+    public string Id => "xlsx";
+    public string DisplayName => "Excel (.xlsx)";
+    public string FileExtension => "xlsx";
+    
     public async Task WriteAsync(
         ExportContext context,
         ExcelXlsxExportOptions options,
@@ -19,17 +23,17 @@ internal sealed class ExcelXlsxExportFormat : IExportFormat<ExcelXlsxExportOptio
         await using var reader = new ExcelXlsxDataReader(context, cancellationToken);
         var configuration = new OpenXmlConfiguration
         {
-            AutoFilter = context.IncludeHeader,
+            AutoFilter = options.IncludeFirstRowAsHeader,
             FastMode = true,
-            FreezeRowCount = context.IncludeHeader ? 1 : 0,
-            TableStyles = context.IncludeHeader && options.ShowTableStyle
+            FreezeRowCount = options.IncludeFirstRowAsHeader ? 1 : 0,
+            TableStyles = options.IncludeFirstRowAsHeader && options.ShowTableStyle
                 ? TableStyles.Default
                 : TableStyles.None
         };
 
         await output.SaveAsAsync(
             reader,
-            printHeader: context.IncludeHeader,
+            printHeader: options.IncludeFirstRowAsHeader,
             sheetName: "Sheet1",
             excelType: ExcelType.XLSX,
             configuration: configuration,

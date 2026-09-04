@@ -25,7 +25,6 @@ namespace JJMasterData.Core.DataManager.Importation.Background;
 
 internal sealed class ImportJobHandler(
     IDataDictionaryRepository dataDictionaryRepository,
-    ImportFormatCatalog formats,
     FormService formService,
     ExpressionsService expressionsService,
     IEntityRepository entityRepository,
@@ -42,7 +41,6 @@ internal sealed class ImportJobHandler(
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(request.ElementName) ??
                           throw new InvalidOperationException($"Element '{request.ElementName}' was not found.");
-        var reader = formats.Resolve(request.FormatId, request.FileName, request.ContentType);
         var dataContext = new DataContext(
             DataContextSource.Upload, request.UserId, request.IpAddress, request.BrowserInfo);
         await ConfigureFormEventsAsync(formElement, dataContext);
@@ -58,8 +56,7 @@ internal sealed class ImportJobHandler(
             await ExecuteCommandAsync(request.CommandBeforeProcess, formElement, formState);
 
             await using var stream = await fileStorage.OpenReadAsync(request.FilePath, cancellationToken);
-            var importContext = new ImportContext(formElement, request.FileName, request.ContentType);
-            await foreach (var record in reader.ReadAsync(importContext, request.FormatOptions, stream, cancellationToken))
+            await foreach (var record in CsvImportReader.ReadAsync(request.Options, stream, cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 result.TotalProcessed++;

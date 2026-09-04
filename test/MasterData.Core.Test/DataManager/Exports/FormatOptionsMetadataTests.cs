@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 namespace JJMasterData.Core.Test.DataManager.Exports;
 
@@ -9,20 +10,20 @@ public sealed class FormatOptionsMetadataTests
     [Fact]
     public void MetadataIsDerivedFromPublicPropertiesAndDataAnnotations()
     {
-        var metadata = FormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
+        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
 
         var count = Assert.Single(metadata, option => option.Name == nameof(TestExportOptions.Count));
         Assert.Equal("Count", count.DisplayName);
-        Assert.Equal(FormatOptionKind.Input, count.Kind);
+        Assert.Equal(ExportFormatOptionKind.Input, count.Kind);
         Assert.Equal("12", count.DefaultValue);
 
         var enabled = Assert.Single(metadata, option => option.Name == nameof(TestExportOptions.Enabled));
         Assert.Equal("Include details", enabled.DisplayName);
-        Assert.Equal(FormatOptionKind.Boolean, enabled.Kind);
+        Assert.Equal(ExportFormatOptionKind.Boolean, enabled.Kind);
         Assert.Equal("true", enabled.DefaultValue);
 
         var mode = Assert.Single(metadata, option => option.Name == nameof(TestExportOptions.Mode));
-        Assert.Equal(FormatOptionKind.Select, mode.Kind);
+        Assert.Equal(ExportFormatOptionKind.Select, mode.Kind);
         Assert.Equal("p", mode.DefaultValue);
         Assert.Collection(mode.Choices,
             choice =>
@@ -40,14 +41,14 @@ public sealed class FormatOptionsMetadataTests
     [Fact]
     public void BinderUsesDefaultsAndBindsNamesAndEnumValuesCaseInsensitively()
     {
-        var metadata = FormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
+        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
 
-        var defaults = FormatOptionsBinder.Bind<TestExportOptions>(metadata, []);
+        var defaults = ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, []);
         Assert.Equal(12, defaults.Count);
         Assert.True(defaults.Enabled);
         Assert.Equal(TestMode.Pretty, defaults.Mode);
 
-        var bound = FormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
+        var bound = ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
         {
             ["count"] = "42",
             ["ENABLED"] = "false",
@@ -61,15 +62,15 @@ public sealed class FormatOptionsMetadataTests
     [Fact]
     public void BinderRejectsUnknownOptionsAndInvalidEnumValues()
     {
-        var metadata = FormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
+        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
 
         Assert.Throws<InvalidOperationException>(() =>
-            FormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
+            ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
             {
                 ["Missing"] = "value"
             }));
         Assert.Throws<InvalidOperationException>(() =>
-            FormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
+            ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
             {
                 [nameof(TestExportOptions.Mode)] = "invalid"
             }));
@@ -79,7 +80,7 @@ public sealed class FormatOptionsMetadataTests
     public void MetadataRejectsTypesThatCannotBeBoundFromStrings()
     {
         var exception = Assert.Throws<InvalidOperationException>(() =>
-            FormatOptionsMetadataFactory.CreateOptions(new UnsupportedExportOptions()));
+            ExportFormatOptionsMetadataFactory.CreateOptions(new UnsupportedExportOptions()));
 
         Assert.Contains(nameof(UnsupportedExportOptions.Value), exception.Message);
     }

@@ -37,10 +37,6 @@
     <value>Línea de resaltado al pasar el ratón</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Export first line as title" xml:space="preserve">
-    <value>Exportación primera línea como título</value>
-    <comment>JJMasterDataCore</comment>
-  </data>
   <data name="Compact mode" xml:space="preserve">
     <value>Modo compacto</value>
   </data>

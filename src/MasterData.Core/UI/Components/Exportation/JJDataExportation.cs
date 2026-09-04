@@ -221,7 +221,6 @@ public class JJDataExportation : ProcessComponent
             ElementName = FormElement.Name,
             UserId = UserId,
             FormatId = ExportOptions.FormatId,
-            IncludeHeader = ExportOptions.ExportFirstLine,
             ExportAllFields = ExportOptions.ExportAllFields,
             FormatOptions = ExportOptions.FormatOptions,
             Filters = filter,

@@ -30,13 +30,13 @@ public sealed class ExportFormatCatalogTests
         await catalog.GetRequired("json").WriteAsync(context, new Dictionary<string, string?>(), output,
             TestContext.Current.CancellationToken);
 
-        var metadata = Assert.Single(catalog.Formats);
+        var metadata = Assert.Single(catalog.GetFormats());
         Assert.Equal("json", metadata.Id);
         Assert.Equal("application/json", metadata.ContentType);
         var option = Assert.Single(metadata.Options);
         Assert.Equal(nameof(JsonExportOptions.Indented), option.Name);
         Assert.Equal("Pretty JSON", option.DisplayName);
-        Assert.Equal(FormatOptionKind.Boolean, option.Kind);
+        Assert.Equal(ExportFormatOptionKind.Boolean, option.Kind);
         output.Position = 0;
         using var document = await JsonDocument.ParseAsync(output, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal("Ada", document.RootElement[0].GetProperty("name").GetString());

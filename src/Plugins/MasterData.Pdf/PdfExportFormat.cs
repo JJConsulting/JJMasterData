@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,30 +12,18 @@ using iText.Layout.Properties;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Pdf;
 
-public sealed class PdfExportOptions : ExportFormatOptions
-{
-    protected override string Id => "pdf";
-    protected override string DisplayName => "PDF";
-    protected override string FileExtension => "pdf";
-    protected override string ContentType => "application/pdf";
-
-    [Display(Name = "Landscape")]
-    public bool Landscape { get; set; } = true;
-
-    [Display(Name = "Show borders")]
-    public bool ShowBorder { get; set; }
-
-    [Display(Name = "Striped rows")]
-    public bool ShowRowStriped { get; set; }
-}
-
 public sealed class PdfExportFormat(FieldFormattingService fieldFormattingService) : IExportFormat<PdfExportOptions>
 {
+    public string Id => "pdf";
+    public string DisplayName => "PDF";
+    public string FileExtension => "pdf";
+    
     public async Task WriteAsync(
         ExportContext context,
         PdfExportOptions options,
@@ -57,7 +44,7 @@ public sealed class PdfExportFormat(FieldFormattingService fieldFormattingServic
 
         var table = new Table(context.Columns.Count, true).UseAllAvailableWidth();
         document.Add(table);
-        if (context.IncludeHeader)
+        if (options.IncludeFirstRowAsHeader)
         {
             foreach (var column in context.Columns)
                 table.AddHeaderCell(Style(new Cell().Add(new Paragraph(column.LabelOrName)), options, true, false));
@@ -66,7 +53,7 @@ public sealed class PdfExportFormat(FieldFormattingService fieldFormattingServic
         long processed = 0;
         await foreach (var row in context.Rows.WithCancellation(cancellationToken))
         {
-            var striped = options.ShowRowStriped && processed % 2 == 1;
+            var striped = options.ShowStripedRows && processed % 2 == 1;
             var formState = new FormStateData(row, context.UserValues, PageState.List);
             foreach (var column in context.Columns)
             {
@@ -84,7 +71,7 @@ public sealed class PdfExportFormat(FieldFormattingService fieldFormattingServic
 
     private static Cell Style(Cell cell, PdfExportOptions options, bool header, bool striped)
     {
-        if (!options.ShowBorder)
+        if (!options.ShowBorders)
             cell.SetBorder(Border.NO_BORDER);
         if (striped)
             cell.SetBackgroundColor(new DeviceRgb(242, 253, 255));

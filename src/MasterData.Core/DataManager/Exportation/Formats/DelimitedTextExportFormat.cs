@@ -11,10 +11,14 @@ using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.DataManager.Exportation.Formats;
 
-internal abstract class DelimitedTextExportFormat<TOptions>(FieldFormattingService fieldFormattingService)
-    : IExportFormat<TOptions> where TOptions : ExportFormatOptions, new()
+internal abstract class DelimitedTextExportFormat<TOptions>(FieldFormattingService fieldFormattingService) : IExportFormat<TOptions> where TOptions : ExportFormatOptions, new()
 {
     protected abstract string GetDelimiter(TOptions options);
+
+    public abstract string Id { get; }
+    public abstract string DisplayName { get; }
+    public abstract string FileExtension { get; }
+    public abstract string ContentType { get; }
 
     public async Task WriteAsync(
         ExportContext context,
@@ -30,7 +34,7 @@ internal abstract class DelimitedTextExportFormat<TOptions>(FieldFormattingServi
                 HasHeaderRecord = false
             });
 
-        if (context.IncludeHeader)
+        if (options.IncludeFirstRowAsHeader)
         {
             foreach (var field in context.Columns)
                 csv.WriteField(field.LabelOrName);
