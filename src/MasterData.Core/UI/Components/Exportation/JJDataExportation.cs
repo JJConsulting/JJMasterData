@@ -223,7 +223,7 @@ public class JJDataExportation : ProcessComponent
             UserId = UserId,
             FormatId = ExportOptions.FormatId,
             ExportAllFields = ExportOptions.ExportAllFields,
-            FormatOptions = ExportOptions.FormatOptions,
+            OptionsValues = ExportOptions.FormatOptions,
             Filters = filter,
             OrderBy = orderByData.ToQueryParameter(),
             UserValues = UserValues,

@@ -4322,4 +4322,9 @@
     <value>Exibir Decorações na Tabela</value>
     <comment>JJMasterDataCore</comment>
   </data>
+
+    <data name="Process aborted by user" xml:space="preserve">
+    <value>Processo abortado pelo usuário</value>
+        <comment>JJMasterDataCore</comment>
+  </data>
 </root>

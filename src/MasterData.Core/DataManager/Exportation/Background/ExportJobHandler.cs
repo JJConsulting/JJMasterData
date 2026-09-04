@@ -66,7 +66,7 @@ internal sealed class ExportJobHandler(
                              81920, true))
             {
                 var definitions = ExportFormatOptionsMetadataFactory.CreateOptions(format);
-                var typedOptions = ExportFormatOptionsBinder.Bind(definitions, format.OptionsType, request.FormatOptions);                
+                var typedOptions = ExportFormatOptionsBinder.Bind(definitions, format.OptionsType, request.OptionsValues);                
                 await format.WriteAsync(context, typedOptions, output, cancellationToken);     
             }
                 
