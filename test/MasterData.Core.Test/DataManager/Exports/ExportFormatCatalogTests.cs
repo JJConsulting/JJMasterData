@@ -2,7 +2,6 @@ using System.Runtime.CompilerServices;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
@@ -13,28 +12,24 @@ public sealed class ExportFormatCatalogTests
     [Fact]
     public async Task CustomJsonFormatIsDiscoveredAndWritesWithoutCoreChanges()
     {
-        var registration = new ExportFormatRegistration<JsonExportFormat, JsonExportOptions>(new JsonExportFormat());
-        var catalog = new ExportFormatCatalog([registration]);
+        var catalog = new ExportFormatCatalog([new JsonExportFormat()]);
         var context = new ExportContext
         {
             FormElement = new FormElement { Name = "customers" },
             Columns = [],
             Rows = Rows(TestContext.Current.CancellationToken),
             UserValues = [],
-            IncludeHeader = true,
             TotalRecords = 1,
             Progress = new Progress<ExportProgress>()
         };
         await using var output = new MemoryStream();
 
-        await catalog.GetRequired("json").WriteAsync(context, new Dictionary<string, string?>(), output,
+        await catalog.GetRequired("json").WriteAsync(context, new JsonExportOptions(), output,
             TestContext.Current.CancellationToken);
 
         var metadata = Assert.Single(catalog.GetFormats());
-        Assert.Equal("json", metadata.Id);
-        Assert.Equal("application/json", metadata.ContentType);
-        var option = Assert.Single(metadata.Options);
-        Assert.Equal(nameof(JsonExportOptions.Indented), option.Name);
+        Assert.Equal("json", metadata.Format.Id);
+        var option = Assert.Single(metadata.Options, o => o.Name == nameof(JsonExportOptions.Indented));
         Assert.Equal("Pretty JSON", option.DisplayName);
         Assert.Equal(ExportFormatOptionKind.Boolean, option.Kind);
         output.Position = 0;
@@ -45,10 +40,7 @@ public sealed class ExportFormatCatalogTests
     [Fact]
     public void DuplicateIdentifiersAreRejected()
     {
-        var first = new ExportFormatRegistration<JsonExportFormat, JsonExportOptions>(new JsonExportFormat());
-        var second = new ExportFormatRegistration<JsonExportFormat, JsonExportOptions>(new JsonExportFormat());
-
-        Assert.Throws<InvalidOperationException>(() => new ExportFormatCatalog([first, second]));
+        Assert.Throws<InvalidOperationException>(() => new ExportFormatCatalog([new JsonExportFormat(), new JsonExportFormat()]));
     }
 
     private static async IAsyncEnumerable<Dictionary<string, object?>> Rows(
@@ -61,17 +53,16 @@ public sealed class ExportFormatCatalogTests
 
     private sealed class JsonExportOptions : ExportFormatOptions
     {
-        protected internal override string Id => "json";
-        protected internal override string DisplayName => "JSON";
-        protected internal override string FileExtension => "json";
-        protected internal override string ContentType => "application/json";
-
         [Display(Name = "Pretty JSON")]
         public bool Indented { get; set; }
     }
 
     private sealed class JsonExportFormat : IExportFormat<JsonExportOptions>
     {
+        public string Id => "json";
+        public string DisplayName => "JSON";
+        public string FileExtension => "json";
+
         public async Task WriteAsync(
             ExportContext context,
             JsonExportOptions options,

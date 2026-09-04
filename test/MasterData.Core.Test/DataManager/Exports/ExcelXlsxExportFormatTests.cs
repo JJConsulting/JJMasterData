@@ -34,28 +34,25 @@ public sealed class ExcelXlsxExportFormatTests
 
         var formats = scope.ServiceProvider.GetRequiredService<ExportFormatCatalog>().GetFormats();
 
-        var csv = Assert.Single(formats, format => format.Id == "csv");
-        Assert.Equal("csv", csv.FileExtension);
-        var csvOption = Assert.Single(csv.Options);
+        var csv = Assert.Single(formats, format => format.Format.Id == "csv");
+        Assert.Equal("csv", csv.Format.FileExtension);
+        var csvOption = Assert.Single(csv.Options, option => option.Name == nameof(CsvExportOptions.Delimiter));
         Assert.Equal(";", csvOption.DefaultValue);
         Assert.Equal([";", ",", "|"], csvOption.Choices.Select(choice => choice.Value));
 
-        var text = Assert.Single(formats, format => format.Id == "txt");
-        Assert.Equal("txt", text.FileExtension);
-        Assert.Equal("\\t", Assert.Single(text.Options).DefaultValue);
+        var text = Assert.Single(formats, format => format.Format.Id == "txt");
+        Assert.Equal("txt", text.Format.FileExtension);
+        Assert.Equal("\\t", Assert.Single(text.Options, option => option.Name == nameof(TextExportOptions.Delimiter)).DefaultValue);
 
-        var legacy = Assert.Single(formats, format => format.Id == "excel");
-        Assert.Equal("xls", legacy.FileExtension);
-        Assert.Equal("application/vnd.ms-excel", legacy.ContentType);
-        Assert.Equal(2, legacy.Options.Count);
+        var legacy = Assert.Single(formats, format => format.Format.Id == "excel");
+        Assert.Equal("xls", legacy.Format.FileExtension);
+        Assert.Equal(3, legacy.Options.Count);
 
-        var xlsx = Assert.Single(formats, format => format.Id == "xlsx");
-        Assert.Equal("Excel (.xlsx)", xlsx.DisplayName);
-        Assert.Equal("xlsx", xlsx.FileExtension);
-        Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", xlsx.ContentType);
-        var option = Assert.Single(xlsx.Options);
-        Assert.Equal(nameof(ExcelXlsxExportOptions.ShowTableStyle), option.Name);
-        Assert.Equal("Show table style", option.DisplayName);
+        var xlsx = Assert.Single(formats, format => format.Format.Id == "xlsx");
+        Assert.Equal("Excel (.xlsx)", xlsx.Format.DisplayName);
+        Assert.Equal("xlsx", xlsx.Format.FileExtension);
+        var option = Assert.Single(xlsx.Options, option => option.Name == nameof(ExcelXlsxExportOptions.ShowTableStyle));
+        Assert.Equal("Show Table Style", option.DisplayName);
         Assert.Equal(ExportFormatOptionKind.Boolean, option.Kind);
         Assert.Equal("true", option.DefaultValue);
     }
@@ -91,9 +88,12 @@ public sealed class ExcelXlsxExportFormatTests
             ],
             () => disposed = true,
             TestContext.Current.CancellationToken);
-        var context = CreateContext(columns, rows, true, 1, progress);
+        var context = CreateContext(columns, rows, 1, progress);
 
-        var bytes = await WriteAsync(context, TestContext.Current.CancellationToken);
+        var bytes = await WriteAsync(
+            context,
+            TestContext.Current.CancellationToken,
+            new ExcelXlsxExportOptions { IncludeFirstRowAsHeader = true });
         var row = Assert.Single(Query(bytes, true));
 
         Assert.Equal(["Name", "Count", "Amount", "Timestamp", "Active", "Identifier", "Duration"], row.Keys);
@@ -124,7 +124,6 @@ public sealed class ExcelXlsxExportFormatTests
             Rows(
                 [new Dictionary<string, object?> { ["name"] = "Ada", ["count"] = 42 }],
                 cancellationToken: TestContext.Current.CancellationToken),
-            false,
             1);
 
         var bytes = await WriteAsync(context, TestContext.Current.CancellationToken);
@@ -145,13 +144,12 @@ public sealed class ExcelXlsxExportFormatTests
             Rows(
                 [new Dictionary<string, object?> { ["name"] = "Ada" }],
                 cancellationToken: TestContext.Current.CancellationToken),
-            true,
             1);
 
         var bytes = await WriteAsync(
             context,
             TestContext.Current.CancellationToken,
-            new ExcelXlsxExportOptions { ShowTableStyle = false });
+            new ExcelXlsxExportOptions { IncludeFirstRowAsHeader = true, ShowTableStyle = false });
 
         using var stream = new MemoryStream(bytes);
         using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
@@ -164,10 +162,12 @@ public sealed class ExcelXlsxExportFormatTests
         var context = CreateContext(
             CreateColumns(("name", "Name"), ("count", "Count")),
             Rows([], cancellationToken: TestContext.Current.CancellationToken),
-            true,
             0);
 
-        var bytes = await WriteAsync(context, TestContext.Current.CancellationToken);
+        var bytes = await WriteAsync(
+            context,
+            TestContext.Current.CancellationToken,
+            new ExcelXlsxExportOptions { IncludeFirstRowAsHeader = true });
         var header = Assert.Single(Query(bytes, false));
 
         Assert.Equal("Name", header["A"]);
@@ -184,10 +184,12 @@ public sealed class ExcelXlsxExportFormatTests
                 new Dictionary<string, object?> { ["name"] = "Ada", ["note"] = null },
                 new Dictionary<string, object?> { ["name"] = "Grace" }
             ], cancellationToken: TestContext.Current.CancellationToken),
-            true,
             2);
 
-        var bytes = await WriteAsync(context, TestContext.Current.CancellationToken);
+        var bytes = await WriteAsync(
+            context,
+            TestContext.Current.CancellationToken,
+            new ExcelXlsxExportOptions { IncludeFirstRowAsHeader = true });
         var rows = Query(bytes, true);
 
         Assert.Equal(2, rows.Count);
@@ -205,7 +207,6 @@ public sealed class ExcelXlsxExportFormatTests
             Rows(
                 [new Dictionary<string, object?> { ["name"] = "Ada" }],
                 cancellationToken: TestContext.Current.CancellationToken),
-            true,
             1);
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
@@ -223,7 +224,6 @@ public sealed class ExcelXlsxExportFormatTests
                 Rows(
                     [new Dictionary<string, object?> { ["name"] = "Ada" }],
                     cancellationToken: TestContext.Current.CancellationToken),
-                true,
                 1);
 
             await using (var output = new FileStream(
@@ -236,7 +236,7 @@ public sealed class ExcelXlsxExportFormatTests
             {
                 await new ExcelXlsxExportFormat().WriteAsync(
                     context,
-                    new ExcelXlsxExportOptions(),
+                    new ExcelXlsxExportOptions { IncludeFirstRowAsHeader = true },
                     output,
                     TestContext.Current.CancellationToken);
             }
@@ -254,7 +254,6 @@ public sealed class ExcelXlsxExportFormatTests
     private static ExportContext CreateContext(
         List<FormElementField> columns,
         IAsyncEnumerable<Dictionary<string, object?>> rows,
-        bool includeHeader,
         long totalRecords,
         IProgress<ExportProgress>? progress = null)
     {
@@ -264,7 +263,6 @@ public sealed class ExcelXlsxExportFormatTests
             Columns = columns,
             Rows = rows,
             UserValues = [],
-            IncludeHeader = includeHeader,
             TotalRecords = totalRecords,
             Progress = progress ?? new Progress<ExportProgress>()
         };

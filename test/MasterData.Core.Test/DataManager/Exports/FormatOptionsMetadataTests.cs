@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 
@@ -10,7 +9,7 @@ public sealed class FormatOptionsMetadataTests
     [Fact]
     public void MetadataIsDerivedFromPublicPropertiesAndDataAnnotations()
     {
-        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
+        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportFormat());
 
         var count = Assert.Single(metadata, option => option.Name == nameof(TestExportOptions.Count));
         Assert.Equal("Count", count.DisplayName);
@@ -41,14 +40,14 @@ public sealed class FormatOptionsMetadataTests
     [Fact]
     public void BinderUsesDefaultsAndBindsNamesAndEnumValuesCaseInsensitively()
     {
-        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
+        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportFormat());
 
-        var defaults = ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, []);
+        var defaults = (TestExportOptions)ExportFormatOptionsBinder.Bind(metadata, typeof(TestExportOptions), []);
         Assert.Equal(12, defaults.Count);
         Assert.True(defaults.Enabled);
         Assert.Equal(TestMode.Pretty, defaults.Mode);
 
-        var bound = ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
+        var bound = (TestExportOptions)ExportFormatOptionsBinder.Bind(metadata, typeof(TestExportOptions), new Dictionary<string, string?>
         {
             ["count"] = "42",
             ["ENABLED"] = "false",
@@ -62,15 +61,15 @@ public sealed class FormatOptionsMetadataTests
     [Fact]
     public void BinderRejectsUnknownOptionsAndInvalidEnumValues()
     {
-        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportOptions());
+        var metadata = ExportFormatOptionsMetadataFactory.CreateOptions(new TestExportFormat());
 
         Assert.Throws<InvalidOperationException>(() =>
-            ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
+            ExportFormatOptionsBinder.Bind(metadata, typeof(TestExportOptions), new Dictionary<string, string?>
             {
                 ["Missing"] = "value"
             }));
         Assert.Throws<InvalidOperationException>(() =>
-            ExportFormatOptionsBinder.Bind<TestExportOptions>(metadata, new Dictionary<string, string?>
+            ExportFormatOptionsBinder.Bind(metadata, typeof(TestExportOptions), new Dictionary<string, string?>
             {
                 [nameof(TestExportOptions.Mode)] = "invalid"
             }));
@@ -80,7 +79,7 @@ public sealed class FormatOptionsMetadataTests
     public void MetadataRejectsTypesThatCannotBeBoundFromStrings()
     {
         var exception = Assert.Throws<InvalidOperationException>(() =>
-            ExportFormatOptionsMetadataFactory.CreateOptions(new UnsupportedExportOptions()));
+            ExportFormatOptionsMetadataFactory.CreateOptions(new UnsupportedExportFormat()));
 
         Assert.Contains(nameof(UnsupportedExportOptions.Value), exception.Message);
     }
@@ -95,11 +94,6 @@ public sealed class FormatOptionsMetadataTests
 
     private sealed class TestExportOptions : ExportFormatOptions
     {
-        protected internal override string Id => "test";
-        protected internal override string DisplayName => "Test";
-        protected internal override string FileExtension => "test";
-        protected internal override string ContentType => "application/test";
-
         public int Count { get; set; } = 12;
 
         [Display(Name = "Include details")]
@@ -108,13 +102,34 @@ public sealed class FormatOptionsMetadataTests
         public TestMode Mode { get; set; } = TestMode.Pretty;
     }
 
+    private sealed class TestExportFormat : IExportFormat<TestExportOptions>
+    {
+        public string Id => "test";
+        public string DisplayName => "Test";
+        public string FileExtension => "test";
+
+        public Task WriteAsync(
+            ExportContext context,
+            TestExportOptions options,
+            Stream output,
+            CancellationToken cancellationToken) => Task.CompletedTask;
+    }
+
     private sealed class UnsupportedExportOptions : ExportFormatOptions
     {
-        protected internal override string Id => "unsupported";
-        protected internal override string DisplayName => "Unsupported";
-        protected internal override string FileExtension => "unsupported";
-        protected internal override string ContentType => "application/unsupported";
-
         public object Value { get; set; } = new();
+    }
+
+    private sealed class UnsupportedExportFormat : IExportFormat<UnsupportedExportOptions>
+    {
+        public string Id => "unsupported";
+        public string DisplayName => "Unsupported";
+        public string FileExtension => "unsupported";
+
+        public Task WriteAsync(
+            ExportContext context,
+            UnsupportedExportOptions options,
+            Stream output,
+            CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }
