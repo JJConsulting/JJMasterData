@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
@@ -462,15 +463,29 @@ internal sealed class GridTableBody(
 
     private static string GetTdStyle(FormElementField field)
     {
-        switch (field.GridAlignment)
+        var alignmentStyle = field.GridAlignment switch
         {
-            case GridAlignment.Left:
-                return "text-align:left";
-            case GridAlignment.Center:
-                return "text-align:center";
-            case GridAlignment.Right:
-                return "text-align:right";
-        }
+            GridAlignment.Left => "text-align:left;",
+            GridAlignment.Center => "text-align:center;",
+            GridAlignment.Right => "text-align:right;",
+            _ => GetDefaultAlignmentStyle(field)
+        };
+
+        if (string.IsNullOrWhiteSpace(field.GridWidth))
+            return alignmentStyle;
+
+        var style = new StringBuilder();
+        
+        if (!string.IsNullOrEmpty(alignmentStyle))
+            style.Append(alignmentStyle);
+ 
+        style.Append($"width:{field.GridWidth};");
+
+        return style.ToString();
+    }
+
+    private static string GetDefaultAlignmentStyle(FormElementField field)
+    {
         switch (field.Component)
         {
             case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
@@ -486,12 +501,12 @@ internal sealed class GridTableBody(
                 break;
             case FormComponent.CheckBox:
             case FormComponent.Icon:
-                return "text-align:center";
+                return "text-align:center;";
             default:
                 if (field.DataType is FieldType.Float or FieldType.Int or FieldType.Decimal)
                 {
                     if (!field.IsPk)
-                        return "text-align:right";
+                        return "text-align:right;";
                 }
 
                 break;

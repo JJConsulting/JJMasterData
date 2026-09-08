@@ -183,15 +183,22 @@ internal sealed class GridTableHeader(
 
     private static string GetThStyle(FormElementField field)
     {
-        switch (field.GridAlignment)
+        var alignmentStyle = field.GridAlignment switch
         {
-            case GridAlignment.Left:
-                return "text-align:left";
-            case GridAlignment.Center:
-                return "text-align:center";
-            case GridAlignment.Right:
-                return "text-align:right";
-        }
+            GridAlignment.Left => "text-align:left",
+            GridAlignment.Center => "text-align:center",
+            GridAlignment.Right => "text-align:right",
+            _ => GetDefaultAlignmentStyle(field)
+        };
+
+        if (string.IsNullOrWhiteSpace(field.GridWidth))
+            return alignmentStyle;
+
+        return $"{alignmentStyle.TrimEnd(';')}{(alignmentStyle.Length > 0 ? ";" : string.Empty)}width:{field.GridWidth};";
+    }
+
+    private static string GetDefaultAlignmentStyle(FormElementField field)
+    {
         switch (field.Component)
         {
             case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
