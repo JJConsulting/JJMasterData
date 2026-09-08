@@ -49,6 +49,18 @@ public static class MasterDataServiceBuilderExtensions
         return builder;
     }
     
+    public static MasterDataServiceBuilder WithCpfCnpj(this MasterDataServiceBuilder builder, Action<CpfCnpjSettings>? configure = null)
+    {
+        builder.Services.AddOptions<CpfCnpjSettings>().BindConfiguration("JJMasterData:CpfCnpj");
+
+        if (configure is not null)
+            builder.Services.PostConfigure(configure);
+
+        builder.WithReceitaFederalService<CpfCnpjService>();
+
+        return builder;
+    }
+
     public static MasterDataServiceBuilder WithViaCep(this MasterDataServiceBuilder builder)
     {
         builder.Services.AddTransient<ICepService, ViaCepService>();
@@ -121,8 +133,16 @@ public static class MasterDataServiceBuilderExtensions
 
         var settings = configuration.GetSection("JJMasterData").Get<BrasilSettings>() ?? new BrasilSettings();
 
-        if (!string.IsNullOrWhiteSpace(settings.Sintegra?.ApiKey) &&
-            string.IsNullOrWhiteSpace(settings.HubDev?.ApiKey))
+        var hasHubDev = !string.IsNullOrWhiteSpace(settings.HubDev?.ApiKey);
+        var hasSintegra = !string.IsNullOrWhiteSpace(settings.Sintegra?.ApiKey);
+        var hasCpfCnpj = !string.IsNullOrWhiteSpace(settings.CpfCnpj?.ApiKey);
+
+        if (hasCpfCnpj && !hasHubDev && !hasSintegra)
+        {
+            builder.WithCpfCnpjCnpjActionPlugin();
+            builder.WithCpfCnpjCpfActionPlugin();
+        }
+        else if (hasSintegra && !hasHubDev)
         {
             builder.WithSintegraCnpjActionPlugin();
             builder.WithSintegraCpfActionPlugin();
@@ -135,6 +155,20 @@ public static class MasterDataServiceBuilderExtensions
         
         builder.WithCepActionPlugin<ViaCepService>();
 
+        return builder;
+    }
+
+    public static MasterDataServiceBuilder WithCpfCnpjCpfActionPlugin(this MasterDataServiceBuilder builder, Action<CpfCnpjSettings>? configure = null)
+    {
+        builder.WithCpfCnpj(configure);
+        builder.WithCpfActionPlugin<CpfCnpjService>();
+        return builder;
+    }
+
+    public static MasterDataServiceBuilder WithCpfCnpjCnpjActionPlugin(this MasterDataServiceBuilder builder, Action<CpfCnpjSettings>? configure = null)
+    {
+        builder.WithCpfCnpj(configure);
+        builder.WithCnpjActionPlugin<CpfCnpjService>();
         return builder;
     }
 
