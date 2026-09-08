@@ -14,4 +14,10 @@
     <data name="Default Format" xml:space="preserve">
         <value />
     </data>
+    <data name="Width" xml:space="preserve">
+        <value>Width</value>
+    </data>
+    <data name="Width unit" xml:space="preserve">
+        <value>Width unit</value>
+    </data>
 </root>

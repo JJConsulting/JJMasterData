@@ -1,0 +1,68 @@
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model FormElementField
+
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@{
+    var gridWidth = Model.GridWidth?.Trim() ?? string.Empty;
+    var gridWidthUnit = "px";
+    var gridWidthValue = gridWidth;
+
+    if (gridWidth.EndsWith('%'))
+    {
+        gridWidthUnit = "%";
+        gridWidthValue = gridWidth.TrimEnd('%');
+    }
+    else if (gridWidth.EndsWith("px", StringComparison.OrdinalIgnoreCase))
+    {
+        gridWidthValue = gridWidth[..^2];
+    }
+}
+
+<div class="row">
+    <div class="mb-3 col-sm-6">
+        <label asp-for="GridAlignment" class="form-label"></label>
+        <select asp-for="GridAlignment" class="form-select"
+                asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
+    </div>
+
+    <div class="mb-3 col-sm-6">
+        <label asp-for="GridWidth" class="form-label"></label>
+        <input asp-for="GridWidth" type="hidden"/>
+        <div class="input-group">
+            <input id="grid-width-value" type="number" min="0" step="any" value="@gridWidthValue"
+                   class="form-control" oninput="updateGridWidth()"/>
+            <select id="grid-width-unit" class="form-select flex-grow-0 w-auto" onchange="updateGridWidth()"
+                    aria-label="@StringLocalizer["Width unit"]">
+                @if (gridWidthUnit == "%")
+                {
+                    <option value="%" selected>%</option>
+                    <option value="px">px</option>
+                }
+                else
+                {
+                    <option value="%">%</option>
+                    <option value="px" selected>px</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-3 col-sm-6 d-flex align-items-center">
+        <code-editor-button
+            asp-for="@Model.GridRenderingTemplate"
+            label="@StringLocalizer["Grid Rendering Template"]"
+            language="liquid"/>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function updateGridWidth() {
+        const value = document.getElementById('grid-width-value').value;
+        const unit = document.getElementById('grid-width-unit').value;
+        document.getElementById('@Html.IdFor(model => model.GridWidth)').value = value ? `${value}${unit}` : '';
+    }
+</script>

@@ -3868,6 +3868,12 @@
   <data name="Alignment At Grid" xml:space="preserve">
     <value>Alinhamento na Grid</value>
   </data>
+  <data name="Width" xml:space="preserve">
+    <value>Largura</value>
+  </data>
+  <data name="Width unit" xml:space="preserve">
+    <value>Unidade da largura</value>
+  </data>
   <data name="Left" xml:space="preserve">
     <value>Esquerda</value>
   </data>

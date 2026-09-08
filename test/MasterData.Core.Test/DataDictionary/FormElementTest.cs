@@ -14,6 +14,24 @@ namespace JJMasterData.Core.Test.DataDictionary;
 
 public class FormElementTest
 {
+    [Theory]
+    [InlineData("25%")]
+    [InlineData("120px")]
+    public void GridWidth_IsSerializedAsString(string gridWidth)
+    {
+        var field = new FormElementField
+        {
+            Name = "field",
+            GridWidth = gridWidth
+        };
+
+        var json = JsonSerializer.Serialize(field);
+        var deserializedField = JsonSerializer.Deserialize<FormElementField>(json);
+
+        Assert.Contains($"\"gridWidth\":\"{gridWidth}\"", json);
+        Assert.Equal(gridWidth, deserializedField!.GridWidth);
+    }
+
     [Fact]
     public void DeepCopyTest()
     {

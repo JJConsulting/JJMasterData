@@ -161,6 +161,13 @@ public class FormElementField : ElementField
     [JsonPropertyName("gridAlignment")]
     [Display(Name = "Alignment At Grid")]
     public GridAlignment GridAlignment { get; set; }
+
+    /// <summary>
+    /// Width used to render the field at the Grid, including the CSS unit (for example, 25% or 120px).
+    /// </summary>
+    [JsonPropertyName("gridWidth")]
+    [Display(Name = "Width")]
+    public string? GridWidth { get; set; }
     
     /// <summary>
     /// Template used to render the field at the Grid.

@@ -793,4 +793,10 @@
     <value>Mostrar estilo de tabla</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Width" xml:space="preserve">
+    <value>Ancho</value>
+  </data>
+  <data name="Width unit" xml:space="preserve">
+    <value>Unidad de ancho</value>
+  </data>
 </root>
