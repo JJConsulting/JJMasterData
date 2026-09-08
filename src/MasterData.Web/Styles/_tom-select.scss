@@ -175,8 +175,28 @@
   color: var(--#{$prefix}body-color);
 }
 .ts-dropdown [data-selectable].option.selected {
-  background-color: var(--#{$prefix}dropdown-link-active-bg, var(--#{$prefix}primary));
-  color: var(--#{$prefix}dropdown-link-active-color, var(--#{$prefix}white));
+  position: relative;
+  padding-right: 2.5rem;
+  background-color: transparent;
+  color: var(--#{$prefix}dropdown-link-color, var(--#{$prefix}body-color));
+}
+.ts-dropdown [data-selectable].option.selected::after {
+  content: "\f00c";
+  position: absolute;
+  top: 50%;
+  right: var(--#{$prefix}dropdown-item-padding-x);
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 1rem;
+  transform: translateY(-50%);
+}
+.ts-dropdown [data-selectable].option.selected:hover {
+  background-color: var(--#{$prefix}primary-bg-subtle);
+  color: var(--#{$prefix}body-color);
+}
+.ts-dropdown [data-selectable].option.selected.active {
+  background-color: var(--#{$prefix}primary);
+  color: var(--#{$prefix}white);
 }
 .ts-dropdown .active.create {
   color: var(--#{$prefix}body-color);
