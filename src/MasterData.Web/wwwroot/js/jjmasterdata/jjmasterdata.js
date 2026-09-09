@@ -2973,6 +2973,8 @@ class TomSelectHelper {
                 option: (data, escape) => this.renderOption(element, data, escape, true),
                 item: (data, escape) => this.renderOption(element, data, escape, false)
             } }));
+        if (element.matches(':disabled'))
+            tomSelect.disable();
         if (!isTagsInput)
             this.enableTypeAhead(tomSelect);
         return tomSelect;

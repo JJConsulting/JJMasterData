@@ -51,6 +51,9 @@ class TomSelectHelper {
             }
         });
 
+        if (element.matches(':disabled'))
+            tomSelect.disable();
+
         if (!isTagsInput)
             this.enableTypeAhead(tomSelect);
 
