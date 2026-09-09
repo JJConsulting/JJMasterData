@@ -16,6 +16,7 @@ public class BrasilConfigurationTests
     [Theory]
     [InlineData("JJMasterData:HubDev:ApiKey", "test-hubdev-key", typeof(HubDevService))]
     [InlineData("JJMasterData:Sintegra:ApiKey", "test-sintegra-key", typeof(SintegraService))]
+    [InlineData("JJMasterData:CpfCnpj:ApiKey", "test-cpfcnpj-key", typeof(CpfCnpjService))]
     public void WithBrasilActionPlugins_RegistersSelectedReceitaFederalService(string selectedKey, string selectedValue, Type expectedType)
     {
         var services = new ServiceCollection();
