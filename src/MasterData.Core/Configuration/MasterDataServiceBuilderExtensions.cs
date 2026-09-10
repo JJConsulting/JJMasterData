@@ -23,7 +23,7 @@ public static class MasterDataServiceBuilderExtensions
     {
         public MasterDataServiceBuilder WithExportFormat<TFormat>() where TFormat : class, IExportFormat
         {
-            builder.Services.AddScoped<IExportFormat, TFormat>();
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, TFormat>());
             return builder;
         }
 

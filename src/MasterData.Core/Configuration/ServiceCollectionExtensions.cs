@@ -11,6 +11,7 @@ using JJMasterData.Core.DataManager.Importation.Background;
 using JJMasterData.Core.Html.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Core.Configuration;
 
@@ -59,10 +60,10 @@ public static class ServiceCollectionExtensions
 
             services.AddTransient<HtmlTemplateRenderer>();
         
-            services.AddScoped<IExportFormat, CsvExportFormat>();
-            services.AddScoped<IExportFormat, TextExportFormat>();
-            services.AddScoped<IExportFormat, ExcelXlsExportFormat>();
-            services.AddScoped<IExportFormat, ExcelXlsxExportFormat>();
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, CsvExportFormat>());
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, TextExportFormat>());
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, ExcelXlsExportFormat>());
+            services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, ExcelXlsxExportFormat>());
             
             services.AddScoped<ExportFormatCatalog>();
             services.AddScoped<ExportJobService>();
