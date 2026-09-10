@@ -58,6 +58,10 @@ class CodeEditor {
             return;
         }
 
+        if (!hints || typeof hints !== "object") {
+            return;
+        }
+
         Object.keys(hints).forEach(lang => {
             //@ts-ignore
             monaco.languages.registerCompletionItemProvider(lang, {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ public class AuditLogService(
     public const string DicBrowser = "browser";
     public const string DicJson = "json";
 
-    public async Task LogAsync(Element element,DataContext dataContext, Dictionary<string, object> formValues, CommandOperation action)
+    public async Task LogAsync(Element element,DataContext dataContext, Dictionary<string, object?> formValues, CommandOperation action)
     {
         var values = new Dictionary<string, object>
         {

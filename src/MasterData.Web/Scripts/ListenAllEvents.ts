@@ -1,10 +1,7 @@
 ﻿const listenAllEvents = (selectorPrefix: string = String()) => {
     selectorPrefix += " "
     
-    $(selectorPrefix + ".selectpicker").selectpicker({
-        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon',
-        styleBase: bootstrapVersion === 5 ? "form-select form-dropdown" : "form-control"
-    });
+    TomSelectHelper.listen(selectorPrefix);
     
     if(bootstrapVersion === 3){
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();

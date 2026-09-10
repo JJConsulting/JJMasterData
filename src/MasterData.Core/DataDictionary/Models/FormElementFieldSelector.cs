@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace JJMasterData.Core.DataDictionary.Models;
+﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElementFieldSelector(FormElement formElement, string fieldName)
 {

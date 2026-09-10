@@ -1,16 +1,16 @@
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
+#nullable disable warnings
+using JJMasterData.Commons.Security;
 
 namespace JJMasterData.Core.UI.Routing;
 
-public class RouteContextFactory(IQueryString queryString, IEncryptionService encryptionService)
+public class RouteContextFactory(IHttpContextAccessor httpContextAccessor, DataProtectionService dataProtectionService)
 {
     public RouteContext Create()
     {
-        if (queryString.TryGetValue("routeContext", out var encryptedQueryString))
+        var queryString = httpContextAccessor.HttpContext?.Request.Query;
+        if (queryString?.TryGetValue("routeContext", out var encryptedQueryString) == true)
         {
-            return encryptionService.DecryptRouteContext(encryptedQueryString);
+            return dataProtectionService.UnprotectRouteContext(encryptedQueryString);
         }
 
         return new RouteContext();

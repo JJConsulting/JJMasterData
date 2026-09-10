@@ -1,8 +1,5 @@
-#nullable enable
-
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -12,18 +9,18 @@ internal sealed class DataImportationScripts(
     string name,
     FormElement formElement, 
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IEncryptionService encryptionService)
+    DataProtectionService encryptionService)
 {
     private readonly string _modalTitle = formElement.Options.GridToolbarActions.ImportAction.Tooltip ?? string.Empty;
 
     private string GetEncryptedRouteContext()
     {
         var routeContext = RouteContext.FromFormElement(formElement, ComponentContext.DataImportation);
-        var encryptedRouteContext = encryptionService.EncryptObject(routeContext);
+        var encryptedRouteContext = encryptionService.ProtectObject(routeContext);
         return encryptedRouteContext;
     }
 
-    public DataImportationScripts(JJDataImportation dataImportation) : this(dataImportation.Name, dataImportation.FormElement, dataImportation.StringLocalizer, dataImportation.EncryptionService)
+    public DataImportationScripts(JJDataImportation dataImportation) : this(dataImportation.Name, dataImportation.FormElement, dataImportation.StringLocalizer, dataImportation.DataProtectionService)
     {
     }
     
@@ -67,7 +64,7 @@ internal sealed class DataImportationScripts(
     public string GetUploadCallbackScript()
     {
         //language=Javascript
-        return $"DataImportationHelper.uploadCallback('{name}','{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.uploadCallback('{name}','{GetEncryptedRouteContext()}', uploadResult.jobId)";
     }
 
     public static string GetCloseModalScript()

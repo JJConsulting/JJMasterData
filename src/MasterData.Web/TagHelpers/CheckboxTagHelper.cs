@@ -72,7 +72,7 @@ public sealed class CheckboxTagHelper(
         if (ShowLabel)
             checkBox.Text = stringLocalizer[displayName ?? string.Empty];
 
-        checkBox.Tooltip = Tooltip;
+        checkBox.Tooltip = Tooltip!;
         Configure?.Invoke(checkBox);
         
         output.TagName = null;

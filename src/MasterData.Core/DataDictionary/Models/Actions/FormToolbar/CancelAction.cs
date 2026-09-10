@@ -1,6 +1,3 @@
-#nullable enable
-
-
 using JJConsulting.FontAwesome;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;

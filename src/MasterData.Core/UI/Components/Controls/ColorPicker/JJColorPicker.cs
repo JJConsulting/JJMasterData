@@ -1,13 +1,12 @@
+#nullable disable warnings
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 
 
 namespace JJMasterData.Core.UI.Components.ColorPicker;
 
-public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
+public class JJColorPicker(IHttpContextAccessor formValues) : ControlBase(formValues)
 {
     public string Title { get; set; }
 

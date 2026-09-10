@@ -1,9 +1,9 @@
+#nullable disable warnings
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.ColorPicker;
 
-internal sealed class ColorPickerFactory(IFormValues formValues) : IControlFactory<JJColorPicker>
+internal sealed class ColorPickerFactory(IHttpContextAccessor formValues) : IControlFactory<JJColorPicker>
 {
     public JJColorPicker Create()
     {

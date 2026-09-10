@@ -1,3 +1,4 @@
+#nullable disable warnings
 namespace JJMasterData.Core.DataDictionary.Repository;
 
 public class FileSystemDataDictionaryOptions

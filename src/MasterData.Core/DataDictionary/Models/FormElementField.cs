@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -123,17 +121,6 @@ public class FormElementField : ElementField
     public bool Export { get; set; }
 
     /// <summary>
-    /// Validates possibly dangerous values in the request for .NET Framework
-    /// </summary>
-    /// <remarks>
-    /// Important for lower versions of .NET Framework to enable the parameter: 
-    /// httpRuntime requestValidationMode="4.5" ... 
-    /// </remarks>
-    [JsonPropertyName("validateRequest")]
-    [Display(Name = "Validate Request")]
-    public bool ValidateRequest { get; set; }
-
-    /// <summary>
     /// Ao alterar o conteúdo recarrega todos os campos do formulário
     /// (Default=false)
     /// </summary>
@@ -174,6 +161,13 @@ public class FormElementField : ElementField
     [JsonPropertyName("gridAlignment")]
     [Display(Name = "Alignment At Grid")]
     public GridAlignment GridAlignment { get; set; }
+
+    /// <summary>
+    /// Width used to render the field at the Grid, including the CSS unit (for example, 25% or 120px).
+    /// </summary>
+    [JsonPropertyName("gridWidth")]
+    [Display(Name = "Width")]
+    public string? GridWidth { get; set; }
     
     /// <summary>
     /// Template used to render the field at the Grid.
@@ -201,7 +195,6 @@ public class FormElementField : ElementField
     {
         Component = FormComponent.Text;
         Export = true;
-        ValidateRequest = true;
         VisibleExpression = "val:1";
         EnableExpression = "val:1";
         TextCase = TextCase.None;
@@ -254,9 +247,8 @@ public class FormElementField : ElementField
         }
 
         Export = true;
-        ValidateRequest = true;
         TextCase = TextCase.None;
-        Actions = new();
+        Actions = [];
     }
 
 

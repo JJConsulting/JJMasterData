@@ -17,8 +17,21 @@ function getRequestOptions() {
 }
 
 function postFormValues(options : PostFormValuesOptions) {
+    postValues(options, getRequestOptions());
+}
+
+function postContent(options: PostFormValuesOptions, body: BodyInit) {
+    postValues(options, {
+        method: "POST",
+        body: body,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    });
+}
+
+function postValues(options: PostFormValuesOptions, requestOptions: RequestInit) {
     SpinnerOverlay.show();
-    const requestOptions = getRequestOptions();
     const event = new Event("postFormValuesCompleted");
     fetch(options.url, requestOptions)
         .then(response => {

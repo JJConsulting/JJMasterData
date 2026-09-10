@@ -1,14 +1,14 @@
-﻿using System;
-using JJMasterData.Core.DataManager.IO;
+﻿#nullable disable warnings
+using System;
 
 namespace JJMasterData.Core.UI.Events.Args;
 
-public class FormUploadFileEventArgs(FormFileContent file) : EventArgs
+public class FormUploadFileEventArgs(IFormFile file) : EventArgs
 {
     /// <summary>
     /// Arquivo recebido
     /// </summary>
-    public FormFileContent File { get; set; } = file;
+    public IFormFile File { get; set; } = file;
 
     /// <summary>
     /// Mensagem de erro referente a validação do evento (opcional)
@@ -19,4 +19,6 @@ public class FormUploadFileEventArgs(FormFileContent file) : EventArgs
     /// Mensagem referente a validação do evento (opcional)
     /// </summary>
     public string SuccessMessage { get; set; }
+
+    public string JobId { get; set; }
 }

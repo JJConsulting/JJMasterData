@@ -1,18 +1,33 @@
 class DataExportationHelper {
+    private static progressVerifications = new Set<string>();
+
     static async startProgressVerification(componentName: string, routeContext: string) {
         DataExportationHelper.setSpinner();
+        DataExportationHelper.setActionProcessing(componentName, true);
+
+        if (DataExportationHelper.progressVerifications.has(componentName))
+            return;
+
+        DataExportationHelper.progressVerifications.add(componentName);
 
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","checkProgress")
+        urlBuilder.addQueryParameter("jobId",DataExportationHelper.getJobId(componentName))
         const url = urlBuilder.build();
         
         var isCompleted : boolean = false;
 
-        while(!isCompleted){
-            isCompleted = await DataExportationHelper.checkProgress(url, componentName);
-            await sleep(3000);
+        try {
+            while(!isCompleted){
+                isCompleted = await DataExportationHelper.checkProgress(url, componentName);
+                if (!isCompleted)
+                    await sleep(3000);
+            }
+        } finally {
+            DataExportationHelper.progressVerifications.delete(componentName);
+            DataExportationHelper.setActionProcessing(componentName, false);
         }
     }
 
@@ -21,6 +36,7 @@ class DataExportationHelper {
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","stopProcess")
+        urlBuilder.addQueryParameter("jobId",DataExportationHelper.getJobId(componentName))
         
         await DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
     }
@@ -115,6 +131,8 @@ class DataExportationHelper {
     
     private static setSpinner() {
         const target = document.getElementById('data-exportation-spinner-');
+        if (!target || target.childElementCount > 0)
+            return;
 
         if(bootstrapVersion < 5){
             const options = {
@@ -154,6 +172,32 @@ class DataExportationHelper {
         }
     }
 
+    private static setActionProcessing(componentName: string, isProcessing: boolean) {
+        const button = Array.from(document.querySelectorAll<HTMLElement>('[onclick*="DataExportationHelper.openExportPopup"]'))
+            .find(element => element.getAttribute('onclick')?.includes(`'${componentName}'`));
+        if (!button)
+            return;
+
+        button.setAttribute('aria-busy', isProcessing.toString());
+        const indicatorId = `data-exportation-action-spinner-${componentName}`;
+        const existingIndicator = document.getElementById(indicatorId);
+        if (!isProcessing) {
+            existingIndicator?.remove();
+            button.querySelector('.data-exportation-action-indicator')?.remove();
+            return;
+        }
+
+        if (existingIndicator || button.querySelector('.data-exportation-action-indicator'))
+            return;
+
+        const indicator = document.createElement('span');
+        indicator.id = indicatorId;
+        indicator.classList.add('spinner-border', 'data-operation-action-indicator', 'data-exportation-action-indicator');
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
+    }
+
     
     private static setSettingsHTML(componentName, html) {
         const modalBody: HTMLElement = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
@@ -162,9 +206,9 @@ class DataExportationHelper {
         const qtdElement = document.querySelector("#" + componentName + "-total-of-records");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
-            if (totRows > 50000) {
-                document.querySelector<HTMLElement>("#data-exportation-warning" + componentName).style.display = "block";
-            }
+            const warningElement = document.querySelector<HTMLElement>("#data-exportation-warning" + componentName);
+            if (totRows > 50000 && warningElement)
+                warningElement.style.display = "block";
         }
         
         if (bootstrapVersion < 5) {
@@ -185,27 +229,13 @@ class DataExportationHelper {
 
 
     static showOptions(componentName: string, exportType: string) {
-        const orientationDiv = document.getElementById(`${componentName}-div-export-orientation`);
-        const allDiv = document.getElementById(`${componentName}-div-export-all`);
-        const delimiterDiv = document.getElementById(`${componentName}-div-export-delimiter`);
-        const firstlineDiv = document.getElementById(`${componentName}-div-export-firstline`);
+        document.querySelectorAll<HTMLElement>(".data-export-format-option").forEach(element => {
+            element.style.display = element.dataset.exportFormat === exportType ? "block" : "none";
+        });
+    }
 
-        if (exportType === "1") { // XLS
-            if (orientationDiv) orientationDiv.style.display = "none";
-            if (allDiv) allDiv.style.display = "block";
-            if (delimiterDiv) delimiterDiv.style.display = "none";
-            if (firstlineDiv) firstlineDiv.style.display = "block";
-        } else if (exportType === "2") { // PDF
-            if (orientationDiv) orientationDiv.style.display = "block";
-            if (allDiv) allDiv.style.display = "none";
-            if (delimiterDiv) delimiterDiv.style.display = "none";
-            if (firstlineDiv) firstlineDiv.style.display = "none";
-        } else {
-            if (orientationDiv) orientationDiv.style.display = "none";
-            if (allDiv) allDiv.style.display = "block";
-            if (delimiterDiv) delimiterDiv.style.display = "block";
-            if (firstlineDiv) firstlineDiv.style.display = "block";
-        }
+    private static getJobId(componentName: string): string {
+        return document.querySelector<HTMLInputElement>(`#${componentName}-export-job-id`)?.value ?? "";
     }
 
 

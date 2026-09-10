@@ -1,11 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿#nullable disable warnings
+using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
-
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -31,7 +28,7 @@ public class JJCheckBox : ControlBase
     {
         get
         {
-            if (_isChecked == null && FormValues.ContainsFormValues())
+            if (_isChecked == null && HasFormValues)
                 _isChecked = Value.Equals(FormValues[Name]);
 
             return _isChecked ?? false;
@@ -39,7 +36,7 @@ public class JJCheckBox : ControlBase
         set => _isChecked = value;
     }
 
-    public JJCheckBox(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
+    public JJCheckBox(IHttpContextAccessor formValues, IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
     {
         _stringLocalizer = stringLocalizer;
         Visible = true;

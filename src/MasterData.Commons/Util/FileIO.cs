@@ -2,8 +2,6 @@
 using System.Data;
 using System.Globalization;
 using System.IO;
-using JJMasterData.Commons.Configuration.Options;
-
 namespace JJMasterData.Commons.Util;
 
 public static class FileIO
@@ -50,13 +48,11 @@ public static class FileIO
 
     /// <summary>
     /// Returns the application path.
-    /// .NET Framework: AppDomain.CurrentDomain.BaseDirectory
-    /// ..NET 8+: Environment.CurrentDirectory
     /// </summary>
     /// <returns></returns>
     public static string GetApplicationPath()
     {
-        return MasterDataCommonsOptions.IsNetFramework ? AppDomain.CurrentDomain.BaseDirectory : Environment.CurrentDirectory;
+        return Environment.CurrentDirectory;
     }
 
     ///<summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -9,7 +10,6 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -22,7 +22,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     private readonly bool _renderPanelGroup = dataPanel.RenderPanelGroup;
     private readonly FormElement _formElement = dataPanel.FormElement;
     private readonly DataPanelForm _dataPanelForm = new(dataPanel);
-    private readonly IFormValues _formValues = dataPanel.CurrentContext.Request.Form;
+    private readonly IHttpContextAccessor _formValues = dataPanel.CurrentContext;
     private readonly PageState _pageState = dataPanel.PageState;
     private readonly ExpressionsService _expressionsService= dataPanel.ExpressionsService;
     

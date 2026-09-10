@@ -1,7 +1,4 @@
-﻿#nullable enable
-
-using System;
-using JJConsulting.Html.Bootstrap.Components;
+﻿using System;
 using JJMasterData.Core.UI.Components.Factories;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.DependencyInjection;

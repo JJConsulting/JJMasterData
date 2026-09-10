@@ -11,7 +11,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
 
@@ -19,7 +19,6 @@ namespace JJMasterData.WebApi.Services;
 
 public class MasterApiService(ExpressionsService expressionsService,
     IHttpContextAccessor httpContextAccessor,
-    IHttpContext httpContext,
     IMasterDataUser masterDataUser,
     DataItemService dataItemService,
     FieldValuesService fieldValuesService,
@@ -123,8 +122,10 @@ public class MasterApiService(ExpressionsService expressionsService,
         return result;
     }
 
-    public async Task<List<ResponseLetter>> SetFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
-        string elementName, bool replace = false)
+    public async Task<List<ResponseLetter>> SetFieldsAsync(
+        IEnumerable<Dictionary<string, object?>> paramsList,
+        string elementName, 
+        bool replace = false)
     {
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
@@ -144,7 +145,8 @@ public class MasterApiService(ExpressionsService expressionsService,
         return results;
     }
 
-    public async Task<List<ResponseLetter>> UpdateFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async Task<List<ResponseLetter>> UpdateFieldsAsync(
+        IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -182,7 +184,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         return results;
     }
 
-    private async Task<ResponseLetter> Insert(FormElement formElement, Dictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> Insert(
+        FormElement formElement, 
+        Dictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -212,7 +216,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> Update(FormElement formElement, Dictionary<string, object?> apiValues)
+    private async Task<ResponseLetter> Update(
+        FormElement formElement, 
+        Dictionary<string, object?> apiValues)
     {
         ResponseLetter ret;
         try
@@ -244,7 +250,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, Dictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(
+        FormElement formElement, 
+        Dictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -317,7 +325,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
-        var formResult = await formService.DeleteAsync(formElement, values, GetDataContext());
+        var formResult = await formService.DeleteAsync(formElement, values!, GetDataContext());
 
         if (formResult.IsValid)
         {
@@ -444,7 +452,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     private DataContext GetDataContext()
     {
         var userId = masterDataUser.Id;
-        return new DataContext(httpContext.Request, DataContextSource.Api, userId);
+        return new DataContext(httpContextAccessor.HttpContext!.Request, DataContextSource.Api, userId);
     }
 
     private ValueTask<FormElement> GetDataDictionary(string elementName)

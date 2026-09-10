@@ -162,7 +162,7 @@
         const value = (input.value || "").toLowerCase();
         const listSelector = "#sortable-" + source;
         $(listSelector + " a").filter(function () {
-            const textValues = $(this).clone().find(".bootstrap-select, .selectpicker, select").remove().end().text();
+            const textValues = $(this).clone().find(".ts-wrapper, .tom-select, select").remove().end().text();
             $(this).toggle(textValues.toLowerCase().indexOf(value) > -1);
         });
     }

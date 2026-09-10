@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -6,8 +7,6 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Tasks;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -20,7 +19,7 @@ public class FieldService(
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
-    public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string originalName)
+    public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string? originalName)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
@@ -93,7 +92,7 @@ public class FieldService(
         }
     }
 
-    private async ValueTask<bool> ValidateFieldAsync(FormElement formElement, FormElementField field, string originalName)
+    private async ValueTask<bool> ValidateFieldAsync(FormElement formElement, FormElementField field, string? originalName)
     {
         ValidateName(field.Name);
 
@@ -276,7 +275,7 @@ public class FieldService(
         if (dataItem == null)
         {
             AddError("DataItem", StringLocalizer["DataItem cannot be empty."]);
-            return ValueTaskHelper.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         if (dataItem.DataItemType == DataItemType.SqlCommand)
@@ -284,7 +283,7 @@ public class FieldService(
             if (dataItem.Command == null)
             {
                 AddError("Command", StringLocalizer["[Command] required"]);
-                return ValueTaskHelper.CompletedTask;
+                return ValueTask.CompletedTask;
             }
                
             if (string.IsNullOrEmpty(dataItem.Command.Sql))
@@ -307,7 +306,7 @@ public class FieldService(
             return ValidateDataElementMapAsync(field);
         }
 
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
     private void ValidateManualItems(List<DataItemValue> items)

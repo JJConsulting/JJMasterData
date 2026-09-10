@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+#nullable disable warnings
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJConsulting.FontAwesome;
 
@@ -22,7 +23,7 @@ public sealed class InsertAction : GridToolbarAction, IModalAction
     /// </summary>
     [JsonPropertyName("elementNameToSelect")]
     [Display(Name = "Element Name To Select")]
-    public string ElementNameToSelect { get; set; }
+    public string? ElementNameToSelect { get; set; }
 
     /// <summary>
     /// Re-opens the insert after saving.
@@ -37,7 +38,7 @@ public sealed class InsertAction : GridToolbarAction, IModalAction
     
     [Display(Name = "Modal Title")]
     [JsonPropertyName("modalTitle")]
-    public string ModalTitle { get; set; }
+    public string? ModalTitle { get; set; }
     
     [Display(Name = "Success Message")]
     [JsonPropertyName("successMessage")]

@@ -108,9 +108,6 @@ With Alignment At Grid at Right:
 #### Export
 You can define whether or not the field will be exported.
 
-#### Validade Request
-On .NET Framework 4.8 systems, the field will validate dangerous values, like Html tags and SQL commands.
-
 ## **Panels**
 Allows you to separate the dictionary fields into panels. 
 But only for add, edit and view actions.
@@ -148,6 +145,14 @@ The Actions field is divided into two, Grid and Toolbar.
 - Sort: Allows the user to order the search by items, for example, in alphabetical order.
 - Filter: Shows all filter options for searching items within the table.
 - Log: Records and displays the actions performed within the table, including adding, editing and deleting.
+
+## Rules
+Within the Rules tab you can create script-based validations executed before `insert` and `update`.
+
+- SQL rules can return rows representing validation errors
+- JavaScript rules can call `addError(message)` or `addError(fieldName, message)`
+
+For the complete reference, see [Rules](../rules.md).
 
 ## **API**
 Within this tab it will be possible to edit each verb responsible for http permissions within the REST API.

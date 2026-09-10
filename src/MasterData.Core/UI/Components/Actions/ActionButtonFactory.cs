@@ -1,8 +1,6 @@
-#nullable enable
-
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
@@ -17,7 +15,7 @@ namespace JJMasterData.Core.UI.Components;
 public class ActionButtonFactory(
     ActionScripts actionScripts,
     ExpressionsService expressionsService,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public JJLinkButton Create(ActionContext actionContext, bool visible, bool enabled)

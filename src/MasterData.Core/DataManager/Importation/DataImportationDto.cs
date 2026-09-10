@@ -1,10 +1,11 @@
-﻿
+#nullable disable warnings
+
 
 using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.DataManager.Importation;
 
-internal record DataImportationDto
+internal sealed class DataImportationDto
 {
     [JsonPropertyName("StartDate")]
     public string StartDate { get; set; }

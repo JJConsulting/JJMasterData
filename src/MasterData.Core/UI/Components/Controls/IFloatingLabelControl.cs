@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace JJMasterData.Core.UI.Components;
+﻿namespace JJMasterData.Core.UI.Components;
 
 public interface IFloatingLabelControl
 {

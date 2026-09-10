@@ -1,22 +1,22 @@
-#nullable enable
+#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Routing;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class LookupService(
-    IFormValues formValues,
+    IHttpContextAccessor httpContextAccessor,
     ExpressionsService expressionsService,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     ElementMapService elementMapService,
-    IUrlHelper urlHelper)
+    LinkGenerator linkGenerator)
 {
     public string GetFormViewUrl(DataElementMap elementMap, FormStateData? formStateData, string componentName)
     {
@@ -25,11 +25,18 @@ public class LookupService(
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
-            encryptionService.EncryptStringWithUrlEscape(
+            encryptionService.Protect(
                 lookupParameters.ToQueryString(expressionsService, formStateData));
 
-        return urlHelper.Action("Index", "Lookup",
-            new { Area = "MasterData", lookupParameters = encryptedLookupParameters })!;
+        var httpContext = httpContextAccessor.HttpContext ??
+                          throw new InvalidOperationException(
+                              "Lookup URLs can only be generated during an HTTP request.");
+        return linkGenerator.GetPathByAction(
+                   httpContext,
+                   "Index",
+                   "Lookup",
+                   new { Area = "MasterData", lookupParameters = encryptedLookupParameters }) ??
+               throw new InvalidOperationException("Unable to generate the lookup URL.");
     }
 
     public async Task<string?> GetDescriptionAsync(
@@ -73,6 +80,6 @@ public class LookupService(
 
     public string? GetSelectedValue(string componentName)
     {
-        return formValues[componentName];
+        return httpContextAccessor.HttpContext?.Request.GetFormValue(componentName);
     }
 }

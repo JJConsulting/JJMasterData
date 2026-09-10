@@ -50,7 +50,6 @@ else
 }
 
 app.UseStaticFiles();
-app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseResponseCaching();

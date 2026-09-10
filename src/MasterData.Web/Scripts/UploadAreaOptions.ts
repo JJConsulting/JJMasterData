@@ -38,13 +38,15 @@ class UploadAreaOptions {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext)
 
-            const params = queryStringParams.split('&');
+            const params = queryStringParams ? queryStringParams.split('&') : [];
 
             for (let i = 0; i < params.length; i++) {
                 const param = params[i].split('=');
                 const key = decodeURIComponent(param[0]);
                 const value = decodeURIComponent(param[1]);
-                urlBuilder.addQueryParameter(key, value);
+                if (key) {
+                    urlBuilder.addQueryParameter(key, value);
+                }
             }
             this.url = urlBuilder.build();
         }

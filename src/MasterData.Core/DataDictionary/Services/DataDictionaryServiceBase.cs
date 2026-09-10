@@ -6,7 +6,6 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -89,6 +88,17 @@ public abstract class DataDictionaryServiceBase(
             AddError(nameof(name), StringLocalizer["The [Name] field cannot contain accents."]);
         
         return validationDictionary.IsValid;
+    }
+
+    protected bool ValidateScriptName(string name, string fieldName = "Name")
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            AddError(fieldName, StringLocalizer["Required [Name] field"]);
+            return false;
+        }
+
+        return true;
     }
 
     protected static bool ValidateExpression(string value, IEnumerable<string> args)

@@ -28,23 +28,49 @@
                 <div class="mb-3 col-sm-12">
                     <checkbox for="OpenInNewTab" layout="Switch"/>
                 </div>
+                <div class="mb-3 col-sm-12">
+                    <checkbox for="SignParametersWithHmac" layout="Switch"/>
+                </div>
             </div>
         </div>
 
-        <collapse-panel title="@StringLocalizer["Modal"]" icon="SolidWindowMaximize" expanded-by-default="false">
+        <div class="@BootstrapHelper.FormGroup">
+            <checkbox for="IsModal" layout="Switch"/>
+        </div>
+        <div class="url-redirect-modal-options">
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <checkbox for="IsModal" layout="Switch"/>
-                </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label class="form-label" asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
                     <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label class="form-label" asp-for="ModalTitle"></label>
+                    <tooltip title="@StringLocalizer["This field support runtime values between {}."]"/>
                     <input asp-for="ModalTitle" class="form-control"/>
                 </div>
             </div>
-        </collapse-panel>
+        </div>
     </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        (() => {
+            const script = document.currentScript;
+            const container = script?.closest("[id^='action-details-']") ?? document;
+            const isModalCheckbox = container.querySelector("#@Html.IdFor(m => m.IsModal)-checkbox");
+            const modalOptions = container.querySelector(".url-redirect-modal-options");
+
+            if (!isModalCheckbox || !modalOptions) {
+                return;
+            }
+
+            const toggleModalOptions = () => {
+                modalOptions.hidden = !isModalCheckbox.checked;
+            };
+
+            toggleModalOptions();
+            isModalCheckbox.addEventListener("change", toggleModalOptions);
+        })();
+    </script>
 }

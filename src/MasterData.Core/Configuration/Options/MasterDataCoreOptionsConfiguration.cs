@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using JJMasterData.Commons.Configuration.Options;
 
 namespace JJMasterData.Core.Configuration.Options;

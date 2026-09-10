@@ -1,61 +1,40 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Tasks;
+﻿#nullable disable warnings
+using System.Collections.Generic;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
 public abstract class ProcessComponent(
-        IHttpContext currentContext,
+        IHttpContextAccessor httpContextAccessor,
         IMasterDataUser masterDataUser,
         ExpressionsService expressionsService,
-        IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
-        IEncryptionService encryptionService,
+        DataProtectionService dataProtectionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : AsyncComponent
 {
-    private string _processKey;
-    private ProcessOptions _processOptions;
-    private string _userId;
-
     internal ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    internal string ProcessKey
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(_processKey))
-                _processKey = BuildProcessKey();
-
-            return _processKey;
-        }
-    }
-
-    public Dictionary<string, object> UserValues { get; set; } = new();
+    public Dictionary<string, object?> UserValues { get; set; } = new();
 
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
     /// <remarks>
-    /// Se a variavel não for atribuida diretamente,
-    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= masterDataUser.Id;
+    internal string UserId => field ??= masterDataUser.Id;
 
-    public IHttpContext CurrentContext { get; init; } = currentContext;
+    public IHttpContextAccessor HttpContextAccessor { get; init; } = httpContextAccessor;
 
     public ProcessOptions ProcessOptions
     {
-        get => _processOptions ??= new ProcessOptions();
-        set => _processOptions = value;
+        get => field ??= new ProcessOptions();
+        set;
     }
 
     /// <summary>
@@ -63,40 +42,8 @@ public abstract class ProcessComponent(
     /// </summary>
     public FormElement FormElement { get; set; }
     
-    internal IBackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
     private ILogger<ProcessComponent> Logger { get; } = logger;
-    internal IEncryptionService EncryptionService { get; } = encryptionService;
+    internal DataProtectionService DataProtectionService { get; } = dataProtectionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
-    internal bool IsRunning() => BackgroundTaskManager.IsRunning(ProcessKey);
-
-    internal void StopImportation() => BackgroundTaskManager.Abort(ProcessKey);
-    
-    private string BuildProcessKey()
-    {
-        var processKey = new StringBuilder();
-
-        switch (this)
-        {
-            case JJDataExportation:
-                processKey.Append("Export/");
-                break;
-            case JJDataImportation:
-                processKey.Append("Import/");
-                break;
-        }
-
-        processKey.Append(FormElement.Name);
-
-        if (ProcessOptions.Scope != ProcessScope.User)
-            return processKey.ToString();
-
-        if (string.IsNullOrEmpty(UserId))
-            return processKey.ToString();
-
-        processKey.Append($"?userid={UserId}");
-
-        return processKey.ToString();
-    }
 
 }

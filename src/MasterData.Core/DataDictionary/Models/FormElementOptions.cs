@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJMasterData.Core.DataDictionary.Models.Actions;

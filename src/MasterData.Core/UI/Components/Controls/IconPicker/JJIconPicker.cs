@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
@@ -10,7 +8,6 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -19,7 +16,7 @@ public class JJIconPicker(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IUrlHelper urlHelper,
     IControlFactory<JJComboBox> comboBoxFactory,
-    IFormValues formValues) : ControlBase(formValues)
+    IHttpContextAccessor formValues) : ControlBase(formValues)
 {
     public FontAwesomeIcon? SelectedIcon { get; set; }
     public string? Id { get; set; }
@@ -43,6 +40,7 @@ public class JJIconPicker(
         comboBox.Name = Name;
         comboBox.Id =  id;
         comboBox.Enabled = Enabled;
+        comboBox.CssClass = "jj-icon-select";
         if(SelectedIcon is not null)
         {
             comboBox.SelectedValue = ((int)SelectedIcon).ToString();
@@ -55,11 +53,7 @@ public class JJIconPicker(
             ShowIcon = Enabled,
         };
         
-        comboBox.Attributes["data-live-search"] = "true";
-        comboBox.Attributes["data-virtual-scroll"] = "true";
-        comboBox.Attributes["data-size"] = "false";
-        comboBox.Attributes["data-sanitize"] = "false";
-        comboBox.Attributes["data-none-results-text"] = stringLocalizer["No icons found."];
+        comboBox.Attributes["data-no-results-text"] = stringLocalizer["No icons found."];
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClassIf(Enabled,"input-group");
         div.Append(await comboBox.GetHtmlBuilderAsync());

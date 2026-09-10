@@ -41,7 +41,7 @@ When displaying multiple items from your table, you can keep their titles fixed 
 ![HeaderFixedOFF.png](../../media/HeaderFixedOFF.png)
 
 ### **MaintainValuesOnLoad**
-This option will ensure that your search through the filter is saved when reloading the page, whether searching for filters or configuration options.
+This option will ensure that your search through the filter is saved in cookies when reloading the page, whether searching for filters or configuration options.
 
 ![MaintainValuesOnLoadON.png](../../media/MaintainValuesOnLoadON.png)
 

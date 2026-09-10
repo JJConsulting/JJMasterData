@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -41,7 +40,7 @@ internal sealed class DataPanelForm
     private DataPanelScripts Scripts => field ??= new DataPanelScripts(this);
     
     internal ExpressionsService ExpressionsService { get; }
-    internal IEncryptionService EncryptionService { get; }
+    internal DataProtectionService DataProtectionService { get; }
     
     internal string? FieldNamePrefix { get; init; }
     public string Name { get; }
@@ -59,7 +58,7 @@ internal sealed class DataPanelForm
         _isGridViewFilter = false;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
         
-        EncryptionService = dataPanel.EncryptionService;
+        DataProtectionService = dataPanel.DataProtectionService;
         ExpressionsService = dataPanel.ExpressionsService;
 
         FormElement = dataPanel.FormElement;
@@ -81,7 +80,7 @@ internal sealed class DataPanelForm
         };
         _isGridViewFilter = true;
         
-        EncryptionService = gridView.EncryptionService;
+        DataProtectionService = gridView.DataProtectionService;
         ExpressionsService = gridView.ExpressionsService;
         FormElement = gridView.FormElement;
         Name = gridView.Name;

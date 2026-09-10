@@ -1,84 +1,76 @@
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Configuration.Options;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
-
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
-using Xunit;
 
 public class FormServiceTests
 {
     [Fact]
     public async Task UpdateAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
-        // Arrange
         var formElement = new FormElement
         {
             Name = "name",
             TableName = "name"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement,values);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
+        var result = await formService.UpdateAsync(formElement, values, new DataContext());
 
-        var dataContext = new DataContext();
-
-        // Mock the FieldValidationService to return no errors
-
-
-        // Act
-        var result = await formService.UpdateAsync(formElement, values, dataContext);
-
-        // Assert
         Assert.NotNull(result);
         Assert.Empty(result.Errors);
     }
 
-    private static FormService GetFormService(FormElement formElement, Dictionary<string,object> values)
+    private static FormService GetFormService(params IRuleExecutor[] ruleExecutors)
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-        var loggerMock = new Mock<ILogger<FormService>>();
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFields(formElement, values, PageState.Update, false))
-            .Returns(new Dictionary<string, string>());
+        var stringLocalizer = CreateStringLocalizer();
+        var fieldValidationService = new FieldValidationService(
+            CreateExpressionsService(),
+            ruleExecutors,
+            stringLocalizer);
+        var auditLogService = new AuditLogService(
+            entityRepositoryMock.Object,
+            Mock.Of<IOptionsSnapshot<MasterDataCoreOptions>>());
 
         return new FormService(
             entityRepositoryMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,
-            stringLocalizerMock.Object,
-            loggerMock.Object);
+            fieldValidationService,
+            auditLogService,
+            stringLocalizer,
+            Mock.Of<ILogger<FormService>>());
     }
 
     [Fact]
     public async Task UpdateAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
-        // Arrange
         var formElement = new FormElement
         {
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement,values);
-        var dataContext = new DataContext();
-        
-        // Act
-        var result = await formService.UpdateAsync(formElement, values, dataContext);
+        AddRequiredField(formElement);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
-        // Assert
+        var result = await formService.UpdateAsync(formElement, values, new DataContext());
+
         Assert.NotNull(result);
         Assert.NotEmpty(result.Errors);
     }
@@ -86,20 +78,16 @@ public class FormServiceTests
     [Fact]
     public async Task InsertAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
-        // Arrange
         var formElement = new FormElement
         {
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement,values);
-        var dataContext = new DataContext();
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
-        // Act
-        var result = await formService.InsertAsync(formElement, values, dataContext);
+        var result = await formService.InsertAsync(formElement, values, new DataContext());
 
-        // Assert
         Assert.NotNull(result);
         Assert.Empty(result.Errors);
     }
@@ -107,20 +95,17 @@ public class FormServiceTests
     [Fact]
     public async Task InsertAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
-        // Arrange
         var formElement = new FormElement
         {
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement,values);
-        var dataContext = new DataContext();
-        
-        // Act
-        var result = await formService.InsertAsync(formElement, values, dataContext);
+        AddRequiredField(formElement);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
-        // Assert
+        var result = await formService.InsertAsync(formElement, values, new DataContext());
+
         Assert.NotNull(result);
         Assert.NotEmpty(result.Errors);
     }
@@ -128,20 +113,16 @@ public class FormServiceTests
     [Fact]
     public async Task InsertOrReplaceAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
-        // Arrange
         var formElement = new FormElement
         {
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement,values);
-        var dataContext = new DataContext();
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
-        // Act
-        var result = await formService.InsertOrReplaceAsync(formElement, values, dataContext);
+        var result = await formService.InsertOrReplaceAsync(formElement, values, new DataContext());
 
-        // Assert
         Assert.NotNull(result);
         Assert.Empty(result.Errors);
     }
@@ -149,20 +130,17 @@ public class FormServiceTests
     [Fact]
     public async Task InsertOrReplaceAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
-        // Arrange
         var formElement = new FormElement
         {
             Name = "name",
             TableName = "tableName"
         };
-        var values = new Dictionary<string, object>();
-        var formService = GetFormService(formElement,values);
-        var dataContext = new DataContext();
+        AddRequiredField(formElement);
+        var values = new Dictionary<string, object?>();
+        var formService = GetFormService();
 
-        // Act
-        var result = await formService.InsertOrReplaceAsync(formElement, values, dataContext);
+        var result = await formService.InsertOrReplaceAsync(formElement, values, new DataContext());
 
-        // Assert
         Assert.NotNull(result);
         Assert.NotEmpty(result.Errors);
     }
@@ -170,20 +148,21 @@ public class FormServiceTests
     [Fact]
     public async Task DeleteAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
-        // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var loggerMock = new Mock<ILogger<FormService>>();
+        var stringLocalizer = CreateStringLocalizer();
+        var fieldValidationService = new FieldValidationService(
+            CreateExpressionsService(),
+            [],
+            stringLocalizer);
+        var auditLogService = new AuditLogService(
+            entityRepositoryMock.Object,
+            Mock.Of<IOptionsSnapshot<MasterDataCoreOptions>>());
         var formService = new FormService(
             entityRepositoryMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,
-            stringLocalizerMock.Object,
-            loggerMock.Object);
+            fieldValidationService,
+            auditLogService,
+            stringLocalizer,
+            Mock.Of<ILogger<FormService>>());
 
         var formElement = new FormElement
         {
@@ -191,19 +170,11 @@ public class FormServiceTests
             TableName = "tableName"
         };
         var primaryKeys = new Dictionary<string, object>();
-        var dataContext = new DataContext();
 
-        // Mock the FieldValidationService to return no errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFields(formElement, primaryKeys, PageState.Delete, false))
-            .Returns(new Dictionary<string, string>());
-
-        // Mock EntityRepository to return a positive number of rows affected
         entityRepositoryMock.Setup(er => er.DeleteAsync(formElement, primaryKeys)).ReturnsAsync(1);
 
-        // Act
-        var result = await formService.DeleteAsync(formElement, primaryKeys, dataContext);
+        var result = await formService.DeleteAsync(formElement, primaryKeys, new DataContext());
 
-        // Assert
         Assert.NotNull(result);
         Assert.Empty(result.Errors);
         Assert.Equal(1, result.NumberOfRowsAffected);
@@ -212,39 +183,124 @@ public class FormServiceTests
     [Fact]
     public async Task DeleteAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
-        // Arrange
-        var entityRepositoryMock = new Mock<IEntityRepository>();
-        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-        var loggerMock = new Mock<ILogger<FormService>>();
-        var formService = new FormService(
-            entityRepositoryMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,
-            stringLocalizerMock.Object,
-            loggerMock.Object);
-
         var formElement = new FormElement
         {
             Name = "name",
-            TableName = "name"
+            TableName = "name",
+            Rules =
+            [
+                new FormElementRule
+                {
+                    Name = "DeleteRule",
+                    Language = RuleLanguage.Sql,
+                    RunOnBeforeDelete = true
+                }
+            ]
         };
         var primaryKeys = new Dictionary<string, object>();
-        var dataContext = new DataContext();
+        var formService = GetFormService(
+            new TestRuleExecutor(new Dictionary<string, string>
+            {
+                ["Field1"] = "Validation Error"
+            }));
 
-        // Mock the FieldValidationService to return validation errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFields(formElement, primaryKeys, PageState.Delete, false))
-            .Returns(new Dictionary<string, string> { { "Field1", "Validation Error" } });
+        var result = await formService.DeleteAsync(formElement, primaryKeys, new DataContext());
 
-        // Act
-        var result = await formService.DeleteAsync(formElement, primaryKeys, dataContext);
-
-        // Assert
         Assert.NotNull(result);
         Assert.NotEmpty(result.Errors);
         Assert.Equal(0, result.NumberOfRowsAffected);
+    }
+
+    [Fact]
+    public async Task InsertAsync_WithScriptValidationErrors_ReturnsFormLetterWithErrors()
+    {
+        var formElement = new FormElement
+        {
+            Name = "name",
+            TableName = "tableName"
+        };
+        var values = new Dictionary<string, object?>();
+
+        var entityRepositoryMock = new Mock<IEntityRepository>();
+        formElement.Rules.Add(new FormElementRule
+        {
+            Name = "InsertRule",
+            Language = RuleLanguage.Sql,
+            RunOnBeforeInsert = true
+        });
+        var stringLocalizer = CreateStringLocalizer();
+        var fieldValidationService = new FieldValidationService(
+            CreateExpressionsService(),
+            [
+                new TestRuleExecutor(new Dictionary<string, string>
+                {
+                    ["validation:test"] = "Script error"
+                })
+            ],
+            stringLocalizer);
+        var formService = new FormService(
+            entityRepositoryMock.Object,
+            fieldValidationService,
+            new AuditLogService(
+                entityRepositoryMock.Object,
+                Mock.Of<IOptionsSnapshot<MasterDataCoreOptions>>()),
+            stringLocalizer,
+            Mock.Of<ILogger<FormService>>());
+
+        var result = await formService.InsertAsync(formElement, values, new DataContext());
+
+        Assert.Single(result.Errors);
+        entityRepositoryMock.Verify(r => r.InsertAsync(It.IsAny<FormElement>(), It.IsAny<Dictionary<string, object?>>()), Times.Never);
+    }
+
+    private static void AddRequiredField(FormElement formElement)
+    {
+        formElement.Fields.Add(new FormElementField
+        {
+            Name = "RequiredField",
+            Label = "Required field",
+            IsRequired = true
+        });
+    }
+
+    private static ExpressionsService CreateExpressionsService()
+    {
+        IExpressionProvider[] providers = [new ValueExpressionProvider()];
+        var expressionParser = new ExpressionParser(
+            Mock.Of<IHttpContextAccessor>(),
+            Mock.Of<IMasterDataUser>(),
+            Mock.Of<ILogger<ExpressionParser>>());
+
+        return new ExpressionsService(
+            providers,
+            expressionParser,
+            Mock.Of<IEncryptionService>(),
+            Mock.Of<ILogger<ExpressionsService>>());
+    }
+
+    private static IStringLocalizer<MasterDataResources> CreateStringLocalizer()
+    {
+        var localizer = new Mock<IStringLocalizer<MasterDataResources>>();
+        localizer
+            .Setup(value => value[It.IsAny<string>()])
+            .Returns((string name) => new LocalizedString(name, name));
+        localizer
+            .Setup(value => value[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string name, object[] arguments) =>
+                new LocalizedString(name, string.Format(name, arguments)));
+        return localizer.Object;
+    }
+
+    private sealed class TestRuleExecutor(Dictionary<string, string> errors) : IRuleExecutor
+    {
+        public RuleLanguage Language => RuleLanguage.Sql;
+
+        public Task<Dictionary<string, string>> ExecuteAsync(
+            FormElement formElement,
+            FormElementRule rule,
+            Dictionary<string, object?> values)
+        {
+            return Task.FromResult(errors);
+        }
     }
 }

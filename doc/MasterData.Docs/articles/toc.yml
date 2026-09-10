@@ -6,6 +6,12 @@
     href: getting_started.md
   - name: Configurations
     href: configurations.md
+  - name: Export
+    href: export.md
+  - name: Import
+    href: import.md
+  - name: Background Jobs
+    href: background.md
   - name: Actions
     items:
     - name: HTML Template
@@ -48,8 +54,10 @@
       href: actions/cancel_action.md      
     - name: Back
       href: actions/back_action.md
-  - name: Custom Rules
-    href: custom_rules.md
+  - name: Customizations
+    href: customizations.md
+  - name: Rules
+    href: rules.md
   - name: TagHelpers
     href: taghelpers.md
   - name: Localization
@@ -146,7 +154,5 @@
   items:
   - name: Multiple Forms Support
     href: multiple_forms.md
-  - name: .NET Framework Support
-    href: miscellaneous/netframework.md
   - name: Assemblies
     href: miscellaneous/assemblies.md

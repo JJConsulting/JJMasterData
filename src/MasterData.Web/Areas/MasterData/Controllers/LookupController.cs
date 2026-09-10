@@ -1,5 +1,5 @@
 ﻿using JJConsulting.FontAwesome;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Extensions;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Localization;
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class LookupController(
-        IEncryptionService encryptionService,
+        DataProtectionService dataProtectionService,
         IFormElementComponentFactory<JJFormView> formViewFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : MasterDataController
@@ -37,7 +37,7 @@ public class LookupController(
             return actionResult;
         
         LookupFormViewHtml = result.HtmlContent;
-        EncryptedLookupParameters = encryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString());
+        EncryptedLookupParameters = dataProtectionService.Protect(lookupParameters.ToQueryString());
         
         return View();
     }

@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -10,7 +11,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementImportService(IDataDictionaryRepository dataDictionaryRepository)
 {
-    public async Task<bool> Import(MemoryStream file)
+    public async Task<bool> Import(Stream file)
     {
         file.Seek(0, SeekOrigin.Begin);
         
@@ -20,9 +21,8 @@ public class ElementImportService(IDataDictionaryRepository dataDictionaryReposi
 
         return true;
     }
-
-#if NET
-    public async Task ImportZipFile(MemoryStream ms)
+    
+    public async Task ImportZipFile(Stream ms)
     {
         using var zip = new ZipArchive(ms, ZipArchiveMode.Read, leaveOpen: true);
         
@@ -45,5 +45,4 @@ public class ElementImportService(IDataDictionaryRepository dataDictionaryReposi
             yield return formElement;
         }
     }
-#endif
 }

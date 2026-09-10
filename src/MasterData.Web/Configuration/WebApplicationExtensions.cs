@@ -1,11 +1,7 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Web.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Web.Configuration;

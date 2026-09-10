@@ -1,7 +1,4 @@
-using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Core.DataDictionary.Structure;
-using JJMasterData.Core.DataManager.Exportation;
-using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.ColorPicker;
 using JJMasterData.Core.UI.Components.Factories;
@@ -19,16 +16,7 @@ public static class FactoriesServiceExtensions
         public IServiceCollection AddFactories()
         {
             return services.AddFormElementFactories()
-                .AddComponentsFactories()
-                .AddDataFactories();
-        }
-
-        private IServiceCollection AddDataFactories()
-        {
-            services.AddTransient<DataExportationWriterFactory>();
-            services.AddTransient<DataImportationWorkerFactory>();
-
-            return services;
+                .AddComponentsFactories();
         }
 
         private IServiceCollection AddFormElementFactories()

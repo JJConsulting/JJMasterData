@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+#nullable disable warnings
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html.Bootstrap.Models;
@@ -32,6 +33,10 @@ public sealed class UrlRedirectAction : BasicAction
     [JsonPropertyName("encryptParameters")]
     [Display(Name="Encrypt Parameters")]
     public bool EncryptParameters { get; set; }
+
+    [JsonPropertyName("signParametersWithHmac")]
+    [Display(Name = "Sign Parameters with HMAC")]
+    public bool SignParametersWithHmac { get; set; }
     
     [JsonPropertyName("openInNewTab")]
     [Display(Name="Open in New Tab")]

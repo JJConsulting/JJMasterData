@@ -14,15 +14,15 @@ public class DictionaryFileServiceTests
         {
             var formElement = CreateFormElement("Customer", "Customer info");
 
-            await DictionaryFileService.WriteAsync(tempPath, formElement, CancellationToken.None);
+            await DictionaryFileService.WriteAsync(tempPath, formElement, TestContext.Current.CancellationToken);
 
             var filePath = Path.Combine(tempPath, "Customer.json");
             Assert.True(File.Exists(filePath));
 
-            var json = await File.ReadAllTextAsync(filePath);
+            var json = await File.ReadAllTextAsync(filePath, TestContext.Current.CancellationToken);
             Assert.Contains(Environment.NewLine, json);
 
-            var loaded = await DictionaryFileService.LoadAsync(tempPath, CancellationToken.None);
+            var loaded = await DictionaryFileService.LoadAsync(tempPath, TestContext.Current.CancellationToken);
 
             Assert.Single(loaded);
             Assert.Equal("Customer", loaded[0].Name);
@@ -46,13 +46,15 @@ public class DictionaryFileServiceTests
 
             await File.WriteAllTextAsync(
                 Path.Combine(tempPath, "first.json"),
-                JsonSerializer.Serialize(first));
+                JsonSerializer.Serialize(first),
+                TestContext.Current.CancellationToken);
             await File.WriteAllTextAsync(
                 Path.Combine(tempPath, "second.json"),
-                JsonSerializer.Serialize(second));
+                JsonSerializer.Serialize(second),
+                TestContext.Current.CancellationToken);
 
             var exception = await Assert.ThrowsAsync<InvalidDataException>(
-                () => DictionaryFileService.LoadAsync(tempPath, CancellationToken.None));
+                () => DictionaryFileService.LoadAsync(tempPath, TestContext.Current.CancellationToken));
 
             Assert.Contains("Duplicate", exception.Message);
         }

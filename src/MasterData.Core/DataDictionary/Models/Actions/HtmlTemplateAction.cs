@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JJConsulting.FontAwesome;

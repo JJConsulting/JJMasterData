@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +8,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -19,7 +19,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         IEnumerable<IPluginHandler> pluginHandlers)
     : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
-    public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string fieldName = null)
+    public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string? fieldName = null)
     {
         var dicParser = await DataDictionaryRepository.GetFormElementAsync(elementName);
         DeleteAction(dicParser, actionName, context, fieldName);
@@ -28,7 +28,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         return true;
     }
 
-    private static void DeleteAction(FormElement formElement, string originalName, ActionSource context, string fieldName = null)
+    private static void DeleteAction(FormElement formElement, string originalName, ActionSource context, string? fieldName = null)
     {
         if (originalName == null)
             return;
@@ -63,7 +63,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         }
     }
 
-    public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
+    public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string? originalName, string? fieldName = null)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
@@ -111,7 +111,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         return true;
     }
 
-    private void ValidateActionName(FormElement formElement, string actionName, string originalName, ActionSource context, string fieldName = null)
+    private void ValidateActionName(FormElement formElement, string actionName, string originalName, ActionSource context, string? fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
@@ -149,7 +149,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         }
     }
 
-    private void ValidateAction(FormElement formElement, BasicAction action, [CanBeNull] string fieldName = null)
+    private void ValidateAction(FormElement formElement, BasicAction action, [CanBeNull] string? fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
@@ -219,7 +219,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         }
     }
 
-    public async Task<bool> SortActionsAsync(string elementName, string[] listAction, ActionSource actionContext, string fieldName)
+    public async Task<bool> SortActionsAsync(string elementName, string[] listAction, ActionSource actionContext, string? fieldName)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         for (int i = 0; i < listAction.Length; i++)

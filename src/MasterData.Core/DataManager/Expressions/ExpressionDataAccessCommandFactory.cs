@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Commons.Data;
@@ -35,7 +34,7 @@ public static class ExpressionDataAccessCommandFactory
             if (oldExpression != expression)
             {
                 dbType = DbType.AnsiString;
-                value = keyValuePair.Value?.ToString();
+                value = keyValuePair.Value?.ToString() ?? string.Empty;
             }
             else
             {

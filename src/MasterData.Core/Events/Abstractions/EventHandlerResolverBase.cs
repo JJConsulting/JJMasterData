@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Events.Abstractions;

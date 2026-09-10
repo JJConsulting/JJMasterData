@@ -31,8 +31,6 @@ public sealed class MasterDataWebOptions
     [Display(Name = "Custom Bootstrap Path")]
     public string? CustomBootstrapPath { get; set; }
     
-    public bool SupportNetFramework { get; set; }
-    
     /// <summary>
     /// Custom scripts to be added at _MasterDataScripts. The paths are relative.
     /// </summary>

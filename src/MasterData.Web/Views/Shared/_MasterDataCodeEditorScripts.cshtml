@@ -1,8 +1,8 @@
 @{
     Dictionary<string, List<CodeEditorHint>>? codeEditorHints = null;
-    if (ViewData.TryGetValue("CodeEditorHints", out var hintsObj) && hintsObj is List<CodeEditorHint> hintsList)
+    if (ViewData.TryGetValue("CodeEditorHints", out var hintsObj) && hintsObj is IEnumerable<CodeEditorHint> hintsEnumerable)
     {
-        codeEditorHints = hintsList
+        codeEditorHints = hintsEnumerable
             .GroupBy(h => h.Language)
             .ToDictionary(g => g.Key, g => g.ToList());
     }

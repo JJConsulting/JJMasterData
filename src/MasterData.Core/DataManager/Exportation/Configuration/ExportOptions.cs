@@ -1,5 +1,7 @@
-﻿using JJMasterData.Commons.Util;
-using JJMasterData.Core.Http.Abstractions;
+#nullable disable warnings
+using System;
+using System.Collections.Generic;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.DataManager.Exportation.Configuration;
 
@@ -9,27 +11,32 @@ namespace JJMasterData.Core.DataManager.Exportation.Configuration;
 public class ExportOptions
 {
     internal const string FileName = "_export_table_file";
-    internal const string TableOrientation = "_export_table_orientation";
+    internal const string FormatOptionPrefix = "_export_option_";
     internal const string ExportTableFirstLine = "_export_table_firstline";
     internal const string ExportAll = "_export_table_all";
-    internal const string ExportDelimiter = "_export_table_delimiter";
 
-    public ExportFileExtension FileExtension { get; set; } = ExportFileExtension.CSV;
-    public bool ExportFirstLine { get; set; } = true;
+    public string FormatId { get; set; } = "xlsx";
     public bool ExportAllFields { get; set; } = true;
-    public bool IsLandScape { get; set; } = false;
-    public string Delimiter { get; set; } = ";";
+    public Dictionary<string, string?> FormatOptions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
-    internal static ExportOptions LoadFromForm(IFormValues formValues, string componentName)
+    internal static ExportOptions LoadFromForm(IHttpContextAccessor httpContextAccessor, string componentName)
     {
         var expConfig = new ExportOptions();
-        if (formValues[componentName + FileName] != null)
+
+        if (!httpContextAccessor.HttpContext!.Request.HasFormContentType)
+            return expConfig;
+        
+        var form = httpContextAccessor.HttpContext!.Request.Form;
+        if (form.TryGetValue(componentName + FileName, out var fileName))
         {
-            expConfig.FileExtension = (ExportFileExtension)int.Parse(formValues[componentName + FileName]);
-            expConfig.IsLandScape = StringManager.ParseBool(formValues[componentName + TableOrientation]);
-            expConfig.ExportFirstLine = StringManager.ParseBool(formValues[componentName + ExportTableFirstLine]);
-            expConfig.ExportAllFields = StringManager.ParseBool(formValues[componentName + ExportAll]);
-            expConfig.Delimiter = formValues[componentName + ExportDelimiter];
+            expConfig.FormatId = fileName.ToString();
+            expConfig.ExportAllFields = StringManager.ParseBool(form[componentName + ExportAll]);
+            var prefix = componentName + FormatOptionPrefix + expConfig.FormatId + "_";
+            foreach (var value in form)
+            {
+                if (value.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    expConfig.FormatOptions[value.Key[prefix.Length..]] = value.Value.ToString();
+            }
         }
 
         return expConfig;

@@ -1,7 +1,5 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
-using JJConsulting.FontAwesome;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Core.DataDictionary.Models;

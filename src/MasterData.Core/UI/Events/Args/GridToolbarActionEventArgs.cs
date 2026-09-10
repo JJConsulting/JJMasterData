@@ -1,7 +1,7 @@
-﻿using System;
+﻿#nullable disable warnings
+using System;
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.UI.Events.Args;
 
@@ -12,5 +12,5 @@ public class GridToolbarActionEventArgs(BasicAction action, JJLinkButton linkBut
 
     public JJLinkButton LinkButton { get; set; } = linkButton;
 
-    public string HtmlResult { get; set; } = null;
+    public string? HtmlResult { get; set; } = null;
 }
