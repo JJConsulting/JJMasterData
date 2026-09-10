@@ -577,10 +577,11 @@ public class JJFormView : AsyncComponent
 
             if (updateErrors.Count > 0)
             {
-                SetGridErrors(errors);
+                SetGridErrors(updateErrors);
             }
         }
 
+        GridView.InvalidateDataSource();
         return await GridView.GetResultAsync();
     }
 

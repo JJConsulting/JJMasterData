@@ -1204,6 +1204,12 @@ public class JJGridView : AsyncComponent
         return DataSource;
     }
     
+    internal void InvalidateDataSource()
+    {
+        if (!IsUserSetDataSource)
+            _dataSource = null;
+    }
+
     private async Task SetDataSource(Dictionary<string, object?> filters)
     {
         if (DataSource == null && !IsUserSetDataSource)
