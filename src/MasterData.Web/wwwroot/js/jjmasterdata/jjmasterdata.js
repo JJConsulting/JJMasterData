@@ -1084,6 +1084,7 @@ class DataImportationModal {
 }
 class DataPanelHelper {
     static reload(panelName, elementFieldName, fieldNameWithPrefix, routeContext) {
+        const nextFieldState = this.getNextPostBackFieldState(panelName, fieldNameWithPrefix);
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("panelName", panelName);
         urlBuilder.addQueryParameter("fieldName", elementFieldName);
@@ -1094,6 +1095,7 @@ class DataPanelHelper {
                 if (typeof data === "string") {
                     HTMLHelper.setOuterHTML(panelName, data);
                     listenAllEvents("#" + panelName);
+                    this.triggerChangeIfValueChanged(panelName, nextFieldState);
                 }
                 else {
                     if (data.jsCallback) {
@@ -1103,6 +1105,44 @@ class DataPanelHelper {
                 jjutil.gotoNextFocus(fieldNameWithPrefix);
             }
         });
+    }
+    static getNextPostBackFieldState(panelName, currentFieldName) {
+        const panel = document.getElementById(panelName);
+        if (!panel)
+            return null;
+        const postBackFields = [...panel.querySelectorAll('[onchange*="DataPanelHelper.reload"]')];
+        const currentFieldIndex = postBackFields.findIndex(field => field.id === currentFieldName || field.name === currentFieldName);
+        if (currentFieldIndex === -1)
+            return null;
+        const currentField = postBackFields[currentFieldIndex];
+        const nextField = postBackFields
+            .slice(currentFieldIndex + 1)
+            .find(field => field.name !== currentField.name && !field.disabled);
+        if (!nextField)
+            return null;
+        return {
+            name: nextField.name,
+            value: this.getPostedFieldValue(nextField.name)
+        };
+    }
+    static triggerChangeIfValueChanged(panelName, previousState) {
+        if (!previousState)
+            return;
+        const panel = document.getElementById(panelName);
+        if (!panel)
+            return;
+        const field = panel.querySelector(`[name="${CSS.escape(previousState.name)}"]`);
+        if (!field || field.disabled)
+            return;
+        const currentValue = this.getPostedFieldValue(previousState.name);
+        if (currentValue === previousState.value)
+            return;
+        field.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    static getPostedFieldValue(fieldName) {
+        return new FormData(getMasterDataForm())
+            .getAll(fieldName)
+            .join();
     }
 }
 function applyDecimalPlaces(element) {
