@@ -14,11 +14,13 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
+using JJMasterData.Commons;
 using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -52,8 +54,16 @@ public class JJFormView : AsyncComponent
 
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync
     {
-        add => _formService.OnBeforeImportAsync += value;
-        remove => _formService.OnBeforeImportAsync -= value;
+        add
+        {
+            _formService.OnBeforeImportAsync += value;
+            DataImportation.OnBeforeImportAsync += value;
+        }
+        remove
+        {
+            _formService.OnBeforeImportAsync -= value;
+            DataImportation.OnBeforeImportAsync -= value;
+        }
     }
 
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync
@@ -76,20 +86,44 @@ public class JJFormView : AsyncComponent
 
     public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync
     {
-        add => _formService.OnAfterInsertAsync += value;
-        remove => _formService.OnAfterInsertAsync -= value;
+        add
+        {
+            _formService.OnAfterInsertAsync += value;
+            DataImportation.OnAfterInsertAsync += value;
+        }
+        remove
+        {
+            _formService.OnAfterInsertAsync -= value;
+            DataImportation.OnAfterInsertAsync -= value;
+        }
     }
 
     public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync
     {
-        add => _formService.OnAfterUpdateAsync += value;
-        remove => _formService.OnAfterUpdateAsync -= value;
+        add
+        {
+            _formService.OnAfterUpdateAsync += value;
+            DataImportation.OnAfterUpdateAsync += value;
+        }
+        remove
+        {
+            _formService.OnAfterUpdateAsync -= value;
+            DataImportation.OnAfterUpdateAsync -= value;
+        }
     }
 
     public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync
     {
-        add => _formService.OnAfterDeleteAsync += value;
-        remove => _formService.OnAfterDeleteAsync -= value;
+        add
+        {
+            _formService.OnAfterDeleteAsync += value;
+            DataImportation.OnAfterDeleteAsync += value;
+        }
+        remove
+        {
+            _formService.OnAfterDeleteAsync -= value;
+            DataImportation.OnAfterDeleteAsync -= value;
+        }
     }
 
     #endregion

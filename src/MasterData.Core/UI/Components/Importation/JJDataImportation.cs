@@ -12,10 +12,12 @@ using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
 using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons;
 using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Storage;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -36,6 +38,16 @@ namespace JJMasterData.Core.UI.Components;
 public class JJDataImportation : ProcessComponent
 {
     private const string ImportationFolderPath = "{app.path}/MasterDataImportFiles/";
+
+    #region "Events"
+    
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterProcessAsync;
+
+    #endregion
 
     #region "Properties"
 
@@ -352,6 +364,11 @@ public class JJDataImportation : ProcessComponent
             return await ImportJobService.EnqueueAsync(new ImportRequest
             {
                 Id = BackgroundJobId.Create("import", FormElement.Name, UserId),
+                OnAfterDeleteAsync = OnAfterDeleteAsync,
+                OnAfterInsertAsync = OnAfterInsertAsync,
+                OnAfterUpdateAsync = OnAfterUpdateAsync,
+                OnBeforeImportAsync = OnBeforeImportAsync,
+                OnAfterProcessAsync = OnAfterProcessAsync,
                 ElementName = FormElement.Name,
                 UserId = UserId,
                 FilePath = filePath,
@@ -362,8 +379,7 @@ public class JJDataImportation : ProcessComponent
                     Delimiter =  CsvImportDelimiter.From(separator),
                     DetectDelimiter = detectDelimiter,
                 },
-                RelationValues = RelationValues?.ToDictionary(item => item.Key, item => (object?)item.Value) ??
-                                 new Dictionary<string, object?>(),
+                RelationValues = RelationValues,
                 UserValues = UserValues,
                 IpAddress = httpContext.Connection.RemoteIpAddress?.ToString(),
                 BrowserInfo = httpContext.Request.Headers.UserAgent.ToString(),

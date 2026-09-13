@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JJConsulting.MasterData.Storage.Abstractions;
+using JJMasterData.Commons;
 using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exceptions;
@@ -41,9 +43,11 @@ internal sealed class ImportJobHandler(
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(request.ElementName) ??
                           throw new InvalidOperationException($"Element '{request.ElementName}' was not found.");
+        
         var dataContext = new DataContext(
             DataContextSource.Upload, request.UserId, request.IpAddress, request.BrowserInfo);
-        await ConfigureFormEventsAsync(formElement, dataContext);
+        
+        await ConfigureFormEventsAsync(request, formElement, dataContext);
 
         var errors = new List<string>();
         var result = new ImportCounters();
@@ -110,6 +114,15 @@ internal sealed class ImportJobHandler(
             }
 
             await ExecuteCommandAsync(request.CommandAfterProcess, formElement, formState);
+            if (request.OnAfterProcessAsync is { } afterProcess)
+            {
+                foreach (var @delegate in afterProcess.GetInvocationList())
+                {
+                    var callback = (AsyncEventHandler<FormAfterActionEventArgs>)@delegate;
+                    await callback(this, new FormAfterActionEventArgs());
+                }
+            }
+
             var finalResult = result.ToResult(errors);
             progress.Report(new BackgroundJobProgress(100,
                 result.Errors > 0 ? localizer["File imported with errors!"] : localizer["File imported successfully!"],
@@ -122,16 +135,31 @@ internal sealed class ImportJobHandler(
         }
     }
 
-    private async Task ConfigureFormEventsAsync(FormElement formElement, DataContext dataContext)
+    private async ValueTask ConfigureFormEventsAsync(
+        ImportRequest request,
+        FormElement formElement,
+        DataContext dataContext)
     {
+        //Eventos na "unha" direto no método
+        formService.OnAfterDeleteAsync += request.OnAfterDeleteAsync;
+        formService.OnAfterInsertAsync += request.OnAfterInsertAsync;
+        formService.OnAfterUpdateAsync += request.OnAfterUpdateAsync;
+        formService.OnBeforeImportAsync += request.OnBeforeImportAsync;
+
+        //Eventos via DI
         var handler = formEventHandlerResolver.GetFormEventHandler(formElement.Name);
+        
         if (handler is null)
             return;
-        await handler.OnFormElementLoadAsync(dataContext, new FormElementLoadEventArgs(formElement));
-        formService.OnBeforeImportAsync += handler.OnBeforeImportAsync;
+        
+        await handler.OnFormElementLoadAsync(
+            dataContext,
+            new FormElementLoadEventArgs(formElement));
+        
+        formService.OnAfterDeleteAsync += handler.OnAfterDeleteAsync;
         formService.OnAfterInsertAsync += handler.OnAfterInsertAsync;
         formService.OnAfterUpdateAsync += handler.OnAfterUpdateAsync;
-        formService.OnAfterDeleteAsync += handler.OnAfterDeleteAsync;
+        formService.OnBeforeImportAsync += handler.OnBeforeImportAsync;
     }
 
     private List<FormElementField> GetImportFields(FormElement formElement)

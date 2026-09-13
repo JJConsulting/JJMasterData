@@ -1,10 +1,19 @@
 using System.Collections.Generic;
+using JJMasterData.Commons;
 using JJMasterData.Commons.Background;
+using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Events.Args;
 
 namespace JJMasterData.Core.DataManager.Importation.Background;
 
 public sealed class ImportRequest : BackgroundJobRequest
 {
+    internal AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync { get; init; }
+    internal AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync { get; init; }
+    internal AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync { get; init; }
+    internal AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync { get; init; }
+    internal AsyncEventHandler<FormAfterActionEventArgs>? OnAfterProcessAsync { get; init; }
+
     public required string ElementName { get; init; }
     public override required string UserId { get; init; }
     public required string FilePath { get; init; }
