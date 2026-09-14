@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
@@ -221,6 +222,8 @@ public class JJDataExportation : ProcessComponent
             Id = BackgroundJobId.Create("export", FormElement.Name, UserId),
             ElementName = FormElement.Name,
             UserId = UserId,
+            CultureName = CultureInfo.CurrentCulture.Name,
+            UICultureName = CultureInfo.CurrentUICulture.Name,
             FormatId = ExportOptions.FormatId,
             ExportAllFields = ExportOptions.ExportAllFields,
             OptionsValues = ExportOptions.FormatOptions,

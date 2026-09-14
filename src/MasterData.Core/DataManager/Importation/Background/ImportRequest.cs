@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using JJMasterData.Commons;
 using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Tasks;
@@ -8,6 +9,8 @@ namespace JJMasterData.Core.DataManager.Importation.Background;
 
 public sealed class ImportRequest : BackgroundJobRequest
 {
+    public string CultureName { get; init; } = CultureInfo.InvariantCulture.Name;
+    public string UICultureName { get; init; } = CultureInfo.InvariantCulture.Name;
     internal AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync { get; init; }
     internal AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync { get; init; }
     internal AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync { get; init; }

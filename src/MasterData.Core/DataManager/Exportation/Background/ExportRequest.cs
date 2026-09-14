@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using JJMasterData.Commons.Background;
 
 namespace JJMasterData.Core.DataManager.Exportation.Background;
@@ -14,4 +15,7 @@ public sealed class ExportRequest : BackgroundJobRequest
     public string? OrderBy { get; init; }
     public required Dictionary<string, object?> UserValues { get; init; }
     public List<Dictionary<string, object?>>? Rows { get; init; }
+    
+    public string CultureName { get; init; } = CultureInfo.InvariantCulture.Name;
+    public string UICultureName { get; init; } = CultureInfo.InvariantCulture.Name;
 }

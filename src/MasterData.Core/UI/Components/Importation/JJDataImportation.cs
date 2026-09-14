@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -371,6 +372,8 @@ public class JJDataImportation : ProcessComponent
                 OnAfterProcessAsync = OnAfterProcessAsync,
                 ElementName = FormElement.Name,
                 UserId = UserId,
+                CultureName = CultureInfo.CurrentCulture.Name,
+                UICultureName = CultureInfo.CurrentUICulture.Name,
                 FilePath = filePath,
                 FileName = fileName,
                 ContentType = contentType,

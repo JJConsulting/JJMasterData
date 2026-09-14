@@ -41,6 +41,7 @@ internal sealed class ExportJobHandler(
         IProgress<BackgroundJobProgress> progress,
         CancellationToken cancellationToken)
     {
+        using var cultureScope = CultureScope.Create(request.CultureName, request.UICultureName);
         var formElement = await dataDictionaryRepository.GetFormElementAsync(request.ElementName) ??
                           throw new InvalidOperationException($"Element '{request.ElementName}' was not found.");
         var format = formats.GetRequired(request.FormatId);
