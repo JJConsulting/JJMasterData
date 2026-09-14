@@ -32,7 +32,8 @@ internal sealed class ExportJobHandler(
     ExportFormatCatalog formats,
     IFileStorage fileStorage,
     IOptions<MasterDataCoreOptions> options,
-    IStringLocalizer<MasterDataResources> localizer) : BackgroundJobHandler<ExportRequest>
+    IStringLocalizer<MasterDataResources> localizer,
+    IMasterDataUser masterDataUser) : BackgroundJobHandler<ExportRequest>
 {
     private const int RecordsPerPage = 100_000;
 
@@ -42,6 +43,7 @@ internal sealed class ExportJobHandler(
         CancellationToken cancellationToken)
     {
         using var cultureScope = CultureScope.Create(request.CultureName, request.UICultureName);
+        masterDataUser.Id = request.UserId;
         var formElement = await dataDictionaryRepository.GetFormElementAsync(request.ElementName) ??
                           throw new InvalidOperationException($"Element '{request.ElementName}' was not found.");
         var format = formats.GetRequired(request.FormatId);

@@ -383,7 +383,7 @@ public class JJDataImportation : ProcessComponent
                     DetectDelimiter = detectDelimiter,
                 },
                 RelationValues = RelationValues,
-                UserValues = UserValues,
+                UserValues = DataHelper.MergeWithHttpContext(httpContext, UserValues),
                 IpAddress = httpContext.Connection.RemoteIpAddress?.ToString(),
                 BrowserInfo = httpContext.Request.Headers.UserAgent.ToString(),
                 CommandBeforeProcess = ProcessOptions.CommandBeforeProcess,

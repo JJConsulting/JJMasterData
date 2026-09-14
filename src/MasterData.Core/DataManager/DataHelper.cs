@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -254,5 +256,25 @@ public static class DataHelper
         {
             values.Remove(key);
         }
+    }
+    
+    public static Dictionary<string, object?> MergeWithHttpContext(
+        HttpContext httpContext,
+        Dictionary<string, object?> values)
+    {
+        var session = httpContext.Features.Get<ISessionFeature>()?.Session;
+        if (session is { IsAvailable: true })
+        {
+            foreach (var key in session.Keys)
+            {
+                if (session.TryGetValue(key, out var value))
+                    values.TryAdd(key, Encoding.UTF8.GetString(value));
+            }
+        }
+
+        foreach (var claim in httpContext.User.Claims)
+            values.TryAdd(claim.Type, claim.Value);
+
+        return values;
     }
 }

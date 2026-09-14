@@ -229,7 +229,9 @@ public class JJDataExportation : ProcessComponent
             OptionsValues = ExportOptions.FormatOptions,
             Filters = filter,
             OrderBy = orderByData.ToQueryParameter(),
-            UserValues = UserValues,
+            UserValues = HttpContextAccessor.HttpContext is { } httpContext
+                ? DataHelper.MergeWithHttpContext(httpContext, UserValues)
+                : UserValues,
             Rows = rows
         };
         return ExportJobService.EnqueueAsync(request, HttpContextAccessor.HttpContext?.RequestAborted ?? default);

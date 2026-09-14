@@ -76,13 +76,13 @@ public sealed class ExpressionParser(
             case "currentculture":
                 return CultureInfo.CurrentCulture.Name;
             case "useremail":
-                return GetClaimValue(ClaimTypes.Email);
+                return GetClaimValue(ClaimTypes.Email) ?? GetUserValue(ClaimTypes.Email, formStateData);
             case "legacyid":
-                return GetClaimValue("LegacyId");
+                return GetClaimValue("LegacyId") ?? GetUserValue("LegacyId", formStateData);
         }
 
-        if (formStateData.UserValues != null && formStateData.UserValues.TryGetValue(field, out var value))
-            return value;
+        if (formStateData.UserValues != null && formStateData.UserValues.TryGetValue(field, out var userValue))
+            return userValue;
 
         if (formStateData.Values.TryGetValue(field, out var objValue))
         {
@@ -102,6 +102,13 @@ public sealed class ExpressionParser(
             return Encoding.UTF8.GetString(sessionValue);
        
         return GetClaimValue(field);
+    }
+
+    private static object? GetUserValue(string field, FormStateData formStateData)
+    {
+        if (formStateData.UserValues != null && formStateData.UserValues.TryGetValue(field, out var value))
+            return value;
+        return null;
     }
 
     private string? GetClaimValue(string claimType)

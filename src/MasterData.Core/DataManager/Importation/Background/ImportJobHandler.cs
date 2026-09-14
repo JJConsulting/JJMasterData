@@ -34,7 +34,8 @@ internal sealed class ImportJobHandler(
     IFileStorage fileStorage,
     IFormEventHandlerResolver formEventHandlerResolver,
     IStringLocalizer<MasterDataResources> localizer,
-    ILogger<ImportJobHandler> logger) : BackgroundJobHandler<ImportRequest>
+    ILogger<ImportJobHandler> logger,
+    IMasterDataUser masterDataUser) : BackgroundJobHandler<ImportRequest>
 {
     public override async Task<object?> ExecuteAsync(
         ImportRequest request,
@@ -42,6 +43,7 @@ internal sealed class ImportJobHandler(
         CancellationToken cancellationToken)
     {
         using var cultureScope = CultureScope.Create(request.CultureName, request.UICultureName);
+        masterDataUser.Id = request.UserId;
         
         var formElement = await dataDictionaryRepository.GetFormElementAsync(request.ElementName) ??
                           throw new InvalidOperationException($"Element '{request.ElementName}' was not found.");

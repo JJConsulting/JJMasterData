@@ -1,4 +1,5 @@
 using System.Text;
+using System.Security.Claims;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
@@ -80,6 +81,22 @@ public class ExpressionParserTests
 
         Assert.Equal("BU-SESSION", firstRow["UNID_NEG"]);
         Assert.All(remainingRows, row => Assert.Equal("BU-SESSION", row["UNID_NEG"]));
+    }
+
+    [Fact]
+    public void ParseExpression_UsesClaimValuesCopiedToUserValuesWhenThereIsNoHttpContext()
+    {
+        var parser = new ExpressionParser(MockHttpContext(), MockMasterDataUser(), MockLogger());
+        var formStateData = new FormStateData(new(), new Dictionary<string, object?>
+        {
+            [ClaimTypes.Email] = "user@jjmasterdata.com",
+            ["LegacyId"] = "legacy-1"
+        }, PageState.Import);
+
+        var result = parser.ParseExpression("{UserEmail} {LegacyId}", formStateData);
+
+        Assert.Equal("user@jjmasterdata.com", result["UserEmail"]);
+        Assert.Equal("legacy-1", result["LegacyId"]);
     }
 
 
