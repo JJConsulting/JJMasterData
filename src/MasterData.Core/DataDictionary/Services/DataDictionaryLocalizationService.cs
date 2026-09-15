@@ -16,9 +16,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class DataDictionaryLocalizationService(
-    IDataDictionaryRepository dataDictionaryRepository,
-    ILogger<DataDictionaryLocalizationService>? logger = null,
-    DataItemService? dataItemService = null)
+    IDataDictionaryRepository dataDictionaryRepository)
 {
     private static readonly ResourceManager ResourceManager = new(typeof(MasterDataResources));
     private static readonly string InvariantResourceName = $"{typeof(MasterDataResources).FullName}.resources";
@@ -57,7 +55,6 @@ public class DataDictionaryLocalizationService(
                 AddKey(keys, field.Label);
                 AddKey(keys, field.HelpDescription);
                 AddActionKeys(keys, field.Actions);
-                await AddDataItemAsync(keys, field.DataItem, formElement.ConnectionId);
             }
 
             AddActionKeys(keys, formElement.Options.GridToolbarActions);
@@ -73,46 +70,7 @@ public class DataDictionaryLocalizationService(
     {
         AddKey(keys, options.Grid.EmptyDataText);
     }
-
-    private async Task AddDataItemAsync(HashSet<string> keys, FormElementDataItem? dataItem, Guid? connectionId)
-    {
-        if (dataItem is null)
-            return;
-
-        if (!dataItem.EnableLocalization)
-            return;
-        
-        if (dataItem.HasItems())
-        {
-            foreach (var item in dataItem.Items)
-            {
-                AddKey(keys, item.Description);
-            }
-            return;
-        }
-        
-        if (dataItemService is null)
-            return;
-        
-        try
-        {
-            dataItem.EnableLocalization = false;
-            var dataQuery = new DataQuery(new FormStateData(PageState.List), connectionId);
-            var values = await dataItemService.GetValuesAsync(dataItem, dataQuery);      
-            dataItem.EnableLocalization = true;
-            
-            foreach (var item in values)
-            {
-                AddKey(keys, item.Description);
-            }
-            
-        }
-        catch (Exception e)
-        {
-            logger?.LogError(e, "Error adding data item localization keys");
-        }
-    }
-
+    
     public static IReadOnlyCollection<string> GetCommonsResourceKeys()
     {
         var keys = new HashSet<string>(StringComparer.Ordinal);
