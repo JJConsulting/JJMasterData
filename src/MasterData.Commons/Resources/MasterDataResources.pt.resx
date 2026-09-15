@@ -646,7 +646,7 @@
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Deleted:" xml:space="preserve">
-    <value>Excluidos:</value>
+    <value>Excluídos:</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="DeleteOnCascade" xml:space="preserve">
@@ -1490,7 +1490,7 @@
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Inserted:" xml:space="preserve">
-    <value>Incluidos:</value>
+    <value>Inseridos:</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Integer number" xml:space="preserve">
@@ -3428,7 +3428,7 @@
     <value>Elemento filho não encontrado na sua fonte de dados.</value>
   </data>
   <data name="Start:" xml:space="preserve">
-    <value>Início</value>
+    <value>Início:</value>
   </data>
   <data name="End:" xml:space="preserve">
     <value>Fim:</value>
@@ -4332,5 +4332,25 @@
     <data name="Process aborted by user" xml:space="preserve">
     <value>Processo abortado pelo usuário</value>
         <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File uploaded. Importation was queued." xml:space="preserve">
+    <value>Arquivo enviado. A importação foi adicionada à fila.</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Row {0}: {1}" xml:space="preserve">
+    <value>Linha {0}: {1}</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Row {0}: Error parsing value [{1}] for field [{2}]." xml:space="preserve">
+    <value>Linha {0}: Erro ao interpretar o valor [{1}] do campo [{2}].</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Row {0}: Invalid number of fields. Expected {1} Received {2}." xml:space="preserve">
+    <value>Linha {0}: Número de campos inválido. Esperado: {1}. Recebido: {2}.</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="UserId:" xml:space="preserve">
+    <value>ID do usuário:</value>
+    <comment>JJMasterDataCore</comment>
   </data>
 </root>

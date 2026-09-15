@@ -248,17 +248,16 @@ public class JJDataImportation : ProcessComponent
                 spin.WithAttribute("id", "data-importation-spinner")
                     .WithStyle( "position: relative; height: 80px");
             })
-            .AppendDiv(div =>
-            {
-                div.AppendText(StringLocalizer["Waiting..."]);
-                div.WithCssClass("mt-1 mb-1");
-            })
             .Append(HtmlTag.Div, msg =>
             {
                 msg.WithAttribute("id", "process-status")
-                    .WithStyle( "display:none")
+                    .WithAttribute("role", "status")
+                    .WithAttribute("aria-live", "polite")
+                    .WithCssClass("mt-1 mb-1")
                     .Append(HtmlTag.Div, status => status.WithAttribute("id", "divStatus"))
-                    .Append(HtmlTag.Span, resume => resume.WithAttribute("id", "process-message"));
+                    .Append(HtmlTag.Span, resume => resume
+                        .WithAttribute("id", "process-message")
+                        .AppendText(StringLocalizer["Waiting..."]));
             })
             .Append(HtmlTag.Div, div =>
             {

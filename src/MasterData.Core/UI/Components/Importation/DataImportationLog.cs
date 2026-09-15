@@ -31,28 +31,32 @@ internal sealed class DataImportationLog
         return new HtmlBuilder(HtmlTag.Div)
             .AppendComponent(GetAlertPanel())
             .Append(GetSummaryHtml())
-            .Append(HtmlTag.Div, div => div.AppendText("\u00A0"))
             .Append(GetLogDetailsHtml());
     }
 
     public HtmlBuilder GetSummaryHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
-            .WithStyle("text-align: center;")
-            .WithCssClass("jjlabel-process");
+            .WithCssClass("jj-import-summary");
 
         if (_status?.StartedAt is { } startedAt && _status.CompletedAt is { } completedAt)
         {
             var elapsedTime = Format.FormatTimeSpan(startedAt.LocalDateTime, completedAt.LocalDateTime);
             html.Append(HtmlTag.Div,
-                div => div.AppendText(_stringLocalizer["Process performed on {0}", elapsedTime]));
+                div => div
+                    .WithCssClass("jj-import-summary__duration")
+                    .AppendText(_stringLocalizer["Process performed on {0}", elapsedTime]));
         }
 
-        AppendCount(html, "lblInsert", BootstrapHelper.LabelSuccess, "Inserted:", _result?.Inserted ?? 0);
-        AppendCount(html, "lblUpdate", BootstrapHelper.LabelSuccess, "Updated:", _result?.Updated ?? 0);
-        AppendCount(html, "lblDelete", BootstrapHelper.LabelDefault, "Deleted:", _result?.Deleted ?? 0);
-        AppendCount(html, "lblIgnore", BootstrapHelper.LabelWarning, "Ignored:", _result?.Ignored ?? 0);
-        AppendCount(html, "lblError", BootstrapHelper.LabelDanger, "Errors:", _result?.Errors ?? 0);
+        html.AppendDiv(div =>
+        {
+            div.WithCssClass("text-center");
+            AppendCount(div, "lblInsert", BootstrapHelper.LabelSuccess, "Inserted:", _result?.Inserted ?? 0);
+            AppendCount(div, "lblUpdate", BootstrapHelper.LabelSuccess, "Updated:", _result?.Updated ?? 0);
+            AppendCount(div, "lblDelete", BootstrapHelper.LabelDefault, "Deleted:", _result?.Deleted ?? 0);
+            AppendCount(div, "lblIgnore", BootstrapHelper.LabelWarning, "Ignored:", _result?.Ignored ?? 0);
+            AppendCount(div, "lblError", BootstrapHelper.LabelDanger, "Errors:", _result?.Errors ?? 0);
+        });
 
         return html;
     }
@@ -62,6 +66,7 @@ internal sealed class DataImportationLog
         html.Append(HtmlTag.Span, span =>
         {
             span.WithCssClass(cssClass)
+                .WithCssClass("me-1")
                 .WithAttribute("id", id)
                 .WithAttributeIf(value == 0, "style", "display:none;")
                 .AppendText(_stringLocalizer[label])
@@ -76,22 +81,36 @@ internal sealed class DataImportationLog
         var startDate = _status?.StartedAt?.LocalDateTime ?? _status?.CreatedAt.LocalDateTime ?? DateTime.MinValue;
         var endDate = _status?.CompletedAt?.LocalDateTime ?? DateTime.MinValue;
         var content = new HtmlBuilder(HtmlTag.Div)
-            .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["Start:"]))
-            .AppendText(startDate.ToString(CultureInfo.CurrentCulture))
-            .AppendBr()
-            .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["End:"]))
-            .AppendText(endDate.ToString(CultureInfo.CurrentCulture));
+            .WithCssClass("jj-import-details")
+            .Append(HtmlTag.Div, metadata =>
+            {
+                metadata.WithCssClass("jj-import-details__metadata");
+                AppendDetail(metadata, "Start:", startDate.ToString(CultureInfo.CurrentCulture));
+                AppendDetail(metadata, "End:", endDate.ToString(CultureInfo.CurrentCulture));
+            });
 
-        if (!string.IsNullOrEmpty(_status?.UserId))
+        var errors = _result?.ErrorMessages ?? [];
+        if (errors.Count > 0)
         {
-            content.AppendBr()
-                .Append(HtmlTag.B, b => b.AppendText(_stringLocalizer["UserId:"]))
-                .AppendText("\u00A0")
-                .AppendText(_status.UserId);
-        }
+            content.Append(HtmlTag.Div, errorSection =>
+            {
+                errorSection.WithCssClass("jj-import-details__errors")
+                    .Append(HtmlTag.Div, header => header
+                        .WithCssClass("jj-import-details__errors-header")
+                        .AppendComponent(new JJIcon(FontAwesomeIcon.ExclamationTriangle))
+                        .Append(HtmlTag.Strong, title => title
+                            .AppendText(_stringLocalizer["Errors:"])
+                            .AppendText(" ")
+                            .AppendText(errors.Count.ToString("N0"))));
 
-        foreach (var error in _result?.ErrorMessages ?? [])
-            content.AppendBr().AppendText(error);
+                errorSection.Append(HtmlTag.Ul, list =>
+                {
+                    list.WithCssClass("jj-import-details__error-list");
+                    foreach (var error in errors)
+                        list.Append(HtmlTag.Li, item => item.AppendText(error));
+                });
+            });
+        }
 
         return new JJCollapsePanel
         {
@@ -100,6 +119,19 @@ internal sealed class DataImportationLog
             ExpandedByDefault = true,
             Content = content
         }.GetHtmlBuilder();
+    }
+
+    private void AppendDetail(HtmlBuilder html, string label, string value, bool monospace = false)
+    {
+        html.Append(HtmlTag.Div, item => item
+            .WithCssClass("jj-import-details__item")
+            .Append(HtmlTag.Span, text => text
+                .WithCssClass("jj-import-details__label")
+                .AppendText(_stringLocalizer[label]))
+            .Append(HtmlTag.Strong, text => text
+                .WithCssClass(monospace ? "jj-import-details__value jj-import-details__value--monospace" :
+                    "jj-import-details__value")
+                .AppendText(value)));
     }
 
     private JJAlert GetAlertPanel()

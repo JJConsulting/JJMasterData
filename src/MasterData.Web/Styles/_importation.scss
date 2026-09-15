@@ -1,0 +1,120 @@
+
+.jj-import-summary {
+  margin-bottom: 1rem;
+}
+
+.jj-import-summary__duration {
+  margin-bottom: 0.75rem;
+  color: inherit;
+  font-size: 0.875rem;
+  opacity: 0.72;
+  text-align: center;
+}
+
+.jj-import-summary__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.625rem;
+}
+
+.jj-import-summary__metric {
+  min-width: 8.5rem;
+  padding: 0.65rem 0.85rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(108, 117, 125, 0.22);
+  border-left-width: 0.25rem;
+  border-radius: 0.4rem;
+  background: rgba(108, 117, 125, 0.045);
+}
+
+.jj-import-summary__metric strong {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.jj-import-summary__metric-label {
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.72;
+}
+
+.jj-import-details__metadata {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.75rem;
+}
+
+.jj-import-details__item {
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border: 1px solid rgba(108, 117, 125, 0.2);
+  border-radius: 0.4rem;
+  background: rgba(108, 117, 125, 0.045);
+}
+
+.jj-import-details__label {
+  color: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.62;
+  text-transform: uppercase;
+}
+
+.jj-import-details__value {
+  overflow-wrap: anywhere;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.jj-import-details__value--monospace {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.85rem;
+}
+
+.jj-import-details__errors {
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(108, 117, 125, 0.28);
+  border-radius: 0.4rem;
+  background: rgba(108, 117, 125, 0.035);
+}
+
+.jj-import-details__errors-header {
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(108, 117, 125, 0.2);
+  color: inherit;
+  background: rgba(108, 117, 125, 0.07);
+}
+
+.jj-import-details__error-list {
+  max-height: 18rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.jj-import-details__error-list li {
+  padding: 0.65rem 1rem;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.jj-import-details__error-list li + li {
+  border-top: 1px solid rgba(108, 117, 125, 0.14);
+}
+

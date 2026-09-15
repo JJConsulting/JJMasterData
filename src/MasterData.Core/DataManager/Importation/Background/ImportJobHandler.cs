@@ -74,11 +74,12 @@ internal sealed class ImportJobHandler(
                     continue;
                 }
 
-                if (record.Values.Count != fields.Count)
+                var receivedFieldCount = record.Values.Count;
+                if (!TryFillMissingOptionalFields(fields, record))
                 {
                     result.Errors++;
                     errors.Add(localizer["Row {0}: Invalid number of fields. Expected {1} Received {2}.",
-                        record.RowNumber, fields.Count, record.Values.Count]);
+                        record.RowNumber, fields.Count, receivedFieldCount]);
                     continue;
                 }
 
@@ -109,7 +110,7 @@ internal sealed class ImportJobHandler(
                 {
                     logger.LogError(exception, "Error processing row {Row} of {Element}", record.RowNumber, formElement.Name);
                     result.Errors++;
-                    errors.Add($"Row {record.RowNumber}: {localizer.GetExceptionMessage(exception)}");
+                    errors.Add(localizer["Row {0}: {1}" ,record.RowNumber, localizer.GetExceptionMessage(exception)]);
                 }
 
                 progress.Report(new BackgroundJobProgress(0,
@@ -180,6 +181,23 @@ internal sealed class ImportJobHandler(
         return string.Equals(expected.Trim(), record.Values[0]?.Trim(), StringComparison.OrdinalIgnoreCase);
     }
 
+    internal static bool TryFillMissingOptionalFields(
+        List<FormElementField> fields,
+        ImportRecord record)
+    {
+        if (record.Values.Count > fields.Count)
+            return false;
+
+        var missingFields = fields.Skip(record.Values.Count);
+        if (missingFields.Any(field => field.IsRequired || field.IsPk))
+            return false;
+
+        while (record.Values.Count < fields.Count)
+            record.Values.Add(null);
+
+        return true;
+    }
+
     private static Dictionary<string, object?> GetValues(List<FormElementField> fields, ImportRecord record)
     {
         var values = new Dictionary<string, object?>(fields.Count, StringComparer.OrdinalIgnoreCase);
@@ -188,7 +206,7 @@ internal sealed class ImportJobHandler(
         return values;
     }
 
-    private static void ProcessResult(
+    private void ProcessResult(
         FormLetter<CommandOperation> formLetter,
         ImportCounters counters,
         List<string> errors,
@@ -197,7 +215,7 @@ internal sealed class ImportJobHandler(
         if (!formLetter.IsValid)
         {
             counters.Errors++;
-            errors.Add($"Row {rowNumber}: {string.Join(Environment.NewLine, formLetter.Errors.Values)}");
+            errors.Add(localizer["Row {0}: {1}" ,rowNumber, string.Join(Environment.NewLine, formLetter.Errors.Values)]);
             return;
         }
         switch (formLetter.Result)
