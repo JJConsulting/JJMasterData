@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using JJMasterData.Core.UI.Components;
 using Moq;
 
@@ -12,16 +12,15 @@ public class JJTextBoxTests
     {
         var text = GetTextBox();
         var expected = new StringBuilder();
-        expected.AppendLine().Append(' ', 2);
         expected.Append("<input ");
         expected.Append("id=\"id1\" ");
         expected.Append("name=\"id1\" ");
         expected.Append("pan=\"pan\" ");
         expected.Append("placeholder=\"00\" ");
-        expected.Append("type=\"text\" ");
         expected.Append("class=\"form-control class1 class2\" ");
         expected.Append("title=\"teste\" ");
         expected.Append("data-bs-toggle=\"tooltip\" ");
+        expected.Append("type=\"text\" ");
         expected.Append("value=\"1188880000\" ");
         expected.Append("/>");
 
@@ -49,7 +48,7 @@ public class JJTextBoxTests
 
     private static JJTextBox GetTextBox()
     {
-        return new JJTextBox(new Mock<IFormValues>().Object)
+        return new JJTextBox(new Mock<IHttpContextAccessor>().Object)
         {
             Name = "id1",
             Tooltip = "teste",

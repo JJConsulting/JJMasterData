@@ -1,13 +1,12 @@
-﻿using System.Linq;
+﻿#nullable disable warnings
+using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -56,7 +55,7 @@ internal sealed class GridCaptionView(
                 {
                     div.WithStyle( "height:2.5rem");
 
-                    div.AppendComponent(new JJIcon(item.Icon, item.IconColor)
+                    div.AppendComponent(new JJIcon(item.Icon.GetValueOrDefault(), item.IconColor ?? string.Empty)
                     {
                         CssClass = "fa-fw fa-2x"
                     });

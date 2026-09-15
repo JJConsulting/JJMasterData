@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -15,10 +14,8 @@ public static class ExpressionHelper
     {
         var stringBuilder = new StringBuilder(expression);
 
-        foreach (var kvp in values)
+        foreach (var (key, value) in values)
         {
-            var value = kvp.Value;
-
             var stringValue = value switch
             {
                 double doubleValue => doubleValue.ToString("F6", NumberFormatInfo.InvariantInfo),
@@ -27,7 +24,7 @@ public static class ExpressionHelper
                 _ => value?.ToString() ?? string.Empty
             };
 
-            stringBuilder.Replace($"{Begin}{kvp.Key}{End}", encodeValue ? HttpUtility.HtmlEncode(stringValue) : stringValue);
+            stringBuilder.Replace($"{Begin}{key}{End}", encodeValue ? HttpUtility.HtmlEncode(stringValue) : stringValue);
         }
 
         return stringBuilder.ToString();

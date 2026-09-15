@@ -1,31 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<TargetFrameworks>net4.8;net10.0</TargetFrameworks>
-		<Description>JJMasterData Hangfire support to background tasks, like exportation and importation.</Description>
-		<PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
-		<AssemblyVersion>2.0.6</AssemblyVersion>
-		<FileVersion>2.0.6</FileVersion>
-		<PackageVersion>2.0.6</PackageVersion>
-		<Version>2.0.6</Version>
-		<PackageTags>hangfire,jjmasterdata</PackageTags>
-		<RootNamespace>JJMasterData.Hangfire</RootNamespace>
-		<AssemblyName>JJMasterData.Hangfire</AssemblyName>
-		<PackageId>JJMasterData.Hangfire</PackageId>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<LangVersion>12</LangVersion>
-		<Nullable>disable</Nullable>
-	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Hangfire.Console" />
-		<PackageReference Include="Hangfire.Core" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<ProjectReference Include="..\..\MasterData.Commons\MasterData.Commons.csproj" />
-		<ProjectReference Include="..\..\MasterData.Core\MasterData.Core.csproj" />
-	</ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>JJMasterData Hangfire backend for import and export jobs.</Description>
+    <PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
+    <PackageTags>hangfire,jjmasterdata</PackageTags>
+    <RootNamespace>JJMasterData.Hangfire</RootNamespace>
+    <AssemblyName>JJMasterData.Hangfire</AssemblyName>
+    <PackageId>JJMasterData.Hangfire</PackageId>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Hangfire.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MasterData.Commons\MasterData.Commons.csproj" />
+  </ItemGroup>
 </Project>

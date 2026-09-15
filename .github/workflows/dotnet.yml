@@ -17,14 +17,5 @@ jobs:
       with:
         dotnet-version: 10.0.x
         
-    - name: Setup NodeJS
-      uses: actions/setup-node@v4
-
-    - name: Restore TypeScript dependencies
-      run: |
-          cd src/MasterData.Web
-          npm install
-          cd ../../..
-          
     - name: Build
       run: dotnet build

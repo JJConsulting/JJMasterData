@@ -4,7 +4,7 @@
 This is probably the first error you can find setting up JJMasterData. You can easily 
 solve it in different ways.
 
-## ..NET 8+
+## .NET 10
 Add a default connection string to appsettings.json.
 ```json
 {
@@ -14,8 +14,8 @@ Add a default connection string to appsettings.json.
 } 
 ```
 
-## .NET Framework 4.8 and .NET Standard 2.0
-Using any supported .NET version, you can set programmatically your connection string.
+## Programmatic configuration
+You can set your connection string programmatically.
 ```csharp
 builder.Services.AddJJMasterDataCore(new MasterDataCoreOptionsConfiguration()
 {

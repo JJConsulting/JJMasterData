@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+#nullable disable warnings
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using JJMasterData.Commons.Data.Entity.Models;
 
 
 namespace JJMasterData.Core.DataDictionary.Models;

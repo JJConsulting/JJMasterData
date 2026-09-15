@@ -1,8 +1,11 @@
 #nullable enable
 namespace JJMasterData.Commons.Security.Cryptography.Abstractions;
 
+/// <summary>
+/// Prefer using <see cref="DataProtectionService"/>.
+/// </summary>
 public interface IEncryptionService
 {
-    string EncryptString(string plainText, string? secretKey = null);
-    string DecryptString(string cipherText, string? secretKey = null);
+    string EncryptString(string plainText);
+    string DecryptString(string cipherText);
 }

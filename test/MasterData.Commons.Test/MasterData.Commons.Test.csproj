@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="xunit.v3" />
   </ItemGroup>
 
@@ -29,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Dao\Seed\DataAccessTest.sql">
+    <None Update="Data\Seed\DataAccessTest.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

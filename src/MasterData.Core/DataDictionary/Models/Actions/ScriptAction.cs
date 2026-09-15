@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+#nullable disable warnings
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 

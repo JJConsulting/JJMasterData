@@ -1,21 +1,26 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable warnings
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Abstractions;
-using JJMasterData.Core.Http.Abstractions;
 
 
 namespace JJMasterData.Core.UI.Components;
 
-public abstract class ControlBase(IFormValues formValues) : ComponentBase
+public abstract class ControlBase : ComponentBase
 {
+    protected ControlBase(IHttpContextAccessor httpContextAccessor)
+    {
+        HttpContextAccessor = httpContextAccessor;
+    }
+
     /// <summary>
     /// Property to check if the control is enabled.
     /// (Default = true)
     /// </summary>
     public bool Enabled { get; set; } = true;
 
-    public Dictionary<string, object> UserValues { get; set; } = new();
+    public Dictionary<string, object?> UserValues { get; set; } = new();
     
     /// <summary>
     /// Property to tell if the control is readonly, but the value is sent to the server.
@@ -34,7 +39,13 @@ public abstract class ControlBase(IFormValues formValues) : ComponentBase
     
     public int MaxLength { get; set; }
 
-    internal IFormValues FormValues { get; } = formValues;
+    internal IHttpContextAccessor HttpContextAccessor { get; }
+
+    internal bool HasFormValues => HttpContextAccessor.HttpContext?.Request.HasFormContentType == true;
+
+    internal IFormCollection FormValues => HasFormValues
+        ? HttpContextAccessor.HttpContext!.Request.Form
+        : FormCollection.Empty;
 
     /// <summary>
     /// Value of the component.
@@ -43,7 +54,7 @@ public abstract class ControlBase(IFormValues formValues) : ComponentBase
     {
         get
         {
-            if (field == null && FormValues.ContainsFormValues())
+            if (field == null && HasFormValues)
             {
                 field = FormValues[Name];
             }

@@ -331,7 +331,7 @@ internal sealed class EntityRepository(
     public async Task<Dictionary<string, object?>> GetFieldsAsync(Element element, Dictionary<string, object> primaryKeys)
     {
         if (primaryKeys.Count == 0)
-            throw new ArgumentException("Your need at least one value at your primary keys.", nameof(primaryKeys));
+            throw new ArgumentException(@"Your need at least one value at your primary keys.", nameof(primaryKeys));
 
         var totalOfRecords = new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var command = provider.GetReadCommand(element, new EntityParameters

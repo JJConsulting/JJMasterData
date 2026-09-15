@@ -45,6 +45,7 @@
         const onSuccess = (files = null) => {
             const processFile = (file: Dropzone.DropzoneFile) => {
                 const jsonResponse = JSON.parse(file.xhr.responseText);
+                const uploadResult = jsonResponse;
                 if (jsonResponse.error) {
                     const previewElement = file.previewElement;
                     previewElement.classList.remove("dz-success");

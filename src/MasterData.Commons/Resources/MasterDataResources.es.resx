@@ -37,10 +37,6 @@
     <value>Línea de resaltado al pasar el ratón</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Export first line as title" xml:space="preserve">
-    <value>Exportación primera línea como título</value>
-    <comment>JJMasterDataCore</comment>
-  </data>
   <data name="Compact mode" xml:space="preserve">
     <value>Modo compacto</value>
   </data>
@@ -775,8 +771,8 @@
   <data name="the file must contain" xml:space="preserve">
     <value>el archivo debe contener</value>
   </data>
-  <data name="separated by semicolons (;), following the layout below:" xml:space="preserve">
-    <value>separadas por punto y coma (;), siguiendo el diseño a continuación:</value>
+  <data name="with automatically detected delimiters (comma, semicolon, pipe or tab), following the layout below:" xml:space="preserve">
+    <value>con delimitadores detectados automáticamente (coma, punto y coma, barra vertical o tabulación), siguiendo el diseño a continuación:</value>
   </data>
   <data name="To select more than one item, enter the desired values separated by a comma." xml:space="preserve">
     <value>Para seleccionar más de un elemento, ingrese los valores deseados separados por una coma.</value>
@@ -792,5 +788,107 @@
   </data>
   <data name="First option used in the combo. If a default value exists in the filter, this option is ignored." xml:space="preserve">
     <value>Primera opción usada en el combo. Si existe un valor predeterminado en el filtro, esta opción se ignora.</value>
+  </data>
+  <data name="Show table style" xml:space="preserve">
+    <value>Mostrar estilo de tabla</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Width" xml:space="preserve">
+    <value>Ancho</value>
+  </data>
+  <data name="Width unit" xml:space="preserve">
+    <value>Unidad de ancho</value>
+  </data>
+  <data name="Error importing file!" xml:space="preserve">
+    <value>¡Error al importar el archivo!</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Errors:" xml:space="preserve">
+    <value>Errores:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File imported successfully!" xml:space="preserve">
+    <value>¡Archivo importado correctamente!</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File imported with errors!" xml:space="preserve">
+    <value>¡Archivo importado con errores!</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File uploaded. Importation was queued." xml:space="preserve">
+    <value>Archivo cargado. La importación se agregó a la cola.</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Importation Details" xml:space="preserve">
+    <value>Detalles de la importación</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Importing {0} records..." xml:space="preserve">
+    <value>Importando {0} registros...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Paste Excel rows or drag and drop files of type: {0}" xml:space="preserve">
+    <value>Pegue filas de Excel o arrastre y suelte archivos de tipo: {0}</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Process aborted by user" xml:space="preserve">
+    <value>Proceso cancelado por el usuario</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Process performed on {0}" xml:space="preserve">
+    <value>Proceso completado en {0}</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Row {0}: Error parsing value [{1}] for field [{2}]." xml:space="preserve">
+    <value>Fila {0}: Error al interpretar el valor [{1}] del campo [{2}].</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Row {0}: Invalid number of fields. Expected {1} Received {2}." xml:space="preserve">
+    <value>Fila {0}: Número de campos no válido. Se esperaban {1} y se recibieron {2}.</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Stop the importation" xml:space="preserve">
+    <value>Detener la importación</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Stopping Processing..." xml:space="preserve">
+    <value>Deteniendo la importación...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Upload File" xml:space="preserve">
+    <value>Cargar archivo</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Waiting..." xml:space="preserve">
+    <value>Espere...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Start:" xml:space="preserve">
+    <value>Inicio:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="End:" xml:space="preserve">
+    <value>Fin:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="UserId:" xml:space="preserve">
+    <value>ID de usuario:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Inserted:" xml:space="preserve">
+    <value>Insertados:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Updated:" xml:space="preserve">
+    <value>Actualizados:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Deleted:" xml:space="preserve">
+    <value>Eliminados:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Ignored:" xml:space="preserve">
+    <value>Ignorados:</value>
+    <comment>JJMasterDataCore</comment>
   </data>
 </root>

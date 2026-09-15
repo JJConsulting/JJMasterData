@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary.Models;

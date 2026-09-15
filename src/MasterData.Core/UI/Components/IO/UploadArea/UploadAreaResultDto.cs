@@ -1,6 +1,3 @@
-#nullable enable
-
-
 using System.Text.Json.Serialization;
 
 namespace JJMasterData.Core.UI.Components;
@@ -12,4 +9,7 @@ public class UploadAreaResultDto
 
     [JsonPropertyName("error")]
     public string? ErrorMessage { get; set; }
+
+    [JsonPropertyName("jobId")]
+    public string? JobId { get; set; }
 }

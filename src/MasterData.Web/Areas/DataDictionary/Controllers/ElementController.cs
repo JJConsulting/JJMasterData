@@ -86,14 +86,13 @@ public class ElementController(
 
     private async ValueTask FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
-        await using var ms = new MemoryStream(e.File.Bytes);
         if (e.File.FileName.EndsWith(".zip"))
         {
-            await elementImportService.ImportZipFile(ms);
+            await elementImportService.ImportZipFile(e.File.OpenReadStream());
         }
         else
         {
-            await elementImportService.Import(ms);
+            await elementImportService.Import(e.File.OpenReadStream());
         }
  
         if (ModelState.IsValid)
@@ -195,7 +194,7 @@ public class ElementController(
 
         foreach (var elementName in elementNamesToDelete)
         {
-            await elementService.DeleteAsync(elementName);
+            await elementService.DeleteAsync(elementName!);
         }
 
         return RedirectToAction(nameof(Index));

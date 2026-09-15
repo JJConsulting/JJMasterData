@@ -6,6 +6,6 @@ public static class MasterDataServiceBuilderExtensions
 {
     public static MasterDataServiceBuilder WithPdfExportation(this MasterDataServiceBuilder builder)
     {
-        return builder.WithPdfExportation<PdfWriter>();
+        return builder.WithExportFormat<PdfExportFormat>();
     }
 }

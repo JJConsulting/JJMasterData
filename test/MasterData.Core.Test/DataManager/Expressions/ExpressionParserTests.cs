@@ -1,8 +1,10 @@
+using System.Text;
+using System.Security.Claims;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -52,15 +54,55 @@ public class ExpressionParserTests
 
         // Assert
         Assert.Single(result);
-        Assert.Empty(result["UnknownField"]!.ToString()!);
+        Assert.Null(result["UnknownField"]);
     }
 
-    // Add more test cases to cover other scenarios
-    // ...
-
-    private static IHttpContext MockHttpContext()
+    [Fact]
+    public void ParseExpression_WithSessionField_ShouldKeepValueAfterRequestEnds()
     {
-        var mockHttpContext = new Mock<IHttpContext>();
+        var sessionValue = Encoding.UTF8.GetBytes("BU-SESSION");
+        var session = new Mock<ISession>();
+        session.SetupGet(value => value.IsAvailable).Returns(true);
+        session
+            .Setup(value => value.TryGetValue("UNID_NEG", out sessionValue))
+            .Returns(true);
+        var httpContextAccessor = new HttpContextAccessor
+        {
+            HttpContext = new DefaultHttpContext { Session = session.Object }
+        };
+        var parser = new ExpressionParser(httpContextAccessor, MockMasterDataUser(), MockLogger());
+        var formStateData = new FormStateData(PageState.Import);
+
+        var firstRow = parser.ParseExpression("{UNID_NEG}", formStateData);
+        httpContextAccessor.HttpContext = null;
+        var remainingRows = Enumerable.Range(0, 3)
+            .Select(_ => parser.ParseExpression("{UNID_NEG}", formStateData))
+            .ToList();
+
+        Assert.Equal("BU-SESSION", firstRow["UNID_NEG"]);
+        Assert.All(remainingRows, row => Assert.Equal("BU-SESSION", row["UNID_NEG"]));
+    }
+
+    [Fact]
+    public void ParseExpression_UsesClaimValuesCopiedToUserValuesWhenThereIsNoHttpContext()
+    {
+        var parser = new ExpressionParser(MockHttpContext(), MockMasterDataUser(), MockLogger());
+        var formStateData = new FormStateData(new(), new Dictionary<string, object?>
+        {
+            [ClaimTypes.Email] = "user@jjmasterdata.com",
+            ["LegacyId"] = "legacy-1"
+        }, PageState.Import);
+
+        var result = parser.ParseExpression("{UserEmail} {LegacyId}", formStateData);
+
+        Assert.Equal("user@jjmasterdata.com", result["UserEmail"]);
+        Assert.Equal("legacy-1", result["LegacyId"]);
+    }
+
+
+    private static IHttpContextAccessor MockHttpContext()
+    {
+        var mockHttpContext = new Mock<IHttpContextAccessor>();
         return mockHttpContext.Object;
     }
 

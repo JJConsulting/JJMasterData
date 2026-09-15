@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>14</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Product>JJMasterData Storage Abstractions</Product>
+        <Title>JJMasterData Storage Abstractions</Title>
+        <PackageId>JJConsulting.MasterData.Storage.Abstractions</PackageId>
+        <Authors>JJConsulting</Authors>
+        <Description>Storage contracts and models for implementing pluggable file storage providers in JJMasterData applications.</Description>
+        <PackageTags>jjmasterdata;storage;file-storage;abstractions;dependency-injection</PackageTags>
+        <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <RootNamespace>JJConsulting.MasterData.Storage.Abstractions</RootNamespace>
+        <AssemblyName>JJConsulting.MasterData.Storage.Abstractions</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+
+        <PackageReference Include="PolySharp"
+                          Condition="'$(TargetFrameworkIdentifier)' == '.NETStandard'">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+
+    </ItemGroup>
+
+</Project>
