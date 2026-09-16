@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Events.Args;
 
 
@@ -13,31 +13,32 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class GridToolbar(JJGridView gridView)
 {
-    internal event AsyncEventHandler<GridToolbarActionEventArgs> OnRenderToolbarActionAsync;
+    internal event EventHandler<GridToolbarActionEventArgs>? OnRenderToolbarAction;
     
-    public async ValueTask<HtmlBuilder> GetHtmlBuilderAsync()
+    public HtmlBuilder GetHtmlBuilder(FormStateData formStateData)
     {
         var toolbar = new JJToolbar();
 
-        await AddActionsToToolbar(toolbar);
+        AddActionsToToolbar(toolbar, formStateData);
             
         return toolbar.GetHtmlBuilder().WithCssClass("mb-1");
     }
 
-    private async ValueTask AddActionsToToolbar(JJToolbar toolbar)
+    private void AddActionsToToolbar(JJToolbar toolbar, FormStateData formStateData)
     {
         var actions = gridView
             .ToolbarActions
             .OrderBy(a => a.Order);
         
         var actionButtonFactory = gridView.ComponentFactory.ActionButton;
-        var formStateData = await gridView.GetFormStateDataAsync();
 
         var groupedActions = new List<JJLinkButton>();
         
         foreach (var action in actions)
         {
             var linkButton = actionButtonFactory.CreateGridToolbarButton(action, gridView,formStateData);
+            string? processingIndicatorId = null;
+            string? processingIndicatorClass = null;
             if (!linkButton.Visible)
                 continue;
 
@@ -53,11 +54,12 @@ internal sealed class GridToolbar(JJGridView gridView)
             switch (action)
             {
                 case ExportAction when gridView.DataExportation.IsRunning():
-                    linkButton.Spinner.Name = $"data-exportation-spinner-{gridView.DataExportation.Name}";
-                    linkButton.Spinner.Visible = true;
+                    processingIndicatorId = $"data-exportation-action-spinner-{gridView.Name}";
+                    processingIndicatorClass = "data-exportation-action-indicator";
                     break;
                 case ImportAction when gridView.DataImportation.IsRunning():
-                    linkButton.Spinner.Visible = true;
+                    processingIndicatorId = $"data-importation-action-spinner-{gridView.Name}";
+                    processingIndicatorClass = "data-importation-action-indicator";
                     break;
                 case FilterAction fAction:
                     if (fAction.ShowAsCollapse)
@@ -65,10 +67,13 @@ internal sealed class GridToolbar(JJGridView gridView)
                     break;
             }
 
-            if (OnRenderToolbarActionAsync is not null)
+            if (processingIndicatorId is not null)
+                linkButton.Attributes["aria-busy"] = "true";
+
+            if (OnRenderToolbarAction is not null)
             {
                 var args = new GridToolbarActionEventArgs(action, linkButton);
-                await OnRenderToolbarActionAsync(gridView, args);
+                OnRenderToolbarAction(gridView, args);
 
                 if (args.HtmlResult is not null)
                 {
@@ -77,8 +82,18 @@ internal sealed class GridToolbar(JJGridView gridView)
                 }
             }
 
+            var linkButtonHtml = linkButton.GetHtmlBuilder();
+            if (processingIndicatorId is not null)
+            {
+                linkButtonHtml.Append(HtmlTag.Span, indicator => indicator
+                    .WithId(processingIndicatorId)
+                    .WithCssClass($"spinner-border data-operation-action-indicator {processingIndicatorClass}")
+                    .WithAttribute("role", "status")
+                    .WithAttribute("aria-hidden", "true"));
+            }
+
             if(!action.IsGroup)
-                toolbar.Items.Add(linkButton.GetHtmlBuilder());
+                toolbar.Items.Add(linkButtonHtml);
             else
                 groupedActions.Add(linkButton);
         }

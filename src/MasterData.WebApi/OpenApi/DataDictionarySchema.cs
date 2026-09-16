@@ -15,35 +15,31 @@ internal static class DataDictionarySchema
     {
         var modelSchema = new OpenApiSchema
         {
-            Type = JsonSchemaType.Array,
-            Title = $"{modelName}List",
-
-            Items = new OpenApiSchema()
+            Type = JsonSchemaType.Object,
+            Title = modelName,
+            Properties = new Dictionary<string, IOpenApiSchema>(),
+            Required = new HashSet<string>()
         };
 
         var example = new JsonObject();
 
         foreach (var field in formElement.Fields)
         {
-            example[field.Name] = JsonSerializer.SerializeToNode(GetFieldExample(field));
-
             if (ignoreIdentity && field is { IsPk: true, AutoNum: true })
                 continue;
 
             var fieldName = apiOptions.GetJsonFieldName(field.Name);
             var itemSchema = GetFieldSchema(field);
 
-            modelSchema.Properties?.Add(fieldName, itemSchema);
+            example[fieldName] = JsonSerializer.SerializeToNode(GetFieldExample(field));
+
+            modelSchema.Properties.Add(fieldName, itemSchema);
 
             if (field.IsRequired || field.IsPk)
-                modelSchema.Required?.Add(fieldName);
+                modelSchema.Required.Add(fieldName);
         }
 
-        if (modelSchema.Required?.Count == 0)
-            modelSchema.Required.Clear();
-
         modelSchema.Example = example;
-
 
         return modelSchema;
     }
@@ -105,97 +101,73 @@ internal static class DataDictionarySchema
                     itemSchema.MaxLength = item.Size;
                 break;
         }
-        
+
+        var description = item.LabelOrName;
+
         if (item is { Component: FormComponent.ComboBox, DataItem.Items.Count: > 0 })
         {
             foreach (var dataItem in item.DataItem.Items)
-            {
-                itemSchema.Description += $"<br>{dataItem.Id} = {dataItem.Description}";
-            }
+                description += $"<br>{dataItem.Id} = {dataItem.Description}";
         }
 
-        itemSchema.Description = item.Label;
         if (item.IsPk)
-            itemSchema.Description += " (<span class='propType'>PK<span>)";
+            description += " (<span class='propType'>PK</span>)";
 
         if (!string.IsNullOrEmpty(item.HelpDescription))
-            itemSchema.Description += $"<br> {item.HelpDescription}";
+            description += $"<br>{item.HelpDescription}";
 
+        itemSchema.Description = description;
         itemSchema.ReadOnly = item.DataBehavior == FieldBehavior.ViewOnly;
-        
-        return itemSchema;
-    }
 
-    internal static OpenApiSchema GetResponseSchema(string modelName)
-    {
-        return new OpenApiSchema
-        {
-            Title = $"{modelName}Status",
-            Type = JsonSchemaType.Array,
-            Items = GetValidationLetterSchema(true),
-            Description = "List with status and validations"
-        };
+        return itemSchema;
     }
 
     internal static OpenApiSchema GetValidationLetterSchema(bool enableDataField = false)
     {
         var modelSchema = new OpenApiSchema
         {
-            Title = "validationLetter",
+            Title = "ValidationLetter",
             Type = JsonSchemaType.Object,
-            Properties = new Dictionary<string, IOpenApiSchema>()
-        };
-        modelSchema.Properties.Add("status", new OpenApiSchema
-        {
-            Description = "Http Response Code",
-            Type = JsonSchemaType.Integer,
-            Format = "int32"
-        });
-
-        modelSchema.Properties.Add("message", new OpenApiSchema
-        {
-            Description = "Error Message",
-            Type = JsonSchemaType.String
-        });
-
-        modelSchema.Properties.Add("validationList", new OpenApiSchema
-        {
-            Description = "Detailed error list",
-            Type = JsonSchemaType.Array,
-            Items = new OpenApiSchema
-            {
-                Type = JsonSchemaType.Object,
-                Description = "Field, Value"
-            },
             Properties = new Dictionary<string, IOpenApiSchema>
             {
                 {
-                    "errorList", 
-                    new OpenApiSchema
+                    "status", new OpenApiSchema
                     {
+                        Description = "Http Response Code",
+                        Type = JsonSchemaType.Integer,
+                        Format = "int32"
+                    }
+                },
+                {
+                    "message", new OpenApiSchema
+                    {
+                        Description = "Error Message",
+                        Type = JsonSchemaType.String
+                    }
+                },
+                {
+                    "validationList", new OpenApiSchema
+                    {
+                        Description = "Detailed error list",
                         Type = JsonSchemaType.Object,
-                        Description = "Field, Value"
+                        AdditionalProperties = new OpenApiSchema
+                        {
+                            Type = JsonSchemaType.String
+                        }
                     }
                 }
-            }
-        });
+            },
+            Required = new HashSet<string> { "status", "message" }
+        };
 
         if (enableDataField)
         {
             modelSchema.Properties.Add("data", new OpenApiSchema
             {
                 Description = "Return of fields, identity for example",
-                Type = JsonSchemaType.Array,
-                Items = new OpenApiSchema
-                {
-                    Description = "Field, Value",
-                    Type = JsonSchemaType.Object
-                }
+                Type = JsonSchemaType.Object
             });
         }
-
-        modelSchema.Required?.Add("status");
-        modelSchema.Required?.Add("message");
 
         return modelSchema;
     }

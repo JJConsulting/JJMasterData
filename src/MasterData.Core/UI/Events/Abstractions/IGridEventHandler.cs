@@ -15,19 +15,17 @@ public interface IGridEventHandler : IEventHandler
         ;
 #endif
     
-    public ValueTask OnRenderCellAsync(object sender, GridCellEventArgs eventArgs)
+    public void OnRenderCell(object? sender, GridCellEventArgs eventArgs)
 #if NET
     {
-        return ValueTask.CompletedTask;
     }
 #else
         ;
 #endif
 
-    public ValueTask OnRenderSelectedCellAsync(object sender, GridSelectedCellEventArgs eventArgs)
+    public void OnRenderSelectedCell(object? sender, GridSelectedCellEventArgs eventArgs)
 #if NET
     {
-        return ValueTask.CompletedTask;
     }
 #else
         ;
@@ -41,26 +39,23 @@ public interface IGridEventHandler : IEventHandler
 #else
         ;
 #endif
-    public ValueTask OnRenderActionAsync(object sender, ActionEventArgs eventArgs)
+    public void OnRenderAction(object? sender, ActionEventArgs eventArgs)
 #if NET
     {
-        return ValueTask.CompletedTask;
     }
 #else
         ;
 #endif
-    ValueTask OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs e)
+    void OnRenderToolbarAction(object? sender, GridToolbarActionEventArgs e)
 #if NET
     {
-        return ValueTask.CompletedTask;
     }
 #else
         ;
 #endif
-    ValueTask OnRenderRowAsync(object sender, GridRowEventArgs e)
+    void OnRenderRow(object? sender, GridRowEventArgs e)
 #if NET
     {
-        return ValueTask.CompletedTask;
     }
 #else
         ;

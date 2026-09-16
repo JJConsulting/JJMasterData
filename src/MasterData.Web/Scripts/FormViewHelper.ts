@@ -9,8 +9,6 @@ class FormViewHelper {
         setTimeout(function () {
             insertAlertDiv.style.display = "none";
         }, 3000);
-
-        GridViewHelper.refresh(componentName,gridViewRouteContext)
     }
 
     private static refreshFormView(componentName: string, routeContext: string) {

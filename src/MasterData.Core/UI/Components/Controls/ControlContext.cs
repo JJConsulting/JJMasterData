@@ -1,5 +1,3 @@
-#nullable enable
-
 using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;

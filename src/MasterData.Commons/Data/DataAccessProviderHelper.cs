@@ -33,8 +33,7 @@ public static class DataAccessProviderHelper
             "Oracle.ManagedDataAccess.Core.Client" => DataAccessProvider.OracleNetCore,
             "MySql" => DataAccessProvider.MySql,
             "MySql.Data.MySqlClient.MySqlClientFactory" => DataAccessProvider.MySql,
-            "PostgreSql" => DataAccessProvider.PostgreSql,
-            "Npgsql.NpgsqlFactory" => DataAccessProvider.PostgreSql,
+            "PostgreSql" or "Npgsql.NpgsqlFactory" => DataAccessProvider.PostgreSql,
             _ => throw new DataAccessProviderException("Unknown data access provider name.")
         };
     }

@@ -1,7 +1,6 @@
 # Getting Started
 
-This tutorial assumes you will use .NET 8+, for .NET Framework 4.8 support,
-check our [documentation](miscellaneous/netframework.md).
+This tutorial assumes you will use .NET 10.
 
 ## 1. Install JJMasterData.Web from NuGet
 ![JJMasterData Nuget](../media/NuGet.png)
@@ -19,7 +18,6 @@ You can replace the appsettings.json url from [here]((https://raw.githubusercont
 {
   "AllowedHosts": "*",
   "JJMasterData": {
-    "SecretKey": "My secret key for cryptography",
     "ConnectionString": "data source=localhost,1433;initial catalog=JJMasterData;Integrated Security=True"
   }
 }
@@ -32,9 +30,6 @@ Add the following lines to your Program.cs
 ```csharp
 //This line will add JJMasterData required services.
 builder.Services.AddJJMasterDataWeb();
-
-//Required middleware for JJMasterData
-app.UseSession();
 
 //Add these lines before specifing default route:
 

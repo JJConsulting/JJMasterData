@@ -1,9 +1,7 @@
-#nullable enable
 using System.Text.Json;
 using JJMasterData.Commons.Serialization;
 #if NET
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 #endif
 
 

@@ -1,5 +1,4 @@
-#nullable enable
-
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +11,14 @@ using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List<FormElementRelationship> relationships)
+internal sealed class FormViewRelationshipLayout(
+    JJFormView parentFormView,
+    List<FormElementRelationship> relationships,
+    FormStateData parentFormState)
 {
     public async Task<ComponentResult> GetRelationshipsResult()
     {
@@ -58,7 +59,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
 
     private async Task<ComponentResult> GetTabRelationshipsResult()
     {
-        var tabNav = new JJMasterDataTabNav(parentFormView.FormValues)
+        var tabNav = new JJMasterDataTabNav(parentFormView.CurrentContext)
         {
             Name = $"relationships-tab-nav-{parentFormView.DataPanel.Name}"
         };
@@ -89,20 +90,18 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
     {
         var value = parentFormView
             .ExpressionsService.GetExpressionValue(expression,
-            GetFormStateData()
+            parentFormState
             )?.ToString() ?? string.Empty;
 
         return parentFormView.Localizer[value];
     }
-
-    private FormStateData GetFormStateData() => new(parentFormView.DataPanel.Values, parentFormView.UserValues, parentFormView.PageState);
 
     private HtmlBuilder? GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder? content)
     {
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse:
-                var collapse = new JJMasterDataCollapsePanel(parentFormView.CurrentContext.Request.Form)
+                var collapse = new JJMasterDataCollapsePanel(parentFormView.CurrentContext)
                 {
                     Name = $"{relationship.ElementRelationship?.ChildElement ?? parentFormView.Name}-collapse-panel",
                     Title = GetExpressionValue(relationship.Panel.Title),
@@ -152,8 +151,6 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
 
     private async Task<ComponentResult> GetRelationshipResult(FormElementRelationship relationship)
     {
-        var parentPanel = parentFormView.DataPanel;
-
         if (relationship.IsParent)
             return new RenderedComponentResult(await parentFormView.GetParentPanelHtmlAtRelationship(relationship));
 
@@ -167,31 +164,38 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         if (parentFormView.CurrentAction is PluginAction)
             childFormView.CurrentActionMap = null;
 
-        var filter = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-        foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
-                     parentPanel.Values.ContainsKey(col.PkColumn)))
-        {
-            var value = parentPanel.Values[col.PkColumn];
-            filter[col.FkColumn] = value;
-        }
-        
+        var relationValues = GetRelationValues(relationship);
+
         switch (relationship.ViewType)
         {
             case RelationshipViewType.Insert:
             case RelationshipViewType.Update:
             case RelationshipViewType.View:
             {
-                await ConfigureOneToOneFormView(childFormView, relationship, filter);
+                await ConfigureOneToOneFormView(childFormView, relationship, relationValues);
                 break;
             }
             case RelationshipViewType.List:
             {
-                await ConfigureOneToManyFormView(childFormView,relationship, filter);
+                await ConfigureOneToManyFormView(childFormView,relationship, relationValues);
                 break;
             }
         }
         
         return await childFormView.GetFormResultAsync();
+    }
+
+    private Dictionary<string, object> GetRelationValues(FormElementRelationship relationship)
+    {
+        var relationValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+
+        foreach (var column in relationship.ElementRelationship!.Columns)
+        {
+            if (parentFormState.Values.TryGetValue(column.PkColumn, out var value) && value is not null)
+                relationValues[column.FkColumn] = value;
+        }
+
+        return relationValues;
     }
 
     private async Task ConfigureOneToManyFormView
@@ -207,7 +211,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         if(childFormView.CurrentAction is null)
             childFormView.PageState = PageState.List;
         
-        childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
+        childFormView.RelationValues = new Dictionary<string, object>(filter, StringComparer.InvariantCultureIgnoreCase);
         await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
         
         var panelState = parentFormView.DataPanel.PageState;
@@ -254,7 +258,7 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
                 childFormView.DataPanel.PageState = PageState.Insert;
         }
         
-        childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
+        childFormView.RelationValues = new Dictionary<string, object>(filter, StringComparer.InvariantCultureIgnoreCase);
         childFormView.UserValues = new Dictionary<string, object?>(parentFormView.UserValues);
         childFormView.ShowTitle = false;
 
@@ -265,5 +269,5 @@ internal sealed class FormViewRelationshipLayout(JJFormView parentFormView, List
         childFormView.DataPanel.FormUI = childFormView.FormElement.Options.Form;
     }
 
-    private bool IsRelationshipDisabled(FormElementRelationship relationship) => !parentFormView.ExpressionsService.GetBoolValue(relationship.Panel.EnableExpression, GetFormStateData());
+    private bool IsRelationshipDisabled(FormElementRelationship relationship) => !parentFormView.ExpressionsService.GetBoolValue(relationship.Panel.EnableExpression, parentFormState);
 }

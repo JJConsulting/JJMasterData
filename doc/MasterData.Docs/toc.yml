@@ -1,8 +1,3 @@
-- name: Articles
-  icon: fa-solid fa-book
-  href: articles/
-  homepage: articles/intro.md
-- name: API Reference
-  icon: fa-solid fa-code
-  href: api/
-  homepage: api/JJMasterData.Core.DataDictionary.html
+- name: JJMasterData
+  icon: SolidBookOpen
+  href: articles/toc.yml

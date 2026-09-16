@@ -1,3 +1,4 @@
+#nullable disable warnings
 using System.Text.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;

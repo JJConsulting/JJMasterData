@@ -14,6 +14,24 @@ namespace JJMasterData.Core.Test.DataDictionary;
 
 public class FormElementTest
 {
+    [Theory]
+    [InlineData("25%")]
+    [InlineData("120px")]
+    public void GridWidth_IsSerializedAsString(string gridWidth)
+    {
+        var field = new FormElementField
+        {
+            Name = "field",
+            GridWidth = gridWidth
+        };
+
+        var json = JsonSerializer.Serialize(field);
+        var deserializedField = JsonSerializer.Deserialize<FormElementField>(json);
+
+        Assert.Contains($"\"gridWidth\":\"{gridWidth}\"", json);
+        Assert.Equal(gridWidth, deserializedField!.GridWidth);
+    }
+
     [Fact]
     public void DeepCopyTest()
     {
@@ -49,7 +67,6 @@ public class FormElementTest
                     AutoPostBack = true,
                     DataBehavior = FieldBehavior.Real,
                     IsPk = true,
-                    ValidateRequest = true,
                     DataItem = new FormElementDataItem
                     {
                         Command = new DataAccessCommand
@@ -125,7 +142,7 @@ public class FormElementTest
                     Size = 1,
                     DataFile = new()
                     {
-                        ShowAsUploadView = true
+                        AllowedTypes = "txt"
                     },
                     Actions =
                     [
@@ -191,6 +208,17 @@ public class FormElementTest
                     IsVerticalLayout = true
                 }
             },
+            Rules =
+            [
+                new FormElementRule
+                {
+                    Id = 1,
+                    Name = "BeforeInsert",
+                    RunOnBeforeImport = true,
+                    Language = RuleLanguage.Sql,
+                    Script = "return 'error'"
+                }
+            ],
             Indexes =
             [
                 new()
@@ -244,5 +272,18 @@ public class FormElementTest
         var newJson = JsonSerializer.Serialize(formElement);
 
         Assert.Equal(oldJson, newJson);
+    }
+
+    [Fact]
+    public void ShouldRun_ReturnsTrueForImport_WhenRuleRunsOnBeforeImport()
+    {
+        var rule = new FormElementRule
+        {
+            RunOnBeforeImport = true,
+            RunOnBeforeInsert = false
+        };
+
+        Assert.True(rule.ShouldRun(PageState.Import));
+        Assert.False(rule.ShouldRun(PageState.Insert));
     }
 }

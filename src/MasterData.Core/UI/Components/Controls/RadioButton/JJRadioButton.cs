@@ -1,14 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿#nullable disable warnings
+using System.Threading.Tasks;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 
 
 namespace JJMasterData.Core.UI.Components;
 
-internal sealed class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
+internal sealed class JJRadioButton(IHttpContextAccessor formValues) : ControlBase(formValues)
 {
     public string Id { get; set; }
     public HtmlBuilder LabelHtml { get; } = new();

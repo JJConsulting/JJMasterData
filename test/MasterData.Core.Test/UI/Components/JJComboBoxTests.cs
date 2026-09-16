@@ -2,8 +2,8 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,10 +13,10 @@ namespace JJMasterData.Core.Test.UI.Components;
 public class JJComboBoxTests
 {
     [Fact]
-    public async Task Selectpicker_Uses_FirstOption_Text_As_NoneSelectedText()
+    public async Task Combo_Uses_FirstOption_Text_As_Placeholder()
     {
         var comboBox = new JJComboBox(
-            new Mock<IFormValues>().Object,
+            new Mock<IHttpContextAccessor>().Object,
             GetDataItemService(),
             GetLocalizer())
         {
@@ -35,7 +35,8 @@ public class JJComboBoxTests
 
         var result = await comboBox.GetResultAsync();
 
-        Assert.Contains("data-none-selected-text=\"(Choose)\"", result.Content);
+        Assert.Contains("class=\"form-control form-select tom-select\"", result.Content);
+        Assert.Contains("data-placeholder=\"(Choose)\"", result.Content);
         Assert.Contains("<option value=\"\" disabled=\"disabled\">(Choose)</option>", result.Content);
         Assert.DoesNotContain("title=\"", result.Content);
     }

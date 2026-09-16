@@ -5,7 +5,7 @@
 There are three ways to configure an application:
 <br><br>
 
-**1)** Add your configuration keys in appsettings.json. On .NET Framework you will need to add `IConfiguration` via `Microsoft.Extensions.Configuration`
+**1)** Add your configuration keys in appsettings.json.
 
 > [!TIP]
 > To autocomplete with JJMasterData keys in your text editor, put this URL in the JSON Schema of your IDE.
@@ -69,5 +69,4 @@ You can change any property from:
 **Localization**
 [Read more](localization.md) about localization.
 <br>
-
 

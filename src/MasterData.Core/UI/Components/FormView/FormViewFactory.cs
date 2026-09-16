@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Security;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -11,8 +11,6 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,17 +18,18 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class FormViewFactory(
-    IHttpContext currentContext,
+    IHttpContextAccessor currentContext,
     IMasterDataUser masterDataUser,
     IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
     FormService formService,
-    IEncryptionService encryptionService,
+    DataProtectionService encryptionService,
     FormValuesService formValuesService,
     FieldValuesService fieldValuesService,
     ExpressionsService expressionsService,
-    HtmlTemplateService htmlTemplateService,
+    HtmlTemplateActionService htmlTemplateService,
     IEnumerable<IPluginHandler> pluginHandlers,
+    UploadViewManager uploadViewManager,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptionsSnapshot<MasterDataCoreOptions> options,
     ILoggerFactory loggerFactory,
@@ -53,6 +52,7 @@ internal sealed class FormViewFactory(
             expressionsService,
             htmlTemplateService,
             pluginHandlers,
+            uploadViewManager,
             options,
             stringLocalizer,
             loggerFactory.CreateLogger<JJFormView>(),
@@ -78,6 +78,6 @@ internal sealed class FormViewFactory(
             return formEventHandler.OnFormElementLoadAsync(formView, new FormElementLoadEventArgs(formElement))!;
         }
 
-        return ValueTaskHelper.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }
