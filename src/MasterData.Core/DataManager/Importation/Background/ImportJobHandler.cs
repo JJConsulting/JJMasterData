@@ -26,7 +26,6 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataManager.Importation.Background;
 
 internal sealed class ImportJobHandler(
-    IDataDictionaryRepository dataDictionaryRepository,
     FormService formService,
     ExpressionsService expressionsService,
     IEntityRepository entityRepository,
@@ -44,9 +43,8 @@ internal sealed class ImportJobHandler(
     {
         using var cultureScope = CultureScope.Create(request.CultureName, request.UICultureName);
         masterDataUser.Id = request.UserId;
-        
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(request.ElementName) ??
-                          throw new InvalidOperationException($"Element '{request.ElementName}' was not found.");
+
+        var formElement = request.FormElement;
         
         var dataContext = new DataContext(
             DataContextSource.Upload, request.UserId, request.IpAddress, request.BrowserInfo);
