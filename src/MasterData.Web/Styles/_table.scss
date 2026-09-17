@@ -76,6 +76,16 @@ table.table-fixed-header:nth-of-type(2) th:not([scope=row]):first-child {
   padding: 0.25rem 0.25rem !important;
 }
 
+/* Libera o overflow somente enquanto o Tom Select estiver aberto */
+.table-responsive:has(.ts-wrapper.dropdown-active) {
+  overflow: visible !important;
+}
+
+/* Garante que o dropdown fique acima dos elementos da modal */
+.table-responsive .ts-dropdown {
+  z-index: 1080;
+}
+
 :root{
   --md-sticky-top-height: 0;
 }
