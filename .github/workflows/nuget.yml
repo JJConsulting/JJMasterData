@@ -2,7 +2,9 @@ name: NuGet Publish
 
 on:
   push:
-    branches: [ "main", "rc" ]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   setup:
@@ -37,16 +39,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build and publish NuGet package
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
           cd ${{ matrix.project }}
-          BASE_VERSION=$(dotnet msbuild -nologo -getProperty:VersionPrefix | tail -n 1 | tr -d '\r')
-          PREVIEW_SUFFIX=$(dotnet msbuild -nologo -getProperty:PreviewVersionSuffix | tail -n 1 | tr -d '\r')
-          if [ "${GITHUB_REF_NAME}" = "rc" ]; then
-            PACKAGE_VERSION="${BASE_VERSION}-${PREVIEW_SUFFIX}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            VERSION_SUFFIX="rc.${{ github.event.pull_request.number }}.${{ github.run_number }}"
           else
-            PACKAGE_VERSION="${BASE_VERSION}"
+            VERSION_SUFFIX=""
           fi
-          dotnet build -c release -p:Version="${PACKAGE_VERSION}" -p:PackageVersion="${PACKAGE_VERSION}" -p:InformationalVersion="${PACKAGE_VERSION}"
-          dotnet pack -c release --no-build --output="nuget" -p:Version="${PACKAGE_VERSION}" -p:PackageVersion="${PACKAGE_VERSION}" -p:InformationalVersion="${PACKAGE_VERSION}"
+          dotnet build -c release -p:VersionSuffix="${VERSION_SUFFIX}" -p:ContinuousIntegrationBuild=true
+          dotnet pack -c release --no-build --output="nuget" -p:VersionSuffix="${VERSION_SUFFIX}" -p:ContinuousIntegrationBuild=true
           cd nuget
-          dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          if [ -n "${NUGET_API_KEY}" ]; then
+            dotnet nuget push "*.nupkg" --api-key "${NUGET_API_KEY}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          else
+            echo "NUGET_API_KEY is unavailable; package was built but not published."
+          fi
