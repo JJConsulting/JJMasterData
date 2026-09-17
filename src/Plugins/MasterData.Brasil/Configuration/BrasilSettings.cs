@@ -5,4 +5,6 @@ public class BrasilSettings
     public HubDevSettings? HubDev { get; set; }
 
     public SintegraSettings? Sintegra { get; set; }
+
+    public CpfCnpjSettings? CpfCnpj { get; set; }
 }
