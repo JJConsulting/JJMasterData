@@ -2,7 +2,6 @@ name: NuGet Publish
 
 permissions:
   contents: read
-  issues: write
 
 on:
   push:
@@ -42,47 +41,6 @@ jobs:
           - src/Plugins/MasterData.Brasil
     steps:
       - uses: actions/checkout@v4
-      - name: Resolve package version
-        id: package-version
-        if: github.event_name == 'pull_request' && matrix.project == 'src/MasterData.Storage.Abstractions'
-        run: |
-          cd "${{ matrix.project }}"
-          VERSION_SUFFIX="rc.${{ github.event.pull_request.number }}.${{ github.run_number }}"
-          PACKAGE_VERSION=$(dotnet msbuild -nologo -getProperty:Version -p:VersionSuffix="${VERSION_SUFFIX}" | tail -n 1 | tr -d '\r')
-          echo "version=${PACKAGE_VERSION}" >> "$GITHUB_OUTPUT"
-      - name: Comment planned NuGet version
-        if: github.event_name == 'pull_request' && matrix.project == 'src/MasterData.Storage.Abstractions'
-        uses: actions/github-script@v7
-        continue-on-error: true
-        env:
-          PACKAGE_VERSION: ${{ steps.package-version.outputs.version }}
-        with:
-          script: |
-            const marker = '<!-- nuget-version-notice -->';
-            const body = `${marker}\nA versão **${process.env.PACKAGE_VERSION}** será publicada em breve no NuGet.`;
-            const issueNumber = context.issue.number;
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              per_page: 100
-            });
-            const existing = comments.find(comment => comment.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                body
-              });
-            }
       - name: Build and publish NuGet package
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
