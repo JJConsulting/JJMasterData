@@ -15,18 +15,14 @@ using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exportation.Background;
 
 internal sealed class ExportJobHandler(
-    IDataDictionaryRepository dataDictionaryRepository,
     IEntityRepository entityRepository,
     ExpressionsService expressionsService,
     ExportFormatCatalog formats,
@@ -44,10 +40,9 @@ internal sealed class ExportJobHandler(
     {
         using var cultureScope = CultureScope.Create(request.CultureName, request.UICultureName);
         masterDataUser.Id = request.UserId;
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(request.ElementName) ??
-                          throw new InvalidOperationException($"Element '{request.ElementName}' was not found.");
+        var formElement = request.FormElement;
         var format = formats.GetRequired(request.FormatId);
-        var columns = GetColumns(formElement, request.ExportAllFields);
+        var columns = GetColumns(request.FormElement, request.ExportAllFields);
         var source = await CreateSourceAsync(formElement, request, cancellationToken);
 
         var context = new ExportContext
@@ -94,8 +89,7 @@ internal sealed class ExportJobHandler(
     {
         var formState = new FormStateData(new Dictionary<string, object?>(), PageState.List);
         return formElement.Fields
-            .Where(field => field.Export && (exportAllFields ||
-                expressionsService.GetBoolValue(field.VisibleExpression, formState)))
+            .Where(field => field.Export && (exportAllFields || expressionsService.GetBoolValue(field.VisibleExpression, formState)))
             .Select(field =>
             {
                 var exportField = field.DeepCopy();

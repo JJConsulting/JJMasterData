@@ -369,7 +369,7 @@ public class JJDataImportation : ProcessComponent
                 OnAfterUpdateAsync = OnAfterUpdateAsync,
                 OnBeforeImportAsync = OnBeforeImportAsync,
                 OnAfterProcessAsync = OnAfterProcessAsync,
-                ElementName = FormElement.Name,
+                FormElement = FormElement.DeepCopy(),
                 UserId = UserId,
                 CultureName = CultureInfo.CurrentCulture.Name,
                 UICultureName = CultureInfo.CurrentUICulture.Name,

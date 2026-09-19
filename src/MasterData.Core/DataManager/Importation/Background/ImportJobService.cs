@@ -11,7 +11,7 @@ public sealed class ImportJobService(IBackgroundJobClient jobs)
 
     public ValueTask<Guid> EnqueueAsync(ImportRequest request, CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(request.ElementName);
+        ArgumentNullException.ThrowIfNull(request.FormElement);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.UserId);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.FilePath);
 
