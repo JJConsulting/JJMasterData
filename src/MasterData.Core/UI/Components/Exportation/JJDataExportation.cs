@@ -220,7 +220,7 @@ public class JJDataExportation : ProcessComponent
         var request = new ExportRequest
         {
             Id = BackgroundJobId.Create("export", FormElement.Name, UserId),
-            ElementName = FormElement.Name,
+            FormElement = FormElement.DeepCopy(),
             UserId = UserId,
             CultureName = CultureInfo.CurrentCulture.Name,
             UICultureName = CultureInfo.CurrentUICulture.Name,
