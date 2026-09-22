@@ -19,7 +19,7 @@ public sealed class EditAction : GridTableAction, IModalAction
     
     [Display(Name = "Modal Title")]
     [JsonPropertyName("modalTitle")]
-    public string ModalTitle { get; set; }
+    public string? ModalTitle { get; set; }
 
     public EditAction()
     {

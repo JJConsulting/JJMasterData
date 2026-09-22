@@ -7,5 +7,5 @@ public interface IModalAction
     [JsonPropertyName("showAsModal")]
     public bool ShowAsModal { get; set; }    
     [JsonPropertyName("modalTitle")]
-    public string ModalTitle { get; set; }    
+    public string? ModalTitle { get; set; }    
 }
