@@ -60,7 +60,11 @@
     href: developer-guide/background-jobs.md
   - name: File storage
     href: developer-guide/file-storage.md
-  - name: Templates, logging and troubleshooting
+  - name: Troubleshooting
     href: developer-guide/templates-troubleshooting.md
+  - name: Grid templates
+    href: developer-guide/grid-templates.md
+  - name: Template actions
+    href: developer-guide/template-action.md
   - name: WebApi and OpenAPI
     href: developer-guide/webapi.md

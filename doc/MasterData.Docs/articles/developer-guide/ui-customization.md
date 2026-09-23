@@ -21,7 +21,7 @@ In the host layout:
 
 Register shared CSS/JS through `CustomStylesheetsPaths` and `CustomScriptsPaths`. `CustomBootstrapPath` replaces the default Bootstrap stylesheet, so the supplied file must provide the Bootstrap styles expected by the components. See [custom Bootstrap 5.3](custom-bootstrap.md) for a Sass compilation example.
 
-For per-dictionary changes from C#, use `OnFormElementLoadAsync`; for reusable Razor components, see [templates and UI](templates-troubleshooting.md#template-and-ui-reference).
+For per-dictionary changes from C#, use `OnFormElementLoadAsync`; for reusable Razor components, see [grid templates](grid-templates.md).
 
 ## Customize a form instance
 
