@@ -47,10 +47,6 @@ namespace JJMasterData.Core.UI.Components;
 /// where each field represents a column and each record represents a row.
 /// Allows pagination, multiple filters, layout configuration and field sorting
 /// </summary>
-/// <example>
-/// Example
-/// <img src="../media/JJGridViewWithLegend.png"/>
-/// </example>
 public class JJGridView : AsyncComponent
 {
     #region Events

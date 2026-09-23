@@ -74,7 +74,7 @@ public class ElementField
     /// <para/> Tipo [protheus:] returns the result of a Protheus function;
     /// </summary>
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("defaultvalue")]
     [Display(Name = "Default Value Expression")]

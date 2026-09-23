@@ -44,9 +44,7 @@ namespace JJMasterData.Core.UI.Components;
 /// Represents a CRUD.
 /// </summary>
 /// <example>
-/// [!code-cshtml[Example](../../../example/JJMasterData.WebExample/Pages/Components/JJFormViewExample.cshtml)]
-/// The GetHtml method will return something like this:
-/// <img src="../media/JJFormViewExample.png"/>
+/// Use <c>GetResultAsync()</c> to render the CRUD form and obtain its HTML result.
 /// </example>
 public class JJFormView : AsyncComponent
 {

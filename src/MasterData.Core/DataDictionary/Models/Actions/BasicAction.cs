@@ -96,7 +96,7 @@ public abstract class BasicAction
     /// <see cref="FormElementField.EnableExpression"/>
     /// </example>
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
@@ -109,7 +109,7 @@ public abstract class BasicAction
     /// <see cref="FormElementField.VisibleExpression"/>
     /// </example>
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]

@@ -34,7 +34,7 @@ public class FormElementField : ElementField
     public FormComponent Component { get; set; }
 
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
@@ -42,7 +42,7 @@ public class FormElementField : ElementField
     public string VisibleExpression { get; set; }
 
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]
@@ -136,7 +136,7 @@ public class FormElementField : ElementField
 
 
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("triggerExpression")]
     [Display(Name = "Trigger Expression")]
