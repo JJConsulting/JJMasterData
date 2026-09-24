@@ -20,6 +20,8 @@
     href: concepts/actions.md
   - name: Validation rules
     href: concepts/rules.md
+  - name: Customizations
+    href: concepts/customizations.md
   - name: Expressions
     href: concepts/expressions.md
   - name: Persistence and version control

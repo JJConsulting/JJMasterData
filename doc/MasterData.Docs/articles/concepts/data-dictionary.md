@@ -1,6 +1,6 @@
 # Data dictionary model
 
-`FormElement` extends the Commons `Element` model with rendering, validation and API settings.
+`FormElement` extends the JJMasterData.Commons `Element` model with rendering, validation and API settings.
 
 | Member | What it controls |
 | --- | --- |
