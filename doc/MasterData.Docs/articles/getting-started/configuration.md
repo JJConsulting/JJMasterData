@@ -42,6 +42,6 @@ app.Run();
 
 `AddJJMasterDataWeb` registers MVC, localization, component factories and data services. `UseMasterDataSeedingAsync` creates the dictionary and audit structures if missing; the database login needs permission to create them. Business tables and stored procedures are created separately through the dictionary editor.
 
-Open `/DataDictionary` to configure metadata. The example has no authentication: add the host's authentication and [route policies](../developer-guide/authorization-localization.md) before exposing the editor or CRUDs to users.
+Open `/DataDictionary` to configure metadata. The example has no authentication: add the host's authentication and [route policies](../developer-guide/authorization.md) before exposing the editor or CRUDs to users.
 
 Next: [create the first dictionary](first-dictionary.md).

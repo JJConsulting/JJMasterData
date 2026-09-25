@@ -1,9 +1,7 @@
-- name: Overview
+- name: Getting started
   items:
   - name: Introduction
     href: intro.md
-- name: Getting started
-  items:
   - name: Installation and configuration
     href: getting-started/configuration.md
   - name: Create the first dictionary
@@ -14,24 +12,20 @@
     href: concepts/architecture.md
   - name: Data dictionary model
     href: concepts/data-dictionary.md
+  - name: CRUD operations
+    href: concepts/crud-operations.md
   - name: Components and file fields
     href: concepts/components.md
   - name: Actions
     href: concepts/actions.md
-  - name: Validation rules
-    href: concepts/rules.md
   - name: Customizations
     href: concepts/customizations.md
+  - name: Validation rules
+    href: concepts/rules.md
   - name: Expressions
     href: concepts/expressions.md
   - name: Persistence and version control
     href: concepts/persistence.md
-- name: User guide
-  items:
-  - name: Dictionary administration
-    href: user-guide/dictionary-administration.md
-  - name: CRUD operations
-    href: user-guide/crud-operations.md
 - name: Developer guide
   items:
   - name: Configuration
@@ -54,8 +48,14 @@
     href: developer-guide/grid-events.md
   - name: Custom export formats
     href: developer-guide/export-formats.md
-  - name: Authorization and localization
-    href: developer-guide/authorization-localization.md
+  - name: Authorization
+    href: developer-guide/authorization.md
+  - name: Localization
+    href: developer-guide/localization.md
+  - name: Data dictionary repository
+    href: developer-guide/data-dictionary-repository.md
+  - name: Entity repository
+    href: developer-guide/entity-repository.md
   - name: Data access
     href: developer-guide/data-access.md
   - name: Background jobs

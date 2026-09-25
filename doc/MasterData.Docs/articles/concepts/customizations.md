@@ -46,9 +46,7 @@ builder.Services.AddFormEventHandler<MyFormEventHandler>("MyElementName");
 ```
 
 > [!TIP]
-> If you add the IFormEventHandler `GetCustomizedFields` method at your class, an information alert will be added at your element configuration like the image below.
-<br>
-<img alt="Customized Fields" src="../media/CustomFields.png"/>
+> If you add the IFormEventHandler `GetCustomizedFields` method at your class, an information alert will be added at your element configuration.
 
 > [!TIP]
 > If you want to also customize Grid events, you can also implement IGridEventHandler at your class.

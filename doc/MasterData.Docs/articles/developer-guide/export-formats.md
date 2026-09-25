@@ -102,4 +102,4 @@ Options must derive from `ExportFormatOptions` and have a public parameterless c
 
 The options metadata factory rejects unsupported property types. Submitted names are bound case-insensitively into a fresh options instance; property initializers define defaults. See the built-in format options for examples of delimiters, borders and table styles.
 
-For the user's workflow and built-in formats, see [record import and export](../user-guide/crud-operations.md#5-import-and-export-records).
+For the user's workflow and built-in formats, see [record import and export](../concepts/crud-operations.md#5-import-and-export-records).

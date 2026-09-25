@@ -1,4 +1,4 @@
-# Authorization and localization
+# Authorization
 
 The `DataDictionary` area manages metadata and should be restricted to administrators. The `MasterData` area renders forms for end users; authorize access to each dictionary according to the application permissions.
 
@@ -16,5 +16,3 @@ Define these policies in `AddAuthorization`. For per-dictionary permissions, ins
 `MasterDataCoreOptions.UserIdClaimType` defaults to `ClaimTypes.NameIdentifier`. `IMasterDataUser.Id` reads that claim and supplies user identity to features such as audit and import/export. Configure the claim type if the host uses another identifier.
 
 The built-in render controller shows an editor shortcut for an identified user with the `Admin` role or a `DataDictionary` claim. This shortcut does not authorize the administration routes.
-
-The UI uses `IStringLocalizer<MasterDataResources>`. Set request culture with the host's request-localization middleware, and provide a custom localizer when dictionary labels/messages come from application-managed resources. Templates can call `localize("ResourceKey")`.

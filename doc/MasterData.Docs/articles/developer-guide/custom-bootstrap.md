@@ -2,7 +2,7 @@
 
 Use `CustomBootstrapPath` when the host application needs to replace the Bootstrap version provided by JJMasterData. This property replaces the entire Bootstrap stylesheet, so the configured CSS file must contain a complete, compatible Bootstrap build rather than only custom overrides.
 
-The example below builds Bootstrap 5.3 with a purple `primary` color (`#7c3aed`) as part of the project build. It follows the ASP.NET Core example from [EmbeddedSass.Net](https://github.com/gumbarros/EmbeddedSass.Net/tree/main/samples/EmbeddedSass.Net.Sample.AspNetCore), which compiles Sass through MSBuild without requiring a separate Sass installation.
+The example below builds Bootstrap 5.3 with a purple `primary` color (`#7c3aed`) as part of the project build. It follows the ASP.NET Core example from [EmbeddedSass.Net](https://github.com/gumbarros/EmbeddedSass.Net), which compiles Sass through MSBuild without requiring a separate Sass installation.
 
 ## 1. Add the Sass compiler and Bootstrap sources
 

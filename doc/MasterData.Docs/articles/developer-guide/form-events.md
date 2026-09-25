@@ -70,4 +70,4 @@ The optional `ServiceLifetime` argument supports transient (default), scoped and
 
 `FormElementLoadEventArgs.FormElement` exposes the loaded metadata. `FormAfterActionEventArgs.Values` exposes the operation values and `UrlRedirect` supplies a redirect to callers that handle it. A background import does not navigate the user's browser through this property.
 
-Direct `IEntityRepository` writes bypass these form-service hooks. See [data access](data-access.md) and [validation rules](../concepts/rules.md#rule-syntax-and-operation-flags).
+Direct `IEntityRepository` writes bypass these form-service hooks. See [entity repository](entity-repository.md) and [validation rules](../concepts/rules.md#rule-syntax-and-operation-flags).

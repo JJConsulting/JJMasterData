@@ -99,4 +99,4 @@ The grid should show the saved name and its generated identifier (`1` in a fresh
 
 ![Person grid after saving, showing Id 1 and Ada Lovelace.](../../media/first-dictionary/07-saved-record.png)
 
-You now have a dictionary, a matching database table, and a working generated form. Continue with [CRUD operations](../user-guide/crud-operations.md) to explore the available record actions.
+You now have a dictionary, a matching database table, and a working generated form. Continue with [CRUD operations](../concepts/crud-operations.md) to explore the available record actions.
