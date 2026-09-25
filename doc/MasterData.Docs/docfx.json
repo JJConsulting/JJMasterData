@@ -10,9 +10,9 @@
           "exclude": [
             "**/example/**",
             "**/test/**",
-            "**/WebApi/**",
             "**/WebEntryPoint/**",
-            "**/ConsoleApps/**"
+            "**/ConsoleApps/**",
+            "**/Plugins/**"
           ]
         }
       ],
@@ -26,9 +26,13 @@
     "content": [
       {
         "files": [
-          "api/*.yml",
-          "articles/**/*.md",
-          "articles/**/*.yml",
+          "api/**/*.yml",
+          "articles/intro.md",
+          "articles/getting-started/**/*.md",
+          "articles/concepts/**/*.md",
+          "articles/user-guide/**/*.md",
+          "articles/developer-guide/**/*.md",
+          "articles/toc.yml",
           "index.md",
           "toc.yml"
         ]
@@ -37,23 +41,17 @@
     "resource": [
       {
         "files": [
-          "example/JJMasterData.WebExample/**",
           "media/**",
           "logo.png",
           "favicon.ico"
         ]
       }
     ],
-    "overwrite": [
-      {
-        "files": [
-          "api/**.md"
-        ]
-      }
-    ],
+    "overwrite": [],
     "dest": "_site",
     "globalMetadata": {
       "_appName":"JJMasterData",
+      "_disableToc": false,
       "_disableContribution": false,
       "_enableSearch": true,
       "_gitContribute": {
@@ -65,20 +63,21 @@
       "_disableSideFilter":true,
       "_appLogoPath": "logo.png",
       "_googleAnalyticsTagId" : "G-60L9XB7X4J",
-      "_appFooter": "Sun Version - 4.0.x",
-      "_copyrightFooter":"2025 JJConsulting. All rights reserved."
+      "_appFooter": "Moon Version - 5.0.x",
+      "_copyrightFooter":"2026 JJConsulting. All rights reserved."
     },
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
       "default",
       "modern",
-      "themes/jjconsulting"
+      "themes/jjmasterdata"
     ],
     "postProcessors": [ "ExtractSearchIndex" ],
     "noLangKeyword": false,
     "keepFileLink": true,
     "cleanupCacheHistory": false,
-    "disableGitFeatures": false
+    "disableGitFeatures": false,
+    "warningsAsErrors": true
   }
 }

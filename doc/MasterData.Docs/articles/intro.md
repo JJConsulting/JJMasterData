@@ -24,7 +24,7 @@ We made our own data dictionary and we liked it so much that we started using it
 
 On 09/09/2022 JJMasterData became part of the open-source community, where everyone can contribute to improve it.
 
-## Why use? 
+## Why use?
 - Code Pattern<br>
   Improvements, updates and fixes without code repetition.
 
@@ -50,3 +50,5 @@ JJMasterData is an open-source .NET library to help you create CRUDs quickly fro
 
 ## Who is using JJMasterData ?
 JJMasterData is **production-ready** and is already being used by [JJConsulting](https://jjconsulting.tech).
+
+Start with [installation and configuration](getting-started/configuration.md), then [create a dictionary](getting-started/first-dictionary.md).
