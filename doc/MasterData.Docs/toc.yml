@@ -1,3 +1,6 @@
-- name: JJMasterData
+- name: Articles
   icon: SolidBookOpen
   href: articles/toc.yml
+- name: API Reference
+  icon: SolidCode
+  href: api/toc.yml

@@ -36,14 +36,14 @@ public class FormElementPanel
     public bool ExpandedByDefault { get; set; }
 
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("visibleExpression")]
     [Display(Name = "Visible Expression")]
     public string VisibleExpression { get; set; } = "val:1";
 
     /// <remarks>
-    /// [See expressions](../articles/expressions.md)
+    /// [See expressions](../articles/concepts/expressions.md)
     /// </remarks>
     [JsonPropertyName("enableExpression")]
     [Display(Name = "Enable Expression")]

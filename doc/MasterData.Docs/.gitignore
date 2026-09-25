@@ -7,5 +7,6 @@
 /**/bin/
 /**/obj/
 _site
+api
 lib
 log.txt

@@ -33,7 +33,6 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 /// <example>
 /// The output will look like this:
-/// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
 /// <seealso cref="JJUploadArea"/>
 public class JJUploadView : AsyncComponent
