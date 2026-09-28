@@ -17,6 +17,9 @@ public class DataElementMap
     [JsonPropertyName("fieldDescription")]
     public string? DescriptionFieldName { get; set; } = null!;
 
+    [JsonPropertyName("parentId")]
+    public string? ParentIdFieldName { get; set; }
+
     [JsonPropertyName("iconId")]
     public string? IconIdFieldName { get; set; }
 

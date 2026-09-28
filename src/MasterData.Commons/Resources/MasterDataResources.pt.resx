@@ -4353,4 +4353,23 @@
     <value>ID do usuário:</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Hierarchy" xml:space="preserve"><value>Hierarquia</value></data>
+  <data name="Open hierarchy" xml:space="preserve"><value>Abrir hierarquia</value></data>
+  <data name="Back one level" xml:space="preserve"><value>Voltar um nível</value></data>
+  <data name="Clear selection" xml:space="preserve"><value>Limpar seleção</value></data>
+  <data name="Parent Id" xml:space="preserve"><value>Id do pai</value></data>
+  <data name="Expand" xml:space="preserve"><value>Expandir</value></data>
+  <data name="Collapse" xml:space="preserve"><value>Recolher</value></data>
+  <data name="The selected hierarchy item is no longer available." xml:space="preserve"><value>O item selecionado da hierarquia não está mais disponível.</value></data>
+  <data name="Parent Id (null or empty for roots)" xml:space="preserve"><value>Id do pai (nulo ou vazio para raízes)</value></data>
+  <data name="Hierarchy queries must use {ParentId} to load a level and {SearchId} to recover a selected node." xml:space="preserve"><value>Consultas de hierarquia devem usar {ParentId} para carregar um nível e {SearchId} para recuperar um nó selecionado.</value></data>
+  <data name="Hierarchy fields only support None or Equal filters." xml:space="preserve"><value>Campos de hierarquia aceitam apenas filtros None ou Equal.</value></data>
+  <data name="{ParentId} is required for hierarchy queries." xml:space="preserve"><value>{ParentId} é obrigatório em consultas de hierarquia.</value></data>
+  <data name="{SearchId} is required for hierarchy queries." xml:space="preserve"><value>{SearchId} é obrigatório em consultas de hierarquia.</value></data>
+  <data name="Parent Id is required for hierarchy fields." xml:space="preserve"><value>O Id do pai é obrigatório para campos de hierarquia.</value></data>
+  <data name="Hierarchy item Ids must be unique." xml:space="preserve"><value>Os Ids dos itens da hierarquia devem ser únicos.</value></data>
+  <data name="Hierarchy must contain at least one root item." xml:space="preserve"><value>A hierarquia deve conter pelo menos um item raiz.</value></data>
+  <data name="A hierarchy item cannot be its own parent." xml:space="preserve"><value>Um item da hierarquia não pode ser seu próprio pai.</value></data>
+  <data name="Hierarchy parent item was not found." xml:space="preserve"><value>O item pai da hierarquia não foi encontrado.</value></data>
+  <data name="Hierarchy contains a cycle." xml:space="preserve"><value>A hierarquia contém um ciclo.</value></data>
 </root>

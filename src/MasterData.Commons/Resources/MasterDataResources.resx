@@ -20,4 +20,14 @@
     <data name="Width unit" xml:space="preserve">
         <value>Width unit</value>
     </data>
+    <data name="Hierarchy" xml:space="preserve"><value>Hierarchy</value></data>
+    <data name="Open hierarchy" xml:space="preserve"><value>Open hierarchy</value></data>
+    <data name="Back one level" xml:space="preserve"><value>Back one level</value></data>
+    <data name="Clear selection" xml:space="preserve"><value>Clear selection</value></data>
+    <data name="Parent Id" xml:space="preserve"><value>Parent Id</value></data>
+    <data name="Expand" xml:space="preserve"><value>Expand</value></data>
+    <data name="Collapse" xml:space="preserve"><value>Collapse</value></data>
+    <data name="The selected hierarchy item is no longer available." xml:space="preserve"><value>The selected hierarchy item is no longer available.</value></data>
+    <data name="Parent Id (null or empty for roots)" xml:space="preserve"><value>Parent Id (null or empty for roots)</value></data>
+    <data name="Hierarchy queries must use {ParentId} to load a level and {SearchId} to recover a selected node." xml:space="preserve"><value>Hierarchy queries must use {ParentId} to load a level and {SearchId} to recover a selected node.</value></data>
 </root>

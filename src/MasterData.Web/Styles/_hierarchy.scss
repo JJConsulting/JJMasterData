@@ -1,0 +1,98 @@
+.jj-hierarchy {
+  --jj-hierarchy-line: var(--bs-border-color, #adb5bd);
+  max-width: 100%;
+
+  .jj-hierarchy-tree,
+  .jj-hierarchy-group {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+  }
+
+  .jj-hierarchy-group {
+    margin-left: .72rem;
+    padding-left: 1.15rem;
+    position: relative;
+
+    &::before {
+      border-left: 1px solid var(--jj-hierarchy-line);
+      bottom: .85rem;
+      content: "";
+      left: 0;
+      position: absolute;
+      top: -.35rem;
+    }
+  }
+
+  .jj-hierarchy-node {
+    position: relative;
+
+    > .jj-hierarchy-row::before {
+      border-top: 1px solid var(--jj-hierarchy-line);
+      content: "";
+      left: -1.15rem;
+      position: absolute;
+      top: 1rem;
+      width: 1rem;
+    }
+  }
+
+  .jj-hierarchy-tree > .jj-hierarchy-node > .jj-hierarchy-row::before {
+    display: none;
+  }
+
+  .jj-hierarchy-row {
+    align-items: center;
+    display: flex;
+    min-height: 2rem;
+    position: relative;
+  }
+
+  .jj-hierarchy-toggle,
+  .jj-hierarchy-toggle-spacer {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 1.5rem;
+    height: 1.5rem;
+    justify-content: center;
+    padding: 0;
+    width: 1.5rem;
+  }
+
+  .jj-hierarchy-toggle {
+    color: var(--bs-secondary-color, #6c757d);
+    font-size: .72rem;
+    text-decoration: none;
+  }
+
+  .jj-hierarchy-label {
+    align-items: center;
+    color: var(--bs-body-color, #212529);
+    display: inline-flex;
+    gap: .35rem;
+    min-width: 0;
+    padding: .2rem .35rem;
+    text-align: left;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible,
+    &.active {
+      background: var(--bs-primary-bg-subtle, #cfe2ff);
+      border-radius: .25rem;
+      color: var(--bs-primary-text-emphasis, #052c65);
+      text-decoration: none;
+    }
+  }
+
+  .jj-hierarchy-text {
+    overflow-wrap: anywhere;
+  }
+
+  .jj-hierarchy-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+    margin-top: .35rem;
+  }
+}

@@ -12,7 +12,7 @@ For example, use `Number`, `Slider` or `Currency` with `Int`, `Float` or `Decima
 | Numeric | `Number`, `Currency`, `Percentage`, `Slider` | Numeric values. `Currency` and `Percentage` provide localized visual formatting; `Slider` is useful for a bounded range. |
 | Date and time | `Date`, `DateTime`, `Hour` | A calendar date, a date with time, or a time of day. |
 | Boolean | `CheckBox` | Boolean fields (`Bit`). It can render as a checkbox, switch or button. |
-| Selection | `ComboBox`, `Search`, `Lookup`, `RadioButtonGroup` | A value chosen from a list, query or related dictionary. These components require `DataItem`. |
+| Selection | `ComboBox`, `Search`, `Lookup`, `RadioButtonGroup`, `Hierarchy` | A value chosen from a list, query, tree or related dictionary. These components require `DataItem`. |
 | Brazilian formats | `Cnpj`, `Cpf`, `CnpjCpf`, `Cep`, `Tel`, `Phone` | Brazilian identifiers, postal codes and phone numbers. These provide input masks; validation is applied where supported. |
 | Special | `Color`, `Icon`, `CodeEditor` | A color picker, icon picker or code editor. |
 | Files | `File` | Upload and manage one or more files. Requires `DataFile`. |
@@ -39,7 +39,7 @@ Place a field with `PanelId`, group fields into the same form row with `LineGrou
 
 ## List and relationship components
 
-`ComboBox`, `Search`, `Lookup` and `RadioButtonGroup` obtain their choices from `DataItem`. Select exactly one source type:
+`ComboBox`, `Search`, `Lookup`, `RadioButtonGroup` and `Hierarchy` obtain their choices from `DataItem`. Select exactly one source type:
 
 | `DataItemType` | Source | Configuration |
 | --- | --- | --- |
@@ -50,6 +50,37 @@ Place a field with `PanelId`, group fields into the same form row with `LineGrou
 `FirstOption` adds the configured leading choice, and `RadioLayout`, `EnableMultiSelect`, `ShowIcon` and `GridBehavior` refine how the list appears. Multi-select values need storage and downstream processing that support multiple values; it is generally best suited to write-only fields or a separate relationship table.
 
 If one list depends on another field, reference the current form field in its query or mapping and enable `AutoPostBack` on the source field. A change then reloads the form and repopulates dependent editors. Use `TriggerExpression` for calculated values, and `VisibleExpression` or `EnableExpression` to change whether a field is available. See [expressions](expressions.md) for expression syntax and timing.
+
+### Hierarchy
+
+`Hierarchy` stores one selected item ID. In forms it uses a compact Tom Select display with an attached Bootstrap button that opens the tree below the field. Any node can be selected, and choosing one updates the display and closes the tree. Children are loaded only when their parent is expanded; an existing value automatically opens its ancestor path. Optional fields also expose **Clear selection**, while **Back one level** selects the current node's parent.
+
+Hierarchy uses the optional `ParentId` property of `DataItemValue`; a null or empty value identifies a root. Manual items are configured in the regular `DataItem.Items` collection. For `ElementMap`, configure the regular mapping and set its optional `ParentIdFieldName`.
+
+The component discovers whether a node has children when it is expanded for the first time. A node whose request returns no items becomes a leaf and loses its expansion control. Loaded children are cached, so subsequent expansions do not issue another request. Manual sources calculate this state directly from their in-memory parent relationships.
+
+A hierarchy SQL command must return columns in this order:
+
+1. `Id`
+2. `Description`
+3. `ParentId`
+4. `IconId` (when `ShowIcon` is enabled)
+5. `IconColor` (when `ShowIcon` is enabled)
+
+The same command handles both operations. Use `{SearchId}` to return one item when JJMasterData reconstructs an existing selection's path, and `{ParentId}` to return the direct children of a node. Both values are parameters, not string substitutions. For example:
+
+```sql
+SELECT Id,
+       Name,
+       ParentId
+FROM Organization currentNode
+WHERE ({SearchId} IS NOT NULL AND Id = {SearchId})
+   OR ({SearchId} IS NULL AND
+       (({ParentId} IS NULL AND ParentId IS NULL) OR ParentId = {ParentId}))
+ORDER BY Name
+```
+
+Hierarchy filters use exact ID comparison and therefore support only `None` or `Equal`. Multiple selection is not supported. Manual hierarchies are validated for duplicate IDs, missing parents, self-reference, cycles and roots.
 
 ## File fields
 

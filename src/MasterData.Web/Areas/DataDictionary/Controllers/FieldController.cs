@@ -138,7 +138,7 @@ public class FieldController(
     [HttpPost]
     public IActionResult RemoveAllDataItem(string elementName, FormElementField field)
     {
-        field.DataItem!.Items = new List<DataItemValue>();
+        field.DataItem!.Items = [];
         return RedirectToIndex(elementName, field);
     }
 
@@ -233,23 +233,22 @@ public class FieldController(
         if (field.Component is not FormComponent.Lookup &&
             field.Component is not FormComponent.Search &&
             field.Component is not FormComponent.ComboBox &&
-            field.Component is not FormComponent.RadioButtonGroup)
+            field.Component is not FormComponent.RadioButtonGroup &&
+            field.Component is not FormComponent.Hierarchy)
         {
             return;
         }
 
-        field.DataItem.ElementMap ??= new DataElementMap
-        {
-            ElementName = formElement.Name
-        };
+        field.DataItem.ElementMap ??= new DataElementMap { ElementName = formElement.Name };
+        var elementMap = field.DataItem.ElementMap;
 
         if (field.Component is FormComponent.Lookup)
             field.DataItem.DataItemType = DataItemType.ElementMap;
         
-        ViewData["ElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName);
+        ViewData["ElementFieldList"] = await fieldService.GetElementFieldListAsync(elementMap.ElementName);
         if (field.DataItem.DataItemType is DataItemType.ElementMap)
         {
-            ViewData["FiltersElementFieldList"] = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap.ElementName, recoverOnlyFilters:true);
+            ViewData["FiltersElementFieldList"] = await fieldService.GetElementFieldListAsync(elementMap.ElementName, recoverOnlyFilters:true);
         }
     }
 

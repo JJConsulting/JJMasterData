@@ -1,4 +1,5 @@
 ﻿#nullable disable warnings
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,7 +61,7 @@ public class FieldService(
 
     private static void RemoveUnusedProperties(FormElementField field)
     {
-        if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup or FormComponent.RadioButtonGroup)
+        if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup or FormComponent.RadioButtonGroup or FormComponent.Hierarchy)
         {
             switch (field.DataItem!.DataItemType)
             {
@@ -207,6 +208,10 @@ public class FieldService(
         {
             await ValidateDataItemAsync(field);
         }
+        else if (field.Component is FormComponent.Hierarchy)
+        {
+            await ValidateHierarchyAsync(field);
+        }
         else if (field.Component == FormComponent.File)
         {
             ValidateDataFile(field.DataBehavior, field.DataFile);
@@ -217,6 +222,12 @@ public class FieldService(
 
     private void ValidateFilter(FormElementField field)
     {
+        if (field.Component is FormComponent.Hierarchy && field.Filter.Type is not (FilterMode.None or FilterMode.Equal))
+        {
+            AddError(nameof(field.Filter.Type),
+                StringLocalizer["Hierarchy fields only support None or Equal filters."]);
+        }
+
         if (field.IsPk)
         {
             if (field.Filter.Type is FilterMode.Contain or FilterMode.MultValuesContain)
@@ -330,11 +341,11 @@ public class FieldService(
         }
     }
 
-    private async ValueTask ValidateDataElementMapAsync(FormElementField field)
+    private async ValueTask ValidateDataElementMapAsync(FormElementField field, DataElementMap? hierarchyElementMap = null)
     {
         var dataItem = field.DataItem;
         
-        var elementMap = dataItem?.ElementMap;
+        var elementMap = hierarchyElementMap ?? dataItem?.ElementMap;
 
         if (elementMap is null)
         {
@@ -369,6 +380,104 @@ public class FieldService(
         
         if (dataItem.GridBehavior is DataItemGridBehavior.Description or DataItemGridBehavior.IconWithDescription && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
             AddError(nameof(dataItem.GridBehavior), StringLocalizer["[GridBehavior] requires a [FieldDescription]"]);
+    }
+
+    private async ValueTask ValidateHierarchyAsync(FormElementField field)
+    {
+        var dataItem = field.DataItem;
+        if (dataItem is null)
+            return;
+
+        switch (dataItem.DataItemType)
+        {
+            case DataItemType.SqlCommand:
+            {
+                var sql = dataItem.Command?.Sql ?? string.Empty;
+                if (dataItem.Command is null)
+                    AddError("Command", StringLocalizer["[Command] required"]);
+                if (string.IsNullOrEmpty(sql))
+                    AddError(nameof(FormElementDataItem.Command.Sql), StringLocalizer["[Field Command.Sql] required"]);
+                if (!sql.Contains("{ParentId}", StringComparison.Ordinal) ||
+                    sql.Contains("--{ParentId}", StringComparison.Ordinal))
+                    AddError("DataItem.Command.Sql", StringLocalizer["{ParentId} is required for hierarchy queries."]);
+                if (!sql.Contains("{SearchId}", StringComparison.Ordinal) ||
+                    sql.Contains("--{SearchId}", StringComparison.Ordinal))
+                    AddError("DataItem.Command.Sql", StringLocalizer["{SearchId} is required for hierarchy queries."]);
+                break;
+            }
+            case DataItemType.ElementMap:
+            {
+                var map = dataItem.ElementMap;
+                await ValidateDataElementMapAsync(field, map);
+                if (string.IsNullOrEmpty(map?.ParentIdFieldName))
+                    AddError(nameof(DataElementMap.ParentIdFieldName), StringLocalizer["Parent Id is required for hierarchy fields."]);
+                if (map is not null && !string.IsNullOrEmpty(map.ParentIdFieldName))
+                {
+                    var childElement = await DataDictionaryRepository.GetFormElementAsync(map.ElementName);
+                    if (childElement is not null && !childElement.Fields.Contains(map.ParentIdFieldName))
+                        AddError(nameof(DataElementMap.ParentIdFieldName), StringLocalizer["Parent Id field was not found."]);
+                }
+                break;
+            }
+            case DataItemType.Manual:
+                ValidateManualHierarchy(dataItem.Items);
+                break;
+        }
+    }
+
+    private void ValidateManualHierarchy(List<DataItemValue>? items)
+    {
+        if (items is null || items.Count == 0)
+        {
+            AddError("DataItem", StringLocalizer["Item list not defined"]);
+            return;
+        }
+
+        for (var i = 0; i < items.Count; i++)
+        {
+            if (string.IsNullOrEmpty(items[i].Id))
+                AddError("DataItem", StringLocalizer["Item id {0} required", i]);
+            if (string.IsNullOrEmpty(items[i].Description))
+                AddError("DataItem", StringLocalizer["Item description {0} required", i]);
+        }
+
+        var duplicateIds = items.GroupBy(item => item.Id, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToList();
+        if (duplicateIds.Count > 0)
+            AddError("DataItem", StringLocalizer["Hierarchy item Ids must be unique."]);
+
+        var byId = items
+            .Where(item => !string.IsNullOrEmpty(item.Id))
+            .GroupBy(item => item.Id, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+        if (!items.Any(item => string.IsNullOrEmpty(item.ParentId)))
+            AddError("DataItem", StringLocalizer["Hierarchy must contain at least one root item."]);
+
+        foreach (var item in items)
+        {
+            if (!string.IsNullOrEmpty(item.ParentId) && item.Id.Equals(item.ParentId, StringComparison.OrdinalIgnoreCase))
+                AddError("DataItem", StringLocalizer["A hierarchy item cannot be its own parent."]);
+            if (!string.IsNullOrEmpty(item.ParentId) && !byId.ContainsKey(item.ParentId))
+                AddError("DataItem", StringLocalizer["Hierarchy parent item was not found."]);
+
+        }
+
+        foreach (var item in items)
+        {
+            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var current = item;
+            while (!string.IsNullOrEmpty(current.ParentId) && byId.TryGetValue(current.ParentId, out current))
+            {
+                if (!visited.Add(current.Id))
+                {
+                    AddError("DataItem", StringLocalizer["Hierarchy contains a cycle."]);
+                    return;
+                }
+            }
+        }
     }
 
     private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
@@ -430,7 +539,7 @@ public class FieldService(
             AddError(nameof(elementMapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
         }
 
-        if (elementMap is null || field.DataItem.ElementMap is null)
+        if (elementMap is null)
         {
             AddError(nameof(elementMap.IdFieldName),
                 StringLocalizer["Required [{0}] field", StringLocalizer["Element Map"]]);
@@ -460,7 +569,7 @@ public class FieldService(
         if (!IsValid) 
             return false;
         
-        field.DataItem.ElementMap.MapFilters.Add(elementMapFilter);
+        elementMap.MapFilters.Add(elementMapFilter);
             
         return true;
     }
