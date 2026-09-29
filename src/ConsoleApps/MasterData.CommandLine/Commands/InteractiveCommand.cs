@@ -6,7 +6,7 @@ namespace JJMasterData.CommandLine.Commands;
 
 public sealed class InteractiveCommand(IAnsiConsole console, ConsoleRunner consoleRunner) : AsyncCommand
 {
-    protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
     {
         var action = console.Prompt(
             new SelectionPrompt<string>()
