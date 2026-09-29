@@ -5,7 +5,7 @@ namespace JJMasterData.CommandLine.Commands;
 
 public sealed class ExportCommand(ConsoleRunner consoleRunner) : AsyncCommand<ExportCommandSettings>
 {
-    protected override async Task<int> ExecuteAsync(
+    public override async Task<int> ExecuteAsync(
         CommandContext context,
         ExportCommandSettings settings,
         CancellationToken cancellationToken)
