@@ -39,48 +39,11 @@ Place a field with `PanelId`, group fields into the same form row with `LineGrou
 
 ## List and relationship components
 
-`ComboBox`, `Search`, `Lookup`, `RadioButtonGroup` and `Hierarchy` obtain their choices from `DataItem`. Select exactly one source type:
-
-| `DataItemType` | Source | Configuration |
-| --- | --- | --- |
-| `Manual` | A fixed list | Populate `Items` with IDs and descriptions. |
-| `SqlCommand` | A query | Configure `Command`; it must return an ID and a description. |
-| `ElementMap` | Another data dictionary | Configure `ElementMap` to identify the target element and fields. |
-
-`FirstOption` adds the configured leading choice, and `RadioLayout`, `EnableMultiSelect`, `ShowIcon` and `GridBehavior` refine how the list appears. Multi-select values need storage and downstream processing that support multiple values; it is generally best suited to write-only fields or a separate relationship table.
-
-If one list depends on another field, reference the current form field in its query or mapping and enable `AutoPostBack` on the source field. A change then reloads the form and repopulates dependent editors. Use `TriggerExpression` for calculated values, and `VisibleExpression` or `EnableExpression` to change whether a field is available. See [expressions](expressions.md) for expression syntax and timing.
+`ComboBox`, `Search`, `Lookup`, `RadioButtonGroup` and `Hierarchy` obtain their choices from `DataItem`. For source configuration, dependent lists, and selection behavior, see [Data items](data-item.md). If one list depends on another field, enable `AutoPostBack` on the source field so the form reloads and the dependent list is repopulated.
 
 ### Hierarchy
 
-`Hierarchy` stores one selected item ID. In forms it uses a compact Tom Select display with an attached Bootstrap button that opens the tree below the field. Any node can be selected, and choosing one updates the display and closes the tree. Children are loaded only when their parent is expanded; an existing value automatically opens its ancestor path. Optional fields also expose **Clear selection**, while **Back one level** selects the current node's parent.
-
-Hierarchy uses the optional `ParentId` property of `DataItemValue`; a null or empty value identifies a root. Manual items are configured in the regular `DataItem.Items` collection. For `ElementMap`, configure the regular mapping and set its optional `ParentIdFieldName`.
-
-The component discovers whether a node has children when it is expanded for the first time. A node whose request returns no items becomes a leaf and loses its expansion control. Loaded children are cached, so subsequent expansions do not issue another request. Manual sources calculate this state directly from their in-memory parent relationships.
-
-A hierarchy SQL command must return columns in this order:
-
-1. `Id`
-2. `Description`
-3. `ParentId`
-4. `IconId` (when `ShowIcon` is enabled)
-5. `IconColor` (when `ShowIcon` is enabled)
-
-The same command handles both operations. Use `{SearchId}` to return one item when JJMasterData reconstructs an existing selection's path, and `{ParentId}` to return the direct children of a node. Both values are parameters, not string substitutions. For example:
-
-```sql
-SELECT Id,
-       Name,
-       ParentId
-FROM Organization currentNode
-WHERE ({SearchId} IS NOT NULL AND Id = {SearchId})
-   OR ({SearchId} IS NULL AND
-       (({ParentId} IS NULL AND ParentId IS NULL) OR ParentId = {ParentId}))
-ORDER BY Name
-```
-
-Hierarchy filters use exact ID comparison and therefore support only `None` or `Equal`. Multiple selection is not supported. Manual hierarchies are validated for duplicate IDs, missing parents, self-reference, cycles and roots.
+`Hierarchy` stores one selected item ID in a parent/child list. Set `ParentId` on manual `DataItemValue` entries, or map the parent column with `DataElementMap.ParentIdFieldName`. Roots have a null or empty parent ID. For SQL sources, return `Id`, `Description`, and `ParentId` in that order; see [Data items: Hierarchy](data-item.md#hierarchy) for the query parameters and full example. Hierarchy supports one selection and filters with `None` or `Equal` only.
 
 ## File fields
 

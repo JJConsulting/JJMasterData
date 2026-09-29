@@ -2,6 +2,10 @@
   --jj-hierarchy-line: var(--bs-border-color, #adb5bd);
   max-width: 100%;
 
+  .jj-hierarchy-input[role="button"] {
+    cursor: pointer;
+  }
+
   .jj-hierarchy-tree,
   .jj-hierarchy-group {
     list-style: none;

@@ -141,12 +141,17 @@ public class JJHierarchy(
             .WithCssClass("input-group");
         var descriptionInput = new HtmlBuilder(HtmlTag.Input)
             .WithAttribute("type", "text")
-            .WithCssClass("form-control")
+            .WithCssClass("form-control jj-hierarchy-input")
             .WithId(htmlId)
             .WithValue(selectedItem?.Description ?? SelectedValue ?? string.Empty)
             .WithAttribute("placeholder", stringLocalizer["(Choose)"])
             .WithAttribute("aria-label", stringLocalizer["Hierarchy"])
             .WithAttribute("readonly", "readonly")
+            .WithAttributeIf(CanInteract, "role", "button")
+            .WithAttributeIf(CanInteract, "aria-controls", panelId)
+            .WithAttributeIf(CanInteract, "aria-expanded", "false")
+            .WithAttributeIf(CanInteract, "aria-haspopup", "tree")
+            .WithAttributeIf(CanInteract, "tabindex", "0")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .WithAttributes(Attributes);
 

@@ -21,9 +21,8 @@ class HierarchyListener {
 
     private static handleClick(hierarchy: HTMLElement, event: Event) {
         const target = event.target as HTMLElement;
-        const openButton = target.closest<HTMLButtonElement>(".jj-hierarchy-open");
-        if (openButton) {
-            this.togglePicker(hierarchy, openButton);
+        if (target.closest(".jj-hierarchy-input, .jj-hierarchy-open")) {
+            this.togglePicker(hierarchy);
             return;
         }
 
@@ -217,6 +216,13 @@ class HierarchyListener {
     }
 
     private static handleKeydown(hierarchy: HTMLElement, event: KeyboardEvent) {
+        const input = (event.target as HTMLElement).closest<HTMLInputElement>(".jj-hierarchy-input");
+        if (input && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            this.togglePicker(hierarchy);
+            return;
+        }
+
         if (event.key === "Escape") {
             const panel = document.getElementById(hierarchy.dataset.panelId || "");
             if (panel && !panel.hidden) {
@@ -257,15 +263,14 @@ class HierarchyListener {
         }
     }
 
-    private static togglePicker(hierarchy: HTMLElement, button: HTMLButtonElement) {
+    private static togglePicker(hierarchy: HTMLElement) {
         const panel = document.getElementById(hierarchy.dataset.panelId || "");
         if (!panel)
             return;
 
-        panel.hidden = !panel.hidden;
-        button.setAttribute("aria-expanded", panel.hidden ? "false" : "true");
-        button.classList.toggle("active", !panel.hidden);
-        if (!panel.hidden) {
+        const open = panel.hidden;
+        this.setPickerOpen(hierarchy, panel, open);
+        if (open) {
             const selectedLabel = panel.querySelector<HTMLButtonElement>(".jj-hierarchy-node[aria-selected=true] > .jj-hierarchy-row .jj-hierarchy-label");
             const firstLabel = panel.querySelector<HTMLButtonElement>(".jj-hierarchy-label");
             (selectedLabel || firstLabel)?.focus();
@@ -274,14 +279,19 @@ class HierarchyListener {
 
     private static closePicker(hierarchy: HTMLElement, restoreFocus = false) {
         const panel = document.getElementById(hierarchy.dataset.panelId || "");
-        const button = hierarchy.querySelector<HTMLButtonElement>(".jj-hierarchy-open");
-        if (!panel || !button)
+        if (!panel)
             return;
 
-        panel.hidden = true;
-        button.setAttribute("aria-expanded", "false");
-        button.classList.remove("active");
+        this.setPickerOpen(hierarchy, panel, false);
         if (restoreFocus)
-            button.focus();
+            hierarchy.querySelector<HTMLElement>(".jj-hierarchy-input")?.focus();
+    }
+
+    private static setPickerOpen(hierarchy: HTMLElement, panel: HTMLElement, open: boolean) {
+        panel.hidden = !open;
+        hierarchy.querySelectorAll<HTMLElement>(".jj-hierarchy-open, .jj-hierarchy-input").forEach(trigger => {
+            trigger.setAttribute("aria-expanded", String(open));
+            trigger.classList.toggle("active", open);
+        });
     }
 }
