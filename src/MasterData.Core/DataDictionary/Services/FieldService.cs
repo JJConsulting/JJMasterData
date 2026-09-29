@@ -280,13 +280,13 @@ public class FieldService(
         }
     }
 
-    private ValueTask ValidateDataItemAsync(FormElementField field)
+    private async ValueTask ValidateDataItemAsync(FormElementField field)
     {
         var dataItem = field.DataItem;
         if (dataItem == null)
         {
             AddError("DataItem", StringLocalizer["DataItem cannot be empty."]);
-            return ValueTask.CompletedTask;
+            return;
         }
 
         if (dataItem.DataItemType == DataItemType.SqlCommand)
@@ -294,7 +294,7 @@ public class FieldService(
             if (dataItem.Command == null)
             {
                 AddError("Command", StringLocalizer["[Command] required"]);
-                return ValueTask.CompletedTask;
+                return;
             }
                
             if (string.IsNullOrEmpty(dataItem.Command.Sql))
@@ -314,10 +314,10 @@ public class FieldService(
         }
         else if (dataItem.DataItemType == DataItemType.ElementMap)
         {
-            return ValidateDataElementMapAsync(field);
+            await ValidateDataElementMapAsync(field);
+            return;
         }
 
-        return ValueTask.CompletedTask;
     }
 
     private void ValidateManualItems(List<DataItemValue> items)
@@ -341,7 +341,7 @@ public class FieldService(
         }
     }
 
-    private async ValueTask ValidateDataElementMapAsync(FormElementField field, DataElementMap? hierarchyElementMap = null)
+    private async ValueTask<FormElement?> ValidateDataElementMapAsync(FormElementField field, DataElementMap? hierarchyElementMap = null)
     {
         var dataItem = field.DataItem;
         
@@ -350,13 +350,13 @@ public class FieldService(
         if (elementMap is null)
         {
             AddError(nameof(elementMap), $"{nameof(DataElementMap)} cannot be null.");
-            return;
+            return null;
         }
         
         if (string.IsNullOrEmpty(elementMap.ElementName))
         {
             AddError(nameof(elementMap.ElementName), StringLocalizer["Required field [ElementName]"]);
-            return;
+            return null;
         }
         
         var childFormElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
@@ -364,7 +364,7 @@ public class FieldService(
         if (childFormElement is null)
         {
             AddError(nameof(elementMap.ElementName),$"Element {elementMap.ElementName} not found at your data source.");
-            return;
+            return null;
         }
 
         var childField = childFormElement.Fields[elementMap.IdFieldName];
@@ -380,6 +380,8 @@ public class FieldService(
         
         if (dataItem.GridBehavior is DataItemGridBehavior.Description or DataItemGridBehavior.IconWithDescription && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
             AddError(nameof(dataItem.GridBehavior), StringLocalizer["[GridBehavior] requires a [FieldDescription]"]);
+
+        return childFormElement;
     }
 
     private async ValueTask ValidateHierarchyAsync(FormElementField field)
@@ -408,14 +410,12 @@ public class FieldService(
             case DataItemType.ElementMap:
             {
                 var map = dataItem.ElementMap;
-                await ValidateDataElementMapAsync(field, map);
+                var childElement = await ValidateDataElementMapAsync(field, map);
                 if (string.IsNullOrEmpty(map?.ParentIdFieldName))
                     AddError(nameof(DataElementMap.ParentIdFieldName), StringLocalizer["Parent Id is required for hierarchy fields."]);
-                if (map is not null && !string.IsNullOrEmpty(map.ParentIdFieldName))
+                else if (childElement is not null && !childElement.Fields.Contains(map.ParentIdFieldName))
                 {
-                    var childElement = await DataDictionaryRepository.GetFormElementAsync(map.ElementName);
-                    if (childElement is not null && !childElement.Fields.Contains(map.ParentIdFieldName))
-                        AddError(nameof(DataElementMap.ParentIdFieldName), StringLocalizer["Parent Id field was not found."]);
+                    AddError(nameof(DataElementMap.ParentIdFieldName), StringLocalizer["Parent Id field was not found."]);
                 }
                 break;
             }
@@ -428,19 +428,10 @@ public class FieldService(
     private void ValidateManualHierarchy(List<DataItemValue>? items)
     {
         if (items is null || items.Count == 0)
-        {
-            AddError("DataItem", StringLocalizer["Item list not defined"]);
             return;
-        }
-
-        for (var i = 0; i < items.Count; i++)
-        {
-            if (string.IsNullOrEmpty(items[i].Id))
-                AddError("DataItem", StringLocalizer["Item id {0} required", i]);
-            if (string.IsNullOrEmpty(items[i].Description))
-                AddError("DataItem", StringLocalizer["Item description {0} required", i]);
-        }
-
+        
+        ValidateManualItems(items);
+        
         var duplicateIds = items.GroupBy(item => item.Id, StringComparer.OrdinalIgnoreCase)
             .Where(group => group.Count() > 1)
             .Select(group => group.Key)

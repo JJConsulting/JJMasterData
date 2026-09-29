@@ -13,7 +13,6 @@ using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -52,8 +51,7 @@ public class JJHierarchy(
         set;
     }
 
-    private RouteContext RouteContext => field ??=
-        new RouteContextFactory(httpContextAccessor, dataProtectionService).Create();
+    private RouteContext RouteContext => field ??= new RouteContextFactory(httpContextAccessor, dataProtectionService).Create();
 
     private ComponentContext ComponentContext => RouteContext.ComponentContext;
     private bool CanInteract => Enabled && !ReadOnly && !ShowSelectedPathOnly;
@@ -190,7 +188,7 @@ public class JJHierarchy(
         var parentId = request.Query["parentId"].ToString();
         var items = await GetChildrenAsync(string.IsNullOrEmpty(parentId) ? null : parentId);
 
-        return new JsonComponentResult(items.Select(ToResult).ToList());
+        return new JsonComponentResult(items.ConvertAll(ToJsonResult));
     }
 
     private async Task<List<DataItemValue>> GetSelectedPathAsync()
@@ -209,14 +207,18 @@ public class JJHierarchy(
         }
     }
 
-    private Task<List<DataItemValue>> GetChildrenAsync(string? parentId) =>
-        dataItemService.GetHierarchyValuesAsync(DataItem,
-            new DataQuery(FormStateData, ConnectionId) { ParentId = parentId });
+    private Task<List<DataItemValue>> GetChildrenAsync(string? parentId)
+    {
+        return dataItemService.GetHierarchyValuesAsync(DataItem, new DataQuery(FormStateData, ConnectionId)
+        {
+            ParentId = parentId
+        });
+    }
 
     private async Task AppendLevelAsync(
         HtmlBuilder parent,
-        IReadOnlyCollection<DataItemValue> items,
-        IReadOnlyList<DataItemValue> path,
+        List<DataItemValue> items,
+        List<DataItemValue> path,
         int depth)
     {
         foreach (var item in items)
@@ -239,7 +241,7 @@ public class JJHierarchy(
         }
     }
 
-    private void AppendReadOnlyPath(HtmlBuilder parent, IReadOnlyList<DataItemValue> path, int depth)
+    private void AppendReadOnlyPath(HtmlBuilder parent, List<DataItemValue> path, int depth)
     {
         if (depth >= path.Count)
             return;
@@ -336,7 +338,7 @@ public class JJHierarchy(
         return query.ToString();
     }
 
-    private object ToResult(DataItemValue item) => new
+    private object ToJsonResult(DataItemValue item) => new
     {
         id = item.Id,
         description = item.Description,
@@ -346,8 +348,14 @@ public class JJHierarchy(
         iconColor = item.IconColor
     };
 
-    private bool CanExpand(DataItemValue item) =>
-        DataItem.DataItemType is not DataItemType.Manual ||
-        DataItem.Items?.Any(child => string.Equals(
-            child.ParentId?.Trim(), item.Id.Trim(), StringComparison.OrdinalIgnoreCase)) is true;
+    private bool CanExpand(DataItemValue item)
+    {
+        if (DataItem.DataItemType is not DataItemType.Manual)
+            return true;
+
+        if (DataItem.Items is null) 
+            return false;
+        
+        return DataItem.Items.Any(child => string.Equals(child.ParentId?.Trim(), item.Id.Trim(), StringComparison.OrdinalIgnoreCase));
+    }
 }
