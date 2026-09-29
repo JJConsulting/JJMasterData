@@ -1,11 +1,8 @@
-﻿#nullable enable
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.OpenApi;
-
 
 namespace JJMasterData.WebApi.OpenApi;
 
@@ -39,7 +36,7 @@ internal static class DataDictionarySchema
                 modelSchema.Required.Add(fieldName);
         }
 
-        modelSchema.Example = example;
+        modelSchema.Examples = [example];
 
         return modelSchema;
     }
