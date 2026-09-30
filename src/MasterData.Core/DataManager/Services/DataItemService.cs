@@ -62,12 +62,18 @@ public class DataItemService(
 
     public Task<List<DataItemValue>> GetHierarchyValuesAsync(
         FormElementDataItem dataItem,
-        DataQuery dataQuery) => hierarchyService.GetValuesAsync(dataItem, dataQuery);
+        DataQuery dataQuery)
+    {
+        return hierarchyService.GetValuesAsync(dataItem, dataQuery);
+    }
 
     public Task<List<DataItemValue>> GetHierarchyPathAsync(
         FormElementDataItem dataItem,
         DataQuery dataQuery,
-        int maximumDepth = 100) => hierarchyService.GetPathAsync(dataItem, dataQuery, maximumDepth);
+        int maximumDepth = 100)
+    {
+        return hierarchyService.GetPathAsync(dataItem, dataQuery, maximumDepth);
+    }
 
     private static DataItemType GetDataItemType(FormElementDataItem dataItem)
     {

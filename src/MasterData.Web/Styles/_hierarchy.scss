@@ -74,6 +74,11 @@
     text-decoration: none;
   }
 
+  .jj-hierarchy-spinner {
+    height: .7rem;
+    width: .7rem;
+  }
+
   .jj-hierarchy-label {
     align-items: center;
     color: var(--bs-body-color, #212529);
@@ -104,4 +109,9 @@
     gap: .25rem;
     margin-top: .35rem;
   }
+}
+
+:is(.form-horizontal .form-group, .form-group.row) > label:has(+ div .jj-hierarchy) {
+  align-self: flex-start;
+  min-height: calc(1.5rem + .75rem + 2px);
 }

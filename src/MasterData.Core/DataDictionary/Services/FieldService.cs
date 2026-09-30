@@ -399,12 +399,6 @@ public class FieldService(
                     AddError("Command", StringLocalizer["[Command] required"]);
                 if (string.IsNullOrEmpty(sql))
                     AddError(nameof(FormElementDataItem.Command.Sql), StringLocalizer["[Field Command.Sql] required"]);
-                if (!sql.Contains("{ParentId}", StringComparison.Ordinal) ||
-                    sql.Contains("--{ParentId}", StringComparison.Ordinal))
-                    AddError("DataItem.Command.Sql", StringLocalizer["{ParentId} is required for hierarchy queries."]);
-                if (!sql.Contains("{SearchId}", StringComparison.Ordinal) ||
-                    sql.Contains("--{SearchId}", StringComparison.Ordinal))
-                    AddError("DataItem.Command.Sql", StringLocalizer["{SearchId} is required for hierarchy queries."]);
                 break;
             }
             case DataItemType.ElementMap:

@@ -1,3 +1,4 @@
+using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
@@ -23,7 +24,7 @@ public class JJHierarchyTests
 
         var result = await hierarchy.GetResultAsync();
 
-        Assert.Contains("type=\"text\" class=\"form-control\" id=\"managerId\" value=\"\"", result.Content);
+        Assert.Contains("type=\"text\" class=\"form-control jj-hierarchy-input\" id=\"managerId\" value=\"\"", result.Content);
         Assert.Contains("placeholder=\"(Choose)\"", result.Content);
         Assert.Contains("aria-expanded=\"false\"", result.Content);
         Assert.Contains("class=\"card mt-2\"", result.Content);
@@ -39,7 +40,7 @@ public class JJHierarchyTests
 
         Assert.Contains("role=\"tree\"", result.Content);
         Assert.Contains("type=\"hidden\" name=\"managerId\" id=\"managerId-value\" value=\"leaf\"", result.Content);
-        Assert.Contains("type=\"text\" class=\"form-control\" id=\"managerId\" value=\"Leaf\"", result.Content);
+        Assert.Contains("type=\"text\" class=\"form-control jj-hierarchy-input\" id=\"managerId\" value=\"Leaf\"", result.Content);
         Assert.Contains("jj-hierarchy-open", result.Content);
         Assert.Contains("btn btn-secondary jj-hierarchy-open", result.Content);
         Assert.Contains("class=\"card mt-2\" id=\"managerId-hierarchy-panel\" hidden", result.Content);
@@ -47,6 +48,9 @@ public class JJHierarchyTests
         Assert.Contains("aria-selected=\"true\"", result.Content);
         Assert.Contains("jj-hierarchy-back", result.Content);
         Assert.Contains("jj-hierarchy-clear", result.Content);
+        Assert.Contains("btn btn-link btn-sm jj-hierarchy-close ms-auto", result.Content);
+        Assert.Contains(">Close</button>", result.Content);
+        Assert.Contains("#cc3344", result.Content);
     }
 
     [Fact]
@@ -61,6 +65,7 @@ public class JJHierarchyTests
         Assert.Contains("data-id=\"leaf\"", result.Content);
         Assert.DoesNotContain("jj-hierarchy-actions", result.Content);
         Assert.DoesNotContain("jj-hierarchy-open", result.Content);
+        Assert.DoesNotContain("jj-hierarchy-close", result.Content);
     }
 
     [Fact]
@@ -77,6 +82,8 @@ public class JJHierarchyTests
         Assert.Contains("\"id\":\"child\"", result.Content);
         Assert.Contains("\"parentId\":\"root\"", result.Content);
         Assert.Contains("\"canExpand\":true", result.Content);
+        Assert.Contains("\"iconCssClass\":\"", result.Content);
+        Assert.Contains("\"iconColor\":\"#cc3344\"", result.Content);
     }
 
     private static JJHierarchy CreateHierarchy(
@@ -115,10 +122,11 @@ public class JJHierarchyTests
             FormStateData = new FormStateData([], pageState),
             DataItem = new FormElementDataItem
             {
+                ShowIcon = true,
                 Items =
                 [
                     new DataItemValue { Id = "root", Description = "Root" },
-                    new DataItemValue { Id = "child", Description = "Child", ParentId = "root" },
+                    new DataItemValue { Id = "child", Description = "Child", ParentId = "root", Icon = FontAwesomeIcon.Search, IconColor = "#cc3344" },
                     new DataItemValue { Id = "leaf", Description = "Leaf", ParentId = "child" }
                 ]
             }

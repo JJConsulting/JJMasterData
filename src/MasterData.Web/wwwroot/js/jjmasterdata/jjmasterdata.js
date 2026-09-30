@@ -1662,6 +1662,10 @@ class HierarchyListener {
             this.togglePicker(hierarchy);
             return;
         }
+        if (target.closest(".jj-hierarchy-close")) {
+            this.closePicker(hierarchy, true);
+            return;
+        }
         const toggle = target.closest(".jj-hierarchy-toggle");
         if (toggle) {
             void this.toggleNode(hierarchy, toggle.closest(".jj-hierarchy-node"));
@@ -1694,8 +1698,12 @@ class HierarchyListener {
                 return;
             }
             node.dataset.loading = "true";
+            const icon = toggle === null || toggle === void 0 ? void 0 : toggle.querySelector("span");
+            if (icon)
+                icon.className = "spinner-border spinner-border-sm jj-hierarchy-spinner";
             if (toggle)
                 toggle.disabled = true;
+            let loaded = false;
             try {
                 const items = yield this.loadChildren(hierarchy, node.dataset.id || "");
                 if (items.length === 0) {
@@ -1707,13 +1715,17 @@ class HierarchyListener {
                 group.setAttribute("role", "group");
                 items.forEach(item => group.append(this.createNode(hierarchy, item)));
                 node.append(group);
-                this.setExpanded(hierarchy, node, toggle, true);
+                loaded = true;
             }
             catch (error) {
                 console.error(error);
             }
             finally {
                 delete node.dataset.loading;
+                if (icon)
+                    icon.className = "fa-solid fa-chevron-right";
+                if (loaded)
+                    this.setExpanded(hierarchy, node, toggle, true);
                 if (toggle)
                     toggle.disabled = false;
             }
@@ -1767,7 +1779,8 @@ class HierarchyListener {
         label.className = "jj-hierarchy-label btn btn-link";
         if (item.iconCssClass) {
             const icon = document.createElement("span");
-            icon.className = `fa ${item.iconCssClass}`;
+            icon.className = item.iconCssClass;
+            icon.setAttribute("aria-hidden", "true");
             if (item.iconColor)
                 icon.style.color = item.iconColor;
             label.append(icon);

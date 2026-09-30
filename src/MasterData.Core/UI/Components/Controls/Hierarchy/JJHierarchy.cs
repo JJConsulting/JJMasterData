@@ -195,16 +195,9 @@ public class JJHierarchy(
     {
         if (string.IsNullOrEmpty(SelectedValue))
             return [];
-
-        try
-        {
-            return await dataItemService.GetHierarchyPathAsync(DataItem,
-                new DataQuery(FormStateData, ConnectionId) { SearchId = SelectedValue }, MaximumPathDepth);
-        }
-        catch (JJMasterDataException)
-        {
-            return [];
-        }
+        
+        return await dataItemService.GetHierarchyPathAsync(DataItem,
+            new DataQuery(FormStateData, ConnectionId) { SearchId = SelectedValue });
     }
 
     private Task<List<DataItemValue>> GetChildrenAsync(string? parentId)
@@ -321,6 +314,11 @@ public class JJHierarchy(
                 .AppendText(stringLocalizer["Clear selection"]));
         }
 
+        actions.Append(HtmlTag.Button, button => button
+            .WithCssClass("btn btn-link btn-sm jj-hierarchy-close ms-auto")
+            .WithAttribute("type", "button")
+            .AppendText(stringLocalizer["Close"]));
+
         return actions;
     }
 
@@ -344,8 +342,8 @@ public class JJHierarchy(
         description = item.Description,
         parentId = item.ParentId,
         canExpand = CanExpand(item),
-        iconCssClass = item.Icon?.CssClass,
-        iconColor = item.IconColor
+        iconCssClass = DataItem.ShowIcon ? item.Icon?.CssClass : null,
+        iconColor = DataItem.ShowIcon ? item.IconColor : null
     };
 
     private bool CanExpand(DataItemValue item)
