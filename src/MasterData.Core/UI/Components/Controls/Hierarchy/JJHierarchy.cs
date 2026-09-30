@@ -205,13 +205,19 @@ public class JJHierarchy(
         return inputGroup;
     }
 
-    private async Task<JsonComponentResult> GetItemsResultAsync()
+    private async Task<ContentComponentResult> GetItemsResultAsync()
     {
         var request = httpContextAccessor.HttpContext!.Request;
         var parentId = request.Query["parentId"].ToString();
         var items = await GetChildrenAsync(string.IsNullOrEmpty(parentId) ? null : parentId);
 
-        return new JsonComponentResult(items.ConvertAll(ToJsonResult));
+        var group = new HtmlBuilder(HtmlTag.Ul)
+            .WithCssClass("jj-hierarchy-group")
+            .WithAttribute("role", "group");
+        foreach (var item in items)
+            group.Append(GetNodeHtml(item, false, false));
+
+        return new ContentComponentResult(group);
     }
 
     private async Task<List<DataItemValue>> GetSelectedPathAsync()
@@ -360,16 +366,6 @@ public class JJHierarchy(
         query.Append($"&fieldName={Uri.EscapeDataString(FieldName)}");
         return query.ToString();
     }
-
-    private object ToJsonResult(DataItemValue item) => new
-    {
-        id = item.Id,
-        description = item.Description,
-        parentId = item.ParentId,
-        canExpand = CanExpand(item),
-        iconCssClass = DataItem.ShowIcon ? item.Icon?.CssClass : null,
-        iconColor = DataItem.ShowIcon ? item.IconColor : null
-    };
 
     private bool CanExpand(DataItemValue item)
     {

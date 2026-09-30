@@ -1731,15 +1731,13 @@ class HierarchyListener {
                 toggle.disabled = true;
             let loaded = false;
             try {
-                const items = yield this.loadChildren(hierarchy, node.dataset.id || "");
-                if (items.length === 0) {
+                const template = document.createElement("template");
+                template.innerHTML = yield this.loadChildren(hierarchy, node.dataset.id || "");
+                const group = template.content.firstElementChild;
+                if (!(group === null || group === void 0 ? void 0 : group.children.length)) {
                     this.markAsLeaf(node, toggle);
                     return;
                 }
-                const group = document.createElement("ul");
-                group.className = "jj-hierarchy-group";
-                group.setAttribute("role", "group");
-                items.forEach(item => group.append(this.createNode(hierarchy, item)));
                 node.append(group);
                 loaded = true;
             }
@@ -1769,55 +1767,8 @@ class HierarchyListener {
             const response = yield fetch(builder.build(), getRequestOptions());
             if (!response.ok)
                 throw new Error(`Unable to load hierarchy items (${response.status}).`);
-            return yield response.json();
+            return yield response.text();
         });
-    }
-    static createNode(hierarchy, item) {
-        const node = document.createElement("li");
-        node.className = "jj-hierarchy-node";
-        node.setAttribute("role", "treeitem");
-        node.setAttribute("aria-selected", "false");
-        node.dataset.id = item.id;
-        node.dataset.parentId = item.parentId || "";
-        node.dataset.canExpand = item.canExpand ? "true" : "false";
-        if (item.canExpand)
-            node.setAttribute("aria-expanded", "false");
-        const row = document.createElement("div");
-        row.className = "jj-hierarchy-row";
-        if (item.canExpand) {
-            const toggle = document.createElement("button");
-            toggle.type = "button";
-            toggle.className = "jj-hierarchy-toggle btn btn-link";
-            toggle.setAttribute("aria-label", hierarchy.dataset.expandLabel || "Expand");
-            const chevron = document.createElement("span");
-            chevron.className = "fa-solid fa-chevron-right";
-            chevron.setAttribute("aria-hidden", "true");
-            toggle.append(chevron);
-            row.append(toggle);
-        }
-        else {
-            const spacer = document.createElement("span");
-            spacer.className = "jj-hierarchy-toggle-spacer";
-            row.append(spacer);
-        }
-        const label = document.createElement("button");
-        label.type = "button";
-        label.className = "jj-hierarchy-label btn btn-link";
-        if (item.iconCssClass) {
-            const icon = document.createElement("span");
-            icon.className = item.iconCssClass;
-            icon.setAttribute("aria-hidden", "true");
-            if (item.iconColor)
-                icon.style.color = item.iconColor;
-            label.append(icon);
-        }
-        const text = document.createElement("span");
-        text.className = "jj-hierarchy-text";
-        text.textContent = item.description || item.id;
-        label.append(text);
-        row.append(label);
-        node.append(row);
-        return node;
     }
     static markAsLeaf(node, toggle) {
         node.dataset.canExpand = "false";

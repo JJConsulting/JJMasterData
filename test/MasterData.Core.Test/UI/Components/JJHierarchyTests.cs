@@ -97,7 +97,7 @@ public class JJHierarchyTests
     }
 
     [Fact]
-    public async Task Hierarchy_Children_Result_Uses_Client_Json_Contract()
+    public async Task Hierarchy_Children_Result_Reuses_Node_Html()
     {
         var protection = new DataProtectionService(new EphemeralDataProtectionProvider());
         var route = protection.ProtectObject(new RouteContext(ComponentContext.Hierarchy));
@@ -107,11 +107,31 @@ public class JJHierarchyTests
 
         var result = await hierarchy.GetResultAsync();
 
-        Assert.Contains("\"id\":\"child\"", result.Content);
-        Assert.Contains("\"parentId\":\"root\"", result.Content);
-        Assert.Contains("\"canExpand\":true", result.Content);
-        Assert.Contains("\"iconCssClass\":\"", result.Content);
-        Assert.Contains("\"iconColor\":\"#cc3344\"", result.Content);
+        Assert.IsType<ContentComponentResult>(result);
+        Assert.Contains("class=\"jj-hierarchy-group\" role=\"group\"", result.Content);
+        Assert.Contains("class=\"jj-hierarchy-node\"", result.Content);
+        Assert.Contains("data-id=\"child\"", result.Content);
+        Assert.Contains("data-parent-id=\"root\"", result.Content);
+        Assert.Contains("data-can-expand=\"true\"", result.Content);
+        Assert.Contains("jj-hierarchy-toggle", result.Content);
+        Assert.Contains("#cc3344", result.Content);
+        Assert.DoesNotContain("data-id=\"root\"", result.Content);
+    }
+
+    [Fact]
+    public async Task Hierarchy_Children_Result_Renders_Empty_Group_For_Leaf()
+    {
+        var protection = new DataProtectionService(new EphemeralDataProtectionProvider());
+        var route = protection.ProtectObject(new RouteContext(ComponentContext.Hierarchy));
+        var context = new DefaultHttpContext();
+        context.Request.QueryString = new QueryString($"?fieldName=managerId&parentId=leaf&routeContext={Uri.EscapeDataString(route)}");
+        var hierarchy = CreateHierarchy(PageState.Update, context, protection);
+
+        var result = await hierarchy.GetResultAsync();
+
+        Assert.IsType<ContentComponentResult>(result);
+        Assert.Contains("class=\"jj-hierarchy-group\" role=\"group\"", result.Content);
+        Assert.DoesNotContain("jj-hierarchy-node", result.Content);
     }
 
     private static JJHierarchy CreateHierarchy(
