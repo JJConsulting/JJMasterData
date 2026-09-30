@@ -13,6 +13,11 @@
     padding-left: 0;
   }
 
+  .jj-hierarchy-tree {
+    max-height: min(24rem, 45vh);
+    overflow-y: auto;
+  }
+
   .jj-hierarchy-group {
     margin-left: .72rem;
     padding-left: 1.15rem;

@@ -35,20 +35,17 @@ class HierarchyListener {
         const label = target.closest<HTMLButtonElement>(".jj-hierarchy-label");
         if (label) {
             this.selectNode(hierarchy, label.closest<HTMLElement>(".jj-hierarchy-node"));
-            this.closePicker(hierarchy);
             return;
         }
 
         if (target.closest(".jj-hierarchy-clear")) {
             this.setSelection(hierarchy, null);
-            this.closePicker(hierarchy);
             return;
         }
 
         const back = target.closest<HTMLButtonElement>(".jj-hierarchy-back");
         if (back && back.dataset.parentId) {
             this.selectNode(hierarchy, this.findNode(hierarchy, back.dataset.parentId));
-            this.closePicker(hierarchy);
         }
     }
 
@@ -198,6 +195,7 @@ class HierarchyListener {
             clear.disabled = !node;
 
         valueInput.dispatchEvent(new Event("change", {bubbles: true}));
+        descriptionInput.dispatchEvent(new Event("change", {bubbles: true}));
     }
 
     private static setExpanded(hierarchy: HTMLElement, node: HTMLElement, toggle: HTMLButtonElement | null, expanded: boolean) {

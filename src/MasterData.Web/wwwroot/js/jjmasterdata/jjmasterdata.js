@@ -1670,18 +1670,15 @@ class HierarchyListener {
         const label = target.closest(".jj-hierarchy-label");
         if (label) {
             this.selectNode(hierarchy, label.closest(".jj-hierarchy-node"));
-            this.closePicker(hierarchy);
             return;
         }
         if (target.closest(".jj-hierarchy-clear")) {
             this.setSelection(hierarchy, null);
-            this.closePicker(hierarchy);
             return;
         }
         const back = target.closest(".jj-hierarchy-back");
         if (back && back.dataset.parentId) {
             this.selectNode(hierarchy, this.findNode(hierarchy, back.dataset.parentId));
-            this.closePicker(hierarchy);
         }
     }
     static toggleNode(hierarchy, node) {
@@ -1823,6 +1820,7 @@ class HierarchyListener {
         if (clear)
             clear.disabled = !node;
         valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+        descriptionInput.dispatchEvent(new Event("change", { bubbles: true }));
     }
     static setExpanded(hierarchy, node, toggle, expanded) {
         node.setAttribute("aria-expanded", expanded ? "true" : "false");

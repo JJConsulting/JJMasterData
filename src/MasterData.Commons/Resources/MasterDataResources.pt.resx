@@ -4355,6 +4355,8 @@
   </data>
   <data name="Hierarchy" xml:space="preserve"><value>Hierarquia</value></data>
   <data name="Open hierarchy" xml:space="preserve"><value>Abrir hierarquia</value></data>
+  <data name="Expand hierarchy" xml:space="preserve"><value>Expandir hierarquia</value></data>
+  <data name="Close hierarchy" xml:space="preserve"><value>Fechar hierarquia</value></data>
   <data name="Back one level" xml:space="preserve"><value>Voltar um nível</value></data>
   <data name="Clear selection" xml:space="preserve"><value>Limpar seleção</value></data>
   <data name="Parent Id" xml:space="preserve"><value>Id do pai</value></data>
