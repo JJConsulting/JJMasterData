@@ -26,6 +26,7 @@ public class JJHierarchyTests
 
         Assert.Contains("type=\"text\" class=\"form-control jj-hierarchy-input\" id=\"managerId\" value=\"\"", result.Content);
         Assert.Contains("placeholder=\"(Choose)\"", result.Content);
+        Assert.DoesNotContain("input-group-btn", result.Content);
         Assert.Contains("aria-expanded=\"false\"", result.Content);
         Assert.Contains("class=\"card mt-2\"", result.Content);
         Assert.Contains("class=\"card-body\"", result.Content);
@@ -48,6 +49,7 @@ public class JJHierarchyTests
         Assert.Contains("aria-selected=\"true\"", result.Content);
         Assert.Contains("jj-hierarchy-back", result.Content);
         Assert.Contains("jj-hierarchy-clear", result.Content);
+        Assert.Contains("<hr", result.Content);
         Assert.Contains("btn btn-link btn-sm jj-hierarchy-close ms-auto", result.Content);
         Assert.Contains(">Close</button>", result.Content);
         Assert.Contains("#cc3344", result.Content);
@@ -66,6 +68,32 @@ public class JJHierarchyTests
         Assert.DoesNotContain("jj-hierarchy-actions", result.Content);
         Assert.DoesNotContain("jj-hierarchy-open", result.Content);
         Assert.DoesNotContain("jj-hierarchy-close", result.Content);
+    }
+
+    [Fact]
+    public async Task Hierarchy_Modal_Renders_Title_Tree_And_Footer_Actions()
+    {
+        var hierarchy = CreateHierarchy(PageState.Update);
+        hierarchy.ShowAsModal = true;
+        hierarchy.ModalTitle = "Manager";
+
+        var result = await hierarchy.GetResultAsync();
+
+        Assert.Contains("data-modal=\"true\"", result.Content);
+        Assert.Contains("class=\"modal fade jj-hierarchy-modal\"", result.Content);
+        Assert.Contains("class=\"modal-title\"", result.Content);
+        Assert.Contains(">Manager</h5>", result.Content);
+        Assert.Contains("class=\"modal-body\"", result.Content);
+        Assert.Contains("class=\"modal-footer jj-hierarchy-actions\"", result.Content);
+        Assert.Contains("jj-hierarchy-back", result.Content);
+        Assert.Contains("jj-hierarchy-clear", result.Content);
+        Assert.Contains("jj-hierarchy-close ms-auto", result.Content);
+        Assert.Contains("btn btn-secondary jj-hierarchy-back", result.Content);
+        Assert.Contains("btn btn-secondary jj-hierarchy-clear", result.Content);
+        Assert.Contains("btn btn-secondary jj-hierarchy-close", result.Content);
+        Assert.DoesNotContain("btn-link jj-hierarchy-back", result.Content);
+        Assert.DoesNotContain("<hr", result.Content);
+        Assert.DoesNotContain("class=\"card mt-2\"", result.Content);
     }
 
     [Fact]

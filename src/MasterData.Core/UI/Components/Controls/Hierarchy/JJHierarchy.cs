@@ -39,6 +39,8 @@ public class JJHierarchy(
     public string HtmlId { get; set; } = string.Empty;
     public bool IsRequired { get; set; }
     public bool ShowSelectedPathOnly { get; set; }
+    public bool ShowAsModal { get; set; }
+    public string? ModalTitle { get; set; }
 
     public string? SelectedValue
     {
@@ -55,6 +57,7 @@ public class JJHierarchy(
 
     private ComponentContext ComponentContext => RouteContext.ComponentContext;
     private bool CanInteract => Enabled && !ReadOnly && !ShowSelectedPathOnly;
+    private bool UseModal => ShowAsModal && CanInteract;
 
     protected override async ValueTask<ComponentResult> BuildResultAsync()
     {
@@ -82,6 +85,7 @@ public class JJHierarchy(
             .WithAttribute("data-value-input-id", $"{htmlId}-value")
             .WithAttribute("data-description-input-id", htmlId)
             .WithAttribute("data-panel-id", panelId)
+            .WithAttribute("data-modal", UseModal ? "true" : "false")
             .WithAttribute("data-interactive", CanInteract ? "true" : "false")
             .WithAttribute("data-expand-label", stringLocalizer["Expand"])
             .WithAttribute("data-collapse-label", stringLocalizer["Collapse"]);
@@ -102,13 +106,6 @@ public class JJHierarchy(
                 .AppendText(stringLocalizer["The selected hierarchy item is no longer available."]));
         }
 
-        var panel = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass("card mt-2")
-            .WithId(panelId)
-            .WithAttributeIf(CanInteract, "hidden", "hidden");
-        var cardBody = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass("card-body");
-
         var tree = new HtmlBuilder(HtmlTag.Ul)
             .WithCssClass("jj-hierarchy-tree")
             .WithAttribute("role", "tree")
@@ -124,11 +121,46 @@ public class JJHierarchy(
             await AppendLevelAsync(tree, roots, path, 0);
         }
 
-        cardBody.Append(tree);
-        if (CanInteract)
-            cardBody.Append(GetActionsHtml(selectedItem));
-        panel.Append(cardBody);
-        wrapper.Append(panel);
+        if (UseModal)
+        {
+            var modal = new HtmlBuilder(HtmlTag.Div)
+                .WithCssClass("modal fade jj-hierarchy-modal")
+                .WithId(panelId)
+                .WithAttribute("tabindex", "-1")
+                .WithAttribute("role", "dialog")
+                .WithAttribute("aria-labelledby", $"{panelId}-title");
+            var dialog = new HtmlBuilder(HtmlTag.Div)
+                .WithCssClass("modal-dialog modal-dialog-scrollable");
+            var content = new HtmlBuilder(HtmlTag.Div).WithCssClass("modal-content");
+            content.Append(HtmlTag.Div, header => header
+                .WithCssClass("modal-header")
+                .Append(HtmlTag.H5, title => title
+                    .WithCssClass("modal-title")
+                    .WithId($"{panelId}-title")
+                    .AppendText(ModalTitle ?? Name)));
+            content.Append(HtmlTag.Div, body => body.WithCssClass("modal-body").Append(tree));
+            content.Append(GetActionsHtml(selectedItem));
+            dialog.Append(content);
+            modal.Append(dialog);
+            wrapper.Append(modal);
+        }
+        else
+        {
+            var panel = new HtmlBuilder(HtmlTag.Div)
+                .WithCssClass("card mt-2")
+                .WithId(panelId)
+                .WithAttributeIf(CanInteract, "hidden", "hidden");
+            var cardBody = new HtmlBuilder(HtmlTag.Div)
+                .WithCssClass("card-body")
+                .Append(tree);
+            if (CanInteract)
+            {
+                cardBody.Append(new HtmlBuilder(HtmlTag.Hr));
+                cardBody.Append(GetActionsHtml(selectedItem));
+            }
+            panel.Append(cardBody);
+            wrapper.Append(panel);
+        }
 
         return wrapper;
     }
@@ -148,7 +180,7 @@ public class JJHierarchy(
             .WithAttributeIf(CanInteract, "role", "button")
             .WithAttributeIf(CanInteract, "aria-controls", panelId)
             .WithAttributeIf(CanInteract, "aria-expanded", "false")
-            .WithAttributeIf(CanInteract, "aria-haspopup", "tree")
+            .WithAttributeIf(CanInteract, "aria-haspopup", UseModal ? "dialog" : "tree")
             .WithAttributeIf(CanInteract, "tabindex", "0")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .WithAttributes(Attributes);
@@ -157,26 +189,17 @@ public class JJHierarchy(
         if (CanInteract)
         {
             var openButton = new HtmlBuilder(HtmlTag.Button)
-                .WithCssClass($"{BootstrapHelper.BtnDefault} jj-hierarchy-open")
+                .WithCssClass("btn btn-secondary jj-hierarchy-open")
                 .WithAttribute("type", "button")
                 .WithAttribute("aria-controls", panelId)
                 .WithAttribute("aria-expanded", "false")
-                .WithAttribute("aria-haspopup", "tree")
+                .WithAttribute("aria-haspopup", UseModal ? "dialog" : "tree")
                 .WithToolTip(stringLocalizer["Open hierarchy"])
                 .Append(HtmlTag.Span, icon => icon
                     .WithCssClass("fa-solid fa-sitemap")
                     .WithAttribute("aria-hidden", "true"));
 
-            if (BootstrapHelper.Version == 3)
-            {
-                inputGroup.Append(HtmlTag.Span, span => span
-                    .WithCssClass("input-group-btn")
-                    .Append(openButton));
-            }
-            else
-            {
-                inputGroup.Append(openButton);
-            }
+            inputGroup.Append(openButton);
         }
 
         return inputGroup;
@@ -298,9 +321,11 @@ public class JJHierarchy(
 
     private HtmlBuilder GetActionsHtml(DataItemValue? selectedItem)
     {
-        var actions = new HtmlBuilder(HtmlTag.Div).WithCssClass("jj-hierarchy-actions");
+        var actions = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass(ShowAsModal ? "modal-footer jj-hierarchy-actions" : "jj-hierarchy-actions");
+        var buttonClass = ShowAsModal ? "btn btn-secondary" : "btn btn-link btn-sm";
         actions.Append(HtmlTag.Button, button => button
-            .WithCssClass("btn btn-link btn-sm jj-hierarchy-back")
+            .WithCssClass($"{buttonClass} jj-hierarchy-back")
             .WithAttribute("type", "button")
             .WithAttribute("data-parent-id", selectedItem?.ParentId ?? string.Empty)
             .WithAttributeIf(selectedItem is null || string.IsNullOrEmpty(selectedItem.ParentId), "disabled", "disabled")
@@ -308,14 +333,14 @@ public class JJHierarchy(
         if (!IsRequired)
         {
             actions.Append(HtmlTag.Button, button => button
-                .WithCssClass("btn btn-link btn-sm jj-hierarchy-clear")
+                .WithCssClass($"{buttonClass} jj-hierarchy-clear")
                 .WithAttribute("type", "button")
                 .WithAttributeIf(string.IsNullOrEmpty(SelectedValue), "disabled", "disabled")
                 .AppendText(stringLocalizer["Clear selection"]));
         }
 
         actions.Append(HtmlTag.Button, button => button
-            .WithCssClass("btn btn-link btn-sm jj-hierarchy-close ms-auto")
+            .WithCssClass($"{buttonClass} jj-hierarchy-close ms-auto")
             .WithAttribute("type", "button")
             .AppendText(stringLocalizer["Close"]));
 

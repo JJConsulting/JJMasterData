@@ -1653,7 +1653,21 @@ class HierarchyListener {
                 return;
             hierarchy.dataset.listenerAttached = "true";
             hierarchy.addEventListener("click", event => this.handleClick(hierarchy, event));
+            hierarchy.addEventListener("dblclick", event => this.handleDoubleClick(hierarchy, event));
             hierarchy.addEventListener("keydown", event => this.handleKeydown(hierarchy, event));
+            if (hierarchy.dataset.modal === "true") {
+                const panel = document.getElementById(hierarchy.dataset.panelId || "");
+                if (!panel)
+                    return;
+                const onShown = () => this.focusSelectedNode(panel);
+                const onHidden = () => {
+                    var _a;
+                    this.setTriggerOpen(hierarchy, false);
+                    (_a = hierarchy.querySelector(".jj-hierarchy-input")) === null || _a === void 0 ? void 0 : _a.focus();
+                };
+                panel.addEventListener("shown.bs.modal", onShown);
+                panel.addEventListener("hidden.bs.modal", onHidden);
+            }
         });
     }
     static handleClick(hierarchy, event) {
@@ -1684,6 +1698,18 @@ class HierarchyListener {
         if (back && back.dataset.parentId) {
             this.selectNode(hierarchy, this.findNode(hierarchy, back.dataset.parentId));
         }
+    }
+    static handleDoubleClick(hierarchy, event) {
+        const target = event.target;
+        if (target.closest(".jj-hierarchy-toggle"))
+            return;
+        const row = target.closest(".jj-hierarchy-row");
+        const node = row === null || row === void 0 ? void 0 : row.closest(".jj-hierarchy-node");
+        if (!node)
+            return;
+        if (node.getAttribute("aria-selected") !== "true")
+            this.selectNode(hierarchy, node);
+        this.closePicker(hierarchy, true);
     }
     static toggleNode(hierarchy, node) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1858,7 +1884,9 @@ class HierarchyListener {
         }
         if (event.key === "Escape") {
             const panel = document.getElementById(hierarchy.dataset.panelId || "");
-            if (panel && !panel.hidden) {
+            if (panel && (hierarchy.dataset.modal === "true"
+                ? panel.classList.contains("show")
+                : !panel.hidden)) {
                 event.preventDefault();
                 this.closePicker(hierarchy, true);
                 return;
@@ -1897,29 +1925,47 @@ class HierarchyListener {
         }
     }
     static togglePicker(hierarchy) {
-        var _a;
         const panel = document.getElementById(hierarchy.dataset.panelId || "");
         if (!panel)
             return;
+        if (hierarchy.dataset.modal === "true") {
+            if (panel.classList.contains("show"))
+                this.closePicker(hierarchy);
+            else {
+                this.setTriggerOpen(hierarchy, true);
+                bootstrap.Modal.getOrCreateInstance(panel).show();
+            }
+            return;
+        }
         const open = panel.hidden;
         this.setPickerOpen(hierarchy, panel, open);
-        if (open) {
-            const selectedLabel = panel.querySelector(".jj-hierarchy-node[aria-selected=true] > .jj-hierarchy-row .jj-hierarchy-label");
-            const firstLabel = panel.querySelector(".jj-hierarchy-label");
-            (_a = (selectedLabel || firstLabel)) === null || _a === void 0 ? void 0 : _a.focus();
-        }
+        if (open)
+            this.focusSelectedNode(panel);
+    }
+    static focusSelectedNode(panel) {
+        var _a;
+        const selectedLabel = panel.querySelector(".jj-hierarchy-node[aria-selected=true] > .jj-hierarchy-row .jj-hierarchy-label");
+        const firstLabel = panel.querySelector(".jj-hierarchy-label");
+        (_a = (selectedLabel || firstLabel)) === null || _a === void 0 ? void 0 : _a.focus();
     }
     static closePicker(hierarchy, restoreFocus = false) {
         var _a;
         const panel = document.getElementById(hierarchy.dataset.panelId || "");
         if (!panel)
             return;
+        if (hierarchy.dataset.modal === "true") {
+            bootstrap.Modal.getOrCreateInstance(panel).hide();
+            return;
+        }
         this.setPickerOpen(hierarchy, panel, false);
         if (restoreFocus)
             (_a = hierarchy.querySelector(".jj-hierarchy-input")) === null || _a === void 0 ? void 0 : _a.focus();
     }
     static setPickerOpen(hierarchy, panel, open) {
         panel.hidden = !open;
+        this.setTriggerOpen(hierarchy, open);
+    }
+    static setTriggerOpen(hierarchy, open) {
         hierarchy.querySelectorAll(".jj-hierarchy-open, .jj-hierarchy-input").forEach(trigger => {
             trigger.setAttribute("aria-expanded", String(open));
             trigger.classList.toggle("active", open);

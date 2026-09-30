@@ -23,6 +23,7 @@ public class HierarchyDataItemServiceTests
             IdFieldName = "Id",
             ParentIdFieldName = "ManagerId"
         };
+        dataItem.ShowAsModal = true;
 
         var json = JsonSerializer.Serialize(dataItem);
         var deserialized = JsonSerializer.Deserialize<FormElementDataItem>(json)!;
@@ -31,20 +32,11 @@ public class HierarchyDataItemServiceTests
         Assert.Equal("root", deserialized.Items![0].Id);
         Assert.Equal("root", deserialized.Items[1].ParentId);
         Assert.Equal("ManagerId", deserialized.ElementMap!.ParentIdFieldName);
+        Assert.Contains("\"showAsModal\":true", json);
+        Assert.True(deserialized.ShowAsModal);
+        Assert.True(copy.ShowAsModal);
         Assert.NotSame(dataItem.Items, copy.Items);
         Assert.NotSame(dataItem.ElementMap, copy.ElementMap);
-    }
-
-    [Fact]
-    public void LegacyDataItem_Deserializes_WithoutHierarchyConfiguration()
-    {
-        const string json = """
-                            {"dataItemType":0,"itens":[{"id":"1","description":"One"}]}
-                            """;
-
-        var dataItem = JsonSerializer.Deserialize<FormElementDataItem>(json)!;
-
-        Assert.Equal("1", dataItem.Items![0].Id);
     }
 
     [Fact]

@@ -72,6 +72,13 @@
         <checkbox for="DataItem!.ShowIcon" layout="Switch" onchange="this.form.requestSubmit();"/>
     </div>
 
+    @if (Model.Component is FormComponent.Hierarchy)
+    {
+        <div class="mb-3 col-sm-4">
+            <checkbox for="DataItem!.ShowAsModal" layout="Switch"/>
+        </div>
+    }
+
 
     @switch (Model.DataItem!.DataItemType)
     {

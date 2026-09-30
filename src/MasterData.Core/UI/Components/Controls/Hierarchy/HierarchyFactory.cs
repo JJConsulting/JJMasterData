@@ -34,6 +34,8 @@ internal sealed class HierarchyFactory(
             SelectedValue = context.Value?.ToString(),
             UserValues = context.FormStateData.UserValues!,
             IsRequired = field.IsRequired,
+            ShowAsModal = field.DataItem.ShowAsModal,
+            ModalTitle = string.IsNullOrEmpty(field.Label) ? field.Name : stringLocalizer[field.Label],
             ShowSelectedPathOnly = context.FormStateData.PageState is PageState.View
         };
     }

@@ -1,5 +1,5 @@
 .jj-hierarchy {
-  --jj-hierarchy-line: var(--bs-border-color, #adb5bd);
+  --jj-hierarchy-line: var(--bs-border-color);
   max-width: 100%;
 
   .jj-hierarchy-input[role="button"] {
@@ -69,7 +69,7 @@
   }
 
   .jj-hierarchy-toggle {
-    color: var(--bs-secondary-color, #6c757d);
+    color: var(--bs-secondary-color);
     font-size: .72rem;
     text-decoration: none;
   }
@@ -81,7 +81,7 @@
 
   .jj-hierarchy-label {
     align-items: center;
-    color: var(--bs-body-color, #212529);
+    color: var(--bs-body-color);
     display: inline-flex;
     gap: .35rem;
     min-width: 0;
@@ -92,9 +92,9 @@
     &:hover,
     &:focus-visible,
     &.active {
-      background: var(--bs-primary-bg-subtle, #cfe2ff);
+      background: var(--bs-primary-bg-subtle);
       border-radius: .25rem;
-      color: var(--bs-primary-text-emphasis, #052c65);
+      color: var(--bs-primary-text-emphasis);
       text-decoration: none;
     }
   }
@@ -109,9 +109,14 @@
     gap: .25rem;
     margin-top: .35rem;
   }
+
+  .modal-footer.jj-hierarchy-actions {
+    justify-content: flex-start;
+    margin-top: 0;
+  }
 }
 
-:is(.form-horizontal .form-group, .form-group.row) > label:has(+ div .jj-hierarchy) {
+.form-group.row > label:has(+ div .jj-hierarchy) {
   align-self: flex-start;
   min-height: calc(1.5rem + .75rem + 2px);
 }
