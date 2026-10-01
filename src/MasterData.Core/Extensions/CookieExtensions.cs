@@ -123,7 +123,9 @@ public static class CookieExtensions
             {
                 HttpOnly = true,
                 IsEssential = true,
-                Path = httpContext.Request.Path,
+                Path = httpContext.Request.PathBase
+                    .Add(httpContext.Request.Path)
+                    .ToUriComponent(),
                 SameSite = SameSiteMode.Lax,
                 Secure = httpContext.Request.IsHttps
             };
