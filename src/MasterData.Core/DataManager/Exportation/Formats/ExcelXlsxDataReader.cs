@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Exportation;
 using MiniExcelLibs;
 
 namespace JJMasterData.Core.DataManager.Exportation.Formats;
@@ -14,6 +13,7 @@ internal sealed class ExcelXlsxDataReader(
     private IAsyncEnumerator<Dictionary<string, object?>>? _enumerator;
     private Dictionary<string, object?>? _current;
     private long _processed;
+    private readonly ExportProgressReporter _progress = new(context);
     private bool _disposed;
 
     public override int FieldCount => context.Columns.Count;
@@ -54,15 +54,13 @@ internal sealed class ExcelXlsxDataReader(
         if (!await _enumerator.MoveNextAsync())
         {
             _current = null;
+            _progress.Report(_processed, completed: true);
             return false;
         }
 
         _current = _enumerator.Current;
         _processed++;
-        context.Progress.Report(new ExportProgress(
-            _processed,
-            context.TotalRecords,
-            $"Exporting {_processed:N0} records..."));
+        _progress.Report(_processed);
         return true;
     }
 
@@ -78,8 +76,8 @@ internal sealed class ExcelXlsxDataReader(
 
         _disposed = true;
         _current = null;
+
         if (_enumerator is not null)
             await _enumerator.DisposeAsync();
-        GC.SuppressFinalize(this);
     }
 }

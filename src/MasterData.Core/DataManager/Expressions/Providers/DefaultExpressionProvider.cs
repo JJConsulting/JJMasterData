@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCalc;
 using NCalc.Factories;
-using NCalc.Handlers;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
@@ -63,7 +62,7 @@ public sealed class DefaultExpressionProvider(
             if (expression.Contains(quotedToken, StringComparison.InvariantCultureIgnoreCase))
             {
                 expression = expression.Replace(quotedToken, kvp.Key);
-                parameters[kvp.Key] = value?.ToString();
+                parameters[kvp.Key] = value?.ToString() ?? string.Empty;
             }
             else
             {
