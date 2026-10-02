@@ -180,7 +180,14 @@ internal sealed class FormViewRelationshipLayout(
             }
         }
         
-        return await childFormView.GetFormResultAsync();
+        var isSaveAction = childFormView.CurrentAction is SaveAction or GridSaveAction;
+        var result = await childFormView.GetFormResultAsync();
+
+        //Previne bug do Alex de um pai depender dos valores filho.
+        if (isSaveAction)
+            parentFormView.InvalidateFormStateData();
+
+        return result;
     }
 
     private Dictionary<string, object> GetRelationValues(FormElementRelationship relationship)
