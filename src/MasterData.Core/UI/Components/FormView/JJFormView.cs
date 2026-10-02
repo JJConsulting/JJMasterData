@@ -1755,6 +1755,8 @@ public class JJFormView : AsyncComponent
         return _formStateData;
     }
 
+    internal void InvalidateFormStateData() => _formStateData = null;
+
     public async ValueTask<FormStateData> GetFormStateDataAsync(bool reloadFormFields)
     {
         var initialValues = new Dictionary<string, object?>();
