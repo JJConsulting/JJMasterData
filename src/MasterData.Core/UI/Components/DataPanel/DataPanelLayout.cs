@@ -89,12 +89,12 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
     private async Task<JJTabNav> GetTabNav(List<FormElementPanel> tabs)
     {
-        var navTab = new JJMasterDataTabNav(_formValues)
-        {
-            Name = $"nav_{_name}"
-        };
+        var navTab = new JJMasterDataTabNav(_formValues, $"nav_{_name}");
         foreach (var panel in tabs)
         {
+            if (!IsVisible(panel))
+                continue;
+
             var htmlPanel = await GetHtmlForm(panel);
             if (htmlPanel != null)
             {

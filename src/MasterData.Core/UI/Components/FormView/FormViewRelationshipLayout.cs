@@ -59,10 +59,8 @@ internal sealed class FormViewRelationshipLayout(
 
     private async Task<ComponentResult> GetTabRelationshipsResult()
     {
-        var tabNav = new JJMasterDataTabNav(parentFormView.CurrentContext)
-        {
-            Name = $"relationships-tab-nav-{parentFormView.DataPanel.Name}"
-        };
+        var tabNav = new JJMasterDataTabNav(parentFormView.CurrentContext,
+            $"relationships-tab-nav-{parentFormView.DataPanel.Name}");
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
         {
