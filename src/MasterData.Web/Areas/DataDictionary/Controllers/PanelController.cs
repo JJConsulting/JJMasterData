@@ -58,15 +58,17 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
     [HttpPost]
     public async Task<IActionResult> Save(string elementName, FormElementPanel panel, [FromForm] string? selectedFields)
     {
-        string[]? splittedFields = selectedFields?.Split(',');
+        var splittedFields = selectedFields?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         await panelService.SavePanelAsync(elementName, panel, splittedFields);
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && panelService.IsValid)
         {
             return RedirectToAction("Index", new { elementName, panelId = panel.PanelId });
         }
 
+        var formElement = await panelService.GetFormElementAsync(elementName);
+        PopulateViewBag(formElement, panel, splittedFields ?? []);
         ViewBag.Error = panelService.GetValidationSummary();
-        return RedirectToIndex(elementName, panel);
+        return View("Index", panel);
     }
 
     [HttpPost]
@@ -94,13 +96,12 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
     private RedirectToActionResult RedirectToIndex(string elementName, FormElementPanel panel)
     {
         TempData.Put("panel",panel);
-        TempData["error"] = ViewBag.Error;
         TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
 
         return RedirectToAction("Index", new { elementName });
     }
 
-    private void PopulateViewBag(FormElement formElement, FormElementPanel panel)
+    private void PopulateViewBag(FormElement formElement, FormElementPanel panel, string[]? selectedFields = null)
     {
         if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
             ViewBag.Tab = selectedTab;
@@ -108,16 +109,22 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
             ViewBag.Tab = tempSelectedTab?.ToString()!;
 
-        if (TempData.TryGetValue("error", out object? value))
-            ViewBag.Error = value!;
-
         ViewBag.MenuId = "Panels";
         ViewBag.ElementName = formElement.Name;
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;
-        ViewBag.AvailableFields = GetAvailableFields(formElement);
-        ViewBag.SelectedFields = (panel.PanelId > 0) ?
-            formElement.Fields.FindAll(x => x.PanelId == panel.PanelId) : [];
+        if (selectedFields is null)
+        {
+            ViewBag.AvailableFields = GetAvailableFields(formElement);
+            ViewBag.SelectedFields = panel.PanelId > 0
+                ? formElement.Fields.FindAll(x => x.PanelId == panel.PanelId) : [];
+        }
+        else
+        {
+            ViewBag.SelectedFields = formElement.Fields.FindAll(x => selectedFields.Contains(x.Name));
+            ViewBag.AvailableFields = formElement.Fields.FindAll(x =>
+                (x.PanelId == 0 || x.PanelId == panel.PanelId) && !selectedFields.Contains(x.Name));
+        }
     }
 
     protected List<FormElementField> GetAvailableFields(FormElement formElement)

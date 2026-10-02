@@ -20,7 +20,7 @@ public class PanelService(IValidationDictionary validationDictionary,
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
-        if (selectedFields is null || selectedFields.Length == 0)
+        if (selectedFields is null || selectedFields.All(string.IsNullOrWhiteSpace))
         {
             AddError(nameof(selectedFields), StringLocalizer["No fields selected for this panel."]);
         }
