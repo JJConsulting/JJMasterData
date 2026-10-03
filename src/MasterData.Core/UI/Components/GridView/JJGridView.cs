@@ -669,6 +669,16 @@ public class JJGridView : AsyncComponent
             return await jjSearchBox.GetItemsResult();
         }
 
+        if (ComponentContext is ComponentContext.HierarchyFilter)
+        {
+            var fieldName = CurrentContext.HttpContext!.Request.Query["fieldName"];
+            var field = FormElement.Fields[fieldName!];
+            var formStateData = new FormStateData(await GetCurrentFilterAsync(), UserValues, PageState.Filter);
+            var hierarchy = ComponentFactory.Controls.Create(FormElement, field, formStateData, Name) as JJHierarchy;
+            hierarchy!.Name = GridFilter.FilterFieldPrefix + hierarchy.Name;
+            return await hierarchy.GetResultAsync();
+        }
+
         if (ComponentContext is ComponentContext.UrlRedirect)
         {
             return await _urlRedirectService.GetUrlRedirectResult(this,CurrentActionMap!);

@@ -187,7 +187,7 @@ internal sealed class DataImportationHelp
                 text.AppendText(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
                 text.AppendText('.');
                 break;
-            case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
+            case FormComponent.ComboBox or FormComponent.RadioButtonGroup or FormComponent.Hierarchy:
                 text.AppendText(StringLocalizer["Inform the Id"]);
                 text.AppendText(' ');
                 text.Append(await GetHtmlComboHelp(field));

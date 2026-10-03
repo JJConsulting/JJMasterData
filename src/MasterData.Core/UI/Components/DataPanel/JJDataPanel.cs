@@ -216,6 +216,9 @@ public class JJDataPanel(
             case ComponentContext.SearchBox:
             case ComponentContext.SearchBoxFilter:
                 return await GetFieldResultAsync<JJSearchBox>();
+            case ComponentContext.Hierarchy:
+            case ComponentContext.HierarchyFilter:
+                return await GetFieldResultAsync<JJHierarchy>();
             case ComponentContext.LookupDescription:
                 return await GetFieldResultAsync<JJLookup>();
             case ComponentContext.DownloadFile:

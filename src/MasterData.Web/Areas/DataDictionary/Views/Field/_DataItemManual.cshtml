@@ -52,6 +52,10 @@
         <tr>
             <th style="width:6.25rem;">@StringLocalizer["Id"]</th>
             <th style="width:9.375rem">@StringLocalizer["Description"]</th>
+            @if (Model.Component is FormComponent.Hierarchy)
+            {
+                <th style="width:7.5rem">@StringLocalizer["Parent Id"]</th>
+            }
             @if (showIcon)
             {
                 <th>@StringLocalizer["IconId"]</th>
@@ -65,49 +69,31 @@
         </tr>
         </thead>
         <tbody>
-        @for (int i = 0; i < Model.DataItem.Items?.Count; i++)
+        @for (var i = 0; i < Model.DataItem.Items?.Count; i++)
         {
             <tr>
-                <td>
-                    @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Id),
-                        Model.DataItem.Items[i].Id, new { @class = "form-control" })
-                </td>
-                <td>
-                    @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Description),
-                        Model.DataItem.Items[i].Description, new { @class = "form-control" })
-                </td>
-
+                <td>@Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Id), Model.DataItem.Items[i].Id, new { @class = "form-control" })</td>
+                <td>@Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Description), Model.DataItem.Items[i].Description, new { @class = "form-control" })</td>
+                @if (Model.Component is FormComponent.Hierarchy)
+                {
+                    <td>@Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].ParentId), Model.DataItem.Items[i].ParentId, new { @class = "form-control" })</td>
+                }
                 @if (showIcon)
                 {
-                    <td>
-                        <div class="row" style="position:relative">
-                            @{
-                                var value = Model.DataItem.Items[i].Icon;
-                            }
-                            <icon-picker id="@Html.IdFor(m => m.DataItem!.Items![i].Icon)" name="@Html.NameFor(m => m.DataItem!.Items![i].Icon)" value="value"/>
-                        </div>
-                    </td>
-                    <td align="center" valign="middle">
-                        @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].IconColor),
-                            Model.DataItem.Items[i].IconColor, new { @class = "form-control form-control-color", type = "color" })
-                    </td>
+                    <td><div class="row" style="position:relative">@{ var value = Model.DataItem.Items[i].Icon; }<icon-picker id="@Html.IdFor(m => m.DataItem!.Items![i].Icon)" name="@Html.NameFor(m => m.DataItem!.Items![i].Icon)" value="value"/></div></td>
+                    <td align="center" valign="middle">@Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].IconColor), Model.DataItem.Items[i].IconColor, new { @class = "form-control form-control-color", type = "color" })</td>
                 }
                 @if (Model.Component is FormComponent.ComboBox)
                 {
-                    <td>
-                        @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Group),
-                            Model.DataItem.Items[i].Group, new { @class = "form-control" })
-                    </td>
+                    <td>@Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Group), Model.DataItem.Items[i].Group, new { @class = "form-control" })</td>
                 }
-                <td align="center" valign="middle">
-                    <link-button icon="RegularTrashCan" type="LinkButtonType.Link" show-as-button="false" tooltip="Remove" on-client-click="removeDataItem(@i);"/>
-                </td>
+                <td align="center" valign="middle"><link-button icon="RegularTrashCan" type="LinkButtonType.Link" show-as-button="false" tooltip="Remove" on-client-click="removeDataItem(@i);"/></td>
             </tr>
         }
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="@(showIcon ? 6 : 4)">
+            <td colspan="@((showIcon ? 5 : 3) + (Model.Component is FormComponent.Hierarchy or FormComponent.ComboBox ? 1 : 0))">
                 <div class="btn-group dropup">
                     <link-button text="Add" icon="PlusCircle" on-client-click="addDataItem(1)"/>
                     <button type="button" class="btn btn-secondary btn-small dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

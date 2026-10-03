@@ -16,6 +16,7 @@ public static class DataManagerServiceExtensions
         
         services.TryAddTransient<AuditLogService>();
         services.TryAddTransient<DataItemService>();
+        services.TryAddTransient<HierarchyService>();
         services.TryAddTransient<LookupService>();
         services.TryAddTransient<FieldFormattingService>();
         services.TryAddTransient<FieldValidationService>();

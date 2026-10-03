@@ -12,7 +12,7 @@ For example, use `Number`, `Slider` or `Currency` with `Int`, `Float` or `Decima
 | Numeric | `Number`, `Currency`, `Percentage`, `Slider` | Numeric values. `Currency` and `Percentage` provide localized visual formatting; `Slider` is useful for a bounded range. |
 | Date and time | `Date`, `DateTime`, `Hour` | A calendar date, a date with time, or a time of day. |
 | Boolean | `CheckBox` | Boolean fields (`Bit`). It can render as a checkbox, switch or button. |
-| Selection | `ComboBox`, `Search`, `Lookup`, `RadioButtonGroup` | A value chosen from a list, query or related dictionary. These components require `DataItem`. |
+| Selection | `ComboBox`, `Search`, `Lookup`, `RadioButtonGroup`, `Hierarchy` | A value chosen from a list, query, tree or related dictionary. These components require `DataItem`. |
 | Brazilian formats | `Cnpj`, `Cpf`, `CnpjCpf`, `Cep`, `Tel`, `Phone` | Brazilian identifiers, postal codes and phone numbers. These provide input masks; validation is applied where supported. |
 | Special | `Color`, `Icon`, `CodeEditor` | A color picker, icon picker or code editor. |
 | Files | `File` | Upload and manage one or more files. Requires `DataFile`. |
@@ -39,17 +39,11 @@ Place a field with `PanelId`, group fields into the same form row with `LineGrou
 
 ## List and relationship components
 
-`ComboBox`, `Search`, `Lookup` and `RadioButtonGroup` obtain their choices from `DataItem`. Select exactly one source type:
+`ComboBox`, `Search`, `Lookup`, `RadioButtonGroup` and `Hierarchy` obtain their choices from `DataItem`. For source configuration, dependent lists, and selection behavior, see [Data items](data-item.md). If one list depends on another field, enable `AutoPostBack` on the source field so the form reloads and the dependent list is repopulated.
 
-| `DataItemType` | Source | Configuration |
-| --- | --- | --- |
-| `Manual` | A fixed list | Populate `Items` with IDs and descriptions. |
-| `SqlCommand` | A query | Configure `Command`; it must return an ID and a description. |
-| `ElementMap` | Another data dictionary | Configure `ElementMap` to identify the target element and fields. |
+### Hierarchy
 
-`FirstOption` adds the configured leading choice, and `RadioLayout`, `EnableMultiSelect`, `ShowIcon` and `GridBehavior` refine how the list appears. Multi-select values need storage and downstream processing that support multiple values; it is generally best suited to write-only fields or a separate relationship table.
-
-If one list depends on another field, reference the current form field in its query or mapping and enable `AutoPostBack` on the source field. A change then reloads the form and repopulates dependent editors. Use `TriggerExpression` for calculated values, and `VisibleExpression` or `EnableExpression` to change whether a field is available. See [expressions](expressions.md) for expression syntax and timing.
+`Hierarchy` stores one selected item ID in a parent/child list. Set `ParentId` on manual `DataItemValue` entries, or map the parent column with `DataElementMap.ParentIdFieldName`. Roots have a null or empty parent ID. For SQL sources, return `Id`, `Description`, and `ParentId` in that order; see [Data items: Hierarchy](data-item.md#hierarchy) for the query parameters and full example. Hierarchy supports one selection and filters with `None` or `Equal` only.
 
 ## File fields
 

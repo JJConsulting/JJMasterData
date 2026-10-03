@@ -26,7 +26,7 @@
             <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
                 <option value="0">@StringLocalizer["Id"]</option>
                 <option value="1">@StringLocalizer["Description"]</option>
-                @if (Model.DataItem!.ShowIcon)
+                @if (Model.DataItem!.ShowIcon && Model.Component is not FormComponent.Hierarchy)
                 {
                     <option value="2">@StringLocalizer["Icon"]</option>
                     <option value="3">@StringLocalizer["Icon with Description"]</option>
@@ -55,11 +55,14 @@
     }
 
 
-    <div class="mb-3 col-sm-4 required">
-        <checkbox
-            tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]"
-            for="DataItem!.EnableMultiSelect" layout="Switch"/>
-    </div>
+    @if (Model.Component is not FormComponent.Hierarchy)
+    {
+        <div class="mb-3 col-sm-4 required">
+            <checkbox
+                tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]"
+                for="DataItem!.EnableMultiSelect" layout="Switch"/>
+        </div>
+    }
 
     <div class="mb-3 col-sm-4 required">
         <checkbox for="DataItem!.EnableLocalization" layout="Switch"/>
@@ -68,6 +71,13 @@
     <div class="mb-3 col-sm-4 required">
         <checkbox for="DataItem!.ShowIcon" layout="Switch" onchange="this.form.requestSubmit();"/>
     </div>
+
+    @if (Model.Component is FormComponent.Hierarchy)
+    {
+        <div class="mb-3 col-sm-4">
+            <checkbox for="DataItem!.ShowAsModal" layout="Switch"/>
+        </div>
+    }
 
 
     @switch (Model.DataItem!.DataItemType)

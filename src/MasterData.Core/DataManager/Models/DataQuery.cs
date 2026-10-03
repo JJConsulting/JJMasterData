@@ -8,4 +8,5 @@ public class DataQuery(FormStateData formStateData, Guid? connectionId)
     public FormStateData FormStateData { get; } = formStateData;
     public string? SearchText { get; init; }
     public string? SearchId { get; init; }
+    public string? ParentId { get; init; }
 }
