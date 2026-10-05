@@ -95,9 +95,9 @@
                 @foreach (var countryInfo in CountryHelper.All)
                 {
                     bool selected = countryInfo == countrySelected;
-                    <option selected="@selected" value="@countryInfo.Code" data-content="
-                    <span class='fi fi-@countryInfo.Code.ToLower()'></span><span>&nbsp;@($"{countryInfo.Name} - {countryInfo.Code}")</span>
-                ">@($"{countryInfo.Name} - {countryInfo.Code}")</option>
+                    <option selected="@selected" value="@countryInfo.CountryCode" data-content="
+                    <span class='fi fi-@countryInfo.CountryCode.ToLower()'></span><span>&nbsp;@($"{countryInfo.Name} - {countryInfo.CountryCode}")</span>
+                ">@($"{countryInfo.Name} - {countryInfo.CountryCode}")</option>
                 }
             </select>
         </div>
