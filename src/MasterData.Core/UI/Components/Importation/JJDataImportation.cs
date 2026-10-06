@@ -155,7 +155,6 @@ public class JJDataImportation : ProcessComponent
 
         if (ComponentContext is ComponentContext.DataImportationFileUpload)
         {
-            UploadArea.OnFileUploadedAsync += FileUploadedAsync;
             return await UploadArea.GetResultAsync();
         }
 
@@ -477,6 +476,7 @@ public class JJDataImportation : ProcessComponent
     private JJUploadArea GetUploadArea()
     {
         var area = ComponentFactory.UploadArea.Create();
+        area.OnFileUploadedAsync += FileUploadedAsync;
         area.RouteContext.ComponentContext = ComponentContext.DataImportationFileUpload;
         area.Multiple = false;
         area.EnableCopyPaste = false;
