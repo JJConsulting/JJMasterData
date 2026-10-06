@@ -28,6 +28,17 @@
     href: concepts/persistence.md
 - name: Developer guide
   items:
+  - name: Brazil integrations
+    href: developer-guide/brasil/index.md
+    items:
+    - name: HubDev
+      href: developer-guide/brasil/hubdev.md
+    - name: Sintegra
+      href: developer-guide/brasil/sintegra.md
+    - name: CPF and CNPJ lookups
+      href: developer-guide/brasil/cpfcnpj.md
+    - name: ViaCEP
+      href: developer-guide/brasil/viacep.md
   - name: Configuration
     href: developer-guide/configuration.md
   - name: Connections and repositories
