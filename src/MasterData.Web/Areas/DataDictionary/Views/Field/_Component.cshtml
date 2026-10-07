@@ -1,23 +1,12 @@
 ﻿@using JJMasterData.Core.DataDictionary.Models
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
-@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
 @{
-    var isForm = ViewData["IsForm"] is true;
+    var componentList = (List<SelectListItem>)ViewData["ComponentList"]!;
 }
 
 <div class="row">
     <div class="mb-3 col-sm-4 required">
-        @{
-            var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
-
-            if (!isForm)
-            {
-                componentList.RemoveAll(c => c.Text == "File");
-            }
-
-            foreach (var component in componentList)
-                component.Group.Name = StringLocalizer[component.Group.Name];
-        }
         <label asp-for="Component" class="form-label"></label>
         <select asp-for="Component"
                 class="form-control form-select"

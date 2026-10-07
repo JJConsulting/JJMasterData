@@ -306,6 +306,10 @@
     <value>Filtros Aplicados</value>
     <comment>JJMasterDataCore</comment>
   </data>  
+  <data name="Advanced Filters" xml:space="preserve">
+    <value>Filtros Avançados</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
   <data name="Applied Filter" xml:space="preserve">
     <value>Filtro Aplicado</value>
   <comment>JJMasterDataCore</comment>
@@ -351,7 +355,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="AutoPostBack" xml:space="preserve">
-    <value>Retorno automático</value>
+    <value>AutoPostBack</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Available Fields" xml:space="preserve">

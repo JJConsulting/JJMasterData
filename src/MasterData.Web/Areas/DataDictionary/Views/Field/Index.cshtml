@@ -14,6 +14,23 @@
     var elementName = ViewData["ElementName"]!.ToString();
     var fields = (FormElementFieldList)ViewData["Fields"]!;
     Layout = !isForm ? Options.Value.ModalLayoutPath : "_FormElementMenuLayout";
+
+    var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
+
+    if (!isForm)
+        componentList.RemoveAll(c => c.Text == "File");
+
+    foreach (var component in componentList)
+        component.Group.Name = StringLocalizer[component.Group.Name];
+
+    ViewData["ComponentList"] = componentList;
+
+    var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+
+    foreach (var dataType in dataTypeList)
+        dataType.Group.Name = StringLocalizer[dataType.Group.Name];
+
+    ViewData["DataTypeList"] = dataTypeList;
 }
 
 @functions{
@@ -93,6 +110,89 @@
         message="@StringLocalizer["Please check the validation errors."]" />
 }
 
+<div class="modal modal-md fade" id="fieldFilterModal" tabindex="-1" aria-labelledby="fieldFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fieldFilterModalLabel">@StringLocalizer["Advanced Filters"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@StringLocalizer["Close"]"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <label for="fieldFilterDataType" class="form-label">@StringLocalizer["Data Type"]</label>
+                        <select id="fieldFilterDataType" class="form-select">
+                            <option value="">@StringLocalizer["All"]</option>
+                            @foreach (var group in dataTypeList.GroupBy(t => t.Group.Name).OrderBy(g => g.Key))
+                            {
+                                <optgroup label="@group.Key">
+                                    @foreach (var type in group.OrderBy(t => t.Text))
+                                    {
+                                        <option value="@type.Value">@type.Text</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="fieldFilterComponent" class="form-label">@StringLocalizer["Component Type"]</label>
+                        <select id="fieldFilterComponent"
+                                class="form-control form-select"
+                                onchange="this.form.submit();">
+                            <option value="">@StringLocalizer["All"]</option>
+                            @foreach (var group in componentList.GroupBy(c => c.Group.Name).OrderBy(g => g.Key))
+                            {
+                                <optgroup label="@group.Key">
+                                    @foreach (var component in group.OrderBy(c => c.Text))
+                                    {
+                                        <option value="@component.Value">@component.Text</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="fieldFilterBehavior" class="form-label">@StringLocalizer["Behavior"]</label>
+                        <select id="fieldFilterBehavior" class="form-select">
+                            <option value="">@StringLocalizer["All"]</option>
+                            @foreach (var behavior in Html.GetEnumSelectList<FieldBehavior>())
+                            {
+                                <option value="@behavior.Value">@behavior.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterPk">
+                            <label class="form-check-label" for="fieldFilterPk">@StringLocalizer["Primary Key"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterAutoPostBack">
+                            <label class="form-check-label" for="fieldFilterAutoPostBack">@StringLocalizer["AutoPostBack"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterRequired">
+                            <label class="form-check-label" for="fieldFilterRequired">@StringLocalizer["Required"]</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary ms-1" data-bs-dismiss="modal" onclick="applyFieldFilters()">
+                    <span class="fa fa-search text-primary"></span>&nbsp;@StringLocalizer["Filter"]
+                </button>
+                <button type="button" class="btn btn-secondary ms-1" data-bs-dismiss="modal" onclick="clearFieldFilters()">
+                    <span class="fa fa-trash"></span>&nbsp;@StringLocalizer["Clear Filters"]
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @if (isForm)
 {
@@ -150,10 +250,20 @@
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
     <div class="row">
         <div class="col-sm-3">
-            <div class="input-group">
-                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);"
+            <div class="input-group" id="field-input-group">
+                <input id="txtFilter" name="txtFilter" onkeyup="searchFields();"
                        placeholder="@StringLocalizer["Search..."]" type="text" class="form-control"
                        data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
+
+                <button type="button" id="fieldFilterButton" class="input-group-text position-relative" data-bs-toggle="tooltip"
+                        title="@StringLocalizer["Advanced Filters"]" aria-label="@StringLocalizer["Advanced Filters"]"
+                        aria-pressed="false"
+                        onclick="showFieldFilterModal()">
+                    <i class="fa-solid fa-filter"></i>
+                    <span id="fieldFilterIndicator"
+                          class="position-absolute top-0 end-0 p-1 bg-primary border border-primary border-opacity-50 rounded-circle d-none"
+                          aria-hidden="true"></span>
+                </button>
 
                 @if (isForm)
                 {
@@ -192,6 +302,12 @@
 
                             <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = elementName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
+                               data-data-type="@((int)field.DataType)"
+                               data-component="@((int)field.Component)"
+                               data-behavior="@((int)field.DataBehavior)"
+                               data-pk="@field.IsPk.ToString().ToLowerInvariant()"
+                               data-auto-postback="@field.AutoPostBack.ToString().ToLowerInvariant()"
+                               data-required="@field.IsRequired.ToString().ToLowerInvariant()"
                                id="@fieldName">
                                 <div style="height: 33px;">
                                     <div class="float-start">
@@ -299,6 +415,52 @@
 </script>
 
 <script type="text/javascript">
+    let activeFieldFilters = null;
+
+    function showFieldFilterModal() {
+        const filters = activeFieldFilters;
+        document.getElementById('fieldFilterDataType').value = filters?.dataType ?? '';
+        document.getElementById('fieldFilterComponent').value = filters?.component ?? '';
+        document.getElementById('fieldFilterBehavior').value = filters?.behavior ?? '';
+        document.getElementById('fieldFilterPk').checked = filters?.pk ?? false;
+        document.getElementById('fieldFilterAutoPostBack').checked = filters?.autoPostBack ?? false;
+        document.getElementById('fieldFilterRequired').checked = filters?.required ?? false;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('fieldFilterModal')).show();
+    }
+
+    function applyFieldFilters() {
+        activeFieldFilters = {
+            dataType: document.getElementById('fieldFilterDataType').value,
+            component: document.getElementById('fieldFilterComponent').value,
+            behavior: document.getElementById('fieldFilterBehavior').value,
+            pk: document.getElementById('fieldFilterPk').checked,
+            autoPostBack: document.getElementById('fieldFilterAutoPostBack').checked,
+            required: document.getElementById('fieldFilterRequired').checked
+        };
+        updateFieldFilterIndicator();
+        searchFields();
+    }
+
+    function updateFieldFilterIndicator() {
+        const filters = activeFieldFilters;
+        const hasFilters = !!filters && Object.values(filters).some(Boolean);
+        document.getElementById('fieldFilterIndicator').classList.toggle('d-none', !hasFilters);
+        document.getElementById('fieldFilterButton').setAttribute('aria-pressed', String(hasFilters));
+    }
+
+    function clearFieldFilters() {
+        document.getElementById('fieldFilterDataType').value = '';
+        document.getElementById('fieldFilterComponent').value = '';
+        document.getElementById('fieldFilterBehavior').value = '';
+        document.getElementById('fieldFilterPk').checked = false;
+        document.getElementById('fieldFilterAutoPostBack').checked = false;
+        document.getElementById('fieldFilterRequired').checked = false;
+        document.getElementById('txtFilter').value = '';
+        activeFieldFilters = null;
+        updateFieldFilterIndicator();
+        searchFields();
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         sortableGrid();
         saveTabState();
@@ -392,13 +554,22 @@
         });
     }
 
-    function searchFields(oDom) {
-        const value = $(oDom).val().toLowerCase();
+    function searchFields() {
+        const value = document.getElementById('txtFilter').value.toLowerCase();
         $("#sortable-grid a").filter(function () {
             const textValues = $(this).clone().find('select').remove().end().text();
             const isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            const data = this.dataset;
+            const filters = activeFieldFilters;
+            const matchesFilters = !filters ||
+                (!filters.dataType || data.dataType === filters.dataType) &&
+                (!filters.component || data.component === filters.component) &&
+                (!filters.behavior || data.behavior === filters.behavior) &&
+                (!filters.pk || data.pk === 'true') &&
+                (!filters.autoPostBack || data.autoPostback === 'true') &&
+                (!filters.required || data.required === 'true');
 
-            $(this).toggle(isSearch);
+            $(this).toggle(isSearch && matchesFilters);
         });
     }
 </script>

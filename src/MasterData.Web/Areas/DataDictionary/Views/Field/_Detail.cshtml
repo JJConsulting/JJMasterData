@@ -1,4 +1,5 @@
 ﻿@using JJConsulting.FontAwesome
+@using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.Events.Abstractions
 @using JJMasterData.Core.UI.Events.Abstractions
@@ -11,6 +12,24 @@
 
 @{
     string currentTab = ViewBag.Tab ?? "#div-general";
+
+    if (ViewData["DataTypeList"] is null)
+    {
+        var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+        foreach (var dataType in dataTypeList)
+            dataType.Group.Name = StringLocalizer[dataType.Group.Name];
+        ViewData["DataTypeList"] = dataTypeList;
+    }
+
+    if (ViewData["ComponentList"] is null)
+    {
+        var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
+        if (ViewData["IsForm"] is not true)
+            componentList.RemoveAll(c => c.Text == "File");
+        foreach (var component in componentList)
+            component.Group.Name = StringLocalizer[component.Group.Name];
+        ViewData["ComponentList"] = componentList;
+    }
 
     string Active(string tab)
     {

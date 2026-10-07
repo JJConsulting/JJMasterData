@@ -59,6 +59,10 @@
     <value>Nuevo</value>
         <comment>JJMasterDataWeb</comment>
   </data>    
+    <data name="Advanced Filters" xml:space="preserve">
+    <value>Filtros avanzados</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
     <data name="Filters" xml:space="preserve">
     <value>Filtros</value>
         <comment>JJMasterDataWeb</comment>

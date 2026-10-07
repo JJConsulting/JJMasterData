@@ -10,6 +10,7 @@
 
 @{
     var isForm = ViewData["IsForm"] is true;
+    var dataTypeList = (List<SelectListItem>)ViewData["DataTypeList"]!;
 }
 
 <div class="row">
@@ -58,20 +59,10 @@
 </div>
 
 <div class="row">
-    @{
-        var dataTypeList = Html.GetEnumSelectList<FieldType>()
-            .OrderBy(f => f.Group.Name)
-            .Select(dataType =>
-            {
-                dataType.Group.Name = StringLocalizer[dataType.Group.Name];
-                return dataType;
-            });
-    }
-
     <div class="mb-3 @(Model.DataType == FieldType.Decimal ? "col-sm-4" : "col-sm-6") required">
         <label asp-for="DataType" class="form-label"></label>
         <select asp-for="DataType" class="form-control form-select" onchange="this.form.submit();"
-                asp-items="dataTypeList"></select>
+                asp-items="dataTypeList.OrderBy(t => t.Group.Name).ThenBy(t => t.Text)"></select>
     </div>
     @switch (Model.DataType)
     {
