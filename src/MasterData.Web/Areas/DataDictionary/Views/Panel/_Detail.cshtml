@@ -18,6 +18,7 @@
     });
 
     function save() {
+        saveOptions();
         SpinnerOverlay.show();
         const url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
         const form = getMasterDataForm();
@@ -72,16 +73,22 @@
     }
 
     function moveUp() {
-        $('#listSelected option:selected:first-child').prop("selected", false);
-        before = $('#listSelected option:selected:first').prev();
-        $('#listSelected option:selected').detach().insertBefore(before);
+        $('#listSelected option:selected').each(function () {
+            const previous = $(this).prev();
+            if (previous.length && !previous.prop('selected')) {
+                $(this).insertBefore(previous);
+            }
+        });
         saveOptions();
     }
 
     function moveDown() {
-        $('#listSelected option:selected:last-child').prop("selected", false);
-        after = $('#listSelected option:selected:last').next();
-        $('#listSelected option:selected').detach().insertAfter(after);
+        $($('#listSelected option:selected').get().reverse()).each(function () {
+            const next = $(this).next();
+            if (next.length && !next.prop('selected')) {
+                $(this).insertAfter(next);
+            }
+        });
         saveOptions();
     }
 </script>

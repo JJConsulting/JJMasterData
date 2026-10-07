@@ -28,6 +28,16 @@ public class PanelService(IValidationDictionary validationDictionary,
         if (!ValidatePanel(panel))
             return;
 
+        var orderedFields = selectedFields!
+            .Select(fieldName => formElement.Fields.FirstOrDefault(field => field.Name == fieldName))
+            .ToList();
+
+        if (orderedFields.Any(field => field is null) || orderedFields.Distinct().Count() != orderedFields.Count)
+        {
+            AddError(nameof(selectedFields), StringLocalizer["Invalid fields selected for this panel."]);
+            return;
+        }
+
         if (panel.PanelId == 0)
         {
             if (formElement.Panels.Count == 0)
@@ -60,6 +70,13 @@ public class PanelService(IValidationDictionary validationDictionary,
                 if (field.PanelId == panel.PanelId)
                     field.PanelId = 0;
             }
+        }
+
+        var selectedFieldIndex = 0;
+        for (var i = 0; i < formElement.Fields.Count; i++)
+        {
+            if (formElement.Fields[i].PanelId == panel.PanelId)
+                formElement.Fields[i] = orderedFields[selectedFieldIndex++]!;
         }
         
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);

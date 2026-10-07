@@ -121,7 +121,10 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         }
         else
         {
-            ViewBag.SelectedFields = formElement.Fields.FindAll(x => selectedFields.Contains(x.Name));
+            ViewBag.SelectedFields = selectedFields
+                .Where(formElement.Fields.Contains)
+                .Select(fieldName => formElement.Fields[fieldName])
+                .ToList();
             ViewBag.AvailableFields = formElement.Fields.FindAll(x =>
                 (x.PanelId == 0 || x.PanelId == panel.PanelId) && !selectedFields.Contains(x.Name));
         }
