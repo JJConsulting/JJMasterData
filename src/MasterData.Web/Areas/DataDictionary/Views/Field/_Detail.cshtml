@@ -1,4 +1,5 @@
 ﻿@using JJConsulting.FontAwesome
+@using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.Events.Abstractions
@@ -38,8 +39,12 @@
 }
 
 <script type="text/javascript">
-    function confirmDeleteField() {
-        return confirm('@StringLocalizer["Are you sure you want to delete this field?"]');
+    function deleteField(url) {
+        if (!confirm('@StringLocalizer["Are you sure you want to delete this field?"]')) {
+            return;
+        }
+
+        postFormValues({ url: url, success: function () {} });
     }
 </script>
 
@@ -154,12 +159,10 @@
 
 
     <link-button
-        asp-action="Delete"
-        asp-route-fieldName="@Model.Name"
-        asp-route-elementName="@elementName"
         text="@StringLocalizer["Delete"]"
         icon="SolidTrashCan"
-        on-client-click="return confirmDeleteField();"/>
+        type="LinkButtonType.Button"
+        on-client-click="deleteField('@Url.Action("Delete", new { fieldName = Model.Name, elementName })')"/>
 
     <link-button
         text="@StringLocalizer["Copy"]"

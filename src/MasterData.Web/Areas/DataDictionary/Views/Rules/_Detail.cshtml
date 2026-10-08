@@ -1,3 +1,4 @@
+@using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Web.TagHelpers
 @using JJMasterData.Core.DataDictionary.Models
 @model JJMasterData.Core.DataDictionary.Models.FormElementRule
@@ -41,8 +42,12 @@
             });
     }
 
-    function deleteRule() {
-        return confirm('@StringLocalizer["Are you sure you want to delete this rule?"]');
+    function deleteRule(url) {
+        if (!confirm('@StringLocalizer["Are you sure you want to delete this rule?"]')) {
+            return;
+        }
+
+        postFormValues({ url: url, success: function () {} });
     }
 </script>
 
@@ -113,7 +118,7 @@
         <link-button text="@StringLocalizer["Save"]" color="Primary" icon="Check" on-client-click="saveRule()"/>
         @if (Model.Id > 0)
         {
-            <link-button text="@StringLocalizer["Delete"]" icon="SolidTrashCan" asp-action="Delete" asp-route-elementName="@ViewBag.ElementName" asp-route-ruleId="@Model.Id" on-client-click="return deleteRule();"/>
+            <link-button text="@StringLocalizer["Delete"]" icon="SolidTrashCan" type="LinkButtonType.Button" on-client-click="deleteRule('@Url.Action("Delete", new { elementName = ViewBag.ElementName, ruleId = Model.Id })')"/>
         }
     </div>
 </div>
