@@ -87,6 +87,15 @@ internal sealed class GridFilter(JJGridView gridView)
                 return _currentFilter;
         }
 
+        // A filter reload does not update grid-view-filters. Autocomplete must read
+        // the current filter inputs instead of the last applied filters.
+        if (gridView.ComponentContext is ComponentContext.SearchBoxFilter && _currentContext.HttpContext!.Request.HasFormContentType)
+        {
+            var filterFormValues = await GetFilterFormValues();
+            await ApplyCurrentFilter(filterFormValues);
+            return _currentFilter;
+        }
+
         var cookieFilter = _currentContext.HttpContext!.GetGridFilterCookie(gridView.Name);
 
         if (cookieFilter != null && gridView.MaintainValuesOnLoad)
