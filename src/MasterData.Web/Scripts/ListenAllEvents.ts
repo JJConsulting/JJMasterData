@@ -23,6 +23,7 @@
     TabNavListener.listenTabNavs(selectorPrefix);
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
+    HierarchyListener.listen(selectorPrefix);
     
     GridViewHelper.setupInfiniteScroll();
     

@@ -17,6 +17,7 @@ public class ControlFactory(IServiceProvider serviceProvider,
     public IControlFactory<JJComboBox> ComboBox => GetControlFactory<JJComboBox>();
     public IControlFactory<JJLookup> Lookup => GetControlFactory<JJLookup>();
     public IControlFactory<JJSearchBox> SearchBox => GetControlFactory<JJSearchBox>();
+    public IControlFactory<JJHierarchy> Hierarchy => GetControlFactory<JJHierarchy>();
     public IControlFactory<JJSlider> Slider => GetControlFactory<JJSlider>();
     public IControlFactory<JJPhoneGroup> PhoneGroup => GetControlFactory<JJPhoneGroup>();
     public IControlFactory<JJTextArea> TextArea => GetControlFactory<JJTextArea>();
@@ -87,6 +88,9 @@ public class ControlFactory(IServiceProvider serviceProvider,
                 break;
             case FormComponent.Lookup:
                 control = Create<JJLookup>(formElement, field, context);
+                break;
+            case FormComponent.Hierarchy:
+                control = Create<JJHierarchy>(formElement, field, context);
                 break;
             case FormComponent.CheckBox:
                 control = Create<JJCheckBox>(formElement, field, context);

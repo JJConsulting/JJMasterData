@@ -14,6 +14,10 @@
             <ol>
                 <li>@StringLocalizer["Id"]</li>
                 <li>@StringLocalizer["Description"]</li>
+                @if (Model.Component is FormComponent.Hierarchy)
+                {
+                    <li>@StringLocalizer["Parent Id (null or empty for roots)"]</li>
+                }
                 @if (showIcon)
                 {
                     <li>
@@ -53,6 +57,10 @@
                         </li>
                     }
                 </ul>
+            }
+            @if (Model.Component is FormComponent.Hierarchy)
+            {
+                <span>@StringLocalizer["Hierarchy queries must use {ParentId} to load a level and {SearchId} to recover a selected node."]</span>
             }
 
         </collapse-panel>

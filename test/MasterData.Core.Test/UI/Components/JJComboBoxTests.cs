@@ -48,7 +48,8 @@ public class JJComboBoxTests
             null!,
             null!,
             GetLocalizer(),
-            Mock.Of<ILogger<DataItemService>>());
+            Mock.Of<ILogger<DataItemService>>(),
+            null!);
     }
 
     private static IStringLocalizer<MasterDataResources> GetLocalizer()

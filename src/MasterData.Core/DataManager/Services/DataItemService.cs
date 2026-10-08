@@ -9,6 +9,7 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -22,7 +23,8 @@ public class DataItemService(
     ExpressionParser expressionParser,
     ElementMapService elementMapService,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    ILogger<DataItemService> logger)
+    ILogger<DataItemService> logger,
+    HierarchyService hierarchyService)
 {
     public async Task<List<DataItemValue>> GetValuesAsync(
         FormElementDataItem dataItem,
@@ -56,6 +58,21 @@ public class DataItemService(
         }
         
         return values;
+    }
+
+    public Task<List<DataItemValue>> GetHierarchyValuesAsync(
+        FormElementDataItem dataItem,
+        DataQuery dataQuery)
+    {
+        return hierarchyService.GetValuesAsync(dataItem, dataQuery);
+    }
+
+    public Task<List<DataItemValue>> GetHierarchyPathAsync(
+        FormElementDataItem dataItem,
+        DataQuery dataQuery,
+        int maximumDepth = 100)
+    {
+        return hierarchyService.GetPathAsync(dataItem, dataQuery, maximumDepth);
     }
 
     private static DataItemType GetDataItemType(FormElementDataItem dataItem)
