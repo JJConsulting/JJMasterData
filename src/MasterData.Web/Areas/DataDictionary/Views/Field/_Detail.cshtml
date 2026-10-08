@@ -37,6 +37,12 @@
     }
 }
 
+<script type="text/javascript">
+    function confirmDeleteField() {
+        return confirm('@StringLocalizer["Are you sure you want to delete this field?"]');
+    }
+</script>
+
 @{
     var elementName = ViewData["ElementName"]!.ToString()!;
     var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(elementName) as IEventHandler ?? GridEventHandlerResolver.GetGridEventHandler(elementName);
@@ -152,7 +158,8 @@
         asp-route-fieldName="@Model.Name"
         asp-route-elementName="@elementName"
         text="@StringLocalizer["Delete"]"
-        icon="SolidTrashCan"/>
+        icon="SolidTrashCan"
+        on-client-click="return confirmDeleteField();"/>
 
     <link-button
         text="@StringLocalizer["Copy"]"

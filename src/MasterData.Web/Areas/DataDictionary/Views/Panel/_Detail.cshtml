@@ -33,6 +33,10 @@
         form.action = url;
         form.submit();
     }
+
+    function confirmDeletePanel() {
+        return confirm('@StringLocalizer["Are you sure you want to delete this panel?"]');
+    }
     
     function showSuccess(fieldName) {
         const successDiv = document.getElementById("div-success");
@@ -144,10 +148,9 @@
 
     <div class="col-sm-12 jjtoolbar">
         <hr/>
-        <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
-        <link-button text="Refresh" icon="Refresh" asp-action="Index" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId"/>
-        <link-button text="Delete" icon="SolidTrashCan" asp-action="Delete" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId"/>
-        <link-button text="Copy" icon="FilesO" on-client-click="copy()"/>
+        <link-button text="@StringLocalizer["Save"]" color="Primary" icon="Check" on-client-click="save()"/>
+        <link-button text="@StringLocalizer["Delete"]" icon="SolidTrashCan" asp-action="Delete" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId" on-client-click="return confirmDeletePanel();"/>
+        <link-button text="@StringLocalizer["Copy"]" icon="FilesO" on-client-click="copy()"/>
     </div>
 
 
