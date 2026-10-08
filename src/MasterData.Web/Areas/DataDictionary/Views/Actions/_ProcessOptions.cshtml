@@ -21,17 +21,11 @@
     </div>
 
     <div class="col-sm-12">
-        <code-editor-button
-            asp-for="@Model.CommandBeforeProcess"
-            label="@StringLocalizer["Before starting the process"]"
-            language="sql"/>
-    
-        &nbsp;
-        
-        <code-editor-button
-            asp-for="@Model.CommandAfterProcess"
-            label="@StringLocalizer["After finishing the process"]"
-            language="sql"/>
+        <label class="@BootstrapHelper.Label" asp-for="CommandBeforeProcess">@StringLocalizer["Before starting the process"]</label>
+        <code-editor asp-for="CommandBeforeProcess" language="sql" height="200" />
+
+        <label class="@BootstrapHelper.Label" asp-for="CommandAfterProcess">@StringLocalizer["After finishing the process"]</label>
+        <code-editor asp-for="CommandAfterProcess" language="sql" height="200" />
         
     </div>
 

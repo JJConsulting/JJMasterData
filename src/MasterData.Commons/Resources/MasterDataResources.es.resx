@@ -895,4 +895,8 @@
     <value>Ignorados:</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Read the documentation for SQL query columns and parameters." xml:space="preserve">
+    <value>Consulte la documentación sobre las columnas y los parámetros de la consulta SQL.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
 </root>

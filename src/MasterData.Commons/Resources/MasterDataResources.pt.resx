@@ -4366,4 +4366,8 @@
     <value>ID do usuário:</value>
     <comment>JJMasterDataCore</comment>
   </data>
+  <data name="Read the documentation for SQL query columns and parameters." xml:space="preserve">
+    <value>Consulte a documentação sobre as colunas e os parâmetros da consulta SQL.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
 </root>

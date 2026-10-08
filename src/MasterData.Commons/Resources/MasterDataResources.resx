@@ -20,4 +20,7 @@
     <data name="Width unit" xml:space="preserve">
         <value>Width unit</value>
     </data>
+    <data name="Read the documentation for SQL query columns and parameters." xml:space="preserve">
+        <value>Read the documentation for SQL query columns and parameters.</value>
+    </data>
 </root>

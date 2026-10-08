@@ -6,81 +6,86 @@
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
 
-<div class="row">
-    <div class="col-sm-12">
-        <jj-title title="Data Item" size="HeadingSize.H5"/>
-    </div>
-    <div class="mb-3 col-sm-4 required">
-        <label class="form-label">@StringLocalizer["Type"]</label>
-        <select asp-for="DataItem!.DataItemType"
-                asp-items="Enum.GetValues<DataItemType>().Select(d => new SelectListItem(d.ToString(), d.ToString()))"
-                onchange="this.form.submit();" class="form-control form-select">
+<div class="mb-3 col-sm-4 required">
+    <label class="form-label">@StringLocalizer["Type"]</label>
+    <select asp-for="DataItem!.DataItemType"
+            asp-items="Enum.GetValues<DataItemType>().Select(d => new SelectListItem(d.ToString(), d.ToString()))"
+            onchange="this.form.submit();" class="form-control form-select">
+    </select>
+</div>
+
+@if (ViewBag.IsForm)
+{
+    <div class="mb-3 col-sm-4 required" id="divReplaceTextOnGrid">
+        <label asp-for="DataItem!.GridBehavior" class="form-label"></label>
+        <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+        <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
+            <option value="0">@StringLocalizer["Id"]</option>
+            <option value="1">@StringLocalizer["Description"]</option>
+            @if (Model.DataItem!.ShowIcon)
+            {
+                <option value="2">@StringLocalizer["Icon"]</option>
+                <option value="3">@StringLocalizer["Icon with Description"]</option>
+            }
         </select>
     </div>
+}
 
-    @if (ViewBag.IsForm)
-    {
-        <div class="mb-3 col-sm-4 required" id="divReplaceTextOnGrid">
-            <label asp-for="DataItem!.GridBehavior" class="form-label"></label>
-            <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
-            <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
-                <option value="0">@StringLocalizer["Id"]</option>
-                <option value="1">@StringLocalizer["Description"]</option>
-                @if (Model.DataItem!.ShowIcon)
-                {
-                    <option value="2">@StringLocalizer["Icon"]</option>
-                    <option value="3">@StringLocalizer["Icon with Description"]</option>
-                }
-            </select>
-        </div>
-    }
-
-    @if (Model.Component is FormComponent.ComboBox)
-    {
-        <div class="mb-3 col-sm-4 required" id="divFirstOption">
-            <label asp-for="DataItem!.FirstOption" class="form-label"></label>
-            <tooltip title="@StringLocalizer["First option used in the combo. If a default value exists in the filter, this option is ignored."]"/>
-            <select asp-for="DataItem!.FirstOption" class="form-control form-select"
-                    asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
-        </div>
-    }
-
-    @if (Model.Component is FormComponent.RadioButtonGroup)
-    {
-        <div class="mb-3 col-sm-4 required">
-            <label asp-for="DataItem!.RadioLayout" class="form-label"></label>
-            <select asp-for="DataItem!.RadioLayout" class="form-control form-select"
-                    asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
-        </div>
-    }
-
-
-    <div class="mb-3 col-sm-4 required">
-        <checkbox
-            tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]"
-            for="DataItem!.EnableMultiSelect" layout="Switch"/>
+@if (Model.Component is FormComponent.ComboBox)
+{
+    <div class="mb-3 col-sm-4 required" id="divFirstOption">
+        <label asp-for="DataItem!.FirstOption" class="form-label"></label>
+        <tooltip title="@StringLocalizer["First option used in the combo. If a default value exists in the filter, this option is ignored."]"/>
+        <select asp-for="DataItem!.FirstOption" class="form-control form-select"
+                asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
     </div>
+}
 
+@if (Model.Component is FormComponent.RadioButtonGroup)
+{
     <div class="mb-3 col-sm-4 required">
-        <checkbox for="DataItem!.EnableLocalization" layout="Switch"/>
+        <label asp-for="DataItem!.RadioLayout" class="form-label"></label>
+        <select asp-for="DataItem!.RadioLayout" class="form-control form-select"
+                asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
     </div>
-
-    <div class="mb-3 col-sm-4 required">
-        <checkbox for="DataItem!.ShowIcon" layout="Switch" onchange="this.form.requestSubmit();"/>
-    </div>
+}
 
 
-    @switch (Model.DataItem!.DataItemType)
-    {
-        case DataItemType.Manual:
-            <partial name="_DataItemManual" model="@Model"/>
-            break;
-        case DataItemType.SqlCommand:
-            <partial name="_DataItemSql" model="@Model"/>
-            break;
-        case DataItemType.ElementMap:
-            <partial name="_DataItemElementMap" model="@Model"/>
-            break;
-    }
-
+<div class="mb-3 col-sm-4 required">
+    <checkbox
+        tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]"
+        for="DataItem!.EnableMultiSelect" layout="Switch"/>
 </div>
+
+<div class="mb-3 col-sm-4 required">
+    <checkbox for="DataItem!.EnableLocalization" layout="Switch"/>
+</div>
+
+<div class="mb-3 col-sm-4 required">
+    <checkbox for="DataItem!.ShowIcon" layout="Switch" onchange="this.form.requestSubmit();"/>
+</div>
+
+
+@switch (Model.DataItem!.DataItemType)
+{
+    case DataItemType.Manual:
+        <partial name="_DataItemManual" model="@Model"/>
+        break;
+    case DataItemType.SqlCommand:
+        <div class="col-sm-12">
+            <label class="@BootstrapHelper.Label" asp-for="DataItem!.Command!.Sql">@StringLocalizer["SQL Query"]</label>
+            <code-editor asp-for="DataItem!.Command!.Sql" language="sql" height="200" />
+        </div>
+        <div class="m-2">
+            <small>
+                <span class="fa fa-circle-info text-info"></span>&nbsp;
+                <em>
+                    <a href="https://md.jjconsulting.tech/articles/concepts/components.html#data-item-sql-query" target="_blank" rel="noopener noreferrer">@StringLocalizer["Read the documentation for SQL query columns and parameters."]</a>
+                </em>
+            </small>
+        </div>
+        break;
+    case DataItemType.ElementMap:
+        <partial name="_DataItemElementMap" model="@Model"/>
+        break;
+}
