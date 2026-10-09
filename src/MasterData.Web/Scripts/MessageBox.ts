@@ -32,117 +32,81 @@ class MessageBox {
     }
 
     private static showModal(): void {
-        if (bootstrapVersion < 5) {
-            $(MessageBox.jQueryModalId)
-                .modal()
-                .on("shown.bs.modal", function () {
-                    $(MessageBox.jQueryModalButton1Id).focus();
-                });
-        } else {
-            const modal = bootstrap.Modal.getOrCreateInstance(
-                document.getElementById(MessageBox.modalId),
-                {}
-            );
-            modal.show();
+        const element = document.getElementById(MessageBox.modalId);
+        const parent = Array.from(document.querySelectorAll<HTMLElement>(".modal.show"))
+            .filter(modal => modal !== element)
+            .sort((a, b) => Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex))[0];
+        const previousFocus = document.activeElement as HTMLElement;
+        const bodyOverflow = document.body.style.overflow;
+        const bodyPadding = document.body.style.paddingRight;
+        const backdrops = new Set(document.querySelectorAll(".modal-backdrop"));
 
-            document.addEventListener("shown.bs.modal", function () {
-                document.getElementById(MessageBox.button1Id).focus();
+        if (parent) {
+            element.style.zIndex = String(Number(getComputedStyle(parent).zIndex) + 20);
+            // Bootstrap owns a single focus trap; suspend it while the child modal is open.
+            bootstrap.Modal.getInstance(parent)?._focustrap.deactivate();
+
+            $(element).one("hidden.bs.modal", () => {
+                if (!parent.isConnected || !parent.classList.contains("show"))
+                    return;
+                document.body.classList.add("modal-open");
+                document.body.style.overflow = bodyOverflow;
+                document.body.style.paddingRight = bodyPadding;
+                bootstrap.Modal.getInstance(parent)?._focustrap.activate();
+                if (previousFocus?.isConnected) previousFocus.focus();
             });
         }
+
+        $(element).one("shown.bs.modal", () => document.getElementById(MessageBox.button1Id).focus());
+        bootstrap.Modal.getOrCreateInstance(element).show();
+
+        if (parent) {
+            const backdrop = Array.from(document.querySelectorAll<HTMLElement>(".modal-backdrop"))
+                .find(candidate => !backdrops.has(candidate));
+            if (backdrop) backdrop.style.zIndex = String(Number(element.style.zIndex) - 1);
+        }
     }
 
-    private static setBtn1(label: string, func: (() => void) | null): void {
-        $(MessageBox.jQueryModalButton1Id).text(label);
-        if ($.isFunction(func)) {
-            $(MessageBox.jQueryModalButton1Id).on("click.siteModalClick1", func);
-        }
-        $(MessageBox.jQueryModalButton1Id).show();
+    private static setButton(selector: string, label: string, callback?: (() => void) | null): void {
+        const button = $(selector).text(label).show();
+        if (callback) button.on("click.siteModal", callback);
     }
 
-    private static setBtn2(label: string, func: (() => void) | null): void {
-        $(MessageBox.jQueryModalButton2Id).text(label);
-        if ($.isFunction(func)) {
-            $(MessageBox.jQueryModalButton2Id).on("click.siteModalClick2", func);
-        }
-        $(MessageBox.jQueryModalButton2Id).show();
-    }
+    private static loadHtml(hasTitle: boolean, iconType: TMessageIcon, size: TMessageSize, allowClose: boolean): void {
+        $(MessageBox.jQueryModalId).remove();
+        const sizeClass = size === TMessageSize.LARGE ? "modal-lg" : size === TMessageSize.SMALL ? "modal-sm" : "";
+        const icons = {
+            [TMessageIcon.ERROR]: ["text-danger", "fa-times-circle"],
+            [TMessageIcon.WARNING]: ["text-warning", "fa-exclamation-triangle"],
+            [TMessageIcon.INFO]: ["text-info", "fa-info-circle"],
+            [TMessageIcon.QUESTION]: ["text-info", "fa-question-circle"],
+        };
+        const icon = icons[iconType];
+        const header = hasTitle
+            ? '<h4 id="site-modal-title" class="modal-title"></h4>'
+            : '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>';
 
-    private static reset(): void {
-        MessageBox.hide()
-    }
-
-    private static loadHtml(hasTitle: boolean, iconType: TMessageIcon, iconSize: TMessageSize, allowClose: boolean): void {
-        if ($(MessageBox.jQueryModalId).length) {
-            $(MessageBox.jQueryModalId).remove();
-        }
-
-        let html = "";
-        html += `<div id=\"site-modal\" tabindex=\"-1\" ${allowClose ? "data-bs-backdrop='static' data-bs-keyboard='false'" : ""} class=\"modal fade\" role=\"dialog\">\r\n`;
-        html += "  <div class=\"modal-dialog";
-        if (iconSize == TMessageSize.LARGE) html += " modal-lg";
-        else if (iconSize == TMessageSize.SMALL) html += " modal-sm";
-        html += "\" role=\"document\">\r\n";
-        html += "    <div class=\"modal-content\">\r\n";
-        html += "      <div class=\"modal-header\">\r\n";
-
-        if (bootstrapVersion >= 4 && hasTitle) {
-            html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
-        } else if (bootstrapVersion >= 5) {
-            html +=
-                '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
-        } else if (bootstrapVersion == 3 && hasTitle) {
-            html +=
-                '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
-        }
-
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-body\">\r\n";
-        html += "        <table border=\"0\">\r\n";
-        html += "          <tr>\r\n";
-        html += '            <td style="width:40px">\r\n';
-
-        if (iconType == TMessageIcon.ERROR) {
-            html += '              <span class="text-danger">\r\n';
-            html +=
-                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        } else if (iconType == TMessageIcon.WARNING) {
-            html += '              <span class="text-warning">\r\n';
-            html +=
-                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        } else if (iconType == TMessageIcon.INFO) {
-            html += '              <span class="text-info">\r\n';
-            html +=
-                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        } else if (iconType == TMessageIcon.QUESTION) {
-            html += '              <span class="text-info">\r\n';
-            html +=
-                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        html += "            </td>\r\n";
-        html += "            <td>\r\n";
-        html += '              <span id="site-modal-content"></span>\r\n';
-        html += "            </td>\r\n";
-        html += "          </tr>\r\n";
-        html += "        </table>\r\n";
-
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-footer\">\r\n";
-        if (bootstrapVersion == 3) {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
-        } else {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
-        }
-        html += "      </div>\r\n";
-        html += "    </div>\r\n";
-        html += "  </div>\r\n";
-        html += "</div>\r\n";
-        $("body").append(html);
+        $("body").append(`
+            <div id="site-modal" tabindex="-1" class="modal fade" role="dialog"
+                 ${allowClose ? 'data-bs-backdrop="static" data-bs-keyboard="false"' : ""}>
+                <div class="modal-dialog ${sizeClass}" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">${header}</div>
+                        <div class="modal-body">
+                            <table border="0"><tr>
+                                <td style="width:40px">
+                                    ${icon ? `<span class="${icon[0]}"><span class="fa ${icon[1]}" aria-hidden="true" style="font-size:1.875rem;"></span></span>` : ""}
+                                </td>
+                                <td><span id="site-modal-content"></span></td>
+                            </tr></table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>
+                            <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>`);
     }
 
     public static show(
@@ -155,21 +119,17 @@ class MessageBox {
         btn2Label?: string,
         btn2Callback?: (() => void) | null
     ): void {
-        MessageBox.reset();
+        MessageBox.hide();
         MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT, btn1Callback != null || btn2Callback != null);
         MessageBox.setTitle(title)
         MessageBox.setContent(description);
 
-        if (btn1Label === undefined) {
-            MessageBox.setBtn1(Localization.get("Close"), null);
-        } else {
-            MessageBox.setBtn1(btn1Label, btn1Callback);
-        }
+        MessageBox.setButton(MessageBox.jQueryModalButton1Id, btn1Label ?? Localization.get("Close"), btn1Callback);
 
         if (btn2Label === undefined) {
             $(MessageBox.jQueryModalButton2Id).hide();
         } else {
-            MessageBox.setBtn2(btn2Label, btn2Callback);
+            MessageBox.setButton(MessageBox.jQueryModalButton2Id, btn2Label, btn2Callback);
         }
 
         MessageBox.showModal();
@@ -203,26 +163,24 @@ class MessageBox {
     }
 
     public static showConfirmationMessage(message: string): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
+        return new Promise<boolean>(resolve => {
+            let confirmed = false;
             MessageBox.showConfirmationDialog({
                 description: message,
                 cancelLabel: Localization.get('No'),
                 confirmLabel: Localization.get('Yes'),
                 confirmCallback: () => {
+                    confirmed = true;
                     MessageBox.hide();
-                    resolve(true);
                 },
-                cancelCallback: () => {
-                    MessageBox.hide();
-                    resolve(false);
-                },
+                cancelCallback: MessageBox.hide,
             });
+            $(MessageBox.jQueryModalId).one("hidden.bs.modal", () => resolve(confirmed));
         });
     }
 
     public static hide(): void {
-        $(MessageBox.jQueryModalId).modal("hide");
-        $(".modal-backdrop").hide();
+        bootstrap.Modal.getInstance(document.getElementById(MessageBox.modalId))?.hide();
     }
 }
 
