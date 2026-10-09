@@ -103,6 +103,9 @@ public class ActionsController(ActionsService actionsService,
         var formElement = await actionsService.GetFormElementAsync(elementName);
         
         PopulateViewData(formElement, action, source, fieldName);
+
+        if (ModelState.IsValid)
+            ViewData["OriginalName"] = action.Name;
         
         ViewData["ShowSaveSuccess"] = ModelState.IsValid;
         
@@ -125,6 +128,9 @@ public class ActionsController(ActionsService actionsService,
         var formElement = await actionsService.GetFormElementAsync(elementName);
         
         PopulateViewData(formElement, action, source, fieldName);
+
+        if (ModelState.IsValid)
+            ViewData["OriginalName"] = action.Name;
         
         ViewData["ShowCopySuccess"] = ModelState.IsValid;
         
