@@ -164,28 +164,6 @@ class ActionHelper {
         })
     }
 
-    private static async executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string, componentName: string, isModal: boolean = true) {
-        if (confirmationMessage) {
-            const confirmed = await showConfirmationMessage(confirmationMessage);
-            if (!confirmed) {
-                return false;
-            }
-        }
-
-        const selectedRowsInput = document.querySelector<HTMLInputElement>("#grid-view-selected-rows-" + componentName);
-
-        if (selectedRowsInput?.value) {
-            const redirectUrl = new URL(url, window.location.origin);
-            redirectUrl.searchParams.set("multiselectValues", selectedRowsInput.value);
-            url = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
-        }
-        
-        if(isModal)
-            defaultModal.showIframe(url, "", modalSize);
-        else
-            window.location.href = url;
-    }
-
     static async executeAction(actionName) {
         
         const element = document.getElementById(actionName);
@@ -194,8 +172,10 @@ class ActionHelper {
         const actionMap = element.dataset.actionMap;
         const gridViewRouteContext = element.dataset.gridViewRouteContext;
         const modalTitle = element.dataset.modalTitle;
-        const isModal = element.dataset.isModal === "true";
-        const isSubmit = element.dataset.isSubmit === "true";
+        const internalModal = element.closest<HTMLElement>(".modal[data-internal-action]");
+        const isInternalAction = element.dataset.internalAction === "true";
+        const isModal = element.dataset.isModal === "true" || !!internalModal;
+        const isSubmit = !internalModal && element.dataset.isSubmit === "true";
         const confirmationMessage = element.dataset.confirmationMessage;
 
         if (confirmationMessage) {
@@ -224,7 +204,8 @@ class ActionHelper {
 
         function onModalClose() {
             formViewActionInput.value = String();
-            setPageState(componentName, PageState.List)
+            if (!isInternalAction && !internalModal)
+                setPageState(componentName, PageState.List)
         }
 
         if (isModal) {
@@ -232,17 +213,29 @@ class ActionHelper {
             urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
 
             const modal = new Modal();
-            modal.modalId = componentName + "-modal";
+            modal.modalId = internalModal?.id ?? componentName + "-modal";
 
-            $("body").on('hidden.bs.modal', "#" + modal.modalId, function () {
-                onModalClose();
-            });
+            if (!internalModal) {
+                $("body").one('hidden.bs.modal', "#" + modal.modalId, function () {
+                    onModalClose();
+                });
+            }
 
             SpinnerOverlay.show();
             const requestOptions = getRequestOptions();
             modal.showUrl({
                 url: urlBuilder.build(), requestOptions: requestOptions
-            }, modalTitle).then(function (data) {
+            }, modalTitle ?? internalModal?.dataset.modalTitle,
+                element.dataset.modalSize ? Number(element.dataset.modalSize)
+                    : internalModal?.dataset.modalSize ? Number(internalModal.dataset.modalSize) : undefined).then(function (data) {
+                if (isInternalAction) {
+                    const modalElement = document.getElementById(modal.modalId);
+                    modalElement.dataset.internalAction = "true";
+                    modalElement.dataset.componentName = componentName;
+                    modalElement.dataset.formViewRouteContext = formViewRouteContext;
+                    modalElement.dataset.modalTitle = modalTitle ?? "";
+                    modalElement.dataset.modalSize = element.dataset.modalSize;
+                }
                 SpinnerOverlay.hide();
                 listenAllEvents("#" + modal.modalId + " ")
 
@@ -252,8 +245,15 @@ class ActionHelper {
                             onModalClose();
                             ActionHelper.submitWithScrollPosition();
                         } else {
-                            modal.hide();
-                            GridViewHelper.refresh(componentName, gridViewRouteContext);
+                            if (internalModal) {
+                                const originName = internalModal.dataset.componentName;
+                                document.querySelector<HTMLInputElement>("#current-action-map-" + originName).value = "";
+                                modal.hide();
+                                FormViewHelper.refreshFormView(originName, internalModal.dataset.formViewRouteContext);
+                            } else {
+                                modal.hide();
+                                GridViewHelper.refresh(componentName, gridViewRouteContext);
+                            }
                         }
                     }
                 }
@@ -284,7 +284,8 @@ class ActionHelper {
 
     static hideActionModal(componentName: string) {
         const modal = new Modal();
-        modal.modalId = componentName + "-modal";
+        modal.modalId = document.getElementById(componentName)?.closest<HTMLElement>(".modal")?.id
+            ?? componentName + "-modal";
         modal.hide();
     }
 
