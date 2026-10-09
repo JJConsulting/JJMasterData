@@ -159,36 +159,18 @@ class ActionHelper {
             }
         });
     }
-    static executeInternalRedirect(url_1, modalSize_1, confirmationMessage_1, componentName_1) {
-        return __awaiter(this, arguments, void 0, function* (url, modalSize, confirmationMessage, componentName, isModal = true) {
-            if (confirmationMessage) {
-                const confirmed = yield showConfirmationMessage(confirmationMessage);
-                if (!confirmed) {
-                    return false;
-                }
-            }
-            const selectedRowsInput = document.querySelector("#grid-view-selected-rows-" + componentName);
-            if (selectedRowsInput === null || selectedRowsInput === void 0 ? void 0 : selectedRowsInput.value) {
-                const redirectUrl = new URL(url, window.location.origin);
-                redirectUrl.searchParams.set("multiselectValues", selectedRowsInput.value);
-                url = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
-            }
-            if (isModal)
-                defaultModal.showIframe(url, "", modalSize);
-            else
-                window.location.href = url;
-        });
-    }
     static executeAction(actionName) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             const element = document.getElementById(actionName);
             const componentName = element.dataset.componentName;
             const actionMap = element.dataset.actionMap;
             const gridViewRouteContext = element.dataset.gridViewRouteContext;
             const modalTitle = element.dataset.modalTitle;
-            const isModal = element.dataset.isModal === "true";
-            const isSubmit = element.dataset.isSubmit === "true";
+            const internalModal = element.closest(".modal[data-internal-action]");
+            const isInternalAction = element.dataset.internalAction === "true";
+            const isModal = element.dataset.isModal === "true" || !!internalModal;
+            const isSubmit = !internalModal && element.dataset.isSubmit === "true";
             const confirmationMessage = element.dataset.confirmationMessage;
             if (confirmationMessage) {
                 const confirm = yield showConfirmationMessage(confirmationMessage);
@@ -211,21 +193,33 @@ class ActionHelper {
             }
             function onModalClose() {
                 formViewActionInput.value = String();
-                setPageState(componentName, PageState.List);
+                if (!isInternalAction && !internalModal)
+                    setPageState(componentName, PageState.List);
             }
             if (isModal) {
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
                 const modal = new Modal();
-                modal.modalId = componentName + "-modal";
-                $("body").on('hidden.bs.modal', "#" + modal.modalId, function () {
-                    onModalClose();
-                });
+                modal.modalId = (_b = internalModal === null || internalModal === void 0 ? void 0 : internalModal.id) !== null && _b !== void 0 ? _b : componentName + "-modal";
+                if (!internalModal) {
+                    $("body").one('hidden.bs.modal', "#" + modal.modalId, function () {
+                        onModalClose();
+                    });
+                }
                 SpinnerOverlay.show();
                 const requestOptions = getRequestOptions();
                 modal.showUrl({
                     url: urlBuilder.build(), requestOptions: requestOptions
-                }, modalTitle).then(function (data) {
+                }, modalTitle !== null && modalTitle !== void 0 ? modalTitle : internalModal === null || internalModal === void 0 ? void 0 : internalModal.dataset.modalTitle, element.dataset.modalSize ? Number(element.dataset.modalSize)
+                    : (internalModal === null || internalModal === void 0 ? void 0 : internalModal.dataset.modalSize) ? Number(internalModal.dataset.modalSize) : undefined).then(function (data) {
+                    if (isInternalAction) {
+                        const modalElement = document.getElementById(modal.modalId);
+                        modalElement.dataset.internalAction = "true";
+                        modalElement.dataset.componentName = componentName;
+                        modalElement.dataset.formViewRouteContext = formViewRouteContext;
+                        modalElement.dataset.modalTitle = modalTitle !== null && modalTitle !== void 0 ? modalTitle : "";
+                        modalElement.dataset.modalSize = element.dataset.modalSize;
+                    }
                     SpinnerOverlay.hide();
                     listenAllEvents("#" + modal.modalId + " ");
                     if (typeof data === "object") {
@@ -235,8 +229,16 @@ class ActionHelper {
                                 ActionHelper.submitWithScrollPosition();
                             }
                             else {
-                                modal.hide();
-                                GridViewHelper.refresh(componentName, gridViewRouteContext);
+                                if (internalModal) {
+                                    const originName = internalModal.dataset.componentName;
+                                    document.querySelector("#current-action-map-" + originName).value = "";
+                                    modal.hide();
+                                    FormViewHelper.refreshFormView(originName, internalModal.dataset.formViewRouteContext);
+                                }
+                                else {
+                                    modal.hide();
+                                    GridViewHelper.refresh(componentName, gridViewRouteContext);
+                                }
                             }
                         }
                     }
@@ -268,8 +270,9 @@ class ActionHelper {
         });
     }
     static hideActionModal(componentName) {
+        var _a, _b, _c;
         const modal = new Modal();
-        modal.modalId = componentName + "-modal";
+        modal.modalId = (_c = (_b = (_a = document.getElementById(componentName)) === null || _a === void 0 ? void 0 : _a.closest(".modal")) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : componentName + "-modal";
         modal.hide();
     }
     static launchUrl(url_1, isModal_1, title_1, confirmationMessage_1) {

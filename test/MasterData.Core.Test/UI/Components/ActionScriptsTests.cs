@@ -64,6 +64,33 @@ public class ActionScriptsTests
         Assert.Contains(",'Request 42','", script);
     }
 
+    [Theory]
+    [InlineData(ActionSource.GridTable, true)]
+    [InlineData(ActionSource.GridToolbar, false)]
+    [InlineData(ActionSource.FormToolbar, true)]
+    [InlineData(ActionSource.Field, false)]
+    public void InternalAction_UsesFormActionRouting(ActionSource source, bool showAsModal)
+    {
+        var action = new InternalAction { Name = "open-details", Text = "Details" };
+        action.ElementRedirect.ElementNameRedirect = "details";
+        action.ElementRedirect.ShowAsModal = showAsModal;
+        var context = new ActionContext
+        {
+            Action = action,
+            FormElement = new FormElement { Name = "requests" },
+            FormStateData = new FormStateData(new Dictionary<string, object?>(), PageState.List),
+            ParentComponentName = "requests"
+        };
+
+        var attributes = CreateActionScripts().GetFormActionAttributes(context, source);
+
+        Assert.Equal(showAsModal ? "true" : "false", attributes["data-is-modal"]);
+        Assert.Equal("true", attributes["data-internal-action"]);
+        Assert.NotEmpty(attributes["data-action-map"]);
+        Assert.Equal("false", attributes["data-is-submit"]);
+        Assert.Equal(showAsModal, attributes.ContainsKey("data-grid-view-route-context"));
+    }
+
     private static ActionScripts CreateActionScripts()
     {
         var expressionsService = CreateExpressionsService();
@@ -81,7 +108,6 @@ public class ActionScriptsTests
         return new ActionScripts(
             expressionsService,
             urlRedirectService,
-            Mock.Of<Microsoft.AspNetCore.Mvc.IUrlHelper>(),
             new DataProtectionService(new EphemeralDataProtectionProvider()),
             CreateStringLocalizer());
     }

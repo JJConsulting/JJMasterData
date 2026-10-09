@@ -135,6 +135,9 @@ public class JJFormView : AsyncComponent
     private FormStateData? _formStateData;
     private bool _isCustomCurrentAction;
     private RelationshipType? _relationshipType;
+    private InternalAction? _internalAction;
+    private JJFormView? _internalActionParent;
+    private bool _returnedToInternalActionParent;
 
     private readonly FormValuesService _formValuesService;
     private readonly FieldValuesService _fieldValuesService;
@@ -216,7 +219,7 @@ public class JJFormView : AsyncComponent
                     _dataPanel.FieldNamePrefix = "insert_";
                 }
 
-                if (IsChildFormView)
+                if (IsChildFormView || IsInternalActionFormView)
                     _dataPanel.FieldNamePrefix += $"{Name}_";
 
                 _dataPanel.ParentComponentName = Name;
@@ -363,6 +366,7 @@ public class JJFormView : AsyncComponent
             field = CurrentActionMap.GetAction(FormElement);
             return field;
         }
+        private set;
     }
 
     public RouteContext RouteContext
@@ -388,6 +392,8 @@ public class JJFormView : AsyncComponent
         : default;
 
     internal FormViewScripts Scripts => field ??= new(this);
+
+    internal bool IsInternalActionFormView => _internalAction is not null;
 
     internal bool IsChildFormView => RelationshipType is not RelationshipType.Parent;
 
@@ -487,6 +493,9 @@ public class JJFormView : AsyncComponent
 
     private async Task<JJFormView> GetChildFormView()
     {
+        if (CurrentAction is InternalAction internalAction)
+            return await CreateInternalActionFormView(internalAction);
+
         var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName!);
 
 
@@ -652,8 +661,11 @@ public class JJFormView : AsyncComponent
 
         DataPanel.Errors = errors;
 
-        if (errors.Count != 0 && !IsInsertAtGridView)
+        if (errors.Count != 0 && (!IsInsertAtGridView || IsInternalActionFormView))
             return await GetFormResult(values, errors, PageState, true);
+
+        if (_internalAction is not null)
+            return await CompleteInternalActionAsync();
 
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
@@ -731,21 +743,30 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetCancelActionResult()
     {
-        PageState = PageState.List;
-
         _ = _uploadViewManager.ClearTemporaryFilesAsync(FormElement);
+
+        if (_internalAction is not null)
+            return await CompleteInternalActionAsync();
+
+        PageState = PageState.List;
 
         return await GridView.GetResultAsync();
     }
 
     private Task<ComponentResult> GetBackActionResult()
     {
+        if (_internalAction is not null)
+            return CompleteInternalActionAsync();
+
         PageState = PageState.List;
         return GridView.GetResultAsync();
     }
 
     private async Task<ComponentResult> GetFormActionResult()
     {
+        if (CurrentAction is InternalAction internalAction)
+            return await GetInternalActionResult(internalAction);
+
         var result = CurrentAction switch
         {
             ViewAction => await GetViewResult(),
@@ -763,12 +784,16 @@ public class JJFormView : AsyncComponent
             _ => await GetDefaultResult()
         };
 
-        if (result is not HtmlComponentResult htmlComponent)
+        if (_returnedToInternalActionParent || result is not HtmlComponentResult htmlComponent)
             return result;
 
         var html = htmlComponent.HtmlBuilder;
 
         html.WithNameAndId(Name);
+
+        if (_internalAction?.ElementRedirect is { ViewType: RelationshipViewType.List, ShowAsModal: false } &&
+            PageState is PageState.List)
+            html.AppendComponent(await GetFormToolbarAsync([new BackAction { VisibleExpression = "val:1" }]));
 
         AppendFormViewHiddenInputs(html);
 
@@ -782,7 +807,8 @@ public class JJFormView : AsyncComponent
 
     private void AppendFormViewHiddenInputs(HtmlBuilder html)
     {
-        if (CurrentAction is not IModalAction { ShowAsModal: true } && (_dataPanel is null || !DataPanel.IsAtModal))
+        if (_internalAction is not null ||
+            (CurrentAction is not IModalAction { ShowAsModal: true } && (_dataPanel is null || !DataPanel.IsAtModal)))
         {
             html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
 
@@ -796,6 +822,110 @@ public class JJFormView : AsyncComponent
                 DataProtectionService.ProtectObject(RouteContext.FromFormElement(FormElement,
                     ComponentContext.FormViewReload)));
         }
+    }
+
+    private async Task<ComponentResult> CompleteInternalActionAsync()
+    {
+        var redirect = _internalAction!.ElementRedirect;
+        if (redirect.ViewType is RelationshipViewType.List && PageState is not PageState.List)
+        {
+            if (DataPanel.IsAtModal && !redirect.ShowAsModal)
+                return CloseModal();
+
+            CurrentActionMap = null;
+            CurrentAction = null;
+            PageState = PageState.List;
+            DataPanel.IsAtModal = redirect.ShowAsModal;
+            InvalidateFormStateData();
+            return await GetGridViewResult();
+        }
+
+        if (redirect.ShowAsModal)
+            return CloseModal();
+
+        var parent = _internalActionParent!;
+        if (ComponentContext is not ComponentContext.RenderComponent)
+            return new JsonComponentResult(new { jsCallback = parent.Scripts.GetSetPageStateScript(PageState.List) });
+
+        _returnedToInternalActionParent = true;
+        parent.CurrentActionMap = null;
+        parent.CurrentAction = null;
+        parent.PageState = PageState.List;
+        return await parent.GetFormResultAsync();
+    }
+
+    private async Task<JJFormView> CreateInternalActionFormView(InternalAction action)
+    {
+        var redirect = action.ElementRedirect;
+        var child = await ComponentFactory.FormView.CreateAsync(redirect.ElementNameRedirect);
+        child._internalAction = action;
+        child._internalActionParent = this;
+        child.FormElement.ParentName = FormElement.ParentName ?? FormElement.Name;
+        child.ShowTitle = action.ShowTitle;
+        child.UserValues = new Dictionary<string, object?>(UserValues);
+        if (UserId is not null)
+            child.UserValues["USERID"] = UserId;
+
+        var selectedRows = GridView.GetSelectedGridValues();
+        if (selectedRows.Count > 0)
+            child.UserValues["MultiselectValues"] = string.Join(',',
+                selectedRows.Select(row => row["INTERNALPK"]).Distinct());
+
+        // Subsequent requests use the child's own state and actions.
+        if (!string.IsNullOrEmpty(CurrentContext.HttpContext!.Request.GetFormValue($"form-view-page-state-{child.Name}")))
+        {
+            child.RelationValues = child.GetRelationValuesFromForm();
+            return child;
+        }
+
+        child.CurrentActionMap = null;
+        var state = CurrentActionMap is { ActionSource: ActionSource.GridTable, PkFieldValues.Count: > 0 }
+            ? new FormStateData(await EntityRepository.GetFieldsAsync(FormElement, CurrentActionMap.PkFieldValues),
+                UserValues, PageState)
+            : await GetFormStateDataAsync();
+        var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        foreach (var field in redirect.RelationFields)
+        {
+            if ((state.Values.TryGetValue(field.InternalField, out var value) ||
+                 state.UserValues?.TryGetValue(field.InternalField, out value) == true) && value is not null)
+                values[field.RedirectField] = value;
+        }
+
+        child.RelationValues = values;
+        child.PageState = redirect.ViewType switch
+        {
+            RelationshipViewType.Insert => PageState.Insert,
+            RelationshipViewType.Update => PageState.Update,
+            RelationshipViewType.View => PageState.View,
+            _ => PageState.List
+        };
+
+        child.DataPanel.PageState = child.PageState;
+        child.DataPanel.AutoReloadFormFields = false;
+
+        if (child.PageState is PageState.Update or PageState.View)
+            await child.DataPanel.LoadValuesFromPkAsync(values);
+
+        DataHelper.CopyIntoDictionary(child.DataPanel.Values, values!);
+        return child;
+    }
+
+    private async Task<ComponentResult> GetInternalActionResult(InternalAction action)
+    {
+        var child = await CreateInternalActionFormView(action);
+        var result = await child.GetFormResultAsync();
+        if (child._returnedToInternalActionParent || result is not HtmlComponentResult content)
+            return result;
+
+        if (action.ElementRedirect.ShowAsModal)
+            return new ContentComponentResult(content.HtmlBuilder);
+
+        var html = new HtmlBuilder(HtmlTag.Div).WithNameAndId(Name);
+        html.Append(content.HtmlBuilder);
+        AppendFormViewHiddenInputs(html);
+        return ComponentContext is ComponentContext.FormViewReload
+            ? new ContentComponentResult(html)
+            : new RenderedComponentResult(html);
     }
 
     private async Task<ComponentResult> GetHtmlTemplateActionResult(HtmlTemplateAction htmlTemplateAction)
@@ -1349,7 +1479,8 @@ public class JJFormView : AsyncComponent
         DataPanel.Errors = errors;
         DataPanel.Values = values;
         DataPanel.AutoReloadFormFields = autoReloadFormFields;
-        DataPanel.IsAtModal = CurrentAction is IModalAction { ShowAsModal: true };
+        DataPanel.IsAtModal = _internalAction?.ElementRedirect.ShowAsModal == true ||
+                              CurrentAction is IModalAction { ShowAsModal: true };
 
         if (!containsRelationshipLayout)
             return await GetDataPanelResult();
@@ -1749,7 +1880,7 @@ public class JJFormView : AsyncComponent
         var reloadFormFields = IsReloadFields();
         var values =
             await _formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData,
-                reloadFormFields);
+                reloadFormFields, IsInternalActionFormView ? DataPanel.FieldNamePrefix : null);
 
         _formStateData = new FormStateData(values, UserValues, PageState);
         return _formStateData;
@@ -1770,7 +1901,7 @@ public class JJFormView : AsyncComponent
         var initialFormStateData = new FormStateData(initialValues, UserValues, PageState);
         var values =
             await _formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData,
-                reloadFormFields);
+                reloadFormFields, IsInternalActionFormView ? DataPanel.FieldNamePrefix : null);
 
         var formStateData = new FormStateData(values, UserValues, PageState);
         return formStateData;

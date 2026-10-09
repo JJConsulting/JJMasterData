@@ -17,61 +17,9 @@ namespace JJMasterData.Core.UI.Components;
 public class ActionScripts(
     ExpressionsService expressionsService,
     UrlRedirectService urlRedirectService,
-    IUrlHelper urlHelper,
     DataProtectionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
-    {
-        var elementRedirect = action.ElementRedirect;
-        string confirmationMessage =
-            GetParsedConfirmationMessage(stringLocalizer[action.ConfirmationMessage ?? string.Empty], actionContext.FormStateData);
-        int popupSize = (int)elementRedirect.ModalSize;
-
-        var @params = new StringBuilder();
-
-        @params.Append("formname=");
-        @params.Append(elementRedirect.ElementNameRedirect);
-        @params.Append("&showTitle=");
-        @params.Append(action.ShowTitle ? '1' : '0');
-        @params.Append("&parentElementName=");
-        @params.Append(actionContext.FormElement.Name);
-        @params.Append("&viewtype=");
-        @params.Append((int)elementRedirect.ViewType);
-        @params.Append("&openInModal=");
-        @params.Append(elementRedirect.ShowAsModal ? '1' : '0');
-        
-        foreach (var field in elementRedirect.RelationFields)
-        {
-            if (actionContext.FormStateData.UserValues?.TryGetValue(field.InternalField, out var userValue) is true)
-            {
-                @params.Append('&');
-                @params.Append(field.RedirectField);
-                @params.Append('=');
-                @params.Append(userValue);
-            }
-            
-            if (actionContext.FormStateData.Values.TryGetValue(field.InternalField, out var value))
-            {
-                @params.Append('&');
-                @params.Append(field.RedirectField);
-                @params.Append('=');
-                @params.Append(value);
-            }
-        }
-
-        string url = urlHelper.Action("Index", "InternalRedirect",
-            new
-            {
-                Area = "MasterData",
-                parameters = encryptionService.Protect(@params.ToString())
-            });
-
-        return
-            $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}', '{actionContext.ParentComponentName}', {elementRedirect.ShowAsModal.ToString().ToLowerInvariant()});";
-    }
-
-    
     private string GetHtmlTemplateScript(
         ActionContext actionContext,
         ActionSource actionSource
@@ -185,6 +133,12 @@ public class ActionScripts(
             actionData.IsModal = true;
         }
 
+        if (action is InternalAction internalAction)
+        {
+            actionData.IsModal = internalAction.ElementRedirect.ShowAsModal;
+            actionData.ModalTitle = stringLocalizer[action.Text ?? string.Empty];
+        }
+
         if (actionData.IsModal && !actionData.IsSubmit)
             actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
 
@@ -204,6 +158,12 @@ public class ActionScripts(
 
         if (actionData.ConfirmationMessage != null)
             attributes["data-confirmation-message"] = actionData.ConfirmationMessage;
+
+        if (action is InternalAction internalRedirect)
+        {
+            attributes["data-internal-action"] = "true";
+            attributes["data-modal-size"] = ((int)internalRedirect.ElementRedirect.ModalSize).ToString();
+        }
 
         return attributes;
     }
@@ -232,8 +192,7 @@ public class ActionScripts(
         else if (action is ScriptAction jsAction)
             button.OnClientClick= expressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ??
                                   string.Empty;
-        else if (action is InternalAction internalAction)
-            button.OnClientClick= GetInternalUrlScript(internalAction, actionContext);
+
         else if (action is HtmlTemplateAction)
             button.OnClientClick= GetHtmlTemplateScript(actionContext, actionSource);
         else
