@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using JJConsulting.Html.Bootstrap.Models;
 
 
 namespace JJMasterData.Core.DataDictionary.Models;
@@ -7,7 +8,10 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormUI
 {
-        
+    [JsonPropertyName("tabsStyle")]
+    [Display(Name = "Tabs Style")]
+    public TabsStyle TabsStyle { get; set; } = TabsStyle.Default;
+    
     /// <summary>
     /// Number of columns at the form to be rendered
     /// Default value: 1
