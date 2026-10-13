@@ -49,6 +49,10 @@
     href: developer-guide/ui-customization.md
   - name: Custom Bootstrap
     href: developer-guide/custom-bootstrap.md
+  - name: Bootstrap Components
+    href: developer-guide/bootstrap-components.md
+  - name: Bootstrap Tag Helpers
+    href: developer-guide/bootstrap-tag-helpers.md
   - name: HtmlBuilder
     href: developer-guide/html-builder.md
   - name: Extension points

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net10.0;netstandard2.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <Description>JJConsulting.Html provides a fluent, low-allocation, strongly typed API for constructing HTML.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\JJConsulting.Html.SourceGenerators\JJConsulting.Html.SourceGenerators.csproj" OutputItemType="Analyzer"
+                        ReferenceOutputAssembly="false"  />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+      <PackageReference Include="System.Text.Encodings.Web" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Html.Abstractions" />
+    </ItemGroup>
+</Project>

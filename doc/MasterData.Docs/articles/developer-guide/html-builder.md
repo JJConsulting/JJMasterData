@@ -2,6 +2,8 @@
 
 `HtmlBuilder` creates HTML programmatically through a fluent API. It is the type returned by many JJMasterData UI components and is useful when an event handler, component, or Tag Helper needs to compose or change markup without building strings manually.
 
+The library is useful when markup depends on runtime data or application logic, when a reusable Tag Helper needs to compose content, or when a small HTML fragment is easier to express in C# than in a separate Razor template. It is not intended to replace Razor for page-sized views.
+
 The package is `JJConsulting.Html`. JJMasterData references it transitively; an application that uses the builder outside JJMasterData can add it explicitly:
 
 ```bash
@@ -49,6 +51,19 @@ var message = HtmlBuilder.Div()
 
 `HtmlBuilder.Div()`, `HtmlBuilder.Input()` and the other tag factories are extensions supplied by `JJConsulting.Html.Extensions`. `HtmlTag` contains the supported HTML tags; void tags such as `Input`, `Img`, `Br` and `Hr` render as `<input />`, `<img />`, `<br />` and `<hr />`.
 
+The tag factories are generated from `HtmlTag`, so the factory and `Append<Tag>` methods stay aligned with the supported tag list. A factory can start empty, take encoded text, or take child `IHtmlContent` values:
+
+```csharp
+var title = HtmlBuilder.H1("Customer details");
+var list = HtmlBuilder.Ul(
+    HtmlBuilder.Li("First item"),
+    HtmlBuilder.Li("Second item"));
+
+var page = HtmlBuilder.Main(title, list);
+```
+
+Use `using JJConsulting.Html.Extensions;` to make the fluent extension methods available. The DSL factories are static extension members on `HtmlBuilder`, so call them with `HtmlBuilder.Div(...)` rather than importing them as ordinary static methods.
+
 ## Text, encoding, and raw markup
 
 `AppendText` HTML-encodes text. Attribute values are also encoded when the builder is rendered. This is the appropriate default for values that can originate outside trusted application code.
@@ -66,6 +81,8 @@ var html = HtmlBuilder.Div().Append(icon);
 ```
 
 Only use `encode: false`, `AppendStyle`, and `AppendScript` with content fully controlled by the application. They write their contents without HTML encoding and must never receive untrusted user input.
+
+`ToString()` renders the complete fragment into a string. When writing to an ASP.NET Core response or another `TextWriter`, prefer `IHtmlContent.WriteTo(writer, encoder)` so the builder can write directly to the destination instead of first creating an intermediate string.
 
 ## Attributes and conditional output
 
@@ -92,6 +109,19 @@ var saveButton = HtmlBuilder.Button()
 ```
 
 An attribute whose value is `null` is rendered as a boolean attribute (for example, `disabled`). Attributes are stored by name case-insensitively; setting the same name again replaces its value. `GetAttribute` and `TryGetAttribute` can inspect attributes previously added to a tagged builder.
+
+`WithCssClass` merges class names and avoids duplicates. Conditional helpers return the same builder, which keeps conditional markup in the same chain:
+
+```csharp
+var button = HtmlBuilder.Button()
+    .WithAttribute("type", "submit")
+    .WithCssClass("btn")
+    .WithCssClassIf(isPrimary, "btn-primary")
+    .WithAttributeIf(isDisabled, "disabled")
+    .AppendTextIf(!isDisabled, "Continue");
+```
+
+`AppendIf` can conditionally append either a builder or a tag. These helpers omit the element or attribute when the condition is false; they do not render a placeholder.
 
 ## Razor and Tag Helpers
 
@@ -123,3 +153,37 @@ var fragment = HtmlBuilder.Div()
 ```
 
 Prefer static bundled assets for shared code. These methods are suited to small, trusted fragments that must accompany dynamically generated HTML.
+
+## Build a declarative fragment
+
+For markup with a clear tree structure, generated tag factories can make the composition more compact than a sequence of `Append<Tag>` calls:
+
+```csharp
+using JJConsulting.Html;
+using JJConsulting.Html.Extensions;
+
+var navigation = HtmlBuilder.Nav(
+    HtmlBuilder.Ul(
+        HtmlBuilder.Li(HtmlBuilder.A("Home").WithHref("/")),
+        HtmlBuilder.Li(HtmlBuilder.A("Customers").WithHref("/customers"))))
+    .WithCssClass("main-navigation");
+```
+
+The DSL and fluent API can be mixed: factories create the tree, and fluent methods add attributes or conditional children. Both produce `HtmlBuilder` instances and can be appended to other `IHtmlContent` fragments.
+
+## Add project-specific helpers
+
+Applications can add extension members for repeated attributes or components while keeping the underlying builder API:
+
+```csharp
+public static class AppHtmlBuilderExtensions
+{
+    extension(HtmlBuilder html)
+    {
+        public HtmlBuilder WithDataAttribute(string name, string value) =>
+            html.WithAttribute($"data-{name}", value);
+    }
+}
+```
+
+This syntax uses C# 14 extension members. Keep helpers that emit raw markup restricted to trusted values, just like the built-in script and style methods.

@@ -1,0 +1,125 @@
+﻿namespace JJConsulting.Html;
+
+public readonly struct HtmlTag
+{
+    public readonly string Name;
+    public readonly bool HasClosingTag;
+
+    private HtmlTag(string name, bool hasClosingTag = true)
+    {
+        Name = name;
+        HasClosingTag = hasClosingTag;
+    }
+
+    #region Available Tags
+    public static readonly HtmlTag A = new("a");
+    public static readonly HtmlTag Abbr = new("abbr");
+    public static readonly HtmlTag Address = new("address");
+    public static readonly HtmlTag Area = new("area", false);
+    public static readonly HtmlTag Article = new("article");
+    public static readonly HtmlTag Aside = new("aside");
+    public static readonly HtmlTag Audio = new("audio");
+    public static readonly HtmlTag B = new("b");
+    public static readonly HtmlTag Base = new("base", false);
+    public static readonly HtmlTag Bdi = new("bdi");
+    public static readonly HtmlTag Bdo = new("bdo");
+    public static readonly HtmlTag Blockquote = new("blockquote");
+    public static readonly HtmlTag Body = new("body");
+    public static readonly HtmlTag Br = new("br", false);
+    public static readonly HtmlTag Button = new("button");
+    public static readonly HtmlTag Canvas = new("canvas");
+    public static readonly HtmlTag Caption = new("caption");
+    public static readonly HtmlTag Center = new("center");
+    public static readonly HtmlTag Cite = new("cite");
+    public static readonly HtmlTag Code = new("code");
+    public static readonly HtmlTag Col = new("col", false);
+    public static readonly HtmlTag ColGroup = new("colgroup");
+    public static readonly HtmlTag Data = new("data");
+    public static readonly HtmlTag Datalist = new("datalist");
+    public static readonly HtmlTag Dd = new("dd");
+    public static readonly HtmlTag Del = new("del");
+    public static readonly HtmlTag Details = new("details");
+    public static readonly HtmlTag Dfn = new("dfn");
+    public static readonly HtmlTag Dialog = new("dialog");
+    public static readonly HtmlTag Div = new("div");
+    public static readonly HtmlTag Dl = new("dl");
+    public static readonly HtmlTag Dt = new("dt");
+    public static readonly HtmlTag Em = new("em");
+    public static readonly HtmlTag Embed = new("embed", false);
+    public static readonly HtmlTag Fieldset = new("fieldset");
+    public static readonly HtmlTag Figcaption = new("figcaption");
+    public static readonly HtmlTag Figure = new("figure");
+    public static readonly HtmlTag Footer = new("footer");
+    public static readonly HtmlTag Form = new("form");
+    public static readonly HtmlTag H1 = new("h1");
+    public static readonly HtmlTag H2 = new("h2");
+    public static readonly HtmlTag H3 = new("h3");
+    public static readonly HtmlTag H4 = new("h4");
+    public static readonly HtmlTag H5 = new("h5");
+    public static readonly HtmlTag H6 = new("h6");
+    public static readonly HtmlTag Head = new("head");
+    public static readonly HtmlTag Header = new("header");
+    public static readonly HtmlTag Hr = new("hr", false);
+    public static readonly HtmlTag Html = new("html");
+    public static readonly HtmlTag I = new("i");
+    public static readonly HtmlTag Iframe = new("iframe");
+    public static readonly HtmlTag Img = new("img", false);
+    public static readonly HtmlTag Input = new("input", false);
+    public static readonly HtmlTag Ins = new("ins");
+    public static readonly HtmlTag Kbd = new("kbd");
+    public static readonly HtmlTag Label = new("label");
+    public static readonly HtmlTag Legend = new("legend");
+    public static readonly HtmlTag Li = new("li");
+    public static readonly HtmlTag Link = new("link", false);
+    public static readonly HtmlTag Main = new("main");
+    public static readonly HtmlTag Map = new("map");
+    public static readonly HtmlTag Mark = new("mark");
+    public static readonly HtmlTag Meta = new("meta", false);
+    public static readonly HtmlTag Meter = new("meter");
+    public static readonly HtmlTag Nav = new("nav");
+    public static readonly HtmlTag Noscript = new("noscript");
+    public static readonly HtmlTag Object = new("object");
+    public static readonly HtmlTag Ol = new("ol");
+    public static readonly HtmlTag OptGroup = new("optgroup");
+    public static readonly HtmlTag Option = new("option");
+    public static readonly HtmlTag Output = new("output");
+    public static readonly HtmlTag P = new("p");
+    public static readonly HtmlTag Picture = new("picture");
+    public static readonly HtmlTag Pre = new("pre");
+    public static readonly HtmlTag Progress = new("progress");
+    public static readonly HtmlTag Q = new("q");
+    public static readonly HtmlTag Rp = new("rp");
+    public static readonly HtmlTag Rt = new("rt");
+    public static readonly HtmlTag Ruby = new("ruby");
+    public static readonly HtmlTag S = new("s");
+    public static readonly HtmlTag Samp = new("samp");
+    public static readonly HtmlTag Script = new("script");
+    public static readonly HtmlTag Section = new("section");
+    public static readonly HtmlTag Select = new("select");
+    public static readonly HtmlTag Small = new("small");
+    public static readonly HtmlTag Source = new("source", false);
+    public static readonly HtmlTag Span = new("span");
+    public static readonly HtmlTag Strong = new("strong");
+    public static readonly HtmlTag Style = new("style");
+    public static readonly HtmlTag Sub = new("sub");
+    public static readonly HtmlTag Summary = new("summary");
+    public static readonly HtmlTag Sup = new("sup");
+    public static readonly HtmlTag Table = new("table");
+    public static readonly HtmlTag Tbody = new("tbody");
+    public static readonly HtmlTag Td = new("td");
+    public static readonly HtmlTag Template = new("template");
+    public static readonly HtmlTag TextArea = new("textarea");
+    public static readonly HtmlTag Tfoot = new("tfoot");
+    public static readonly HtmlTag Th = new("th");
+    public static readonly HtmlTag Thead = new("thead");
+    public static readonly HtmlTag Time = new("time");
+    public static readonly HtmlTag Title = new("title");
+    public static readonly HtmlTag Tr = new("tr");
+    public static readonly HtmlTag Track = new("track", false);
+    public static readonly HtmlTag U = new("u");
+    public static readonly HtmlTag Ul = new("ul");
+    public static readonly HtmlTag Var = new("var");
+    public static readonly HtmlTag Video = new("video");
+    public static readonly HtmlTag Wbr = new("wbr", false);
+    #endregion
+}

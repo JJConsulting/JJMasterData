@@ -30,6 +30,9 @@ jobs:
     strategy:
       matrix:
         project:
+          - src/Html/JJConsulting.Html
+          - src/Html/JJConsulting.Html.Bootstrap
+          - src/Html/JJConsulting.Html.Bootstrap.TagHelpers
           - src/MasterData.Storage.Abstractions
           - src/MasterData.Commons
           - src/MasterData.Core
