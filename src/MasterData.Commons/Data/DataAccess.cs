@@ -10,7 +10,6 @@ using System.Text;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -60,6 +59,12 @@ public partial class DataAccess
         _dbProviderFactory = DataAccessProviderFactory.GetDbProviderFactory(_connectionProvider);
     }
 
+    public DataAccess(string connectionString, DbProviderFactory dbProviderFactory)
+    {
+        _connectionString = connectionString;
+        _dbProviderFactory = dbProviderFactory;
+    }
+
     [ActivatorUtilitiesConstructor]
     public DataAccess(IOptionsSnapshot<MasterDataCommonsOptions> options)
     {
@@ -72,12 +77,20 @@ public partial class DataAccess
     [MustDisposeResource]
     private DbConnection CreateConnection()
     {
-        var connection = _dbProviderFactory.CreateConnection();
-        
-        connection!.ConnectionString = _connectionString;
-        connection.Open();
-        
-        return connection;
+        var connection = _dbProviderFactory.CreateConnection()
+            ?? throw new DataAccessException("The database provider could not create a connection.");
+
+        try
+        {
+            connection.ConnectionString = _connectionString;
+            connection.Open();
+            return connection;
+        }
+        catch
+        {
+            connection.Dispose();
+            throw;
+        }
     }
 
     /// <summary>
@@ -225,10 +238,8 @@ public partial class DataAccess
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
 
-            using (dbCommand.Connection)
-            {
-                scalarResult = dbCommand.ExecuteScalar();
-            }
+            scalarResult = dbCommand.ExecuteScalar();
+            SetOutputParameters(command, dbCommand);
         }
         catch (Exception ex)
         {
@@ -288,6 +299,7 @@ public partial class DataAccess
                     dbCommand.Transaction = sqlTransaction;
 
                     numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+                    SetOutputParameters(command, dbCommand);
                 }
 
                 sqlTransaction.Commit();
@@ -340,10 +352,8 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
-            using (dbCommand.Connection)
-            {
-                numberOfRowsAffected += dbCommand.ExecuteNonQuery();
-            }
+            numberOfRowsAffected = dbCommand.ExecuteNonQuery();
+            SetOutputParameters(command, dbCommand);
         }
         catch (Exception ex)
         {

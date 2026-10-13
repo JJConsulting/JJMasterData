@@ -8,7 +8,6 @@ using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -148,17 +147,14 @@ public class DataItemService(
         
         DataTable dataTable;
 
-        using (logger.BeginCommandScope(command))
+        try
         {
-            try
-            {
-                dataTable = await entityRepository.GetDataTableAsync(command, dataQuery.ConnectionId);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error recovering SQL DataItem.");
-                throw;
-            }
+            dataTable = await entityRepository.GetDataTableAsync(command, dataQuery.ConnectionId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error recovering SQL DataItem.");
+            throw;
         }
         
         var searchText = dataQuery.SearchText;

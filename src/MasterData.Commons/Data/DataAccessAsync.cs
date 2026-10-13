@@ -20,12 +20,20 @@ public partial class DataAccess
     [MustDisposeResource]
     private async Task<DbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
     {
-        var connection = _dbProviderFactory.CreateConnection();
+        var connection = _dbProviderFactory.CreateConnection()
+            ?? throw new DataAccessException("The database provider could not create a connection.");
 
-        connection!.ConnectionString = _connectionString;
-        await connection.OpenAsync(cancellationToken);
-
-        return connection;
+        try
+        {
+            connection.ConnectionString = _connectionString;
+            await connection.OpenAsync(cancellationToken);
+            return connection;
+        }
+        catch
+        {
+            await connection.DisposeAsync();
+            throw;
+        }
     }
 
     ///<inheritdoc cref="GetDataTable(string)"/>
@@ -80,9 +88,9 @@ public partial class DataAccess
                 await using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
                     await readerAction(reader, state, cancellationToken);
-
-                    SetOutputParameters(command, dbCommand);
                 }
+
+                SetOutputParameters(command, dbCommand);
             }
         }
         catch (Exception ex)
@@ -163,6 +171,7 @@ public partial class DataAccess
                 dbCommand.Transaction = transaction;
 
                 numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
+                SetOutputParameters(command, dbCommand);
             }
             await transaction.CommitAsync(cancellationToken);
         }
