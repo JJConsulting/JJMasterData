@@ -126,7 +126,10 @@ public sealed class ExcelXlsxExportFormatTests
                 cancellationToken: TestContext.Current.CancellationToken),
             1);
 
-        var bytes = await WriteAsync(context, TestContext.Current.CancellationToken);
+        var bytes = await WriteAsync(
+            context,
+            TestContext.Current.CancellationToken,
+            new ExcelXlsxExportOptions { IncludeFirstRowAsHeader = false });
         var row = Assert.Single(Query(bytes, false));
 
         Assert.Equal("Ada", row["A"]);
