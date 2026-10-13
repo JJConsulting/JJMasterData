@@ -47,7 +47,7 @@
     <Project Path="test\Plugins\MasterData.Brasil.Test\MasterData.Brasil.Test.csproj" />
   </Folder>
   <Folder Name="/Examples/">
-    <Project Path="example/MasterData.Data.SourceGenerator/MasterData.Data.SourceGenerator.csproj" />
+    <Project Path="example/MasterData.Data.SourceGenerator.Example/MasterData.Data.SourceGenerator.Example.csproj" />
   </Folder>
   <Project Path="example\MasterData.WebEntryPoint\MasterData.WebEntryPoint.csproj" />
   <Project Path="src\MasterData.Commons\MasterData.Commons.csproj" />
