@@ -37,6 +37,9 @@
 	  <Compile Update="Data\DataAccessAsync.cs">
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
+	  <Compile Update="Data\DataAccessOfT.cs">
+	    <DependentUpon>DataAccess.cs</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\MasterData.Storage.Abstractions\MasterData.Storage.Abstractions.csproj" />

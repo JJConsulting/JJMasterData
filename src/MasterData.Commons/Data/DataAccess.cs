@@ -631,27 +631,36 @@ public partial class DataAccess
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = _dbProviderFactory.CreateCommand();
-        
+
         if (dbCommand == null)
             throw new ArgumentException(nameof(dbCommand));
-        
-        if (string.IsNullOrEmpty(command.Sql))
-            throw new DataAccessException("Sql Command cannot be null or empty.");
-        
-        dbCommand.CommandType = command.Type;
-        dbCommand.CommandText = command.Sql;
-        
-#pragma warning disable CS0618 // Type or member is obsolete
-        dbCommand.CommandTimeout = command.TimeoutSeconds ?? TimeOut;
-#pragma warning restore CS0618 // Type or member is obsolete
-        
-        foreach (var parameter in command.Parameters)
-        {
-            var dbParameter = CreateDbParameter(parameter);
-            dbCommand.Parameters.Add(dbParameter);
-        }
 
-        return dbCommand;
+        try
+        {
+            if (string.IsNullOrEmpty(command.Sql))
+                throw new DataAccessException("Sql Command cannot be null or empty.");
+
+            dbCommand.CommandType = command.Type;
+            dbCommand.CommandText = command.Sql;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            dbCommand.CommandTimeout = command.TimeoutSeconds ?? TimeOut;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            foreach (var parameter in command.Parameters)
+            {
+                var dbParameter = CreateDbParameter(parameter);
+                dbCommand.Parameters.Add(dbParameter);
+            }
+
+            return dbCommand;
+        }
+        catch
+        {
+            // Configuration can fail before the caller acquires ownership of the command.
+            dbCommand.Dispose();
+            throw;
+        }
     }
 
     private DbParameter CreateDbParameter(DataAccessParameter parameter)

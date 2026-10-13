@@ -45,13 +45,15 @@ public partial class DataAccess
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
-        var dataTable = new DataTable();
-        await ExecuteDataCommandAsync(
+        return await ReadAsync(
             command,
-            dataTable,
-            static (dataAdapter, dataSet, cancellationToken) => dataAdapter.FillAsync(dataSet, cancellationToken),
+            static async (reader, token) =>
+            {
+                var dataTable = new DataTable();
+                await reader.FillAsync(dataTable, token);
+                return dataTable;
+            },
             cancellationToken);
-        return dataTable;
     }
 
     ///<inheritdoc cref="GetDataSet(string)"/>
@@ -63,21 +65,24 @@ public partial class DataAccess
     ///<inheritdoc cref="GetDataSet(DataAccessCommand)"/>
     public async Task<DataSet> GetDataSetAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
-        var dataSet = new DataSet();
-        await ExecuteDataCommandAsync(
+        return await ReadAsync(
             command,
-            dataSet,
-            static (dataAdapter, dataSet, cancellationToken) => dataAdapter.FillAsync(dataSet, cancellationToken),
+            static async (reader, token) =>
+            {
+                var dataSet = new DataSet();
+                await reader.FillAsync(dataSet, token);
+                return dataSet;
+            },
             cancellationToken);
-        return dataSet;
     }
 
-    private async Task ExecuteDataCommandAsync<TState>(
+    private async Task<TResult> ReadAsync<TResult>(
         DataAccessCommand command,
-        TState state,
-        [RequireStaticDelegate] Func<DbDataReader, TState, CancellationToken, Task> readerAction,
+        Func<DbDataReader, CancellationToken, Task<TResult>> read,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(read);
+
         try
         {
             await using var dbCommand = CreateDbCommand(command);
@@ -85,12 +90,14 @@ public partial class DataAccess
 
             await using (dbCommand.Connection)
             {
+                TResult result;
                 await using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
-                    await readerAction(reader, state, cancellationToken);
+                    result = await read(reader, cancellationToken);
                 }
 
                 SetOutputParameters(command, dbCommand);
+                return result;
             }
         }
         catch (Exception ex)
