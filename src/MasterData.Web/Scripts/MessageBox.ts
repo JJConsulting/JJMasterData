@@ -33,38 +33,8 @@ class MessageBox {
 
     private static showModal(): void {
         const element = document.getElementById(MessageBox.modalId);
-        const parent = Array.from(document.querySelectorAll<HTMLElement>(".modal.show"))
-            .filter(modal => modal !== element)
-            .sort((a, b) => Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex))[0];
-        const previousFocus = document.activeElement as HTMLElement;
-        const bodyOverflow = document.body.style.overflow;
-        const bodyPadding = document.body.style.paddingRight;
-        const backdrops = new Set(document.querySelectorAll(".modal-backdrop"));
-
-        if (parent) {
-            element.style.zIndex = String(Number(getComputedStyle(parent).zIndex) + 20);
-            // Bootstrap owns a single focus trap; suspend it while the child modal is open.
-            bootstrap.Modal.getInstance(parent)?._focustrap.deactivate();
-
-            $(element).one("hidden.bs.modal", () => {
-                if (!parent.isConnected || !parent.classList.contains("show"))
-                    return;
-                document.body.classList.add("modal-open");
-                document.body.style.overflow = bodyOverflow;
-                document.body.style.paddingRight = bodyPadding;
-                bootstrap.Modal.getInstance(parent)?._focustrap.activate();
-                if (previousFocus?.isConnected) previousFocus.focus();
-            });
-        }
-
         $(element).one("shown.bs.modal", () => document.getElementById(MessageBox.button1Id).focus());
-        bootstrap.Modal.getOrCreateInstance(element).show();
-
-        if (parent) {
-            const backdrop = Array.from(document.querySelectorAll<HTMLElement>(".modal-backdrop"))
-                .find(candidate => !backdrops.has(candidate));
-            if (backdrop) backdrop.style.zIndex = String(Number(element.style.zIndex) - 1);
-        }
+        Modal.showElement(element);
     }
 
     private static setButton(selector: string, label: string, callback?: (() => void) | null): void {
