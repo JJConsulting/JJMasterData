@@ -1,4 +1,5 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementPanel
@@ -18,6 +19,7 @@
     });
 
     function save() {
+        saveOptions();
         SpinnerOverlay.show();
         const url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
         const form = getMasterDataForm();
@@ -31,6 +33,14 @@
         const form = getMasterDataForm();
         form.action = url;
         form.submit();
+    }
+
+    function deletePanel(url) {
+        if (!confirm('@StringLocalizer["Are you sure you want to delete this panel?"]')) {
+            return;
+        }
+
+        postFormValues({ url: url, success: function () {} });
     }
     
     function showSuccess(fieldName) {
@@ -72,16 +82,22 @@
     }
 
     function moveUp() {
-        $('#listSelected option:selected:first-child').prop("selected", false);
-        before = $('#listSelected option:selected:first').prev();
-        $('#listSelected option:selected').detach().insertBefore(before);
+        $('#listSelected option:selected').each(function () {
+            const previous = $(this).prev();
+            if (previous.length && !previous.prop('selected')) {
+                $(this).insertBefore(previous);
+            }
+        });
         saveOptions();
     }
 
     function moveDown() {
-        $('#listSelected option:selected:last-child').prop("selected", false);
-        after = $('#listSelected option:selected:last').next();
-        $('#listSelected option:selected').detach().insertAfter(after);
+        $($('#listSelected option:selected').get().reverse()).each(function () {
+            const next = $(this).next();
+            if (next.length && !next.prop('selected')) {
+                $(this).insertAfter(next);
+            }
+        });
         saveOptions();
     }
 </script>
@@ -137,10 +153,10 @@
 
     <div class="col-sm-12 jjtoolbar">
         <hr/>
-        <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
-        <link-button text="Refresh" icon="Refresh" asp-action="Index" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId"/>
-        <link-button text="Delete" icon="SolidTrashCan" asp-action="Delete" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId"/>
-        <link-button text="Copy" icon="FilesO" on-client-click="copy()"/>
+        <link-button text="@StringLocalizer["Save"]" color="Primary" icon="Check" on-client-click="save()"/>
+        <link-button text="@StringLocalizer["Refresh"]" icon="Refresh" asp-action="Index" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId"/>
+        <link-button text="@StringLocalizer["Delete"]" icon="SolidTrashCan" type="LinkButtonType.Button" on-client-click="deletePanel('@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })')"/>
+        <link-button text="@StringLocalizer["Copy"]" icon="FilesO" on-client-click="copy()"/>
     </div>
 
 

@@ -211,12 +211,7 @@ class DataExportationHelper {
                 warningElement.style.display = "block";
         }
         
-        if (bootstrapVersion < 5) {
-            $("#data-exportation-modal-" + componentName).modal();
-        } else {
-            const modal = bootstrap.Modal.getOrCreateInstance(document.querySelector("#data-exportation-modal-" + componentName), {});
-            modal.show();
-        }
+        Modal.showElement(document.querySelector<HTMLElement>("#data-exportation-modal-" + componentName));
 
         listenAllEvents("#data-exportation-modal-" + componentName);
     }

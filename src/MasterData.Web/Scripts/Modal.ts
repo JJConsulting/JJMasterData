@@ -1,38 +1,21 @@
-﻿enum ModalSize {
+enum ModalSize {
     Fullscreen,
     ExtraLarge,
     Large,
     Default,
     Small
 }
-class ModalUrlOptions{
+
+class ModalUrlOptions {
     url: string
     requestOptions?: RequestInit
 }
 
-abstract class ModalBase{
-    modalId: string;
+class Modal {
+    modalId = "jjmasterdata-modal";
     modalElement: HTMLElement;
-    modalSize: ModalSize;
+    modalSize = ModalSize.ExtraLarge;
     centered: boolean;
-
-
-
-    abstract get modalTitle();
-    abstract set modalTitle(value: string);
-    
-    public constructor() {
-        this.modalId = "jjmasterdata-modal";
-        this.modalSize = ModalSize.ExtraLarge;
-    }
-    
-    abstract showIframe(url: string, title: string, size: ModalSize);
-
-    abstract showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize) : Promise<any>;
-    abstract hide();
-}
-
-class _Modal extends ModalBase {
 
     private modalSizeCssClass = {
         Default: "jj-modal-default",
@@ -41,9 +24,9 @@ class _Modal extends ModalBase {
         Small: "jj-modal-sm",
         Fullscreen: "modal-fullscreen",
     };
-    
+
     private _modalTitle: string;
-    
+
     get modalTitle(): string {
         return this._modalTitle;
     }
@@ -54,26 +37,10 @@ class _Modal extends ModalBase {
     }
 
 
-    constructor() {
-        super();
-    }
-    
-    private getBootstrapModal(){
-        return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
-    }
-    
-    private showModal(){
-        this.getBootstrapModal().show();
-    }
-
-    private hideModal(){
-        this.getBootstrapModal().hide();
-    }
-    
-    private getModalCssClass(){
+    private getModalCssClass() {
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
-    
+
     private createModalElement() {
         if (!document.getElementById(this.modalId)) {
             this.modalElement = document.createElement("div");
@@ -93,20 +60,19 @@ class _Modal extends ModalBase {
         </div>
       </div>`;
             let form = getMasterDataForm();
-            if(form){
+            if (form) {
                 form.appendChild(this.modalElement);
-            }
-            else{
+            } else {
                 document.body.appendChild(this.modalElement);
             }
-            
-            this.modalElement.addEventListener('hidden.bs.modal', () => {
-                document.getElementById(this.modalId).remove();
-            })
+
+            this.modalElement.addEventListener('hidden.bs.modal', event => {
+                if (event.target === this.modalElement) this.modalElement.remove();
+            });
 
         } else {
             this.modalElement = document.getElementById(this.modalId);
-            
+
             const dialog = document.getElementById(this.modalId + "-dialog");
 
             //@ts-ignore
@@ -119,283 +85,145 @@ class _Modal extends ModalBase {
         }
     }
 
-    override showIframe(url: string, title: string, size: ModalSize = null) {
+    showIframe(url: string, title: string, size: ModalSize = null) {
         this._modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
-        
+
         modalBody.innerHTML = `<iframe src="${url}" class="modal-iframe"></iframe>`;
 
-        this.showModal();
+        Modal.showElement(this.modalElement);
     }
 
-    override async showUrl(modalOptions: ModalUrlOptions | string, title: string, size: ModalSize = null) {
+    async showUrl(modalOptions: ModalUrlOptions | string, title: string, size: ModalSize = null) {
         this._modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
-        
-        let fetchUrl : string;
-        let fetchOptions : RequestInit;
+
+        let fetchUrl: string;
+        let fetchOptions: RequestInit;
 
         if (typeof modalOptions === 'object' && 'url' in modalOptions) {
             fetchUrl = modalOptions.url;
             fetchOptions = modalOptions.requestOptions;
-        }
-        else{
+        } else {
             fetchUrl = modalOptions;
         }
-        
+
         return await fetch(fetchUrl, fetchOptions)
-            .then( async response => {
+            .then(async response => {
                 if (response.headers.get("content-type")?.includes("application/json")) {
                     return response.json();
-                } 
-                else if(response.redirected){
+                } else if (response.redirected) {
                     window.open(response.url, '_blank').focus();
-                }
-                else {
-                   return response.text().then((htmlData)=>{
+                } else {
+                    return response.text().then((htmlData) => {
                         this.setAndShowModal(htmlData)
                     });
                 }
-        })
+            })
     }
-    
-    private setAndShowModal(content: string){
+
+    private setAndShowModal(content: string) {
         const modalBody = this.modalElement.querySelector<HTMLElement>(`#${this.modalId} .modal-body`);
         HTMLHelper.setInnerHTML(modalBody, content)
 
-        this.showModal();
+        Modal.showElement(this.modalElement);
     }
 
     hide() {
-        this.hideModal();
-    }
-    
-}
-
-class _LegacyModal extends ModalBase{
-    private _modalTitle: string;
-    
-    get modalTitle(): string {
-        return this._modalTitle;
-    }
-
-    set modalTitle(value: string) {
-        this._modalTitle = value;
-        document.getElementById(`${this.modalId}-title`).innerText = value;
-    }
-
-    constructor() {
-        super();
-    }
-    
-    private createModalHtml(content: string, isIframe: boolean) {
-        const size = isIframe
-            ? this.modalSize === ModalSize.Small
-                ? "auto"
-                : this.modalSize === ModalSize.ExtraLarge
-                    ? "65%"
-                    : "auto"
-            : "auto";
-
-        const html = `
-            <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
-                <div class="modal-dialog" style="position: auto; height: ${
-            this.modalSize === ModalSize.ExtraLarge
-                ? "95"
-                : this.modalSize === ModalSize.Large
-                    ? "75"
-                    : this.modalSize === ModalSize.Fullscreen
-                        ? "100"
-                        : "90"
-        }vh; width: ${size};">
-                    <div class="modal-content" style="height:100%;width:auto;">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title" id="${this.modalId}-title"></h4>
-                        </div>
-                        <div class="modal-body" style="height:90%;width:auto;">
-                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        return html;
-    }
-
-    private showModal() {
-        $(`#${this.modalId}`).modal();
-
-        
-        $("iframe").on("load", () => {
-            SpinnerOverlay.hide();
-        });
-    }
-
-    private setTitle(title: string) {
-        $(`#${this.modalId}-title`).html(title);
-    }
-
-    override showIframe(url: string, title: string, size: ModalSize = null) {
-        this.modalSize = size || this.modalSize;
-        const modalHtml = this.createModalHtml(url, true); // Using iframe
-
-        const modalIdSelector = `#${this.modalId}`;
-        if ($(modalIdSelector).length) {
-            $(modalIdSelector).remove();
-        }
-
-        const $form = $(getMasterDataForm());
-
-        if ($form.length) {
-            // @ts-ignore
-            $(modalHtml).appendTo($form);
-        } else {
-            $(modalHtml).appendTo($("body"));
-        }
-        
-        this.setTitle(title);
-        this.showModal();
-    }
-
-    override async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null) {
-        this.modalSize = size || this.modalSize;
-
-        let fetchUrl : string;
-        let fetchOptions : RequestInit;
-
-        if(typeof options === 'object' && 'url' in options){
-            fetchUrl = options.url;
-            fetchOptions = options.requestOptions;
-        }
-        else{
-            fetchUrl = options;
-        }
-        
-        try {
-            return await fetch(fetchUrl, fetchOptions)
-                .then( async response => {
-                    if (response.headers.get("content-type")?.includes("application/json")) {
-                        return response.json();
-                    }
-                    else if(response.redirected){
-                        window.open(response.url, '_blank').focus();
-                    }
-                    else {
-                        return response.text().then((htmlData) => {
-                            const modalHtml = this.createModalHtml(htmlData, false);
-                            const modalIdSelector = `#${this.modalId}`;
-                            if ($(modalIdSelector).length) {
-                                $(modalIdSelector).hide();
-                                $(".modal-backdrop").remove()
-                                $(modalIdSelector).remove();
-                            }
-                            // @ts-ignore
-                            const $form = $(getMasterDataForm());
-                            if ($form.length) {
-                                // @ts-ignore
-                                $(modalHtml).appendTo($form);
-                            } else {
-                                $(modalHtml).appendTo($("body"));
-                            }
-                            this.setTitle(title);
-                            this.showModal();
-                        });
-                    }
-                })
-        } catch (error) {
-            console.error("An error occurred while fetching content:", error);
-        }
-    }
-
-    override hide() {
-        $(`#${this.modalId}`).modal("hide");
-    }
-}
-
-
-
-
-class Modal {
-    private instance: ModalBase;
-
-    get modalId(): string {
-        return this.instance.modalId;
-    }
-
-    set modalId(value: string) {
-        this.instance.modalId = value;
-    }
-
-    get modalTitle(): string {
-        return this.instance.modalTitle;
-    }
-
-    set modalTitle(value: string) {
-        this.instance.modalTitle = value;
-    }
-
-    get modalSize(): ModalSize {
-        return this.instance.modalSize;
-    }
-
-    set modalSize(value: ModalSize) {
-        this.instance.modalSize = value;
-    }
-
-    get modalElement(): HTMLElement {
-        return this.instance.modalElement;
-    }
-
-    set modalElement(value: HTMLElement) {
-        this.instance.modalElement = value;
-    }
-
-    get centered(): boolean {
-        return this.instance.centered;
-    }
-
-    set centered(value: boolean) {
-        this.instance.centered = value;
-    }
-    
-    constructor() {
-        if (bootstrapVersion === 5) {
-            this.instance = new _Modal();
-        } else {
-            this.instance = new _LegacyModal();
-        }
-
-        this.instance.modalId = "jjmasterdata-modal";
-        this.instance.modalSize = ModalSize.ExtraLarge;
-    }
-
-    showIframe(url: string, title: string, size: ModalSize = null) {
-        this.instance.showIframe(url,title,size);
-    }
-    async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null): Promise<any> {
-        return await this.instance.showUrl(options,title,size);
+        bootstrap.Modal.getOrCreateInstance("#" + this.modalId).hide();
     }
 
     remove() {
-        this.instance.hide();
-        document.getElementById(this.instance.modalId).remove();
+        this.hide();
+        document.getElementById(this.modalId).remove();
     }
-    
-    hide() {
-        this.instance.hide();
+
+    static showElement(element: HTMLElement): void {
+        bootstrap.Modal.getOrCreateInstance(element).show();
     }
+
+    static prepareElement(element: HTMLElement): void {
+        const parent = Array.from(document.querySelectorAll<HTMLElement>(".modal.show"))
+            .filter(modal => modal !== element)
+            .sort((a, b) => Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex))[0];
+        const previousFocus = document.activeElement as HTMLElement;
+        const bodyOverflow = document.body.style.overflow;
+        const bodyPadding = document.body.style.paddingRight;
+        const backdrops = new Set(document.querySelectorAll(".modal-backdrop"));
+
+        const originalParent = element.parentElement;
+        if (originalParent?.closest(".modal")) {
+            // Keep nested dialogs outside transformed modal content and inside the form.
+            (getMasterDataForm() ?? document.body).appendChild(element);
+            element.addEventListener("hidden.bs.modal", () => {
+                // Restore only after the event has finished bubbling to delegated close handlers.
+                Promise.resolve().then(() => {
+                    if (originalParent.isConnected) originalParent.appendChild(element);
+                    else element.remove();
+                });
+            }, {once: true});
+        }
+
+        if (parent) {
+            element.style.zIndex = String(Number(getComputedStyle(parent).zIndex) + 20);
+            // Bootstrap owns a single focus trap; suspend it while the child modal is open.
+            bootstrap.Modal.getInstance(parent)?._focustrap.deactivate();
+
+            $(element).one("hidden.bs.modal", () => {
+                if (!parent.isConnected || !parent.classList.contains("show"))
+                    return;
+                document.body.classList.add("modal-open");
+                document.body.style.overflow = bodyOverflow;
+                document.body.style.paddingRight = bodyPadding;
+                bootstrap.Modal.getInstance(parent)?._focustrap.activate();
+                if (previousFocus?.isConnected) previousFocus.focus();
+            });
+        }
+
+        if (parent) {
+            // Bootstrap creates the backdrop after the show event; adjust it before the next paint.
+            Promise.resolve().then(() => {
+                const backdrop = Array.from(document.querySelectorAll<HTMLElement>(".modal-backdrop"))
+                    .find(candidate => !backdrops.has(candidate));
+                if (backdrop)
+                    backdrop.style.zIndex = String(Number(element.style.zIndex) - 1);
+            });
+        }
+    }
+
 }
+
+// Include dialogs opened by generated scripts, data attributes and Bootstrap's own API.
+document.addEventListener("show.bs.modal", event => {
+    if (event.target instanceof HTMLElement && event.target.classList.contains("modal"))
+        Modal.prepareElement(event.target);
+});
+
+// Bootstrap's data API normally closes the active dialog before toggling another one.
+document.addEventListener("click", event => {
+    if (!(event.target instanceof Element)) return;
+    const trigger = event.target.closest<HTMLElement>('[data-bs-toggle="modal"]');
+    if (!trigger?.closest(".modal.show") || trigger.matches(":disabled, .disabled")) return;
+    const selector = trigger.dataset.bsTarget || trigger.getAttribute("href")?.match(/#.+$/)?.[0];
+    const target = selector ? document.querySelector<HTMLElement>(selector) : null;
+    if (!target?.classList.contains("modal"))
+        return;
+    event.preventDefault();
+    event.stopPropagation();
+    const modal = bootstrap.Modal.getOrCreateInstance(target);
+    if (target.classList.contains("show")) modal.hide();
+    else modal.show();
+}, true);
 
 class DefaultModal {
 
-    static instance : Modal
+    static instance: Modal
+
     static getInstance() {
-        if(this.instance === undefined){
+        if (this.instance === undefined) {
             this.instance = new Modal();
         }
         return this.instance;
@@ -405,12 +233,13 @@ class DefaultModal {
 var defaultModal = DefaultModal.getInstance();
 
 // Compatibility with legacy systems.
-class popup{
+class popup {
     //Yes, the parameters are inverted.
-    static show(title,url,size = null){
-        defaultModal.showIframe(url,title,size)
+    static show(title, url, size = null) {
+        defaultModal.showIframe(url, title, size)
     }
-    static hide(){
+
+    static hide() {
         defaultModal.hide()
     }
 }

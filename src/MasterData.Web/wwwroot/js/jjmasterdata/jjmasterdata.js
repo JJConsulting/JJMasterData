@@ -159,36 +159,18 @@ class ActionHelper {
             }
         });
     }
-    static executeInternalRedirect(url_1, modalSize_1, confirmationMessage_1, componentName_1) {
-        return __awaiter(this, arguments, void 0, function* (url, modalSize, confirmationMessage, componentName, isModal = true) {
-            if (confirmationMessage) {
-                const confirmed = yield showConfirmationMessage(confirmationMessage);
-                if (!confirmed) {
-                    return false;
-                }
-            }
-            const selectedRowsInput = document.querySelector("#grid-view-selected-rows-" + componentName);
-            if (selectedRowsInput === null || selectedRowsInput === void 0 ? void 0 : selectedRowsInput.value) {
-                const redirectUrl = new URL(url, window.location.origin);
-                redirectUrl.searchParams.set("multiselectValues", selectedRowsInput.value);
-                url = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
-            }
-            if (isModal)
-                defaultModal.showIframe(url, "", modalSize);
-            else
-                window.location.href = url;
-        });
-    }
     static executeAction(actionName) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             const element = document.getElementById(actionName);
             const componentName = element.dataset.componentName;
             const actionMap = element.dataset.actionMap;
             const gridViewRouteContext = element.dataset.gridViewRouteContext;
             const modalTitle = element.dataset.modalTitle;
-            const isModal = element.dataset.isModal === "true";
-            const isSubmit = element.dataset.isSubmit === "true";
+            const internalModal = element.closest(".modal[data-internal-action]");
+            const isInternalAction = element.dataset.internalAction === "true";
+            const isModal = element.dataset.isModal === "true" || !!internalModal;
+            const isSubmit = !internalModal && element.dataset.isSubmit === "true";
             const confirmationMessage = element.dataset.confirmationMessage;
             if (confirmationMessage) {
                 const confirm = yield showConfirmationMessage(confirmationMessage);
@@ -211,21 +193,33 @@ class ActionHelper {
             }
             function onModalClose() {
                 formViewActionInput.value = String();
-                setPageState(componentName, PageState.List);
+                if (!isInternalAction && !internalModal)
+                    setPageState(componentName, PageState.List);
             }
             if (isModal) {
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
                 const modal = new Modal();
-                modal.modalId = componentName + "-modal";
-                $("body").on('hidden.bs.modal', "#" + modal.modalId, function () {
-                    onModalClose();
-                });
+                modal.modalId = (_b = internalModal === null || internalModal === void 0 ? void 0 : internalModal.id) !== null && _b !== void 0 ? _b : componentName + "-modal";
+                if (!internalModal) {
+                    $("body").one('hidden.bs.modal', "#" + modal.modalId, function () {
+                        onModalClose();
+                    });
+                }
                 SpinnerOverlay.show();
                 const requestOptions = getRequestOptions();
                 modal.showUrl({
                     url: urlBuilder.build(), requestOptions: requestOptions
-                }, modalTitle).then(function (data) {
+                }, modalTitle !== null && modalTitle !== void 0 ? modalTitle : internalModal === null || internalModal === void 0 ? void 0 : internalModal.dataset.modalTitle, element.dataset.modalSize ? Number(element.dataset.modalSize)
+                    : (internalModal === null || internalModal === void 0 ? void 0 : internalModal.dataset.modalSize) ? Number(internalModal.dataset.modalSize) : undefined).then(function (data) {
+                    if (isInternalAction) {
+                        const modalElement = document.getElementById(modal.modalId);
+                        modalElement.dataset.internalAction = "true";
+                        modalElement.dataset.componentName = componentName;
+                        modalElement.dataset.formViewRouteContext = formViewRouteContext;
+                        modalElement.dataset.modalTitle = modalTitle !== null && modalTitle !== void 0 ? modalTitle : "";
+                        modalElement.dataset.modalSize = element.dataset.modalSize;
+                    }
                     SpinnerOverlay.hide();
                     listenAllEvents("#" + modal.modalId + " ");
                     if (typeof data === "object") {
@@ -235,8 +229,16 @@ class ActionHelper {
                                 ActionHelper.submitWithScrollPosition();
                             }
                             else {
-                                modal.hide();
-                                GridViewHelper.refresh(componentName, gridViewRouteContext);
+                                if (internalModal) {
+                                    const originName = internalModal.dataset.componentName;
+                                    document.querySelector("#current-action-map-" + originName).value = "";
+                                    modal.hide();
+                                    FormViewHelper.refreshFormView(originName, internalModal.dataset.formViewRouteContext);
+                                }
+                                else {
+                                    modal.hide();
+                                    GridViewHelper.refresh(componentName, gridViewRouteContext);
+                                }
                             }
                         }
                     }
@@ -268,8 +270,9 @@ class ActionHelper {
         });
     }
     static hideActionModal(componentName) {
+        var _a, _b, _c;
         const modal = new Modal();
-        modal.modalId = componentName + "-modal";
+        modal.modalId = (_c = (_b = (_a = document.getElementById(componentName)) === null || _a === void 0 ? void 0 : _a.closest(".modal")) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : componentName + "-modal";
         modal.hide();
     }
     static launchUrl(url_1, isModal_1, title_1, confirmationMessage_1) {
@@ -744,13 +747,7 @@ class DataExportationHelper {
             if (totRows > 50000 && warningElement)
                 warningElement.style.display = "block";
         }
-        if (bootstrapVersion < 5) {
-            $("#data-exportation-modal-" + componentName).modal();
-        }
-        else {
-            const modal = bootstrap.Modal.getOrCreateInstance(document.querySelector("#data-exportation-modal-" + componentName), {});
-            modal.show();
-        }
+        Modal.showElement(document.querySelector("#data-exportation-modal-" + componentName));
         listenAllEvents("#data-exportation-modal-" + componentName);
     }
     static stopProcess(url, stopMessage) {
@@ -1933,130 +1930,61 @@ class MessageBox {
         $(MessageBox.jQueryModalContentId).html(content);
     }
     static showModal() {
-        if (bootstrapVersion < 5) {
-            $(MessageBox.jQueryModalId)
-                .modal()
-                .on("shown.bs.modal", function () {
-                $(MessageBox.jQueryModalButton1Id).focus();
-            });
-        }
-        else {
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById(MessageBox.modalId), {});
-            modal.show();
-            document.addEventListener("shown.bs.modal", function () {
-                document.getElementById(MessageBox.button1Id).focus();
-            });
-        }
+        const element = document.getElementById(MessageBox.modalId);
+        $(element).one("shown.bs.modal", () => document.getElementById(MessageBox.button1Id).focus());
+        Modal.showElement(element);
     }
-    static setBtn1(label, func) {
-        $(MessageBox.jQueryModalButton1Id).text(label);
-        if ($.isFunction(func)) {
-            $(MessageBox.jQueryModalButton1Id).on("click.siteModalClick1", func);
-        }
-        $(MessageBox.jQueryModalButton1Id).show();
+    static setButton(selector, label, callback) {
+        const button = $(selector).text(label).show();
+        if (callback)
+            button.on("click.siteModal", callback);
     }
-    static setBtn2(label, func) {
-        $(MessageBox.jQueryModalButton2Id).text(label);
-        if ($.isFunction(func)) {
-            $(MessageBox.jQueryModalButton2Id).on("click.siteModalClick2", func);
-        }
-        $(MessageBox.jQueryModalButton2Id).show();
-    }
-    static reset() {
-        MessageBox.hide();
-    }
-    static loadHtml(hasTitle, iconType, iconSize, allowClose) {
-        if ($(MessageBox.jQueryModalId).length) {
-            $(MessageBox.jQueryModalId).remove();
-        }
-        let html = "";
-        html += `<div id=\"site-modal\" tabindex=\"-1\" ${allowClose ? "data-bs-backdrop='static' data-bs-keyboard='false'" : ""} class=\"modal fade\" role=\"dialog\">\r\n`;
-        html += "  <div class=\"modal-dialog";
-        if (iconSize == TMessageSize.LARGE)
-            html += " modal-lg";
-        else if (iconSize == TMessageSize.SMALL)
-            html += " modal-sm";
-        html += "\" role=\"document\">\r\n";
-        html += "    <div class=\"modal-content\">\r\n";
-        html += "      <div class=\"modal-header\">\r\n";
-        if (bootstrapVersion >= 4 && hasTitle) {
-            html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
-        }
-        else if (bootstrapVersion >= 5) {
-            html +=
-                '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
-        }
-        else if (bootstrapVersion == 3 && hasTitle) {
-            html +=
-                '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
-        }
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-body\">\r\n";
-        html += "        <table border=\"0\">\r\n";
-        html += "          <tr>\r\n";
-        html += '            <td style="width:40px">\r\n';
-        if (iconType == TMessageIcon.ERROR) {
-            html += '              <span class="text-danger">\r\n';
-            html +=
-                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        else if (iconType == TMessageIcon.WARNING) {
-            html += '              <span class="text-warning">\r\n';
-            html +=
-                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        else if (iconType == TMessageIcon.INFO) {
-            html += '              <span class="text-info">\r\n';
-            html +=
-                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        else if (iconType == TMessageIcon.QUESTION) {
-            html += '              <span class="text-info">\r\n';
-            html +=
-                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size:1.875rem;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        html += "            </td>\r\n";
-        html += "            <td>\r\n";
-        html += '              <span id="site-modal-content"></span>\r\n';
-        html += "            </td>\r\n";
-        html += "          </tr>\r\n";
-        html += "        </table>\r\n";
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-footer\">\r\n";
-        if (bootstrapVersion == 3) {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
-        }
-        else {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
-        }
-        html += "      </div>\r\n";
-        html += "    </div>\r\n";
-        html += "  </div>\r\n";
-        html += "</div>\r\n";
-        $("body").append(html);
+    static loadHtml(hasTitle, iconType, size, allowClose) {
+        $(MessageBox.jQueryModalId).remove();
+        const sizeClass = size === TMessageSize.LARGE ? "modal-lg" : size === TMessageSize.SMALL ? "modal-sm" : "";
+        const icons = {
+            [TMessageIcon.ERROR]: ["text-danger", "fa-times-circle"],
+            [TMessageIcon.WARNING]: ["text-warning", "fa-exclamation-triangle"],
+            [TMessageIcon.INFO]: ["text-info", "fa-info-circle"],
+            [TMessageIcon.QUESTION]: ["text-info", "fa-question-circle"],
+        };
+        const icon = icons[iconType];
+        const header = hasTitle
+            ? '<h4 id="site-modal-title" class="modal-title"></h4>'
+            : '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>';
+        $("body").append(`
+            <div id="site-modal" tabindex="-1" class="modal fade" role="dialog"
+                 ${allowClose ? 'data-bs-backdrop="static" data-bs-keyboard="false"' : ""}>
+                <div class="modal-dialog ${sizeClass}" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">${header}</div>
+                        <div class="modal-body">
+                            <table border="0"><tr>
+                                <td style="width:40px">
+                                    ${icon ? `<span class="${icon[0]}"><span class="fa ${icon[1]}" aria-hidden="true" style="font-size:1.875rem;"></span></span>` : ""}
+                                </td>
+                                <td><span id="site-modal-content"></span></td>
+                            </tr></table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>
+                            <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>`);
     }
     static show(title, description, iconType, sizeType, btn1Label, btn1Callback, btn2Label, btn2Callback) {
-        MessageBox.reset();
+        MessageBox.hide();
         MessageBox.loadHtml((title != null && title != ""), iconType, sizeType || TMessageSize.DEFAULT, btn1Callback != null || btn2Callback != null);
         MessageBox.setTitle(title);
         MessageBox.setContent(description);
-        if (btn1Label === undefined) {
-            MessageBox.setBtn1(Localization.get("Close"), null);
-        }
-        else {
-            MessageBox.setBtn1(btn1Label, btn1Callback);
-        }
+        MessageBox.setButton(MessageBox.jQueryModalButton1Id, btn1Label !== null && btn1Label !== void 0 ? btn1Label : Localization.get("Close"), btn1Callback);
         if (btn2Label === undefined) {
             $(MessageBox.jQueryModalButton2Id).hide();
         }
         else {
-            MessageBox.setBtn2(btn2Label, btn2Callback);
+            MessageBox.setButton(MessageBox.jQueryModalButton2Id, btn2Label, btn2Callback);
         }
         MessageBox.showModal();
     }
@@ -2065,25 +1993,24 @@ class MessageBox {
         MessageBox.show(null, description, TMessageIcon.QUESTION, TMessageSize.DEFAULT, confirmLabel !== null && confirmLabel !== void 0 ? confirmLabel : Localization.get("Yes"), confirmCallback, cancelLabel !== null && cancelLabel !== void 0 ? cancelLabel : Localization.get("No"), cancelCallback !== null && cancelCallback !== void 0 ? cancelCallback : MessageBox.hide);
     }
     static showConfirmationMessage(message) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
+            let confirmed = false;
             MessageBox.showConfirmationDialog({
                 description: message,
                 cancelLabel: Localization.get('No'),
                 confirmLabel: Localization.get('Yes'),
                 confirmCallback: () => {
+                    confirmed = true;
                     MessageBox.hide();
-                    resolve(true);
                 },
-                cancelCallback: () => {
-                    MessageBox.hide();
-                    resolve(false);
-                },
+                cancelCallback: MessageBox.hide,
             });
+            $(MessageBox.jQueryModalId).one("hidden.bs.modal", () => resolve(confirmed));
         });
     }
     static hide() {
-        $(MessageBox.jQueryModalId).modal("hide");
-        $(".modal-backdrop").hide();
+        var _a;
+        (_a = bootstrap.Modal.getInstance(document.getElementById(MessageBox.modalId))) === null || _a === void 0 ? void 0 : _a.hide();
     }
 }
 MessageBox.jQueryModalId = "#site-modal";
@@ -2116,22 +2043,10 @@ var ModalSize;
 })(ModalSize || (ModalSize = {}));
 class ModalUrlOptions {
 }
-class ModalBase {
+class Modal {
     constructor() {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.ExtraLarge;
-    }
-}
-class _Modal extends ModalBase {
-    get modalTitle() {
-        return this._modalTitle;
-    }
-    set modalTitle(value) {
-        this._modalTitle = value;
-        document.getElementById(`${this.modalId}-title`).innerText = value;
-    }
-    constructor() {
-        super();
         this.modalSizeCssClass = {
             Default: "jj-modal-default",
             ExtraLarge: "jj-modal-xl",
@@ -2140,14 +2055,12 @@ class _Modal extends ModalBase {
             Fullscreen: "modal-fullscreen",
         };
     }
-    getBootstrapModal() {
-        return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
+    get modalTitle() {
+        return this._modalTitle;
     }
-    showModal() {
-        this.getBootstrapModal().show();
-    }
-    hideModal() {
-        this.getBootstrapModal().hide();
+    set modalTitle(value) {
+        this._modalTitle = value;
+        document.getElementById(`${this.modalId}-title`).innerText = value;
     }
     getModalCssClass() {
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
@@ -2177,8 +2090,9 @@ class _Modal extends ModalBase {
             else {
                 document.body.appendChild(this.modalElement);
             }
-            this.modalElement.addEventListener('hidden.bs.modal', () => {
-                document.getElementById(this.modalId).remove();
+            this.modalElement.addEventListener('hidden.bs.modal', event => {
+                if (event.target === this.modalElement)
+                    this.modalElement.remove();
             });
         }
         else {
@@ -2196,7 +2110,7 @@ class _Modal extends ModalBase {
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         modalBody.innerHTML = `<iframe src="${url}" class="modal-iframe"></iframe>`;
-        this.showModal();
+        Modal.showElement(this.modalElement);
     }
     showUrl(modalOptions_1, title_1) {
         return __awaiter(this, arguments, void 0, function* (modalOptions, title, size = null) {
@@ -2232,190 +2146,87 @@ class _Modal extends ModalBase {
     setAndShowModal(content) {
         const modalBody = this.modalElement.querySelector(`#${this.modalId} .modal-body`);
         HTMLHelper.setInnerHTML(modalBody, content);
-        this.showModal();
+        Modal.showElement(this.modalElement);
     }
     hide() {
-        this.hideModal();
-    }
-}
-class _LegacyModal extends ModalBase {
-    get modalTitle() {
-        return this._modalTitle;
-    }
-    set modalTitle(value) {
-        this._modalTitle = value;
-        document.getElementById(`${this.modalId}-title`).innerText = value;
-    }
-    constructor() {
-        super();
-    }
-    createModalHtml(content, isIframe) {
-        const size = isIframe
-            ? this.modalSize === ModalSize.Small
-                ? "auto"
-                : this.modalSize === ModalSize.ExtraLarge
-                    ? "65%"
-                    : "auto"
-            : "auto";
-        const html = `
-            <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
-                <div class="modal-dialog" style="position: auto; height: ${this.modalSize === ModalSize.ExtraLarge
-            ? "95"
-            : this.modalSize === ModalSize.Large
-                ? "75"
-                : this.modalSize === ModalSize.Fullscreen
-                    ? "100"
-                    : "90"}vh; width: ${size};">
-                    <div class="modal-content" style="height:100%;width:auto;">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title" id="${this.modalId}-title"></h4>
-                        </div>
-                        <div class="modal-body" style="height:90%;width:auto;">
-                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        return html;
-    }
-    showModal() {
-        $(`#${this.modalId}`).modal();
-        $("iframe").on("load", () => {
-            SpinnerOverlay.hide();
-        });
-    }
-    setTitle(title) {
-        $(`#${this.modalId}-title`).html(title);
-    }
-    showIframe(url, title, size = null) {
-        this.modalSize = size || this.modalSize;
-        const modalHtml = this.createModalHtml(url, true);
-        const modalIdSelector = `#${this.modalId}`;
-        if ($(modalIdSelector).length) {
-            $(modalIdSelector).remove();
-        }
-        const $form = $(getMasterDataForm());
-        if ($form.length) {
-            $(modalHtml).appendTo($form);
-        }
-        else {
-            $(modalHtml).appendTo($("body"));
-        }
-        this.setTitle(title);
-        this.showModal();
-    }
-    showUrl(options_1, title_1) {
-        return __awaiter(this, arguments, void 0, function* (options, title, size = null) {
-            this.modalSize = size || this.modalSize;
-            let fetchUrl;
-            let fetchOptions;
-            if (typeof options === 'object' && 'url' in options) {
-                fetchUrl = options.url;
-                fetchOptions = options.requestOptions;
-            }
-            else {
-                fetchUrl = options;
-            }
-            try {
-                return yield fetch(fetchUrl, fetchOptions)
-                    .then((response) => __awaiter(this, void 0, void 0, function* () {
-                    var _a;
-                    if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
-                        return response.json();
-                    }
-                    else if (response.redirected) {
-                        window.open(response.url, '_blank').focus();
-                    }
-                    else {
-                        return response.text().then((htmlData) => {
-                            const modalHtml = this.createModalHtml(htmlData, false);
-                            const modalIdSelector = `#${this.modalId}`;
-                            if ($(modalIdSelector).length) {
-                                $(modalIdSelector).hide();
-                                $(".modal-backdrop").remove();
-                                $(modalIdSelector).remove();
-                            }
-                            const $form = $(getMasterDataForm());
-                            if ($form.length) {
-                                $(modalHtml).appendTo($form);
-                            }
-                            else {
-                                $(modalHtml).appendTo($("body"));
-                            }
-                            this.setTitle(title);
-                            this.showModal();
-                        });
-                    }
-                }));
-            }
-            catch (error) {
-                console.error("An error occurred while fetching content:", error);
-            }
-        });
-    }
-    hide() {
-        $(`#${this.modalId}`).modal("hide");
-    }
-}
-class Modal {
-    get modalId() {
-        return this.instance.modalId;
-    }
-    set modalId(value) {
-        this.instance.modalId = value;
-    }
-    get modalTitle() {
-        return this.instance.modalTitle;
-    }
-    set modalTitle(value) {
-        this.instance.modalTitle = value;
-    }
-    get modalSize() {
-        return this.instance.modalSize;
-    }
-    set modalSize(value) {
-        this.instance.modalSize = value;
-    }
-    get modalElement() {
-        return this.instance.modalElement;
-    }
-    set modalElement(value) {
-        this.instance.modalElement = value;
-    }
-    get centered() {
-        return this.instance.centered;
-    }
-    set centered(value) {
-        this.instance.centered = value;
-    }
-    constructor() {
-        if (bootstrapVersion === 5) {
-            this.instance = new _Modal();
-        }
-        else {
-            this.instance = new _LegacyModal();
-        }
-        this.instance.modalId = "jjmasterdata-modal";
-        this.instance.modalSize = ModalSize.ExtraLarge;
-    }
-    showIframe(url, title, size = null) {
-        this.instance.showIframe(url, title, size);
-    }
-    showUrl(options_1, title_1) {
-        return __awaiter(this, arguments, void 0, function* (options, title, size = null) {
-            return yield this.instance.showUrl(options, title, size);
-        });
+        bootstrap.Modal.getOrCreateInstance("#" + this.modalId).hide();
     }
     remove() {
-        this.instance.hide();
-        document.getElementById(this.instance.modalId).remove();
+        this.hide();
+        document.getElementById(this.modalId).remove();
     }
-    hide() {
-        this.instance.hide();
+    static showElement(element) {
+        bootstrap.Modal.getOrCreateInstance(element).show();
+    }
+    static prepareElement(element) {
+        var _a, _b;
+        const parent = Array.from(document.querySelectorAll(".modal.show"))
+            .filter(modal => modal !== element)
+            .sort((a, b) => Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex))[0];
+        const previousFocus = document.activeElement;
+        const bodyOverflow = document.body.style.overflow;
+        const bodyPadding = document.body.style.paddingRight;
+        const backdrops = new Set(document.querySelectorAll(".modal-backdrop"));
+        const originalParent = element.parentElement;
+        if (originalParent === null || originalParent === void 0 ? void 0 : originalParent.closest(".modal")) {
+            ((_a = getMasterDataForm()) !== null && _a !== void 0 ? _a : document.body).appendChild(element);
+            element.addEventListener("hidden.bs.modal", () => {
+                Promise.resolve().then(() => {
+                    if (originalParent.isConnected)
+                        originalParent.appendChild(element);
+                    else
+                        element.remove();
+                });
+            }, { once: true });
+        }
+        if (parent) {
+            element.style.zIndex = String(Number(getComputedStyle(parent).zIndex) + 20);
+            (_b = bootstrap.Modal.getInstance(parent)) === null || _b === void 0 ? void 0 : _b._focustrap.deactivate();
+            $(element).one("hidden.bs.modal", () => {
+                var _a;
+                if (!parent.isConnected || !parent.classList.contains("show"))
+                    return;
+                document.body.classList.add("modal-open");
+                document.body.style.overflow = bodyOverflow;
+                document.body.style.paddingRight = bodyPadding;
+                (_a = bootstrap.Modal.getInstance(parent)) === null || _a === void 0 ? void 0 : _a._focustrap.activate();
+                if (previousFocus === null || previousFocus === void 0 ? void 0 : previousFocus.isConnected)
+                    previousFocus.focus();
+            });
+        }
+        if (parent) {
+            Promise.resolve().then(() => {
+                const backdrop = Array.from(document.querySelectorAll(".modal-backdrop"))
+                    .find(candidate => !backdrops.has(candidate));
+                if (backdrop)
+                    backdrop.style.zIndex = String(Number(element.style.zIndex) - 1);
+            });
+        }
     }
 }
+document.addEventListener("show.bs.modal", event => {
+    if (event.target instanceof HTMLElement && event.target.classList.contains("modal"))
+        Modal.prepareElement(event.target);
+});
+document.addEventListener("click", event => {
+    var _a, _b;
+    if (!(event.target instanceof Element))
+        return;
+    const trigger = event.target.closest('[data-bs-toggle="modal"]');
+    if (!(trigger === null || trigger === void 0 ? void 0 : trigger.closest(".modal.show")) || trigger.matches(":disabled, .disabled"))
+        return;
+    const selector = trigger.dataset.bsTarget || ((_b = (_a = trigger.getAttribute("href")) === null || _a === void 0 ? void 0 : _a.match(/#.+$/)) === null || _b === void 0 ? void 0 : _b[0]);
+    const target = selector ? document.querySelector(selector) : null;
+    if (!(target === null || target === void 0 ? void 0 : target.classList.contains("modal")))
+        return;
+    event.preventDefault();
+    event.stopPropagation();
+    const modal = bootstrap.Modal.getOrCreateInstance(target);
+    if (target.classList.contains("show"))
+        modal.hide();
+    else
+        modal.show();
+}, true);
 class DefaultModal {
     static getInstance() {
         if (this.instance === undefined) {

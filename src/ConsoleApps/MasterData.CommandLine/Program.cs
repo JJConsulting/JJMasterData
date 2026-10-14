@@ -22,6 +22,8 @@ app.Configure(config =>
         .WithDescription("Exports JSON dictionaries from the JJMasterData database to a folder.");
     config.AddCommand<DiffCommand>("diff")
         .WithDescription("Compares folder dictionaries against the JJMasterData database.");
+    config.AddCommand<SchemaCommand>("schema")
+        .WithDescription("Generates the FormElement JSON Schema.");
     config.ValidateExamples();
 });
 

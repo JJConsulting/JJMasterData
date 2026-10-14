@@ -29,7 +29,6 @@
     <ItemGroup>
         <PackageReference Include="EmbeddedSass.Net.MsBuild" PrivateAssets="all" />
         <PackageReference Include="JetBrains.Annotations" />
-        <PackageReference Include="JJConsulting.Html.Bootstrap.TagHelpers" />
         <PackageReference Include="Microsoft.TypeScript.MSBuild">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -44,6 +43,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\MasterData.Core\MasterData.Core.csproj" />
+        <ProjectReference Include="..\Html\JJConsulting.Html.Bootstrap.TagHelpers\JJConsulting.Html.Bootstrap.TagHelpers.csproj" />
     </ItemGroup>
     
 	<ItemGroup>

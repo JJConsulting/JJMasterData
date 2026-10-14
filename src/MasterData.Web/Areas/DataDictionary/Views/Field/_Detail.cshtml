@@ -1,4 +1,6 @@
 ﻿@using JJConsulting.FontAwesome
+@using JJConsulting.Html.Bootstrap.Models
+@using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.Events.Abstractions
 @using JJMasterData.Core.UI.Events.Abstractions
@@ -12,11 +14,39 @@
 @{
     string currentTab = ViewBag.Tab ?? "#div-general";
 
+    if (ViewData["DataTypeList"] is null)
+    {
+        var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+        foreach (var dataType in dataTypeList)
+            dataType.Group.Name = StringLocalizer[dataType.Group.Name];
+        ViewData["DataTypeList"] = dataTypeList;
+    }
+
+    if (ViewData["ComponentList"] is null)
+    {
+        var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
+        if (ViewData["IsForm"] is not true)
+            componentList.RemoveAll(c => c.Text == "File");
+        foreach (var component in componentList)
+            component.Group.Name = StringLocalizer[component.Group.Name];
+        ViewData["ComponentList"] = componentList;
+    }
+
     string Active(string tab)
     {
         return currentTab == tab ? "active show" : string.Empty;
     }
 }
+
+<script type="text/javascript">
+    function deleteField(url) {
+        if (!confirm('@StringLocalizer["Are you sure you want to delete this field?"]')) {
+            return;
+        }
+
+        postFormValues({ url: url, success: function () {} });
+    }
+</script>
 
 @{
     var elementName = ViewData["ElementName"]!.ToString()!;
@@ -129,11 +159,10 @@
 
 
     <link-button
-        asp-action="Delete"
-        asp-route-fieldName="@Model.Name"
-        asp-route-elementName="@elementName"
         text="@StringLocalizer["Delete"]"
-        icon="SolidTrashCan"/>
+        icon="SolidTrashCan"
+        type="LinkButtonType.Button"
+        on-client-click="deleteField('@Url.Action("Delete", new { fieldName = Model.Name, elementName })')"/>
 
     <link-button
         text="@StringLocalizer["Copy"]"

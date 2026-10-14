@@ -51,11 +51,9 @@
         </div>
     </div>
 
-    <div class="mb-3 col-sm-6 d-flex align-items-center">
-        <code-editor-button
-            asp-for="@Model.GridRenderingTemplate"
-            label="@StringLocalizer["Grid Rendering Template"]"
-            language="liquid"/>
+    <div class="mb-3 col-sm-12">
+        <label class="@BootstrapHelper.Label" asp-for="GridRenderingTemplate">@StringLocalizer["Grid Rendering Template"]</label>
+        <code-editor asp-for="GridRenderingTemplate" language="liquid" height="200" />
     </div>
 </div>
 

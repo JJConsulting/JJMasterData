@@ -71,7 +71,11 @@ public class JJGridView : AsyncComponent
     /// </remarks>
     public event GridDataLoadEventHandler? OnDataLoadAsync;
     public event EventHandler<ActionEventArgs>? OnRenderAction;
-    public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
+    public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync
+    {
+        add => Filter.OnFilterLoadAsync += value;
+        remove => Filter.OnFilterLoadAsync -= value;
+    }
     public event EventHandler<GridToolbarActionEventArgs>? OnRenderToolbarAction;
     public event AsyncEventHandler<GridRenderEventArgs>? OnBeforeTableRenderAsync;
     public event AsyncEventHandler<GridRenderEventArgs>? OnAfterTableRenderAsync;
@@ -373,7 +377,6 @@ public class JJGridView : AsyncComponent
                 return _filter;
             
             _filter = new GridFilter(this);
-            _filter.OnFilterLoadAsync += OnFilterLoadAsync;
 
             return _filter;
         }

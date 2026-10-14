@@ -4,8 +4,9 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class JJMasterDataTabNav : JJTabNav
 {
-    public JJMasterDataTabNav(IHttpContextAccessor formValues)
+    public JJMasterDataTabNav(IHttpContextAccessor formValues, string name)
     {
+        Name = name;
         var request = formValues.HttpContext?.Request;
         if (request?.HasFormContentType == true &&
             request.Form.TryGetValue("selected_tab_" + Name, out var value))

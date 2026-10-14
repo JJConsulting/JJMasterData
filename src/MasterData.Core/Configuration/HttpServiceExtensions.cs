@@ -10,6 +10,7 @@ public static class HttpServiceExtensions
     {
         services.AddHttpContextAccessor();
 
+        //todo: Deve ser removido pois esta obsoleto, o correto é usar LinkGenerator nas services.
 #pragma warning disable ASPDEPR006
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         
@@ -18,7 +19,7 @@ public static class HttpServiceExtensions
             var actionContextAccessor = serviceProvider.GetRequiredService<IActionContextAccessor>();
 #pragma warning restore ASPDEPR006
             var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
-            return urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+            return urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext ?? new());
         });
     }
 }

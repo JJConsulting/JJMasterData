@@ -22,10 +22,7 @@
                     <select size="10" name="listEnabled" id="listEnabled" multiple="multiple" class="form-control form-select" ondblclick="addFields()">
                         @foreach (FormElementField f in ViewBag.AvailableFields)
                         {
-                            if (f.PanelId == 0)
-                            {
-                                <option value="@f.Name">@f.Name</option>
-                            }
+                            <option value="@f.Name">@f.Name</option>
                         }
                     </select>
                 </td>
@@ -43,10 +40,7 @@
                         <select size="10" name="listSelected" id="listSelected" multiple="multiple" class="form-control form-select" ondblclick="removeFields()">
                             @foreach (FormElementField f in ViewBag.SelectedFields)
                             {
-                                if (f.PanelId == Model.PanelId)
-                                {
-                                    <option value="@f.Name">@f.Name</option>
-                                }
+                                <option value="@f.Name">@f.Name</option>
                             }
                         </select>
                     </div>

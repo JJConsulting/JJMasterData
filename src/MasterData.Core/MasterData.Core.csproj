@@ -26,7 +26,6 @@
         <PackageReference Include="CsvHelper" />
         <PackageReference Include="Fluid.Core" />
         <PackageReference Include="Jint" />
-        <PackageReference Include="JJConsulting.Html.Bootstrap" />
         <PackageReference Include="MiniExcel" />
         <PackageReference Include="NCalc.MemoryCache" />
         <PackageReference Include="NCalc.DependencyInjection" />
@@ -37,6 +36,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\MasterData.Commons\MasterData.Commons.csproj" />
+        <ProjectReference Include="..\Html\JJConsulting.Html.Bootstrap\JJConsulting.Html.Bootstrap.csproj" />
         <InternalsVisibleTo Include="JJMasterData.ConsoleApp" />
         <InternalsVisibleTo Include="JJMasterData.Core.Test" />
         <InternalsVisibleTo Include="JJMasterData.Web" />
