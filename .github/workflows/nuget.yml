@@ -34,7 +34,7 @@ jobs:
           - src/Html/JJConsulting.Html.Bootstrap
           - src/Html/JJConsulting.Html.Bootstrap.TagHelpers
           - src/MasterData.Storage.Abstractions
-          - src/MasterData.DataAccess.SourceGenerator
+          - src/MasterData.Data.SourceGenerator
           - src/MasterData.Commons
           - src/MasterData.Core
           - src/MasterData.Web
