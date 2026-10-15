@@ -30,8 +30,8 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
     {
         var panels = await GetTabPanelsHtml();
 
-        panels.AppendRange(await GetNonTabPanels());
-        panels.AppendRange(await GetFieldsWithoutPanel());
+        await AppendNonTabPanels(panels);
+        await AppendFieldsWithoutPanel(panels);
 
         return panels;
     }
@@ -47,39 +47,31 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
         return navTab.GetHtmlBuilder();
     }
 
-    private async Task<List<HtmlBuilder>> GetNonTabPanels()
+    private async Task AppendNonTabPanels(HtmlBuilder panels)
     {
-        List<HtmlBuilder> htmlList = [];
         foreach (var panel in _formElement.Panels.Where(p => p.Layout != PanelLayout.Tab && p.ParentId == null))
         {
-            var htmlPanel = await GetPanelHtml(panel);
-            if (htmlPanel != null)
-                htmlList.Add(htmlPanel);
+            panels.Append(await GetPanelHtml(panel));
         }
-
-        return htmlList;
     }
 
-    private async Task<List<HtmlBuilder>> GetFieldsWithoutPanel()
+    private async Task AppendFieldsWithoutPanel(HtmlBuilder panels)
     {
-        List<HtmlBuilder> htmlList = [];
         var dontContainsVisibleFields = !_formElement.Fields.Exists(x => x.PanelId == 0 && _expressionsService.GetBoolValue(x.VisibleExpression, _dataPanelForm.FormStateData));
     
         if (dontContainsVisibleFields)
-            return htmlList;
+            return;
     
         if (!_renderPanelGroup)
-            htmlList.Add(await GetHtmlForm(null));
+            panels.Append(await GetHtmlForm(null));
         else
         {
             var card = new JJCard
             {
                 Content = await GetHtmlForm(null)
             };
-            htmlList.Add(card.GetHtmlBuilder());
+            panels.Append(card.GetHtmlBuilder());
         }
-    
-        return htmlList;
     }
 
     private async Task<JJTabNav> GetTabNav(List<FormElementPanel> tabs)
@@ -126,58 +118,62 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
         if (!isVisible)
             return null;
 
-        if (panel.Layout == PanelLayout.Collapse)
+        var div = HtmlBuilder.Div().WithCssClass(panel.CssClass);
+        
+        switch (panel.Layout)
         {
-            var collapse = new JJMasterDataCollapsePanel(_formValues)
+            case PanelLayout.Collapse:
             {
-                Title = GetPanelExpression(panel.Title),
-                SubTitle =GetPanelExpression(panel.SubTitle),
-                TitleIcon = panel.Icon.HasValue ? new JJIcon(panel.Icon.Value) : null,
-                Name = $"{_name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
-                CssClass = panel.CssClass,
-                Content = await GetPanelContent(panel),
-                ExpandedByDefault = panel.ExpandedByDefault,
-                Color = panel.Color
-            };
-            return collapse.GetHtmlBuilder();
-        }
-        else if (panel.Layout == PanelLayout.Card)
-        {
-            var card = new JJCard
-            {
-                Title = GetPanelExpression(panel.Title),
-                SubTitle = GetPanelExpression(panel.SubTitle),
-                Icon = panel.Icon,
-                CssClass = panel.CssClass,
-                Content = await GetPanelContent(panel)
-            };
-            return card.GetHtmlBuilder();
-        }
-        else if (panel.Layout == PanelLayout.NoDecoration)
-        {
-            var container = new HtmlBuilder(HtmlTag.Div)
-                .WithCssClass(panel.CssClass);
+                var collapse = new JJMasterDataCollapsePanel(_formValues)
+                {
+                    Title = GetPanelExpression(panel.Title),
+                    SubTitle =GetPanelExpression(panel.SubTitle),
+                    TitleIcon = panel.Icon.HasValue ? new JJIcon(panel.Icon.Value) : null,
+                    Name = $"{_name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
+                    Content = await GetPanelContent(panel),
+                    ExpandedByDefault = panel.ExpandedByDefault,
+                    Color = panel.Color
+                };
 
-            if (!string.IsNullOrEmpty(panel.Title) || !string.IsNullOrEmpty(panel.SubTitle))
+                div.Append(collapse);
+                
+                return div;
+            }
+            case PanelLayout.Card:
             {
-                var title = new JJTitle
+                var card = new JJCard
                 {
                     Title = GetPanelExpression(panel.Title),
                     SubTitle = GetPanelExpression(panel.SubTitle),
                     Icon = panel.Icon,
-                    Size = HeadingSize.H3
+                    Content = await GetPanelContent(panel)
                 };
-
-                container.AppendComponent(title);
+                
+                div.Append(card);
+                
+                return div;
             }
+            case PanelLayout.NoDecoration:
+            {
+                if (!string.IsNullOrEmpty(panel.Title) || !string.IsNullOrEmpty(panel.SubTitle))
+                {
+                    var title = new JJTitle
+                    {
+                        Title = GetPanelExpression(panel.Title),
+                        SubTitle = GetPanelExpression(panel.SubTitle),
+                        Icon = panel.Icon,
+                        Size = HeadingSize.H3
+                    };
+
+                    div.AppendComponent(title);
+                }
             
-            container.Append(await GetPanelContent(panel));
+                div.Append(await GetPanelContent(panel));
             
-            return container;
-        }
-        else
-        {
-            return await GetPanelContent(panel);
+                return div;
+            }
+            default:
+                return await GetPanelContent(panel);
         }
     }
 
@@ -199,10 +195,7 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
                 field.EnableExpression = "val:0";
         }
 
-        var formContent = await _dataPanelForm.GetHtmlForm(fields);
-        var html = new HtmlBuilder(HtmlTag.Div).Append(formContent);
-
-        return html;
+        return await _dataPanelForm.GetHtmlForm(fields);
     }
 
     private async Task<HtmlBuilder?> GetPanelContent(FormElementPanel panel)
@@ -213,31 +206,31 @@ internal sealed class DataPanelLayout(JJDataPanel dataPanel)
 
         var children = _formElement.Panels.Where(x => x.ParentId == panel.PanelId).ToList();
         var childTabs = children.Where(x => x.Layout == PanelLayout.Tab).ToList();
+        
         if (childTabs.Count > 0)
         {
             var tabs = await GetTabNav(childTabs);
             contents.Add(tabs.GetHtmlBuilder());
         }
 
-        foreach (var child in children.Where(x => x.Layout != PanelLayout.Tab))
+        foreach (var child in children)
         {
-            var html = await GetPanelHtml(child);
-            contents.Add(html);
+            if (child.Layout != PanelLayout.Tab)
+            {
+                var html = await GetPanelHtml(child);
+                contents.Add(html);
+            }
         }
 
         if (contents.Count == 0)
             return null;
         
-        var container = new HtmlBuilder(HtmlTag.Div).WithCssClass("container");
+        var div = HtmlBuilder.Div();
         
-        container.AppendDiv(div =>
-        {
-            div.WithCssClass("row");
-            foreach (var content in contents)
-                div.Append(content);
-        });
+        div.WithCssClass("row");
+        div.AppendRange(contents);
         
-        return container;
+        return div;
     }
 
     private bool IsEnabled(FormElementPanel panel)
