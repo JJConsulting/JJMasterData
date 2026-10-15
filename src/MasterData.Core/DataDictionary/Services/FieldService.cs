@@ -293,7 +293,7 @@ public class FieldService(
                 && (!dataItem.Command.Sql.Contains("{SearchId}") || dataItem.Command.Sql.Contains("--{SearchId}")))
             {
                 AddError("DataItem.Command.Sql", StringLocalizer["{SearchId} is required at queries not using Id as Grid Behavior."] + "\n" +
-                                        StringLocalizer["Check <a href=\"{0}\">the docs</a> for more information.","https://md.jjconsulting.tech/articles/tutorials/search_id.html"]);
+                                        StringLocalizer["Check <a href=\"{0}\">the docs</a> for more information.","https://md.jjconsulting.tech/articles/concepts/components.html#data-item-sql-query"]);
             }
         }
         else if (dataItem.DataItemType == DataItemType.Manual)
