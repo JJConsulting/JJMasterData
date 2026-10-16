@@ -275,8 +275,8 @@
 @using (Html.BeginMasterDataForm("Index", "Field", new { elementName }))
 {
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
-    <div class="row">
-        <div class="col-sm-3">
+    <div class="row field-editor gy-3">
+        <div class="col-md-3">
             <div class="input-group" id="field-input-group">
                 <input id="txtFilter" name="txtFilter" onkeyup="searchFields();"
                        placeholder="@StringLocalizer["Search..."]" type="text" class="form-control"
@@ -344,7 +344,7 @@
                                data-auto-postback="@field.AutoPostBack.ToString().ToLowerInvariant()"
                                data-required="@field.IsRequired.ToString().ToLowerInvariant()"
                                id="@fieldName">
-                                <div style="height: 33px;">
+                                <div style="min-height: 33px;">
                                     <div class="float-start">
                                         <b>@fieldName</b>
                                         @if (field.IsPk)
@@ -403,7 +403,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-9" style="padding-left:0px">
+        <div class="col-md-9">
             <div class="jjrelative" id="field-details">
                     <partial name="_Detail" model="Model"/>
             </div>

@@ -1,9 +1,5 @@
 ﻿@media (min-height: 310px) {
 
-  #field-details {
-    height: 64vh !important;
-  }
-
   .jj-list-group {
     height: 55vh !important;
   }
@@ -11,20 +7,12 @@
 
 @media (min-height: 610px) {
 
-  #field-details {
-    height: 71vh !important;
-  }
-
   .jj-list-group {
     height: 64vh !important;
   }
 }
 
 @media (min-height: 710px) {
-
-  #field-details {
-    height: 75vh !important;
-  }
 
   .jj-list-group {
     height: 70vh !important;
@@ -38,8 +26,7 @@
 #field-details {
   border-width: 0px;
   width: 100%;
-  height: 75vh;
-  overflow: auto;
+  min-width: 0;
 }
 
 .jj-list-group {
@@ -66,4 +53,26 @@
 
 .md-logo{
   width: 120px;margin-top: -5px;
+}
+
+.field-editor > [class*="col-"] {
+  min-width: 0;
+}
+
+#field-details .jjtoolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+#field-details .jjtoolbar hr {
+  flex-basis: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .field-editor #sortable-grid {
+    height: auto !important;
+    max-height: 35vh;
+  }
 }
