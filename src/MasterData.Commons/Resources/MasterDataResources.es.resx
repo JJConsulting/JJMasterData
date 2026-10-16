@@ -899,6 +899,21 @@
     <value>Consulte la documentación sobre las columnas y los parámetros de la consulta SQL.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Has Default Value" xml:space="preserve">
+    <value>Tiene valor predeterminado</value>
+  </data>
+  <data name="Has Trigger" xml:space="preserve">
+    <value>Tiene trigger</value>
+  </data>
+  <data name="Has Panel" xml:space="preserve">
+    <value>Tiene panel</value>
+  </data>
+  <data name="CSS Class" xml:space="preserve">
+    <value>Clase CSS</value>
+  </data>
+  <data name="Group Line" xml:space="preserve">
+    <value>Grupo de línea</value>
+  </data>
   <data name="This option is valid only for Collapse panels." xml:space="preserve">
     <value>Esta opción solo es válida para paneles de tipo Collapse.</value>
   </data>

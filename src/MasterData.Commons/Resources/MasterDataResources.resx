@@ -65,4 +65,13 @@
   <data name="This option is valid only for Collapse panels." xml:space="preserve">
     <value>This option is valid only for Collapse panels.</value>
   </data>
+  <data name="Has Default Value" xml:space="preserve">
+    <value>Has Default Value</value>
+  </data>
+  <data name="Has Trigger" xml:space="preserve">
+    <value>Has Trigger</value>
+  </data>
+  <data name="Has Panel" xml:space="preserve">
+    <value>Has Panel</value>
+  </data>
 </root>

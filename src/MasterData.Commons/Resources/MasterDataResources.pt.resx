@@ -4391,4 +4391,13 @@
   <data name="This option is valid only for Collapse panels." xml:space="preserve">
     <value>Esta opção é válida apenas para painéis do tipo Collapse.</value>
   </data>
+  <data name="Has Default Value" xml:space="preserve">
+    <value>Possui Default Value</value>
+  </data>
+  <data name="Has Trigger" xml:space="preserve">
+    <value>Possui Trigger</value>
+  </data>
+  <data name="Has Panel" xml:space="preserve">
+    <value>Possui Panel</value>
+  </data>
 </root>
