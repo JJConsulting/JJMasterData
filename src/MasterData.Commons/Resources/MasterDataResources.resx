@@ -23,4 +23,13 @@
     <data name="Read the documentation for SQL query columns and parameters." xml:space="preserve">
         <value>Read the documentation for SQL query columns and parameters.</value>
     </data>
+  <data name="Has Default Value" xml:space="preserve">
+    <value>Has Default Value</value>
+  </data>
+  <data name="Has Trigger" xml:space="preserve">
+    <value>Has Trigger</value>
+  </data>
+  <data name="Has Panel" xml:space="preserve">
+    <value>Has Panel</value>
+  </data>
 </root>

@@ -161,6 +161,14 @@
                             }
                         </select>
                     </div>
+                    <div class="col-sm-6 mb-3">
+                        <label for="fieldFilterCssClass" class="form-label">@StringLocalizer["CSS Class"]</label>
+                        <input id="fieldFilterCssClass" type="text" class="form-control">
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label for="fieldFilterLineGroup" class="form-label">@StringLocalizer["Group Line"]</label>
+                        <input id="fieldFilterLineGroup" type="number" class="form-control">
+                    </div>
                     <div class="col-sm-4 mb-3">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="fieldFilterPk">
@@ -177,6 +185,24 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="fieldFilterRequired">
                             <label class="form-check-label" for="fieldFilterRequired">@StringLocalizer["Required"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterHasDefaultValue">
+                            <label class="form-check-label" for="fieldFilterHasDefaultValue">@StringLocalizer["Has Default Value"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterHasTrigger">
+                            <label class="form-check-label" for="fieldFilterHasTrigger">@StringLocalizer["Has Trigger"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterHasPanel">
+                            <label class="form-check-label" for="fieldFilterHasPanel">@StringLocalizer["Has Panel"]</label>
                         </div>
                     </div>
                 </div>
@@ -305,6 +331,11 @@
                                data-data-type="@((int)field.DataType)"
                                data-component="@((int)field.Component)"
                                data-behavior="@((int)field.DataBehavior)"
+                               data-css-class="@field.CssClass"
+                               data-line-group="@field.LineGroup"
+                               data-has-default-value="@((!string.IsNullOrWhiteSpace(field.DefaultValue)).ToString().ToLowerInvariant())"
+                               data-has-trigger="@((!string.IsNullOrWhiteSpace(field.TriggerExpression)).ToString().ToLowerInvariant())"
+                               data-has-panel="@((field.PanelId > 0).ToString().ToLowerInvariant())"
                                data-pk="@field.IsPk.ToString().ToLowerInvariant()"
                                data-auto-postback="@field.AutoPostBack.ToString().ToLowerInvariant()"
                                data-required="@field.IsRequired.ToString().ToLowerInvariant()"
@@ -425,11 +456,21 @@
         document.getElementById('fieldFilterPk').checked = filters?.pk ?? false;
         document.getElementById('fieldFilterAutoPostBack').checked = filters?.autoPostBack ?? false;
         document.getElementById('fieldFilterRequired').checked = filters?.required ?? false;
+        document.getElementById('fieldFilterCssClass').value = filters?.cssClass ?? '';
+        document.getElementById('fieldFilterLineGroup').value = filters?.lineGroup ?? '';
+        document.getElementById('fieldFilterHasDefaultValue').checked = filters?.hasDefaultValue ?? false;
+        document.getElementById('fieldFilterHasTrigger').checked = filters?.hasTrigger ?? false;
+        document.getElementById('fieldFilterHasPanel').checked = filters?.hasPanel ?? false;
         bootstrap.Modal.getOrCreateInstance(document.getElementById('fieldFilterModal')).show();
     }
 
     function applyFieldFilters() {
         activeFieldFilters = {
+            cssClass: document.getElementById('fieldFilterCssClass').value.trim().toLowerCase(),
+            lineGroup: document.getElementById('fieldFilterLineGroup').value,
+            hasDefaultValue: document.getElementById('fieldFilterHasDefaultValue').checked,
+            hasTrigger: document.getElementById('fieldFilterHasTrigger').checked,
+            hasPanel: document.getElementById('fieldFilterHasPanel').checked,
             dataType: document.getElementById('fieldFilterDataType').value,
             component: document.getElementById('fieldFilterComponent').value,
             behavior: document.getElementById('fieldFilterBehavior').value,
@@ -456,6 +497,11 @@
         document.getElementById('fieldFilterAutoPostBack').checked = false;
         document.getElementById('fieldFilterRequired').checked = false;
         document.getElementById('txtFilter').value = '';
+        document.getElementById('fieldFilterCssClass').value = '';
+        document.getElementById('fieldFilterLineGroup').value = '';
+        document.getElementById('fieldFilterHasDefaultValue').checked = false;
+        document.getElementById('fieldFilterHasTrigger').checked = false;
+        document.getElementById('fieldFilterHasPanel').checked = false;
         activeFieldFilters = null;
         updateFieldFilterIndicator();
         searchFields();
@@ -565,6 +611,11 @@
                 (!filters.dataType || data.dataType === filters.dataType) &&
                 (!filters.component || data.component === filters.component) &&
                 (!filters.behavior || data.behavior === filters.behavior) &&
+                (!filters.cssClass || (data.cssClass ?? '').toLowerCase().includes(filters.cssClass)) &&
+                (!filters.lineGroup || Number(data.lineGroup) === Number(filters.lineGroup)) &&
+                (!filters.hasDefaultValue || data.hasDefaultValue === 'true') &&
+                (!filters.hasTrigger || data.hasTrigger === 'true') &&
+                (!filters.hasPanel || data.hasPanel === 'true') &&
                 (!filters.pk || data.pk === 'true') &&
                 (!filters.autoPostBack || data.autoPostback === 'true') &&
                 (!filters.required || data.required === 'true');
