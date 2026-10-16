@@ -19,9 +19,7 @@ class GridViewFilterHelper {
         const filterIcon = document.getElementById(gridViewName + "-filter-icon");
         filterIcon.classList.remove("d-none");
         
-        if (bootstrapVersion !== 3) {
-            bootstrap.Tooltip.getOrCreateInstance(filterIcon, {trigger:"click hover focus"});
-        }
+        bootstrap.Tooltip.getOrCreateInstance(filterIcon, {trigger:"click hover focus"});
     }
     
     static reload(gridViewName, filterPanelName, routeContext) {

@@ -476,23 +476,13 @@ class CollapsePanelListener {
     static listen(componentName) {
         let nameSelector = "#" + componentName;
         let collapseSelector = '#' + componentName + '-is-open';
-        let collapseElement = document.querySelector(nameSelector);
-        if (bootstrapVersion === 5) {
-            collapseElement.addEventListener("hidden.bs.collapse", function () {
-                document.querySelector(collapseSelector).value = "0";
-            });
-            collapseElement.addEventListener("show.bs.collapse", function () {
-                document.querySelector(collapseSelector).value = "1";
-            });
-        }
-        else {
-            $(nameSelector).on('hidden.bs.collapse', function () {
-                $(collapseSelector).val("0");
-            });
-            $(nameSelector).on('show.bs.collapse', function () {
-                $(collapseSelector).val("1");
-            });
-        }
+        const collapseElement = document.querySelector(nameSelector);
+        collapseElement.addEventListener("hidden.bs.collapse", function () {
+            document.querySelector(collapseSelector).value = "0";
+        });
+        collapseElement.addEventListener("show.bs.collapse", function () {
+            document.querySelector(collapseSelector).value = "1";
+        });
     }
 }
 class DataDictionaryUtils {
@@ -678,41 +668,14 @@ class DataExportationHelper {
         const target = document.getElementById('data-exportation-spinner-');
         if (!target || target.childElementCount > 0)
             return;
-        if (bootstrapVersion < 5) {
-            const options = {
-                className: "spinner",
-                color: "#000",
-                corners: 1,
-                direction: 1,
-                fps: 20,
-                hwaccel: false,
-                left: "50%",
-                length: 38,
-                lines: 13,
-                opacity: 0.3,
-                position: "absolute",
-                radius: 45,
-                rotate: 0,
-                scale: 0.2,
-                shadow: false,
-                speed: 1.2,
-                top: "50%",
-                trail: 62,
-                width: 17,
-                zIndex: 2e9
-            };
-            new Spinner(options).spin(target);
-        }
-        else {
-            const spinnerDiv = document.createElement('div');
-            spinnerDiv.classList.add('spinner-border', 'text-primary', 'spinner-border-lg');
-            spinnerDiv.setAttribute('role', 'status');
-            const spanElement = document.createElement('span');
-            spanElement.classList.add('visually-hidden');
-            spanElement.textContent = 'Loading...';
-            spinnerDiv.appendChild(spanElement);
-            target.append(spinnerDiv);
-        }
+        const spinnerDiv = document.createElement('div');
+        spinnerDiv.classList.add('spinner-border', 'text-primary', 'spinner-border-lg');
+        spinnerDiv.setAttribute('role', 'status');
+        const spanElement = document.createElement('span');
+        spanElement.classList.add('visually-hidden');
+        spanElement.textContent = 'Loading...';
+        spinnerDiv.appendChild(spanElement);
+        target.append(spinnerDiv);
     }
     static setActionProcessing(componentName, isProcessing) {
         var _a;
@@ -773,41 +736,14 @@ class DataImportationHelper {
         const target = document.getElementById('data-importation-spinner');
         if (!target || target.childElementCount > 0)
             return;
-        if (bootstrapVersion < 5) {
-            const options = {
-                className: "spinner",
-                color: "#000",
-                corners: 1,
-                direction: 1,
-                fps: 20,
-                hwaccel: false,
-                left: "50%",
-                length: 38,
-                lines: 13,
-                opacity: 0.3,
-                position: "absolute",
-                radius: 45,
-                rotate: 0,
-                scale: 0.2,
-                shadow: false,
-                speed: 1.2,
-                top: "50%",
-                trail: 62,
-                width: 17,
-                zIndex: 2e9
-            };
-            new Spinner(options).spin(target);
-        }
-        else {
-            const spinnerDiv = document.createElement('div');
-            spinnerDiv.classList.add('spinner-border', 'text-primary', 'spinner-border-lg');
-            spinnerDiv.setAttribute('role', 'status');
-            const spanElement = document.createElement('span');
-            spanElement.classList.add('visually-hidden');
-            spanElement.textContent = 'Loading...';
-            spinnerDiv.appendChild(spanElement);
-            target.append(spinnerDiv);
-        }
+        const spinnerDiv = document.createElement('div');
+        spinnerDiv.classList.add('spinner-border', 'text-primary', 'spinner-border-lg');
+        spinnerDiv.setAttribute('role', 'status');
+        const spanElement = document.createElement('span');
+        spanElement.classList.add('visually-hidden');
+        spanElement.textContent = 'Loading...';
+        spinnerDiv.appendChild(spanElement);
+        target.append(spinnerDiv);
     }
     static checkProgress(componentName, importationRouteContext, intervalId) {
         showSpinnerOnPost = false;
@@ -1181,14 +1117,6 @@ class FormViewHelper {
 }
 var _a, _b;
 var showSpinnerOnPost = true;
-var bootstrapVersion = (() => {
-    const htmlElement = document.querySelector('html');
-    const versionAttribute = htmlElement === null || htmlElement === void 0 ? void 0 : htmlElement.getAttribute('data-bs-version');
-    if (versionAttribute) {
-        return parseInt(versionAttribute, 10);
-    }
-    return 5;
-})();
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class GridViewFilterHelper {
@@ -1208,9 +1136,7 @@ class GridViewFilterHelper {
     static showFilterIcon(gridViewName) {
         const filterIcon = document.getElementById(gridViewName + "-filter-icon");
         filterIcon.classList.remove("d-none");
-        if (bootstrapVersion !== 3) {
-            bootstrap.Tooltip.getOrCreateInstance(filterIcon, { trigger: "click hover focus" });
-        }
+        bootstrap.Tooltip.getOrCreateInstance(filterIcon, { trigger: "click hover focus" });
     }
     static reload(gridViewName, filterPanelName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -1655,119 +1581,15 @@ document.addEventListener("DOMContentLoaded", function () {
     Localization.initialize();
     listenAllEvents();
 });
-class LegacySearchBoxListener {
-    static listenTypeahead(selectorPrefix = String()) {
-        $(selectorPrefix + "input.jj-search-box").each(function () {
-            const hiddenInputId = $(this).attr("hidden-input-id");
-            let queryString = $(this).attr("query-string");
-            let triggerLength = $(this).attr("trigger-length");
-            let numberOfItems = $(this).attr("number-of-items");
-            if (triggerLength == null)
-                triggerLength = "1";
-            if (numberOfItems == null)
-                numberOfItems = "30";
-            const urlBuilder = new UrlBuilder();
-            for (const pair of queryString.split("&")) {
-                const [key, value] = pair.split("=");
-                if (key && value) {
-                    urlBuilder.addQueryParameter(key, value);
-                }
-            }
-            const url = urlBuilder.build();
-            const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
-            const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
-            $(this).on("blur", function () {
-                if ($(this).val() == "") {
-                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.searchClass);
-                    $(jjSearchBoxHiddenSelector).val("");
-                }
-                else if ($(jjSearchBoxHiddenSelector).val() == "") {
-                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.warningClass);
-                }
-                else {
-                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
-                }
-                $(jjSearchBoxSelector).prev().attr("style", "display:none");
-                $(jjSearchBoxSelector).css("background-color", '');
-            });
-            let debounceTimer;
-            $(this).typeahead({
-                hint: true,
-                highlight: true,
-                autoselect: true,
-                minLength: triggerLength,
-                classNames: {
-                    dataset: "list-group",
-                    cursor: "active",
-                    menu: "search-box-menu"
-                }
-            }, {
-                displayKey: "description",
-                limit: numberOfItems,
-                source: function (query, syncResults, asyncResults) {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(function () {
-                        if (query.length == triggerLength)
-                            return;
-                        FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
-                        $(jjSearchBoxSelector).addClass("loading-circle");
-                        fetch(url, getRequestOptions())
-                            .then(response => response.json())
-                            .then(data => {
-                            $(jjSearchBoxSelector).removeClass("loading-circle");
-                            asyncResults(data);
-                        })
-                            .catch(error => {
-                            console.error(error);
-                            $(jjSearchBoxSelector).removeClass("loading-circle");
-                            FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.errorClass);
-                        });
-                    }, 250);
-                },
-                templates: {
-                    suggestion: function (value) {
-                        if (value.icon) {
-                            return `<div class="list-group-item"><span class="fa ${value.icon}" style="color:${value.iconColor}"></span>&nbsp;${value.description}</div>`;
-                        }
-                        return `<div class="list-group-item">${value.description}</div>`;
-                    }
-                }
-            });
-            $(this).bind('typeahead:select', function (ev, selectedValue) {
-                const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
-                if (hiddenSearchBox)
-                    hiddenSearchBox.value = selectedValue.id;
-                if (selectedValue.id != "") {
-                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
-                }
-                $(this).trigger("change");
-            });
-            $('.typeahead').bind('typeahead:change', function (ev, suggestion) {
-                if ($(jjSearchBoxHiddenSelector).val() == "") {
-                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.warningClass);
-                }
-            });
-            $(jjSearchBoxSelector).prev().attr("style", "display:none");
-            $(jjSearchBoxSelector).css("background-color", '');
-            $(jjSearchBoxSelector).closest('.twitter-typeahead').css('display', '');
-        });
-    }
-}
 const listenAllEvents = (selectorPrefix = String()) => {
     var _a;
     selectorPrefix += " ";
     TomSelectHelper.listen(selectorPrefix);
-    if (bootstrapVersion === 3) {
-        $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
-    }
     CodeEditor.setup(selectorPrefix);
     CalendarListener.listen(selectorPrefix);
     PhoneInputListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
-    if (bootstrapVersion === 3)
-        LegacySearchBoxListener.listenTypeahead(selectorPrefix);
-    else
-        SearchBoxListener.listen(selectorPrefix);
+    SearchBoxListener.listen(selectorPrefix);
     LookupListener.listenChanges(selectorPrefix);
     SortableListener.listenSorting(selectorPrefix);
     UploadAreaListener.listenFileUpload(selectorPrefix);
@@ -1776,12 +1598,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     SliderListener.listenInputs(selectorPrefix);
     GridViewHelper.setupInfiniteScroll();
     Inputmask().mask(document.querySelectorAll(selectorPrefix + "input"));
-    if (bootstrapVersion === 5) {
-        TooltipHelper.listen(selectorPrefix);
-    }
-    else {
-        $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
-    }
+    TooltipHelper.listen(selectorPrefix);
     const responsiveTables = document.querySelector(selectorPrefix + '.table-responsive');
     if (responsiveTables) {
         responsiveTables.addEventListener('show.bs.dropdown', () => {
@@ -2577,56 +2394,18 @@ class SortableListener {
 class SpinnerOverlay {
     static loadHtml() {
         if (!document.querySelector("#" + this.spinnerOverlayId)) {
-            if (bootstrapVersion < 5) {
-                const spinnerOverlay = document.createElement("div");
-                spinnerOverlay.id = this.spinnerOverlayId;
-                spinnerOverlay.innerHTML = `
-            <div class="ajaxImage"></div>
-            <div class="ajaxMessage">Loading...</div>
-            `;
-                document.body.appendChild(spinnerOverlay);
-                const options = {
-                    lines: 17,
-                    length: 28,
-                    width: 14,
-                    radius: 38,
-                    scale: 0.40,
-                    corners: 1,
-                    color: "#000",
-                    opacity: 0.3,
-                    rotate: 0,
-                    direction: 1,
-                    speed: 1.2,
-                    trail: 62,
-                    fps: 20,
-                    zIndex: 2e9,
-                    className: "spinner",
-                    top: "50%",
-                    left: "50%",
-                    shadow: false,
-                    hwaccel: false,
-                    position: "absolute",
-                };
-                const spinner = new Spinner(options).spin();
-                if (spinner.el) {
-                    const spinnerOverlayElement = document.querySelector("#spinner-overlay .ajaxImage");
-                    spinnerOverlayElement.parentNode.insertBefore(spinner.el, spinnerOverlayElement.nextSibling);
-                }
-            }
-            else {
-                const spinnerOverlayDiv = document.createElement('div');
-                spinnerOverlayDiv.id = this.spinnerOverlayId;
-                spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
-                const spinnerDiv = document.createElement('div');
-                spinnerDiv.classList.add('spinner-border', 'spinner-border-lg');
-                spinnerDiv.setAttribute('role', 'status');
-                const spanElement = document.createElement('span');
-                spanElement.classList.add('visually-hidden');
-                spanElement.textContent = 'Loading...';
-                spinnerDiv.appendChild(spanElement);
-                spinnerOverlayDiv.appendChild(spinnerDiv);
-                document.body.appendChild(spinnerOverlayDiv);
-            }
+            const spinnerOverlayDiv = document.createElement('div');
+            spinnerOverlayDiv.id = this.spinnerOverlayId;
+            spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
+            const spinnerDiv = document.createElement('div');
+            spinnerDiv.classList.add('spinner-border', 'spinner-border-lg');
+            spinnerDiv.setAttribute('role', 'status');
+            const spanElement = document.createElement('span');
+            spanElement.classList.add('visually-hidden');
+            spanElement.textContent = 'Loading...';
+            spinnerDiv.appendChild(spanElement);
+            spinnerOverlayDiv.appendChild(spinnerDiv);
+            document.body.appendChild(spinnerOverlayDiv);
         }
     }
     static show() {
