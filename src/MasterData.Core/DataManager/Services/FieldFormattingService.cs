@@ -39,7 +39,7 @@ public class FieldFormattingService(
                 break;
             case FormComponent.Number:
             case FormComponent.Slider:
-                stringValue = GetNumericValueAsString(field, value,$"N{field.NumberOfDecimalPlaces}");
+                stringValue = GetNumericValueAsString(field, value, $"N{field.NumberOfDecimalPlaces}");
                 break;
             case FormComponent.Currency:
                 stringValue = GetNumericValueAsString(field, value,$"C{field.NumberOfDecimalPlaces}");
@@ -63,7 +63,7 @@ public class FieldFormattingService(
         
         if (field.EncodeHtml)
             stringValue = HttpUtility.HtmlEncode(stringValue);
-        
+
         return stringValue.Trim();
     }
     

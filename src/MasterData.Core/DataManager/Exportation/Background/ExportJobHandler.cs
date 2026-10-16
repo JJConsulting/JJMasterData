@@ -31,7 +31,7 @@ internal sealed class ExportJobHandler(
     IStringLocalizer<MasterDataResources> localizer,
     IMasterDataUser masterDataUser) : BackgroundJobHandler<ExportRequest>
 {
-    private const int RecordsPerPage = 100_000;
+    private const int RecordsPerPage = 10_000;
 
     public override async Task<object?> ExecuteAsync(
         ExportRequest request,
@@ -43,15 +43,36 @@ internal sealed class ExportJobHandler(
         var formElement = request.FormElement;
         var format = formats.GetRequired(request.FormatId);
         var columns = GetColumns(request.FormElement, request.ExportAllFields);
-        var source = await CreateSourceAsync(formElement, request, cancellationToken);
+        List<Dictionary<string, object?>> firstPage;
+        long totalRecords;
+        EntityParameters? parameters = null;
+        if (request.Rows is not null)
+        {
+            firstPage = request.Rows;
+            totalRecords = request.Rows.Count;
+        }
+        else
+        {
+            parameters = new EntityParameters
+            {
+                Filters = new Dictionary<string, object?>(request.Filters),
+                RecordsPerPage = RecordsPerPage,
+                OrderBy = OrderByData.FromString(request.OrderBy),
+                CurrentPage = 1
+            };
+            var result = await entityRepository.GetDictionaryListResultAsync(formElement, parameters);
+            cancellationToken.ThrowIfCancellationRequested();
+            firstPage = result.Data;
+            totalRecords = result.TotalOfRecords;
+        }
 
         var context = new ExportContext
         {
             FormElement = formElement,
             Columns = columns,
-            Rows = GetRowsAsync(formElement, source, cancellationToken),
+            Rows = GetRowsAsync(formElement, firstPage, totalRecords, parameters, cancellationToken),
             UserValues = new Dictionary<string, object?>(request.UserValues),
-            TotalRecords = source.Total,
+            TotalRecords = totalRecords,
             Progress = new Progress<ExportProgress>(current => progress.Report(
                 new BackgroundJobProgress(current.Percentage, current.Message, current)))
         };
@@ -99,60 +120,39 @@ internal sealed class ExportJobHandler(
             .ToList();
     }
 
-    private async Task<ExportSource> CreateSourceAsync(
-        FormElement formElement,
-        ExportRequest request,
-        CancellationToken cancellationToken)
-    {
-        if (request.Rows is not null)
-            return new ExportSource(request.Rows, request.Rows.Count, null);
-
-        var parameters = new EntityParameters
-        {
-            Filters = new Dictionary<string, object?>(request.Filters),
-            RecordsPerPage = RecordsPerPage,
-            OrderBy = OrderByData.FromString(request.OrderBy),
-            CurrentPage = 1
-        };
-        var firstPage = await entityRepository.GetDictionaryListResultAsync(formElement, parameters);
-        cancellationToken.ThrowIfCancellationRequested();
-        return new ExportSource(
-            firstPage.Data,
-            firstPage.TotalOfRecords,
-            parameters);
-    }
-
     private async IAsyncEnumerable<Dictionary<string, object?>> GetRowsAsync(
         FormElement formElement,
-        ExportSource source,
+        List<Dictionary<string, object?>> firstPage,
+        long totalOfRecords,
+        EntityParameters? parameters,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var totalPages = source.Parameters is null ? 1 :
-            (int)Math.Ceiling((source.Total ?? 0) / (double)RecordsPerPage);
+        var totalPages = parameters is null ? 1 :
+            (int)Math.Ceiling(totalOfRecords / (double)RecordsPerPage);
 
         for (var page = 1; page <= Math.Max(1, totalPages); page++)
         {
             List<Dictionary<string, object?>> rows;
             if (page == 1)
-                rows = source.FirstPage;
+                rows = firstPage;
             else
             {
                 var pageParameters = new EntityParameters
                 {
-                    Filters = source.Parameters!.Filters,
-                    RecordsPerPage = source.Parameters.RecordsPerPage,
-                    OrderBy = source.Parameters.OrderBy,
+                    Filters = parameters!.Filters,
+                    RecordsPerPage = parameters.RecordsPerPage,
+                    OrderBy = parameters.OrderBy,
                     CurrentPage = page
                 };
-                var result = await entityRepository.GetDictionaryListResultAsync(formElement, pageParameters);
+                var result = await entityRepository.GetDictionaryListResultAsync(
+                    formElement, pageParameters, recoverTotalOfRecords: false);
                 rows = result.Data;
             }
 
             foreach (var sourceRow in rows)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var row = new Dictionary<string, object?>(sourceRow, StringComparer.OrdinalIgnoreCase);
-                yield return row;
+                yield return sourceRow;
             }
         }
     }
@@ -169,15 +169,5 @@ internal sealed class ExportJobHandler(
             name = name.Replace(invalid.ToString(), string.Empty);
         name = HttpUtility.UrlEncode(name, Encoding.UTF8);
         return $"{name}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.{extension.TrimStart('.').ToLowerInvariant()}";
-    }
-
-    private sealed class ExportSource(
-        List<Dictionary<string, object?>> firstPage,
-        long? total,
-        EntityParameters? parameters)
-    {
-        public List<Dictionary<string, object?>> FirstPage { get; init; } = firstPage;
-        public long? Total { get; init; } = total;
-        public EntityParameters? Parameters { get; init; } = parameters;
     }
 }
