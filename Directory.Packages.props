@@ -32,7 +32,7 @@
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Playwright.Xunit.v3" Version="1.63.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
-    <PackageVersion Include="Microsoft.TypeScript.MSBuild" Version="5.8.3" />
+    <PackageVersion Include="ESBuild.MSBuild" Version="0.28.1" />
     <PackageVersion Include="MiniExcel" Version="1.46.0" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="MongoDB.Driver" Version="3.12.0" />

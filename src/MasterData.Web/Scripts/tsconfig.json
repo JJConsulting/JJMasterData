@@ -1,17 +1,10 @@
 {
-  "compileOnSave": true,
   "compilerOptions": {
-    "noImplicitAny": false,
-    "alwaysStrict": false,
-    "sourceRoot": "/Scripts",
-    "allowJs": true,
-    "sourceMap": true,
-    "removeComments": true,
     "target": "ES6",
-    "moduleResolution": "node",
     "types": [],
-    "outFile": "../wwwroot/js/jjmasterdata/jjmasterdata.js"
+    "strict": false,
+    "useDefineForClassFields": false,
+    "noEmit": true
   },
-  "include": ["**/*.ts"],
-  "exclude": [""]
+  "include": ["**/*.ts"]
 }
