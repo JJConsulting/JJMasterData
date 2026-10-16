@@ -1455,6 +1455,33 @@ class GridViewHelper {
             }
         });
     }
+    static hideEmptyColumns(selectorPrefix) {
+        var _a, _b;
+        const tables = document.querySelectorAll(`${selectorPrefix} table`);
+        for (const table of tables) {
+            if (!table.tHead || !table.tBodies.length)
+                continue;
+            const headers = Array.from((_b = (_a = table.tHead.rows[0]) === null || _a === void 0 ? void 0 : _a.cells) !== null && _b !== void 0 ? _b : []);
+            const rows = Array.from(table.tBodies[0].rows);
+            if (!rows.length)
+                continue;
+            headers.forEach((th, index) => {
+                const cells = rows.map(row => row.cells[index]);
+                const hide = cells.every(td => {
+                    var _a;
+                    return td !== undefined &&
+                        td !== null &&
+                        td.classList.contains("table-action") &&
+                        td.children.length === 0 &&
+                        ((_a = td.textContent) === null || _a === void 0 ? void 0 : _a.trim()) === "";
+                });
+                th.classList.toggle("d-none", hide);
+                cells.forEach(td => {
+                    td === null || td === void 0 ? void 0 : td.classList.toggle("d-none", hide);
+                });
+            });
+        }
+    }
 }
 class GridViewSelectionHelper {
     static selectItem(componentName, inputElement) {
@@ -1596,6 +1623,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     TabNavListener.listenTabNavs(selectorPrefix);
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
+    GridViewHelper.hideEmptyColumns(selectorPrefix);
     GridViewHelper.setupInfiniteScroll();
     Inputmask().mask(document.querySelectorAll(selectorPrefix + "input"));
     TooltipHelper.listen(selectorPrefix);

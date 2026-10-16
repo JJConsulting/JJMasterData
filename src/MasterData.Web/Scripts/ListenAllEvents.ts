@@ -17,6 +17,7 @@
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
     
+    GridViewHelper.hideEmptyColumns(selectorPrefix);
     GridViewHelper.setupInfiniteScroll();
     
     //@ts-ignore
