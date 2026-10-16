@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -4369,6 +4369,27 @@
   <data name="Read the documentation for SQL query columns and parameters." xml:space="preserve">
     <value>Consulte a documentação sobre as colunas e os parâmetros da consulta SQL.</value>
     <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Parent Panel" xml:space="preserve">
+    <value>Painel Pai</value>
+  </data>
+  <data name="Tabs Style" xml:space="preserve">
+    <value>Estilo das Tabs</value>
+  </data>
+  <data name="Invalid parent panel." xml:space="preserve">
+    <value>Painel pai inválido.</value>
+  </data>
+  <data name="A panel cannot be its own parent." xml:space="preserve">
+    <value>Um painel não pode ser pai de si mesmo.</value>
+  </data>
+  <data name="Panel hierarchy cannot contain recursion." xml:space="preserve">
+    <value>A hierarquia de painéis não pode conter recursividade.</value>
+  </data>
+  <data name="Title is required for Tab or Collapse panels." xml:space="preserve">
+    <value>O título é obrigatório para painéis do tipo Tab ou Collapse.</value>
+  </data>
+  <data name="This option is valid only for Collapse panels." xml:space="preserve">
+    <value>Esta opção é válida apenas para painéis do tipo Collapse.</value>
   </data>
   <data name="Has Default Value" xml:space="preserve">
     <value>Possui Default Value</value>

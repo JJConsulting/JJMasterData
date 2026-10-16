@@ -914,4 +914,7 @@
   <data name="Group Line" xml:space="preserve">
     <value>Grupo de línea</value>
   </data>
+  <data name="This option is valid only for Collapse panels." xml:space="preserve">
+    <value>Esta opción solo es válida para paneles de tipo Collapse.</value>
+  </data>
 </root>
