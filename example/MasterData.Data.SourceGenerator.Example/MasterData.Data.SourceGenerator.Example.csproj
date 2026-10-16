@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><IsPackable>false</IsPackable>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+      <AssemblyName>JJMasterData.Data.SourceGenerator.Example</AssemblyName>
+      <RootNamespace>JJMasterData.Data.SourceGenerator.Example</RootNamespace>
+      <PackageId>JJMasterData.Data.SourceGenerator.Example</PackageId>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    
+    <ProjectReference Include="../../src/MasterData.Commons/MasterData.Commons.csproj" />
+    <ProjectReference Include="..\..\src\MasterData.Data.SourceGenerator\MasterData.Data.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>
