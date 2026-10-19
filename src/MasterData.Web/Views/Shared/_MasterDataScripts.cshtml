@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
+﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
     var pathBase = Context.Request.PathBase;
@@ -8,32 +7,14 @@
 <script src="~/_content/JJMasterData.Web/js/jquery/jquery.min.js"></script>
 <script src="~/_content/JJMasterData.Web/js/jquery/jquery-form/jquery.form.js"></script>
 <script src="~/_content/JJMasterData.Web/js/jquery/jquery-ui/jquery-ui.min.js"></script>
-@if (BootstrapHelper.Version == 3)
-{
-    <script type="text/javascript">
-            // Change JQueryUI plugin names to fix name collision with Bootstrap.
-            document.addEventListener("DOMContentLoaded",()=>{
-                $.widget.bridge('uitooltip', $.ui.tooltip);
-                $.widget.bridge('uibutton', $.ui.button);
-            })
-        </script>
-}
+
 <script src="~/_content/JJMasterData.Web/js/jquery/jquery-validation/jquery.validate.min.js"></script>
 <script src="~/_content/JJMasterData.Web/js/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
 <script src="~/_content/JJMasterData.Web/js/autonumeric/autoNumeric.min.js"></script>
 
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap5/bootstrap.bundle.min.js"></script>
 
-@switch (BootstrapHelper.Version)
-{
-    case 3:
-        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap3/bootstrap.min.js"></script>
-        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-toggle/bootstrap-toggle.min.js"></script>
-        break;
-    case 5:
-        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap5/bootstrap.bundle.min.js"></script>
-        break;
-}
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/tom-select/tom-select.complete.min.js"></script>
 
 
@@ -57,14 +38,9 @@
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/spin/spin.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/inputmask/dist/inputmask.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/inputmask/dist/bindings/inputmask.binding.js"></script>
-@if (BootstrapHelper.Version == 3)
-{
-    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/typeahead/typeahead.min.js"></script>
-}
-else
-{
-    <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap-search/bootstrap-search.min.js"></script>
-}
+
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap-search/bootstrap-search.min.js"></script>
+
 
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/dropzone/dropzone.min.js"></script>
 
@@ -73,8 +49,32 @@ else
     <partial name="_MasterDataCodeEditorScripts"/>
 }
 
-<script  type="text/javascript" src="~/_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js" asp-append-version="true"></script>
+<template id="jjmasterdata-modal-template">
+    <div class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"> </div>
+            </div>
+        </div>
+    </div>
+</template>
 
+<template id="jjmasterdata-messagebox-template">
+    <div class="modal-body d-flex align-items-center gap-3">
+        <span class="message-box-icon fa flex-shrink-0" aria-hidden="true" style="font-size:1.875rem;"></span>
+        <span id="site-modal-content" class="flex-grow-1" style="min-width:0;"></span>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>
+        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>
+    </div>
+</template>
+
+<script  type="text/javascript" src="~/_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js" asp-append-version="true"></script>
 
 @foreach (var customScriptPath in Options.Value.CustomScriptsPaths)
 {

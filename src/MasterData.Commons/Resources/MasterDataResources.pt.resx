@@ -4370,4 +4370,13 @@
     <value>Consulte a documentação sobre as colunas e os parâmetros da consulta SQL.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Has Default Value" xml:space="preserve">
+    <value>Possui Default Value</value>
+  </data>
+  <data name="Has Trigger" xml:space="preserve">
+    <value>Possui Trigger</value>
+  </data>
+  <data name="Has Panel" xml:space="preserve">
+    <value>Possui Panel</value>
+  </data>
 </root>
