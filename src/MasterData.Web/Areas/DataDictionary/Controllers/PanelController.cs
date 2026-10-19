@@ -1,4 +1,4 @@
-﻿using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +63,7 @@ public class PanelController(PanelService panelService, IStringLocalizer<MasterD
         await panelService.SavePanelAsync(elementName, panel, splittedFields);
         if (ModelState.IsValid && panelService.IsValid)
         {
+            TempData["SaveSuccessMessage"] = "Panel saved successfully.";
             return RedirectToAction("Index", new { elementName, panelId = panel.PanelId });
         }
 
@@ -84,6 +85,15 @@ public class PanelController(PanelService panelService, IStringLocalizer<MasterD
     public async Task<IActionResult> Sort(string elementName, string fieldsOrder)
     {
         await panelService.SortPanelsAsync(elementName, fieldsOrder.Split(','));
+        return Json(new { success = true });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Move(string elementName, int panelId, int? parentId, int? beforePanelId)
+    {
+        if (!ModelState.IsValid || !await panelService.MovePanelAsync(elementName, panelId, parentId, beforePanelId))
+            return BadRequest();
         return Json(new { success = true });
     }
 

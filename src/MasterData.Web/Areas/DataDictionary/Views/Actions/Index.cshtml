@@ -13,34 +13,6 @@
     ActionSource selectedSource = Model.Source;
 }
 
-@if (ViewData["ShowSaveSuccess"] is true)
-{
-    <message-toast
-        title-color="Success"
-        title="@StringLocalizer["Success"]"
-        icon="@FontAwesomeIcon.CheckCircle"
-        name="action-save-success"
-        show-as-opened="false"
-        message="@StringLocalizer["Action saved successfully."]"/>
-    <script>
-                MessageToastHelper.show("action-save-success");
-            </script>
-}
-
-@if (ViewData["ShowCopySuccess"] is true)
-{
-    <message-toast
-        title-color="Success"
-        title="@StringLocalizer["Success"]"
-        icon="@FontAwesomeIcon.CheckCircle"
-        name="action-copy-success"
-        show-as-opened="false"
-        message="@StringLocalizer["Action copied successfully."]"/>
-    <script>
-                MessageToastHelper.show("action-copy-success");
-            </script>
-}
-
 <ul class="nav nav-underline">
     <li id="navGrid" class="nav-item">
         <a class="nav-link @(selectedSource == ActionSource.GridTable ? "active" : string.Empty)"

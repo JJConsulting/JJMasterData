@@ -4400,4 +4400,52 @@
   <data name="Has Panel" xml:space="preserve">
     <value>Possui Panel</value>
   </data>
+  <data name="Drop here to reorder" xml:space="preserve">
+    <value>Solte aqui para reordenar</value>
+  </data>
+  <data name="Drop here to make a child panel" xml:space="preserve">
+    <value>Solte aqui para tornar um panel filho</value>
+  </data>
+  <data name="Drop here to move to the root" xml:space="preserve">
+    <value>Solte aqui para mover para a raiz</value>
+  </data>
+  <data name="Unable to move panel." xml:space="preserve">
+    <value>Não foi possível mover o panel.</value>
+  </data>
+  <data name="Drag onto a panel to make it a child. Use the gaps to reorder. Clear the search before dragging." xml:space="preserve">
+    <value>Arraste sobre um panel para torná-lo filho. Use os espaços entre panels para reordenar. Limpe a busca antes de arrastar.</value>
+  </data>
+  <data name="Panel moved successfully." xml:space="preserve">
+    <value>Painel movido com sucesso</value>
+  </data>
+  <data name="Field moved successfully." xml:space="preserve">
+    <value>Campo movido com sucesso</value>
+  </data>
+  <data name="Panel saved successfully." xml:space="preserve">
+    <value>Painel salvo com sucesso</value>
+  </data>
+  <data name="Entity saved successfully." xml:space="preserve">
+    <value>Entidade salva com sucesso</value>
+  </data>
+  <data name="Options saved successfully." xml:space="preserve">
+    <value>Opções salvas com sucesso</value>
+  </data>
+  <data name="Error saving" xml:space="preserve">
+    <value>Erro ao salvar</value>
+  </data>
+  <data name="Please check your fields." xml:space="preserve">
+    <value>Por favor, verifique seus campos.</value>
+  </data>
+  <data name="Rule saved successfully." xml:space="preserve">
+    <value>Regra salva com sucesso</value>
+  </data>
+  <data name="Index saved successfully." xml:space="preserve">
+    <value>Índice salvo com sucesso</value>
+  </data>
+  <data name="Relationship saved successfully." xml:space="preserve">
+    <value>Relacionamento salvo com sucesso</value>
+  </data>
+  <data name="API settings saved successfully." xml:space="preserve">
+    <value>Configurações da API salvas com sucesso</value>
+  </data>
 </root>

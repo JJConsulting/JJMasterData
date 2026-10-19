@@ -917,4 +917,37 @@
   <data name="This option is valid only for Collapse panels." xml:space="preserve">
     <value>Esta opción solo es válida para paneles de tipo Collapse.</value>
   </data>
+  <data name="Panel moved successfully." xml:space="preserve">
+    <value>Panel movido correctamente</value>
+  </data>
+  <data name="Field moved successfully." xml:space="preserve">
+    <value>Campo movido correctamente</value>
+  </data>
+  <data name="Panel saved successfully." xml:space="preserve">
+    <value>Panel guardado correctamente</value>
+  </data>
+  <data name="Entity saved successfully." xml:space="preserve">
+    <value>Entidad guardada correctamente</value>
+  </data>
+  <data name="Options saved successfully." xml:space="preserve">
+    <value>Opciones guardadas correctamente</value>
+  </data>
+  <data name="Error saving" xml:space="preserve">
+    <value>Error al guardar</value>
+  </data>
+  <data name="Please check your fields." xml:space="preserve">
+    <value>Por favor, revise sus campos.</value>
+  </data>
+  <data name="Rule saved successfully." xml:space="preserve">
+    <value>Regla guardada correctamente</value>
+  </data>
+  <data name="Index saved successfully." xml:space="preserve">
+    <value>Índice guardado correctamente</value>
+  </data>
+  <data name="Relationship saved successfully." xml:space="preserve">
+    <value>Relación guardada correctamente</value>
+  </data>
+  <data name="API settings saved successfully." xml:space="preserve">
+    <value>Configuración de la API guardada correctamente</value>
+  </data>
 </root>

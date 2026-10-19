@@ -4,7 +4,7 @@
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementPanel
 
-<div class="row mb-3">
+<div class="row gy-3 mb-3">
     <div class="col-sm-4 required">
         <label class="form-label" asp-for="Layout"></label>
         <select asp-for="Layout" class="form-control form-select">
@@ -28,7 +28,7 @@
 
     </div>
 </div>
-<div class="row">
+<div class="row gy-3">
     <div class="col-sm-4">
         <expression for="Title" use-floating-label="false"/>
     </div>
@@ -44,7 +44,7 @@
         </select>
     </div>
 </div>
-<div class="row mb-3">
+<div class="row gy-3 mb-3">
     <div class="col-sm-6">
         <label asp-for="Icon" class="@BootstrapHelper.Label"></label>
         <icon-picker for="Icon"/>

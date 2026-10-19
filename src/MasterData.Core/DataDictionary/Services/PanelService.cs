@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
@@ -90,16 +90,40 @@ public class PanelService(IValidationDictionary validationDictionary,
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 
+    public async Task<bool> MovePanelAsync(string elementName, int panelId, int? parentId, int? beforePanelId)
+    {
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var panel = formElement.Panels.FirstOrDefault(x => x.PanelId == panelId);
+        if (parentId == 0)
+            parentId = null;
+        var before = formElement.Panels.FirstOrDefault(x => x.PanelId == beforePanelId);
+        if (panel is null || parentId == panelId ||
+            (parentId.HasValue && (formElement.Panels.All(x => x.PanelId != parentId) ||
+                                  HasDescendant(formElement.Panels, panelId, parentId.Value))) ||
+            (beforePanelId.HasValue && (before is null || before == panel || before.ParentId != parentId)))
+            return false;
+
+        panel.ParentId = parentId;
+        formElement.Panels.Remove(panel);
+        if (before is null)
+            formElement.Panels.Add(panel);
+        else
+            formElement.Panels.Insert(formElement.Panels.IndexOf(before), panel);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        return true;
+    }
+
     private static bool HasDescendant(IReadOnlyCollection<FormElementPanel> panels, int panelId, int candidateParentId)
     {
         var children = panels.Where(x => x.ParentId == panelId).Select(x => x.PanelId).ToHashSet();
+        var visited = new HashSet<int>();
         while (children.Count > 0)
         {
             if (children.Contains(candidateParentId))
                 return true;
             var next = panels.Where(x => children.Contains(x.ParentId ?? 0)).Select(x => x.PanelId).ToHashSet();
-            if (next.SetEquals(children))
-                break;
+            visited.UnionWith(children);
+            next.ExceptWith(visited);
             children = next;
         }
         return false;
