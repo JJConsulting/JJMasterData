@@ -32,6 +32,7 @@
           "articles/concepts/**/*.md",
           "articles/user-guide/**/*.md",
           "articles/developer-guide/**/*.md",
+          "articles/cookbook/**/*.md",
           "articles/toc.yml",
           "index.md",
           "toc.yml"
@@ -43,7 +44,8 @@
         "files": [
           "media/**",
           "logo.png",
-          "favicon.ico"
+          "favicon.ico",
+          "llms.txt"
         ]
       }
     ],

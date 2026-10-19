@@ -33,3 +33,11 @@ formView.FormElement.Title = "Runtime customization";
 ```
 
 These changes apply only to that form instance. Use a registered [form event handler](form-events.md) when the customization must apply whenever the dictionary is loaded.
+
+## Build focused screens from one dictionary
+
+A task-specific page can change labels, visibility, required fields and panels on its runtime dictionary. Use `Virtual` fields for display-only context that has no database contract; include them in an appropriate panel and supply their values before rendering. Keep the metadata changes on the instance.
+
+For parent IDs or server-defined status values, `JJDataPanel.SecretValues` supplies protected values merged over processed form values. A visibility expression alone does not protect the value. Reauthorize and reconstruct current context on submission; see [Create a task-specific form](../cookbook/task-form.md).
+
+If a dictionary is reused by full CRUD, standalone panels, imports and APIs, decide which customizations belong to each entry point. Form handlers attached by the form-view factory do not automatically run for a standalone panel.

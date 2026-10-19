@@ -109,6 +109,14 @@ For bulk operations, use the overloads that receive `IEnumerable<Dictionary<stri
 
 Use the form-service workflow when a write must behave like a submission from the generated UI. See [Form events](form-events.md) for the hooks executed by that workflow.
 
+## Stored-procedure routing and generated values
+
+With the SQL Server provider, `UseReadProcedure` and `UseWriteProcedure` on the element independently select stored procedures for queries and writes. `ReadProcedureName` and `WriteProcedureName` override the names. This applies to repository calls as well as the generated UI; see the [stored-procedure contract](stored-procedures.md).
+
+`SetValuesAsync` sends an empty action to the write procedure, which determines whether the key exists and reports the operation through `@RET`. The first returned row can supply generated keys or other known dictionary fields; the repository merges them into the passed values dictionary. Preserve this result when replacing generated write SQL.
+
+A direct repository call does not validate form input or run form audit processing simply because a stored procedure is configured. Keep database invariants in the procedure or constraints, and use the form workflow when dictionary rules and events are required.
+
 ## Connections
 
 The repository resolves the database from `element.ConnectionId`. A null connection ID uses the default JJMasterData connection; a configured ID selects the corresponding additional connection. See [Connections and repositories](connections.md).

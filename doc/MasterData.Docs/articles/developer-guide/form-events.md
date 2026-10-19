@@ -71,3 +71,19 @@ The optional `ServiceLifetime` argument supports transient (default), scoped and
 `FormElementLoadEventArgs.FormElement` exposes the loaded metadata. `FormAfterActionEventArgs.Values` exposes the operation values and `UrlRedirect` supplies a redirect to callers that handle it. A background import does not navigate the user's browser through this property.
 
 Direct `IEntityRepository` writes bypass these form-service hooks. See [entity repository](entity-repository.md) and [validation rules](../concepts/rules.md#rule-syntax-and-operation-flags).
+
+## Validation, side effects and transaction boundaries
+
+Keep before hooks focused on validating or adjusting `args.Values`. Writing other records from a before hook can leave those side effects behind if a later check rejects the main operation. A query that finds no duplicate or no reference is useful for a friendly message, but does not eliminate races with concurrent requests; retain database constraints or transactional enforcement.
+
+After hooks run after repository persistence. An error there does not automatically roll back the saved record. For changes that must commit together, implement the transaction inside the persistence/application operation. Do not use an after hook as a substitute for an atomic write across related tables.
+
+See [Validate business operations](../cookbook/business-validation.md) for date-range and delete checks, and [Persist multiple selections](../cookbook/multiple-selections.md) for relationship changes inside a write procedure.
+
+## Factory and manual-save behavior
+
+`IFormElementComponentFactory<JJFormView>.CreateAsync(name)` attaches the dictionary's registered form handler and invokes `OnFormElementLoadAsync`. Standalone `JJDataPanel` creation loads metadata without that handler lifecycle. Rendering a panel, reading values or validating fields does not dispatch form before/after events by itself.
+
+For a custom POST that should behave like the generated form, use `JJFormView.GetFormValuesAsync()` followed by `InsertFormValuesAsync` or `UpdateFormValuesAsync`, once per submitted operation. These methods call the form service. See [Create a task-specific form](../cookbook/task-form.md). For aggregate saves owned by the application, explicitly define which validations, audit writes and side effects the save service performs.
+
+An after hook that calls an external service must define retry and partial-failure behavior. A queue request made after commit can itself fail; durable delivery across that gap needs an outbox written in the record's transaction.

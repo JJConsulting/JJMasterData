@@ -47,7 +47,7 @@ Place a field with `PanelId`, group fields into the same form row with `LineGrou
 | `SqlCommand` | A query | Configure `Command`; it must return an ID and a description. |
 | `ElementMap` | Another data dictionary | Configure `ElementMap` to identify the target element and fields. |
 
-`FirstOption` adds the configured leading choice, and `RadioLayout`, `EnableMultiSelect`, `ShowIcon` and `GridBehavior` refine how the list appears. Multi-select values need storage and downstream processing that support multiple values; it is generally best suited to write-only fields or a separate relationship table.
+`FirstOption` adds the configured leading choice, and `RadioLayout`, `EnableMultiSelect`, `ShowIcon` and `GridBehavior` refine how the list appears. For `ComboBox`, `DataItem.EnableMultiSelect = true` enables multiple selection and represents selected IDs as comma-separated text. The database contract must support that representation. See [Persist multiple selections](../cookbook/multiple-selections.md) for reading and writing a relationship table without adding a serialized-value column to the parent table.
 
 If one list depends on another field, reference the current form field in its query or mapping and enable `AutoPostBack` on the source field. A change then reloads the form and repopulates dependent editors. Use `TriggerExpression` for calculated values, and `VisibleExpression` or `EnableExpression` to change whether a field is available. See [expressions](expressions.md) for expression syntax and timing.
 
