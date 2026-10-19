@@ -1,7 +1,5 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,22 +11,19 @@ public partial class DataAccess
     /// Reads the first row directly into a model,
     /// or null when there are no rows.
     /// </summary>
-    public async Task<T?> QueryFirstOrDefaultAsync<T>(
+    public async Task<T?> GetAsync<T>(
         DataAccessCommand command,
-        Func<DbDataReader, IDataAccessMapper<T>> mapperFactory,
         CancellationToken cancellationToken = default)
-        where T : class
+        where T : class, IDataAccessModel<T>
     {
-        ArgumentNullException.ThrowIfNull(mapperFactory);
-
         return await ReadAsync<T?>(
             command,
             async (reader, token) =>
             {
                 if (await reader.ReadAsync(token).ConfigureAwait(false))
                 {
-                    var mapper = mapperFactory(reader);
-                    return mapper.Map(reader);
+                    var ordinals = T.ResolveOrdinals(reader);
+                    return T.Read(reader, ordinals);
                 }
 
                 return null;
@@ -39,14 +34,11 @@ public partial class DataAccess
     /// <summary>
     /// Reads rows directly into models.
     /// </summary>
-    public async Task<List<T>> QueryListAsync<T>(
+    public async Task<List<T>> GetListAsync<T>(
         DataAccessCommand command,
-        Func<DbDataReader, IDataAccessMapper<T>> mapperFactory,
         CancellationToken cancellationToken = default)
-        where T : class
+        where T : class, IDataAccessModel<T>
     {
-        ArgumentNullException.ThrowIfNull(mapperFactory);
-
         return await ReadAsync(
             command,
             async (reader, token) =>
@@ -56,11 +48,11 @@ public partial class DataAccess
                 if (!await reader.ReadAsync(token).ConfigureAwait(false))
                     return items;
 
-                var mapper = mapperFactory(reader);
+                var ordinals = T.ResolveOrdinals(reader);
 
                 do
                 {
-                    items.Add(mapper.Map(reader));
+                    items.Add(T.Read(reader, ordinals));
                 }
                 while (await reader.ReadAsync(token).ConfigureAwait(false));
 

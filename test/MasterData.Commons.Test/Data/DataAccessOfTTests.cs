@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Test.Data;
 public enum QueryStatus : short { Active = 1 }
 
 [DataAccessModel]
-public class QueryCustomer
+public partial class QueryCustomer
 {
     [DataAccessColumn("customer_id")] public int Id { get; set; }
     public string Name { get; set; } = "initial";
@@ -46,7 +46,7 @@ public class TypedDataAccessTests
                    'e48b83a0-2ad6-48b7-b9ae-08c4ebf5b827', 0, 'J', 'ignored'
             """);
         command.AddParameter("@id", 7, DbType.Int32);
-        var list = await access.GetQueryCustomerListAsync(command, Token);
+        var list = await access.GetListAsync<QueryCustomer>(command, Token);
         Assert.Equal(2, list.Count);
         var first = list[0];
         Assert.Equal(7, first.Id);
@@ -55,9 +55,9 @@ public class TypedDataAccessTests
         Assert.Null(first.Optional);
         Assert.Equal(12.5m, first.Balance);
         Assert.Equal(QueryStatus.Active, first.Status);
-        var nullableEnum = await access.GetQueryCustomerAsync(new("SELECT NULL AS OptionalStatus"), Token);
+        var nullableEnum = await access.GetAsync<QueryCustomer>(new("SELECT NULL AS OptionalStatus"), Token);
         Assert.Null(nullableEnum!.OptionalStatus);
-        var numericEnum = await access.GetQueryCustomerAsync(new("SELECT 1 AS OptionalStatus"), Token);
+        var numericEnum = await access.GetAsync<QueryCustomer>(new("SELECT 1 AS OptionalStatus"), Token);
         Assert.Equal(QueryStatus.Active, numericEnum!.OptionalStatus);
         Assert.Equal(new DateTime(2026, 10, 13, 10, 15, 0), first.CreatedAt);
         Assert.Equal(TimeSpan.FromHours(-3), first.Offset!.Value.Offset);
@@ -67,9 +67,9 @@ public class TypedDataAccessTests
         Assert.Equal('J', first.Initial);
         Assert.False(list[1].Active);
         Assert.Null(list[1].CreatedAt);
-        var single = await access.GetQueryCustomerAsync(command, Token);
+        var single = await access.GetAsync<QueryCustomer>(command, Token);
         Assert.Equal(7, single!.Id);
-        var missing = await access.GetQueryCustomerAsync(new("SELECT 9 AS customer_id"), Token);
+        var missing = await access.GetAsync<QueryCustomer>(new("SELECT 9 AS customer_id"), Token);
         Assert.Equal("initial", missing!.Name);
         Assert.Equal(42, missing.Optional);
     }
@@ -78,10 +78,10 @@ public class TypedDataAccessTests
     public async Task HandlesEmptyResultsAndSchemaChangesOnReusedAccess()
     {
         var access = CreateAccess();
-        Assert.Null(await access.GetQueryCustomerAsync(new("SELECT 1 AS customer_id WHERE 0"), Token));
-        Assert.Empty(await access.GetQueryCustomerListAsync(new("SELECT 1 AS customer_id WHERE 0"), Token));
-        Assert.Equal(1, (await access.GetQueryCustomerAsync(new("SELECT 'one' AS Name, 1 AS customer_id"), Token))!.Id);
-        var second = await access.GetQueryCustomerAsync(new("SELECT 2 AS customer_id, 'two' AS Name"), Token);
+        Assert.Null(await access.GetAsync<QueryCustomer>(new("SELECT 1 AS customer_id WHERE 0"), Token));
+        Assert.Empty(await access.GetListAsync<QueryCustomer>(new("SELECT 1 AS customer_id WHERE 0"), Token));
+        Assert.Equal(1, (await access.GetAsync<QueryCustomer>(new("SELECT 'one' AS Name, 1 AS customer_id"), Token))!.Id);
+        var second = await access.GetAsync<QueryCustomer>(new("SELECT 2 AS customer_id, 'two' AS Name"), Token);
         Assert.Equal(2, second!.Id);
         Assert.Equal("two", second.Name);
     }
@@ -96,7 +96,7 @@ public class TypedDataAccessTests
     [InlineData("SELECT 1 AS customer_id, 2 AS CUSTOMER_ID", "customer_id")]
     public async Task RejectsUnsafeConversionsAndAmbiguousColumns(string sql, string column)
     {
-        var exception = await Assert.ThrowsAsync<DataException>(() => CreateAccess().GetQueryCustomerAsync(new(sql), Token));
+        var exception = await Assert.ThrowsAsync<DataException>(() => CreateAccess().GetAsync<QueryCustomer>(new(sql), Token));
         Assert.Contains(column, exception.Message, StringComparison.OrdinalIgnoreCase);
         Assert.Equal(sql, exception.Data["DataAccess Query"]);
     }
@@ -107,8 +107,8 @@ public class TypedDataAccessTests
         var access = CreateAccess();
         using var cancellation = new CancellationTokenSource();
         cancellation.Cancel();
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => access.GetQueryCustomerListAsync(new("SELECT 1"), cancellation.Token));
-        Assert.NotNull(await access.GetQueryCustomerAsync(new("SELECT 1 AS customer_id"), Token));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => access.GetListAsync<QueryCustomer>(new("SELECT 1"), cancellation.Token));
+        Assert.NotNull(await access.GetAsync<QueryCustomer>(new("SELECT 1 AS customer_id"), Token));
     }
 
     [Theory]
@@ -130,7 +130,7 @@ public class TypedDataAccessTests
         reader.SetupGet(r => r.FieldCount).Returns(1);
         reader.Setup(r => r.GetName(0)).Returns("customer_id");
         reader.Setup(r => r.GetValue(0)).Returns(outcome == "map" ? "bad" : 1);
-        reader.SetupSequence(r => r.ReadAsync(token)).ReturnsAsync(true).ReturnsAsync(false);
+        reader.SetupSequence(r => r.ReadAsync(token)).ReturnsAsync(true).ReturnsAsync(true).ReturnsAsync(false);
         var factory = new Mock<DbProviderFactory>();
         factory.Setup(f => f.CreateConnection()).Returns(connection.Object);
         factory.Setup(f => f.CreateCommand()).Returns(command.Object);
@@ -142,10 +142,15 @@ public class TypedDataAccessTests
         if (outcome == "cancel") reader.Setup(r => r.ReadAsync(token)).ThrowsAsync(new OperationCanceledException(token));
         var query = new DataAccessCommand("SELECT customer_id") { TimeoutSeconds = 17 };
         var access = new DataAccess("test", factory.Object);
-        if (outcome == "success") Assert.Single(await access.GetQueryCustomerListAsync(query, token));
+        if (outcome == "success")
+        {
+            Assert.Equal(2, (await access.GetListAsync<QueryCustomer>(query, token)).Count);
+            // Each property scans the one-column schema once, regardless of row count.
+            reader.Verify(r => r.GetName(0), Times.Exactly(typeof(QueryCustomer).GetProperties().Length));
+        }
         else
         {
-            var error = await Assert.ThrowsAnyAsync<Exception>(() => access.GetQueryCustomerListAsync(query, token));
+            var error = await Assert.ThrowsAnyAsync<Exception>(() => access.GetListAsync<QueryCustomer>(query, token));
             Assert.Equal(query.Sql, error.Data["DataAccess Query"]);
             if (outcome == "cancel") Assert.IsType<OperationCanceledException>(error);
         }
@@ -177,7 +182,7 @@ public class TypedDataAccessTests
         var output = new DataAccessParameter("@out", DBNull.Value, DbType.Int32, ParameterDirection.Output);
         var query = new DataAccessCommand("EXEC test", [output], CommandType.StoredProcedure);
         var access = new DataAccess("test", factory.Object);
-        Assert.Null(await access.GetQueryCustomerAsync(query, Token));
+        Assert.Null(await access.GetAsync<QueryCustomer>(query, Token));
         Assert.Equal(123, output.Value);
         Assert.Equal(CommandType.StoredProcedure, command.Object.CommandType);
     }
@@ -189,7 +194,7 @@ public class TypedDataAccessTests
         var factory = new Mock<DbProviderFactory>();
         factory.Setup(f => f.CreateCommand()).Returns(command.Object);
         var access = new DataAccess("test", factory.Object);
-        await Assert.ThrowsAsync<JJMasterData.Commons.Exceptions.DataAccessException>(() => access.GetQueryCustomerListAsync(new(""), Token));
+        await Assert.ThrowsAsync<JJMasterData.Commons.Exceptions.DataAccessException>(() => access.GetListAsync<QueryCustomer>(new(""), Token));
         command.Protected().Verify("Dispose", Times.Once(), ItExpr.Is<bool>(disposing => disposing));
         factory.Verify(f => f.CreateConnection(), Times.Never);
     }

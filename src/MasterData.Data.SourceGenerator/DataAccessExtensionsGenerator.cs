@@ -32,8 +32,8 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
     private static readonly DiagnosticDescriptor DuplicateColumn = Rule("JJMDG005", "Duplicate column",
         "Model '{0}' maps column '{1}' more than once (case-insensitive)");
 
-    private static readonly DiagnosticDescriptor NameConflict = Rule("JJMDG006", "Extension name conflict",
-        "Model '{0}' has conflicting extension names; set a unique DataAccessModel.ExtensionName");
+    private static readonly DiagnosticDescriptor PartialRequired = Rule("JJMDG008", "Partial declaration required",
+        "Model '{0}' and its containing types must be partial");
 
     private static readonly DiagnosticDescriptor InvalidConfiguration =
         Rule("JJMDG007", "Invalid attribute configuration", "Invalid {0} on '{1}': {2}");
@@ -51,16 +51,11 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         // and diagnostic locations are kept on a separate branch from source generation.
         var models = analysis.Select(static (result, _) => result.Model)
             .WithTrackingName("Models");
-        var conflicts = models.Select(static (model, _) => model.Name).Collect()
-            .Select(static (names, token) => FindConflicts(names, token));
-        var diagnostics = analysis.Combine(conflicts)
-            .SelectMany(static (pair, _) => GetDiagnostics(pair.Left, pair.Right));
+        var diagnostics = analysis.SelectMany(static (result, _) => result.Diagnostics);
         context.RegisterSourceOutput(diagnostics, static (output, diagnostic) => output.ReportDiagnostic(diagnostic));
 
-        var sources = models.Combine(conflicts)
-            .Select(static (pair, _) => (Model: pair.Left, Conflict: HasConflict(pair.Right, pair.Left.Name)))
-            .Where(static pair => pair.Model.IsValid && !pair.Conflict)
-            .Select(static (pair, token) => (pair.Model.HintName, Source: Emit(pair.Model, token)))
+        var sources = models.Where(static model => model.IsValid)
+            .Select(static (model, token) => (model.HintName, Source: Emit(model, token)))
             .WithTrackingName("Sources");
         context.RegisterSourceOutput(sources, static (output, source) =>
             output.AddSource(source.HintName, SourceText.From(source.Source, Encoding.UTF8)));
@@ -72,28 +67,22 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         var symbol = (INamedTypeSymbol)context.TargetSymbol;
         var model = new ModelAnalysis();
         var compilation = context.SemanticModel.Compilation;
-        AnalyzeModelConfiguration(symbol, context.Attributes[0], model);
+        AnalyzeModelConfiguration(symbol, model);
         AnalyzeProperties(symbol, compilation, model, cancellationToken);
 
-        var extensionMetadataName =
-            (symbol.ContainingNamespace.IsGlobalNamespace ? "" : symbol.ContainingNamespace.ToDisplayString() + ".") +
-            model.Name + "DataAccessExtensions";
-        if (compilation.GetTypeByMetadataName(extensionMetadataName) != null)
-            model.Report(NameConflict, symbol, symbol.Name);
-        return new AnalysisResult(CreateModelData(symbol, model), model.Diagnostics.ToImmutableArray(),
-            Diagnostic.Create(NameConflict, symbol.Locations.FirstOrDefault(), symbol.Name));
+        return new AnalysisResult(CreateModelData(symbol, model), model.Diagnostics.ToImmutableArray());
     }
 
-    private static void AnalyzeModelConfiguration(INamedTypeSymbol symbol, AttributeData attribute, ModelAnalysis model)
+    private static void AnalyzeModelConfiguration(INamedTypeSymbol symbol, ModelAnalysis model)
     {
         model.Name = symbol.Name;
-        foreach (var argument in attribute.NamedArguments)
-            if (argument.Key == "ExtensionName")
-                model.Name = argument.Value.Value as string ?? "";
-        if (!SyntaxFacts.IsValidIdentifier(model.Name) || SyntaxFacts.GetKeywordKind(model.Name) != SyntaxKind.None)
-            model.Report(InvalidConfiguration, symbol, "ExtensionName", symbol.Name,
-                "expected a non-keyword C# identifier");
-
+        for (var type = symbol; type != null; type = type.ContainingType)
+        {
+            if (type.DeclaringSyntaxReferences.Any(reference =>
+                    reference.GetSyntax() is not TypeDeclarationSyntax declaration ||
+                    !declaration.Modifiers.Any(SyntaxKind.PartialKeyword)))
+                model.Report(PartialRequired, type, symbol.Name);
+        }
         if (symbol.TypeKind != TypeKind.Class || symbol.IsAbstract || symbol.IsStatic || !IsAccessible(symbol) ||
             HasInvalidContainer(symbol))
             model.Report(InvalidModel, symbol, symbol.Name);
@@ -192,7 +181,10 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
             symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
             symbol.ContainingNamespace.IsGlobalNamespace ? "" : symbol.ContainingNamespace.ToDisplayString(),
             model.Name,
-            symbol.DeclaredAccessibility == Accessibility.Public && HasPublicContainingTypes(symbol) ? "public" : "internal",
+            symbol.DeclaredAccessibility == Accessibility.Public ? "public" : "internal",
+            GetContainerStart(symbol),
+            string.Concat(Enumerable.Repeat("}\n", GetContainerCount(symbol))),
+            symbol.IsRecord,
             model.Properties.Select(static p => new PropertyData(p.Symbol.Name, p.Column, p.ReaderMethod,
                 p.Type.TypeKind == TypeKind.Enum
                     ? p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
@@ -281,43 +273,28 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         }
     }
 
-    private static string FindConflicts(ImmutableArray<string> names, CancellationToken cancellationToken)
-    {
-        var methodNames = new Dictionary<string, string>(StringComparer.Ordinal);
-        var conflicting = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var name in names)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            // FooList's single-result method conflicts with Foo's list method.
-            foreach (var method in new[] { "Get" + name + "Async", "Get" + name + "ListAsync" })
-            {
-                if (methodNames.TryGetValue(method, out var previous))
-                {
-                    conflicting.Add(previous);
-                    conflicting.Add(name);
-                }
-                else
-                {
-                    methodNames.Add(method, name);
-                }
-            }
-        }
+    private static string Literal(string text) => SymbolDisplay.FormatLiteral(text, true);
 
-        // A canonical string provides value equality for this global dependency.
-        return conflicting.Count == 0
-            ? ""
-            : "\n" + string.Join("\n", conflicting.OrderBy(static n => n, StringComparer.Ordinal)) + "\n";
+    private static string GetContainerStart(INamedTypeSymbol symbol)
+    {
+        var declarations = new Stack<string>();
+        for (var type = symbol.ContainingType; type != null; type = type.ContainingType)
+        {
+            var kind = type.IsRecord
+                ? (type.TypeKind == TypeKind.Struct ? "record struct" : "record class")
+                : (type.TypeKind == TypeKind.Struct ? "struct" : type.TypeKind == TypeKind.Interface ? "interface" : "class");
+            declarations.Push("partial " + kind + " @" + type.Name + "\n{\n");
+        }
+        return string.Concat(declarations);
     }
 
-    private static bool HasConflict(string conflicts, string name) =>
-        conflicts.IndexOf("\n" + name + "\n", StringComparison.Ordinal) >= 0;
-
-    private static ImmutableArray<Diagnostic> GetDiagnostics(AnalysisResult result, string conflicts) =>
-        HasConflict(conflicts, result.Model.Name)
-            ? result.Diagnostics.Add(result.ConflictDiagnostic)
-            : result.Diagnostics;
-
-    private static string Literal(string text) => SymbolDisplay.FormatLiteral(text, true);
+    private static int GetContainerCount(INamedTypeSymbol symbol)
+    {
+        var count = 0;
+        for (var type = symbol.ContainingType; type != null; type = type.ContainingType)
+            count++;
+        return count;
+    }
 
     private static string Emit(ModelData model, CancellationToken cancellationToken)
     {
@@ -325,54 +302,30 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         var builder = new StringBuilder("// <auto-generated/>\n#nullable enable\n");
         if (model.Namespace.Length != 0)
             builder.Append("namespace ").Append(model.Namespace).Append(" {\n");
-        builder.Append(model.Accessibility).Append(" static class ").Append(model.Name).Append("DataAccessExtensions\n{\n");
-        AppendQueryMethods(builder, model);
-        AppendMapper(builder, model, cancellationToken);
-        builder.Append("}\n");
-        if (model.Namespace.Length != 0)
-            builder.Append("}\n");
-        return builder.ToString();
-    }
-
-    private static void AppendQueryMethods(StringBuilder builder, ModelData model)
-    {
-        // Raw strings mirror the generated code; fully qualified types avoid consumer using directives.
-        builder.Append($"""
-                public static global::System.Threading.Tasks.Task<{model.TypeName}?> Get{model.Name}Async(this global::JJMasterData.Commons.Data.DataAccess dataAccess, global::JJMasterData.Commons.Data.DataAccessCommand command, global::System.Threading.CancellationToken cancellationToken = default)
-                    => dataAccess.QueryFirstOrDefaultAsync<{model.TypeName}>(command, static reader => new Mapper(reader), cancellationToken);
-                public static global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<{model.TypeName}>> Get{model.Name}ListAsync(this global::JJMasterData.Commons.Data.DataAccess dataAccess, global::JJMasterData.Commons.Data.DataAccessCommand command, global::System.Threading.CancellationToken cancellationToken = default)
-                    => dataAccess.QueryListAsync<{model.TypeName}>(command, static reader => new Mapper(reader), cancellationToken);
-            """).Append('\n');
-    }
-
-    private static void AppendMapper(StringBuilder builder, ModelData model, CancellationToken cancellationToken)
-    {
-        var type = model.TypeName;
-        builder.Append("    private sealed class Mapper : global::JJMasterData.Commons.Data.IDataAccessMapper<").Append(type)
-            .Append(">\n    {\n");
-        for (var i = 0; i < model.Properties.Length; i++)
-            builder.Append("        private readonly int ordinal").Append(i).Append(";\n");
-        AppendMapperConstructor(builder, model);
-        builder.Append("        public ").Append(type)
-            .Append(" Map(global::System.Data.Common.DbDataReader reader)\n        {\n            var item = new ")
-            .Append(type).Append("();\n");
+        builder.Append(model.ContainerStart);
+        builder.Append(model.Accessibility).Append(model.IsRecord ? " partial record class @" : " partial class @")
+            .Append(model.Name).Append(" : global::JJMasterData.Commons.Data.IDataAccessModel<")
+            .Append(model.TypeName).Append(">\n{\n");
+        var contract = "global::JJMasterData.Commons.Data.IDataAccessModel<" + model.TypeName + ">";
+        builder.Append("    static int[] ").Append(contract)
+            .Append(".ResolveOrdinals(global::System.Data.Common.DbDataReader reader)\n        => new int[]\n        {\n");
+        foreach (var property in model.Properties)
+            builder.Append("            global::JJMasterData.Commons.Data.DataAccessValueReader.FindOrdinal(reader, ")
+                .Append(Literal(property.Column)).Append("),\n");
+        builder.Append("        };\n");
+        builder.Append("    static ").Append(model.TypeName).Append(' ').Append(contract)
+            .Append(".Read(global::System.Data.Common.DbDataReader reader, global::System.ReadOnlySpan<int> ordinals)\n    {\n")
+            .Append("        var item = new ").Append(model.TypeName).Append("();\n");
         for (var i = 0; i < model.Properties.Length; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             AppendPropertyMapping(builder, model.Properties[i], i);
         }
-
-        builder.Append("            return item;\n        }\n    }\n");
-    }
-
-    private static void AppendMapperConstructor(StringBuilder builder, ModelData model)
-    {
-        builder.Append("        public Mapper(global::System.Data.Common.DbDataReader reader)\n        {\n");
-        for (var i = 0; i < model.Properties.Length; i++)
-            builder.Append("            ordinal").Append(i)
-                .Append(" = global::JJMasterData.Commons.Data.DataAccessValueReader.FindOrdinal(reader, ")
-                .Append(Literal(model.Properties[i].Column)).Append(");\n");
-        builder.Append("        }\n");
+        builder.Append("        return item;\n    }\n}\n");
+        builder.Append(model.ContainerEnd);
+        if (model.Namespace.Length != 0)
+            builder.Append("}\n");
+        return builder.ToString();
     }
 
     private static void AppendPropertyMapping(StringBuilder builder, PropertyData property, int propertyIndex)
@@ -385,32 +338,22 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         var enumCast = property.EnumType.Length == 0 ? "" : "(" + property.EnumType + ")";
 
         builder.Append($$"""
-                        if (ordinal{{propertyIndex}} >= 0)
-                        {
-                            if (reader.IsDBNull(ordinal{{propertyIndex}}))
-                                {{nullAssignment}}
-                            else
-                                {{target}} = {{enumCast}}global::JJMasterData.Commons.Data.DataAccessValueReader.Read{{property.ReaderMethod}}(reader, ordinal{{propertyIndex}});
-                        }
+                    if (ordinals[{{propertyIndex}}] >= 0)
+                    {
+                        if (reader.IsDBNull(ordinals[{{propertyIndex}}]))
+                            {{nullAssignment}}
+                        else
+                            {{target}} = {{enumCast}}global::JJMasterData.Commons.Data.DataAccessValueReader.Read{{property.ReaderMethod}}(reader, ordinals[{{propertyIndex}}]);
+                    }
             """).Append('\n');
-    }
-
-    private static bool HasPublicContainingTypes(INamedTypeSymbol symbol)
-    {
-        for (var current = symbol.ContainingType; current != null; current = current.ContainingType)
-            if (current.DeclaredAccessibility != Accessibility.Public)
-                return false;
-        return true;
     }
 
     private sealed class AnalysisResult(
         ModelData model,
-        ImmutableArray<Diagnostic> diagnostics,
-        Diagnostic conflictDiagnostic)
+        ImmutableArray<Diagnostic> diagnostics)
     {
         public ModelData Model { get; } = model;
         public ImmutableArray<Diagnostic> Diagnostics { get; } = diagnostics;
-        public Diagnostic ConflictDiagnostic { get; } = conflictDiagnostic;
     }
 
     // Only value-equatable data crosses into the source pipeline. ImmutableArray itself uses reference equality,
@@ -420,6 +363,9 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         string namespaceName,
         string name,
         string accessibility,
+        string containerStart,
+        string containerEnd,
+        bool isRecord,
         ImmutableArray<PropertyData> properties,
         bool isValid) : IEquatable<ModelData>
     {
@@ -427,6 +373,9 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         public string Namespace { get; } = namespaceName;
         public string Name { get; } = name;
         public string Accessibility { get; } = accessibility;
+        public string ContainerStart { get; } = containerStart;
+        public string ContainerEnd { get; } = containerEnd;
+        public bool IsRecord { get; } = isRecord;
         public ImmutableArray<PropertyData> Properties { get; } = properties;
         public bool IsValid { get; } = isValid;
 
@@ -439,6 +388,9 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
             Namespace == other.Namespace &&
             Name == other.Name &&
             Accessibility == other.Accessibility &&
+            ContainerStart == other.ContainerStart &&
+            ContainerEnd == other.ContainerEnd &&
+            IsRecord == other.IsRecord &&
             IsValid == other.IsValid &&
             Properties.SequenceEqual(other.Properties);
 

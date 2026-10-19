@@ -237,69 +237,50 @@ This is useful for structured logging, but it also means exception details can c
 - Set `TimeoutSeconds` on long-running commands instead of changing the obsolete global `TimeOut` property.
 - Use [`IEntityRepository`](~/articles/developer-guide/entity-repository.md) when the operation should honor an `Element`, its metadata, or its `ConnectionId`.
 
-## Compile-time model materialization
+## Typed queries
 
-Install `JJMasterData.DataAccess.SourceGenerator` alongside `JJMasterData.Commons` (the Commons version must include the typed query API). The generator requires a Roslyn 4.14 or newer compiler (the repository uses .NET 10). The generator package contains a build analyzer under `analyzers/dotnet/cs`; Roslyn is not a runtime dependency. Mark its reference as private so applications control whether to enable generation:
+Install the generator alongside `JJMasterData.Commons`:
 
 ```xml
-<PackageReference Include="JJMasterData.DataAccess.SourceGenerator" Version="5.0.12" PrivateAssets="all" />
+<PackageReference Include="JJMasterData.Data.SourceGenerators" Version="5.0.12" PrivateAssets="all" />
 ```
 
-Models do not need `partial`. Put the model namespace in scope to use its generated extensions:
+Annotate a partial model, then query it:
 
 ```csharp
 using JJMasterData.Commons.Data;
 
 [DataAccessModel]
-public class Product
+public partial class Product
 {
     [DataAccessColumn("product_id")]
     public int Id { get; set; }
     public string Description { get; set; } = "";
     public decimal Price { get; set; }
 }
-```
 
-Query it from an application method:
-
-```csharp
+// Inside an application method:
 var command = new DataAccessCommand(
     "SELECT Id AS product_id, Description, Price FROM Product");
-var products = await dataAccess.GetProductListAsync(command, cancellationToken);
-var product = await dataAccess.GetProductAsync(command, cancellationToken);
+
+Product? product = await dataAccess.GetAsync<Product>(command, cancellationToken);
+List<Product> products = await dataAccess.GetListAsync<Product>(command, cancellationToken);
 ```
 
-The first-row method returns `null` for an empty result, and the list method returns an empty list. Only the first result set is mapped. Unlike `GetDictionaryListAsync`, these methods construct models directly from `DbDataReader`, without an intermediate dictionary or table. Ordinals are bound once for each query, using ordinal case-insensitive column matching. Extra columns are ignored; missing columns preserve property initializers. Duplicate matched SQL column names fail with `DataException`.
+`GetAsync<T>` returns the first row or `null`. `GetListAsync<T>` returns all rows or an empty list. Both read only the first result set.
 
-Supported properties are `string`, `bool`, `char`, all C# integer types, `float`, `double`, `decimal`, `Guid`, `DateTime`, `DateTimeOffset`, `TimeSpan`, enums, and their nullable variants. SQL `NULL` sets nullable properties to `null`; it throws `DataException` for non-nullable properties, including non-nullable strings. For projects with nullable reference types disabled, strings are treated as non-nullable; enable nullable annotations to declare `string?`.
+The generator implements `IDataAccessModel<T>` with static `ResolveOrdinals` and `Read` methods. Column positions are resolved once per query; rows are read directly into models, without JSON, intermediate dictionaries, or mapper objects.
 
-Exact provider types use a direct type check. Numeric conversions accept numeric provider values, check integral range, and reject fractional values assigned to integer properties. Numeric enum values use the enum's underlying integer type; undefined enum values remain allowed. Numeric `0`/`1` can map to `bool`, and a one-character string can map to `char`. Arbitrary values are never converted to strings. Conversion failures identify the column and expected type and preserve the normal `DataAccess Query`/`DataAccess Parameters` exception context.
+- Columns match property names without case sensitivity; use `[DataAccessColumn]` for aliases.
+- Extra columns are ignored. Missing columns preserve property initializers. Duplicate matched columns throw `DataException`.
+- SQL `NULL` is accepted only by nullable properties, including `string?`.
+- Supported types: strings, booleans, characters, numeric primitives, `Guid`, `DateTime`, `DateTimeOffset`, `TimeSpan`, enums, and nullable variants. Unsafe conversions throw `DataException`.
+- Models must be concrete, non-generic partial classes with a public or internal parameterless constructor. Containing types must also be partial and non-generic. Properties need public visibility and accessible setters; nested objects, collections, indexers, static properties, `required`, and `init` are unsupported.
 
-Canonical `D`-format strings can map to `Guid`; invariant ISO date strings can map to `DateTime` and `DateTimeOffset` (offset required), and constant-format (`c`) duration strings can map to `TimeSpan`. SQLite returns integers as `long`, real expressions as `double`, and stored decimals and temporal values as strings. Decimal properties additionally accept invariant decimal strings with an optional leading sign and decimal point. See [Microsoft.Data.Sqlite data types](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/types). Floating-point source values retain their provider precision; use an appropriate SQL type/provider for exact decimals. Provider-specific wrapper types and binary GUID representations are unsupported; cast them in SQL to a supported representation. Other providers use the same ADO.NET path but need verification against their actual returned types. Provider factory discovery is unchanged; with Microsoft.Data.Sqlite, pass `SqliteFactory.Instance` explicitly as in the runnable example.
+The API requires `T : class, IDataAccessModel<T>`; models without the generated contract fail to compile. The generator requires Roslyn 4.14 or newer. It generates no SQL and preserves normal cancellation, timeout, and output-parameter behavior.
 
-Models must be accessible, concrete, non-generic classes with an accessible parameterless constructor and public properties with public or internal setters. Inherited properties are mapped. Nested objects, collections, indexers, static properties, inaccessible setters, `required` members and `init` setters are rejected. The generator does not produce SQL or change the data dictionary or CRUD system. Queries retain the existing per-operation connection ownership, timeout, cancellation and output-parameter behavior. The existing query API does not expose an external connection or transaction.
+Run the SQLite example:
 
-Generation errors appear as build diagnostics:
-
-| Diagnostic | Meaning |
-| --- | --- |
-| JJMDG001 | Invalid, inaccessible, abstract or generic model |
-| JJMDG002 | No accessible parameterless constructor |
-| JJMDG003 | Unsupported property type |
-| JJMDG004 | Property/member cannot be assigned safely |
-| JJMDG005 | Duplicate mapped column names |
-| JJMDG006 | Conflicting generated type or method names |
-| JJMDG007 | Invalid attribute configuration |
-
-Classes with identical names in different namespaces, and names such as `Product`/`ProductList`, can create ambiguous extension calls. Set a unique suffix using `[DataAccessModel(ExtensionName = "SalesProduct")]`; this generates `GetSalesProductAsync` and `GetSalesProductListAsync` in the model namespace.
-
-For debugging, optionally emit generated files under `obj`:
-
-```xml
-<PropertyGroup>
-  <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-  <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)generated</CompilerGeneratedFilesOutputPath>
-</PropertyGroup>
+```sh
+dotnet run --project example/MasterData.Data.SourceGenerator.Example
 ```
-
-Run the SQLite example with `dotnet run --project example/DataAccess.SourceGenerator`. Compare dictionary, generated and handwritten materialization with `dotnet run -c Release --project benchmarks/DataAccess.SourceGenerator -- --filter '*'`. BenchmarkDotNet is used only by the benchmark project; it measures time, allocation and GC behavior for 1, 1,000 and 10,000 rows. [Microsoft.Data.Sqlite async methods execute synchronously internally](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/async), so this benchmark measures materialization rather than network/database concurrency.
