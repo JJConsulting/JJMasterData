@@ -353,6 +353,7 @@ appsettings.json
 *.DS_Store
 
 # Front-end generated files
+/src/MasterData.Web/wwwroot/js/jjmasterdata/jjmasterdata.js
 jjmasterdata.css
 jjmasterdata.css.map
 
