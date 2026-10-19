@@ -270,7 +270,8 @@ public partial class DataAccess
         return result;
     }
 
-    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command,
+    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(
+        DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
         var dictionaryList = new List<Dictionary<string, object?>>();
@@ -281,29 +282,36 @@ public partial class DataAccess
             dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
             await using var connection = dbCommand.Connection;
-            await using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
+            await using var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken);
+
+            var fieldCount = dataReader.FieldCount;
+            var columnNames = new string[fieldCount];
+
+            for (var i = 0; i < fieldCount; i++)
             {
-                List<string> columnNames = [];
+                columnNames[i] = dataReader.GetName(i);
+            }
 
-                for (var i = 0; i < dataReader.FieldCount; i++)
+            int[]? ordinals = null;
+
+            while (await dataReader.ReadAsync(cancellationToken))
+            {
+                ordinals ??= Array.ConvertAll(columnNames, dataReader.GetOrdinal);
+
+                var dictionary = new Dictionary<string, object?>(
+                    fieldCount,
+                    StringComparer.InvariantCultureIgnoreCase);
+
+                for (var i = 0; i < fieldCount; i++)
                 {
-                    columnNames.Add(dataReader.GetName(i));
+                    var ordinal = ordinals[i];
+
+                    dictionary[columnNames[i]] = dataReader.IsDBNull(ordinal)
+                        ? null
+                        : dataReader.GetValue(ordinal);
                 }
 
-                while (await dataReader.ReadAsync(cancellationToken))
-                {
-                    var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-                    foreach (var columnName in columnNames)
-                    {
-                        var ordinal = dataReader.GetOrdinal(columnName);
-                        var value = dataReader.IsDBNull(ordinal)
-                            ? null
-                            : dataReader.GetValue(ordinal);
-                        dictionary[columnName] = value;
-                    }
-
-                    dictionaryList.Add(dictionary);
-                }
+                dictionaryList.Add(dictionary);
             }
 
             SetOutputParameters(command, dbCommand);
