@@ -60,7 +60,10 @@ internal sealed class FormViewRelationshipLayout(
     private async Task<ComponentResult> GetTabRelationshipsResult()
     {
         var tabNav = new JJMasterDataTabNav(parentFormView.CurrentContext,
-            $"relationships-tab-nav-{parentFormView.DataPanel.Name}");
+            $"relationships-tab-nav-{parentFormView.DataPanel.Name}")
+        {
+            Style = parentFormView.FormElement.Options.Form.TabsStyle
+        };
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
         {
@@ -112,14 +115,13 @@ internal sealed class FormViewRelationshipLayout(
                 };
 
                 return collapse.GetHtmlBuilder();
-            case PanelLayout.Panel or PanelLayout.Well:
+            case PanelLayout.Card:
                 var panel = new JJCard
                 {
                     Name = $"{relationship.Id}-card",
                     Title = GetExpressionValue(relationship.Panel.Title),
                     SubTitle = GetExpressionValue(relationship.Panel.SubTitle),
                     Color = relationship.Panel.Color,
-                    Layout = relationship.Panel.Layout,
                     Icon = relationship.Panel.Icon,
                     Content = content,
                     CssClass = relationship.Panel.CssClass

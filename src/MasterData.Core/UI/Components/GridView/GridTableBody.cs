@@ -37,7 +37,7 @@ internal sealed class GridTableBody(
 
         tbody.WithAttribute("id", _name);
         tbody.WithCssClass("md-table-body");
-        tbody.AppendRange(await GetRowsList());
+        await AppendRows(tbody);
 
         if (gridView.PaginationType is GridPaginationType.Scroll)
             tbody.AppendRange(GetPlaceholderRows());
@@ -68,10 +68,8 @@ internal sealed class GridTableBody(
         }
     }
 
-    internal async ValueTask<List<HtmlBuilder>> GetRowsList()
+    internal async ValueTask AppendRows(HtmlBuilder container)
     {
-        List<HtmlBuilder> rows = [];
-        
         var dataSource = gridView.DataSource;
         
         var currentPageCssClass = $"md-row-page-{gridView.CurrentPage}";
@@ -89,10 +87,8 @@ internal sealed class GridTableBody(
             }
             
             
-            rows.Add(row);
+            container.Append(row);
         }
-
-        return rows;
     }
 
     private void SetPaginationScrollAttributes(HtmlBuilder row)
@@ -123,7 +119,7 @@ internal sealed class GridTableBody(
         var enableGridAction = !gridView.EnableEditMode && (defaultAction != null || gridView.EnableMultiSelect);
         tr.WithCssClassIf(enableGridAction, "tr-hover-action");
         
-        tr.AppendRange(await GetTdHtmlList(row, index));
+        await AppendTds(tr, row, index);
 
         if (OnRenderRow is not null)
         {
@@ -137,7 +133,7 @@ internal sealed class GridTableBody(
         return tr;
     }
 
-    internal async ValueTask<List<HtmlBuilder>> GetTdHtmlList(Dictionary<string, object?> row, int index)
+    internal async ValueTask AppendTds(HtmlBuilder container, Dictionary<string, object?> row, int index)
     {
         var values = await GetValues(row);
         var formStateData = new FormStateData(values, gridView.UserValues, PageState.List);
@@ -146,8 +142,6 @@ internal sealed class GridTableBody(
         
         var onClickScript = GetOnClickScript(formStateData, defaultAction);
 
-        var tdList = new List<HtmlBuilder>();
-        
         if (gridView.EnableMultiSelect)
         {
             var checkBox = GetMultiSelectCheckbox(row, index, values);
@@ -162,23 +156,21 @@ internal sealed class GridTableBody(
                     $"$('#{checkBox.Name}').not(':disabled').prop('checked',!$('#{checkBox.Name}').is(':checked')).change()";
             }
 
-            tdList.Add(td);
+            container.Append(td);
         }
 
-        tdList.AddRange(await GetVisibleFieldsHtmlList(row, index, values, onClickScript));
+        await AppendVisibleFields(container, row, index, values, onClickScript);
         
-        tdList.AddRange( GetActionsHtmlList(formStateData));
-
-        return tdList;
+        AppendActions(container, formStateData);
     }
 
-    private async ValueTask<List<HtmlBuilder>> GetVisibleFieldsHtmlList(
+    private async ValueTask AppendVisibleFields(
+        HtmlBuilder container,
         Dictionary<string, object?> row, 
         int index,
         Dictionary<string, object?> values,
         string onClickScript)
     {
-        var result = new List<HtmlBuilder>();
         var formStateData = new FormStateData(values, gridView.UserValues, PageState.List);
         foreach (var field in visibleFields)
         {
@@ -205,10 +197,8 @@ internal sealed class GridTableBody(
                 td.Append(await GetGridFieldHtml(field, formStateData, row, stringValue));
             }
 
-            result.Add(td);
+            container.Append(td);
         }
-
-        return result;
     }
 
     private async ValueTask<HtmlBuilder> GetGridFieldHtml(FormElementField field,
@@ -385,21 +375,18 @@ internal sealed class GridTableBody(
         return div;
     }
 
-    private List<HtmlBuilder> GetActionsHtmlList(FormStateData formStateData)
+    private void AppendActions(HtmlBuilder container, FormStateData formStateData)
     {
-        List<HtmlBuilder> result = [];
         var basicActions = gridView.TableActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.Where(x => x is { IsVisible: true, IsGroup: false });
         var groupedActions = basicActions.FindAll(x => x is { IsVisible: true, IsGroup: true });
         
-        result.AddRange( GetActionsWithoutGroupHtml(actionsWithoutGroup, formStateData));
+        container.AppendRange(GetActionsWithoutGroupHtml(actionsWithoutGroup, formStateData));
 
         if (groupedActions.Count > 0)
         {
-            result.Add(GetActionsGroupHtml(groupedActions, formStateData));
+            container.Append(GetActionsGroupHtml(groupedActions, formStateData));
         }
-
-        return result;
     }
     
     private HtmlBuilder GetActionsGroupHtml(

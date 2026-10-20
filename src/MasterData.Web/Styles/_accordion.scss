@@ -1,88 +1,32 @@
 ﻿@import "variables";
 
 .accordion {
-  --bs-accordion-btn-focus-box-shadow: inset 0 calc(-1*var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+  --#{$prefix}accordion-btn-focus-box-shadow: inset 0 calc(-1 * var(--#{$prefix}accordion-border-width)) 0 var(--#{$prefix}accordion-border-color);
 }
 
 .accordion-button {
   height: auto;
 }
 
+@mixin accordion-color($color) {
+  --#{$prefix}accordion-btn-bg: var(--#{$prefix}#{$color}-bg-subtle);
+  --#{$prefix}accordion-btn-color: var(--#{$prefix}#{$color}-text-emphasis);
+  --#{$prefix}accordion-active-bg: var(--#{$prefix}#{$color}-bg-subtle);
+  --#{$prefix}accordion-active-color: var(--#{$prefix}#{$color}-text-emphasis);
+}
+
 .accordion-default {
-  --#{$prefix}accordion-active-bg: transparent !important;
-  --#{$prefix}accordion-btn-bg: transparent !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}accordion-color) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}accordion-color) !important;
+  --#{$prefix}accordion-btn-bg: transparent;
+  --#{$prefix}accordion-btn-color: var(--#{$prefix}accordion-color);
+  --#{$prefix}accordion-active-bg: transparent;
+  --#{$prefix}accordion-active-color: var(--#{$prefix}accordion-color);
 }
 
-.accordion-primary {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}primary-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}primary-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}primary-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}primary-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var( --#{$prefix}primary-text-emphasis) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}primary-bg-subtle) !important;
-}
-
-.accordion-success {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}success-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}success-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}success-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}success-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}success-text-emphasis) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}success-bg-subtle) !important;
-}
-
-.accordion-danger {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}danger-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}danger-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}danger-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}danger-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}danger-text-emphasis) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}danger-bg-subtle) !important;
-}
-
-.accordion-warning {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}warning-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}warning-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}warning-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}warning-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}warning-text-emphasis) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}warning-bg-subtle) !important;
-}
-
-.accordion-info {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}info-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}info-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}info-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}info-bg-subtle) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}info-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}info-text-emphasis) !important;
-}
-
-.accordion-dark {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}dark-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}dark-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}dark-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}dark-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}dark-text-emphasis) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}dark-bg-subtle) !important;
-}
-
-.accordion-light {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}light-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}light-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}light-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}light-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}light-text-emphasis) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}light-bg-subtle) !important;
-}
-
-.accordion-secondary {
-  --#{$prefix}accordion-active-bg: var(--#{$prefix}secondary-bg-subtle) !important;
-  --#{$prefix}accordion-active: var(--#{$prefix}secondary-text-emphasis) !important;
-  --#{$prefix}accordion-btn-color: var(--#{$prefix}secondary-text-emphasis) !important;
-  --#{$prefix}accordion-btn-active: var(--#{$prefix}secondary-bg-subtle) !important;
-  --#{$prefix}accordion-active-color: var(--#{$prefix}secondary-text-emphasis) !important;
-  --#{$prefix}accordion-btn-bg: var(--#{$prefix}secondary-bg-subtle) !important;
-}
+.accordion-primary { @include accordion-color(primary); }
+.accordion-secondary { @include accordion-color(secondary); }
+.accordion-success { @include accordion-color(success); }
+.accordion-danger { @include accordion-color(danger); }
+.accordion-warning { @include accordion-color(warning); }
+.accordion-info { @include accordion-color(info); }
+.accordion-light { @include accordion-color(light); }
+.accordion-dark { @include accordion-color(dark); }

@@ -64,7 +64,10 @@ public class RulesController(FormElementRulesService formElementRulesService) : 
     {
         await formElementRulesService.SaveAsync(elementName, rule);
         if (ModelState.IsValid)
+        {
+            TempData["SaveSuccessMessage"] = "Rule saved successfully.";
             return RedirectToAction("Index", new { elementName, ruleId = rule.Id, selectedTab });
+        }
 
         return RedirectToIndex(elementName, rule, selectedTab);
     }

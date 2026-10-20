@@ -10,6 +10,44 @@ namespace JJMasterData.Core.Test.DataDictionary.Services;
 
 public class PanelServiceTests
 {
+    [Theory]
+    [InlineData(1, 3, null, false)] // Descendant would create a cycle.
+    [InlineData(2, 2, null, false)]
+    [InlineData(2, 99, null, false)]
+    [InlineData(99, null, null, false)]
+    [InlineData(2, null, 3, false)] // Insertion target has another parent.
+    [InlineData(2, null, 1, true)]
+    [InlineData(2, 4, null, true)]
+    public async Task MovePanelAsync_ValidatesHierarchyAndPreservesFields(int panelId, int? parentId,
+        int? beforePanelId, bool expected)
+    {
+        var form = new FormElement { Name = "test" };
+        form.Panels.AddRange([
+            new FormElementPanel { PanelId = 1 },
+            new FormElementPanel { PanelId = 2, ParentId = 1 },
+            new FormElementPanel { PanelId = 3, ParentId = 2 },
+            new FormElementPanel { PanelId = 4 }
+        ]);
+        var field = new FormElementField { Name = "field", PanelId = 2 };
+        form.Fields.Add(field);
+        var repository = new Mock<IDataDictionaryRepository>();
+        repository.Setup(x => x.GetFormElementAsync("test")).ReturnsAsync(form);
+        repository.Setup(x => x.InsertOrReplaceAsync(form)).Returns(Task.CompletedTask);
+        var service = new PanelService(Mock.Of<IValidationDictionary>(), [], repository.Object,
+            Mock.Of<IStringLocalizer<MasterDataResources>>());
+
+        Assert.Equal(expected, await service.MovePanelAsync("test", panelId, parentId, beforePanelId));
+
+        Assert.Same(field, Assert.Single(form.Fields));
+        Assert.Equal(2, field.PanelId);
+        Assert.Equal(2, form.GetPanelById(3).ParentId);
+        Assert.Equal(expected ? parentId : 1, form.GetPanelById(2).ParentId);
+        Assert.Equal(4, form.Panels.Count);
+        if (expected && beforePanelId.HasValue)
+            Assert.True(form.Panels.IndexOf(form.GetPanelById(panelId)) < form.Panels.IndexOf(form.GetPanelById(beforePanelId.Value)));
+        repository.Verify(x => x.InsertOrReplaceAsync(form), expected ? Times.Once() : Times.Never());
+    }
+
     [Fact]
     public async Task SavePanelAsync_ShouldPersistSelectedFieldOrder_WhenFieldsAreReordered()
     {

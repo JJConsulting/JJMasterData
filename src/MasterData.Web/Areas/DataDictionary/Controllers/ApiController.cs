@@ -33,7 +33,10 @@ public class ApiController(ApiService apiService) : DataDictionaryController
         formElement.SynchronismMode = apiViewModel.SynchronismMode;
 
         if (await apiService.SetFormElementWithApiValidation(formElement))
-            return RedirectToAction("Index", new { elementName =  apiViewModel.ElementName });
+        {
+            TempData["SaveSuccessMessage"] = "API settings saved successfully.";
+            return RedirectToAction("Index", new { elementName = apiViewModel.ElementName });
+        }
         
         var model = PopulateViewModel(formElement);
 

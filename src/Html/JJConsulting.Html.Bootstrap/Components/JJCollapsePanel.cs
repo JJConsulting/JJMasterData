@@ -57,6 +57,8 @@ public class JJCollapsePanel : HtmlComponent
     {
         var root = new HtmlBuilder(HtmlTag.Div);
 
+        root.WithCssClass(CssClass);
+        
         root.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
@@ -64,7 +66,7 @@ public class JJCollapsePanel : HtmlComponent
             input.WithValue(IsCollapseOpen ? "1" : "0");
         });
 
-        root.Append(BootstrapHelper.Version < 5 ? GetPanel() : GetAccordion());
+        root.Append(GetAccordion());
 
         root.AppendScript($"CollapsePanelListener.listen('{Name}')");
 
@@ -90,7 +92,7 @@ public class JJCollapsePanel : HtmlComponent
     private HtmlBuilder GetAccordionHeader()
     {
         var h2 = new HtmlBuilder(HtmlTag.H2)
-            .WithCssClass("accordion-header ")
+            .WithCssClass("accordion-header")
             .WithAttribute("id", $"{Name}-header")
             .Append(HtmlTag.Button, (button) =>
             {
@@ -98,6 +100,8 @@ public class JJCollapsePanel : HtmlComponent
                 button.WithAttribute("type", "button");
                 button.WithDataAttribute("toggle", "collapse");
                 button.WithDataAttribute("target", $"#{Name}-collapse");
+                button.WithAttribute("aria-expanded", IsCollapseOpen.ToString().ToLowerInvariant());
+                button.WithAttribute("aria-controls", $"{Name}-collapse");
                 button.AppendDiv(div =>
                 {
                     div.WithId($"{Name}-title");
@@ -117,55 +121,11 @@ public class JJCollapsePanel : HtmlComponent
         var body = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", $"{Name}-collapse")
             .WithCssClass("accordion-collapse collapse")
-            .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
+            .WithCssClassIf(IsCollapseOpen, "show")
             .WithAttribute("aria-labelledby", $"{Name}-header")
             .WithDataAttribute("parent", $"#{Name}")
             .Append(GetBody());
         return body;
-    }
-
-    #endregion
-
-    #region Bootstrap 3/4 Panel
-
-    private HtmlBuilder GetPanel()
-    {
-        var panel = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass(BootstrapHelper.PanelGroup)
-            .Append(HtmlTag.Div, div =>
-            {
-                div.WithCssClass(BootstrapHelper.GetPanel(Color.ToColorString()));
-                div.Append(GetPanelHeading());
-                div.Append(HtmlTag.Div, body =>
-                {
-                    body.WithNameAndId(Name)
-                        .WithCssClass("panel-collapse collapse")
-                        .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
-                        .Append(GetBody());
-                });
-            });
-        return panel;
-    }
-
-    private HtmlBuilder GetPanelHeading()
-    {
-        var panelHeading = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToColorString()))
-            .WithAttribute("href", "#collapseOne")
-            .WithDataAttribute("toggle", "collapse")
-            .WithDataAttribute("target", $"#{Name}")
-            .WithAttribute("aria-expanded", IsCollapseOpen.ToString().ToLower())
-            .Append(HtmlTag.Div, div =>
-            {
-                div.WithCssClass($"{BootstrapHelper.PanelTitle} unselectable");
-                div.Append(HtmlTag.A, a =>
-                {
-                    a.AppendComponent(TitleIcon);
-                    a.AppendTextIf(TitleIcon != null, "\u00A0");
-                    a.AppendText(Title);
-                });
-            });
-        return panelHeading;
     }
 
     #endregion
@@ -184,9 +144,8 @@ public class JJCollapsePanel : HtmlComponent
 
         if (Buttons.Count > 0)
             panelBody.Append(GetButtons());
-
-        panelBody.WithCssClass(CssClass);
-        panelBody.WithCssClass(BootstrapHelper.Version >= 5 ? "accordion-body" : BootstrapHelper.PanelBody);
+        
+        panelBody.WithCssClass("accordion-body");
 
         return panelBody;
     }

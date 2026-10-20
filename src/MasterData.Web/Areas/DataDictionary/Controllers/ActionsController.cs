@@ -107,7 +107,7 @@ public class ActionsController(ActionsService actionsService,
         if (ModelState.IsValid)
             ViewData["OriginalName"] = action.Name;
         
-        ViewData["ShowSaveSuccess"] = ModelState.IsValid;
+        ViewData["SaveSuccessMessage"] = ModelState.IsValid ? "Action saved successfully." : null;
         
         return View("Index", model);
     }
@@ -132,7 +132,7 @@ public class ActionsController(ActionsService actionsService,
         if (ModelState.IsValid)
             ViewData["OriginalName"] = action.Name;
         
-        ViewData["ShowCopySuccess"] = ModelState.IsValid;
+        ViewData["SaveSuccessMessage"] = ModelState.IsValid ? "Action copied successfully." : null;
         
         return View("Index", model);
     }

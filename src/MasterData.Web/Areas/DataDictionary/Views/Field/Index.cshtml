@@ -90,25 +90,9 @@
     }
 }
 
-@if (ViewData["ShowSaveSuccess"] is true)
+@if (!isForm)
 {
-    <message-toast
-        title-color="Success"
-        title="@StringLocalizer["Success"]"
-        icon="@FontAwesomeIcon.CheckCircle"
-        name="field-save-success"
-        show-as-opened="true"
-        message="@StringLocalizer["Field saved successfully."]" />
-}
-@if (!ViewData.ModelState.IsValid)
-{
-    <message-toast
-        title-color="Danger"
-        title="@StringLocalizer["Error"]"
-        icon="@FontAwesomeIcon.TimesCircle"
-        name="field-validation-error"
-        show-as-opened="true"
-        message="@StringLocalizer["Please check the validation errors."]" />
+    <partial name="_SaveFeedback"/>
 }
 
 <div class="modal modal-md fade" id="fieldFilterModal" tabindex="-1" aria-labelledby="fieldFilterModalLabel" aria-hidden="true">
@@ -271,6 +255,13 @@
         </div>
     </div>
 }
+
+<message-toast name="field-sort-success"
+               title-color="Success"
+               title="@StringLocalizer["Success"]"
+               icon="@FontAwesomeIcon.CheckCircle"
+               show-as-opened="false"
+               message="@StringLocalizer["Field moved successfully."]"/>
 
 @using (Html.BeginMasterDataForm("Index", "Field", new { elementName }))
 {
@@ -561,29 +552,49 @@
     }
 
     function sortableGrid() {
-        $("#sortable-grid").sortable({
+        $('#sortable-grid').sortable({
+            items: '> a',
+            helper: 'original',
+            axis: 'y',
+            start: function () {
+                $(this).data('previous-order', $(this).children('a').not('.ui-sortable-placeholder').toArray());
+            },
             update: function () {
-                const order = $(this).sortable('toArray');
-                moveFields(order);
+                moveFields(this);
             }
         });
     }
 
-    function moveFields(order) {
-        const formData = new FormData();
-        formData.append('fieldsOrder', order);
-        fetch('@Url.Action("Sort", new { elementName })', {
-            method: "POST",
-            body: formData
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('@StringLocalizer["Error while ordering fields."]');
-                }
-            })
-            .catch(error => {
-                messageBox.show('@StringLocalizer["Error"]', error.message, 4);
+    function updateFieldOrder(list) {
+        $(list).children('a').each(function (index) {
+            $(this).find('.jjsortable-span').text(index);
+        });
+    }
+
+    async function moveFields(list) {
+        const sortable = $(list);
+        sortable.sortable('disable');
+        try {
+            const formData = new FormData();
+            formData.append('fieldsOrder', sortable.sortable('toArray').join(','));
+            const token = getMasterDataForm()?.querySelector('[name="__RequestVerificationToken"]');
+            if (token) formData.append(token.name, token.value);
+            const response = await fetch('@Url.Action("Sort", new { elementName })', {
+                method: 'POST',
+                body: formData
             });
+            if (!response.ok) 
+                throw new Error();
+            updateFieldOrder(list);
+            MessageToastHelper.show('field-sort-success');
+        } catch {
+            sortable.append(sortable.data('previous-order'));
+            updateFieldOrder(list);
+            messageBox.show(@Json.Serialize(StringLocalizer["Error"].Value),
+                @Json.Serialize(StringLocalizer["Error while ordering fields."].Value), 4);
+        } finally {
+            sortable.sortable('enable');
+        }
     }
 
     function loadFieldDetails(url, fieldName) {

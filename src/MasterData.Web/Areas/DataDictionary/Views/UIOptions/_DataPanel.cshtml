@@ -14,6 +14,13 @@
     <div class="col-sm-4">
         <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]" for="ShowViewModeAsStatic" layout="Switch"/>
     </div>
+    
+    <div class="col-sm-4 col-6">
+        <div class="form-floating">
+            <select asp-for="TabsStyle" class="form-select" asp-items="Html.GetEnumSelectList<JJConsulting.Html.Bootstrap.Models.TabsStyle>()"></select>
+            <label asp-for="TabsStyle"></label>
+        </div>
+    </div>
 </div>
 
 <div class="row mb-3">
