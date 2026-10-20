@@ -4,8 +4,8 @@ Implement `IGridEventHandler` for behavior specific to a grid. Register it for t
 
 ```csharp
 using JJMasterData.Core.Configuration;
-using JJMasterData.Core.UI.Events.Abstractions;
-using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Core.Events.Abstractions;
+using JJMasterData.Core.Events.Args;
 
 builder.Services.AddGridEventHandler<PersonGridEvents>("Person");
 
@@ -79,7 +79,8 @@ public sealed class ProductGridEvents(IProductReader products) : IGridEventHandl
         args.TotalOfRecords = matchingProducts.Count;
 
         var page = matchingProducts
-            .Skip(args.CurrentPage * args.RecordsPerPage)
+            .OrderBy(product => product.Id)
+            .Skip((args.CurrentPage - 1) * args.RecordsPerPage)
             .Take(args.RecordsPerPage);
 
         args.DataSource = page.Select(product => new Dictionary<string, object?>
@@ -93,7 +94,7 @@ public sealed class ProductGridEvents(IProductReader products) : IGridEventHandl
 }
 ```
 
-For a database-backed source, prefer applying `Where`, `OrderBy`, `Skip` and `Take` to the database query and run a separate `CountAsync` for `TotalOfRecords`. The exact page calculation depends on how the host represents `CurrentPage`; verify it against the grid configuration before copying the example.
+For a database-backed source, prefer applying `Where`, `OrderBy`, `Skip` and `Take` to the database query and run a separate `CountAsync` for `TotalOfRecords`. `CurrentPage` starts at 1; the offset is `(CurrentPage - 1) * RecordsPerPage`. Use stable ordering with a unique tie-breaker so records do not drift between pages. The example fixes ordering by `Id`; a production reader should also translate `args.OrderBy` into allowed sort expressions.
 
 ## Example: status badge in a cell
 
@@ -184,3 +185,11 @@ Keep row and cell hooks deterministic and cheap. Resolve related data in `OnData
 The default handler lifetime is transient. `AddGridEventHandler<T>` also accepts scoped or singleton lifetimes. If a class implements both `IGridEventHandler` and `IFormEventHandler`, register both interfaces explicitly.
 
 Grid hooks customize the UI. Use [form events](form-events.md) for validation that must run during persistence and import. Export has its own repository-based pipeline; do not assume a grid rendering customization changes exported values.
+
+## Selection and editable values
+
+`GetSelectedGridValues()` returns dictionaries containing primary-key values plus `INTERNALPK`; it does not recover every displayed field. Enable `EnableMultiSelect` before reading the selection. Reload the record to check its current state when processing a command.
+
+`GetGridValuesAsync()` serves a different purpose: with `EnableEditMode`, it merges posted editor values with the rows loaded for the grid. Calling it does not persist changes, and it does not return only the changed records. The built-in grid edit/save actions can run the form update workflow for each row.
+
+See [Run a bulk action](../cookbook/bulk-action.md) for selected-key commands and [Edit values in a grid](../cookbook/editable-grid.md) for the save workflow and transaction behavior.

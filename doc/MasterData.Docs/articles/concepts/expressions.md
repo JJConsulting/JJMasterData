@@ -49,3 +49,19 @@ Reserved values take precedence. Other names resolve from `UserValues`, form val
 | `coalesce(...)` | First value that is neither null nor an empty string. |
 
 For example, `exp:coalesce({Amount}, 0)` supplies a fallback. Register custom NCalc functions through `MasterDataCoreOptions.ExpressionContext`, or add a provider with `WithExpressionProvider<T>()`. Visibility/enablement require `ISyncExpressionProvider`; defaults/triggers require `IAsyncExpressionProvider`.
+
+## Defaults, triggers and persistence
+
+A `DefaultValue` supplies an initial/fallback value; a `TriggerExpression` recalculates a value during processing. For a parent-scoped form, a default can prefill a foreign key while a trigger can keep a contextual value synchronized. Neither replaces server-side ownership checks on update or delete.
+
+`VisibleExpression = "val:0"` hides an editor and `EnableExpression = "val:0"` disables editing. These settings do not remove the field from database commands: that is controlled by [field data behavior](data-dictionary.md#field-data-behavior). A hidden `Real` field and a `Virtual` field have different persistence contracts.
+
+See [Preserve context across requests](../developer-guide/routes-and-embedding.md#preserve-context-across-requests) for the distinction between a listing filter and a foreign-key default.
+
+## Register application functions
+
+Extend `MasterDataCoreOptions.ExpressionContext.Functions` with `PostConfigure<MasterDataCoreOptions>` after registering JJMasterData. Add entries to the existing dictionary so built-in functions remain available. Function arguments expose `Evaluate(index)` and the current expression context.
+
+The `exp:` provider supplies a `ServiceProvider` parameter containing its current service provider. A function can resolve a service during evaluation; avoid capturing scoped services or a particular user in globally configured options. Synchronous expressions can be evaluated repeatedly and outside a browser request, so keep them inexpensive and define what happens without `HttpContext`.
+
+[Add application expression functions](../cookbook/custom-expression-functions.md) demonstrates a calculation and a role-dependent visibility function. Role visibility is presentation logic; enforce the actual operation's policy in the host.
