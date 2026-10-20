@@ -1,11 +1,8 @@
 ﻿using JJConsulting.FontAwesome;
 using JJConsulting.Html;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Extensions;
-using JJMasterData.Web.Filters;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -19,7 +16,6 @@ public class FieldController(
     )
     : DataDictionaryController
 {
-    [ImportModelState]
     public async Task<IActionResult> Index(string elementName, string? fieldName)
     {
         var formElement = await fieldService.GetFormElementAsync(elementName);
@@ -27,9 +23,7 @@ public class FieldController(
 
         if (string.IsNullOrEmpty(fieldName))
         {
-            if (TempData.ContainsKey("field"))
-                field = TempData.Get<FormElementField>("field");
-            else if (formElement.Fields.Count > 0)
+            if (formElement.Fields.Count > 0)
                 field = formElement.Fields[0];
             else
                 field = new FormElementField();
@@ -75,7 +69,6 @@ public class FieldController(
     }
 
     [HttpPost]
-    [ExportModelState]
     public async Task<IActionResult> Save(string elementName, FormElementField field, string? originalName)
     {
         RecoverCustomAttributes(ref field);
@@ -83,11 +76,12 @@ public class FieldController(
         await fieldService.SaveFieldAsync(elementName, field, originalName);
 
         if (!ModelState.IsValid)
-            return RedirectToIndex(elementName, field);
+            return await RenderIndexAsync(elementName, field);
 
         var formElement = await fieldService.GetFormElementAsync(elementName);
         await PopulateViewData(formElement, field);
-        ViewData["ShowSaveSuccess"] = true;
+        ViewData["OriginalName"] = field.Name;
+        ViewData["SaveSuccessMessage"] = "Field saved successfully.";
         return View("Index", field);
     }
 
@@ -109,7 +103,7 @@ public class FieldController(
     }
 
     [HttpPost]
-    public RedirectToActionResult AddDataItem(string elementName, FormElementField field, int qtdRowsToAdd)
+    public async Task<ViewResult> AddDataItem(string elementName, FormElementField field, int qtdRowsToAdd)
     {
         field.DataItem ??= new FormElementDataItem();
         field.DataItem.Items ??= [];
@@ -125,47 +119,47 @@ public class FieldController(
             field.DataItem.Items.Add(item);
         }
 
-        return RedirectToIndex(elementName, field);
+        return await RenderIndexAsync(elementName, field);
     }
 
     [HttpPost]
-    public RedirectToActionResult RemoveDataItem(string elementName, FormElementField field, int dataItemIndex)
+    public async Task<ViewResult> RemoveDataItem(string elementName, FormElementField field, int dataItemIndex)
     {
         field.DataItem?.Items?.RemoveAt(dataItemIndex);
-        return RedirectToIndex(elementName, field);
+        ModelState.Clear();
+        return await RenderIndexAsync(elementName, field);
     }
 
     [HttpPost]
-    public IActionResult RemoveAllDataItem(string elementName, FormElementField field)
+    public async Task<ViewResult> RemoveAllDataItem(string elementName, FormElementField field)
     {
         field.DataItem!.Items = new List<DataItemValue>();
-        return RedirectToIndex(elementName, field);
+        ModelState.Clear();
+        return await RenderIndexAsync(elementName, field);
     }
 
     [HttpPost]
-    [ExportModelState]
     public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field,
         DataElementMapFilter elementMapFilter)
     {
         await fieldService.AddElementMapFilterAsync(field, elementMapFilter);
 
-        return RedirectToIndex(elementName, field);
+        return await RenderIndexAsync(elementName, field);
     }
 
     [HttpPost]
-    public IActionResult RemoveElementMapFilter(string elementName, FormElementField field, string elementMapFieldName)
+    public async Task<ViewResult> RemoveElementMapFilter(string elementName, FormElementField field, string elementMapFieldName)
     {
         field.DataItem!.ElementMap!.MapFilters.RemoveAll(x => x.FieldName.Equals(elementMapFieldName));
-        return RedirectToIndex(elementName, field);
+        ModelState.Clear();
+        return await RenderIndexAsync(elementName, field);
     }
 
-    private RedirectToActionResult RedirectToIndex(string elementName, FormElementField field)
+    private async Task<ViewResult> RenderIndexAsync(string elementName, FormElementField field)
     {
-        TempData.Put("field", field);
-        TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
-        TempData["OriginalName"] = ModelState.IsValid ? field.Name : Request.Form["originalName"].ToString();
-
-        return RedirectToAction("Index", new { elementName });
+        var formElement = await fieldService.GetFormElementAsync(elementName);
+        await PopulateViewData(formElement, field);
+        return View("Index", field);
     }
 
     private async Task PopulateViewData(FormElement formElement, FormElementField? field)
@@ -188,18 +182,10 @@ public class FieldController(
         if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab))
             ViewData["Tab"] = selectedTab;
 
-        else if (TempData.TryGetValue("selected-tab", out var tempSelectedTab))
-            ViewData["Tab"] = tempSelectedTab?.ToString()!;
-
-        if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
-            ViewData["OriginalName"] = originalName;
-        else if (TempData.TryGetValue("originalName", out var tempOriginalName))
-            ViewData["OriginalName"] = tempOriginalName?.ToString()!;
-
-        if (TempData["OriginalName"] != null)
-            ViewData["OriginalName"] = TempData["originalName"]!;
-        else
-            ViewData["OriginalName"] = field.Name;
+        ViewData["OriginalName"] = Request.HasFormContentType &&
+                                   Request.Form.TryGetValue("originalName", out var originalName)
+            ? originalName.ToString()
+            : field.Name;
 
         ViewData["IsForm"] = formElement.TypeIdentifier == 'F';
         ViewData["MenuId"] = "Fields";
@@ -354,7 +340,7 @@ public class FieldController(
     }
     
     [HttpPost]
-    public async Task<RedirectToActionResult> CopyFrom(string elementName, string copyFromElementName, string[] copyFromFieldNames)
+    public async Task<ViewResult> CopyFrom(string elementName, string copyFromElementName, string[] copyFromFieldNames)
     {
         var copyFromFormElement = await fieldService.GetFormElementAsync(copyFromElementName);
 
@@ -381,7 +367,7 @@ public class FieldController(
             await fieldService.SetFormElementAsync(formElement);
         }
         
-        return RedirectToIndex(elementName, field);
+        return await RenderIndexAsync(elementName, field);
     }
 
     [HttpPost]

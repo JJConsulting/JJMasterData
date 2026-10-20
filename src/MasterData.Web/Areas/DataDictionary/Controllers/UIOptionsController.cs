@@ -20,7 +20,10 @@ public class UIOptionsController(UIOptionsService optionsService) : DataDictiona
     public async Task<ActionResult> Edit(FormElementOptions uIMetadataOptions, string elementName)
     {
         if (await optionsService.EditOptionsAsync(uIMetadataOptions, elementName))
+        {
+            TempData["SaveSuccessMessage"] = "Options saved successfully.";
             return RedirectToAction("Index", new { elementName });
+        }
 
         var jjValidationSummary = optionsService.GetValidationSummary();
         ViewBag.Error = jjValidationSummary;

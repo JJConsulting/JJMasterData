@@ -19,17 +19,13 @@ public class CardTagHelper : TagHelper
     [HtmlAttributeName("color")]
     public BootstrapColor Color { get; set; }
 
-    [HtmlAttributeName("layout")]
-    public PanelLayout? Layout { get; set; }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var card = new JJCard
         {
             Name = Name ?? Title?.ToLower().Replace(" ", "_")!,
             Title = Title,
-            Color = Color,
-            Layout = Layout ?? PanelLayout.Panel
+            Color = Color
         };
 
         if (Icon != default)

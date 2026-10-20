@@ -52,31 +52,31 @@ class MessageBox {
             [TMessageIcon.QUESTION]: ["text-info", "fa-question-circle"],
         };
         const icon = icons[iconType];
-        const header = hasTitle
-            ? '<h4 id="site-modal-title" class="modal-title"></h4>'
-            : '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>';
+        const modal = Modal.cloneModalTemplate();
+        modal.id = MessageBox.modalId;
+        const template = document.getElementById("jjmasterdata-messagebox-template") as HTMLTemplateElement;
+        modal.querySelector(".modal-body").replaceWith(template.content.cloneNode(true));
+        const dialog = modal.querySelector<HTMLElement>(".modal-dialog");
+        dialog.classList.remove("modal-dialog-scrollable");
+        if (sizeClass) dialog.classList.add(sizeClass);
+        if (allowClose) {
+            modal.setAttribute("data-bs-backdrop", "static");
+            modal.setAttribute("data-bs-keyboard", "false");
+        }
 
-        $("body").append(`
-            <div id="site-modal" tabindex="-1" class="modal fade" role="dialog"
-                 ${allowClose ? 'data-bs-backdrop="static" data-bs-keyboard="false"' : ""}>
-                <div class="modal-dialog ${sizeClass}" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">${header}</div>
-                        <div class="modal-body">
-                            <table border="0"><tr>
-                                <td style="width:40px">
-                                    ${icon ? `<span class="${icon[0]}"><span class="fa ${icon[1]}" aria-hidden="true" style="font-size:1.875rem;"></span></span>` : ""}
-                                </td>
-                                <td><span id="site-modal-content"></span></td>
-                            </tr></table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>
-                            <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>
-                        </div>
-                    </div>
-                </div>
-            </div>`);
+        const title = modal.querySelector<HTMLElement>(".modal-title");
+        title.id = MessageBox.jQueryModalTitleId.substring(1);
+        title.classList.add("h4");
+        modal.querySelector(hasTitle ? ".btn-close" : MessageBox.jQueryModalTitleId).remove();
+        const iconElement = modal.querySelector<HTMLElement>(".message-box-icon");
+        if (icon) {
+            iconElement.classList.add(icon[0]);
+            iconElement.classList.add(icon[1]);
+        } else {
+            iconElement.remove();
+        }
+
+        document.body.appendChild(modal);
     }
 
     public static show(

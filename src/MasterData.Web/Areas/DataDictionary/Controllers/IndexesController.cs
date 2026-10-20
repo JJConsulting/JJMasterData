@@ -59,6 +59,7 @@ public class IndexesController(IndexesService indexesService) : DataDictionaryCo
 
         if (await indexesService.SaveAsync(elementName, index!, elementIndex))
         {
+            TempData["SaveSuccessMessage"] = "Index saved successfully.";
             return Json(new { success = true });
         }
 

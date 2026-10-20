@@ -45,6 +45,8 @@
     href: developer-guide/connections.md
   - name: Routes and embedding
     href: developer-guide/routes-and-embedding.md
+  - name: Data panels and application-owned saves
+    href: developer-guide/data-panels.md
   - name: UI customization
     href: developer-guide/ui-customization.md
   - name: Custom Bootstrap
@@ -71,6 +73,8 @@
     href: developer-guide/data-dictionary-repository.md
   - name: Entity repository
     href: developer-guide/entity-repository.md
+  - name: Stored procedures
+    href: developer-guide/stored-procedures.md
   - name: Data access
     href: developer-guide/data-access.md
   - name: Background jobs
@@ -85,3 +89,26 @@
     href: developer-guide/template-action.md
   - name: WebApi and OpenAPI
     href: developer-guide/webapi.md
+- name: Cookbook
+  href: cookbook/index.md
+  items:
+  - name: Customize a read procedure
+    href: cookbook/read-procedure.md
+  - name: Customize a write procedure
+    href: cookbook/write-procedure.md
+  - name: Persist multiple selections
+    href: cookbook/multiple-selections.md
+  - name: Edit values in a grid
+    href: cookbook/editable-grid.md
+  - name: Validate business operations
+    href: cookbook/business-validation.md
+  - name: Run a bulk action
+    href: cookbook/bulk-action.md
+  - name: Create a task-specific form
+    href: cookbook/task-form.md
+  - name: Save a composed document
+    href: cookbook/composed-document.md
+  - name: Add application expression functions
+    href: cookbook/custom-expression-functions.md
+  - name: Show a status guide with HTML templates
+    href: cookbook/html-templates.md

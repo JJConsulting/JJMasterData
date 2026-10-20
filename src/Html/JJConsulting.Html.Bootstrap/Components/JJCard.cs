@@ -16,8 +16,6 @@ public class JJCard : HtmlComponent
 
     public string? Tooltip { get; set; }
 
-    public PanelLayout Layout { get; set; }
-
     public BootstrapColor Color { get; set; } = BootstrapColor.Default;
 
     public IHtmlContent? Content { get; set; }
@@ -25,110 +23,65 @@ public class JJCard : HtmlComponent
     private bool HasTitle => !string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(SubTitle);
 
     public FontAwesomeIcon? Icon { get; set; }
-
-
+    
     protected override HtmlBuilder BuildHtml()
     {
-        var html = Layout switch
-        {
-            PanelLayout.Well => GetHtmlWell(),
-            PanelLayout.NoDecoration => GetHtmlNoDecoration(),
-            _ => GetHtmlPanel()
-        };
-
-        if (BootstrapHelper.Version > 3)
-        {
-            return new HtmlBuilder(HtmlTag.Div)
-                .Append(html);
-        }
-
-        return html;
-    }
-
-    private HtmlBuilder GetHtmlPanel()
-    {
-        var html = new HtmlBuilder(HtmlTag.Div)
-            .WithAttributes(Attributes)
-            .WithNameAndId(Name)
-            .WithCssClass(CssClass)
-            .WithCssClass(BootstrapHelper.GetPanel(Color.ToColorString()));
-
-        html.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.Div, header =>
-        {
-            header.WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToColorString()));
-            if (Icon is not null)
-            {
-                var icon = new JJIcon(Icon.Value);
-                icon.CssClass += $" {BootstrapHelper.MarginRight}-1";
-                header.AppendComponent(icon);
-            }
-
-            header.AppendText(Title);
-
-            if (Tooltip is not null)
-            {
-                var icon = new JJIcon(FontAwesomeIcon.QuestionCircle);
-                icon.CssClass += " help-description";
-                icon.Attributes["title"] = Tooltip;
-                icon.Attributes[BootstrapHelper.DataToggle] = "tooltip";
-                header.AppendComponent(icon);
-            }
-        });
-
-        html.Append(HtmlTag.Div, d =>
-        {
-            d.WithCssClass(BootstrapHelper.PanelBody);
-            if (!string.IsNullOrEmpty(SubTitle))
-            {
-                d.Append(BootstrapUtils.GetBlockquote(null, SubTitle));
-            }
-
-            d.Append(Content);
-        });
-
-        return html;
-    }
-
-    private HtmlBuilder GetHtmlNoDecoration()
-    {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
 
-        if (Icon is not null)
+        html.WithCssClass("card");
+        if (Color != BootstrapColor.Default)
+            html.WithCssClass($"border-{Color.ToColorString()}");
+
+        html.AppendDiv(body =>
         {
-            var icon = new JJIcon(Icon.Value);
-            icon.CssClass += $" {BootstrapHelper.MarginRight}-1";
-            html.AppendComponent(icon);
-        }
+            body.WithCssClass("card-body");
 
-        if (HasTitle)
-        {
-            html.Append(BootstrapUtils.GetBlockquote(Title, SubTitle));
-        }
+            if (HasTitle)
+            {
+                body.Append(HtmlTag.H5, title =>
+                {
+                    title.WithCssClass("card-title");
+                    if (Color != BootstrapColor.Default)
+                        title.WithCssClass($"text-{Color.ToColorString()}");
 
-        html.Append(Content);
+                    if (Icon is not null)
+                    {
+                        var icon = new JJIcon(Icon.Value);
+                        icon.CssClass += " me-2";
+                        title.AppendComponent(icon);
+                    }
 
-        return html;
-    }
+                    title.AppendText(Title);
 
-    private HtmlBuilder GetHtmlWell()
-    {
-        var html = new HtmlBuilder(HtmlTag.Div)
-            .WithAttributes(Attributes)
-            .WithNameAndId(Name)
-            .WithCssClass(CssClass);
+                    if (Tooltip is not null)
+                    {
+                        var tooltipIcon = new JJIcon(FontAwesomeIcon.QuestionCircle);
+                        tooltipIcon.CssClass += " help-description ms-2";
+                        tooltipIcon.Attributes["title"] = Tooltip;
+                        tooltipIcon.Attributes[BootstrapHelper.DataToggle] = "tooltip";
+                        title.AppendComponent(tooltipIcon);
+                    }
+                });
 
-        html.WithCssClass(BootstrapHelper.Version == 3 ? "well" : "card card-body");
+                if (!string.IsNullOrEmpty(SubTitle))
+                {
+                    body.Append(HtmlTag.H6, subtitle =>
+                    {
+                        subtitle.WithCssClass("card-subtitle mb-2 text-body-secondary");
+                        subtitle.AppendText(SubTitle);
+                    });
+                }
+            }
 
-        if (HasTitle)
-        {
-            html.Append(BootstrapUtils.GetBlockquote(Title, SubTitle));
-        }
-
-        html.Append(Content);
-
+            body.AppendDiv(content =>
+            {
+                content.WithCssClass("card-text");
+                content.Append(Content);
+            });
+        });
         return html;
     }
 }

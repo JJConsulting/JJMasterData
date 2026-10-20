@@ -15,11 +15,8 @@
         <PackageId>JJMasterData.Web</PackageId>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <EmbeddedSassSilencedDeprecations>import;global-builtin;if-function;color-functions</EmbeddedSassSilencedDeprecations>
-        <TypescriptOutDir>wwwroot</TypescriptOutDir>
-        <ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
-            CompileTypeScript;
-            $(ResolveCurrentProjectStaticWebAssetsInputs)
-        </ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
+        <ESBuildWebRoot>wwwroot/js/jjmasterdata/</ESBuildWebRoot>
+        <ESBuildArguments>--target=es2015 --tree-shaking=false --minify --tsconfig=Scripts/tsconfig.json</ESBuildArguments>
     </PropertyGroup>
     
     <ItemGroup>
@@ -29,10 +26,7 @@
     <ItemGroup>
         <PackageReference Include="EmbeddedSass.Net.MsBuild" PrivateAssets="all" />
         <PackageReference Include="JetBrains.Annotations" />
-        <PackageReference Include="Microsoft.TypeScript.MSBuild">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="ESBuild.MSBuild" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>
@@ -56,4 +50,12 @@
         <Using Include="JJMasterData.Commons.Resources"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Remove="$(ESBuildWebRoot)jjmasterdata.js" />
+        <ESBuild Include="Scripts/**/*.ts" Exclude="Scripts/**/*.d.ts" Group="jjmasterdata.ts" />
+    </ItemGroup>
+
+    <Target Name="CopyJavaScriptToWebRoot" AfterTargets="Build">
+        <Copy SourceFiles="$(IntermediateOutputPath)esbuild/jjmasterdata.js" DestinationFolder="$(ESBuildWebRoot)" SkipUnchangedFiles="true" />
+    </Target>
 </Project>

@@ -1,0 +1,73 @@
+# JJMasterData
+
+> JJMasterData is a .NET library for generating CRUD interfaces and HTTP APIs from data dictionaries. Its ASP.NET Core UI combines metadata, field components, expressions, validation rules, actions and database persistence.
+
+The current Web project targets .NET 10. Start with installation and the first dictionary, then use the relevant guide or recipe. Links are relative to this file so they work when the documentation is hosted under a subpath.
+
+Dictionary metadata and business records use separate repositories. Saving metadata does not migrate the database. The host owns authentication and authorization. Direct repository writes and SQL actions bypass the normal form-event and audit workflow; standalone data panels do not attach form handlers automatically.
+
+## Getting started
+
+- [Introduction](articles/intro.html): Package overview and documentation entry point.
+- [Installation and configuration](articles/getting-started/configuration.html): MVC host, package installation, database connection, seeding and route registration.
+- [Create the first dictionary](articles/getting-started/first-dictionary.html): Define fields, panels, keys and database mapping.
+- [Architecture](articles/concepts/architecture.html): Package responsibilities and the metadata-to-runtime flow.
+
+## Dictionary concepts
+
+- [Data dictionary model](articles/concepts/data-dictionary.html): FormElement, fields, keys, connections and persistence behavior.
+- [CRUD operations](articles/concepts/crud-operations.html): Generated UI, validation, import/export and auditing.
+- [Components and file fields](articles/concepts/components.html): Editors, layouts, lookup sources and file settings.
+- [Expressions](articles/concepts/expressions.html): Defaults, triggers, visibility, enablement, placeholders and custom functions.
+- [Validation rules](articles/concepts/rules.html): Dictionary validation and operation-specific execution flags.
+- [Actions](articles/concepts/actions.html): Grid, form and field commands; SQL actions and toolbar placement.
+- [Persistence and version control](articles/concepts/persistence.html): Metadata storage, dictionary files and command-line import/export.
+
+## MVC integration and customization
+
+- [Routes and embedding](articles/developer-guide/routes-and-embedding.html): Embed components in controllers and Razor views; preserve callback responses.
+- [Data panels and application-owned saves](articles/developer-guide/data-panels.html): Complete MVC controller/view example using ViewData, explicit validation and saving.
+- [UI customization](articles/developer-guide/ui-customization.html): Runtime metadata changes and shared host assets.
+- [Form events](articles/developer-guide/form-events.html): Registration, insert/update/delete/import hooks and transaction boundaries.
+- [Grid events](articles/developer-guide/grid-events.html): Custom data loading, pagination, rendering, selection and editable values.
+- [Authorization](articles/developer-guide/authorization.html): Protect administration, runtime routes and record access.
+- [Extension points](articles/developer-guide/extensions.html): Select the appropriate handler, expression provider, action plugin or export format.
+
+## Data access and hosting
+
+- [Configuration](articles/developer-guide/configuration.html): Host options, internal tables, assets and defaults.
+- [Connections and repositories](articles/developer-guide/connections.html): Default and additional connections and repository registration.
+- [Data dictionary repository](articles/developer-guide/data-dictionary-repository.html): Load and persist dictionary metadata.
+- [Entity repository](articles/developer-guide/entity-repository.html): Query and write business records using element metadata.
+- [Stored procedures](articles/developer-guide/stored-procedures.html): SQL Server read/write signatures, naming, pagination, output keys and operation codes.
+- [Data access](articles/developer-guide/data-access.html): Parameterized SQL, stored procedures, result shapes, transactions and cancellation.
+- [WebApi and OpenAPI](articles/developer-guide/webapi.html): Dictionary-driven HTTP endpoints and API metadata.
+- [Background jobs](articles/developer-guide/background-jobs.html): Import/export execution, progress, cancellation and durability.
+- [File storage](articles/developer-guide/file-storage.html): File providers and upload-field configuration.
+
+## Cookbook
+
+- [Cookbook index](articles/cookbook/index.html): Scenario overview and recipe selection.
+- [Customize a read procedure](articles/cookbook/read-procedure.html): Joined descriptions and calculated columns with filtering and pagination.
+- [Customize a write procedure](articles/cookbook/write-procedure.html): Database validation, insert/update/delete contract and generated keys.
+- [Persist multiple selections](articles/cookbook/multiple-selections.html): Translate a multiple-choice field into a relationship table.
+- [Edit values in a grid](articles/cookbook/editable-grid.html): Built-in grid saves and application-owned batch editing.
+- [Validate business operations](articles/cookbook/business-validation.html): Cross-field validation, imports and deletion checks.
+- [Run a bulk action](articles/cookbook/bulk-action.html): Execute a database command for selected primary keys.
+- [Create a task-specific form](articles/cookbook/task-form.html): Server-defined context and an explicit form-service save.
+- [Save a header and its lines together](articles/cookbook/composed-document.html): MVC editor with validation, stable row keys and one transactional save.
+- [Add application expression functions](articles/cookbook/custom-expression-functions.html): Reusable calculations and request-aware expression functions.
+
+- [Show a status guide with HTML templates](articles/cookbook/html-templates.html): Complete HtmlTemplateAction with fictional SQL data, multiple result sets and a self-contained Liquid template.
+
+## Optional
+
+- [Commons API reference](api/JJMasterData.Commons.html): Database access and shared infrastructure namespaces.
+- [Core API reference](api/JJMasterData.Core.html): Dictionary models, form services and UI namespaces.
+- [Custom export formats](articles/developer-guide/export-formats.html): Export format registration and options.
+- [Grid templates](articles/developer-guide/grid-templates.html): Razor-based grid customization.
+- [Template actions](articles/developer-guide/template-action.html): Liquid/HTML action templates.
+- [HtmlBuilder](articles/developer-guide/html-builder.html): Compose HTML from C#.
+- [Localization](articles/developer-guide/localization.html): Resources and culture configuration.
+- [Brazil integrations](articles/developer-guide/brasil/index.html): Address and identification lookup plugins.
+- [Troubleshooting](articles/developer-guide/templates-troubleshooting.html): Diagnose configuration, template and runtime issues.

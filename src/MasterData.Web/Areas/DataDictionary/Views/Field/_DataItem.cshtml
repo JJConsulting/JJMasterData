@@ -1,12 +1,11 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+﻿@using JJMasterData.Core.DataDictionary.Models
 
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 
-@using JJConsulting.Html.Bootstrap.Models
-@using JJMasterData.Core.DataDictionary.Models
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
 
-<div class="mb-3 col-sm-4 required">
+<div class="col-sm-4 required">
     <label class="form-label">@StringLocalizer["Type"]</label>
     <select asp-for="DataItem!.DataItemType"
             asp-items="Enum.GetValues<DataItemType>().Select(d => new SelectListItem(d.ToString(), d.ToString()))"
@@ -16,7 +15,7 @@
 
 @if (ViewBag.IsForm)
 {
-    <div class="mb-3 col-sm-4 required" id="divReplaceTextOnGrid">
+    <div class="col-sm-4 required" id="divReplaceTextOnGrid">
         <label asp-for="DataItem!.GridBehavior" class="form-label"></label>
         <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
         <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
@@ -33,7 +32,7 @@
 
 @if (Model.Component is FormComponent.ComboBox)
 {
-    <div class="mb-3 col-sm-4 required" id="divFirstOption">
+    <div class="col-sm-3 mb-3 required" id="divFirstOption">
         <label asp-for="DataItem!.FirstOption" class="form-label"></label>
         <tooltip title="@StringLocalizer["First option used in the combo. If a default value exists in the filter, this option is ignored."]"/>
         <select asp-for="DataItem!.FirstOption" class="form-control form-select"
@@ -43,7 +42,7 @@
 
 @if (Model.Component is FormComponent.RadioButtonGroup)
 {
-    <div class="mb-3 col-sm-4 required">
+    <div class="col-sm-3 required">
         <label asp-for="DataItem!.RadioLayout" class="form-label"></label>
         <select asp-for="DataItem!.RadioLayout" class="form-control form-select"
                 asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
@@ -51,17 +50,17 @@
 }
 
 
-<div class="mb-3 col-sm-4 required">
+<div class="col-sm-3 required">
     <checkbox
         tooltip="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]"
         for="DataItem!.EnableMultiSelect" layout="Switch"/>
 </div>
 
-<div class="mb-3 col-sm-4 required">
+<div class="col-sm-3 required">
     <checkbox for="DataItem!.EnableLocalization" layout="Switch"/>
 </div>
 
-<div class="mb-3 col-sm-4 required">
+<div class="col-sm-3 required">
     <checkbox for="DataItem!.ShowIcon" layout="Switch" onchange="this.form.requestSubmit();"/>
 </div>
 

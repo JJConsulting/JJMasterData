@@ -33,7 +33,6 @@ public class FormElementOptions
     [Display(Name = "Use Floating Labels")]
     public bool UseFloatingLabels { get; set; }
 
-
     public FormElementOptions DeepCopy()
     {
         return new FormElementOptions

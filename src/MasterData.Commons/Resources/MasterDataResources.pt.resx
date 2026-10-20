@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -4369,5 +4369,83 @@
   <data name="Read the documentation for SQL query columns and parameters." xml:space="preserve">
     <value>Consulte a documentação sobre as colunas e os parâmetros da consulta SQL.</value>
     <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Parent Panel" xml:space="preserve">
+    <value>Painel Pai</value>
+  </data>
+  <data name="Tabs Style" xml:space="preserve">
+    <value>Estilo das Tabs</value>
+  </data>
+  <data name="Invalid parent panel." xml:space="preserve">
+    <value>Painel pai inválido.</value>
+  </data>
+  <data name="A panel cannot be its own parent." xml:space="preserve">
+    <value>Um painel não pode ser pai de si mesmo.</value>
+  </data>
+  <data name="Panel hierarchy cannot contain recursion." xml:space="preserve">
+    <value>A hierarquia de painéis não pode conter recursividade.</value>
+  </data>
+  <data name="Title is required for Tab or Collapse panels." xml:space="preserve">
+    <value>O título é obrigatório para painéis do tipo Tab ou Collapse.</value>
+  </data>
+  <data name="This option is valid only for Collapse panels." xml:space="preserve">
+    <value>Esta opção é válida apenas para painéis do tipo Collapse.</value>
+  </data>
+  <data name="Has Default Value" xml:space="preserve">
+    <value>Possui Default Value</value>
+  </data>
+  <data name="Has Trigger" xml:space="preserve">
+    <value>Possui Trigger</value>
+  </data>
+  <data name="Has Panel" xml:space="preserve">
+    <value>Possui Panel</value>
+  </data>
+  <data name="Drop here to reorder" xml:space="preserve">
+    <value>Solte aqui para reordenar</value>
+  </data>
+  <data name="Drop here to make a child panel" xml:space="preserve">
+    <value>Solte aqui para tornar um panel filho</value>
+  </data>
+  <data name="Drop here to move to the root" xml:space="preserve">
+    <value>Solte aqui para mover para a raiz</value>
+  </data>
+  <data name="Unable to move panel." xml:space="preserve">
+    <value>Não foi possível mover o panel.</value>
+  </data>
+  <data name="Drag onto a panel to make it a child. Use the gaps to reorder. Clear the search before dragging." xml:space="preserve">
+    <value>Arraste sobre um panel para torná-lo filho. Use os espaços entre panels para reordenar. Limpe a busca antes de arrastar.</value>
+  </data>
+  <data name="Panel moved successfully." xml:space="preserve">
+    <value>Painel movido com sucesso</value>
+  </data>
+  <data name="Field moved successfully." xml:space="preserve">
+    <value>Campo movido com sucesso</value>
+  </data>
+  <data name="Panel saved successfully." xml:space="preserve">
+    <value>Painel salvo com sucesso</value>
+  </data>
+  <data name="Entity saved successfully." xml:space="preserve">
+    <value>Entidade salva com sucesso</value>
+  </data>
+  <data name="Options saved successfully." xml:space="preserve">
+    <value>Opções salvas com sucesso</value>
+  </data>
+  <data name="Error saving" xml:space="preserve">
+    <value>Erro ao salvar</value>
+  </data>
+  <data name="Please check your fields." xml:space="preserve">
+    <value>Por favor, verifique seus campos.</value>
+  </data>
+  <data name="Rule saved successfully." xml:space="preserve">
+    <value>Regra salva com sucesso</value>
+  </data>
+  <data name="Index saved successfully." xml:space="preserve">
+    <value>Índice salvo com sucesso</value>
+  </data>
+  <data name="Relationship saved successfully." xml:space="preserve">
+    <value>Relacionamento salvo com sucesso</value>
+  </data>
+  <data name="API settings saved successfully." xml:space="preserve">
+    <value>Configurações da API salvas com sucesso</value>
   </data>
 </root>

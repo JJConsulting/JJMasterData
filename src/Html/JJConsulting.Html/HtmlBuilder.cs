@@ -15,17 +15,17 @@ namespace JJConsulting.Html;
 public class HtmlBuilder : IHtmlContent
 {
     private readonly Dictionary<string, string?>? _attributes;
-    private readonly List<IHtmlContent?> _children;
     private readonly HtmlTag? _tag;
 
+    private List<IHtmlContent?>? _children;
+    
     public HtmlBuilder()
     {
-        _children = [];
     }
 
     public HtmlBuilder(string rawText, bool encode = true) : this()
     {
-        _children.Add(new HtmlText(rawText, encode));
+        _children = [new HtmlText(rawText, encode)];
     }
 
     public HtmlBuilder(HtmlTag tag) : this()
@@ -36,7 +36,7 @@ public class HtmlBuilder : IHtmlContent
 
     public HtmlBuilder(HtmlTag tag, string rawText) : this(tag)
     {
-        _children.Add(new HtmlText(rawText));
+        _children = [new HtmlText(rawText)];
     }
 
     public HtmlBuilder(HtmlTag tag, params List<IHtmlContent?> children)
@@ -62,6 +62,9 @@ public class HtmlBuilder : IHtmlContent
     {
         if (!_tag.HasValue)
         {
+            if (_children == null) 
+                return;
+            
             foreach (var c in _children)
             {
                 c?.WriteTo(writer, encoder);
@@ -86,11 +89,14 @@ public class HtmlBuilder : IHtmlContent
 
         writer.Write('>');
 
-        foreach (var child in _children)
+        if (_children != null)
         {
-            child?.WriteTo(writer, encoder);
+            foreach (var child in _children)
+            {
+                child?.WriteTo(writer, encoder);
+            }
         }
-
+        
         writer.Write("</");
         writer.Write(tagName);
         writer.Write('>');
@@ -141,6 +147,8 @@ public class HtmlBuilder : IHtmlContent
         if (ReferenceEquals(this, html))
             throw new InvalidOperationException("Cannot prepend the same HtmlBuilder instance to itself.");
 
+        _children ??= [];
+        
         _children.Insert(0, html);
 
         return this;
@@ -154,6 +162,8 @@ public class HtmlBuilder : IHtmlContent
         if (ReferenceEquals(this, html))
             throw new InvalidOperationException("Cannot append the same HtmlBuilder instance to itself.");
 
+        _children ??= [];
+        
         _children.Add(html);
 
         return this;
@@ -161,6 +171,7 @@ public class HtmlBuilder : IHtmlContent
 
     public HtmlBuilder AppendRange(IEnumerable<IHtmlContent> htmlEnumerable)
     {
+        _children ??= [];
         _children.AddRange(htmlEnumerable);
         return this;
     }

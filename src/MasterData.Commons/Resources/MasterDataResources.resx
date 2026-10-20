@@ -1,4 +1,4 @@
-<root>
+﻿<root>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -23,4 +23,55 @@
     <data name="Read the documentation for SQL query columns and parameters." xml:space="preserve">
         <value>Read the documentation for SQL query columns and parameters.</value>
     </data>
+  <data name="Parent Panel" xml:space="preserve">
+    <value>Parent Panel</value>
+  </data>
+  <data name="Tab Style" xml:space="preserve">
+    <value>Tab Style</value>
+  </data>
+  <data name="Tabs" xml:space="preserve">
+    <value>Tabs</value>
+  </data>
+  <data name="Underline" xml:space="preserve">
+    <value>Underline</value>
+  </data>
+  <data name="Pills" xml:space="preserve">
+    <value>Pills</value>
+  </data>
+  <data name="Invalid parent panel." xml:space="preserve">
+    <value>Invalid parent panel.</value>
+  </data>
+  <data name="A panel cannot be its own parent." xml:space="preserve">
+    <value>A panel cannot be its own parent.</value>
+  </data>
+  <data name="Panel hierarchy cannot contain recursion." xml:space="preserve">
+    <value>Panel hierarchy cannot contain recursion.</value>
+  </data>
+  <data name="No Decoration" xml:space="preserve">
+    <value>No Decoration</value>
+  </data>
+  <data name="Tab" xml:space="preserve">
+    <value>Tab</value>
+  </data>
+  <data name="Collapse" xml:space="preserve">
+    <value>Collapse</value>
+  </data>
+  <data name="Card" xml:space="preserve">
+    <value>Card</value>
+  </data>
+  <data name="Title is required for Tab or Collapse panels." xml:space="preserve">
+    <value>Title is required for Tab or Collapse panels.</value>
+  </data>
+  <data name="This option is valid only for Collapse panels." xml:space="preserve">
+    <value>This option is valid only for Collapse panels.</value>
+  </data>
+  <data name="Has Default Value" xml:space="preserve">
+    <value>Has Default Value</value>
+  </data>
+  <data name="Has Trigger" xml:space="preserve">
+    <value>Has Trigger</value>
+  </data>
+  <data name="Has Panel" xml:space="preserve">
+    <value>Has Panel</value>
+  </data>
 </root>
