@@ -9,16 +9,111 @@ public class DataAccessGeneratorTests
 {
     private static (Compilation Compilation, GeneratorDriverRunResult Result) Generate(string source)
     {
+        var compilation = CreateCompilation(source);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new DataAccessGenerator());
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var output, out _, TestContext.Current.CancellationToken);
+        return (output, driver.GetRunResult());
+    }
+
+    private static CSharpCompilation CreateCompilation(string source)
+    {
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
             .Split(Path.PathSeparator)
             .Select(path => MetadataReference.CreateFromFile(path))
             .Append(MetadataReference.CreateFromFile(typeof(DataAccess).Assembly.Location));
-        var compilation = CSharpCompilation.Create("GeneratorConsumer",
-            [CSharpSyntaxTree.ParseText(source)], references,
+        return CSharpCompilation.Create("GeneratorConsumer",
+            [CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken)], references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new DataAccessExtensionsGenerator());
-        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var output, out _);
-        return (output, driver.GetRunResult());
+    }
+
+    private static CSharpGeneratorDriver CreateTrackedDriver() =>
+        CSharpGeneratorDriver.Create(
+            [new DataAccessGenerator().AsSourceGenerator()],
+            driverOptions: new GeneratorDriverOptions(IncrementalGeneratorOutputKind.None,
+                trackIncrementalGeneratorSteps: true));
+
+    [Fact]
+    public void ReusesSourcesWhenUnrelatedCodeChanges()
+    {
+        var compilation = CreateCompilation("""
+            using JJMasterData.Commons.Data;
+            [DataAccessModel] public partial class Product { public int Id { get; set; } }
+            """);
+        var driver = CreateTrackedDriver().RunGenerators(compilation, TestContext.Current.CancellationToken);
+        var edited = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText("public class Unrelated { }", cancellationToken: TestContext.Current.CancellationToken));
+        driver = driver.RunGenerators(edited, TestContext.Current.CancellationToken);
+
+        var result = Assert.Single(driver.GetRunResult().Results);
+        Assert.Empty(result.Diagnostics);
+        var step = Assert.Single(result.TrackedSteps["Sources"]);
+        Assert.Equal(IncrementalStepRunReason.Cached, Assert.Single(step.Outputs).Reason);
+    }
+
+    [Fact]
+    public void RegeneratesOnlyTheChangedModel()
+    {
+        const string source = """
+            using JJMasterData.Commons.Data;
+            [DataAccessModel] public partial class Product { public int Id { get; set; } }
+            [DataAccessModel] public partial class Customer { public int Code { get; set; } }
+            """;
+        var compilation = CreateCompilation(source);
+        var driver = CreateTrackedDriver().RunGenerators(compilation, TestContext.Current.CancellationToken);
+        var edited = compilation.ReplaceSyntaxTree(compilation.SyntaxTrees.Single(),
+            CSharpSyntaxTree.ParseText(source.Replace("int Id", "long Id"), cancellationToken: TestContext.Current.CancellationToken));
+        driver = driver.RunGeneratorsAndUpdateCompilation(edited, out var output, out _, TestContext.Current.CancellationToken);
+
+        var result = Assert.Single(driver.GetRunResult().Results);
+        Assert.Empty(result.Diagnostics);
+        Assert.Empty(output.GetDiagnostics(TestContext.Current.CancellationToken)
+            .Where(d => d.Severity == DiagnosticSeverity.Error));
+        var reasons = result.TrackedSteps["Sources"].SelectMany(step => step.Outputs).Select(item => item.Reason).ToArray();
+        Assert.Equal(2, reasons.Length);
+        Assert.Contains(IncrementalStepRunReason.Modified, reasons);
+        Assert.Contains(IncrementalStepRunReason.Cached, reasons);
+    }
+
+    [Fact]
+    public void UpdatesDiagnosticLocationsAfterTriviaChanges()
+    {
+        const string source = """
+            using JJMasterData.Commons.Data;
+            [DataAccessModel] public partial class Product { public object Value { get; set; } }
+            """;
+        var compilation = CreateCompilation(source);
+        var driver = CreateTrackedDriver().RunGenerators(compilation, TestContext.Current.CancellationToken);
+        var original = Assert.Single(driver.GetRunResult().Diagnostics);
+        var edited = compilation.ReplaceSyntaxTree(compilation.SyntaxTrees.Single(),
+            CSharpSyntaxTree.ParseText("\n\n" + source, cancellationToken: TestContext.Current.CancellationToken));
+        driver = driver.RunGenerators(edited, TestContext.Current.CancellationToken);
+
+        var diagnostic = Assert.Single(driver.GetRunResult().Diagnostics);
+        Assert.Equal("JJMDG003", diagnostic.Id);
+        Assert.Equal(original.Location.SourceSpan.Start + 2, diagnostic.Location.SourceSpan.Start);
+        Assert.Same(edited.SyntaxTrees.Single(), diagnostic.Location.SourceTree);
+    }
+
+    [Fact]
+    public void EmitsEscapedIdentifiersAndLiteralsInsideRecordStructContainers()
+    {
+        var (compilation, result) = Generate(""""
+            #nullable enable
+            using JJMasterData.Commons.Data;
+            namespace @event;
+            public partial record struct Container
+            {
+                public enum Kind { None }
+                [DataAccessModel] public partial record @class
+                {
+                    [DataAccessColumn("quoted\"column\\name\n")] public string? @string { get; set; }
+                    public Kind? @enum { get; set; }
+                }
+            }
+            """");
+        Assert.Empty(result.Diagnostics);
+        Assert.Single(Assert.Single(result.Results).GeneratedSources);
+        Assert.Empty(compilation.GetDiagnostics(TestContext.Current.CancellationToken)
+            .Where(d => d.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning));
     }
 
     [Fact]
