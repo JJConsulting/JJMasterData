@@ -5,12 +5,12 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace JJMasterData.Commons.Test.Data;
 
-public class DataAccessGeneratorTests
+public class DataAccessSourceGeneratorTests
 {
     private static (Compilation Compilation, GeneratorDriverRunResult Result) Generate(string source)
     {
         var compilation = CreateCompilation(source);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new DataAccessGenerator());
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new DataAccessSourceGenerator());
         driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var output, out _, TestContext.Current.CancellationToken);
         return (output, driver.GetRunResult());
     }
@@ -28,7 +28,7 @@ public class DataAccessGeneratorTests
 
     private static CSharpGeneratorDriver CreateTrackedDriver() =>
         CSharpGeneratorDriver.Create(
-            [new DataAccessGenerator().AsSourceGenerator()],
+            [new DataAccessSourceGenerator().AsSourceGenerator()],
             driverOptions: new GeneratorDriverOptions(IncrementalGeneratorOutputKind.None,
                 trackIncrementalGeneratorSteps: true));
 

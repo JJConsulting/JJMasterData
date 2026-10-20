@@ -239,13 +239,13 @@ This is useful for structured logging, but it also means exception details can c
 
 ## Typed queries
 
-Install the generator alongside `JJMasterData.Commons`:
+Install `JJMasterData.Data.SourceGenerators` alongside `JJMasterData.Commons`:
 
 ```xml
-<PackageReference Include="JJMasterData.Data.SourceGenerators" Version="5.0.12" PrivateAssets="all" />
+<PackageReference Include="JJMasterData.Data.SourceGenerators" PrivateAssets="all" />
 ```
 
-Annotate a partial model, then query it:
+Add `[DataAccessModel]` to a partial class and use `GetAsync<T>` or `GetListAsync<T>`:
 
 ```csharp
 using JJMasterData.Commons.Data;
@@ -269,39 +269,42 @@ List<Product> products = await dataAccess.GetListAsync<Product>(command, cancell
 
 `GetAsync<T>` returns the first row or `null`. `GetListAsync<T>` returns all rows or an empty list. Both read only the first result set.
 
-The generator implements `IDataAccessModel<T>` with static `ResolveOrdinals` and `Read` methods. Column positions are resolved once per query; rows are read directly into models, without JSON, intermediate dictionaries, or mapper objects.
+### Mapping rules
 
-- Columns match property names without case sensitivity. Use `[DataAccessColumn]` or `[JsonPropertyName]` for aliases; `DataAccessColumn` takes priority when both are present. These attributes are also inherited by overridden properties.
-- Extra columns are ignored. Missing columns preserve property initializers. Duplicate matched columns throw `DataException`.
-- SQL `NULL` is accepted only by nullable properties, including `string?`.
+- Column names match property names, ignoring case. For aliases, use `[DataAccessColumn]` or `[JsonPropertyName]`; `DataAccessColumn` takes priority. Overrides inherit these attributes.
+- Extra columns are ignored; missing columns keep property initializers. Duplicate matched columns throw `DataException`.
+- SQL `NULL` requires a nullable property, including `string?`.
 - Supported types: strings, booleans, characters, numeric primitives, `Guid`, `DateTime`, `DateTimeOffset`, `TimeSpan`, enums, and nullable variants. Unsafe conversions throw `DataException`.
-- Properties whose types are annotated with `[DataAccessModel]` are populated from the same reader and current row, using each nested model's own column names. Nested objects are created even when all their columns are missing; their property initializers are preserved. Cycles between models produce a generator diagnostic.
-- Use `[DataAccessIgnore]` to exclude a property from mapping and validation, including computed, `required`, `init`, or unsupported property types. Ignored properties retain their constructor/initializer values and are never read from SQL.
-- Models must be concrete, non-generic partial classes with a public or internal parameterless constructor. Containing types must also be partial and non-generic. Mapped properties need public visibility and accessible setters; collections, indexers, static properties, `required`, and `init` remain unsupported unless ignored.
+- Use `[DataAccessIgnore]` to skip a property, including computed, `required`, `init`, or unsupported properties. Ignored properties keep their constructor or initializer values.
+
+### Nested models
+
+Properties whose type has `[DataAccessModel]` read from the same row using that model's column names:
 
 ```csharp
 [DataAccessModel]
 public partial class Order
 {
-    [System.Text.Json.Serialization.JsonPropertyName("order_id")]
+    [DataAccessColumn("order_id")]
     public int Id { get; set; }
     public Product Product { get; set; } = null!;
+
     [DataAccessIgnore]
     public string Summary => $"{Id}: {Product.Description}";
-    [DataAccessIgnore]
-    public required string Context { get; init; } = "default";
 }
 
-// Each row supplies order_id plus product_id, Description and Price for Product.
+// Each row supplies order_id, product_id, Description and Price.
 var orders = await dataAccess.GetListAsync<Order>(new DataAccessCommand(
     "SELECT o.Id AS order_id, p.Id AS product_id, p.Description, p.Price " +
     "FROM Orders o JOIN Product p ON p.Id = o.ProductId"), cancellationToken);
 ```
 
-The API requires `T : class, IDataAccessModel<T>`; models without the generated contract fail to compile. The generator requires Roslyn 4.14 or newer. It generates no SQL and preserves normal cancellation, timeout, and output-parameter behavior.
+Nested objects are created even when their columns are missing, preserving their property initializers. Cycles between models produce a generator diagnostic.
 
-Run the SQLite example:
+### Requirements
 
-```sh
-dotnet run --project example/MasterData.Data.SourceGenerator.Example
-```
+- Models must be concrete, non-generic partial classes with a public or internal parameterless constructor. Containing types must also be partial and non-generic.
+- Mapped properties must be public with accessible setters. Collections, indexers, static properties, `required`, and `init` are unsupported unless ignored.
+
+The generator implements `IDataAccessModel<T>`, which the typed query methods require. It resolves column positions once per query and reads rows directly into models. 
+You write the SQL; cancellation, timeouts, and output parameters work as usual.

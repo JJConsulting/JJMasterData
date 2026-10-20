@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace JJMasterData.Data.SourceGenerators;
 
 [Generator(LanguageNames.CSharp)]
-public sealed class DataAccessGenerator : IIncrementalGenerator
+public sealed class DataAccessSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
