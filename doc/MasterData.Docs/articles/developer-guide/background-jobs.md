@@ -61,3 +61,9 @@ Configure capacity, concurrency, and completed-job retention under `JJMasterData
 ```
 
 Use the Hangfire plugin when a durable job backend is needed. See [configuration reference](configuration.md).
+
+## Application integrations after a save
+
+An application can enqueue projection refreshes or notifications from a form after-event, but the event runs after the record is persisted. Neither a volatile queue nor a durable enqueue performed later makes the record and the integration request one atomic write. Use an application outbox in the record's transaction when delivery must survive a crash between those steps.
+
+Design workers for retries and duplicate requests.

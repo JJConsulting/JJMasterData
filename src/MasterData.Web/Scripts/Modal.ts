@@ -41,24 +41,23 @@ class Modal {
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
 
+    static cloneModalTemplate(): HTMLElement {
+        const template = document.getElementById("jjmasterdata-modal-template") as HTMLTemplateElement;
+        return template.content.firstElementChild.cloneNode(true) as HTMLElement;
+    }
+
     private createModalElement() {
         if (!document.getElementById(this.modalId)) {
-            this.modalElement = document.createElement("div");
+            this.modalElement = Modal.cloneModalTemplate();
             this.modalElement.id = this.modalId;
-            this.modalElement.classList.add("modal", "fade");
-            this.modalElement.tabIndex = -1;
-            this.modalElement.setAttribute("role", "dialog");
             this.modalElement.setAttribute("aria-labelledby", `${this.modalId}-label`);
-            this.modalElement.innerHTML = `
-      <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
-        <div class="modal-content" >
-          <div class="modal-header">
-            <h5 class="modal-title" id="${this.modalId}-title">${this.modalTitle}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body"> </div>
-        </div>
-      </div>`;
+            const dialog = this.modalElement.querySelector<HTMLElement>(".modal-dialog");
+            dialog.id = `${this.modalId}-dialog`;
+            dialog.classList.toggle("modal-dialog-centered", !!this.centered);
+            dialog.classList.add(this.getModalCssClass());
+            const title = this.modalElement.querySelector<HTMLElement>(".modal-title");
+            title.id = `${this.modalId}-title`;
+            title.innerHTML = `${this.modalTitle}`;
             let form = getMasterDataForm();
             if (form) {
                 form.appendChild(this.modalElement);
@@ -91,7 +90,10 @@ class Modal {
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
 
-        modalBody.innerHTML = `<iframe src="${url}" class="modal-iframe"></iframe>`;
+        const iframe = document.createElement("iframe");
+        iframe.src = url;
+        iframe.classList.add("modal-iframe");
+        modalBody.replaceChildren(iframe);
 
         Modal.showElement(this.modalElement);
     }

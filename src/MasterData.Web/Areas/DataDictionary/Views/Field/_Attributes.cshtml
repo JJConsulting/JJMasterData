@@ -22,7 +22,7 @@
      or FormComponent.CnpjCpf
      or FormComponent.Cep)
 {
-    <div class="mb-3 col-sm-4">
+    <div class="col-sm-4">
         <label for="txtPlaceHolder" class="form-label">@StringLocalizer["Placeholder"]</label>
         <input class="form-control" placeholder="" id="txtPlaceHolder" name="txtPlaceHolder" maxlength="100" type="text" value="@Model.GetAttr(FormElementField.PlaceholderAttribute)">
     </div>
@@ -34,7 +34,7 @@
     {
         var isSwitch = Model.GetAttr(FormElementField.IsSwitchAttribute)?.ToString()?.ToLowerInvariant();
         var isButton = Model.GetAttr(FormElementField.IsButtonAttribute)?.ToString()?.ToLowerInvariant();
-        <div class="mb-3 col-sm-4">
+        <div class="col-sm-4">
             <label for="checkbox-layout" class="form-label">@StringLocalizer["Layout"]</label>
             <select id="checkbox-layout" name="checkbox-layout" class="form-select">
                 <option value="checkbox" selected="@(isSwitch != "true" && isButton != "true")">Checkbox</option>
@@ -103,19 +103,19 @@
         </div>
         break;
     case FormComponent.TextArea:
-        <div class="mb-3 col-sm-4">
+        <div class="col-sm-4">
             <label for="txtTextAreaRows" class="form-label">@StringLocalizer["Rows"]</label>
             <tooltip title="@StringLocalizer["Number of lines in the text box."]"/>
             <input class="form-control" id="txtTextAreaRows" name="txtTextAreaRows" maxlength="100" type="number" min="1" max="5000" placeholder="5" value="@Model.GetAttr(FormElementField.RowsAttribute)">
         </div>
         break;
     case FormComponent.Lookup:
-        <div class="mb-3 col-sm-4">
+        <div class="col-sm-4">
             <label for="cboLkPopUpSize" class="form-label">@StringLocalizer["Modal Size"]</label>
             <select id="cboLkPopUpSize" name="cboLkPopUpSize" class="form-control form-select" asp-items="@Html.GetEnumSelectList<ModalSize>()"></select>
         </div>
 
-        <div class="mb-3 col-sm-4">
+        <div class="col-sm-4">
             <label for="txtLkPopUpTitle" class="form-label">@StringLocalizer["Modal Title"]</label>
             <input class="form-control" id="txtLkPopUpTitle" name="txtLkPopUpTitle" maxlength="200" type="text" placeholder="@StringLocalizer["Search..."]" value="@Model.GetAttr(FormElementField.PopUpTitleAttribute)">
         </div>
@@ -123,7 +123,7 @@
     case FormComponent.Date:
     case FormComponent.DateTime:
     case FormComponent.Hour:
-        <div class="mb-3 col-sm-4">
+        <div class="col-sm-4">
             <checkbox tooltip="@StringLocalizer["When opening the picker, fill the input with today's date."]" label="@StringLocalizer["Autocomplete"]" name="@(FormElementField.AutocompletePickerAttribute)"
                       layout="Switch"
 

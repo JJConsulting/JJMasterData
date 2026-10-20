@@ -264,7 +264,8 @@ class GridViewHelper {
             }
         });
     }
-
+    
+    
     static setupInfiniteScroll() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -285,5 +286,37 @@ class GridViewHelper {
                 observer.observe(el);
             }
         });
+    }
+    static hideEmptyColumns(selectorPrefix: string): void {
+        const tables = document.querySelectorAll<HTMLTableElement>(`${selectorPrefix} table`);
+
+        for (const table of tables) {
+            if (!table.tHead || !table.tBodies.length)
+                continue;
+
+            const headers = Array.from(table.tHead.rows[0]?.cells ?? []);
+            const rows = Array.from(table.tBodies[0].rows);
+
+            if (!rows.length)
+                continue;
+
+            headers.forEach((th, index) => {
+                const cells = rows.map(row => row.cells[index]);
+
+                const hide = cells.every(td =>
+                    td !== undefined &&
+                    td !== null &&
+                    td.classList.contains("table-action") &&
+                    td.children.length === 0 &&
+                    td.textContent?.trim() === ""
+                );
+
+                th.classList.toggle("d-none", hide);
+
+                cells.forEach(td => {
+                    td?.classList.toggle("d-none", hide);
+                });
+            });
+        }
     }
 }
