@@ -1,4 +1,6 @@
-﻿@using JJMasterData.Core.DataDictionary.Models
+@using JJConsulting.FontAwesome
+@using JJConsulting.Html.Bootstrap.Models
+@using JJMasterData.Core.DataDictionary.Models
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementPanel
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
@@ -10,74 +12,153 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        sortableGrid();
+        initializePanelTree();
         saveTabState();
     });
 
     function saveTabState() {
-        let currentTab = document.querySelector("#selected-tab").value;
-        if (!currentTab) {
-            currentTab = "#div-general";
-        }
-
-        let tabLinks = document.querySelectorAll("[@BootstrapHelper.DataToggle='tab']");
-        tabLinks.forEach(function(link) {
-            if (link.getAttribute('href') === currentTab) {
-                link.classList.add('active');
-                link.classList.add('show');
-            } else {
-                link.classList.remove('active');
-                link.classList.remove('remove');
-            }
-        });
-
-        document.querySelectorAll(".tab-pane").forEach(function (tabPane){
-            if (tabPane.id === currentTab.replace("#","")) {
-                tabPane.classList.add('active');
-                tabPane.classList.add('show');
-            } else {
-                tabPane.classList.remove('active');
-                tabPane.classList.remove('remove');
-            }
-        })
-
-        document.querySelector(currentTab).classList.add('active');
-        document.querySelector(currentTab).classList.add('show');
-
-        tabLinks.forEach(function(tabLink) {
-            tabLink.addEventListener("click", function(e) {
-
-                document.querySelector("#selected-tab").value = e.target.getAttribute("href");
-
+        const selectedTab = document.getElementById('selected-tab');
+        const currentTab = selectedTab.value || '#div-general';
+        document.querySelectorAll("[@BootstrapHelper.DataToggle='tab']").forEach(link => {
+            const active = link.getAttribute('href') === currentTab;
+            link.classList.toggle('active', active);
+            link.classList.toggle('show', active);
+            link.onclick = () => {
+                selectedTab.value = link.getAttribute('href');
                 resizeContainer();
+            };
+        });
+        document.querySelectorAll('#field-details .tab-pane').forEach(pane => {
+            const active = `#${pane.id}` === currentTab;
+            pane.classList.toggle('active', active);
+            pane.classList.toggle('show', active);
+        });
+    }
+
+    let sortingPanel = false;
+    let movingPanel = false;
+
+    function getPanelRows() {
+        return [...document.querySelectorAll('#sortable-grid .panel-node')];
+    }
+
+    function initializePanelTree() {
+        const rows = getPanelRows();
+        const ids = new Set(rows.map(row => row.id));
+        rows.filter(row => !ids.has(row.dataset.parentId)).forEach(row => row.dataset.parentId = '');
+        rebuildPanelTree(rows);
+        initializePanelSorting();
+
+        document.getElementById('field-list').addEventListener('click', event => {
+            const link = event.target.closest('.panel-link');
+            if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (sortingPanel || movingPanel) return;
+            const row = link.closest('.panel-node');
+            const children = row.querySelector(':scope > .panel-children');
+            if (children) bootstrap.Collapse.getOrCreateInstance(children, { toggle: false }).toggle();
+            loadDetails(link.dataset.detailUrl, row.id);
+        });
+    }
+
+    function updatePanelOrder() {
+        document.querySelectorAll('#sortable-grid, #sortable-grid .panel-children').forEach(group => {
+            group.querySelectorAll(':scope > .panel-node').forEach((row, index) => {
+                row.querySelector('.panel-order').textContent = index + 1;
             });
         });
     }
 
-    function sortableGrid() {
-        $("#sortable-grid").sortable({
+    function initializePanelSorting() {
+        $('#sortable-grid, #sortable-grid .panel-children').sortable({
+            items: '> .panel-node',
+            handle: '> .panel-link',
+            helper: 'original',
+            axis: 'y',
+            tolerance: 'pointer',
+            start: function () {
+                if (movingPanel || document.getElementById('txtFilter').value.trim()) return false;
+                sortingPanel = true;
+                $(this).data('previous-order', $(this).children('.panel-node').not('.ui-sortable-placeholder').toArray());
+            },
+            stop: function () {
+                // Ignore the mouse click generated when releasing a dragged row.
+                setTimeout(() => sortingPanel = false, 0);
+            },
             update: function () {
-                const order = $(this).sortable('toArray');
-                moveFields(order);
+                savePanelOrder(this);
             }
         });
     }
 
-    function moveFields(order) {
-        const formData = new FormData();
-        formData.append('fieldsOrder', order);
-        fetch('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
-            method: "POST",
-            body: formData
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('@StringLocalizer["Error while ordering fields."]');
-                }
-            })
-            .catch(error => {
-                messageBox.show('@StringLocalizer["Error"]', error.message, 4);
+    async function savePanelOrder(group) {
+        movingPanel = true;
+        const sortables = $('#sortable-grid, #sortable-grid .panel-children');
+        sortables.sortable('disable');
+        try {
+            const formData = new FormData();
+            formData.append('fieldsOrder', getPanelRows().map(row => row.id).join(','));
+            const token = getMasterDataForm()?.querySelector('[name="__RequestVerificationToken"]');
+            if (token) formData.append(token.name, token.value);
+            const response = await fetch('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
+                method: 'POST', body: formData
             });
+            if (!response.ok) throw new Error();
+            updatePanelOrder();
+            MessageToastHelper.show('panel-sort-success');
+        } catch {
+            $(group).append($(group).data('previous-order'));
+            updatePanelOrder();
+            messageBox.show(@Json.Serialize(StringLocalizer["Error"].Value),
+                @Json.Serialize(StringLocalizer["Unable to move panel."].Value), 4);
+        } finally {
+            movingPanel = false;
+            sortables.sortable('enable');
+        }
+    }
+
+    function rebuildPanelTree(rows = getPanelRows()) {
+        const tree = document.getElementById('sortable-grid');
+        const childrenByParent = new Map();
+        rows.forEach(row => {
+            const parentId = row.dataset.parentId;
+            if (!childrenByParent.has(parentId)) childrenByParent.set(parentId, []);
+            childrenByParent.get(parentId).push(row);
+        });
+        const visited = new Set();
+        function append(parentId, container) {
+            (childrenByParent.get(parentId) ?? []).forEach(row => {
+                if (visited.has(row.id)) return;
+                visited.add(row.id);
+                const parentLabel = row.querySelector('.panel-parent');
+                const parent = document.getElementById(parentId);
+                parentLabel.hidden = !parent;
+                parentLabel.textContent = parent ? parent.querySelector('.panel-title').textContent : '';
+                parentLabel.title = parentLabel.textContent;
+                container.appendChild(row);
+                const link = row.querySelector('.panel-link');
+                const hasChildren = childrenByParent.has(row.id);
+                link.classList.remove('collapsed');
+                link.removeAttribute('data-bs-toggle');
+                link.removeAttribute('data-bs-target');
+                link.removeAttribute('aria-expanded');
+                link.removeAttribute('aria-controls');
+                if (hasChildren) {
+                    link.setAttribute('data-bs-toggle', 'collapse');
+                    link.setAttribute('data-bs-target', `#panel-children-${row.id}`);
+                    link.setAttribute('aria-controls', `panel-children-${row.id}`);
+                    link.setAttribute('aria-expanded', 'true');
+                    const children = document.createElement('div');
+                    children.id = `panel-children-${row.id}`;
+                    children.className = 'panel-children collapse show';
+                    row.appendChild(children);
+                    append(row.id, children);
+                }
+            });
+        }
+        append('', tree);
+        updatePanelOrder();
     }
 
     function loadDetails(url, panelId) {
@@ -88,7 +169,7 @@
         if (panelId !== "") {
             const panel = document.getElementById(panelId);
             if (panel) {
-                panel.classList.add("active");
+                panel.querySelector(".panel-link").classList.add("active");
             }
         }
         
@@ -115,17 +196,34 @@
             })
     }
 
-    function searchFields(oDom) {
-        const value = $(oDom).val().toLowerCase();
-        $("#sortable-grid a").filter(function () {
-            //procura por textos
-            const textValues = $(this).clone().find('.ts-wrapper, .tom-select, select').remove().end().text();
-            const isSearch = textValues.toLowerCase().indexOf(value) > -1;
-
-            $(this).toggle(isSearch);
+    function searchFields(input) {
+        const rows = [...document.querySelectorAll('.panel-node')];
+        const query = input.value.trim().toLocaleLowerCase();
+        const visible = new Set();
+        rows.filter(row => row.querySelector('.panel-title').textContent.toLocaleLowerCase().includes(query) ||
+            row.querySelector('.panel-layout').textContent.toLocaleLowerCase().includes(query)).forEach(row => {
+            while (row && !visible.has(row.id)) {
+                visible.add(row.id);
+                row = document.getElementById(row.dataset.parentId);
+            }
         });
+        rows.forEach(row => {
+            row.hidden = !visible.has(row.id);
+            if (query && visible.has(row.id)) {
+                const children = row.querySelector(':scope > .panel-children');
+                if (children) bootstrap.Collapse.getOrCreateInstance(children, { toggle: false }).show();
+            }
+        });
+        document.getElementById('panel-no-results').hidden = visible.size > 0 || rows.length === 0;
     }
 </script>
+
+<message-toast name="panel-sort-success"
+               title-color="Success"
+               title="@StringLocalizer["Success"]"
+               icon="@FontAwesomeIcon.CheckCircle"
+               show-as-opened="false"
+               message="@StringLocalizer["Panel moved successfully."]"/>
 
 @using (Html.BeginMasterDataForm())
 {
@@ -133,10 +231,10 @@
     <input type="hidden" name="selectedFields" id="selectedFields" value="@Context.Request.Query["selectedFields"]"/>
     <input type="hidden" name="enabled_fields" id="enabled_fields" value="@Context.Request.Query["enabled_fields"]"/>
 
-    <div class="row">
-        <div class="col-sm-3">
-            <div class="input-group jjform-action ">
-                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
+    <div class="row field-editor gy-3">
+        <div class="col-md-3">
+            <div class="input-group">
+                <input id="txtFilter" name="txtFilter" oninput="searchFields(this);" placeholder="@StringLocalizer["Search..."]" type="text" class="form-control" data-bs-toggle="tooltip" aria-label="@StringLocalizer["Filter by any field visible in the list"]" title="@StringLocalizer["Filter by any field visible in the list"]">
                 <a href="javascript: void(0);" class="input-group-text link-underline link-underline-opacity-0" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
                     <span class="fa fa-plus  bi"></span>
                 </a>
@@ -145,36 +243,44 @@
             <div class="jjrelative">
                 <div id="field-list">
                     <div class="list-group jj-list-group jjsortable" id="sortable-grid">
-                        @{int nLine = 0;}
                         @if (ViewBag.Panels.Count == 0)
                         {
                             <div>@StringLocalizer["No record found"]</div>
                         }
                         @foreach (FormElementPanel panel in ViewBag.Panels)
                         {
-                            nLine++;
-                            <a href="javascript:loadDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, panelId = panel.PanelId })', '@panel.PanelId' );"
-                               class="list-group-item @(panel.PanelId.Equals(Model.PanelId) ? "active" : "")"
-                               id="@panel.PanelId">
-                                <div style="height: 33px;">
-                                    <div class="@BootstrapHelper.PullLeft">
-                                        <b>@panel.Title</b>
-                                        <br>
-                                        @panel.Layout.ToString()
-                                    </div>
-                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
-                                    </div>
-                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
-                                        @nLine.ToString()
+                            var layoutIcon = panel.Icon?.CssClass ?? panel.Layout switch
+                            {
+                                PanelLayout.Tab => "fa-solid fa-folder",
+                                PanelLayout.Collapse => "fa-solid fa-square-caret-down",
+                                PanelLayout.Card => "fa-regular fa-window-maximize",
+                                _ => "fa-solid fa-border-none"
+                            };
+                            <div class="panel-node" id="@panel.PanelId" data-parent-id="@panel.ParentId">
+                                <a href="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = panel.PanelId })"
+                                   data-detail-url="@Url.Action("Detail", new { elementName = ViewBag.ElementName, panelId = panel.PanelId })"
+                                   class="list-group-item panel-link @(panel.PanelId == Model.PanelId ? "active" : "")"
+                                   title="@StringLocalizer["Drag and drop to move"]">
+                                    <span class="panel-type-icon @layoutIcon" aria-hidden="true"></span>
+                                    <span class="panel-copy">
+                                        <b class="panel-title">@(string.IsNullOrWhiteSpace(panel.Title) ? $"{panel.Layout} #{panel.PanelId}" : panel.Title)</b>
+                                        <small class="panel-layout">
+                                            <span>@panel.Layout</span>
+                                            <span class="panel-parent" hidden></span>
+                                        </small>
                                     </span>
-                                </div>
-                            </a>
+                                    <span class="panel-collapse-indicator fa-solid fa-chevron-right" aria-hidden="true"></span>
+                                    <span class="panel-order jjsortable-span"></span>
+                                    <span class="jjsortable-icon" aria-hidden="true"></span>
+                                </a>
+                            </div>
                         }
                     </div>
+                    <div id="panel-no-results" class="text-muted" hidden>@StringLocalizer["No record found"]</div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-9" style="padding-left:0px">
+        <div class="col-md-9">
             <div class="jjrelative" id="field-details">
                 <partial name="_Detail" model="Model"/>
             </div>

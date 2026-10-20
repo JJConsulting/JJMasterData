@@ -642,8 +642,7 @@ public class JJGridView : AsyncComponent
 
             var htmlBuilder = new HtmlBuilder();
             var visibleFields = await GetVisibleFieldsAsync();
-            var rows = await CreateTableBody(visibleFields).GetRowsList();
-            htmlBuilder.AppendRange(rows);
+            await CreateTableBody(visibleFields).AppendRows(htmlBuilder);
             
             return new ContentComponentResult(htmlBuilder);
         }
@@ -905,12 +904,11 @@ public class JJGridView : AsyncComponent
         var row = DataSource?[rowIndex];
         var visibleFields = await GetVisibleFieldsAsync();
 
-        string result = string.Empty;
-        foreach (var td in await CreateTableBody(visibleFields)
-                     .GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
-            result += td;
-        
-        return result;
+        var html = new HtmlBuilder();
+        await CreateTableBody(visibleFields)
+            .AppendTds(html, row ?? new Dictionary<string, object?>(), rowIndex);
+
+        return html.ToString();
     }
     
     public string GetTitleHtml()

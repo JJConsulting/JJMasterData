@@ -11,6 +11,8 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
+<partial name="_SaveFeedback"/>
+
 @section Scripts{
     <script type="text/javascript">
         function saveForm() {
@@ -22,18 +24,20 @@
                 },
                 body: new URLSearchParams(new FormData(form))
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error();
+                return response.json();
+            })
             .then(data => {
                 if (data.success === true) {
                     window.parent.defaultModal.hide();
                     window.parent.location.reload();
                 } else {
                     document.querySelector('#divError').innerHTML = data.errorMessage;
+                    MessageToastHelper.show('dictionary-save-error');
                 }
             })
-            .catch(error => {
-                document.querySelector('#divError').innerHTML = error;
-            });
+            .catch(() => MessageToastHelper.show('dictionary-save-error'));
         }
     
         function populateFkColumn() {

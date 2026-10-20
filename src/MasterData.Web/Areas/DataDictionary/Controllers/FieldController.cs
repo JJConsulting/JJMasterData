@@ -81,7 +81,7 @@ public class FieldController(
         var formElement = await fieldService.GetFormElementAsync(elementName);
         await PopulateViewData(formElement, field);
         ViewData["OriginalName"] = field.Name;
-        ViewData["ShowSaveSuccess"] = true;
+        ViewData["SaveSuccessMessage"] = "Field saved successfully.";
         return View("Index", field);
     }
 

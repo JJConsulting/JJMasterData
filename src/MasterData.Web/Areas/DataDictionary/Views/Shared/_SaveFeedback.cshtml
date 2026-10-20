@@ -1,0 +1,42 @@
+@using JJConsulting.FontAwesome
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@{
+    var hasErrors = !ViewData.ModelState.IsValid;
+    var successMessage = TempData["SaveSuccessMessage"] as string ?? ViewData["SaveSuccessMessage"] as string;
+}
+
+<div class="dictionary-save-feedback">
+@if (!hasErrors && !string.IsNullOrEmpty(successMessage))
+{
+    <message-toast name="dictionary-save-success"
+                   title-color="Success"
+                   title="@StringLocalizer["Success"]"
+                   icon="@FontAwesomeIcon.CheckCircle"
+                   show-as-opened="true"
+                   message="@StringLocalizer[successMessage]"/>
+}
+
+<message-toast name="dictionary-save-error"
+               title-color="Danger"
+               title="@StringLocalizer["Error saving"]"
+               icon="@FontAwesomeIcon.TimesCircle"
+               show-as-opened="@hasErrors"
+               message="@StringLocalizer["Please check your fields."]"/>
+
+</div>
+
+<script>
+    (() => {
+        const showSaveError = () => MessageToastHelper.show('dictionary-save-error');
+        const bindValidation = () => {
+            $(document.forms).on('invalid-form.dictionarySaveFeedback', showSaveError);
+            document.addEventListener('invalid', showSaveError, true);
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindValidation, { once: true });
+        } else {
+            bindValidation();
+        }
+    })();
+</script>

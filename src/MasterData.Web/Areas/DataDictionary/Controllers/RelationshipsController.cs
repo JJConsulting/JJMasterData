@@ -91,6 +91,7 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
         if (await relationshipsService.ValidateElementRelationship(model.Relationship, model.ElementName, model.Id))
         {
             await relationshipsService.SaveElementRelationship(model.Relationship, model.Id, model.ElementName);
+            TempData["SaveSuccessMessage"] = "Relationship saved successfully.";
             return Json(new { success = true });
         }
 
@@ -196,6 +197,7 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
         if (relationshipsService.ValidatePanel(panel))
         {
             await relationshipsService.SaveFormElementRelationship(panel,model.ViewType,model.EditModeOpenByDefault, model.Id, model.ElementName);
+            TempData["SaveSuccessMessage"] = "Relationship saved successfully.";
             return Json(new { success = true });
         }
 

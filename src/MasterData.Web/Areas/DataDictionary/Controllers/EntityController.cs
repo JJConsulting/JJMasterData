@@ -25,7 +25,8 @@ public class EntityController(
         EntityViewModel model)
     {
         await entityService.EditEntityAsync(model.Entity, model.ElementName);
-            
+        if (ModelState.IsValid && entityService.IsValid)
+            ViewData["SaveSuccessMessage"] = "Entity saved successfully.";
         return View(model);
 
     }
@@ -41,8 +42,11 @@ public class EntityController(
     {
         await entityService.EditEntityAsync(model.Entity, model.ElementName);
 
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && entityService.IsValid)
+        {
+            TempData["SaveSuccessMessage"] = "Entity saved successfully.";
             return RedirectToAction("Index", new { elementName = model.ElementName });
+        }
         
         return View(model);
     }
