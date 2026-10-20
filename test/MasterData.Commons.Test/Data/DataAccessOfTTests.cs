@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using System.Text.Json.Serialization;
 using JJMasterData.Commons.Data;
 using Microsoft.Data.Sqlite;
 using Moq;
@@ -27,10 +28,71 @@ public partial class QueryCustomer
     public char Initial { get; set; }
 }
 
+[DataAccessModel]
+public partial class QueryOrder
+{
+    public QueryOrder() => Context = "constructor context";
+
+    [JsonPropertyName("order_id")]
+    public int Id { get; set; }
+    public QueryOrderDetails Details { get; set; } = null!;
+    public QueryCustomer? Customer { get; set; }
+    [DataAccessIgnore] public required string Context { get; init; } = "context";
+    [DataAccessIgnore] public object State { get; set; } = "initial";
+    [DataAccessIgnore] public string Summary => $"Order {Id}";
+}
+
+[DataAccessModel]
+public partial class QueryOrderDetails
+{
+    [DataAccessColumn("description"), JsonPropertyName("wrong_description")]
+    public string Description { get; set; } = "initial";
+    public QueryOrderAddress Address { get; set; } = null!;
+}
+
+[DataAccessModel]
+public partial class QueryOrderAddress
+{
+    [JsonPropertyName("city_name")]
+    public string? City { get; set; } = "initial";
+}
+
 public class TypedDataAccessTests
 {
     private static DataAccess CreateAccess() => new("Data Source=:memory:", SqliteFactory.Instance);
     private static CancellationToken Token => TestContext.Current.CancellationToken;
+
+    [Fact]
+    public async Task MapsNestedModelsFromEachCurrentRowAndHonorsMappingAttributes()
+    {
+        var orders = await CreateAccess().GetListAsync<QueryOrder>(new("""
+            SELECT 1 AS order_id, 7 AS customer_id, 'Jane' AS Name,
+                   'First' AS description, 'ignored' AS wrong_description,
+                   'London' AS city_name, 'ignored' AS State, 'ignored' AS Context
+            UNION ALL SELECT 2, 8, 'John', 'Second', 'ignored', NULL, 'ignored', 'ignored'
+            """), Token);
+
+        Assert.Equal(2, orders.Count);
+        Assert.Equal(1, orders[0].Id);
+        Assert.Equal(2, orders[1].Id);
+        Assert.Equal(7, orders[0].Customer!.Id);
+        Assert.Equal(8, orders[1].Customer!.Id);
+        Assert.Equal("Jane", orders[0].Customer!.Name);
+        Assert.Equal("John", orders[1].Customer!.Name);
+        Assert.Equal("First", orders[0].Details.Description);
+        Assert.Equal("Second", orders[1].Details.Description);
+        Assert.Equal("London", orders[0].Details.Address.City);
+        Assert.Null(orders[1].Details.Address.City);
+        Assert.NotSame(orders[0].Customer, orders[1].Customer);
+        Assert.Equal("initial", orders[0].State);
+        Assert.Equal("constructor context", orders[0].Context);
+        Assert.Equal("Order 1", orders[0].Summary);
+
+        var missing = await CreateAccess().GetAsync<QueryOrder>(new("SELECT 3 AS order_id"), Token);
+        Assert.Equal("initial", missing!.Details.Description);
+        Assert.Equal("initial", missing.Details.Address.City);
+        Assert.Equal("initial", missing.Customer!.Name);
+    }
 
     [Fact]
     public async Task MapsSqliteDirectlyWithParametersAliasesNullsExtraAndMissingColumns()

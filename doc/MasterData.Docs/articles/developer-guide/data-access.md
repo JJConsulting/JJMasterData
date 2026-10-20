@@ -271,11 +271,32 @@ List<Product> products = await dataAccess.GetListAsync<Product>(command, cancell
 
 The generator implements `IDataAccessModel<T>` with static `ResolveOrdinals` and `Read` methods. Column positions are resolved once per query; rows are read directly into models, without JSON, intermediate dictionaries, or mapper objects.
 
-- Columns match property names without case sensitivity; use `[DataAccessColumn]` for aliases.
+- Columns match property names without case sensitivity. Use `[DataAccessColumn]` or `[JsonPropertyName]` for aliases; `DataAccessColumn` takes priority when both are present. These attributes are also inherited by overridden properties.
 - Extra columns are ignored. Missing columns preserve property initializers. Duplicate matched columns throw `DataException`.
 - SQL `NULL` is accepted only by nullable properties, including `string?`.
 - Supported types: strings, booleans, characters, numeric primitives, `Guid`, `DateTime`, `DateTimeOffset`, `TimeSpan`, enums, and nullable variants. Unsafe conversions throw `DataException`.
-- Models must be concrete, non-generic partial classes with a public or internal parameterless constructor. Containing types must also be partial and non-generic. Properties need public visibility and accessible setters; nested objects, collections, indexers, static properties, `required`, and `init` are unsupported.
+- Properties whose types are annotated with `[DataAccessModel]` are populated from the same reader and current row, using each nested model's own column names. Nested objects are created even when all their columns are missing; their property initializers are preserved. Cycles between models produce a generator diagnostic.
+- Use `[DataAccessIgnore]` to exclude a property from mapping and validation, including computed, `required`, `init`, or unsupported property types. Ignored properties retain their constructor/initializer values and are never read from SQL.
+- Models must be concrete, non-generic partial classes with a public or internal parameterless constructor. Containing types must also be partial and non-generic. Mapped properties need public visibility and accessible setters; collections, indexers, static properties, `required`, and `init` remain unsupported unless ignored.
+
+```csharp
+[DataAccessModel]
+public partial class Order
+{
+    [System.Text.Json.Serialization.JsonPropertyName("order_id")]
+    public int Id { get; set; }
+    public Product Product { get; set; } = null!;
+    [DataAccessIgnore]
+    public string Summary => $"{Id}: {Product.Description}";
+    [DataAccessIgnore]
+    public required string Context { get; init; } = "default";
+}
+
+// Each row supplies order_id plus product_id, Description and Price for Product.
+var orders = await dataAccess.GetListAsync<Order>(new DataAccessCommand(
+    "SELECT o.Id AS order_id, p.Id AS product_id, p.Description, p.Price " +
+    "FROM Orders o JOIN Product p ON p.Id = o.ProductId"), cancellationToken);
+```
 
 The API requires `T : class, IDataAccessModel<T>`; models without the generated contract fail to compile. The generator requires Roslyn 4.14 or newer. It generates no SQL and preserves normal cancellation, timeout, and output-parameter behavior.
 

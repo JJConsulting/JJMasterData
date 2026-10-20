@@ -14,3 +14,7 @@ public sealed class DataAccessColumnAttribute(string name) : Attribute
 {
     public string Name { get; } = name;
 }
+
+/// <summary>Excludes a property from database mapping and mapping validation.</summary>
+[AttributeUsage(AttributeTargets.Property, Inherited = true)]
+public sealed class DataAccessIgnoreAttribute : Attribute;

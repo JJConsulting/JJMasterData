@@ -16,6 +16,11 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
 {
     private const string ModelAttribute = "JJMasterData.Commons.Data.DataAccessModelAttribute";
     private const string ColumnAttribute = "JJMasterData.Commons.Data.DataAccessColumnAttribute";
+    private const string IgnoreAttribute = "JJMasterData.Commons.Data.DataAccessIgnoreAttribute";
+    private const string JsonNameAttribute = "System.Text.Json.Serialization.JsonPropertyNameAttribute";
+
+    private static readonly DiagnosticDescriptor RecursiveModel = Rule("JJMDG006", "Recursive model mapping",
+        "Property '{0}' creates a cycle between DataAccess models");
 
     private static readonly DiagnosticDescriptor InvalidModel = Rule("JJMDG001", "Invalid model",
         "Model '{0}' must be a concrete, accessible, non-generic class");
@@ -66,7 +71,7 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
     {
         cancellationToken.ThrowIfCancellationRequested();
         var symbol = (INamedTypeSymbol)context.TargetSymbol;
-        var model = new ModelAnalysis();
+        var model = new ModelAnalysis { CancellationToken = cancellationToken };
         var compilation = context.SemanticModel.Compilation;
         AnalyzeModelConfiguration(symbol, model);
         AnalyzeProperties(symbol, compilation, model, cancellationToken);
@@ -98,7 +103,7 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         ModelAnalysis model,
         CancellationToken cancellationToken)
     {
-        var propertyNames = new HashSet<string>(StringComparer.Ordinal);
+        var propertyNames = new Dictionary<string, IPropertySymbol>(StringComparer.Ordinal);
         var columnNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         for (var current = symbol;
              current != null && current.SpecialType != SpecialType.System_Object;
@@ -113,15 +118,24 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
                     model.Report(InvalidProperty, field, field.Name);
                 if (member is not IPropertySymbol property)
                     continue;
-                var columnAttribute = GetColumnAttribute(property);
+                var columnAttribute = GetPropertyAttribute(property, ColumnAttribute) ??
+                                      GetPropertyAttribute(property, JsonNameAttribute);
                 if (property.DeclaredAccessibility != Accessibility.Public && columnAttribute == null &&
                     !IsRequired(property))
                     continue;
-                if (!propertyNames.Add(property.Name))
+                if (propertyNames.TryGetValue(property.Name, out var derived))
                 {
                     // An override is mapped through the most-derived declaration; hidden properties are ambiguous.
-                    if (!model.Properties.Any(p => Overrides(p.Symbol, property)))
+                    if (!Overrides(derived, property))
                         model.Report(InvalidProperty, property, property.Name);
+                    continue;
+                }
+
+                propertyNames.Add(property.Name, property);
+                if (GetPropertyAttribute(property, IgnoreAttribute) != null)
+                {
+                    if (IsRequired(property))
+                        model.Properties.Add(new PropertyAnalysis(property, "", "Ignore", property.Type, false));
                     continue;
                 }
 
@@ -148,12 +162,21 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
             return;
         }
 
+        if (property.Type is INamedTypeSymbol nestedType && IsDataAccessModel(nestedType))
+        {
+            if (HasModelCycle(nestedType, new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default) { symbol },
+                    model.CancellationToken))
+                model.Report(RecursiveModel, property, property.Name);
+            model.Properties.Add(new PropertyAnalysis(property, "", "Model", nestedType, false));
+            return;
+        }
+
         var column = columnAttribute == null
             ? property.Name
             : columnAttribute.ConstructorArguments.FirstOrDefault().Value as string;
         if (string.IsNullOrWhiteSpace(column))
         {
-            model.Report(InvalidConfiguration, property, "DataAccessColumn", property.Name,
+            model.Report(InvalidConfiguration, property, columnAttribute!.AttributeClass!.Name, property.Name,
                 "column name cannot be empty");
             return;
         }
@@ -187,25 +210,53 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
             GetContainerStart(symbol),
             string.Concat(Enumerable.Repeat("}\n", GetContainerCount(symbol))),
             symbol.IsRecord,
+            symbol.InstanceConstructors.Any(c => c.IsImplicitlyDeclared && c.Parameters.Length == 0),
             model.Properties.Select(static p => new PropertyData(p.Symbol.Name, p.Column, p.ReaderMethod,
-                p.Type.TypeKind == TypeKind.Enum
+                p.ReaderMethod == "Model" || p.Type.TypeKind == TypeKind.Enum
                     ? p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
                     : "",
                 p.Symbol.Type.ToDisplayString(), p.Nullable)).ToImmutableArray(),
             model.Diagnostics.Count == 0);
     }
 
-    private static AttributeData? GetColumnAttribute(IPropertySymbol property)
+    private static AttributeData? GetPropertyAttribute(IPropertySymbol property, string attributeName)
     {
         for (var current = property; current != null; current = current.OverriddenProperty)
         {
             var attribute = current.GetAttributes()
-                .FirstOrDefault(a => a.AttributeClass?.ToDisplayString() == ColumnAttribute);
+                .FirstOrDefault(a => a.AttributeClass?.ToDisplayString() == attributeName);
             if (attribute != null)
                 return attribute;
         }
 
         return null;
+    }
+
+    private static bool IsDataAccessModel(INamedTypeSymbol type) =>
+        type.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == ModelAttribute);
+
+    private static bool HasModelCycle(INamedTypeSymbol type, HashSet<INamedTypeSymbol> path,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!path.Add(type))
+            return true;
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        for (var current = type; current != null; current = current.BaseType)
+        {
+            foreach (var property in current.GetMembers().OfType<IPropertySymbol>())
+            {
+                if (!names.Add(property.Name) || property.IsStatic || property.IsIndexer ||
+                    property.DeclaredAccessibility != Accessibility.Public ||
+                    GetPropertyAttribute(property, IgnoreAttribute) != null)
+                    continue;
+                if (property.Type is INamedTypeSymbol nested && IsDataAccessModel(nested) &&
+                    HasModelCycle(nested, path, cancellationToken))
+                    return true;
+            }
+        }
+        path.Remove(type);
+        return false;
     }
 
     private static bool Overrides(IPropertySymbol derived, IPropertySymbol ancestor)
@@ -324,24 +375,81 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         builder.Append(model.Accessibility).Append(model.IsRecord ? " partial record class @" : " partial class @")
             .Append(model.Name).Append(" : Data::IDataAccessModel<")
             .Append(model.TypeName).Append(">\n{\n");
+        var hasIgnoredRequired = model.Properties.Any(p => p.ReaderMethod == "Ignore");
+        if (hasIgnoredRequired)
+        {
+            // A constructor marked SetsRequiredMembers lets ignored required properties keep their initializers.
+            // Declaring an overload removes the implicit constructor, so reproduce it when necessary.
+            if (model.HasImplicitConstructor)
+                builder.Append("    ").Append(model.Accessibility).Append(" @").Append(model.Name).Append("() { }\n");
+            builder.Append("    private readonly struct __DataAccessConstruction { }\n")
+                .Append("#pragma warning disable CS8618 // Ignored required members retain their constructor defaults.\n")
+                .Append("    [global::System.Diagnostics.CodeAnalysis.SetsRequiredMembers]\n")
+                .Append("    private @").Append(model.Name)
+                .Append("(__DataAccessConstruction _) : this() { }\n")
+                .Append("#pragma warning restore CS8618\n");
+        }
         var contract = "Data::IDataAccessModel<" + model.TypeName + ">";
         builder.Append("    static int[] ").Append(contract)
-            .Append(".ResolveOrdinals(Db::DbDataReader reader)\n        => new int[]\n        {\n");
+            .Append(".ResolveOrdinals(Db::DbDataReader reader)\n    {\n")
+            .Append("        var ordinals = new global::System.Collections.Generic.List<int>();\n");
         foreach (var property in model.Properties)
-            builder.Append("            Data::DataAccessValueReader.FindOrdinal(reader, ")
-                .Append(Literal(property.Column)).Append("),\n");
-        builder.Append("        };\n\n");
+        {
+            if (property.ReaderMethod == "Ignore")
+                continue;
+            if (property.ReaderMethod == "Model")
+                builder.Append("        AppendModelOrdinals<").Append(property.TypeName)
+                    .Append(">(reader, ordinals);\n");
+            else
+                builder.Append("        ordinals.Add(Data::DataAccessValueReader.FindOrdinal(reader, ")
+                    .Append(Literal(property.Column)).Append("));\n");
+        }
+        builder.Append("        return ordinals.ToArray();\n    }\n\n");
         builder.Append("    static ").Append(model.TypeName).Append(' ').Append(contract)
             .Append(".Read(Db::DbDataReader reader, System::ReadOnlySpan<int> ordinals)\n    {\n")
-            .Append("        var item = new ").Append(model.TypeName).Append("();\n");
-        for (var i = 0; i < model.Properties.Length; i++)
+            .Append("        var item = new ").Append(model.TypeName)
+            .Append(hasIgnoredRequired ? "(default(__DataAccessConstruction));\n" : "();\n");
+        if (model.Properties.Any(p => p.ReaderMethod != "Ignore"))
+            builder.Append("        var index = 0;\n");
+        foreach (var property in model.Properties)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (property.ReaderMethod == "Ignore")
+                continue;
             builder.AppendLine();
-            AppendPropertyMapping(builder, model.Properties[i], i);
+            if (property.ReaderMethod == "Model")
+            {
+                builder.Append("        var length_").Append(property.Name).Append(" = ordinals[index++];\n")
+                    .Append("        item.@").Append(property.Name).Append(" = ReadModel<")
+                    .Append(property.TypeName).Append(">(reader, ordinals.Slice(index, length_")
+                    .Append(property.Name).Append("));\n")
+                    .Append("        index += length_").Append(property.Name).Append(";\n");
+            }
+            else
+            {
+                builder.Append("        {\n            var ordinal = ordinals[index++];\n");
+                AppendPropertyMapping(builder, property);
+                builder.Append("        }\n");
+            }
         }
 
-        builder.Append("\n        return item;\n    }\n}\n");
+        builder.Append("\n        return item;\n    }\n");
+        if (model.Properties.Any(p => p.ReaderMethod == "Model"))
+            builder.Append("""
+                    private static void AppendModelOrdinals<T>(Db::DbDataReader reader,
+                        global::System.Collections.Generic.List<int> ordinals)
+                        where T : class, Data::IDataAccessModel<T>
+                    {
+                        var nested = T.ResolveOrdinals(reader);
+                        ordinals.Add(nested.Length);
+                        ordinals.AddRange(nested);
+                    }
+
+                    private static T ReadModel<T>(Db::DbDataReader reader, System::ReadOnlySpan<int> ordinals)
+                        where T : class, Data::IDataAccessModel<T>
+                        => T.Read(reader, ordinals);
+                """).Append('\n');
+        builder.Append("}\n");
         builder.Append(model.ContainerEnd);
         if (model.Namespace.Length != 0)
             builder.Append("}\n");
@@ -349,22 +457,22 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
             .GetRoot(cancellationToken).NormalizeWhitespace(eol: "\n").ToFullString() + "\n";
     }
 
-    private static void AppendPropertyMapping(StringBuilder builder, PropertyData property, int propertyIndex)
+    private static void AppendPropertyMapping(StringBuilder builder, PropertyData property)
     {
         var target = "item.@" + property.Name;
         var nullAssignment = property.Nullable
             ? target + " = null;"
             : "throw Data::DataAccessValueReader.NullValue(" +
               Literal(property.Column) + ", " + Literal(property.DisplayType) + ");";
-        var enumCast = property.EnumType.Length == 0 ? "" : "(" + property.EnumType + ")";
+        var enumCast = property.TypeName.Length == 0 ? "" : "(" + property.TypeName + ")";
 
         builder.Append($$"""
-                                 if (ordinals[{{propertyIndex}}] >= 0)
+                                 if (ordinal >= 0)
                                  {
-                                     if (reader.IsDBNull(ordinals[{{propertyIndex}}]))
+                                     if (reader.IsDBNull(ordinal))
                                          {{nullAssignment}}
                                      else
-                                         {{target}} = {{enumCast}}Data::DataAccessValueReader.Read{{property.ReaderMethod}}(reader, ordinals[{{propertyIndex}}]);
+                                         {{target}} = {{enumCast}}Data::DataAccessValueReader.Read{{property.ReaderMethod}}(reader, ordinal);
                                  }
                          """).Append('\n');
     }
@@ -387,6 +495,7 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         string containerStart,
         string containerEnd,
         bool isRecord,
+        bool hasImplicitConstructor,
         ImmutableArray<PropertyData> properties,
         bool isValid) : IEquatable<ModelData>
     {
@@ -397,6 +506,7 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         public string ContainerStart { get; } = containerStart;
         public string ContainerEnd { get; } = containerEnd;
         public bool IsRecord { get; } = isRecord;
+        public bool HasImplicitConstructor { get; } = hasImplicitConstructor;
         public ImmutableArray<PropertyData> Properties { get; } = properties;
         public bool IsValid { get; } = isValid;
 
@@ -413,6 +523,7 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
             ContainerStart == other.ContainerStart &&
             ContainerEnd == other.ContainerEnd &&
             IsRecord == other.IsRecord &&
+            HasImplicitConstructor == other.HasImplicitConstructor &&
             IsValid == other.IsValid &&
             Properties.SequenceEqual(other.Properties);
 
@@ -424,14 +535,14 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
         string name,
         string column,
         string readerMethod,
-        string enumType,
+        string typeName,
         string displayType,
         bool nullable) : IEquatable<PropertyData>
     {
         public string Name { get; } = name;
         public string Column { get; } = column;
         public string ReaderMethod { get; } = readerMethod;
-        public string EnumType { get; } = enumType;
+        public string TypeName { get; } = typeName;
         public string DisplayType { get; } = displayType;
         public bool Nullable { get; } = nullable;
 
@@ -439,7 +550,7 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
             Name == other.Name &&
             Column == other.Column &&
             ReaderMethod == other.ReaderMethod &&
-            EnumType == other.EnumType &&
+            TypeName == other.TypeName &&
             DisplayType == other.DisplayType &&
             Nullable == other.Nullable;
 
@@ -450,6 +561,7 @@ public sealed class DataAccessExtensionsGenerator : IIncrementalGenerator
     // Symbols are retained only while analyzing one model, never in the cached source model.
     private sealed class ModelAnalysis
     {
+        public CancellationToken CancellationToken { get; set; }
         public string Name { get; set; } = "";
         public List<PropertyAnalysis> Properties { get; } = new();
         public List<Diagnostic> Diagnostics { get; } = new();
