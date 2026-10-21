@@ -28,6 +28,7 @@ Dictionary metadata and business records use separate repositories. Saving metad
 - [Routes and embedding](articles/developer-guide/routes-and-embedding.html): Embed components in controllers and Razor views; preserve callback responses.
 - [Data panels and application-owned saves](articles/developer-guide/data-panels.html): Complete MVC controller/view example using ViewData, explicit validation and saving.
 - [UI customization](articles/developer-guide/ui-customization.html): Runtime metadata changes and shared host assets.
+- [Grid Preference Store](articles/developer-guide/grid-preference-store.html): Cookie, session and custom storage for grid preferences.
 - [Form events](articles/developer-guide/form-events.html): Registration, insert/update/delete/import hooks and transaction boundaries.
 - [Grid events](articles/developer-guide/grid-events.html): Custom data loading, pagination, rendering, selection and editable values.
 - [Authorization](articles/developer-guide/authorization.html): Protect administration, runtime routes and record access.
