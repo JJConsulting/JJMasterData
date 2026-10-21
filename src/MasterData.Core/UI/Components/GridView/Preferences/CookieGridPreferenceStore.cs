@@ -96,6 +96,6 @@ public sealed class CookieGridPreferenceStore(
 
     private IDataProtector GetProtector(string key)
     {
-        return protectionProvider.CreateProtector("JJMasterData.GridPreferences.v2", key);
+        return protectionProvider.CreateProtector("JJMasterData.GridPreferences", key);
     }
 }

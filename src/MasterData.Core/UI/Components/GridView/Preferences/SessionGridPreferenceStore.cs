@@ -53,5 +53,5 @@ public sealed class SessionGridPreferenceStore(IHttpContextAccessor contextAcces
         _values[key] = preferences;
     }
 
-    private static string GetKey(string gridName) => ".JJMasterData.Grid.v2." + gridName.ToLowerInvariant();
+    private static string GetKey(string gridName) => ".JJMasterData.Grid." + gridName.ToLowerInvariant();
 }
