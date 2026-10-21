@@ -6,6 +6,7 @@ Choose an extension according to the behavior being changed:
 | --- | --- | --- |
 | Validate or modify submitted values; react after persistence | `IFormEventHandler` | [Form events](form-events.md) |
 | Customize grid filters, data and rendered content | `IGridEventHandler` | [Grid events](grid-events.md) |
+| Choose how grid preferences are stored | `WithGridPreferenceStore<T>()` / `WithGridSessionPreferenceStore()` | [Grid Preference Store](grid-preference-store.md) |
 | Add a downloadable file format and its options | `IExportFormat<TOptions>` | [Custom export formats](export-formats.md) |
 | Add an expression provider | `WithExpressionProvider<T>()` | [Expressions](../concepts/expressions.md) |
 | Add an action plugin | `WithActionPlugin<TPlugin>()` | [Actions](../concepts/actions.md) |

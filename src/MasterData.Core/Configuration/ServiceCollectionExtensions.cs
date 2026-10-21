@@ -9,6 +9,8 @@ using JJMasterData.Core.DataManager.Exportation.Background;
 using JJMasterData.Core.DataManager.Exportation.Formats;
 using JJMasterData.Core.DataManager.Importation.Background;
 using JJMasterData.Core.Html.Templates;
+using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -50,6 +52,15 @@ public static class ServiceCollectionExtensions
             services.AddOptions<MasterDataCoreOptions>().BindConfiguration("JJMasterData");
 
             services.AddHttpServices();
+            services.AddDataProtection();
+            services.TryAddScoped<IGridPreferenceStore>(provider =>
+            {
+                var context = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                if (context?.Features.Get<ISessionFeature>()?.Session != null)
+                    return ActivatorUtilities.CreateInstance<SessionGridPreferenceStore>(provider);
+                
+                return ActivatorUtilities.CreateInstance<CookieGridPreferenceStore>(provider);
+            });
             services.AddDataDictionaryServices();
             services.AddDataManagerServices();
             services.AddEventHandlers();

@@ -63,6 +63,8 @@
     href: developer-guide/form-events.md
   - name: Grid events
     href: developer-guide/grid-events.md
+  - name: Grid Preference Store
+    href: developer-guide/grid-preference-store.md
   - name: Custom export formats
     href: developer-guide/export-formats.md
   - name: Authorization
