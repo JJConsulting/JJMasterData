@@ -25,7 +25,7 @@ public class JJMasterDataLogo(IHttpContextAccessor httpContextAccessor)
         var appPath = httpContextAccessor.HttpContext?.Request.PathBase;
         var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath.ToString() ?? "/";
 
-        if (!baseUrl.EndsWith("/"))
+        if (!baseUrl.EndsWith('/'))
             baseUrl += "/";
         
         var logoSrc = $"{baseUrl}_content/JJMasterData.Web/images/JJMasterData.png";
