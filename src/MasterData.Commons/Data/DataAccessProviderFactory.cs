@@ -20,8 +20,7 @@ public static class DataAccessProviderFactory
 
         if (instance == null)
             throw new DataAccessProviderException($"Error loading {dbProviderFactoryTypename} from {assemblyName}");
-        
-        
+
         return instance as DbProviderFactory;
     }
 
