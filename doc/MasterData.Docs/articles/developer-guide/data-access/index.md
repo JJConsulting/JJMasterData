@@ -6,7 +6,7 @@ Use `DataAccess` for custom queries, commands, and stored procedures. For CRUD o
 
 The types in this guide are in the `JJMasterData.Commons.Data` namespace.
 
-## Inject `DataAccess`
+## Basic usage
 
 Register JJMasterData in the host and inject `DataAccess` into the service that needs it. `AddJJMasterDataCommons`, `AddJJMasterDataCore`, and `AddJJMasterDataWeb` register `DataAccess` as a scoped service.
 
@@ -38,7 +38,7 @@ var dataAccess = new DataAccess(
     DataAccessProvider.PostgreSql);
 ```
 
-## Choose the result shape
+## Query data
 
 Select the method that matches the expected result:
 
@@ -100,7 +100,7 @@ Use `GetDataTableAsync` instead when the consumer expects ADO.NET objects, such 
 DataTable table = await dataAccess.GetDataTableAsync(command, cancellationToken);
 ```
 
-## Write data
+## Commands and transactions
 
 `SetCommandAsync` executes a non-query command and returns its affected-row count:
 
@@ -141,69 +141,6 @@ var commands = new[]
 await dataAccess.SetCommandListAsync(commands, cancellationToken);
 ```
 
-## Parameters and SQL safety
-
-Always put external values in `DataAccessParameter`. Do not concatenate or interpolate them into the SQL text.
-
-```csharp
-// Safe: the value is sent separately from the SQL text.
-var command = new DataAccessCommand(
-    "SELECT Id FROM dbo.Person WHERE Email = @Email",
-    [new DataAccessParameter("@Email", email)]);
-```
-
-Parameter markers are provider-specific. SQL Server, SQLite, MySQL, and PostgreSQL commonly use names such as `@Email`; Oracle commands commonly use names such as `p_email`. Match the syntax expected by the configured provider.
-
-Specify `DbType` when type inference is ambiguous, especially for nullable values, fixed sizes, decimals, and provider-sensitive string types:
-
-```csharp
-var nicknameParameter = new DataAccessParameter(
-    "@Nickname",
-    nickname is null ? DBNull.Value : nickname,
-    DbType.String,
-    100);
-```
-
-`DataAccessParameter` requires `DBNull.Value`, not C# `null`, to send a SQL `NULL`.
-
-For compact parameterized queries, `DataAccessCommand` can be created explicitly from a `FormattableString`. The values become `@p0`, `@p1`, and so on; they are not inserted into the SQL text.
-
-```csharp
-DataAccessCommand command = (DataAccessCommand)$"""
-    SELECT Id, Name
-    FROM dbo.Person
-    WHERE CreatedAt >= {startDate} AND IsActive = {true}
-    """;
-```
-
-Use this form only with providers that accept `@` parameter markers. Keep SQL identifiers such as table, column, and sort-direction names out of interpolated input; parameters protect values, not identifiers.
-
-## Stored procedures and output parameters
-
-Set the command type to `CommandType.StoredProcedure`. After execution, JJMasterData copies output values back to the corresponding `DataAccessParameter` objects.
-
-```csharp
-var newId = new DataAccessParameter(
-    "@NewId",
-    DBNull.Value,
-    DbType.Int32,
-    ParameterDirection.Output);
-
-var command = new DataAccessCommand(
-    "dbo.CreatePerson",
-    [
-        new DataAccessParameter("@Name", name),
-        newId
-    ],
-    CommandType.StoredProcedure);
-
-await dataAccess.SetCommandAsync(command, cancellationToken);
-
-var personId = Convert.ToInt32(newId.Value);
-```
-
-For variable-length output values, also set the parameter `Size`.
-
 ## Timeouts and cancellation
 
 Set a timeout per command with `TimeoutSeconds`:
@@ -237,74 +174,8 @@ This is useful for structured logging, but it also means exception details can c
 - Set `TimeoutSeconds` on long-running commands instead of changing the obsolete global `TimeOut` property.
 - Use [`IEntityRepository`](~/articles/developer-guide/entity-repository.md) when the operation should honor an `Element`, its metadata, or its `ConnectionId`.
 
-## Typed queries
+## Further reading
 
-Install `JJMasterData.Data.SourceGenerators` alongside `JJMasterData.Commons`:
-
-```xml
-<PackageReference Include="JJMasterData.Data.SourceGenerators" PrivateAssets="all" />
-```
-
-Add `[DataAccessModel]` to a partial class and use `GetAsync<T>` or `GetListAsync<T>`:
-
-```csharp
-using JJMasterData.Commons.Data;
-
-[DataAccessModel]
-public partial class Product
-{
-    [DataAccessColumn("product_id")]
-    public int Id { get; set; }
-    public string Description { get; set; } = "";
-    public decimal Price { get; set; }
-}
-
-// Inside an application method:
-var command = new DataAccessCommand(
-    "SELECT Id AS product_id, Description, Price FROM Product");
-
-Product? product = await dataAccess.GetAsync<Product>(command, cancellationToken);
-List<Product> products = await dataAccess.GetListAsync<Product>(command, cancellationToken);
-```
-
-`GetAsync<T>` returns the first row or `null`. `GetListAsync<T>` returns all rows or an empty list. Both read only the first result set.
-
-### Mapping rules
-
-- Column names match property names, ignoring case. For aliases, use `[DataAccessColumn]` or `[JsonPropertyName]`; `DataAccessColumn` takes priority. Overrides inherit these attributes.
-- Extra columns are ignored; missing columns keep property initializers. Duplicate matched columns throw `DataException`.
-- SQL `NULL` requires a nullable property, including `string?`.
-- Supported types: strings, booleans, characters, numeric primitives, `Guid`, `DateTime`, `DateTimeOffset`, `TimeSpan`, enums, and nullable variants. Unsafe conversions throw `DataException`.
-- Use `[DataAccessIgnore]` to skip a property, including computed, `required`, `init`, or unsupported properties. Ignored properties keep their constructor or initializer values.
-
-### Nested models
-
-Properties whose type has `[DataAccessModel]` read from the same row using that model's column names:
-
-```csharp
-[DataAccessModel]
-public partial class Order
-{
-    [DataAccessColumn("order_id")]
-    public int Id { get; set; }
-    public Product Product { get; set; } = null!;
-
-    [DataAccessIgnore]
-    public string Summary => $"{Id}: {Product.Description}";
-}
-
-// Each row supplies order_id, product_id, Description and Price.
-var orders = await dataAccess.GetListAsync<Order>(new DataAccessCommand(
-    "SELECT o.Id AS order_id, p.Id AS product_id, p.Description, p.Price " +
-    "FROM Orders o JOIN Product p ON p.Id = o.ProductId"), cancellationToken);
-```
-
-Nested objects are created even when their columns are missing, preserving their property initializers. Cycles between models produce a generator diagnostic.
-
-### Requirements
-
-- Models must be concrete, non-generic partial classes with a public or internal parameterless constructor. Containing types must also be partial and non-generic.
-- Mapped properties must be public with accessible setters. Collections, indexers, static properties, `required`, and `init` are unsupported unless ignored.
-
-The generator implements `IDataAccessModel<T>`, which the typed query methods require. It resolves column positions once per query and reads rows directly into models. 
-You write the SQL; cancellation, timeouts, and output parameters work as usual.
+- [Parameters and SQL safety](~/articles/developer-guide/data-access/parameters.md): Bind values, send SQL NULL, and use parameterized interpolation.
+- [Stored procedures and output parameters](~/articles/developer-guide/data-access/stored-procedures.md): Execute procedures and retrieve output parameters.
+- [Typed queries](~/articles/developer-guide/data-access/typed-queries.md): Generate model mappings, read typed results, and map nested objects.

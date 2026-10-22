@@ -80,7 +80,14 @@
   - name: Stored procedures
     href: developer-guide/stored-procedures.md
   - name: Data access
-    href: developer-guide/data-access.md
+    href: developer-guide/data-access/index.md
+    items:
+    - name: Parameters and SQL safety
+      href: developer-guide/data-access/parameters.md
+    - name: Stored procedures and output parameters
+      href: developer-guide/data-access/stored-procedures.md
+    - name: Typed queries
+      href: developer-guide/data-access/typed-queries.md
   - name: Background jobs
     href: developer-guide/background-jobs.md
   - name: File storage

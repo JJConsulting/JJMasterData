@@ -1146,3 +1146,389 @@ body:has(.playground-container) article {
         padding: 0;
     }
 }
+
+/* Hallmark · Long Document · technical · graphite / copper
+ * Fluid, left-aligned documentation; shared theme and navigation preserved.
+ * Pre-emit critique: P4 H4 E4 S5 R5 V4.
+ */
+@media screen {
+    .container-xxl {
+        max-width: none;
+        padding-inline: var(--layout-gutter);
+    }
+
+    body:not([data-search])[data-layout] > main.container-xxl {
+        padding-block: var(--space-md) var(--space-xl);
+    }
+
+    body:not([data-search])[data-layout] > main.container-xxl > .content {
+        margin: 0;
+        padding-bottom: 0;
+    }
+
+    body:not([data-search])[data-layout] > main.container-xxl > .affix {
+        display: none;
+    }
+
+    article,
+    .docs-home {
+        width: 100%;
+        max-width: none;
+        margin-inline: 0;
+    }
+
+    article {
+        overflow-wrap: anywhere;
+    }
+
+    article > p,
+    article > ul,
+    article > ol,
+    article > dl {
+        max-width: var(--layout-prose);
+    }
+
+    article h1 {
+        max-width: none;
+        margin-block-end: var(--space-md);
+        font-size: clamp(var(--text-xl), 3vw, var(--text-2xl));
+        line-height: 1.2;
+    }
+
+    article h2 {
+        margin-block-start: var(--space-xl);
+    }
+
+    .actionbar {
+        margin-block-end: var(--space-xs);
+    }
+
+    body:not([data-search])[data-layout] > main.container-xxl:has(.docs-home) > .content > .actionbar {
+        display: none;
+    }
+
+    .docs-home__intro {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-md);
+        padding-block: var(--space-md) var(--space-xl);
+    }
+
+    .docs-home__intro h1 {
+        grid-row: auto;
+        max-width: none;
+        font-size: clamp(var(--text-2xl), 4vw, var(--text-3xl));
+    }
+
+    .docs-home__lede {
+        max-width: 65ch;
+        font-size: var(--text-md);
+    }
+
+    .docs-index {
+        margin-block-start: var(--space-sm);
+    }
+
+    .docs-index__group {
+        grid-template-columns: minmax(0, 1fr);
+        padding-block: var(--space-md);
+    }
+}
+
+@media screen and (min-width: 48rem) {
+    body:not([data-search])[data-layout] > main.container-xxl {
+        gap: var(--layout-gap);
+    }
+
+    body:not([data-search])[data-layout] > main.container-xxl > .toc-offcanvas {
+        flex: 0 0 var(--layout-sidebar);
+        top: calc(var(--banner-height) + var(--space-md));
+        max-height: calc(100dvh - var(--banner-height) - var(--space-lg));
+        padding-inline-end: var(--space-sm);
+        border-inline-end: var(--rule-hair) solid var(--color-rule);
+    }
+
+    .toc li > a,
+    .affix li > a {
+        font-size: var(--text-base);
+    }
+}
+
+@media screen and (min-width: 64rem) {
+    .docs-index__group {
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1.4fr);
+    }
+}
+
+@media screen and (min-width: 75rem) {
+    body:not([data-search])[data-layout] > main.container-xxl > .affix:not(:has(nav:empty)) {
+        flex: 0 0 var(--layout-outline);
+        top: calc(var(--banner-height) + var(--space-md));
+        max-height: calc(100dvh - var(--banner-height) - var(--space-lg));
+        padding-inline-start: var(--space-sm);
+        border-inline-start: var(--rule-hair) solid var(--color-rule);
+    }
+}
+
+@media screen and (min-width: 48rem) and (max-width: 63.999rem) {
+    body:not([data-search])[data-layout] > main.container-xxl > .toc-offcanvas {
+        flex: 0 0 13rem;
+    }
+}
+
+@media screen and (max-width: 47.999rem) {
+    .navbar .container-xxl {
+        flex-wrap: wrap !important;
+    }
+
+    .navbar-collapse {
+        order: 1;
+        flex-basis: 100%;
+    }
+
+    .site-footer .flex-fill {
+        line-height: 1.5;
+    }
+}
+
+/* Hallmark · Long Document · reading hierarchy / compact reference navigation
+ * Existing graphite and copper theme; Source Sans for reading, headings and brand.
+ * Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V4.
+ */
+article {
+    font-size: var(--text-prose-mobile);
+    line-height: var(--leading-prose);
+    text-align: start;
+}
+
+article :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: -0.015em;
+    line-height: var(--leading-heading);
+    text-wrap: pretty;
+    scroll-margin-top: calc(var(--banner-height) + var(--space-md));
+}
+
+article h1 {
+    margin-block: 0 var(--space-md);
+    font-size: clamp(var(--text-xl), 2.5vw, var(--text-heading-1));
+    letter-spacing: -0.025em;
+}
+
+article h2 {
+    margin-block: var(--space-xl) var(--space-sm);
+    padding: 0;
+    border: 0;
+    font-size: var(--text-heading-2);
+}
+
+article h3 {
+    margin-block: var(--space-lg) var(--space-xs);
+    font-size: var(--text-heading-3);
+}
+
+article :is(h4, h5, h6) {
+    margin-block: var(--space-md) var(--space-2xs);
+    font-size: var(--text-prose);
+    letter-spacing: 0;
+}
+
+article :is(p, ul, ol, dl, blockquote, pre, .alert, .tabGroup) {
+    margin-block: 0 var(--space-sm);
+}
+
+article :is(ul, ol) {
+    padding-inline-start: var(--space-md);
+}
+
+article li + li {
+    margin-block-start: var(--space-3xs);
+}
+
+article li > :is(ul, ol) {
+    margin-block: var(--space-3xs) 0;
+}
+
+article li > p:last-child {
+    margin-block-end: 0;
+}
+
+article :is(p, li, td, dd) > a:not(.anchorjs-link):not(.xref),
+article p > a.xref {
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule-2);
+    text-underline-offset: 0.18em;
+}
+
+article :is(p, li, td, dd) > a:hover {
+    text-decoration-color: currentColor;
+}
+
+article :not(pre) > code {
+    padding: 0.1em 0.25em;
+    border: 0;
+    background: var(--color-paper-3);
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+article pre,
+article .tabGroup > section {
+    border-color: var(--color-rule);
+    border-radius: var(--radius-input);
+    background: var(--color-code-surface);
+    color: var(--color-code-ink);
+    box-shadow: none;
+}
+
+article pre {
+    padding: var(--space-sm);
+    line-height: var(--leading-code);
+    tab-size: 4;
+}
+
+article pre code,
+article pre code.hljs {
+    display: block;
+    padding: 0;
+    overflow: visible;
+    font-size: var(--text-code);
+    line-height: inherit;
+    white-space: pre;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+article .table-responsive {
+    margin-block: var(--space-md);
+}
+
+article table {
+    font-size: var(--text-base);
+    line-height: 1.5;
+}
+
+article table :is(th, td) {
+    padding: var(--space-xs) var(--space-sm);
+}
+
+article table thead th {
+    font-family: var(--font-body);
+    font-weight: 600;
+}
+
+article blockquote,
+article .alert {
+    max-width: var(--layout-prose);
+    font-size: inherit;
+    line-height: inherit;
+}
+
+article .alert > :last-child {
+    margin-block-end: 0;
+}
+
+#breadcrumb .breadcrumb {
+    font-size: var(--text-sm);
+}
+
+body:not([data-search])[data-layout] > main.container-xxl > .content > .actionbar {
+    align-items: center;
+    margin-block: 0 var(--space-sm);
+}
+
+.toc li {
+    grid-template-columns: var(--space-xs) minmax(0, 1fr);
+    column-gap: var(--space-3xs);
+}
+
+.toc li > a,
+.affix li > a {
+    padding: var(--space-3xs) var(--space-2xs);
+    font-size: var(--text-navigation);
+    line-height: 1.45;
+    border-radius: var(--radius-input);
+}
+
+.toc li.active > a {
+    background: var(--color-paper-3);
+    color: var(--color-ink);
+    font-weight: 600;
+}
+
+.toc li > a:hover,
+.affix li > a:hover {
+    background: var(--color-paper-2);
+}
+
+.toc .expand-stub {
+    width: var(--space-xs);
+}
+
+.affix nav > ul > li > a {
+    font-family: var(--font-body);
+    font-weight: 400;
+}
+
+.affix li.active > a {
+    color: var(--color-link);
+    font-weight: 600;
+}
+
+.affix h5 {
+    margin-block: 0 var(--space-xs);
+    font-size: var(--text-navigation);
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.docs-home__intro h1,
+.docs-index__group h2 {
+    font-family: var(--font-display);
+}
+
+@media screen and (min-width: 48rem) {
+    article {
+        font-size: var(--text-prose);
+    }
+}
+
+@media screen and (min-width: 80rem) {
+    body:not([data-search])[data-layout] > main.container-xxl > .affix:has(nav a) {
+        display: block;
+        flex: 0 0 var(--layout-outline);
+        width: var(--layout-outline);
+    }
+}
+
+/* DocFX loads syntax styles when the theme changes. Keep the reading metrics stable. */
+html[data-bs-theme] article pre code.hljs {
+    padding: 0;
+    color: inherit;
+}
+
+article pre > .code-action {
+    color: var(--color-code-ink);
+    background: var(--color-code-surface);
+}
+
+.toc li.active:has(li.active) > a {
+    background: transparent;
+}
+
+article pre {
+    font-family: var(--font-mono);
+}
+
+article table :is(th, td) {
+    border-inline: 0;
+}
+
+article table code {
+    white-space: nowrap;
+    overflow-wrap: normal;
+}

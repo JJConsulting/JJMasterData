@@ -41,7 +41,10 @@ Dictionary metadata and business records use separate repositories. Saving metad
 - [Data dictionary repository](articles/developer-guide/data-dictionary-repository.html): Load and persist dictionary metadata.
 - [Entity repository](articles/developer-guide/entity-repository.html): Query and write business records using element metadata.
 - [Stored procedures](articles/developer-guide/stored-procedures.html): SQL Server read/write signatures, naming, pagination, output keys and operation codes.
-- [Data access](articles/developer-guide/data-access.html): Parameterized SQL, stored procedures, result shapes, transactions and cancellation.
+- [Data access](articles/developer-guide/data-access/index.html): Configuration, basic queries, commands, transactions, timeouts, cancellation, and error handling.
+- [DataAccess: Parameters and SQL safety](articles/developer-guide/data-access/parameters.html): Bind values, send SQL NULL, and use parameterized interpolation.
+- [DataAccess: Stored procedures and output parameters](articles/developer-guide/data-access/stored-procedures.html): Execute procedures and retrieve output parameters.
+- [DataAccess: Typed queries](articles/developer-guide/data-access/typed-queries.html): Generate model mappings, read typed results, and map nested objects.
 - [WebApi and OpenAPI](articles/developer-guide/webapi.html): Dictionary-driven HTTP endpoints and API metadata.
 - [Background jobs](articles/developer-guide/background-jobs.html): Import/export execution, progress, cancellation and durability.
 - [File storage](articles/developer-guide/file-storage.html): File providers and upload-field configuration.

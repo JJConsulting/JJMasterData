@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-22",
+  "scope": "doc/MasterData.Docs shared layout",
+  "fonts": [
+    "Source Sans 3",
+    "Source Code Pro"
+  ],
+  "palette": "Existing graphite and copper OKLCH tokens",
+  "framework": "DocFX modern / Bootstrap",
+  "motion": "Existing CSS interactions",
+  "tokens": "doc/MasterData.Docs/themes/jjmasterdata/public/tokens.css"
+}

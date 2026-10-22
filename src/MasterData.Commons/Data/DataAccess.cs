@@ -20,7 +20,7 @@ namespace JJMasterData.Commons.Data;
 /// Provides functionality to developers who write managed code similar to the functionality provided to native component object model (COM)
 /// </summary>
 /// <example>
-/// [!include[Example](../../../doc/MasterData.Docs/articles/developer-guide/data-access.md)]
+/// [!include[Example](../../../doc/MasterData.Docs/articles/developer-guide/data-access/index.md)]
 /// </example>
 [PublicAPI]
 public partial class DataAccess

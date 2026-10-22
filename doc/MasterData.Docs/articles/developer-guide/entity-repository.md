@@ -121,7 +121,7 @@ A direct repository call does not validate form input or run form audit processi
 
 The repository resolves the database from `element.ConnectionId`. A null connection ID uses the default JJMasterData connection; a configured ID selects the corresponding additional connection. See [Connections and repositories](connections.md).
 
-Do not build an element only to switch databases for arbitrary SQL. For queries that are not represented by dictionary metadata, use [`DataAccess`](data-access.md).
+Do not build an element only to switch databases for arbitrary SQL. For queries that are not represented by dictionary metadata, use [`DataAccess`](data-access/index.md).
 
 ## Inspect and create database structures
 

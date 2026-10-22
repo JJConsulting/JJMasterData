@@ -1,0 +1,18 @@
+[
+  {
+    "date": "2026-10-22",
+    "macrostructure": "Long Document / reading hierarchy with page outline",
+    "theme": "existing graphite and copper",
+    "enrichment": "none",
+    "brief": "Documentation typography, readable prose, compact code, navigation and tables",
+    "scope": "shared documentation theme"
+  },
+  {
+    "date": "2026-10-22",
+    "macrostructure": "Long Document / fluid sidebar layout",
+    "theme": "existing graphite and copper",
+    "enrichment": "none",
+    "brief": "Widen documentation layout, reduce empty margins and homepage spacing",
+    "scope": "shared documentation layout"
+  }
+]

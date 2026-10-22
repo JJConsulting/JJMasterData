@@ -4,14 +4,6 @@
 /* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4 */
 
 @font-face {
-    font-family: "Space Grotesk";
-    font-style: normal;
-    font-weight: 600 700;
-    font-display: swap;
-    src: url("fonts/space-grotesk-latin.woff2") format("woff2");
-}
-
-@font-face {
     font-family: "Source Sans 3";
     font-style: normal;
     font-weight: 400 700;
@@ -20,17 +12,17 @@
 }
 
 @font-face {
-    font-family: "JetBrains Mono";
+    font-family: "Source Code Pro";
     font-style: normal;
-    font-weight: 400 600;
+    font-weight: 400 700;
     font-display: swap;
-    src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    src: url("fonts/source-code-pro-variable.ttf") format("truetype");
 }
 
 :root {
-    --font-display: "Space Grotesk", "Arial Narrow", sans-serif;
+    --font-display: var(--font-body);
     --font-body: "Source Sans 3", "Segoe UI", sans-serif;
-    --font-mono: "JetBrains Mono", "Cascadia Code", monospace;
+    --font-mono: "Source Code Pro", "Cascadia Code", monospace;
 
     --space-3xs: 0.25rem;
     --space-2xs: 0.5rem;
@@ -161,4 +153,43 @@
     --bs-primary-text-emphasis: var(--color-accent-hover);
     --bs-primary-bg-subtle: var(--color-paper-3);
     --bs-primary-border-subtle: var(--color-rule-2);
+}
+
+:root {
+    --layout-gutter: clamp(var(--space-sm), 2vw, var(--space-lg));
+    --layout-gap: clamp(var(--space-md), 2.5vw, var(--space-xl));
+    --layout-sidebar: 16rem;
+    --layout-outline: 12rem;
+    --layout-prose: 90ch;
+}
+
+/* Reading scale for guides and API reference. */
+:root {
+    --font-heading: var(--font-body);
+    --text-prose: 1.125rem;
+    --text-prose-mobile: 1.0625rem;
+    --text-navigation: 0.9375rem;
+    --text-code: 0.875rem;
+    --text-heading-1: 2.25rem;
+    --text-heading-2: 1.6875rem;
+    --text-heading-3: 1.3125rem;
+    --leading-prose: 1.65;
+    --leading-heading: 1.25;
+    --leading-code: 1.65;
+    --layout-prose: 75ch;
+    --layout-outline: 13rem;
+}
+
+[data-bs-theme="light"] {
+    --color-code-surface: oklch(95.5% 0 0);
+    --color-code-ink: oklch(28% 0 0);
+    --color-code-key: oklch(43% 0.12 55);
+    --color-code-string: oklch(38% 0.07 155);
+    --color-code-number: oklch(42% 0.1 285);
+    --color-code-comment: oklch(45% 0 0);
+}
+
+[data-bs-theme="dark"] {
+    --color-code-surface: oklch(16% 0 0);
+    --color-code-ink: oklch(88% 0 0);
 }
