@@ -74,6 +74,13 @@ public class FormElementDataItem
     [Display(Name = "Show Icon")]
     public bool ShowIcon { get; set; }
 
+    /// <summary>
+    /// Displays the hierarchy picker in a modal instead of below the input.
+    /// </summary>
+    [JsonPropertyName("showAsModal")]
+    [Display(Name = "Show as Modal")]
+    public bool ShowAsModal { get; set; }
+
     public bool SupportsFloatingLabels() => !EnableMultiSelect && !ShowIcon;
 
     [MemberNotNullWhen(true, nameof(Command))]

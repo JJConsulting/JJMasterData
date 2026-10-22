@@ -62,11 +62,11 @@ public sealed class PdfExportFormat(FieldFormattingService fieldFormattingServic
                 table.AddCell(Style(new Cell().Add(new Paragraph(value)), options, false, striped));
             }
             processed++;
-            context.Progress.Report(new ExportProgress(processed, context.TotalRecords,
-                $"Exporting {processed:N0} records..."));
+            context.Progress.Report(processed);
             table.Flush();
         }
         table.Complete();
+        context.Progress.Complete(processed);
     }
 
     private static Cell Style(Cell cell, PdfExportOptions options, bool header, bool striped)

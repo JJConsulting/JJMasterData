@@ -20,7 +20,7 @@ public sealed class ExportFormatCatalogTests
             Rows = Rows(TestContext.Current.CancellationToken),
             UserValues = [],
             TotalRecords = 1,
-            Progress = new Progress<ExportProgress>()
+            Progress = new ExportProgressReporter(1, new Progress<ExportProgress>())
         };
         await using var output = new MemoryStream();
 

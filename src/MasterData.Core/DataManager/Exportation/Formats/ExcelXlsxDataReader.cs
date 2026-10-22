@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Exportation;
 using MiniExcelLibs;
 
 namespace JJMasterData.Core.DataManager.Exportation.Formats;
@@ -55,15 +54,13 @@ internal sealed class ExcelXlsxDataReader(
         if (!await _enumerator.MoveNextAsync())
         {
             _current = null;
+            context.Progress.Complete(_processed);
             return false;
         }
 
         _current = _enumerator.Current;
         _processed++;
-        context.Progress.Report(new ExportProgress(
-            _processed,
-            context.TotalRecords,
-            $"Exporting {_processed:N0} records..."));
+        context.Progress.Report(_processed);
         return true;
     }
 
@@ -79,8 +76,8 @@ internal sealed class ExcelXlsxDataReader(
 
         _disposed = true;
         _current = null;
+
         if (_enumerator is not null)
             await _enumerator.DisposeAsync();
-        GC.SuppressFinalize(this);
     }
 }

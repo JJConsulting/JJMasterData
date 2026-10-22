@@ -533,6 +533,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.TextFileFileUpload:
             case ComponentContext.SearchBox:
             case ComponentContext.LookupDescription:
+            case ComponentContext.Hierarchy:
                 return await DataPanel.GetResultAsync();
             case ComponentContext.UrlRedirect:
                 return await DataPanel.GetUrlRedirectResult(CurrentActionMap!);
@@ -543,6 +544,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.GridViewScrollPagination:
             case ComponentContext.GridViewFilterReload:
             case ComponentContext.SearchBoxFilter:
+            case ComponentContext.HierarchyFilter:
                 return await GetGridViewResult();
             case ComponentContext.DownloadFile:
                 return await ComponentFactory.Downloader.Create().GetDownloadResultAsync();
