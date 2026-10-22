@@ -165,56 +165,56 @@ public static class DataAccessValueReader
         return ReadTimeSpan(reader, ordinal, reader.GetValue(ordinal));
     }
 
-    private static byte ReadByte(DbDataReader reader, int ordinal, object value)
+    public static byte ReadByte(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.Byte",
             static value => Convert.ToByte(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static sbyte ReadSByte(DbDataReader reader, int ordinal, object value)
+    public static sbyte ReadSByte(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.SByte",
             static value => Convert.ToSByte(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static short ReadInt16(DbDataReader reader, int ordinal, object value)
+    public static short ReadInt16(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.Int16",
             static value => Convert.ToInt16(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static ushort ReadUInt16(DbDataReader reader, int ordinal, object value)
+    public static ushort ReadUInt16(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.UInt16",
             static value => Convert.ToUInt16(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static int ReadInt32(DbDataReader reader, int ordinal, object value)
+    public static int ReadInt32(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.Int32", static value => value is long integer
             ? checked((int)integer)
             : Convert.ToInt32(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static uint ReadUInt32(DbDataReader reader, int ordinal, object value)
+    public static uint ReadUInt32(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.UInt32",
             static value => Convert.ToUInt32(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static long ReadInt64(DbDataReader reader, int ordinal, object value)
+    public static long ReadInt64(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.Int64",
             static value => Convert.ToInt64(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static ulong ReadUInt64(DbDataReader reader, int ordinal, object value)
+    public static ulong ReadUInt64(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.UInt64",
             static value => Convert.ToUInt64(Numeric(value, true), CultureInfo.InvariantCulture));
     }
 
-    private static float ReadSingle(DbDataReader reader, int ordinal, object value)
+    public static float ReadSingle(DbDataReader reader, int ordinal, object value)
     {
         return Read(reader, ordinal, value, "System.Single", static value =>
         {
