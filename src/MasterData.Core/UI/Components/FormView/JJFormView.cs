@@ -836,7 +836,8 @@ public class JJFormView : AsyncComponent
             CurrentAction = null;
             PageState = PageState.List;
             DataPanel.IsAtModal = redirect.ShowAsModal;
-            InvalidateFormStateData();
+            _formStateData = null;
+
             return await GetGridViewResult();
         }
 
@@ -1886,7 +1887,12 @@ public class JJFormView : AsyncComponent
         return _formStateData;
     }
 
-    internal void InvalidateFormStateData() => _formStateData = null;
+    internal async ValueTask RefreshFormStateData()
+    {
+        var formState = new FormStateData(new Dictionary<string, object?>(), UserValues, PageState);
+        var values = await _formValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formState, false);
+        _formStateData = new FormStateData(values, UserValues, PageState);
+    }
 
     public async ValueTask<FormStateData> GetFormStateDataAsync(bool reloadFormFields)
     {
