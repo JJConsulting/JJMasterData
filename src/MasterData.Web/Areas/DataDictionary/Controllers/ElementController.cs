@@ -142,6 +142,7 @@ public class ElementController(
         var formElement = await elementService.CreateEntityAsync(model);
         if (formElement != null)
         {
+            TempData["SaveSuccessMessage"] = "Entity saved successfully.";
             return RedirectToAction("Index", "Entity", new { elementName = formElement.Name });
         }
 

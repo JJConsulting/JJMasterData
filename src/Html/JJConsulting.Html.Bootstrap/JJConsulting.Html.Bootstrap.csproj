@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>JJConsulting.Html.Bootstrap offers a strongly typed way to create Bootstrap components.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="JetBrains.Annotations" />
+      <PackageReference Include="JJConsulting.FontAwesome" />
+      <PackageReference Include="PolySharp">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\JJConsulting.Html\JJConsulting.Html.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="JetBrains.Annotations"/>
+    </ItemGroup>
+</Project>

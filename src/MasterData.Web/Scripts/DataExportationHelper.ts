@@ -134,42 +134,14 @@ class DataExportationHelper {
         if (!target || target.childElementCount > 0)
             return;
 
-        if(bootstrapVersion < 5){
-            const options = {
-                className: "spinner",
-                color: "#000",
-                corners: 1,
-                direction: 1,
-                fps: 20,
-                hwaccel: false,
-                left: "50%",
-                length: 38,
-                lines: 13,
-                opacity: 0.3,
-                position: "absolute",
-                radius: 45,
-                rotate: 0,
-                scale: 0.2,
-                shadow: false,
-                speed: 1.2,
-                top: "50%",
-                trail: 62,
-                width: 17,
-                zIndex: 2e9
-            };
-            // @ts-ignore
-            new Spinner(options).spin(target);
-        }
-        else{
-            const spinnerDiv = document.createElement('div');
-            spinnerDiv.classList.add('spinner-border','text-primary','spinner-border-lg',);
-            spinnerDiv.setAttribute('role', 'status');
-            const spanElement = document.createElement('span');
-            spanElement.classList.add('visually-hidden');
-            spanElement.textContent = 'Loading...';
-            spinnerDiv.appendChild(spanElement);
-            target.append(spinnerDiv);
-        }
+        const spinnerDiv = document.createElement('div');
+        spinnerDiv.classList.add('spinner-border','text-primary','spinner-border-lg',);
+        spinnerDiv.setAttribute('role', 'status');
+        const spanElement = document.createElement('span');
+        spanElement.classList.add('visually-hidden');
+        spanElement.textContent = 'Loading...';
+        spinnerDiv.appendChild(spanElement);
+        target.append(spinnerDiv);
     }
 
     private static setActionProcessing(componentName: string, isProcessing: boolean) {
@@ -211,12 +183,7 @@ class DataExportationHelper {
                 warningElement.style.display = "block";
         }
         
-        if (bootstrapVersion < 5) {
-            $("#data-exportation-modal-" + componentName).modal();
-        } else {
-            const modal = bootstrap.Modal.getOrCreateInstance(document.querySelector("#data-exportation-modal-" + componentName), {});
-            modal.show();
-        }
+        Modal.showElement(document.querySelector<HTMLElement>("#data-exportation-modal-" + componentName));
 
         listenAllEvents("#data-exportation-modal-" + componentName);
     }

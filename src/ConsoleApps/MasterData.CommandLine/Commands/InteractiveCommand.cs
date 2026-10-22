@@ -11,10 +11,21 @@ public sealed class InteractiveCommand(IAnsiConsole console, ConsoleRunner conso
         var action = console.Prompt(
             new SelectionPrompt<string>()
                 .Title("Welcome to JJMasterData command line tool.")
-                .AddChoices("Import", "Export", "Diff", "Exit"));
+                .AddChoices("Import", "Export", "Diff", "Schema", "Exit"));
 
         if (string.Equals(action, "Exit", StringComparison.Ordinal))
             return 0;
+
+        if (string.Equals(action, "Schema", StringComparison.Ordinal))
+        {
+            var output = console.Prompt(
+                new TextPrompt<string>("Output file")
+                    .Validate(value => string.IsNullOrWhiteSpace(value)
+                        ? ValidationResult.Error("[red]Output file is required.[/]")
+                        : ValidationResult.Success()));
+
+            return await ExecuteAsync(FormElementSchemaService.WriteAsync(output, cancellationToken));
+        }
 
         var path = console.Prompt(
             new TextPrompt<string>("Path")

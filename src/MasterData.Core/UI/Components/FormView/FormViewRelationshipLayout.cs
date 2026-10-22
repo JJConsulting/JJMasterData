@@ -59,9 +59,10 @@ internal sealed class FormViewRelationshipLayout(
 
     private async Task<ComponentResult> GetTabRelationshipsResult()
     {
-        var tabNav = new JJMasterDataTabNav(parentFormView.CurrentContext)
+        var tabNav = new JJMasterDataTabNav(parentFormView.CurrentContext,
+            $"relationships-tab-nav-{parentFormView.DataPanel.Name}")
         {
-            Name = $"relationships-tab-nav-{parentFormView.DataPanel.Name}"
+            Style = parentFormView.FormElement.Options.Form.TabsStyle
         };
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
@@ -114,14 +115,13 @@ internal sealed class FormViewRelationshipLayout(
                 };
 
                 return collapse.GetHtmlBuilder();
-            case PanelLayout.Panel or PanelLayout.Well:
+            case PanelLayout.Card:
                 var panel = new JJCard
                 {
                     Name = $"{relationship.Id}-card",
                     Title = GetExpressionValue(relationship.Panel.Title),
                     SubTitle = GetExpressionValue(relationship.Panel.SubTitle),
                     Color = relationship.Panel.Color,
-                    Layout = relationship.Panel.Layout,
                     Icon = relationship.Panel.Icon,
                     Content = content,
                     CssClass = relationship.Panel.CssClass
@@ -182,7 +182,14 @@ internal sealed class FormViewRelationshipLayout(
             }
         }
         
-        return await childFormView.GetFormResultAsync();
+        var isSaveAction = childFormView.CurrentAction is SaveAction or GridSaveAction;
+        var result = await childFormView.GetFormResultAsync();
+
+        //Previne bug do Alex de um pai depender dos valores filho.
+        if (isSaveAction)
+            await parentFormView.RefreshFormStateData();
+
+        return result;
     }
 
     private Dictionary<string, object> GetRelationValues(FormElementRelationship relationship)
@@ -201,7 +208,7 @@ internal sealed class FormViewRelationshipLayout(
     private async Task ConfigureOneToManyFormView
     (   JJFormView childFormView,
         FormElementRelationship relationship,
-        Dictionary<string, object?> filter)
+        Dictionary<string, object?> relationValues)
     {
         childFormView.RelationshipType = RelationshipType.OneToMany;
         
@@ -211,8 +218,8 @@ internal sealed class FormViewRelationshipLayout(
         if(childFormView.CurrentAction is null)
             childFormView.PageState = PageState.List;
         
-        childFormView.RelationValues = new Dictionary<string, object>(filter, StringComparer.InvariantCultureIgnoreCase);
-        await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
+        childFormView.RelationValues = new Dictionary<string, object>(relationValues, StringComparer.InvariantCultureIgnoreCase);
+        await childFormView.GridView.Filter.ApplyCurrentFilter(relationValues);
         
         var panelState = parentFormView.DataPanel.PageState;
         
@@ -224,13 +231,18 @@ internal sealed class FormViewRelationshipLayout(
     }
 
     private async Task ConfigureOneToOneFormView(JJFormView childFormView,
-        FormElementRelationship relationship, Dictionary<string, object?> filter)
+        FormElementRelationship relationship, Dictionary<string, object?> relationValues)
     {
+        childFormView.UserValues = new Dictionary<string, object?>(parentFormView.UserValues);
+
         Dictionary<string, object?>? childValues = null;
-        if (filter.Count > 0 && relationship.ViewType is RelationshipViewType.Update or RelationshipViewType.View)
+        if (relationValues.Count > 0 && relationship.ViewType is RelationshipViewType.Update or RelationshipViewType.View)
         {
+            var pageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
+            var queryFilter = await childFormView.GridView.FieldValuesService.MergeWithDefaultValuesAsync(
+                childFormView.FormElement, new FormStateData(relationValues, childFormView.UserValues, pageState));
             childValues =
-                await parentFormView.EntityRepository.GetFieldsAsync(childFormView.FormElement, filter!);
+                await parentFormView.EntityRepository.GetFieldsAsync(childFormView.FormElement, queryFilter!);
         }
         
         childFormView.RelationshipType = RelationshipType.OneToOne;
@@ -258,8 +270,7 @@ internal sealed class FormViewRelationshipLayout(
                 childFormView.DataPanel.PageState = PageState.Insert;
         }
         
-        childFormView.RelationValues = new Dictionary<string, object>(filter, StringComparer.InvariantCultureIgnoreCase);
-        childFormView.UserValues = new Dictionary<string, object?>(parentFormView.UserValues);
+        childFormView.RelationValues = new Dictionary<string, object>(relationValues, StringComparer.InvariantCultureIgnoreCase);
         childFormView.ShowTitle = false;
 
         if (childValues is not null)

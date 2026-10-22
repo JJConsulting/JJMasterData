@@ -11,7 +11,7 @@ class FormViewHelper {
         }, 3000);
     }
 
-    private static refreshFormView(componentName: string, routeContext: string) {
+    static refreshFormView(componentName: string, routeContext: string) {
         const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
 
         postFormValues({

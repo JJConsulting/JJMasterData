@@ -7,19 +7,25 @@
     Layout = Options.Value.ModalLayoutPath;
 }
 
+<partial name="_SaveFeedback"/>
+
 <script type="text/javascript">
     function saveIndexes() {
         const requestOptions = getRequestOptions();
         fetch('@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })', requestOptions)
-        .then(response=>response.json()).then(data=>{
+        .then(response => {
+            if (!response.ok) throw new Error();
+            return response.json();
+        }).then(data=>{
             if (data.success){
                  window.parent.defaultModal.hide();
                  window.parent.location.reload();
             }
             else{
                 document.getElementById("divError").innerHTML = data.errorMessage;
+                MessageToastHelper.show('dictionary-save-error');
             }
-        })
+        }).catch(() => MessageToastHelper.show('dictionary-save-error'));
     }
 </script>
 

@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<VersionPrefix>5.0.3</VersionPrefix>
+		<VersionPrefix>5.0.16</VersionPrefix>
 		<Version>$(VersionPrefix)</Version>
 		<Version Condition="'$(VersionSuffix)' != ''">$(VersionPrefix)-$(VersionSuffix)</Version>
 		<PackageVersion>$(Version)</PackageVersion>
@@ -21,7 +21,7 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<ResourceLanguages>en</ResourceLanguages>
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-        <NoWarn>NU1903</NoWarn>
+        <NoWarn>NU1903,NU1902</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="$(MSBuildThisFileDirectory)JJMasterData.png">

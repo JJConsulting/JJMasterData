@@ -43,7 +43,31 @@ Place a field with `PanelId`, group fields into the same form row with `LineGrou
 
 ### Hierarchy
 
+`FirstOption` adds the configured leading choice, and `RadioLayout`, `EnableMultiSelect`, `ShowIcon` and `GridBehavior` refine how the list appears. For `ComboBox`, `DataItem.EnableMultiSelect = true` enables multiple selection and represents selected IDs as comma-separated text. The database contract must support that representation. See [Persist multiple selections](../cookbook/multiple-selections.md) for reading and writing a relationship table without adding a serialized-value column to the parent table.
+
+If one list depends on another field, reference the current form field in its query or mapping and enable `AutoPostBack` on the source field. A change then reloads the form and repopulates dependent editors. Use `TriggerExpression` for calculated values, and `VisibleExpression` or `EnableExpression` to change whether a field is available. See [expressions](expressions.md) for expression syntax and timing.
 `Hierarchy` stores one selected item ID in a parent/child list. Set `ParentId` on manual `DataItemValue` entries, or map the parent column with `DataElementMap.ParentIdFieldName`. Roots have a null or empty parent ID. For SQL sources, return `Id`, `Description`, and `ParentId` in that order; see [Data items: Hierarchy](data-item.md#hierarchy) for the query parameters and full example. Hierarchy supports one selection and filters with `None` or `Equal` only.
+
+### Data Item SQL Query
+
+For `DataItemType.SqlCommand`, configure `DataItem.Command.Sql` to return the following columns in order. IDs and descriptions are read by position, so their column aliases do not affect the mapping.
+
+| Position | Column | When to return it |
+| --- | --- | --- |
+| 1 | ID | The value stored in the field. |
+| 2 | Description | The text displayed for the value. |
+| 3 | Icon ID | When `ShowIcon` is enabled, return the numeric value of a `JJConsulting.FontAwesome.FontAwesomeIcon`. |
+| 4 | Icon color | When `ShowIcon` is enabled, return a hexadecimal color, such as `#005a86`. |
+| 3 or 5 | Group (optional) | For `ComboBox`, return a group label after the description, or after the icon color when `ShowIcon` is enabled. |
+
+For `Search` with `ShowIcon` disabled, you can also display an image alongside the result by returning a column named `ImageUrl`.
+
+Use these parameters when the query needs to resolve a stored value or filter search results:
+
+| Parameter | Usage |
+| --- | --- |
+| `{SearchId}` | The field's stored ID, used to retrieve its description in the grid. Required when `GridBehavior` is not `Id`. |
+| `{SearchText}` | The text typed into a `Search` component, which can be used to filter the SQL query. |
 
 ## File fields
 

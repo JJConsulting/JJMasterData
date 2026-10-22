@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Data.Entity.Models;
+﻿using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
@@ -91,7 +91,7 @@ public class ActionButtonFactory(
             case ImportAction:
                 var importationScripts = new DataImportationScripts($"{actionContext.ParentComponentName}-importation", actionContext.FormElement,stringLocalizer, encryptionService);
                 button.OnClientClick =
-                    importationScripts.GetShowScript();
+                    importationScripts.GetShowScript(gridView.Scripts.GetRefreshScript());
                 break;
                 
             case ExportAction:
@@ -141,6 +141,10 @@ public class ActionButtonFactory(
         if (action.IsUserDefined)
         {
             actionScripts.AddUserAction(button,actionContext, ActionSource.FormToolbar);
+        }
+        else if (formView.IsInternalActionFormView && action is CancelAction or BackAction)
+        {
+            actionScripts.AddFormAction(button, actionContext, ActionSource.FormToolbar, formView.DataPanel.IsAtModal);
         }
         else if (action is FormToolbarAction)
         {

@@ -22,7 +22,7 @@ Run the tool directly to open the interactive menu:
 jjmasterdata
 ```
 
-The interactive mode exposes `Import`, `Export`, and `Diff`, and prompts for the dictionary path and the database connection string.
+The interactive mode exposes `Import`, `Export`, `Diff`, and `Schema`. The schema action only asks for an output file.
 
 ### Import
 
@@ -50,6 +50,14 @@ Compare the dictionaries on disk with the database state:
 
 ```bash
 jjmasterdata diff --path ./dictionaries --connection "Server=localhost;Database=JJMasterData;Trusted_Connection=True"
+```
+
+### JSON Schema
+
+Generate a JSON Schema for `FormElement` without a database connection:
+
+```bash
+jjmasterdata schema -o ./schemas/form-element.schema.json
 ```
 
 ## Notes

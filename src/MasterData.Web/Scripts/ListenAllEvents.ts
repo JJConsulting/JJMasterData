@@ -3,19 +3,12 @@
     
     TomSelectHelper.listen(selectorPrefix);
     
-    if(bootstrapVersion === 3){
-        $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
-    }
-    
     CodeEditor.setup(selectorPrefix);
     CalendarListener.listen(selectorPrefix);
     PhoneInputListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
     
-    if(bootstrapVersion === 3)
-        LegacySearchBoxListener.listenTypeahead(selectorPrefix);
-    else
-        SearchBoxListener.listen(selectorPrefix);
+    SearchBoxListener.listen(selectorPrefix);
     
     LookupListener.listenChanges(selectorPrefix);
     SortableListener.listenSorting(selectorPrefix);
@@ -25,16 +18,13 @@
     SliderListener.listenInputs(selectorPrefix);
     HierarchyListener.listen(selectorPrefix);
     
+    GridViewHelper.hideEmptyColumns(selectorPrefix);
     GridViewHelper.setupInfiniteScroll();
     
     //@ts-ignore
     Inputmask().mask(document.querySelectorAll(selectorPrefix+"input"));
     
-    if(bootstrapVersion === 5){
-        TooltipHelper.listen(selectorPrefix);
-    }else{
-        $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
-    }
+    TooltipHelper.listen(selectorPrefix);
     
     const responsiveTables = document.querySelector<HTMLElement>(selectorPrefix +'.table-responsive');
 

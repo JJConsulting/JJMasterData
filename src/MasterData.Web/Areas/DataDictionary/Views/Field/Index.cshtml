@@ -13,7 +13,25 @@
     var isForm = ViewData["IsForm"] is true;
     var elementName = ViewData["ElementName"]!.ToString();
     var fields = (FormElementFieldList)ViewData["Fields"]!;
+    var panels = ((FormElement)ViewData["FormElement"]!).Panels;
     Layout = !isForm ? Options.Value.ModalLayoutPath : "_FormElementMenuLayout";
+
+    var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
+
+    if (!isForm)
+        componentList.RemoveAll(c => c.Text == "File");
+
+    foreach (var component in componentList)
+        component.Group.Name = StringLocalizer[component.Group.Name];
+
+    ViewData["ComponentList"] = componentList;
+
+    var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+
+    foreach (var dataType in dataTypeList)
+        dataType.Group.Name = StringLocalizer[dataType.Group.Name];
+
+    ViewData["DataTypeList"] = dataTypeList;
 }
 
 @functions{
@@ -73,26 +91,119 @@
     }
 }
 
-@if (ViewData["ShowSaveSuccess"] is true)
+@if (!isForm)
 {
-    <message-toast
-        title-color="Success"
-        title="@StringLocalizer["Success"]"
-        icon="@FontAwesomeIcon.CheckCircle"
-        name="field-save-success"
-        show-as-opened="true"
-        message="@StringLocalizer["Field saved successfully."]" />
+    <partial name="_SaveFeedback"/>
 }
-@if (!ViewData.ModelState.IsValid)
-{
-    <message-toast
-        title-color="Danger"
-        title="@StringLocalizer["Error"]"
-        icon="@FontAwesomeIcon.TimesCircle"
-        name="field-validation-error"
-        show-as-opened="true"
-        message="@StringLocalizer["Please check the validation errors."]" />
-}
+
+<div class="modal modal-md fade" id="fieldFilterModal" tabindex="-1" aria-labelledby="fieldFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fieldFilterModalLabel">@StringLocalizer["Advanced Filters"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@StringLocalizer["Close"]"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <label for="fieldFilterDataType" class="form-label">@StringLocalizer["Data Type"]</label>
+                        <select id="fieldFilterDataType" class="form-select">
+                            <option value="">@StringLocalizer["All"]</option>
+                            @foreach (var group in dataTypeList.GroupBy(t => t.Group.Name).OrderBy(g => g.Key))
+                            {
+                                <optgroup label="@group.Key">
+                                    @foreach (var type in group.OrderBy(t => t.Text))
+                                    {
+                                        <option value="@type.Value">@type.Text</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="fieldFilterComponent" class="form-label">@StringLocalizer["Component Type"]</label>
+                        <select id="fieldFilterComponent"
+                                class="form-control form-select"
+                                onchange="this.form.submit();">
+                            <option value="">@StringLocalizer["All"]</option>
+                            @foreach (var group in componentList.GroupBy(c => c.Group.Name).OrderBy(g => g.Key))
+                            {
+                                <optgroup label="@group.Key">
+                                    @foreach (var component in group.OrderBy(c => c.Text))
+                                    {
+                                        <option value="@component.Value">@component.Text</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="fieldFilterBehavior" class="form-label">@StringLocalizer["Behavior"]</label>
+                        <select id="fieldFilterBehavior" class="form-select">
+                            <option value="">@StringLocalizer["All"]</option>
+                            @foreach (var behavior in Html.GetEnumSelectList<FieldBehavior>())
+                            {
+                                <option value="@behavior.Value">@behavior.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label for="fieldFilterCssClass" class="form-label">@StringLocalizer["CSS Class"]</label>
+                        <input id="fieldFilterCssClass" type="text" class="form-control">
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label for="fieldFilterLineGroup" class="form-label">@StringLocalizer["Group Line"]</label>
+                        <input id="fieldFilterLineGroup" type="number" class="form-control">
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterPk">
+                            <label class="form-check-label" for="fieldFilterPk">@StringLocalizer["Primary Key"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterAutoPostBack">
+                            <label class="form-check-label" for="fieldFilterAutoPostBack">@StringLocalizer["AutoPostBack"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterRequired">
+                            <label class="form-check-label" for="fieldFilterRequired">@StringLocalizer["Required"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterHasDefaultValue">
+                            <label class="form-check-label" for="fieldFilterHasDefaultValue">@StringLocalizer["Has Default Value"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterHasTrigger">
+                            <label class="form-check-label" for="fieldFilterHasTrigger">@StringLocalizer["Has Trigger"]</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fieldFilterHasPanel">
+                            <label class="form-check-label" for="fieldFilterHasPanel">@StringLocalizer["Has Panel"]</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary ms-1" data-bs-dismiss="modal" onclick="applyFieldFilters()">
+                    <span class="fa fa-search text-primary"></span>&nbsp;@StringLocalizer["Filter"]
+                </button>
+                <button type="button" class="btn btn-secondary ms-1" data-bs-dismiss="modal" onclick="clearFieldFilters()">
+                    <span class="fa fa-trash"></span>&nbsp;@StringLocalizer["Clear Filters"]
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @if (isForm)
@@ -146,15 +257,32 @@
     </div>
 }
 
+<message-toast name="field-sort-success"
+               title-color="Success"
+               title="@StringLocalizer["Success"]"
+               icon="@FontAwesomeIcon.CheckCircle"
+               show-as-opened="false"
+               message="@StringLocalizer["Field moved successfully."]"/>
+
 @using (Html.BeginMasterDataForm("Index", "Field", new { elementName }))
 {
     <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
-    <div class="row">
-        <div class="col-sm-3">
-            <div class="input-group">
-                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);"
+    <div class="row field-editor gy-3">
+        <div class="col-md-3">
+            <div class="input-group" id="field-input-group">
+                <input id="txtFilter" name="txtFilter" onkeyup="searchFields();"
                        placeholder="@StringLocalizer["Search..."]" type="text" class="form-control"
                        data-bs-toggle="tooltip" title="@StringLocalizer["Filter by any field visible in the list"]">
+
+                <button type="button" id="fieldFilterButton" class="input-group-text position-relative" data-bs-toggle="tooltip"
+                        title="@StringLocalizer["Advanced Filters"]" aria-label="@StringLocalizer["Advanced Filters"]"
+                        aria-pressed="false"
+                        onclick="showFieldFilterModal()">
+                    <i class="fa-solid fa-filter"></i>
+                    <span id="fieldFilterIndicator"
+                          class="position-absolute top-0 end-0 p-1 bg-primary border border-primary border-opacity-50 rounded-circle d-none"
+                          aria-hidden="true"></span>
+                </button>
 
                 @if (isForm)
                 {
@@ -190,11 +318,25 @@
                         {
                             var field = fields[i];
                             var fieldName = field.Name;
+                            var panelTitle = field.PanelId > 0
+                                ? panels.FirstOrDefault(panel => panel.PanelId == field.PanelId)?.Title
+                                : null;
 
                             <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = elementName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
+                               data-data-type="@((int)field.DataType)"
+                               data-component="@((int)field.Component)"
+                               data-behavior="@((int)field.DataBehavior)"
+                               data-css-class="@field.CssClass"
+                               data-line-group="@field.LineGroup"
+                               data-has-default-value="@((!string.IsNullOrWhiteSpace(field.DefaultValue)).ToString().ToLowerInvariant())"
+                               data-has-trigger="@((!string.IsNullOrWhiteSpace(field.TriggerExpression)).ToString().ToLowerInvariant())"
+                               data-has-panel="@((field.PanelId > 0).ToString().ToLowerInvariant())"
+                               data-pk="@field.IsPk.ToString().ToLowerInvariant()"
+                               data-auto-postback="@field.AutoPostBack.ToString().ToLowerInvariant()"
+                               data-required="@field.IsRequired.ToString().ToLowerInvariant()"
                                id="@fieldName">
-                                <div style="height: 33px;">
+                                <div style="min-height: 33px;">
                                     <div class="float-start">
                                         <b>@fieldName</b>
                                         @if (field.IsPk)
@@ -219,6 +361,11 @@
                                         }
                                         <br>
                                         <small>
+                                            @if (!string.IsNullOrWhiteSpace(panelTitle))
+                                            {
+                                                <span>@panelTitle</span>
+                                                <span> - </span>
+                                            }
                                             @if (field.Label != null && !string.Equals(fieldName, field.Label, StringComparison.InvariantCultureIgnoreCase))
                                             {
                                                 var label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
@@ -248,7 +395,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-9" style="padding-left:0px">
+        <div class="col-md-9">
             <div class="jjrelative" id="field-details">
                     <partial name="_Detail" model="Model"/>
             </div>
@@ -300,6 +447,67 @@
 </script>
 
 <script type="text/javascript">
+    let activeFieldFilters = null;
+
+    function showFieldFilterModal() {
+        const filters = activeFieldFilters;
+        document.getElementById('fieldFilterDataType').value = filters?.dataType ?? '';
+        document.getElementById('fieldFilterComponent').value = filters?.component ?? '';
+        document.getElementById('fieldFilterBehavior').value = filters?.behavior ?? '';
+        document.getElementById('fieldFilterPk').checked = filters?.pk ?? false;
+        document.getElementById('fieldFilterAutoPostBack').checked = filters?.autoPostBack ?? false;
+        document.getElementById('fieldFilterRequired').checked = filters?.required ?? false;
+        document.getElementById('fieldFilterCssClass').value = filters?.cssClass ?? '';
+        document.getElementById('fieldFilterLineGroup').value = filters?.lineGroup ?? '';
+        document.getElementById('fieldFilterHasDefaultValue').checked = filters?.hasDefaultValue ?? false;
+        document.getElementById('fieldFilterHasTrigger').checked = filters?.hasTrigger ?? false;
+        document.getElementById('fieldFilterHasPanel').checked = filters?.hasPanel ?? false;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('fieldFilterModal')).show();
+    }
+
+    function applyFieldFilters() {
+        activeFieldFilters = {
+            cssClass: document.getElementById('fieldFilterCssClass').value.trim().toLowerCase(),
+            lineGroup: document.getElementById('fieldFilterLineGroup').value,
+            hasDefaultValue: document.getElementById('fieldFilterHasDefaultValue').checked,
+            hasTrigger: document.getElementById('fieldFilterHasTrigger').checked,
+            hasPanel: document.getElementById('fieldFilterHasPanel').checked,
+            dataType: document.getElementById('fieldFilterDataType').value,
+            component: document.getElementById('fieldFilterComponent').value,
+            behavior: document.getElementById('fieldFilterBehavior').value,
+            pk: document.getElementById('fieldFilterPk').checked,
+            autoPostBack: document.getElementById('fieldFilterAutoPostBack').checked,
+            required: document.getElementById('fieldFilterRequired').checked
+        };
+        updateFieldFilterIndicator();
+        searchFields();
+    }
+
+    function updateFieldFilterIndicator() {
+        const filters = activeFieldFilters;
+        const hasFilters = !!filters && Object.values(filters).some(Boolean);
+        document.getElementById('fieldFilterIndicator').classList.toggle('d-none', !hasFilters);
+        document.getElementById('fieldFilterButton').setAttribute('aria-pressed', String(hasFilters));
+    }
+
+    function clearFieldFilters() {
+        document.getElementById('fieldFilterDataType').value = '';
+        document.getElementById('fieldFilterComponent').value = '';
+        document.getElementById('fieldFilterBehavior').value = '';
+        document.getElementById('fieldFilterPk').checked = false;
+        document.getElementById('fieldFilterAutoPostBack').checked = false;
+        document.getElementById('fieldFilterRequired').checked = false;
+        document.getElementById('txtFilter').value = '';
+        document.getElementById('fieldFilterCssClass').value = '';
+        document.getElementById('fieldFilterLineGroup').value = '';
+        document.getElementById('fieldFilterHasDefaultValue').checked = false;
+        document.getElementById('fieldFilterHasTrigger').checked = false;
+        document.getElementById('fieldFilterHasPanel').checked = false;
+        activeFieldFilters = null;
+        updateFieldFilterIndicator();
+        searchFields();
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         sortableGrid();
         saveTabState();
@@ -345,29 +553,49 @@
     }
 
     function sortableGrid() {
-        $("#sortable-grid").sortable({
+        $('#sortable-grid').sortable({
+            items: '> a',
+            helper: 'original',
+            axis: 'y',
+            start: function () {
+                $(this).data('previous-order', $(this).children('a').not('.ui-sortable-placeholder').toArray());
+            },
             update: function () {
-                const order = $(this).sortable('toArray');
-                moveFields(order);
+                moveFields(this);
             }
         });
     }
 
-    function moveFields(order) {
-        const formData = new FormData();
-        formData.append('fieldsOrder', order);
-        fetch('@Url.Action("Sort", new { elementName })', {
-            method: "POST",
-            body: formData
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('@StringLocalizer["Error while ordering fields."]');
-                }
-            })
-            .catch(error => {
-                messageBox.show('@StringLocalizer["Error"]', error.message, 4);
+    function updateFieldOrder(list) {
+        $(list).children('a').each(function (index) {
+            $(this).find('.jjsortable-span').text(index);
+        });
+    }
+
+    async function moveFields(list) {
+        const sortable = $(list);
+        sortable.sortable('disable');
+        try {
+            const formData = new FormData();
+            formData.append('fieldsOrder', sortable.sortable('toArray').join(','));
+            const token = getMasterDataForm()?.querySelector('[name="__RequestVerificationToken"]');
+            if (token) formData.append(token.name, token.value);
+            const response = await fetch('@Url.Action("Sort", new { elementName })', {
+                method: 'POST',
+                body: formData
             });
+            if (!response.ok) 
+                throw new Error();
+            updateFieldOrder(list);
+            MessageToastHelper.show('field-sort-success');
+        } catch {
+            sortable.append(sortable.data('previous-order'));
+            updateFieldOrder(list);
+            messageBox.show(@Json.Serialize(StringLocalizer["Error"].Value),
+                @Json.Serialize(StringLocalizer["Error while ordering fields."].Value), 4);
+        } finally {
+            sortable.sortable('enable');
+        }
     }
 
     function loadFieldDetails(url, fieldName) {
@@ -393,13 +621,27 @@
         });
     }
 
-    function searchFields(oDom) {
-        const value = $(oDom).val().toLowerCase();
+    function searchFields() {
+        const value = document.getElementById('txtFilter').value.toLowerCase();
         $("#sortable-grid a").filter(function () {
             const textValues = $(this).clone().find('select').remove().end().text();
             const isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            const data = this.dataset;
+            const filters = activeFieldFilters;
+            const matchesFilters = !filters ||
+                (!filters.dataType || data.dataType === filters.dataType) &&
+                (!filters.component || data.component === filters.component) &&
+                (!filters.behavior || data.behavior === filters.behavior) &&
+                (!filters.cssClass || (data.cssClass ?? '').toLowerCase().includes(filters.cssClass)) &&
+                (!filters.lineGroup || Number(data.lineGroup) === Number(filters.lineGroup)) &&
+                (!filters.hasDefaultValue || data.hasDefaultValue === 'true') &&
+                (!filters.hasTrigger || data.hasTrigger === 'true') &&
+                (!filters.hasPanel || data.hasPanel === 'true') &&
+                (!filters.pk || data.pk === 'true') &&
+                (!filters.autoPostBack || data.autoPostback === 'true') &&
+                (!filters.required || data.required === 'true');
 
-            $(this).toggle(isSearch);
+            $(this).toggle(isSearch && matchesFilters);
         });
     }
 </script>

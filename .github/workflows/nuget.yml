@@ -11,12 +11,12 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
     
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
@@ -25,11 +25,14 @@ jobs:
           dotnet restore
     
   nuget-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
     strategy:
       matrix:
         project:
+          - src/Html/JJConsulting.Html
+          - src/Html/JJConsulting.Html.Bootstrap
+          - src/Html/JJConsulting.Html.Bootstrap.TagHelpers
           - src/MasterData.Storage.Abstractions
           - src/MasterData.Commons
           - src/MasterData.Core
@@ -40,7 +43,7 @@ jobs:
           - src/Plugins/MasterData.Pdf
           - src/Plugins/MasterData.Brasil
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build and publish NuGet package
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

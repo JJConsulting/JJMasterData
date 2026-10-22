@@ -85,16 +85,6 @@
         @if (!ViewData.ModelState.IsValid)
         {
             <input type="hidden" id="action-has-errors" value="true"/>
-            <message-toast
-                title-color="Danger"
-                title="@StringLocalizer["Error"]"
-                icon="@FontAwesomeIcon.TimesCircle"
-                name="action-validation-error"
-                show-as-opened="false"
-                message="@StringLocalizer["Please check the validation errors."]"/>
-            <script>
-                MessageToastHelper.show("action-validation-error");
-            </script>
         }
 
         <card>

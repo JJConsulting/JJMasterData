@@ -1,13 +1,14 @@
-﻿using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class PanelController(PanelService panelService) : DataDictionaryController
+public class PanelController(PanelService panelService, IStringLocalizer<MasterDataResources> stringLocalizer) : DataDictionaryController
 {
     public async Task<ActionResult> Index(string elementName, int? panelId = null)
     {
@@ -58,15 +59,18 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
     [HttpPost]
     public async Task<IActionResult> Save(string elementName, FormElementPanel panel, [FromForm] string? selectedFields)
     {
-        string[]? splittedFields = selectedFields?.Split(',');
+        var splittedFields = selectedFields?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         await panelService.SavePanelAsync(elementName, panel, splittedFields);
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && panelService.IsValid)
         {
+            TempData["SaveSuccessMessage"] = "Panel saved successfully.";
             return RedirectToAction("Index", new { elementName, panelId = panel.PanelId });
         }
 
+        var formElement = await panelService.GetFormElementAsync(elementName);
+        PopulateViewBag(formElement, panel, splittedFields ?? []);
         ViewBag.Error = panelService.GetValidationSummary();
-        return RedirectToIndex(elementName, panel);
+        return View("Index", panel);
     }
 
     [HttpPost]
@@ -85,6 +89,15 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Move(string elementName, int panelId, int? parentId, int? beforePanelId)
+    {
+        if (!ModelState.IsValid || !await panelService.MovePanelAsync(elementName, panelId, parentId, beforePanelId))
+            return BadRequest();
+        return Json(new { success = true });
+    }
+
+    [HttpPost]
     public async Task<IActionResult> Copy(string elementName, FormElementPanel panel)
     {
         var newPanel = await panelService.CopyPanel(elementName, panel);
@@ -94,13 +107,12 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
     private RedirectToActionResult RedirectToIndex(string elementName, FormElementPanel panel)
     {
         TempData.Put("panel",panel);
-        TempData["error"] = ViewBag.Error;
         TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
 
         return RedirectToAction("Index", new { elementName });
     }
 
-    private void PopulateViewBag(FormElement formElement, FormElementPanel panel)
+    private void PopulateViewBag(FormElement formElement, FormElementPanel panel, string[]? selectedFields = null)
     {
         if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
             ViewBag.Tab = selectedTab;
@@ -108,16 +120,28 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
             ViewBag.Tab = tempSelectedTab?.ToString()!;
 
-        if (TempData.TryGetValue("error", out object? value))
-            ViewBag.Error = value!;
-
         ViewBag.MenuId = "Panels";
         ViewBag.ElementName = formElement.Name;
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;
-        ViewBag.AvailableFields = GetAvailableFields(formElement);
-        ViewBag.SelectedFields = (panel.PanelId > 0) ?
-            formElement.Fields.FindAll(x => x.PanelId == panel.PanelId) : [];
+        ViewBag.ParentPanels = formElement.Panels.Where(x => x.PanelId != panel.PanelId)
+            .Select(x => new SelectListItem(x.Title ?? $"{x.Layout} #{x.PanelId}", x.PanelId.ToString(), x.PanelId == panel.ParentId))
+            .Prepend(new SelectListItem(stringLocalizer["None"], "", panel.ParentId == null));
+        if (selectedFields is null)
+        {
+            ViewBag.AvailableFields = GetAvailableFields(formElement);
+            ViewBag.SelectedFields = panel.PanelId > 0
+                ? formElement.Fields.FindAll(x => x.PanelId == panel.PanelId) : [];
+        }
+        else
+        {
+            ViewBag.SelectedFields = selectedFields
+                .Where(formElement.Fields.Contains)
+                .Select(fieldName => formElement.Fields[fieldName])
+                .ToList();
+            ViewBag.AvailableFields = formElement.Fields.FindAll(x =>
+                (x.PanelId == 0 || x.PanelId == panel.PanelId) && !selectedFields.Contains(x.Name));
+        }
     }
 
     protected List<FormElementField> GetAvailableFields(FormElement formElement)

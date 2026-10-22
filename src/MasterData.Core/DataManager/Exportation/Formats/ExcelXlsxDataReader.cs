@@ -33,7 +33,8 @@ internal sealed class ExcelXlsxDataReader(
             throw new InvalidOperationException("No export row is currently available.");
 
         var column = context.Columns[i];
-        return _current.GetValueOrDefault(column.Name);
+        // MiniExcel omits null cells, leaving gaps in the exported table formatting.
+        return _current.GetValueOrDefault(column.Name) ?? string.Empty;
     }
 
     public override Task<object> GetValueAsync(int i, CancellationToken token = default)

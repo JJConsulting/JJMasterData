@@ -36,10 +36,10 @@ internal sealed class DataImportationScripts(
         return $"DataImportationHelper.back('{name}', '{GetEncryptedRouteContext()}')";
     }
     
-    public string GetShowScript()
+    public string GetShowScript(string callback)
     {
         //language=Javascript
-        return $"DataImportationHelper.show('{name}','{stringLocalizer[_modalTitle]}','{GetEncryptedRouteContext()}')";
+        return $"DataImportationHelper.show('{name}','{stringLocalizer[_modalTitle]}','{GetEncryptedRouteContext()}', () => {{ {callback} }})";
     }
 
     

@@ -272,7 +272,7 @@ public class JJDataPanel(
         AppendHiddenInputs(html);
         
         var panelGroup = new DataPanelLayout(this);
-        html.AppendRange(await panelGroup.GetHtmlPanelList());
+        html.Append(await panelGroup.GetPanelHtml());
         html.AppendScript(GetHtmlFormScript());
         
         return html;

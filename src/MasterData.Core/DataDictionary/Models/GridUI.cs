@@ -94,12 +94,12 @@ public class GridUI
     public bool EnableMultiSelect { get; set; }
 
     /// <summary>
-    /// Maintains filters, order and grid pagination in cookies,
+    /// Maintains grid display settings and navigation state in the configured preference store,
     /// and recovers on the first page load. (Default = false)
     /// </summary>
     /// <remarks>
     /// When using this property, we recommend changing the object's [Name] parameter.
-    /// The [Name] property is used to compose the cookie names.
+    /// The [Name] property identifies the grid in the preference store.
     /// </remarks>
     [JsonPropertyName("maintainValuesOnLoad")]
     [Display(Name = "Save User Preferences")]

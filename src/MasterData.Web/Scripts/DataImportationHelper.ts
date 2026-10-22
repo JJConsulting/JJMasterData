@@ -13,42 +13,14 @@
         if (!target || target.childElementCount > 0)
             return;
         
-        if(bootstrapVersion < 5){
-            const options = {
-                className: "spinner",
-                color: "#000",
-                corners: 1,
-                direction: 1,
-                fps: 20,
-                hwaccel: false,
-                left: "50%",
-                length: 38,
-                lines: 13,
-                opacity: 0.3,
-                position: "absolute",
-                radius: 45,
-                rotate: 0,
-                scale: 0.2,
-                shadow: false,
-                speed: 1.2,
-                top: "50%",
-                trail: 62,
-                width: 17,
-                zIndex: 2e9
-            };
-            // @ts-ignore
-            new Spinner(options).spin(target);
-        }
-        else{
-            const spinnerDiv = document.createElement('div');
-            spinnerDiv.classList.add('spinner-border','text-primary','spinner-border-lg',);
-            spinnerDiv.setAttribute('role', 'status');
-            const spanElement = document.createElement('span');
-            spanElement.classList.add('visually-hidden');
-            spanElement.textContent = 'Loading...';
-            spinnerDiv.appendChild(spanElement);
-            target.append(spinnerDiv);
-        }
+        const spinnerDiv = document.createElement('div');
+        spinnerDiv.classList.add('spinner-border','text-primary','spinner-border-lg',);
+        spinnerDiv.setAttribute('role', 'status');
+        const spanElement = document.createElement('span');
+        spanElement.classList.add('visually-hidden');
+        spanElement.textContent = 'Loading...';
+        spinnerDiv.appendChild(spanElement);
+        target.append(spinnerDiv);
     }
 
     private static checkProgress(componentName, importationRouteContext, intervalId: number) {
@@ -154,9 +126,9 @@
 
                     postFormValues({
                         url: urlBuilder.build(), success: html => {
-                            $("body").on('hidden.bs.modal',"#" + DataImportationModal.getInstance().modalId, function () {
-                                getMasterDataForm().submit();
-                            });
+                            $(DataImportationModal.getInstance().modalElement)
+                                .off('hidden.bs.modal.importation')
+                                .one('hidden.bs.modal.importation', DataImportationModal.refreshGrid);
                             document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
                         }
                     })
@@ -169,7 +141,8 @@
             });
     }
 
-    static show(componentName: string, modalTitle: string, routeContext: string) {
+    static show(componentName: string, modalTitle: string, routeContext: string, refreshGrid: () => void) {
+        DataImportationModal.refreshGrid = refreshGrid;
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         const requestOptions = getRequestOptions();

@@ -1,15 +1,17 @@
 @using JJConsulting.FontAwesome
 @using JJConsulting.Html.Bootstrap.Models
-@using JJMasterData.Core.UI.Components
-@using JJMasterData.Web.TagHelpers
 @model RelationshipsListViewModel
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 <script type="text/javascript">
-         function deleteRelationship() {
-                 return confirm('@StringLocalizer["Are you sure you want to delete this relationship?"]');
+         function deleteRelationship(url) {
+             if (!confirm('@StringLocalizer["Are you sure you want to delete this relationship?"]')) {
+                 return;
              }
+
+             postFormValues({ url: url, success: function () {} });
+         }
 </script>
 
 
@@ -75,13 +77,9 @@
                         tooltip="Edit"
                         show-as-button="false"/>
                     <link-button
-                        type="LinkButtonType.Submit"
-                        asp-controller="Relationships"
-                        asp-action="Delete"
-                        asp-route-relationshipId="@relationship.Id"
-                        asp-route-elementName="@Model.ElementName"
+                        type="LinkButtonType.Button"
                         show-as-button="false"
-                        on-client-click="return deleteRelationship();"
+                        on-client-click="deleteRelationship('@Url.Action("Delete", "Relationships", new { relationshipId = relationship.Id, elementName = Model.ElementName })')"
                         tooltip="Delete"
                         icon="SolidTrashCan"/>
 

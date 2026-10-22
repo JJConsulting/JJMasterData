@@ -11,6 +11,10 @@ public class FormElementPanel
     [JsonPropertyName("id")]
     public int PanelId { get; set; }
 
+    [Display(Name = "Parent Panel")]
+    [JsonPropertyName("parentId")]
+    public int? ParentId { get; set; }
+
     [JsonPropertyName("title")]
     [Display(Name = "Title")]
     public string? Title { get; set; }
@@ -21,8 +25,8 @@ public class FormElementPanel
 
     [JsonPropertyName("layout")]
     [Display(Name = "Layout")]
-    public PanelLayout Layout { get; set; } = PanelLayout.Well;
-
+    public PanelLayout Layout { get; set; } = PanelLayout.Card;
+    
     [JsonPropertyName("color")]
     [Display(Name = "Color")]
     public BootstrapColor Color { get; set; } = BootstrapColor.Default;

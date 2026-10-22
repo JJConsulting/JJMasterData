@@ -10,8 +10,6 @@ using JJConsulting.Html.Bootstrap.Components;
 using JJConsulting.Html.Bootstrap.Extensions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
-using JJMasterData.Commons;
-using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Serialization;
 using JJMasterData.Commons.Tasks;
@@ -87,17 +85,26 @@ internal sealed class GridFilter(JJGridView gridView)
                 return _currentFilter;
         }
 
-        var cookieFilter = _currentContext.HttpContext!.GetGridFilterCookie(gridView.Name);
-
-        if (cookieFilter != null && gridView.MaintainValuesOnLoad)
+        // A filter reload does not update grid-view-filters. Autocomplete must read
+        // the current filter inputs instead of the last applied filters.
+        if (gridView.ComponentContext is ComponentContext.SearchBoxFilter && _currentContext.HttpContext!.Request.HasFormContentType)
         {
-            DataHelper.CopyIntoDictionary(_currentFilter, cookieFilter);
+            var filterFormValues = await GetFilterFormValues();
+            await ApplyCurrentFilter(filterFormValues);
             return _currentFilter;
         }
 
-        if (cookieFilter != null && (_currentContext.HttpContext!.Request.HasFormContentType || IsDynamicPost()))
+        var savedFilter = gridView.PreferenceStore.GetFilter(gridView.Name);
+
+        if (savedFilter != null && gridView.MaintainValuesOnLoad)
         {
-            DataHelper.CopyIntoDictionary(_currentFilter, cookieFilter);
+            DataHelper.CopyIntoDictionary(_currentFilter, savedFilter);
+            return _currentFilter;
+        }
+
+        if (savedFilter != null && (_currentContext.HttpContext!.Request.HasFormContentType || IsDynamicPost()))
+        {
+            DataHelper.CopyIntoDictionary(_currentFilter, savedFilter);
             return _currentFilter;
         }
 
@@ -161,7 +168,7 @@ internal sealed class GridFilter(JJGridView gridView)
         DataHelper.CopyIntoDictionary(_currentFilter, values);
         
         if(gridView.MaintainValuesOnLoad)
-            _currentContext.HttpContext!.SetGridFilterCookie(gridView.Name, _currentFilter);
+            gridView.PreferenceStore.SetFilter(gridView.Name, _currentFilter);
     }
 
     private async ValueTask<HtmlBuilder> GetDefaultFilter()
