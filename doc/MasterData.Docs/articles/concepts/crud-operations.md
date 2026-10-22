@@ -74,7 +74,7 @@ Delete is a real persistence operation unless the configured repository or datab
 
 Use field settings for simple data contracts: **Required**, data type, size, primary key, identity, and field expressions. Use a [validation rule](../concepts/rules.md) when a condition spans fields or requires business validation. For example, a rule can reject an amount that is zero or negative even if the browser-side UI was modified.
 
-For code that must inspect, change, or reject submitted values, register a form event in the host application. Put rejection logic in `OnBeforeInsertAsync` or `OnBeforeUpdateAsync`; add an error there to stop the write. After-events run only after the repository operation succeeds, so they are appropriate for follow-up work and redirects, not validation. See [Form events](../developer-guide/form-events.md).
+For code that must inspect, change, or reject submitted values, register a form event in the host application. Put rejection logic in `OnBeforeInsertAsync` or `OnBeforeUpdateAsync`; add an error there to stop the write. After-events run only after the repository operation succeeds, so they are appropriate for follow-up work and redirects, not validation. See [Form events](../developer-guide/customizations/form-events.md).
 
 ## 5. Import and export records
 

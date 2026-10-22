@@ -8,7 +8,7 @@ Install the package:
 dotnet add package JJConsulting.Html.Bootstrap.TagHelpers
 ```
 
-The host application must load the Bootstrap CSS and JavaScript needed by the rendered components. The package does not bundle those assets. See [Custom Bootstrap](custom-bootstrap.md) for JJMasterData stylesheet configuration and [Bootstrap components](bootstrap-components.md) for component behavior and compatibility settings.
+The host application must load the Bootstrap CSS and JavaScript needed by the rendered components. The package does not bundle those assets. See [Custom Bootstrap](custom-bootstrap.md) for JJMasterData stylesheet configuration and [Bootstrap components](components.md) for component behavior and compatibility settings.
 
 ## Register the Tag Helpers
 
@@ -112,4 +112,4 @@ The final item is rendered as the current page, without a link.
 
 Helpers that support child content retrieve it through Razor's `GetChildContentAsync()` and hand it to the matching component. This applies to `alert`, `card`, `collapse-panel`, and `offcanvas`. Helpers such as `link-button`, `icon`, `breadcrumb`, and `jj-title` build their output from attributes and do not use arbitrary child markup.
 
-Tag Helper output is `IHtmlContent` from the component library, so it is emitted as markup without converting it to an intermediate string. For programmatic composition outside Razor, use the corresponding component classes directly; see [Bootstrap components](bootstrap-components.md).
+Tag Helper output is `IHtmlContent` from the component library, so it is emitted as markup without converting it to an intermediate string. For programmatic composition outside Razor, use the corresponding component classes directly; see [Bootstrap components](components.md).

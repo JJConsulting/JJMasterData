@@ -114,4 +114,4 @@ Do not load the default `bootstrap.min.css` at the same time. If both stylesheet
 
 For changes that do not require recompiling Bootstrap, such as spacing or styles for application-specific components, use `CustomStylesheetsPaths` instead.
 
-See also [UI customization](ui-customization.md).
+See also [UI customization](../customizations/ui-customization.md).

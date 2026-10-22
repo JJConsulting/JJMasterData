@@ -15,7 +15,7 @@ Use built-in actions for CRUD operations, filtering and import/export. For appli
 
 Give each action a unique `Name`. Use `VisibleExpression` to hide it, `EnableExpression` to disable it and `ConfirmationMessage` to request confirmation before execution. These UI settings do not replace the host's authorization policy.
 
-A `ScriptAction` runs in the browser; it is not a server-side validation hook. Use a [rule](rules.md) or [form event](../developer-guide/form-events.md) to reject a write.
+A `ScriptAction` runs in the browser; it is not a server-side validation hook. Use a [rule](rules.md) or [form event](../developer-guide/customizations/form-events.md) to reject a write.
 
 ## Configuration reference
 

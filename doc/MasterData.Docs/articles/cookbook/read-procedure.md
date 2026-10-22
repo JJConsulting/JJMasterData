@@ -58,4 +58,4 @@ The generated count and data queries share `@sqlTable` and `@sqlWhere`, so keep 
 4. Export a filtered result spanning several pages. Confirm that the joined and calculated columns are present when configured for export.
 5. Change a filter definition and compare the generated signature with the deployed procedure before releasing.
 
-Use [grid rendering events](../developer-guide/grid-events.md) for a badge or color only. Supply business values in the read result when export and repository consumers also need them. See the complete [procedure contract](../developer-guide/stored-procedures.md).
+Use [grid rendering events](../developer-guide/customizations/grid-events.md) for a badge or color only. Supply business values in the read result when export and repository consumers also need them. See the complete [procedure contract](../developer-guide/repositories/stored-procedures.md).

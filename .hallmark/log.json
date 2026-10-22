@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-10-22",
+    "macrostructure": "Ecosystem Index",
+    "theme": "existing graphite and copper",
+    "enrichment": "real first-dictionary form screenshot",
+    "brief": "Documentation landing with featured walkthrough, real CRUD preview, task-based discovery and reference links",
+    "scope": "doc/MasterData.Docs/index.md",
+    "nav": "N13 preserved",
+    "footer": "Ft2 preserved"
+  },
+  {
+    "date": "2026-10-22",
     "macrostructure": "Long Document / reading hierarchy with page outline",
     "theme": "existing graphite and copper",
     "enrichment": "none",

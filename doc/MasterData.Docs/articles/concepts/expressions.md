@@ -56,7 +56,7 @@ A `DefaultValue` supplies an initial/fallback value; a `TriggerExpression` recal
 
 `VisibleExpression = "val:0"` hides an editor and `EnableExpression = "val:0"` disables editing. These settings do not remove the field from database commands: that is controlled by [field data behavior](data-dictionary.md#field-data-behavior). A hidden `Real` field and a `Virtual` field have different persistence contracts.
 
-See [Preserve context across requests](../developer-guide/routes-and-embedding.md#preserve-context-across-requests) for the distinction between a listing filter and a foreign-key default.
+See [Preserve context across requests](../developer-guide/customizations/routes-and-embedding.md#preserve-context-across-requests) for the distinction between a listing filter and a foreign-key default.
 
 ## Register application functions
 

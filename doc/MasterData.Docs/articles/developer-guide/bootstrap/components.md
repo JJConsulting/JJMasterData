@@ -134,4 +134,4 @@ var content = HtmlBuilder.Section()
     });
 ```
 
-See [HtmlBuilder](html-builder.md) for text encoding, attributes, and composition behavior.
+See [HtmlBuilder](../html-builder/index.md) for text encoding, attributes, and composition behavior.

@@ -40,7 +40,7 @@ The generated procedure counts when `@qtdtotal` is null or zero. A value of `-1`
 
 The read procedure is also used outside grid rendering, including record lookup and repository-based export. Support primary-key filters, all requested pages and requested ordering. Avoid returning an extra diagnostic `SELECT` before the rows.
 
-See [Customize a read procedure](../cookbook/read-procedure.md) for a joined projection and its acceptance checks.
+See [Customize a read procedure](../../cookbook/read-procedure.md) for a joined projection and its acceptance checks.
 
 ## Write contract
 
@@ -54,7 +54,7 @@ The generated procedure resolves an empty action by checking whether the primary
 
 `@RET` describes the operation, **not** the number of rows changed. It is an output parameter, not the T-SQL `RETURN` value. Throw a database error on failure rather than using a custom error number in `@RET`.
 
-On insert, return generated keys as a result row with aliases matching the dictionary fields, for example `OUTPUT INSERTED.Id AS Id`. The repository merges returned known fields into the values dictionary. Do not place another result set before this row. See [Customize a write procedure](../cookbook/write-procedure.md).
+On insert, return generated keys as a result row with aliases matching the dictionary fields, for example `OUTPUT INSERTED.Id AS Id`. The repository merges returned known fields into the values dictionary. Do not place another result set before this row. See [Customize a write procedure](../../cookbook/write-procedure.md).
 
 A write procedure can update related tables, but it must explicitly manage the transaction needed to keep those changes atomic. An after-event runs after repository persistence and does not extend the procedure's transaction.
 
@@ -62,4 +62,4 @@ A write procedure can update related tables, but it must explicitly manage the t
 
 Keep customized SQL in your application's database migrations or database project. Regenerating and deploying the baseline procedure can overwrite custom joins, validations and writes. When fields or filters change, compare the new generated signature with the maintained script and update both together.
 
-Verify insert, update, delete, empty-action upsert, lookup by key, paging, ordering, count and export as applicable. Test import separately because it uses its own validation hooks. The [entity repository](entity-repository.md) uses these procedures but direct writes do not run form validation or audit processing.
+Verify insert, update, delete, empty-action upsert, lookup by key, paging, ordering, count and export as applicable. Test import separately because it uses its own validation hooks. The [entity repository](entities.md) uses these procedures but direct writes do not run form validation or audit processing.

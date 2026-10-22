@@ -76,4 +76,4 @@ An after-event cannot reject an already completed write. Use it for follow-up be
 
 Exercise insertion, update and import with an invalid range. Verify that a valid update does not overlap itself. Try deleting a referenced resource and confirm that it remains. Repeat through the Web API when enabled, and remember that direct repository writes and SQL actions bypass these hooks.
 
-See [Form events](../developer-guide/form-events.md) for registration and the import-specific lifecycle.
+See [Form events](../developer-guide/customizations/form-events.md) for registration and the import-specific lifecycle.

@@ -27,3 +27,11 @@ Set the dictionary's `ConnectionId` to that GUID. The actual configuration prope
 | `IEntityProvider` | Provider-specific database operations. |
 
 The builder extensions live in `JJMasterData.Commons.Configuration` and `JJMasterData.Core.Configuration`. Choose metadata storage independently from the record connection.
+
+## Further reading
+
+- [Data dictionary repository](data-dictionary.md): Configure metadata storage, load definitions, and manage caching.
+- [Entity repository](entities.md): Query and persist records using dictionary metadata.
+- [Stored procedures](stored-procedures.md): Configure the read/write procedure contracts used by dictionaries.
+
+For SQL outside a data dictionary, see [Data access](../data-access/index.md).

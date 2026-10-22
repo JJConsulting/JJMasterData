@@ -55,11 +55,11 @@ The available helpers and their purposes are listed in [Grid templates](grid-tem
 
 When the action depends on optional values, guard missing or empty values with `isNullOrEmpty` or `isNullOrWhiteSpace`. For links to files, `getFileUrl` requires the corresponding `DataFile` and record values in the rendering context.
 
-The action is listed with the other action types in [Actions](../concepts/actions.md).
+The action is listed with the other action types in [Actions](../../concepts/actions.md).
 
 ## Complete example and rendering context
 
-[Show a status guide with HTML templates](../cookbook/html-templates.md) contains a complete action with two SQL results, fictional data, empty-state handling and a self-contained HTML document.
+[Show a status guide with HTML templates](../../cookbook/html-templates.md) contains a complete action with two SQL results, fictional data, empty-state handling and a self-contained HTML document.
 
 The query runs on the dictionary's connection. Record primary-key values are available as parameters (and through `{Id}`-style placeholders); a toolbar action without a record does not supply them. The template context contains the query results under `DataSource`, rather than the grid row's fields at the top level.
 

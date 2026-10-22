@@ -118,7 +118,7 @@ The explicit cast to `DataAccessCommand` converts interpolated **values into par
 
 ## MVC view
 
-In `Views/Planning/Edit.cshtml`, use the existing layout and Tag Helper registrations described in [Data panels](../developer-guide/data-panels.md#mvc-view):
+In `Views/Planning/Edit.cshtml`, use the existing layout and Tag Helper registrations described in [Data panels](../developer-guide/customizations/data-panels.md#mvc-view):
 
 ```cshtml
 <master-data-form asp-controller="Planning"

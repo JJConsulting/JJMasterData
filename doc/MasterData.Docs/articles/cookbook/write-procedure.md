@@ -86,4 +86,4 @@ Keep friendly input checks in [form events](business-validation.md), and databas
 
 Insert a category and confirm that its generated key is available for subsequent navigation. Update and delete it, then exercise `SetValuesAsync` with both a new and an existing key. Test blank names and missing records; they must fail rather than report success. If imports are enabled, verify both new and existing rows.
 
-Keep this script under version control and merge future generated signature changes into it. See [Stored procedures](../developer-guide/stored-procedures.md) for naming and deployment details.
+Keep this script under version control and merge future generated signature changes into it. See [Stored procedures](../developer-guide/repositories/stored-procedures.md) for naming and deployment details.

@@ -43,4 +43,4 @@ For a child CRUD, apply both the parent's grid filter and the foreign key's defa
 
 Use `JJFormView` when the generated CRUD workflow should process actions and saves. Use a standalone `JJDataPanel` for fields inside a host-owned page, and `JJGridView` for separately placed lists. These components have different factory and persistence behavior; see [Data panels and application-owned saves](data-panels.md).
 
-A composed page can render a grid's toolbar with `GetToolbarHtmlAsync()` and its table with `GetTableHtmlAsync()`. Rendering those fragments does not implement the host's save, add/remove tracking or aggregate transaction. See [Save a composed document](../cookbook/composed-document.md) for a header and multiple editable detail lists.
+A composed page can render a grid's toolbar with `GetToolbarHtmlAsync()` and its table with `GetTableHtmlAsync()`. Rendering those fragments does not implement the host's save, add/remove tracking or aggregate transaction. See [Save a composed document](../../cookbook/composed-document.md) for a header and multiple editable detail lists.

@@ -2,7 +2,7 @@
 
 `DataAccess` is JJMasterData's lightweight ADO.NET wrapper for executing SQL that is not represented by a data dictionary. It uses the database provider and connection string configured for JJMasterData, opens and disposes connections for each operation, and supports synchronous and asynchronous APIs.
 
-Use `DataAccess` for custom queries, commands, and stored procedures. For CRUD operations based on an `Element`, prefer [`IEntityRepository`](~/articles/developer-guide/entity-repository.md), which applies the element metadata and resolves its configured connection.
+Use `DataAccess` for custom queries, commands, and stored procedures. For CRUD operations based on an `Element`, prefer [`IEntityRepository`](~/articles/developer-guide/repositories/entities.md), which applies the element metadata and resolves its configured connection.
 
 The types in this guide are in the `JJMasterData.Commons.Data` namespace.
 
@@ -28,7 +28,7 @@ public sealed class PersonReportService(DataAccess dataAccess)
 }
 ```
 
-The injected instance uses `JJMasterData:ConnectionString` and `JJMasterData:ConnectionProvider`. See [connections and repositories](~/articles/developer-guide/connections.md) for the complete connection configuration.
+The injected instance uses `JJMasterData:ConnectionString` and `JJMasterData:ConnectionProvider`. See [connections and repositories](~/articles/developer-guide/repositories/index.md) for the complete connection configuration.
 
 You can also create an instance directly when a query must use a connection that is not the JJMasterData default:
 
@@ -172,7 +172,7 @@ This is useful for structured logging, but it also means exception details can c
 - Use `DbType` and `DBNull.Value` when a parameter's type or nullability is not obvious.
 - Use `SetCommandListAsync` when multiple writes must succeed or fail together.
 - Set `TimeoutSeconds` on long-running commands instead of changing the obsolete global `TimeOut` property.
-- Use [`IEntityRepository`](~/articles/developer-guide/entity-repository.md) when the operation should honor an `Element`, its metadata, or its `ConnectionId`.
+- Use [`IEntityRepository`](~/articles/developer-guide/repositories/entities.md) when the operation should honor an `Element`, its metadata, or its `ConnectionId`.
 
 ## Further reading
 

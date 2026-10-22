@@ -2,7 +2,7 @@
 
 `IEntityRepository` reads and writes business records using an `Element` or `FormElement`. The element supplies the table, fields, keys, connection and provider-specific settings used by each operation.
 
-Use [`IDataDictionaryRepository`](data-dictionary-repository.md) to load the metadata, then pass it to the entity repository:
+Use [`IDataDictionaryRepository`](data-dictionary.md) to load the metadata, then pass it to the entity repository:
 
 ```csharp
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -107,7 +107,7 @@ For bulk operations, use the overloads that receive `IEnumerable<Dictionary<stri
 > [!IMPORTANT]
 > Direct `IEntityRepository` writes bypass `FormService`. They do not run field validation, dictionary rules, form events or JJMasterData audit processing.
 
-Use the form-service workflow when a write must behave like a submission from the generated UI. See [Form events](form-events.md) for the hooks executed by that workflow.
+Use the form-service workflow when a write must behave like a submission from the generated UI. See [Form events](../customizations/form-events.md) for the hooks executed by that workflow.
 
 ## Stored-procedure routing and generated values
 
@@ -119,9 +119,9 @@ A direct repository call does not validate form input or run form audit processi
 
 ## Connections
 
-The repository resolves the database from `element.ConnectionId`. A null connection ID uses the default JJMasterData connection; a configured ID selects the corresponding additional connection. See [Connections and repositories](connections.md).
+The repository resolves the database from `element.ConnectionId`. A null connection ID uses the default JJMasterData connection; a configured ID selects the corresponding additional connection. See [Connections and repositories](index.md).
 
-Do not build an element only to switch databases for arbitrary SQL. For queries that are not represented by dictionary metadata, use [`DataAccess`](data-access/index.md).
+Do not build an element only to switch databases for arbitrary SQL. For queries that are not represented by dictionary metadata, use [`DataAccess`](../data-access/index.md).
 
 ## Inspect and create database structures
 

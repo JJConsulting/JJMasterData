@@ -48,7 +48,7 @@ else
 }
 ```
 
-The host supplies routing, antiforgery validation and MVC response handling. Use the form Tag Helper and preserve component action results as described in [Routes and embedding](../developer-guide/routes-and-embedding.md). Choose either the normal built-in save action or your explicit save branch for a submission; do not invoke both.
+The host supplies routing, antiforgery validation and MVC response handling. Use the form Tag Helper and preserve component action results as described in [Routes and embedding](../developer-guide/customizations/routes-and-embedding.md). Choose either the normal built-in save action or your explicit save branch for a submission; do not invoke both.
 
 Creating `JJFormView` by dictionary name attaches registered form handlers. Its insertion method runs the form-service workflow and recovers generated identity values when the provider returns them. A standalone data panel followed by `IEntityRepository.InsertAsync` has a different validation/event/audit lifecycle.
 
@@ -62,4 +62,4 @@ Imports and API writes do not recreate this screen's per-request setup. If those
 
 Create a ticket, confirm its account and initial status, and follow the generated key to its detail page. Submit invalid required fields and confirm the entered text survives redisplay. Tamper with posted account/status fields, then change account access after rendering: both attempts must follow the server's current checks.
 
-See [Data panels](../developer-guide/data-panels.md) for value precedence and factory differences.
+See [Data panels](../developer-guide/customizations/data-panels.md) for value precedence and factory differences.

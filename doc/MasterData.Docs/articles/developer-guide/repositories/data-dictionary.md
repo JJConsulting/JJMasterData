@@ -2,7 +2,7 @@
 
 `IDataDictionaryRepository` stores and retrieves `FormElement` definitions. A `FormElement` is the metadata that describes a generated CRUD: its table, fields, panels, actions, rules, relationships and UI options.
 
-The repository manages definitions, not business records. Use [`IEntityRepository`](entity-repository.md) when you need to read or write rows from the tables described by those definitions.
+The repository manages definitions, not business records. Use [`IEntityRepository`](entities.md) when you need to read or write rows from the tables described by those definitions.
 
 ## Inject and load a dictionary
 
@@ -57,9 +57,9 @@ builder.Services
             "Dictionaries"));
 ```
 
-The filesystem implementation stores one `<Name>.json` file per dictionary. This is useful when definitions should be reviewed and versioned with the application. See [Persistence and version control](../concepts/persistence.md) for deployment options.
+The filesystem implementation stores one `<Name>.json` file per dictionary. This is useful when definitions should be reviewed and versioned with the application. See [Persistence and version control](../../concepts/persistence.md) for deployment options.
 
-Metadata storage is independent from the connection used by a dictionary's business table. See [Connections and repositories](connections.md) for connection selection.
+Metadata storage is independent from the connection used by a dictionary's business table. See [Connections and repositories](index.md) for connection selection.
 
 ## Initialize the storage
 

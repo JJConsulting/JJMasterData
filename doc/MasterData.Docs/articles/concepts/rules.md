@@ -15,7 +15,7 @@ Rules run before insert, update and import by default. Delete is opt-in through 
 
 Use field names as error keys to associate messages with the corresponding editor. Rules still run when individual field validation is skipped because an editor is hidden or disabled.
 
-Use [expressions](expressions.md) for calculated values and UI conditions. When validation requires injected application services, use a [before-event](../developer-guide/form-events.md).
+Use [expressions](expressions.md) for calculated values and UI conditions. When validation requires injected application services, use a [before-event](../developer-guide/customizations/form-events.md).
 
 ## Rule syntax and operation flags
 
@@ -53,7 +53,7 @@ if (values.Amount == null || values.Amount <= 0) {
 
 Use `addError("Message")` for a general error, or `addError("FieldName", "Message")` for a field error. No errors means success. Messages pass through the library localizer during rule validation.
 
-For validation requiring dependency injection, use [form events](../developer-guide/form-events.md).
+For validation requiring dependency injection, use [form events](../developer-guide/customizations/form-events.md).
 
 ### More validation examples
 

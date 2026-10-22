@@ -17,4 +17,4 @@ Start with a working host from [Installation and configuration](../getting-start
 | Reuse calculations and request-aware UI expressions | [Add application expression functions](custom-expression-functions.md) |
 | Display a status legend from multiple SQL results | [Show a status guide with HTML templates](html-templates.md) |
 
-For reusable contracts rather than a complete scenario, see [Stored procedures](../developer-guide/stored-procedures.md), [Form events](../developer-guide/form-events.md) and [Grid events](../developer-guide/grid-events.md).
+For reusable contracts rather than a complete scenario, see [Stored procedures](../developer-guide/repositories/stored-procedures.md), [Form events](../developer-guide/customizations/form-events.md) and [Grid events](../developer-guide/customizations/grid-events.md).

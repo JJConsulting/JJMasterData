@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Use this checklist when investigating a failing operation or a generated UI issue. For Liquid syntax and rendering contexts, see the [Grid templates quick reference](grid-templates.md#quick-liquid-reference) and [TemplateAction quick reference](template-action.md#quick-liquid-reference).
+Use this checklist when investigating a failing operation or a generated UI issue. For Liquid syntax and rendering contexts, see the [Grid templates quick reference](templates/grid-templates.md#quick-liquid-reference) and [TemplateAction quick reference](templates/template-actions.md#quick-liquid-reference).
 
 Enable library diagnostics in the host configuration when investigating a failing operation:
 

@@ -90,7 +90,7 @@ var guide = new HtmlTemplateAction
 form.GridView.ToolbarActions.Add(guide);
 ```
 
-Use the controller/view result handling from [Routes and embedding](../developer-guide/routes-and-embedding.md). Return component `IActionResult` responses directly so opening the action returns its content. If configuring through the dictionary editor instead, create an `HtmlTemplateAction` in **Grid Toolbar Actions**, then paste the two string contents into **Data Source** and **HTML Template**.
+Use the controller/view result handling from [Routes and embedding](../developer-guide/customizations/routes-and-embedding.md). Return component `IActionResult` responses directly so opening the action returns its content. If configuring through the dictionary editor instead, create an `HtmlTemplateAction` in **Grid Toolbar Actions**, then paste the two string contents into **Data Source** and **HTML Template**.
 
 ## How the data reaches the template
 
@@ -111,4 +111,4 @@ For a **row action**, add the action to `form.GridView.TableActions` and filter 
 
 The guide only displays information. If response targets affect business validation, enforce them in the save operation too.
 
-Open **Ticket guide** to check the three status badges and the 4/24/72-hour targets. Then return zero rows from either query while preserving its columns: that section should show its empty message. See [Template actions](../developer-guide/template-action.md) for the reusable contract.
+Open **Ticket guide** to check the three status badges and the 4/24/72-hour targets. Then return zero rows from either query while preserving its columns: that section should show its empty message. See [Template actions](../developer-guide/templates/template-actions.md) for the reusable contract.

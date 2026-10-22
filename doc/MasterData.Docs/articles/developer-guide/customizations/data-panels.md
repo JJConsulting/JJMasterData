@@ -4,7 +4,7 @@
 
 ## Controller
 
-This example edits an existing `OrderHeader` dictionary with `Id` (primary key), `Title` (required text) and `Notes` (optional text). Use the [configured MVC host](../getting-started/configuration.md), its existing authentication and controller routing.
+This example edits an existing `OrderHeader` dictionary with `Id` (primary key), `Title` (required text) and `Notes` (optional text). Use the [configured MVC host](../../getting-started/configuration.md), its existing authentication and controller routing.
 
 ```csharp
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -113,7 +113,7 @@ For insertion, use `PageState.Insert`, skip the record lookup, validate in inser
 
 Null entries in `SecretValues` are removed before merging, so a null entry does not force a field to SQL null. `GetFormValuesAsync()` also removes null entries from `Values`. If omission and explicit clearing have different meanings in your command, model that distinction in its request contract.
 
-See [Create a task-specific form](../cookbook/task-form.md) for protected values and a save through the form workflow.
+See [Create a task-specific form](../../cookbook/task-form.md) for protected values and a save through the form workflow.
 
 ## Choose the save pipeline
 
@@ -131,4 +131,4 @@ Rendering a panel and reading its values never saves a record. `GetResultAsync()
 
 ## Compose a custom page
 
-Assign distinct component names and include the MasterData asset partials and form Tag Helper in the host. Recreate the same dictionaries, names and context on subsequent POST/AJAX requests. For a header and several detail lists that must commit together, see [Save a composed document](../cookbook/composed-document.md).
+Assign distinct component names and include the MasterData asset partials and form Tag Helper in the host. Recreate the same dictionaries, names and context on subsequent POST/AJAX requests. For a header and several detail lists that must commit together, see [Save a composed document](../../cookbook/composed-document.md).

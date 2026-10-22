@@ -57,10 +57,15 @@
     href: developer-guide/authorization.md
   - name: Background jobs
     href: developer-guide/background-jobs.md
-  - name: Bootstrap Components
-    href: developer-guide/bootstrap-components.md
-  - name: Bootstrap Tag Helpers
-    href: developer-guide/bootstrap-tag-helpers.md
+  - name: Bootstrap
+    href: developer-guide/bootstrap/index.md
+    items:
+    - name: Bootstrap Components
+      href: developer-guide/bootstrap/components.md
+    - name: Bootstrap Tag Helpers
+      href: developer-guide/bootstrap/tag-helpers.md
+    - name: Custom Bootstrap
+      href: developer-guide/bootstrap/custom-bootstrap.md
   - name: Brazil integrations
     href: developer-guide/brasil/index.md
     items:
@@ -75,11 +80,31 @@
   - name: Configuration
     href: developer-guide/configuration.md
   - name: Connections and repositories
-    href: developer-guide/connections.md
-  - name: Custom Bootstrap
-    href: developer-guide/custom-bootstrap.md
-  - name: Custom export formats
-    href: developer-guide/export-formats.md
+    href: developer-guide/repositories/index.md
+    items:
+    - name: Data dictionary repository
+      href: developer-guide/repositories/data-dictionary.md
+    - name: Entity repository
+      href: developer-guide/repositories/entities.md
+    - name: Stored procedures
+      href: developer-guide/repositories/stored-procedures.md
+  - name: Customizations
+    href: developer-guide/customizations/index.md
+    items:
+    - name: Custom export formats
+      href: developer-guide/customizations/export-formats.md
+    - name: Data panels and application-owned saves
+      href: developer-guide/customizations/data-panels.md
+    - name: Form events
+      href: developer-guide/customizations/form-events.md
+    - name: Grid events
+      href: developer-guide/customizations/grid-events.md
+    - name: Grid Preference Store
+      href: developer-guide/customizations/grid-preference-store.md
+    - name: Routes and embedding
+      href: developer-guide/customizations/routes-and-embedding.md
+    - name: UI customization
+      href: developer-guide/customizations/ui-customization.md
   - name: Data access
     href: developer-guide/data-access/index.md
     items:
@@ -89,37 +114,27 @@
       href: developer-guide/data-access/stored-procedures.md
     - name: Typed queries
       href: developer-guide/data-access/typed-queries.md
-  - name: Data dictionary repository
-    href: developer-guide/data-dictionary-repository.md
-  - name: Data panels and application-owned saves
-    href: developer-guide/data-panels.md
-  - name: Entity repository
-    href: developer-guide/entity-repository.md
-  - name: Extension points
-    href: developer-guide/extensions.md
   - name: File storage
     href: developer-guide/file-storage.md
-  - name: Form events
-    href: developer-guide/form-events.md
-  - name: Grid events
-    href: developer-guide/grid-events.md
-  - name: Grid Preference Store
-    href: developer-guide/grid-preference-store.md
-  - name: Grid templates
-    href: developer-guide/grid-templates.md
   - name: HtmlBuilder
-    href: developer-guide/html-builder.md
+    href: developer-guide/html-builder/index.md
+    items:
+    - name: Attributes and conditional output
+      href: developer-guide/html-builder/attributes.md
+    - name: Razor, Tag Helpers, and custom helpers
+      href: developer-guide/html-builder/integration.md
+    - name: Text encoding and raw markup
+      href: developer-guide/html-builder/encoding.md
   - name: Localization
     href: developer-guide/localization.md
-  - name: Routes and embedding
-    href: developer-guide/routes-and-embedding.md
-  - name: Stored procedures
-    href: developer-guide/stored-procedures.md
-  - name: Template actions
-    href: developer-guide/template-action.md
+  - name: Templates
+    href: developer-guide/templates/index.md
+    items:
+    - name: Grid templates
+      href: developer-guide/templates/grid-templates.md
+    - name: Template actions
+      href: developer-guide/templates/template-actions.md
   - name: Troubleshooting
     href: developer-guide/templates-troubleshooting.md
-  - name: UI customization
-    href: developer-guide/ui-customization.md
   - name: WebApi and OpenAPI
     href: developer-guide/webapi.md

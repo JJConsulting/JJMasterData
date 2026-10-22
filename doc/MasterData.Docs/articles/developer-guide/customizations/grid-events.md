@@ -192,4 +192,4 @@ Grid hooks customize the UI. Use [form events](form-events.md) for validation th
 
 `GetGridValuesAsync()` serves a different purpose: with `EnableEditMode`, it merges posted editor values with the rows loaded for the grid. Calling it does not persist changes, and it does not return only the changed records. The built-in grid edit/save actions can run the form update workflow for each row.
 
-See [Run a bulk action](../cookbook/bulk-action.md) for selected-key commands and [Edit values in a grid](../cookbook/editable-grid.md) for the save workflow and transaction behavior.
+See [Run a bulk action](../../cookbook/bulk-action.md) for selected-key commands and [Edit values in a grid](../../cookbook/editable-grid.md) for the save workflow and transaction behavior.
