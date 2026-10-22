@@ -126,9 +126,9 @@
 
                     postFormValues({
                         url: urlBuilder.build(), success: html => {
-                            $("body").on('hidden.bs.modal',"#" + DataImportationModal.getInstance().modalId, function () {
-                                getMasterDataForm().submit();
-                            });
+                            $(DataImportationModal.getInstance().modalElement)
+                                .off('hidden.bs.modal.importation')
+                                .one('hidden.bs.modal.importation', DataImportationModal.refreshGrid);
                             document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
                         }
                     })
@@ -141,7 +141,8 @@
             });
     }
 
-    static show(componentName: string, modalTitle: string, routeContext: string) {
+    static show(componentName: string, modalTitle: string, routeContext: string, refreshGrid: () => void) {
+        DataImportationModal.refreshGrid = refreshGrid;
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         const requestOptions = getRequestOptions();
