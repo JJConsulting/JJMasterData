@@ -30,6 +30,26 @@ public class ElementMapService(
             Filters = filters!
         });
     }
+
+    public async Task<List<Dictionary<string, object?>>> GetHierarchyDictionaryList(
+        DataElementMap elementMap,
+        string? searchId,
+        string? parentId,
+        FormStateData formStateData)
+    {
+        var childElement = await dataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var filters = GetMapFilters(elementMap, formStateData);
+
+        if (!string.IsNullOrEmpty(searchId))
+            filters[elementMap.IdFieldName] = searchId;
+        else if (!string.IsNullOrEmpty(parentId) && !string.IsNullOrEmpty(elementMap.ParentIdFieldName))
+            filters[elementMap.ParentIdFieldName] = parentId;
+
+        return await entityRepository.GetDictionaryListAsync(childElement, new EntityParameters
+        {
+            Filters = filters
+        });
+    }
     
     private Dictionary<string, object> GetFilters(
         DataElementMap elementMap,
@@ -52,6 +72,18 @@ public class ElementMapService(
             }
         }
        
+        return filters;
+    }
+
+    private Dictionary<string, object?> GetMapFilters(DataElementMap elementMap, FormStateData formStateData)
+    {
+        var filters = new Dictionary<string, object?>();
+        foreach (var filter in elementMap.Filters)
+        {
+            filters[filter.Key] = expressionsService.GetExpressionValue(filter.Value.ToString(), formStateData)
+                                  ?? string.Empty;
+        }
+
         return filters;
     }
 }

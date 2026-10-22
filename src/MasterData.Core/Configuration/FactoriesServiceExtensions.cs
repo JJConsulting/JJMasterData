@@ -71,6 +71,7 @@ public static class FactoriesServiceExtensions
             services.AddScoped<IControlFactory<JJRadioButtonGroup>, RadioButtonGroupFactory>();
             services.AddScoped<IControlFactory<JJIconPicker>, IconPickerFactory>();
             services.AddScoped<IControlFactory<JJCodeEditor>, CodeEditorFactory>();
+            services.AddScoped<IControlFactory<JJHierarchy>, HierarchyFactory>();
             services.AddScoped<ControlFactory>();
         }
     }

@@ -17,6 +17,13 @@ public class DataItemValue
 
     [JsonPropertyName("description")]
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Optional parent item identifier used by hierarchy components.
+    /// A null or empty value identifies a root item.
+    /// </summary>
+    [JsonPropertyName("parentId")]
+    public string? ParentId { get; set; }
     
     [CanBeNull]
     [JsonPropertyName("imageUrl")]

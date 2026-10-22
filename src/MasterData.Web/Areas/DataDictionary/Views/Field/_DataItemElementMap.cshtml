@@ -3,54 +3,54 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@{
+    var elementMap = Model.DataItem!.ElementMap!;
+    const string prefix = "DataItem.ElementMap";
+}
 
 <collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
     <div class="row">
         <div class="mb-3 col-sm-12 required">
             <label class="form-label">@StringLocalizer["Element Name"]</label>
-            <select asp-for="DataItem!.ElementMap!.ElementName"
-                    asp-items="@(new SelectList(ViewBag.ElementNameList, "Key", "Value"))"
-                    class="form-control form-select"
-                    onchange="getMasterDataForm().submit();"></select>
+            @Html.DropDownList($"{prefix}.ElementName",
+                new SelectList(ViewBag.ElementNameList, "Key", "Value", elementMap.ElementName),
+                new { @class = "form-control form-select", onchange = "getMasterDataForm().submit();" })
          
 
         </div>
         <div class="mb-3 col-sm-3 required">
             <label class="form-label">@StringLocalizer["Id"]</label>
-            <select asp-for="DataItem!.ElementMap!.IdFieldName"
-                    asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                    class="form-control form-select"></select>
+            @Html.DropDownList($"{prefix}.IdFieldName", new SelectList(ViewBag.ElementFieldList, "Key", "Value", elementMap.IdFieldName), new { @class = "form-control form-select" })
         </div>
         <div class="mb-3 col-sm-3">
             <label class="form-label">@StringLocalizer["Description"]</label>
-            <select asp-for="DataItem!.ElementMap!.DescriptionFieldName"
-                    asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                    class="form-control form-select"></select>
+            @Html.DropDownList($"{prefix}.DescriptionFieldName", new SelectList(ViewBag.ElementFieldList, "Key", "Value", elementMap.DescriptionFieldName), new { @class = "form-control form-select" })
         </div>
 
-        @if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup && Model.DataItem!.ShowIcon)
+        @if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup or FormComponent.Hierarchy && Model.DataItem!.ShowIcon)
         {
             <div class="mb-3 col-sm-2">
                 <label class="form-label">@StringLocalizer["Icon"]</label>
-                <select asp-for="DataItem!.ElementMap!.IconIdFieldName"
-                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                        class="form-control form-select"></select>
+                @Html.DropDownList($"{prefix}.IconIdFieldName", new SelectList(ViewBag.ElementFieldList, "Key", "Value", elementMap.IconIdFieldName), new { @class = "form-control form-select" })
 
             </div>
             <div class="mb-3 col-sm-2">
                 <label class="form-label">@StringLocalizer["Icon Color"]</label>
-                <select asp-for="DataItem!.ElementMap!.IconColorFieldName"
-                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                        class="form-control form-select"></select>
+                @Html.DropDownList($"{prefix}.IconColorFieldName", new SelectList(ViewBag.ElementFieldList, "Key", "Value", elementMap.IconColorFieldName), new { @class = "form-control form-select" })
             </div>
         }
         @if (Model.Component is FormComponent.ComboBox)
         {
             <div class="mb-3 col-sm-2">
                 <label class="form-label">@StringLocalizer["Group"]</label>
-                <select asp-for="DataItem!.ElementMap!.GroupFieldName"
-                        asp-items="@(new SelectList(ViewBag.ElementFieldList, "Key", "Value"))"
-                        class="form-control form-select"></select>
+                @Html.DropDownList($"{prefix}.GroupFieldName", new SelectList(ViewBag.ElementFieldList, "Key", "Value", elementMap.GroupFieldName), new { @class = "form-control form-select" })
+            </div>
+        }
+        @if (Model.Component is FormComponent.Hierarchy)
+        {
+            <div class="mb-3 col-sm-3 required">
+                <label class="form-label">@StringLocalizer["Parent Id"]</label>
+                @Html.DropDownList($"{prefix}.ParentIdFieldName", new SelectList(ViewBag.ElementFieldList, "Key", "Value", elementMap.ParentIdFieldName), new { @class = "form-control form-select" })
             </div>
         }
     </div>
@@ -63,16 +63,16 @@
        
         <table class="table table-bordered table-hover">
             <tbody>
-            @for (var i = 0; i < Model.DataItem!.ElementMap!.MapFilters.Count; i++)
+            @for (var i = 0; i < elementMap.MapFilters.Count; i++)
             {
                 var index = i;
-                var mapFilter = Model.DataItem.ElementMap.MapFilters[i];
+                var mapFilter = elementMap.MapFilters[i];
                 <tr>
                     <td>
                         @mapFilter.FieldName<i class="fa-solid fa-arrow-right"></i>@mapFilter.ExpressionValue
-                        @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[index].FieldName, mapFilter.FieldName)
+                        @Html.Hidden($"{prefix}.MapFilters[{index}].FieldName", mapFilter.FieldName)
                         <div style="display:none">
-                            <expression for="@Model.DataItem!.ElementMap!.MapFilters[index].ExpressionValue" value="mapFilter.ExpressionValue" use-floating-label="false"/>
+                            @Html.Hidden($"{prefix}.MapFilters[{index}].ExpressionValue", mapFilter.ExpressionValue)
                         </div>
                     </td>
                     <td style="width:80px;" align="center">

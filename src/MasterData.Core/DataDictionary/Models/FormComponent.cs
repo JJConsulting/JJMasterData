@@ -59,6 +59,8 @@ public enum FormComponent
     CodeEditor = 27,
     [Display(GroupName = "6. Mask")]
     Phone = 28,
+    [Display(GroupName = "5. Data Item")]
+    Hierarchy = 29,
 }
 
 public static class FormComponentExtensions

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -53,7 +54,17 @@ public class FieldFormattingService(
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? stringLocalizer["Yes"] : stringLocalizer["No"];
                 break;
-            case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup 
+            case FormComponent.Hierarchy when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
+            {
+                var hierarchyItems = await dataItemService.GetHierarchyValuesAsync(field.DataItem,
+                    new DataQuery(formStateData, fieldSelector.FormElement.ConnectionId)
+                    {
+                        SearchId = value.ToString()
+                    });
+                stringValue = hierarchyItems.FirstOrDefault()?.Description ?? value.ToString() ?? string.Empty;
+                break;
+            }
+            case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
                 return await dataItemService.GetDescriptionAsync(fieldSelector.FormElement, field, formStateData, value);
             default:

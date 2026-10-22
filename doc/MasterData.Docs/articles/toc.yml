@@ -16,6 +16,8 @@
     href: concepts/crud-operations.md
   - name: Components and file fields
     href: concepts/components.md
+  - name: Data items
+    href: concepts/data-item.md
   - name: Actions
     href: concepts/actions.md
   - name: Customizations

@@ -50,5 +50,7 @@ public enum ComponentContext
     AuditLogView,
 
     InsertSelection,
-    LookupDescription
+    LookupDescription,
+    Hierarchy,
+    HierarchyFilter
 }
