@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Events.Abstractions;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,29 @@ public static class MasterDataServiceBuilderExtensions
 {
     extension(MasterDataServiceBuilder builder)
     {
+        /// <summary>Replaces the scoped store used for GridView preferences.</summary>
+        public MasterDataServiceBuilder WithGridPreferenceStore<T>() where T : class, IGridPreferenceStore
+        {
+            builder.Services.Replace(ServiceDescriptor.Scoped<IGridPreferenceStore, T>());
+            return builder;
+        }
+
+        /// <summary>Replaces the scoped store used for GridView preferences.</summary>
+        public MasterDataServiceBuilder WithGridPreferenceStore(Func<IServiceProvider, IGridPreferenceStore> implementationFactory)
+        {
+            builder.Services.Replace(ServiceDescriptor.Scoped(implementationFactory));
+            return builder;
+        }
+
+        /// <summary>
+        /// Stores all grid preferences in the current ASP.NET Core session.
+        /// The host must configure AddSession and UseSession.
+        /// </summary>
+        public MasterDataServiceBuilder WithGridSessionPreferenceStore()
+        {
+            return builder.WithGridPreferenceStore<SessionGridPreferenceStore>();
+        }
+
         public MasterDataServiceBuilder WithExportFormat<TFormat>() where TFormat : class, IExportFormat
         {
             builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, TFormat>());
