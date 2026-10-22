@@ -13,7 +13,6 @@ internal sealed class ExcelXlsxDataReader(
     private IAsyncEnumerator<Dictionary<string, object?>>? _enumerator;
     private Dictionary<string, object?>? _current;
     private long _processed;
-    private readonly ExportProgressReporter _progress = new(context);
     private bool _disposed;
 
     public override int FieldCount => context.Columns.Count;
@@ -55,13 +54,13 @@ internal sealed class ExcelXlsxDataReader(
         if (!await _enumerator.MoveNextAsync())
         {
             _current = null;
-            _progress.Report(_processed, completed: true);
+            context.Progress.Complete(_processed);
             return false;
         }
 
         _current = _enumerator.Current;
         _processed++;
-        _progress.Report(_processed);
+        context.Progress.Report(_processed);
         return true;
     }
 

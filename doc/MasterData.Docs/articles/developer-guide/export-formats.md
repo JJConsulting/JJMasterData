@@ -46,18 +46,16 @@ public sealed class JsonExportFormat : IExportFormat<JsonExportOptions>
             }
             writer.WriteEndObject();
             processed++;
+            context.Progress.Report(processed);
             if (processed % 1000 == 0)
             {
                 await writer.FlushAsync(cancellationToken);
-                context.Progress.Report(new ExportProgress(
-                    processed, context.TotalRecords, $"Exported {processed} records."));
             }
         }
 
         writer.WriteEndArray();
         await writer.FlushAsync(cancellationToken);
-        context.Progress.Report(new ExportProgress(
-            processed, context.TotalRecords, $"Exported {processed} records."));
+        context.Progress.Complete(processed);
     }
 }
 ```
@@ -87,7 +85,7 @@ Add `WithExportFormat` to the application's existing registration chain. The for
 | `Rows` | Asynchronous sequence of repository rows. |
 | `UserValues` | Values supplied with the export request. |
 | `TotalRecords` | Expected count, which can be null. |
-| `Progress` | Report `ExportProgress` with processed count, total and message. |
+| `Progress` | Call `Report(processed)` for each row and `Complete(processed)` at the end. The reporter sends updates every 50 records and sends the final count if it has not already been reported, creating the progress object and message only when sending an update. |
 
 Enumerate rows once, honor cancellation and write incrementally for large exports. Keep the supplied stream open for the pipeline. The pipeline handles repository paging, naming, temporary-file cleanup and saving to `IFileStorage`; formats should not duplicate those steps.
 

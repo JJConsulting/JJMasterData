@@ -73,8 +73,9 @@ internal sealed class ExportJobHandler(
             Rows = GetRowsAsync(formElement, firstPage, totalRecords, parameters, cancellationToken),
             UserValues = new Dictionary<string, object?>(request.UserValues),
             TotalRecords = totalRecords,
-            Progress = new Progress<ExportProgress>(current => progress.Report(
-                new BackgroundJobProgress(current.Percentage, current.Message, current)))
+            Progress = new ExportProgressReporter(totalRecords,
+                new Progress<ExportProgress>(current => progress.Report(
+                    new BackgroundJobProgress(current.Percentage, current.Message, current))))
         };
 
         progress.Report(new BackgroundJobProgress(0, localizer["Retrieving records..."]));

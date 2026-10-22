@@ -270,7 +270,7 @@ public sealed class ExcelXlsxExportFormatTests
             Rows = rows,
             UserValues = [],
             TotalRecords = totalRecords,
-            Progress = progress ?? new Progress<ExportProgress>()
+            Progress = new ExportProgressReporter(totalRecords, progress ?? new Progress<ExportProgress>())
         };
     }
 

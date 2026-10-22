@@ -40,7 +40,6 @@ internal abstract class DelimitedTextExportFormat<TOptions> : IExportFormat<TOpt
         }
 
         long processed = 0;
-        var progress = new ExportProgressReporter(context);
         await foreach (var row in context.Rows.WithCancellation(cancellationToken))
         {
             foreach (var field in context.Columns)
@@ -51,10 +50,10 @@ internal abstract class DelimitedTextExportFormat<TOptions> : IExportFormat<TOpt
             }
             await csv.NextRecordAsync();
             processed++;
-            progress.Report(processed);
+            context.Progress.Report(processed);
         }
 
-        progress.Report(processed, completed: true);
+        context.Progress.Complete(processed);
         await textWriter.FlushAsync(cancellationToken);
     }
 }

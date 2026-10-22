@@ -28,7 +28,6 @@ public sealed class ExcelXlsExportFormat : IExportFormat<ExcelXlsExportOptions>
         }
         await writer.WriteAsync("<tbody>");
         long processed = 0;
-        var progress = new ExportProgressReporter(context);
         await foreach (var row in context.Rows.WithCancellation(cancellationToken))
         {
             await writer.WriteAsync("<tr>");
@@ -40,9 +39,9 @@ public sealed class ExcelXlsExportFormat : IExportFormat<ExcelXlsExportOptions>
             }
             await writer.WriteAsync("</tr>");
             processed++;
-            progress.Report(processed);
+            context.Progress.Report(processed);
         }
-        progress.Report(processed, completed: true);
+        context.Progress.Complete(processed);
         await writer.WriteAsync("</tbody></table></body></html>");
         await writer.FlushAsync(cancellationToken);
     }

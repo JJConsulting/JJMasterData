@@ -1,11 +1,17 @@
+using System;
+
 namespace JJMasterData.Core.DataManager.Exportation;
 
-internal sealed class ExportProgressReporter(ExportContext context)
+public sealed class ExportProgressReporter(long? totalRecords, IProgress<ExportProgress> progress)
 {
     private const long ReportInterval = 50;
     private long _lastReported;
 
-    public void Report(long processed, bool completed = false)
+    public void Report(long processed) => Report(processed, completed: false);
+
+    public void Complete(long processed) => Report(processed, completed: true);
+
+    private void Report(long processed, bool completed)
     {
         if (!completed && processed - _lastReported < ReportInterval)
             return;
@@ -14,6 +20,6 @@ internal sealed class ExportProgressReporter(ExportContext context)
             return;
 
         _lastReported = processed;
-        context.Progress.Report(new ExportProgress(processed, context.TotalRecords, $"Exporting {processed:N0} records..."));
+        progress.Report(new ExportProgress(processed, totalRecords, $"Exporting {processed:N0} records..."));
     }
 }
