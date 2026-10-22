@@ -1532,3 +1532,29 @@ article table code {
     white-space: nowrap;
     overflow-wrap: normal;
 }
+
+/* Keep long navigation trees scrollable below the fixed header. */
+@media screen and (min-width: 48rem) {
+    body:not([data-search])[data-layout] > main.container-xxl > .toc-offcanvas {
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        scrollbar-width: thin;
+        scrollbar-gutter: stable;
+    }
+
+    body:not([data-search])[data-layout] > main.container-xxl > .toc-offcanvas #tocOffcanvas,
+    body:not([data-search])[data-layout] > main.container-xxl > .toc-offcanvas .offcanvas-body {
+        height: auto;
+        overflow: visible;
+    }
+
+    body:not([data-search])[data-layout] > main.container-xxl > .toc-offcanvas .offcanvas-body {
+        padding: 0;
+    }
+}
+
+#tocOffcanvas .offcanvas-body {
+    min-height: 0;
+    overscroll-behavior-y: contain;
+}
