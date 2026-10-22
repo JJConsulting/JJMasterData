@@ -11,7 +11,6 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
@@ -29,17 +28,14 @@ internal sealed class EntityRepository(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var command = provider.GetInsertCommand(element, values);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing insert command for element {element}.", element.Name);
-            var newFields = dataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
+        _logger.LogInformation("Executing insert command for element {Element}", element.Name);
+        var newFields = dataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
 
-            foreach (var entry in newFields)
+        foreach (var entry in newFields)
+        {
+            if (element.Fields.ContainsKey(entry.Key))
             {
-                if (element.Fields.ContainsKey(entry.Key))
-                {
-                    values[entry.Key] = entry.Value;
-                }
+                values[entry.Key] = entry.Value;
             }
         }
     }
@@ -48,18 +44,15 @@ internal sealed class EntityRepository(
     {
         var command = provider.GetInsertCommand(element, values);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            var dataAccess = GetDataAccess(element.ConnectionId);
-            _logger.LogInformation("Executing insert command for element {element}.", element.Name);
-            var newFields = await dataAccess.GetDictionaryAsync(command);
+        var dataAccess = GetDataAccess(element.ConnectionId);
+        _logger.LogInformation("Executing insert command for element {Element}", element.Name);
+        var newFields = await dataAccess.GetDictionaryAsync(command);
 
-            foreach (var entry in newFields)
+        foreach (var entry in newFields)
+        {
+            if (element.Fields.ContainsKey(entry.Key))
             {
-                if (element.Fields.ContainsKey(entry.Key))
-                {
-                    values[entry.Key] = entry.Value;
-                }
+                values[entry.Key] = entry.Value;
             }
         }
     }
@@ -69,11 +62,8 @@ internal sealed class EntityRepository(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var commandList = GetInsertCommandList(element, values);
 
-        using (_logger.BeginCommandListScope(commandList))
-        {
-            _logger.LogInformation("Executing insert in batch for element {element}.", element.Name);
-            return dataAccess.SetCommand(commandList);
-        }
+        _logger.LogInformation("Executing insert in batch for element {Element}", element.Name);
+        return dataAccess.SetCommand(commandList);
     }
 
     public async Task<int> InsertAsync(Element element, IEnumerable<Dictionary<string, object?>> values)
@@ -81,11 +71,8 @@ internal sealed class EntityRepository(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var commandList = GetInsertCommandList(element, values);
 
-        using (_logger.BeginCommandListScope(commandList))
-        {
-            _logger.LogInformation("Executing insert in batch for element {element}.", element.Name);
-            return await dataAccess.SetCommandListAsync(commandList);
-        }
+        _logger.LogInformation("Executing insert in batch for element {Element}", element.Name);
+        return await dataAccess.SetCommandListAsync(commandList);
     }
     
     public int Update(Element element, Dictionary<string, object?> values)
@@ -93,24 +80,18 @@ internal sealed class EntityRepository(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var command = provider.GetUpdateCommand(element, values);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing update command for element {element}.", element.Name);
-            int numberRowsAffected = dataAccess.SetCommand(command);
-            return numberRowsAffected;
-        }
+        _logger.LogInformation("Executing update command for element {Element}", element.Name);
+        int numberRowsAffected = dataAccess.SetCommand(command);
+        return numberRowsAffected;
     }
     
     public async Task<int> UpdateAsync(Element element, Dictionary<string, object?> values)
     {
         var dataAccess = GetDataAccess(element.ConnectionId);
         var command = provider.GetUpdateCommand(element, values);
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing update command for element {element}.", element.Name);
-            int numberRowsAffected = await dataAccess.SetCommandAsync(command);
-            return numberRowsAffected;
-        }
+        _logger.LogInformation("Executing update command for element {Element}", element.Name);
+        int numberRowsAffected = await dataAccess.SetCommandAsync(command);
+        return numberRowsAffected;
     }
 
     public async Task<int> DeleteAsync(Element element, Dictionary<string, object> filters)
@@ -118,12 +99,9 @@ internal sealed class EntityRepository(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var command = provider.GetDeleteCommand(element, filters);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing delete command for element {element}.", element.Name);
-            int numberRowsAffected = await dataAccess.SetCommandAsync(command);
-            return numberRowsAffected;
-        }
+        _logger.LogInformation("Executing delete command for element {Element}", element.Name);
+        int numberRowsAffected = await dataAccess.SetCommandAsync(command);
+        return numberRowsAffected;
     }
 
     public int Delete(Element element, Dictionary<string, object> primaryKeys)
@@ -131,12 +109,9 @@ internal sealed class EntityRepository(
         var dataAccess = GetDataAccess(element.ConnectionId);
         var command = provider.GetDeleteCommand(element, primaryKeys);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing delete command for element {element}.", element.Name);
-            int numberRowsAffected = dataAccess.SetCommand(command);
-            return numberRowsAffected;
-        }
+        _logger.LogInformation("Executing delete command for element {Element}", element.Name);
+        int numberRowsAffected = dataAccess.SetCommand(command);
+        return numberRowsAffected;
     }
 
     private List<DataAccessCommand> GetInsertCommandList(Element element, IEnumerable<Dictionary<string, object?>> values)
@@ -176,12 +151,9 @@ internal sealed class EntityRepository(
         const CommandOperation commandType = CommandOperation.None;
         var command = provider.GetInsertOrReplaceCommand(element, values);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing SET command for element {element}.", element.Name);
-            var newFields = await dataAccess.GetDictionaryAsync(command);
-            return GetCommandOperation(element, values, command, commandType, newFields);
-        }
+        _logger.LogInformation("Executing SET command for element {Element}", element.Name);
+        var newFields = await dataAccess.GetDictionaryAsync(command);
+        return GetCommandOperation(element, values, command, commandType, newFields);
     }
 
     public async Task<CommandOperation> SetValuesNoResultAsync(Element element, Dictionary<string,object?> values)
@@ -190,12 +162,9 @@ internal sealed class EntityRepository(
         const CommandOperation result = CommandOperation.None;
         var command = provider.GetInsertOrReplaceCommand(element, values);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing SET command for element {element}.", element.Name);
-            await dataAccess.SetCommandAsync(command);
-            return GetCommandFromValuesNoResult(element, command, result);
-        }
+        _logger.LogInformation("Executing SET command for element {Element}", element.Name);
+        await dataAccess.SetCommandAsync(command);
+        return GetCommandFromValuesNoResult(element, command, result);
     }
 
     private static CommandOperation GetCommandFromValuesNoResult(Element element, DataAccessCommand command, CommandOperation ret)
@@ -221,12 +190,9 @@ internal sealed class EntityRepository(
         const CommandOperation commandType = CommandOperation.None;
         var command = provider.GetInsertOrReplaceCommand(element, values);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing SET command for element {element}.", element.Name);
-            var newFields = dataAccess.GetDictionary(command);
-            return GetCommandOperation(element, values, command, commandType, newFields);
-        }
+        _logger.LogInformation("Executing SET command for element {Element}", element.Name);
+        var newFields = dataAccess.GetDictionary(command);
+        return GetCommandOperation(element, values, command, commandType, newFields);
     }
 
     public async Task SetValuesAsync(Element element, IEnumerable<Dictionary<string, object?>> values)
@@ -235,12 +201,9 @@ internal sealed class EntityRepository(
         
         var commandList = GetSetValuesCommands(element, values);
 
-        using (_logger.BeginCommandListScope(commandList))
-        {
-            _logger.LogInformation("Executing SET command list for element {element}.", element.Name);
+        _logger.LogInformation("Executing SET command list for element {Element}", element.Name);
 
-            await dataAccess.SetCommandListAsync(commandList);
-        }
+        await dataAccess.SetCommandListAsync(commandList);
     }
 
     public Task<Element> GetElementFromTableAsync(string? schemaName, string tableName, Guid? connectionId = null)
@@ -309,11 +272,8 @@ internal sealed class EntityRepository(
             Filters = primaryKeys!
         }, totalOfRecords);
 
-        using (_logger.BeginCommandScope(cmd))
-        {
-            _logger.LogInformation("Executing GET command for element {element}.", element.Name);
-            return dataAccess.GetDictionary(cmd) ?? new Dictionary<string, object?>();
-        }
+        _logger.LogInformation("Executing GET command for element {Element}", element.Name);
+        return dataAccess.GetDictionary(cmd) ?? new Dictionary<string, object?>();
     }
 
     public Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId = null)
@@ -339,12 +299,9 @@ internal sealed class EntityRepository(
             Filters = primaryKeys!
         }, totalOfRecords);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            var dataAccess = GetDataAccess(element.ConnectionId);
-            _logger.LogInformation("Executing GET command for element {element}.", element.Name);
-            return await dataAccess.GetDictionaryAsync(command);
-        }
+        var dataAccess = GetDataAccess(element.ConnectionId);
+        _logger.LogInformation("Executing GET command for element {Element}", element.Name);
+        return await dataAccess.GetDictionaryAsync(command);
     }
 
     public Task CreateDataModelAsync(Element element, List<RelationshipReference>? relationships = null)
@@ -501,18 +458,15 @@ internal sealed class EntityRepository(
 
         var dataAccess = GetDataAccess(element.ConnectionId);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing GET command for element {element}.", element.Name);
-            var list = dataAccess.GetDictionaryList(command);
+        _logger.LogInformation("Executing GET command for element {Element}", element.Name);
+        var list = dataAccess.GetDictionaryList(command);
 
-            int totalRecords = 0;
-            if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
-                totalRecords = (int)totalParameter.Value;
+        int totalRecords = 0;
+        if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
+            totalRecords = (int)totalParameter.Value;
 
-            var result = new DictionaryListResult(list, totalRecords);
-            return new DictionaryListResult(result.Data, result.TotalOfRecords);
-        }
+        var result = new DictionaryListResult(list, totalRecords);
+        return new DictionaryListResult(result.Data, result.TotalOfRecords);
     }
 
     public async Task<DictionaryListResult> GetDictionaryListResultAsync(Element element, EntityParameters? parameters = null, bool recoverTotalOfRecords = true)
@@ -529,18 +483,15 @@ internal sealed class EntityRepository(
 
         var dataAccess = GetDataAccess(element.ConnectionId);
 
-        using (_logger.BeginCommandScope(command))
-        {
-            _logger.LogInformation("Executing GET command for element {element}.", element.Name);
-            var list = await dataAccess.GetDictionaryListAsync(command);
+        _logger.LogInformation("Executing GET command for element {Element}", element.Name);
+        var list = await dataAccess.GetDictionaryListAsync(command);
 
-            int totalRecords = 0;
-            if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
-                totalRecords = (int)totalParameter.Value;
+        int totalRecords = 0;
+        if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
+            totalRecords = (int)totalParameter.Value;
 
-            var result = new DictionaryListResult(list, totalRecords);
-            return new DictionaryListResult(result.Data, result.TotalOfRecords);
-        }
+        var result = new DictionaryListResult(list, totalRecords);
+        return new DictionaryListResult(result.Data, result.TotalOfRecords);
     }
 
     public DataSet GetDataSet(DataAccessCommand command, Guid? connectionId = null)

@@ -10,7 +10,6 @@ using System.Text;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -60,6 +59,12 @@ public partial class DataAccess
         _dbProviderFactory = DataAccessProviderFactory.GetDbProviderFactory(_connectionProvider);
     }
 
+    public DataAccess(string connectionString, DbProviderFactory dbProviderFactory)
+    {
+        _connectionString = connectionString;
+        _dbProviderFactory = dbProviderFactory;
+    }
+
     [ActivatorUtilitiesConstructor]
     public DataAccess(IOptionsSnapshot<MasterDataCommonsOptions> options)
     {
@@ -72,12 +77,20 @@ public partial class DataAccess
     [MustDisposeResource]
     private DbConnection CreateConnection()
     {
-        var connection = _dbProviderFactory.CreateConnection();
-        
-        connection!.ConnectionString = _connectionString;
-        connection.Open();
-        
-        return connection;
+        var connection = _dbProviderFactory.CreateConnection()
+            ?? throw new DataAccessException("The database provider could not create a connection.");
+
+        try
+        {
+            connection.ConnectionString = _connectionString;
+            connection.Open();
+            return connection;
+        }
+        catch
+        {
+            connection.Dispose();
+            throw;
+        }
     }
 
     /// <summary>
@@ -225,10 +238,8 @@ public partial class DataAccess
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
 
-            using (dbCommand.Connection)
-            {
-                scalarResult = dbCommand.ExecuteScalar();
-            }
+            scalarResult = dbCommand.ExecuteScalar();
+            SetOutputParameters(command, dbCommand);
         }
         catch (Exception ex)
         {
@@ -288,6 +299,7 @@ public partial class DataAccess
                     dbCommand.Transaction = sqlTransaction;
 
                     numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+                    SetOutputParameters(command, dbCommand);
                 }
 
                 sqlTransaction.Commit();
@@ -340,10 +352,8 @@ public partial class DataAccess
             using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
-            using (dbCommand.Connection)
-            {
-                numberOfRowsAffected += dbCommand.ExecuteNonQuery();
-            }
+            numberOfRowsAffected = dbCommand.ExecuteNonQuery();
+            SetOutputParameters(command, dbCommand);
         }
         catch (Exception ex)
         {
@@ -549,34 +559,43 @@ public partial class DataAccess
         {
             using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = CreateConnection();
-            using (dbCommand.Connection)
+
+            using var connection = dbCommand.Connection;
+
+            using (var dataReader = dbCommand.ExecuteReader())
             {
-                using (var dataReader =  dbCommand.ExecuteReader())
+                var fieldCount = dataReader.FieldCount;
+                var columnNames = new string[fieldCount];
+
+                for (var i = 0; i < fieldCount; i++)
                 {
-                    List<string> columnNames = [];
-                    for (var i = 0; i < dataReader.FieldCount; i++)
-                    {
-                        columnNames.Add(dataReader.GetName(i));
-                    }
-
-                    while ( dataReader.Read())
-                    {
-                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-                        foreach (var columnName in columnNames)
-                        {
-                            var ordinal = dataReader.GetOrdinal(columnName);
-                            var value = dataReader.IsDBNull(ordinal)
-                                ? null
-                                : dataReader.GetValue(ordinal);
-                            dictionary[columnName] = value;
-                        }
-
-                        dictionaryList.Add(dictionary);
-                    }
+                    columnNames[i] = dataReader.GetName(i);
                 }
 
-                SetOutputParameters(command, dbCommand);
+                int[]? ordinals = null;
+
+                while (dataReader.Read())
+                {
+                    ordinals ??= Array.ConvertAll(columnNames, dataReader.GetOrdinal);
+
+                    var dictionary = new Dictionary<string, object?>(
+                        fieldCount,
+                        StringComparer.InvariantCultureIgnoreCase);
+
+                    for (var i = 0; i < fieldCount; i++)
+                    {
+                        var ordinal = ordinals[i];
+
+                        dictionary[columnNames[i]] = dataReader.IsDBNull(ordinal)
+                            ? null
+                            : dataReader.GetValue(ordinal);
+                    }
+
+                    dictionaryList.Add(dictionary);
+                }
             }
+
+            SetOutputParameters(command, dbCommand);
         }
         catch (Exception ex)
         {
@@ -621,27 +640,36 @@ public partial class DataAccess
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = _dbProviderFactory.CreateCommand();
-        
+
         if (dbCommand == null)
             throw new ArgumentException(nameof(dbCommand));
-        
-        if (string.IsNullOrEmpty(command.Sql))
-            throw new DataAccessException("Sql Command cannot be null or empty.");
-        
-        dbCommand.CommandType = command.Type;
-        dbCommand.CommandText = command.Sql;
-        
-#pragma warning disable CS0618 // Type or member is obsolete
-        dbCommand.CommandTimeout = command.TimeoutSeconds ?? TimeOut;
-#pragma warning restore CS0618 // Type or member is obsolete
-        
-        foreach (var parameter in command.Parameters)
-        {
-            var dbParameter = CreateDbParameter(parameter);
-            dbCommand.Parameters.Add(dbParameter);
-        }
 
-        return dbCommand;
+        try
+        {
+            if (string.IsNullOrEmpty(command.Sql))
+                throw new DataAccessException("Sql Command cannot be null or empty.");
+
+            dbCommand.CommandType = command.Type;
+            dbCommand.CommandText = command.Sql;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            dbCommand.CommandTimeout = command.TimeoutSeconds ?? TimeOut;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            foreach (var parameter in command.Parameters)
+            {
+                var dbParameter = CreateDbParameter(parameter);
+                dbCommand.Parameters.Add(dbParameter);
+            }
+
+            return dbCommand;
+        }
+        catch
+        {
+            // Configuration can fail before the caller acquires ownership of the command.
+            dbCommand.Dispose();
+            throw;
+        }
     }
 
     private DbParameter CreateDbParameter(DataAccessParameter parameter)
