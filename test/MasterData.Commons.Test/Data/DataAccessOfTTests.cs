@@ -148,6 +148,22 @@ public class TypedDataAccessTests
         Assert.Equal("two", second.Name);
     }
 
+    [Fact]
+    public async Task ChecksRuntimeTypesPerRowEvenWhenSqliteSchemaIsUnchanged()
+    {
+        var rows = await CreateAccess().GetListAsync<QueryCustomer>(new("""
+            SELECT 1 AS customer_id, NULL AS Note
+            UNION ALL SELECT 2.0, 'second'
+            """), Token);
+        Assert.Equal(1, rows[0].Id);
+        Assert.Null(rows[0].Note);
+        Assert.Equal(2, rows[1].Id);
+        Assert.Equal("second", rows[1].Note);
+        await Assert.ThrowsAsync<DataException>(() => CreateAccess().GetListAsync<QueryCustomer>(new("""
+            SELECT 1 AS customer_id UNION ALL SELECT 2.5
+            """), Token));
+    }
+
     [Theory]
     [InlineData("SELECT NULL AS customer_id", "customer_id")]
     [InlineData("SELECT NULL AS Name", "Name")]
@@ -207,8 +223,10 @@ public class TypedDataAccessTests
         if (outcome == "success")
         {
             Assert.Equal(2, (await access.GetListAsync<QueryCustomer>(query, token)).Count);
-            // Each property scans the one-column schema once, regardless of row count.
-            reader.Verify(r => r.GetName(0), Times.Exactly(typeof(QueryCustomer).GetProperties().Length));
+            // One schema pass per result, and one value fetch per mapped cell.
+            reader.Verify(r => r.GetName(0), Times.Once);
+            reader.Verify(r => r.GetValue(0), Times.Exactly(2));
+            reader.Verify(r => r.IsDBNull(It.IsAny<int>()), Times.Never);
         }
         else
         {

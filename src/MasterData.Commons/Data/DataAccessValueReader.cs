@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Data;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Globalization;
 
@@ -22,11 +23,32 @@ public static class DataAccessValueReader
         return ordinal;
     }
 
-    public static DataException NullValue(string column, string expectedType) => 
-        new($"Column '{column}' contains NULL; expected non-nullable {expectedType}.");
+    /// <summary>Resolves all mapped columns in one schema pass, preserving missing and duplicate checks.</summary>
+    public static int[] FindOrdinals(DbDataReader reader, IReadOnlyDictionary<string, int> columns)
+    {
+        var ordinals = new int[columns.Count];
+        Array.Fill(ordinals, -1);
+        for (var i = 0; i < reader.FieldCount; i++)
+        {
+            var name = reader.GetName(i);
+            if (!columns.TryGetValue(name, out var index)) continue;
+            if (ordinals[index] >= 0)
+                throw new DataException($"Column '{name}' occurs more than once in the result set.");
+            ordinals[index] = i;
+        }
+        return ordinals;
+    }
 
-    private static bool IsNumeric(object value) => value is byte
-        or sbyte or short or ushort or int or uint or long or ulong or float or double or decimal;
+    public static DataException NullValue(string column, string expectedType)
+    {
+        return new DataException($"Column '{column}' contains NULL; expected non-nullable {expectedType}.");
+    }
+
+    private static bool IsNumeric(object value)
+    {
+        return value is byte
+            or sbyte or short or ushort or int or uint or long or ulong or float or double or decimal;
+    }
 
     private static object Numeric(object value, bool integral)
     {
@@ -39,10 +61,8 @@ public static class DataAccessValueReader
         return value;
     }
 
-    private static T Read<T>(DbDataReader reader, int ordinal, string expectedType, Func<object, T> convert)
+    private static T Read<T>(DbDataReader reader, int ordinal, object value, string expectedType, Func<object, T> convert)
     {
-        var value = reader.GetValue(ordinal);
-        
         if (value is T exact) 
             return exact;
         try
@@ -54,49 +74,166 @@ public static class DataAccessValueReader
             throw new DataException($"Column '{reader.GetName(ordinal)}' cannot be mapped to {expectedType}.", ex);
         }
     }
+    
+    public static byte ReadByte(DbDataReader reader, int ordinal)
+    {
+        return ReadByte(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static byte ReadByte(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.Byte", static value => Convert.ToByte(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static sbyte ReadSByte(DbDataReader reader, int ordinal)
+    {
+        return ReadSByte(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static sbyte ReadSByte(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.SByte", static value => Convert.ToSByte(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static short ReadInt16(DbDataReader reader, int ordinal)
+    {
+        return ReadInt16(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static short ReadInt16(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.Int16", static value => Convert.ToInt16(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static ushort ReadUInt16(DbDataReader reader, int ordinal)
+    {
+        return ReadUInt16(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static ushort ReadUInt16(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.UInt16", static value => Convert.ToUInt16(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static int ReadInt32(DbDataReader reader, int ordinal)
+    {
+        return ReadInt32(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static int ReadInt32(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.Int32", static value => Convert.ToInt32(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static uint ReadUInt32(DbDataReader reader, int ordinal)
+    {
+        return ReadUInt32(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static uint ReadUInt32(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.UInt32", static value => Convert.ToUInt32(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static long ReadInt64(DbDataReader reader, int ordinal)
+    {
+        return ReadInt64(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static long ReadInt64(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.Int64", static value => Convert.ToInt64(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static ulong ReadUInt64(DbDataReader reader, int ordinal)
+    {
+        return ReadUInt64(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static ulong ReadUInt64(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.UInt64", static value => Convert.ToUInt64(Numeric(value, true), CultureInfo.InvariantCulture));
+    public static float ReadSingle(DbDataReader reader, int ordinal)
+    {
+        return ReadSingle(reader, ordinal, reader.GetValue(ordinal));
+    }
 
-    public static float ReadSingle(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.Single", static value =>
+    public static double ReadDouble(DbDataReader reader, int ordinal)
+    {
+        return ReadDouble(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static decimal ReadDecimal(DbDataReader reader, int ordinal)
+    {
+        return ReadDecimal(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static string ReadString(DbDataReader reader, int ordinal)
+    {
+        return ReadString(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static char ReadChar(DbDataReader reader, int ordinal)
+    {
+        return ReadChar(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static bool ReadBoolean(DbDataReader reader, int ordinal)
+    {
+        return ReadBoolean(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static Guid ReadGuid(DbDataReader reader, int ordinal)
+    {
+        return ReadGuid(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static DateTime ReadDateTime(DbDataReader reader, int ordinal)
+    {
+        return ReadDateTime(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static DateTimeOffset ReadDateTimeOffset(DbDataReader reader, int ordinal)
+    {
+        return ReadDateTimeOffset(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    public static TimeSpan ReadTimeSpan(DbDataReader reader, int ordinal)
+    {
+        return ReadTimeSpan(reader, ordinal, reader.GetValue(ordinal));
+    }
+
+    private static byte ReadByte(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.Byte",
+            static value => Convert.ToByte(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static sbyte ReadSByte(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.SByte",
+            static value => Convert.ToSByte(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static short ReadInt16(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.Int16",
+            static value => Convert.ToInt16(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static ushort ReadUInt16(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.UInt16",
+            static value => Convert.ToUInt16(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static int ReadInt32(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.Int32", static value => value is long integer
+            ? checked((int)integer)
+            : Convert.ToInt32(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static uint ReadUInt32(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.UInt32",
+            static value => Convert.ToUInt32(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static long ReadInt64(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.Int64",
+            static value => Convert.ToInt64(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static ulong ReadUInt64(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.UInt64",
+            static value => Convert.ToUInt64(Numeric(value, true), CultureInfo.InvariantCulture));
+    }
+
+    private static float ReadSingle(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.Single", static value =>
         {
             var number = Convert.ToSingle(Numeric(value, false), CultureInfo.InvariantCulture);
             if (float.IsInfinity(number) && value is double d && double.IsFinite(d))
                 throw new OverflowException("Numeric value exceeds Single range.");
             return number;
         });
+    }
 
-    public static double ReadDouble(DbDataReader reader, int ordinal)
+    public static double ReadDouble(DbDataReader reader, int ordinal, object value)
     {
-        return Read(reader, ordinal, "System.Double",
+        return Read(reader, ordinal, value, "System.Double",
             static value => Convert.ToDouble(Numeric(value, false), CultureInfo.InvariantCulture));
     }
 
-    public static decimal ReadDecimal(DbDataReader reader, int ordinal)
+    public static decimal ReadDecimal(DbDataReader reader, int ordinal, object value)
     {
-        return Read(reader, ordinal, "System.Decimal", static value =>
+        return Read(reader, ordinal, value, "System.Decimal", static value =>
         {
             if (value is string text)
             {
@@ -107,57 +244,71 @@ public static class DataAccessValueReader
         });
     }
 
-    public static string ReadString(DbDataReader reader, int ordinal)
+    public static string ReadString(DbDataReader reader, int ordinal, object value)
     {
-        return Read<string>(reader, ordinal, "System.String",
+        return Read<string>(reader, ordinal, value, "System.String",
             static _ => throw new InvalidCastException("Expected a string provider value."));
     }
 
-    public static char ReadChar(DbDataReader reader, int ordinal)
+    public static char ReadChar(DbDataReader reader, int ordinal, object value)
     {
-        return Read(reader, ordinal, "System.Char",
+        return Read(reader, ordinal, value, "System.Char",
             static value => value is string { Length: 1 } text
                 ? text[0]
                 : throw new InvalidCastException("Expected a char or single-character string."));
     }
 
-    public static bool ReadBoolean(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.Boolean", static value => Numeric(value, true) switch
+    public static bool ReadBoolean(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.Boolean", static value => Numeric(value, true) switch
         {
             var number when Convert.ToDecimal(number, CultureInfo.InvariantCulture) == 0 => false,
             var number when Convert.ToDecimal(number, CultureInfo.InvariantCulture) == 1 => true,
             _ => throw new InvalidCastException("Expected a boolean or numeric 0/1.")
         });
+    }
 
-    public static Guid ReadGuid(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.Guid", static value => value is string text ? Guid.ParseExact(text, "D") : throw new InvalidCastException("Expected a Guid or canonical Guid string."));
+    public static Guid ReadGuid(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.Guid",
+            static value => value is string text
+                ? Guid.ParseExact(text, "D")
+                : throw new InvalidCastException("Expected a Guid or canonical Guid string."));
+    }
 
-    public static DateTime ReadDateTime(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.DateTime", static value =>
+    public static DateTime ReadDateTime(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.DateTime", static value =>
         {
             if (value is string text)
-                return DateTime.ParseExact(text, DateFormats, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-            
+                return DateTime.ParseExact(text, DateFormats, CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind);
+
             throw new InvalidCastException("Expected a DateTime or ISO date string.");
         });
+    }
 
-    public static DateTimeOffset ReadDateTimeOffset(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.DateTimeOffset", static value =>
+    public static DateTimeOffset ReadDateTimeOffset(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.DateTimeOffset", static value =>
         {
             if (value is string text)
                 return DateTimeOffset.ParseExact(text, OffsetFormats, CultureInfo.InvariantCulture,
                     DateTimeStyles.None);
-            
+
             throw new InvalidCastException("Expected a DateTimeOffset or ISO date string with offset.");
         });
+    }
 
-    public static TimeSpan ReadTimeSpan(DbDataReader reader, int ordinal) =>
-        Read(reader, ordinal, "System.TimeSpan", static value =>
+    public static TimeSpan ReadTimeSpan(DbDataReader reader, int ordinal, object value)
+    {
+        return Read(reader, ordinal, value, "System.TimeSpan", static value =>
         {
             if (value is string text)
                 return TimeSpan.ParseExact(text, "c", CultureInfo.InvariantCulture);
             throw new InvalidCastException("Expected a TimeSpan or constant-format duration string.");
         });
+    }
 
     //Você deve estar preocupado achando que ele lê somente essas datas, mas são formato ISO. Por volta da linha 46, caso seja data é retornado imediatamente.
     private static readonly string[] DateFormats = ["O", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.FFFFFFF", "yyyy-MM-dd'T'HH:mm:ss.FFFFFFFK"];

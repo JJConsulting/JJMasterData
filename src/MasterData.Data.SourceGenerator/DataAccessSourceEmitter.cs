@@ -67,6 +67,23 @@ internal static class DataAccessSourceEmitter
     private static void WriteResolveOrdinals(IndentedTextWriter writer, DataAccessModelInfo dataAccessModel, string contract,
         CancellationToken cancellationToken)
     {
+        var scalarProperties = dataAccessModel.Properties.Where(p => p.ReaderMethod != "Ignore").ToArray();
+        if (scalarProperties.All(p => p.ReaderMethod != "Model"))
+        {
+            writer.WriteLine("private static readonly global::System.Collections.Generic.Dictionary<string, int> __DataAccessColumns =");
+            writer.WriteLine("    new(global::System.StringComparer.OrdinalIgnoreCase)");
+            OpenBlock(writer);
+            for (var i = 0; i < scalarProperties.Length; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                writer.WriteLine("[" + Literal(scalarProperties[i].Column) + "] = " + i + ",");
+            }
+            writer.Indent--;
+            writer.WriteLine("};");
+            writer.WriteLine("static int[] " + contract + ".ResolveOrdinals(Db::DbDataReader reader)");
+            writer.WriteLine("    => Data::DataAccessValueReader.FindOrdinals(reader, __DataAccessColumns);");
+            return;
+        }
         OpenBlock(writer, "static int[] " + contract + ".ResolveOrdinals(Db::DbDataReader reader)");
         writer.WriteLine("var ordinals = new global::System.Collections.Generic.List<int>();");
         foreach (var property in dataAccessModel.Properties)
@@ -127,14 +144,16 @@ internal static class DataAccessSourceEmitter
         var enumCast = property.TypeName.Length == 0 ? "" : "(" + property.TypeName + ")";
 
         OpenBlock(writer, "if (ordinal >= 0)");
-        writer.WriteLine("if (reader.IsDBNull(ordinal))");
+        writer.WriteLine("var value = reader.GetValue(ordinal);");
+        writer.WriteLine("if (value is global::System.DBNull)");
         writer.Indent++;
         writer.WriteLine(nullAssignment);
         writer.Indent--;
         writer.WriteLine("else");
         writer.Indent++;
-        writer.WriteLine(target + " = " + enumCast + "Data::DataAccessValueReader.Read" +
-                         property.ReaderMethod + "(reader, ordinal);");
+        writer.WriteLine(target + " = " + enumCast + "(value is global::System." + property.ReaderMethod +
+                         " exact ? exact : Data::DataAccessValueReader.Read" +
+                         property.ReaderMethod + "(reader, ordinal, value));");
         writer.Indent--;
         CloseBlock(writer);
     }

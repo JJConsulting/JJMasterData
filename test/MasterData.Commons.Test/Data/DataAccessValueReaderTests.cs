@@ -5,6 +5,27 @@ namespace JJMasterData.Commons.Test.Data;
 
 public class DataAccessValueReaderTests
 {
+    [Fact]
+    public void ResolvesReorderedMissingAndAmbiguousColumnsInOnePass()
+    {
+        var columns = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Id"] = 0, ["Name"] = 1, ["Missing"] = 2
+        };
+        using var table = new DataTable();
+        table.Columns.Add("NAME");
+        table.Columns.Add("Extra");
+        table.Columns.Add("id");
+        using var reader = table.CreateDataReader();
+        Assert.Equal([2, 0, -1], DataAccessValueReader.FindOrdinals(reader, columns));
+
+        using var duplicate = new DataTable();
+        duplicate.Columns.Add("Id");
+        duplicate.Columns.Add("ID");
+        using var duplicateReader = duplicate.CreateDataReader();
+        Assert.Throws<DataException>(() => DataAccessValueReader.FindOrdinals(duplicateReader, columns));
+    }
+
     private static DataTableReader Reader(object value)
     {
         var table = new DataTable();
