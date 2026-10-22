@@ -8,77 +8,78 @@
     href: getting-started/first-dictionary.md
 - name: Concepts
   items:
-  - name: Architecture
-    href: concepts/architecture.md
-  - name: Data dictionary model
-    href: concepts/data-dictionary.md
-  - name: CRUD operations
-    href: concepts/crud-operations.md
-  - name: Components and file fields
-    href: concepts/components.md
-  - name: Data items
-    href: concepts/data-item.md
   - name: Actions
     href: concepts/actions.md
+  - name: Architecture
+    href: concepts/architecture.md
+  - name: Components and file fields
+    href: concepts/components.md
+  - name: CRUD operations
+    href: concepts/crud-operations.md
   - name: Customizations
     href: concepts/customizations.md
-  - name: Validation rules
-    href: concepts/rules.md
+  - name: Data dictionary model
+    href: concepts/data-dictionary.md
+  - name: Data items
+    href: concepts/data-item.md
   - name: Expressions
     href: concepts/expressions.md
   - name: Persistence and version control
     href: concepts/persistence.md
+  - name: Validation rules
+    href: concepts/rules.md
+- name: Cookbook
+  href: cookbook/index.md
+  items:
+  - name: Add application expression functions
+    href: cookbook/custom-expression-functions.md
+  - name: Create a task-specific form
+    href: cookbook/task-form.md
+  - name: Customize a read procedure
+    href: cookbook/read-procedure.md
+  - name: Customize a write procedure
+    href: cookbook/write-procedure.md
+  - name: Edit values in a grid
+    href: cookbook/editable-grid.md
+  - name: Persist multiple selections
+    href: cookbook/multiple-selections.md
+  - name: Run a bulk action
+    href: cookbook/bulk-action.md
+  - name: Save a composed document
+    href: cookbook/composed-document.md
+  - name: Show a status guide with HTML templates
+    href: cookbook/html-templates.md
+  - name: Validate business operations
+    href: cookbook/business-validation.md
 - name: Developer guide
   items:
+  - name: Authorization
+    href: developer-guide/authorization.md
+  - name: Background jobs
+    href: developer-guide/background-jobs.md
+  - name: Bootstrap Components
+    href: developer-guide/bootstrap-components.md
+  - name: Bootstrap Tag Helpers
+    href: developer-guide/bootstrap-tag-helpers.md
   - name: Brazil integrations
     href: developer-guide/brasil/index.md
     items:
+    - name: CPF and CNPJ lookups
+      href: developer-guide/brasil/cpfcnpj.md
     - name: HubDev
       href: developer-guide/brasil/hubdev.md
     - name: Sintegra
       href: developer-guide/brasil/sintegra.md
-    - name: CPF and CNPJ lookups
-      href: developer-guide/brasil/cpfcnpj.md
     - name: ViaCEP
       href: developer-guide/brasil/viacep.md
   - name: Configuration
     href: developer-guide/configuration.md
   - name: Connections and repositories
     href: developer-guide/connections.md
-  - name: Routes and embedding
-    href: developer-guide/routes-and-embedding.md
-  - name: Data panels and application-owned saves
-    href: developer-guide/data-panels.md
-  - name: UI customization
-    href: developer-guide/ui-customization.md
   - name: Custom Bootstrap
     href: developer-guide/custom-bootstrap.md
-  - name: Bootstrap Components
-    href: developer-guide/bootstrap-components.md
-  - name: Bootstrap Tag Helpers
-    href: developer-guide/bootstrap-tag-helpers.md
-  - name: HtmlBuilder
-    href: developer-guide/html-builder.md
-  - name: Extension points
-    href: developer-guide/extensions.md
-  - name: Form events
-    href: developer-guide/form-events.md
-  - name: Grid events
-    href: developer-guide/grid-events.md
-  - name: Grid Preference Store
-    href: developer-guide/grid-preference-store.md
   - name: Custom export formats
     href: developer-guide/export-formats.md
-  - name: Authorization
-    href: developer-guide/authorization.md
-  - name: Localization
-    href: developer-guide/localization.md
-  - name: Data dictionary repository
-    href: developer-guide/data-dictionary-repository.md
-  - name: Entity repository
-    href: developer-guide/entity-repository.md
-  - name: Stored procedures
-    href: developer-guide/stored-procedures.md
   - name: Data access
     href: developer-guide/data-access/index.md
     items:
@@ -88,38 +89,37 @@
       href: developer-guide/data-access/stored-procedures.md
     - name: Typed queries
       href: developer-guide/data-access/typed-queries.md
-  - name: Background jobs
-    href: developer-guide/background-jobs.md
+  - name: Data dictionary repository
+    href: developer-guide/data-dictionary-repository.md
+  - name: Data panels and application-owned saves
+    href: developer-guide/data-panels.md
+  - name: Entity repository
+    href: developer-guide/entity-repository.md
+  - name: Extension points
+    href: developer-guide/extensions.md
   - name: File storage
     href: developer-guide/file-storage.md
-  - name: Troubleshooting
-    href: developer-guide/templates-troubleshooting.md
+  - name: Form events
+    href: developer-guide/form-events.md
+  - name: Grid events
+    href: developer-guide/grid-events.md
+  - name: Grid Preference Store
+    href: developer-guide/grid-preference-store.md
   - name: Grid templates
     href: developer-guide/grid-templates.md
+  - name: HtmlBuilder
+    href: developer-guide/html-builder.md
+  - name: Localization
+    href: developer-guide/localization.md
+  - name: Routes and embedding
+    href: developer-guide/routes-and-embedding.md
+  - name: Stored procedures
+    href: developer-guide/stored-procedures.md
   - name: Template actions
     href: developer-guide/template-action.md
+  - name: Troubleshooting
+    href: developer-guide/templates-troubleshooting.md
+  - name: UI customization
+    href: developer-guide/ui-customization.md
   - name: WebApi and OpenAPI
     href: developer-guide/webapi.md
-- name: Cookbook
-  href: cookbook/index.md
-  items:
-  - name: Customize a read procedure
-    href: cookbook/read-procedure.md
-  - name: Customize a write procedure
-    href: cookbook/write-procedure.md
-  - name: Persist multiple selections
-    href: cookbook/multiple-selections.md
-  - name: Edit values in a grid
-    href: cookbook/editable-grid.md
-  - name: Validate business operations
-    href: cookbook/business-validation.md
-  - name: Run a bulk action
-    href: cookbook/bulk-action.md
-  - name: Create a task-specific form
-    href: cookbook/task-form.md
-  - name: Save a composed document
-    href: cookbook/composed-document.md
-  - name: Add application expression functions
-    href: cookbook/custom-expression-functions.md
-  - name: Show a status guide with HTML templates
-    href: cookbook/html-templates.md
