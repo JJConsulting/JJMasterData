@@ -8,12 +8,10 @@ using JJConsulting.FontAwesome;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -21,8 +19,7 @@ public class HierarchyService(
     IEntityRepository entityRepository,
     ExpressionParser expressionParser,
     ElementMapService elementMapService,
-    IStringLocalizer<MasterDataResources> stringLocalizer,
-    ILogger<HierarchyService> logger)
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public async Task<List<DataItemValue>> GetValuesAsync(
         FormElementDataItem dataItem,
@@ -140,12 +137,7 @@ public class HierarchyService(
         DataQuery dataQuery)
     {
         var command = GetDataItemCommand(dataItem, dataQuery);
-        DataTable dataTable;
-        using (logger.BeginCommandScope(command))
-        {
-            dataTable = await entityRepository.GetDataTableAsync(command, dataQuery.ConnectionId);
-        }
-
+        var dataTable = await entityRepository.GetDataTableAsync(command, dataQuery.ConnectionId);
         if (dataTable.Columns.Count < 3)
             throw new JJMasterDataException("Hierarchy SQL must return Id, Description and ParentId.");
 

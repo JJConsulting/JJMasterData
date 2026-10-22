@@ -146,8 +146,7 @@ public class JJHierarchyTests
             entityRepository,
             null!,
             null!,
-            localizer,
-            Mock.Of<ILogger<HierarchyService>>());
+            localizer);
         var service = new DataItemService(
             entityRepository,
             null!,

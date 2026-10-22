@@ -102,8 +102,7 @@ public class HierarchyDataItemServiceTests
             entityRepository,
             null!,
             null!,
-            localizer,
-            Mock.Of<ILogger<HierarchyService>>());
+            localizer);
 
         return new DataItemService(
             entityRepository,
