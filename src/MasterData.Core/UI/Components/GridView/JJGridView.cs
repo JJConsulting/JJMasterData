@@ -102,6 +102,8 @@ public class JJGridView : AsyncComponent
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
     
+    internal IGridPreferenceStore PreferenceStore { get; }
+
     private readonly FieldValidationService _fieldValidationService;
     private readonly UrlRedirectService _urlRedirectService;
     
@@ -234,7 +236,7 @@ public class JJGridView : AsyncComponent
             {
                 if (MaintainValuesOnLoad)
                 {
-                    var tableOrder = CurrentContext.HttpContext!.GetGridOrderCookie(Name);
+                    var tableOrder = PreferenceStore.GetOrder(Name);
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -247,7 +249,7 @@ public class JJGridView : AsyncComponent
                 _currentOrder = OrderByData.FromString(order);
                 if (_currentOrder == null)
                 {
-                    var tableOrder = CurrentContext.HttpContext!.GetGridOrderCookie(Name);
+                    var tableOrder = PreferenceStore.GetOrder(Name);
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -265,7 +267,7 @@ public class JJGridView : AsyncComponent
         set
         {
             if (MaintainValuesOnLoad)
-                CurrentContext.HttpContext!.SetGridOrderCookie(Name, value.ToQueryParameter());
+                PreferenceStore.SetOrder(Name, value.ToQueryParameter());
             
             _currentOrder = value;
         }
@@ -312,13 +314,13 @@ public class JJGridView : AsyncComponent
         set
         {
             if (MaintainValuesOnLoad && PaginationType is GridPaginationType.Buttons)
-                CurrentContext.HttpContext!.SetGridCurrentPageCookie(Name, value);
+                PreferenceStore.SetCurrentPage(Name, value);
 
             _currentPage = value;
         }
     }
 
-    private int GetPageFromPreferences() => CurrentContext.HttpContext!.GetGridCurrentPageCookie(Name) ?? 1;
+    private int GetPageFromPreferences() => PreferenceStore.GetCurrentPage(Name) ?? 1;
 
     public int TotalOfPages
     {
@@ -353,21 +355,22 @@ public class JJGridView : AsyncComponent
             }
 
             if (MaintainValuesOnLoad)
-                CurrentSettings = CurrentContext.HttpContext!.GetGridSettingsCookie(FormElement.Name);
+                _currentSettings = PreferenceStore.GetSettings(Name);
 
-            if (_currentSettings == null)
-                CurrentSettings = GridSettingsForm.LoadFromForm();
+            _currentSettings ??= GridSettingsForm.LoadFromForm();
             
             return _currentSettings!;
         }
         set
         {
             if (MaintainValuesOnLoad)
-                CurrentContext.HttpContext!.SetGridSettingsCookie(FormElement.Name, value);
+                PreferenceStore.SetSettings(Name, value);
 
             _currentSettings = value;
         }
     }
+
+    internal void SetInitialSettings(GridSettings settings) => _currentSettings = settings;
 
     internal GridFilter Filter
     {
@@ -410,12 +413,12 @@ public class JJGridView : AsyncComponent
     public bool EnableMultiSelect { get; set; }
 
     /// <summary>
-    /// Keep the grid filters, order and pagination in cookies,
+    /// Keep grid display settings and navigation state in the configured preference store,
     /// and recover on the first page load. (Default = false)
     /// </summary>
     /// <remarks>
     /// When using this property, we recommend changing the object's [Name] parameter.
-    /// The [Name] property is used to compose the cookie names.
+    /// The [Name] property identifies the grid in the preference store.
     /// </remarks>
     public bool MaintainValuesOnLoad { get; set; }
 
@@ -576,8 +579,10 @@ public class JJGridView : AsyncComponent
         UrlRedirectService urlRedirectService,
         HtmlTemplateRenderer htmlTemplateRenderer,
         ILogger<JJGridView> logger,
-        IComponentFactory componentFactory)
+        IComponentFactory componentFactory,
+        IGridPreferenceStore preferenceStore)
     {
+        PreferenceStore = preferenceStore;
         Name = formElement.Name.ToLowerInvariant();
         FormElement = formElement;
         ShowTitle =  formElement.Options.Grid.ShowTitle;

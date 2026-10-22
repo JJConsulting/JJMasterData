@@ -1,6 +1,7 @@
 class DataImportationModal {
     
     static instance : Modal
+    static refreshGrid: () => void;
     static getInstance() {
         if(this.instance === undefined){
             this.instance = new Modal();

@@ -31,7 +31,8 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         UrlRedirectService urlRedirectService,
         HtmlTemplateRenderer htmlTemplateRenderer,
         ILoggerFactory loggerFactory,
-        IComponentFactory componentFactory)
+        IComponentFactory componentFactory,
+        IGridPreferenceStore preferenceStore)
     : IFormElementComponentFactory<JJGridView>
 {
     public JJGridView Create(FormElement formElement)
@@ -51,7 +52,8 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
             urlRedirectService,
             htmlTemplateRenderer,
             loggerFactory.CreateLogger<JJGridView>(),
-            componentFactory);
+            componentFactory,
+            preferenceStore);
 
         var eventHandler = gridEventHandlerResolver.GetGridEventHandler(formElement.Name);
         
@@ -103,6 +105,7 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
 
         SetGridUiOptions(grid, gridOptions);
     }
+    
     internal void SetGridUiOptions(JJGridView grid, GridUI gridOptions)
     {
         grid.EnableSorting = gridOptions.EnableSorting;
@@ -115,21 +118,20 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad)
-                settings = currentContext.HttpContext!.GetGridSettingsCookie(grid.FormElement.Name);
+                settings = preferenceStore.GetSettings(grid.Name);
 
-            if (settings == null)
+            settings ??= new GridSettings
             {
-                settings = grid.CurrentSettings;
-                settings.ShowRowHover = gridOptions.ShowRowHover;
-                settings.ShowRowStriped = gridOptions.ShowRowStriped;
-                settings.ShowBorder = gridOptions.ShowBorder;
-                settings.RecordsPerPage = gridOptions.RecordsPerPage;
-                settings.TotalPaginationButtons = gridOptions.TotalPaggingButton;
-                settings.IsHeaderFixed = gridOptions.HeaderFixed;
-                settings.IsCompact = gridOptions.IsCompact;
-            }
+                ShowRowHover = gridOptions.ShowRowHover,
+                ShowRowStriped = gridOptions.ShowRowStriped,
+                ShowBorder = gridOptions.ShowBorder,
+                RecordsPerPage = gridOptions.RecordsPerPage,
+                TotalPaginationButtons = gridOptions.TotalPaggingButton,
+                IsHeaderFixed = gridOptions.HeaderFixed,
+                IsCompact = gridOptions.IsCompact
+            };
 
-            grid.CurrentSettings = settings;
+            grid.SetInitialSettings(settings);
         }
 
         grid.ShowHeaderWhenEmpty = gridOptions.ShowHeaderWhenEmpty;

@@ -91,7 +91,7 @@ public class ActionButtonFactory(
             case ImportAction:
                 var importationScripts = new DataImportationScripts($"{actionContext.ParentComponentName}-importation", actionContext.FormElement,stringLocalizer, encryptionService);
                 button.OnClientClick =
-                    importationScripts.GetShowScript();
+                    importationScripts.GetShowScript(gridView.Scripts.GetRefreshScript());
                 break;
                 
             case ExportAction:

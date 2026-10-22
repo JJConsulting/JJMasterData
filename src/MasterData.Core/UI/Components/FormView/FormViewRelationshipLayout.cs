@@ -187,7 +187,7 @@ internal sealed class FormViewRelationshipLayout(
 
         //Previne bug do Alex de um pai depender dos valores filho.
         if (isSaveAction)
-            parentFormView.InvalidateFormStateData();
+            await parentFormView.RefreshFormStateData();
 
         return result;
     }
