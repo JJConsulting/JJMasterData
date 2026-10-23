@@ -14,10 +14,10 @@ using Microsoft.Extensions.Localization;
 namespace JJMasterData.Core.UI.Components;
 
 public class JJComboBox(
-    IHttpContextAccessor formValues,
+    IHttpContextAccessor httpContextAccessor,
     DataItemService dataItemService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
-    : ControlBase(formValues), IDataItemControl, IFloatingLabelControl
+    : ControlBase(httpContextAccessor), IDataItemControl, IFloatingLabelControl
 {
     public Guid? ConnectionId { get; set; }
 
@@ -72,6 +72,7 @@ public class JJComboBox(
             .WithId(Id ?? Name)
             .WithAttributeIf(MultiSelect, "multiple")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
+            .WithAttributeIf(MultiSelect && DataItem.FirstOption == FirstOptionMode.All, "data-empty-option", "true")
             .WithAttribute("data-placeholder", GetFirstOptionText())
             .WithAttributeIf(!Enabled, "disabled")
             .WithAttributes(Attributes)
@@ -104,7 +105,8 @@ public class JJComboBox(
 
         var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
-            .WithAttributeIf(MultiSelect,"disabled")
+            .WithAttributeIf(DataItem.FirstOption == FirstOptionMode.All &&
+                             string.IsNullOrEmpty(SelectedValue?.Trim(',')), "selected")
             .AppendText(GetFirstOptionText());
 
         if (DataItem.FirstOption != FirstOptionMode.None)
@@ -247,7 +249,6 @@ public class JJComboBox(
         var item = await GetValueAsync(SelectedValue);
         if (item == null)
             return null;
-
         
         var label = item.Description;
 

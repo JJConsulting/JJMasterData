@@ -379,9 +379,10 @@ internal sealed class DataPanelForm
                 break;
             case JJComboBox comboBox:
             {
-                if ((field.Filter.IsRequired || field.Filter.Type.IsMultiValues) && _isGridViewFilter)
+                if (field.Filter.IsRequired && _isGridViewFilter)
                     comboBox.DataItem.FirstOption = FirstOptionMode.None;
-                
+                else if (_isGridViewFilter && (comboBox.MultiSelect || field.Filter.Type == FilterMode.MultValuesEqual))
+                    comboBox.DataItem.FirstOption = FirstOptionMode.All;
                 else if (_isGridViewFilter)
                 {
                     var hasDefaultValue = !string.IsNullOrEmpty(field.DefaultValue);

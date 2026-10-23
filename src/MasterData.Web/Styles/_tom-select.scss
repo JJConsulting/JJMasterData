@@ -33,7 +33,6 @@
 }
 .ts-wrapper.multi.has-items .ts-control {
   padding: calc(#{$input-padding-y} - 1px) $input-padding-x calc(#{$input-padding-y} - 4px);
-  min-height: calc(#{$input-line-height}em + #{$input-padding-y * 2});
 }
 .full .ts-control {
   background-color: var(--#{$prefix}body-bg);
@@ -604,7 +603,7 @@
   font-size: $input-font-size-sm;
 }
 .input-group-sm > .ts-wrapper.multi.has-items .ts-control, .ts-wrapper.form-select-sm.multi.has-items .ts-control, .ts-wrapper.form-control-sm.multi.has-items .ts-control {
-  padding-top: calc((calc(#{$input-line-height}em + #{$input-padding-y-sm * 2} + calc(var(--#{$prefix}border-width) * 2)) - #{$input-line-height * $input-font-size-sm} - calc((var(--#{$prefix}border-width) + 1px) * 2)) / 2) !important;
+  padding-top: calc((calc(#{$input-line-height}em + #{$input-padding-y-sm * 2} + calc(var(--#{$prefix}border-width) * 2)) - #{$input-line-height * $input-font-size-sm} - calc((var(--#{$prefix}border-width) + 1px) * 2)) / 2);
 }
 .ts-wrapper.multi.has-items .ts-control {
   padding-left: calc(#{$input-padding-x} - 5px);
@@ -637,11 +636,23 @@
 .ts-wrapper.form-select, .ts-wrapper.tom-select:not(.tom-select-tags), .ts-wrapper.single {
   --ts-pr-caret: 2.25rem;
 }
+// Keep Bootstrap's themed padding and sizing on the outer form control.
 .ts-wrapper.form-control, .ts-wrapper.form-select {
-  padding: 0 !important;
+  min-height: 0;
 }
 .ts-wrapper.form-control .ts-control, .ts-wrapper.form-select .ts-control {
   border: none !important;
+  padding: 0 !important;
+  min-height: 1lh;
+  font-size: inherit;
+  line-height: inherit;
+  row-gap: 3px;
+}
+.ts-wrapper.form-control.multi .ts-control > .item,
+.ts-wrapper.form-select.multi .ts-control > .item {
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 .ts-wrapper.form-control:not(.disabled) .ts-control, .ts-wrapper.form-select:not(.disabled) .ts-control {
   background: transparent !important;

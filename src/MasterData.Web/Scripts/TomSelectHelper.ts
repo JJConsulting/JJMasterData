@@ -51,6 +51,19 @@ class TomSelectHelper {
             }
         });
 
+        if (isMultiSelect && element.dataset.emptyOption === 'true') {
+            tomSelect.on('item_add', (value: string) => {
+                const valuesToRemove = value === ''
+                    ? tomSelect.items.filter(item => item !== '')
+                    : [''];
+                valuesToRemove.forEach(item => tomSelect.removeItem(item, true));
+            });
+            tomSelect.on('clear item_remove', () => {
+                if (tomSelect.items.length === 0)
+                    tomSelect.addItem('', true);
+            });
+        }
+
         if (element.matches(':disabled'))
             tomSelect.disable();
 

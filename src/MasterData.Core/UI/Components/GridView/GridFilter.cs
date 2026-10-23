@@ -351,6 +351,9 @@ internal sealed class GridFilter(JJGridView gridView)
 
     private static object ParseFilterValue(FormElementField field, string value)
     {
+        if (field.Component == FormComponent.ComboBox && (field.Filter.Type.IsMultiValues || field.DataItem?.EnableMultiSelect == true))
+            return value?.Trim(',');
+
         var fieldType = field.DataType;
         var component = field.Component;
 
