@@ -11,7 +11,7 @@ on:
 
 jobs:
   nuget-push:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       id-token: write
@@ -32,9 +32,9 @@ jobs:
           - src/Plugins/MasterData.Pdf
           - src/Plugins/MasterData.Brasil
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6.0.0
         with:
           dotnet-version: 10.0.x
 
@@ -51,7 +51,7 @@ jobs:
 
       - name: NuGet login
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: NuGet/login@v1
+        uses: NuGet/login@v1.2.0
         id: login
         with:
           user: ${{ secrets.NUGET_USER }}
