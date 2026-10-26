@@ -20,8 +20,10 @@
         <partial name="_ProcessOptions" for="ProcessOptions"/>
         <div class="row">
             <div class=" col-sm-6">
-                <label asp-for="FileName" class="form-label"></label>
-                <tooltip title="@StringLocalizer["Name of the file that will be downloaded by the user."]"/>
+                <label asp-for="FileName" class="form-label">
+                    @StringLocalizer[Html.DisplayNameFor(model => model.FileName)]
+                    <tooltip title="@StringLocalizer["Name of the file that will be downloaded by the user."]"/>
+                </label>
                 <input asp-for="FileName" class="form-control"/>
             </div>
         </div>

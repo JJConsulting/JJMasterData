@@ -84,4 +84,7 @@
     <data name="The selected hierarchy item is no longer available." xml:space="preserve"><value>The selected hierarchy item is no longer available.</value></data>
     <data name="Parent Id (null or empty for roots)" xml:space="preserve"><value>Parent Id (null or empty for roots)</value></data>
     <data name="Hierarchy queries must use {ParentId} to load a level and {SearchId} to recover a selected node." xml:space="preserve"><value>Hierarchy queries must use {ParentId} to load a level and {SearchId} to recover a selected node.</value></data>
+  <data name="Export Records Per Page" xml:space="preserve"><value>Export Records Per Page</value></data>
+  <data name="Number of records retrieved per query during export." xml:space="preserve"><value>Number of records retrieved per query during export.</value></data>
+  <data name="Export records per page must be greater than zero." xml:space="preserve"><value>Export records per page must be greater than zero.</value></data>
 </root>

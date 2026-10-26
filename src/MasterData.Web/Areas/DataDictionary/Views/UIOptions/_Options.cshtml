@@ -1,13 +1,23 @@
-﻿@using JJMasterData.Web.TagHelpers
-@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
+﻿@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
-<div class="row">
+<div class="row align-items-center">
     <div class="col-sm-4">
         <checkbox for="EnableAuditLog" layout="Switch"/>
     </div>
     <div class="col-sm-4">
-        <checkbox for="UseFloatingLabels" tooltip="@StringLocalizer["Show a label floating within the field. Not all fields support this option."]" layout="Switch"/>
+        <checkbox for="UseFloatingLabels" layout="Switch" tooltip="@StringLocalizer["Show a label floating within the field. Not all fields support this option."]"/>
+    </div>
+    <div class="col-sm-4 mb-3">
+        <label asp-for="ExportRecordsPerPage" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.ExportRecordsPerPage)]
+        </label>
+        <div class="input-group">
+            <input type="number" class="form-control" asp-for="ExportRecordsPerPage">
+            <button type="button" class="input-group-text" onclick="setMaxRecordsPerPage(this)" data-bs-toggle="tooltip" title="@StringLocalizer["Maximum possible records"]">
+                <icon icon="SolidGaugeHigh"></icon>
+            </button>
+        </div>
     </div>
 </div>

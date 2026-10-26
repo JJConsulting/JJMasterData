@@ -29,14 +29,18 @@
            message="@StringLocalizer["The data type ({0}) is not recommended by modern database providers.", Model.DataType.ToString()]"/>
     }
     <div class="mb-3 col-sm-6 required">
-        <label asp-for="Name" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Name of the field at the database."]"/>
+        <label asp-for="Name" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.Name)]
+            <tooltip title="@StringLocalizer["Name of the field at the database."]"/>
+        </label>
         <input asp-for="Name" placeholder="" maxlength="64" class="form-control"/>
         <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
     </div>
     <div class="mb-3 col-sm-6">
-        <label asp-for="Label" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Name of the field displayed at the form."]"/>
+        <label asp-for="Label" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.Label)]
+            <tooltip title="@StringLocalizer["Name of the field displayed at the form."]"/>
+        </label>
         <input asp-for="Label" class="form-control" placeholder=""/>
     </div>
 </div>
@@ -50,8 +54,10 @@
         </div>
 
         <div class="mb-3 col-sm-6 required">
-            <label asp-for="DataBehavior" class="form-label"></label>
-            <tooltip title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"/>
+            <label asp-for="DataBehavior" class="form-label">
+                @StringLocalizer[Html.DisplayNameFor(model => model.DataBehavior)]
+                <tooltip title="@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]"/>
+            </label>
             <select asp-for="DataBehavior" class="form-control form-select"
                     asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
         </div>
@@ -68,8 +74,10 @@
     {
         case FieldType.Varchar or FieldType.NVarchar:
             <div class="mb-3 col-sm-6">
-                <label asp-for="Size" class="form-label"></label>
-                <tooltip title="@StringLocalizer["Defines the field size. Use -1 to specify MAX keyword."]"/>
+                <label asp-for="Size" class="form-label">
+                    @StringLocalizer[Html.DisplayNameFor(model => model.Size)]
+                    <tooltip title="@StringLocalizer["Defines the field size. Use -1 to specify MAX keyword."]"/>
+                </label>
                 <input asp-for="Size" class="form-control"/>
             </div>
             break;
@@ -90,8 +98,10 @@
 
         case FieldType.Decimal:
             <div class="mb-3 col-sm-4">
-                <label asp-for="Size" class="form-label"></label>
-                <tooltip title="@StringLocalizer["The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38."]"/>
+                <label asp-for="Size" class="form-label">
+                    @StringLocalizer[Html.DisplayNameFor(model => model.Size)]
+                    <tooltip title="@StringLocalizer["The total number of digits stored, including both sides of the decimal point. Ranges from 1 to 38."]"/>
+                </label>
                 <input asp-for="Size" min="1" max="38" class="form-control"/>
             </div>
 

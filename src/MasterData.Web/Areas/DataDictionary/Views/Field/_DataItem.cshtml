@@ -16,8 +16,10 @@
 @if (ViewBag.IsForm)
 {
     <div class="col-sm-4 required" id="divReplaceTextOnGrid">
-        <label asp-for="DataItem!.GridBehavior" class="form-label"></label>
-        <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+        <label asp-for="DataItem!.GridBehavior" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.DataItem!.GridBehavior)]
+            <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+        </label>
         <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
             <option value="0">@StringLocalizer["Id"]</option>
             <option value="1">@StringLocalizer["Description"]</option>
@@ -33,8 +35,10 @@
 @if (Model.Component is FormComponent.ComboBox)
 {
     <div class="col-sm-3 mb-3 required" id="divFirstOption">
-        <label asp-for="DataItem!.FirstOption" class="form-label"></label>
-        <tooltip title="@StringLocalizer["First option used in the combo. If a default value exists in the filter, this option is ignored."]"/>
+        <label asp-for="DataItem!.FirstOption" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.DataItem!.FirstOption)]
+            <tooltip title="@StringLocalizer["First option used in the combo. If a default value exists in the filter, this option is ignored."]"/>
+        </label>
         <select asp-for="DataItem!.FirstOption" class="form-control form-select"
                 asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
     </div>
