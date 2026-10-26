@@ -5,6 +5,21 @@ namespace JJMasterData.Commons.Test.Data.Entity;
 
 public class OrderByDataTest
 {
+    [Theory]
+    [InlineData(null, "TenantId ASC,Id ASC")]
+    [InlineData("Name DESC", "Name DESC,TenantId ASC,Id ASC")]
+    [InlineData("Id DESC,Name ASC", "Id DESC,Name ASC,TenantId ASC")]
+    [InlineData("tenantid DESC,id DESC", "tenantid DESC,id DESC")]
+    public void AddIfMissingPreservesExistingOrderAndAppendsMissingKeyFields(string? original, string expected)
+    {
+        var orderBy = OrderByData.FromString(original);
+
+        orderBy.AddIfMissing("TenantId", OrderByDirection.Asc)
+            .AddIfMissing("Id", OrderByDirection.Asc);
+
+        Assert.Equal(expected, orderBy.ToQueryParameter());
+    }
+
     [Fact]
     public void Validate_ShouldReturnTrue_WhenFieldsAreEmpty()
     {
