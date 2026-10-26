@@ -1,4 +1,4 @@
-﻿
+
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable EventNeverSubscribedTo.Global
@@ -24,7 +24,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -145,7 +145,7 @@ public class JJFormView : AsyncComponent
     private readonly IEnumerable<IPluginHandler> _pluginHandlers;
     private readonly MasterDataCoreOptions _options;
     private readonly ILogger<JJFormView> _logger;
-    private readonly IDataDictionaryRepository _dataDictionaryRepository;
+    private readonly DataDictionaryService _dataDictionaryService;
     private readonly IMasterDataUser _masterDataUser;
     private readonly FormService _formService;
     private readonly UploadViewManager _uploadViewManager;
@@ -433,7 +433,7 @@ public class JJFormView : AsyncComponent
         IHttpContextAccessor currentContext,
         IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         FormService formService,
         DataProtectionService dataProtectionService,
         FormValuesService formValuesService,
@@ -467,7 +467,7 @@ public class JJFormView : AsyncComponent
         _uploadViewManager = uploadViewManager;
         _options = options.Value;
         _logger = logger;
-        _dataDictionaryRepository = dataDictionaryRepository;
+        _dataDictionaryService = dataDictionaryService;
     }
 
     #endregion
@@ -1282,7 +1282,7 @@ public class JJFormView : AsyncComponent
         var html = new HtmlBuilder(HtmlTag.Div);
 
         var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect ?? throw new JJMasterDataException("Element name to select cannot be null.");
-        var childElement = await _dataDictionaryRepository.GetFormElementAsync(childElementName);
+        var childElement = await _dataDictionaryService.GetFormElementAsync(childElementName);
 
         var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
 

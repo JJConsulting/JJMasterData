@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using JJConsulting.Html;
@@ -9,7 +9,6 @@ using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
 
@@ -23,11 +22,11 @@ public class ElementService(
         IValidationDictionary validationDictionary,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
         RelativeDateFormatter relativeDateFormatter,
         IUrlHelper urlHelper)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository, stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService, stringLocalizer)
 {
     #region Add Dictionary
 
@@ -61,7 +60,7 @@ public class ElementService(
             };
         }
         
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
 
         return formElement;
     }
@@ -74,7 +73,7 @@ public class ElementService(
         
         if (ValidateName(tableName))
         {
-            if (await DataDictionaryRepository.ExistsAsync(tableName))
+            if (await DataDictionaryService.ExistsAsync(tableName))
             {
                 AddError("Name", StringLocalizer["There is already a dictionary with the name "] + tableName);
             }
@@ -96,7 +95,7 @@ public class ElementService(
 
     public async Task<bool> DuplicateEntityAsync(string originalElementName, string newName)
     {
-        bool originalElementExists = await DataDictionaryRepository.ExistsAsync(originalElementName);
+        bool originalElementExists = await DataDictionaryService.ExistsAsync(originalElementName);
         if (!originalElementExists)
         {
             AddError("OriginalElementName", StringLocalizer["Original Element Name {0} does not exists", originalElementName]);
@@ -105,9 +104,9 @@ public class ElementService(
         
         if (await ValidateEntityAsync(newName))
         {
-            var dicParser = await DataDictionaryRepository.GetFormElementAsync(originalElementName);
+            var dicParser = await DataDictionaryService.GetFormElementAsync(originalElementName);
             dicParser.Name = newName;
-            await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
+            await DataDictionaryService.InsertOrReplaceAsync(dicParser);
         }
 
         return IsValid;
@@ -121,7 +120,7 @@ public class ElementService(
             case true:
                 AddError("Name", StringLocalizer["[New Element Name] field is required."]);
                 break;
-            case false when await DataDictionaryRepository.ExistsAsync(name):
+            case false when await DataDictionaryService.ExistsAsync(name):
                 AddError("Name", StringLocalizer["Element {0} already exists.", name]);
                 break;
         }
@@ -150,7 +149,7 @@ public class ElementService(
         {
             var filter = DataDictionaryFilter.FromDictionary(args.Filters!);
             var result =
-                await DataDictionaryRepository.GetFormElementInfoListAsync(filter, args.OrderBy, args.RecordsPerPage,
+                await DataDictionaryService.GetFormElementInfoListAsync(filter, args.OrderBy, args.RecordsPerPage,
                     args.CurrentPage);
 
             var dictionaryList = result.Data.ConvertAll(info => info.ToDictionary());
@@ -224,6 +223,6 @@ public class ElementService(
 
     public Task DeleteAsync(string elementName)
     {
-        return DataDictionaryRepository.DeleteAsync(elementName);
+        return DataDictionaryService.DeleteAsync(elementName);
     }
 }

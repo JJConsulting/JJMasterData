@@ -8,7 +8,6 @@ using System.Resources;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Logging;
@@ -16,7 +15,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class DataDictionaryLocalizationService(
-    IDataDictionaryRepository dataDictionaryRepository)
+    DataDictionaryService dataDictionaryService)
 {
     private static readonly ResourceManager ResourceManager = new(typeof(MasterDataResources));
     private static readonly string InvariantResourceName = $"{typeof(MasterDataResources).FullName}.resources";
@@ -24,7 +23,7 @@ public class DataDictionaryLocalizationService(
     public async Task<IReadOnlyCollection<string>> GetFormElementLocalizationKeysAsync()
     {
         var keys = new HashSet<string>(StringComparer.Ordinal);
-        var formElementList = await dataDictionaryRepository.GetFormElementListAsync();
+        var formElementList = await dataDictionaryService.GetFormElementListAsync();
 
         foreach (var formElement in formElementList)
         {

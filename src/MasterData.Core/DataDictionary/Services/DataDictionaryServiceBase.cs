@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJConsulting.Html.Bootstrap.Components;
 using JJMasterData.Commons.Util;
 using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public abstract class DataDictionaryServiceBase(
     IValidationDictionary validationDictionary, 
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    protected IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    protected DataDictionaryService DataDictionaryService { get; } = dataDictionaryService;
     protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     protected void AddError(string field, string message)
@@ -44,12 +43,12 @@ public abstract class DataDictionaryServiceBase(
 
     public ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
-        return DataDictionaryRepository.GetFormElementAsync(elementName);
+        return DataDictionaryService.GetFormElementAsync(elementName);
     }
     
     public ValueTask<List<string>> GetNameListAsync()
     {
-        return DataDictionaryRepository.GetElementNameListAsync();
+        return DataDictionaryService.GetElementNameListAsync();
     }
 
     public bool ValidateName(string name)
@@ -121,7 +120,7 @@ public abstract class DataDictionaryServiceBase(
     {
         var elementList = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
-        var list = await DataDictionaryRepository.GetElementNameListAsync();
+        var list = await DataDictionaryService.GetElementNameListAsync();
         
         foreach (var name in list)
         {

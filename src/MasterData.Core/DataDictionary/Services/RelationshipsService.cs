@@ -1,22 +1,21 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class RelationshipsService(IValidationDictionary validationDictionary,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         PanelService panelService)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     public async Task SaveElementRelationship(ElementRelationship elementRelationship, int? id, string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         var relationships = formElement.Relationships;
 
         if (!relationships.Any(r => r.IsParent))
@@ -41,7 +40,7 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
             relation.ElementRelationship = elementRelationship;
         }
         
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
 
     public async Task SaveFormElementRelationship(
@@ -51,14 +50,14 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
         int id,
         string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
 
         var relationship = formElement.Relationships.First(r=>r.Id == id);
         relationship.ViewType = viewType;
         relationship.Panel = panel;
         relationship.EditModeOpenByDefault = editModeOpenedByDefault;
         
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
 
     public async Task<bool> ValidateRelation(string elementName, string childElementName, string pkColumnName,
@@ -70,13 +69,13 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
             return IsValid;
         }
 
-        if (!(await DataDictionaryRepository.ExistsAsync(childElementName)))
+        if (!(await DataDictionaryService.ExistsAsync(childElementName)))
         {
             AddError("Entity", StringLocalizer["Entity {0} not found", childElementName]);
             return IsValid;
         }
         
-        var childElement = await DataDictionaryRepository.GetFormElementAsync(childElementName);
+        var childElement = await DataDictionaryService.GetFormElementAsync(childElementName);
 
         if (childElement.Relationships.Any(r =>
                 r.ElementRelationship != null && r.ElementRelationship.ChildElement == elementName))
@@ -186,7 +185,7 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
 
     public async Task DeleteAsync(string elementName, int id)
     {
-        var formElement =  await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement =  await DataDictionaryService.GetFormElementAsync(elementName);
         var relationship = formElement.Relationships.GetById(id);
 
         formElement.Relationships.Remove(relationship);
@@ -195,13 +194,13 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
             formElement.Relationships.Clear();
         }
         
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
     
 
     public async Task SortAsync(string elementName, IEnumerable<string> relationships)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
 
         FormElementRelationship GetRelationship(string name)
         {
@@ -220,7 +219,7 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
             formElement.Relationships[i] = newList[i];
         }
         
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
 
     public bool ValidatePanel(FormElementPanel panel)

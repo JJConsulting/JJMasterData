@@ -1,3 +1,4 @@
+using JJMasterData.Core.Test.DataDictionary.Services;
 using System.Text;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
@@ -41,7 +42,7 @@ public class FormFileServiceTests
         var contextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
         var elementFileService = new ElementFileService(
-            Mock.Of<IDataDictionaryRepository>(),
+            DataDictionaryTestHelper.Create(Mock.Of<IDataDictionaryRepository>()),
             Mock.Of<IEntityRepository>(),
             fileStorage,
             new FileValidationService(stringLocalizer));
@@ -87,7 +88,7 @@ public class FormFileServiceTests
         var contextAccessor = new HttpContextAccessor { HttpContext = context };
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
         var elementFileService = new ElementFileService(
-            Mock.Of<IDataDictionaryRepository>(),
+            DataDictionaryTestHelper.Create(Mock.Of<IDataDictionaryRepository>()),
             Mock.Of<IEntityRepository>(),
             fileStorage,
             new FileValidationService(stringLocalizer));

@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +14,11 @@ public static partial class WebApplicationExtensions
         using var dbScope = app.Services.CreateScope();
         var serviceProvider = dbScope.ServiceProvider;
     
-        var dataDictionaryRepository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
+        var dataDictionaryService = serviceProvider.GetRequiredService<DataDictionaryService>();
         var auditLogService = serviceProvider.GetRequiredService<AuditLogService>();
 
         await auditLogService.CreateStructureIfNotExistsAsync();
-        await dataDictionaryRepository.CreateStructureIfNotExistsAsync();
+        await dataDictionaryService.CreateStructureIfNotExistsAsync();
     }
     
     public static ControllerActionEndpointConventionBuilder MapDataDictionary(this WebApplication app)

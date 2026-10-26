@@ -1,4 +1,4 @@
-﻿
+
 #nullable disable warnings
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -21,24 +20,18 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 public class SqlDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly Element _masterDataElement;
-    private readonly bool _enableDataDictionaryCaching;
     private readonly IEntityRepository _entityRepository;
-    private readonly IMemoryCache _memoryCache;
 
     public SqlDataDictionaryRepository(
         IEntityRepository entityRepository, 
-        IMemoryCache memoryCache,
         IOptionsSnapshot<MasterDataCoreOptions> options)
     {
         _entityRepository = entityRepository;
-        _memoryCache = memoryCache;
         
         var mdOptions = options.Value;
         _masterDataElement = DataDictionaryStructure.GetElement(mdOptions.DataDictionaryTableSchema, mdOptions.DataDictionaryTableName);
-        _enableDataDictionaryCaching = mdOptions.EnableDataDictionaryCaching;
     }
 
-    private static readonly Guid ElementNameListCacheKey = Guid.Parse("fb545293-9793-4f00-8f2f-b961999c8202");
     public List<FormElement> GetFormElementList(bool? apiSync = null)
     {
         var parameters = GetFormElementListParameters(apiSync);
@@ -80,10 +73,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
     public async ValueTask<List<string>> GetElementNameListAsync()
     {
-        if (_enableDataDictionaryCaching && _memoryCache.TryGetValue(ElementNameListCacheKey, out List<string>? nameList))
-        {
-            return nameList!;
-        }
         var filter = new Dictionary<string, object?> { { DataDictionaryStructure.Type, "F" } };
 
         var orderBy = new OrderByData();
@@ -92,17 +81,13 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var dt = await _entityRepository.GetDictionaryListResultAsync(_masterDataElement,
             new EntityParameters { Filters = filter, OrderBy = orderBy}, false);
 
-        nameList = dt.Data.ConvertAll(row => row[DataDictionaryStructure.Name]!.ToString()!);
-        
-        _memoryCache.Set(ElementNameListCacheKey, nameList);
-        
+        var nameList = dt.Data.ConvertAll(row => row[DataDictionaryStructure.Name]!.ToString()!);
+
         return nameList;
     }
 
     public FormElement? GetFormElement(string elementName)
     {
-        if (_enableDataDictionaryCaching && _memoryCache.TryGetValue(elementName, out FormElement? formElement))
-            return formElement!.DeepCopy();
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
@@ -112,12 +97,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         if (model != null)
         {
-            formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
-            
-            if(_enableDataDictionaryCaching)
-                _memoryCache.Set(elementName, formElement);
-            
-            return formElement!.DeepCopy();
+            var formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
+
+            return formElement;
         }
 
         return null;
@@ -125,8 +107,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
     public async ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
-        if (_enableDataDictionaryCaching && _memoryCache.TryGetValue(elementName, out FormElement? formElement))
-            return formElement!.DeepCopy();
         
         var filter = new Dictionary<string, object> {
         {
@@ -142,12 +122,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         
         var model = DataDictionaryModel.FromDictionary(values);
         
-        formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
-        
-        if(_enableDataDictionaryCaching)
-            _memoryCache.Set(elementName, formElement);
-        
-        return formElement!.DeepCopy();
+        var formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
+
+        return formElement;
     }
     
     public async Task InsertOrReplaceAsync(FormElement formElement)
@@ -155,9 +132,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var values = GetFormElementDictionary(formElement);
 
         await _entityRepository.SetValuesAsync(_masterDataElement, values);
-
-        if(_enableDataDictionaryCaching)
-            ClearCache(formElement);
     }
     
     public async Task InsertOrReplaceAsync(IEnumerable<FormElement> formElements)
@@ -167,9 +141,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var values = GetValues(formElementsList);
 
         await _entityRepository.SetValuesAsync(_masterDataElement, values);
-    
-        foreach (var formElement in formElementsList)
-            ClearCache(formElement);
     }
     
     private static IEnumerable<Dictionary<string, object?>> GetValues(List<FormElement> formElements)
@@ -186,9 +157,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var values = GetFormElementDictionary(formElement);
 
         _entityRepository.SetValues(_masterDataElement, values);
-        
-        if(_enableDataDictionaryCaching)
-            ClearCache(formElement);
     }
 
     private static Dictionary<string, object?> GetFormElementDictionary(FormElement formElement)
@@ -231,11 +199,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var filters = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         await _entityRepository.DeleteAsync(_masterDataElement, filters);
-        
-        if(_enableDataDictionaryCaching)
-            _memoryCache.Remove(elementName);
     }
-
 
     public async Task<bool> ExistsAsync(string elementName)
     {
@@ -270,15 +234,4 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         return new ListResult<FormElementInfo>(formElementInfoList, result.TotalOfRecords);
     }
 
-    private void ClearCache(FormElement formElement)
-    {
-        if (!formElement.UseReadProcedure)
-            _memoryCache.Remove(formElement.Name + "_ReadScript");
-        if (!formElement.UseWriteProcedure)
-            _memoryCache.Remove(formElement.Name + "_WriteScript");
-
-        
-        _memoryCache.Remove(ElementNameListCacheKey);
-        _memoryCache.Remove(formElement.Name);
-    }
 }

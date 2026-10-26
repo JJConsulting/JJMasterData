@@ -83,7 +83,7 @@ public class DataDictionaryLocalizationServiceTests
             .Setup(x => x.GetFormElementListAsync(It.IsAny<bool?>()))
             .ReturnsAsync([formElement]);
         
-        var service = new DataDictionaryLocalizationService(repositoryMock.Object);
+        var service = new DataDictionaryLocalizationService(DataDictionaryTestHelper.Create(repositoryMock.Object));
 
         var keys = await service.GetFormElementLocalizationKeysAsync();
 
@@ -129,7 +129,7 @@ public class DataDictionaryLocalizationServiceTests
             .Setup(x => x.GetFormElementListAsync(It.IsAny<bool?>()))
             .ReturnsAsync(new List<FormElement> { formElement });
 
-        var service = new DataDictionaryLocalizationService(repositoryMock.Object);
+        var service = new DataDictionaryLocalizationService(DataDictionaryTestHelper.Create(repositoryMock.Object));
 
         var keys = await service.GetAllLocalizationKeysAsync();
 
