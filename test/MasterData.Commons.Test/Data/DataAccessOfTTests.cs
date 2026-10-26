@@ -63,6 +63,26 @@ public class TypedDataAccessTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
+    public void GeneratedMapperUsesCentralizedTypedReaderWithoutBoxing()
+    {
+        var reader = new Mock<DbDataReader>(MockBehavior.Strict);
+        reader.SetupGet(r => r.FieldCount).Returns(1);
+        reader.Setup(r => r.GetName(0)).Returns("customer_id");
+        reader.Setup(r => r.IsDBNull(0)).Returns(false);
+        reader.Setup(r => r.GetFieldType(0)).Returns(typeof(int));
+        reader.Setup(r => r.GetInt32(0)).Returns(42);
+
+        var customer = ReadModel<QueryCustomer>(reader.Object);
+
+        static T ReadModel<T>(DbDataReader dataReader) where T : class, IDataAccessModel<T>
+            => T.Read(dataReader, T.ResolveOrdinals(dataReader));
+
+        Assert.Equal(42, customer.Id);
+        reader.Verify(r => r.GetInt32(0), Times.Once);
+        reader.Verify(r => r.GetValue(It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
     public async Task MapsNestedModelsFromEachCurrentRowAndHonorsMappingAttributes()
     {
         var orders = await CreateAccess().GetListAsync<QueryOrder>(new("""
@@ -207,7 +227,9 @@ public class TypedDataAccessTests
         var reader = new Mock<DbDataReader>();
         reader.SetupGet(r => r.FieldCount).Returns(1);
         reader.Setup(r => r.GetName(0)).Returns("customer_id");
-        reader.Setup(r => r.GetValue(0)).Returns(outcome == "map" ? "bad" : 1);
+        reader.Setup(r => r.GetFieldType(0)).Returns(outcome == "map" ? typeof(string) : typeof(int));
+        reader.Setup(r => r.GetInt32(0)).Returns(1);
+        reader.Setup(r => r.GetValue(0)).Returns("bad");
         reader.SetupSequence(r => r.ReadAsync(token)).ReturnsAsync(true).ReturnsAsync(true).ReturnsAsync(false);
         var factory = new Mock<DbProviderFactory>();
         factory.Setup(f => f.CreateConnection()).Returns(connection.Object);
@@ -225,8 +247,9 @@ public class TypedDataAccessTests
             Assert.Equal(2, (await access.GetListAsync<QueryCustomer>(query, token)).Count);
             // One schema pass per result, and one value fetch per mapped cell.
             reader.Verify(r => r.GetName(0), Times.Once);
-            reader.Verify(r => r.GetValue(0), Times.Exactly(2));
-            reader.Verify(r => r.IsDBNull(It.IsAny<int>()), Times.Never);
+            reader.Verify(r => r.GetInt32(0), Times.Exactly(2));
+            reader.Verify(r => r.GetValue(0), Times.Never);
+            reader.Verify(r => r.IsDBNull(0), Times.Exactly(2));
         }
         else
         {

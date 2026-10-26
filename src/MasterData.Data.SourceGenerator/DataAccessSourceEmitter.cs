@@ -144,16 +144,14 @@ internal static class DataAccessSourceEmitter
         var enumCast = property.TypeName.Length == 0 ? "" : "(" + property.TypeName + ")";
 
         OpenBlock(writer, "if (ordinal >= 0)");
-        writer.WriteLine("var value = reader.GetValue(ordinal);");
-        writer.WriteLine("if (value is global::System.DBNull)");
+        writer.WriteLine("if (reader.IsDBNull(ordinal))");
         writer.Indent++;
         writer.WriteLine(nullAssignment);
         writer.Indent--;
         writer.WriteLine("else");
         writer.Indent++;
-        writer.WriteLine(target + " = " + enumCast + "(value is global::System." + property.ReaderMethod +
-                         " exact ? exact : Data::DataAccessValueReader.Read" +
-                         property.ReaderMethod + "(reader, ordinal, value));");
+        writer.WriteLine(target + " = " + enumCast + "Data::DataAccessValueReader.Read" +
+                         property.ReaderMethod + "(reader, ordinal);");
         writer.Indent--;
         CloseBlock(writer);
     }

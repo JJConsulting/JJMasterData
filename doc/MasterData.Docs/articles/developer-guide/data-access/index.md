@@ -15,7 +15,7 @@ using JJMasterData.Commons.Data;
 
 public sealed class PersonReportService(DataAccess dataAccess)
 {
-    public async Task<object?> GetNameAsync(
+    public async Task<string?> GetNameAsync(
         int personId,
         CancellationToken cancellationToken = default)
     {
@@ -23,7 +23,7 @@ public sealed class PersonReportService(DataAccess dataAccess)
             "SELECT Name FROM dbo.Person WHERE Id = @Id",
             [new DataAccessParameter("@Id", personId)]);
 
-        return await dataAccess.GetResultAsync(command, cancellationToken);
+        return await dataAccess.GetStringAsync(command, cancellationToken);
     }
 }
 ```
@@ -52,22 +52,33 @@ Select the method that matches the expected result:
 | `INSERT`, `UPDATE`, or `DELETE` | `SetCommandAsync` | Number of affected rows |
 | Several writes in one transaction | `SetCommandListAsync` | Total number of affected rows |
 
-Equivalent synchronous methods are available without the `Async` suffix. In web applications, prefer the asynchronous methods and pass the request's `CancellationToken`.
+The methods in the table have synchronous equivalents without the `Async` suffix. In web applications, prefer the asynchronous methods and pass the request's `CancellationToken`.
 
 ### Read one value
 
-`GetResultAsync` has the same semantics as ADO.NET's `ExecuteScalar`: it ignores every column and row except the first column of the first row.
+These methods read the first column of the first row. They accept a `DataAccessCommand` and an optional `CancellationToken`, and return `null` for an empty result or SQL `NULL`.
+
+| Method | Return type |
+| --- | --- |
+| `GetStringAsync` | `Task<string?>` |
+| `GetIntAsync` | `Task<int?>` |
+| `GetLongAsync` | `Task<long?>` |
+| `GetDecimalAsync` | `Task<decimal?>` |
+| `GetBoolAsync` | `Task<bool>` |
+| `GetGuidAsync` | `Task<Guid?>` |
+| `GetDateTimeAsync` | `Task<DateTime?>` |
 
 ```csharp
 var command = new DataAccessCommand(
     "SELECT COUNT(*) FROM dbo.Person WHERE IsActive = @IsActive",
     [new DataAccessParameter("@IsActive", true)]);
 
-var result = await dataAccess.GetResultAsync(command, cancellationToken);
-var activePeople = Convert.ToInt32(result);
+int? activePeople = await dataAccess.GetIntAsync(command, cancellationToken);
 ```
 
-The result is `null` when the query returns no value. A database `NULL` may be returned as `DBNull.Value`, so convert or check the value according to the provider and query.
+They use typed getters when the provider type matches, with validated conversions otherwise. Invalid conversions and numeric overflow throw `DataException`. These methods have no synchronous or raw SQL string overloads.
+
+Use `GetResultAsync` when you need an `object?`. It returns `null` for an empty result; SQL `NULL` may be returned as `DBNull.Value`.
 
 ### Read rows
 
