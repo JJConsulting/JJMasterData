@@ -70,8 +70,9 @@ internal static class DataAccessSourceEmitter
         var scalarProperties = dataAccessModel.Properties.Where(p => p.ReaderMethod != "Ignore").ToArray();
         if (scalarProperties.All(p => p.ReaderMethod != "Model"))
         {
-            writer.WriteLine("private static readonly global::System.Collections.Generic.Dictionary<string, int> __DataAccessColumns =");
-            writer.WriteLine("    new(global::System.StringComparer.OrdinalIgnoreCase)");
+            writer.WriteLine("private static readonly global::System.Collections.Frozen.FrozenDictionary<string, int> __DataAccessColumns =");
+            writer.WriteLine("    global::System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(");
+            writer.WriteLine("    new global::System.Collections.Generic.Dictionary<string, int>(global::System.StringComparer.OrdinalIgnoreCase)");
             OpenBlock(writer);
             for (var i = 0; i < scalarProperties.Length; i++)
             {
@@ -79,7 +80,7 @@ internal static class DataAccessSourceEmitter
                 writer.WriteLine("[" + Literal(scalarProperties[i].Column) + "] = " + i + ",");
             }
             writer.Indent--;
-            writer.WriteLine("};");
+            writer.WriteLine("}, global::System.StringComparer.OrdinalIgnoreCase);");
             writer.WriteLine("static int[] " + contract + ".ResolveOrdinals(Db::DbDataReader reader)");
             writer.WriteLine("    => Data::DataAccessValueReader.FindOrdinals(reader, __DataAccessColumns);");
             return;

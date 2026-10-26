@@ -24,7 +24,7 @@ public static class DataAccessValueReader
     }
 
     /// <summary>Resolves all mapped columns in one schema pass, preserving missing and duplicate checks.</summary>
-    public static int[] FindOrdinals(DbDataReader reader, IReadOnlyDictionary<string, int> columns)
+    public static int[] FindOrdinals<TDictionary>(DbDataReader reader, TDictionary columns) where TDictionary : IReadOnlyDictionary<string,int>
     {
         var ordinals = new int[columns.Count];
         Array.Fill(ordinals, -1);
