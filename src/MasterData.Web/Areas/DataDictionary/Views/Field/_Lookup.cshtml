@@ -19,8 +19,10 @@
     </div>
 
     <div class="mb-3 col-sm-3 required" id="divReplaceTextOnGrid">
-        <label asp-for="DataItem!.GridBehavior" class="form-label"></label>
-        <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+        <label asp-for="DataItem!.GridBehavior" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.DataItem!.GridBehavior)]
+            <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+        </label>
         <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
             <option value="0">@StringLocalizer["Id"]</option>
             <option value="1">@StringLocalizer["Description"]</option>

@@ -3,9 +3,6 @@
 @using JJConsulting.Html.Bootstrap.Models
 @using JJMasterData.Commons.Util
 @using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Core.DataDictionary.Services
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
 @{
@@ -73,8 +70,10 @@
             <input class="form-control jj-numeric" placeholder="" type="number" name="maxValue" id="maxValue" value="@Model.GetAttr(FormElementField.MaxValueAttribute)"/>
         </div>
         <div class="col-sm-4">
-            <label for="step" class="form-label">@StringLocalizer["Step"]</label>
-            <tooltip title="@StringLocalizer["Defines the interval at which the value changes."]"/>
+            <label for="step" class="form-label">
+                @StringLocalizer["Step"]
+                <tooltip title="@StringLocalizer["Defines the interval at which the value changes."]"/>
+            </label>
             <input id="step" name="step" placeholder="1" class="form-control jj-numeric" type="number" value="@Model.GetAttr(FormElementField.StepAttribute)"/>
         </div>
         break;
@@ -104,8 +103,10 @@
         break;
     case FormComponent.TextArea:
         <div class="col-sm-4">
-            <label for="txtTextAreaRows" class="form-label">@StringLocalizer["Rows"]</label>
-            <tooltip title="@StringLocalizer["Number of lines in the text box."]"/>
+            <label for="txtTextAreaRows" class="form-label">
+                @StringLocalizer["Rows"]
+                <tooltip title="@StringLocalizer["Number of lines in the text box."]"/>
+            </label>
             <input class="form-control" id="txtTextAreaRows" name="txtTextAreaRows" maxlength="100" type="number" min="1" max="5000" placeholder="5" value="@Model.GetAttr(FormElementField.RowsAttribute)">
         </div>
         break;

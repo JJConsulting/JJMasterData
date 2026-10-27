@@ -33,6 +33,14 @@ public class FormElementOptions
     [Display(Name = "Use Floating Labels")]
     public bool UseFloatingLabels { get; set; }
 
+    /// <summary>
+    /// Number of records retrieved per database query during export.
+    /// </summary>
+    [JsonPropertyName("exportRecordsPerPage")]
+    [Display(Name = "Export Records Per Page")]
+    [Range(1, int.MaxValue)]
+    public int ExportRecordsPerPage { get; set; } = 10_000;
+
     public FormElementOptions DeepCopy()
     {
         return new FormElementOptions
@@ -43,7 +51,8 @@ public class FormElementOptions
             GridTableActions = GridTableActions.DeepCopy(),
             GridToolbarActions = GridToolbarActions.DeepCopy(),
             UseFloatingLabels = UseFloatingLabels,
-            EnableAuditLog = EnableAuditLog
+            EnableAuditLog = EnableAuditLog,
+            ExportRecordsPerPage = ExportRecordsPerPage
         };
     }
 }

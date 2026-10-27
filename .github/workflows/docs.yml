@@ -17,12 +17,12 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7.0.1
     - name: Dotnet Setup
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6.0.0
       with:
         dotnet-version: 10.0.x
 
@@ -31,10 +31,10 @@ jobs:
 
     - name: Upload artifact
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v5.0.0
       with:
         path: 'doc/MasterData.Docs/_site'
     - name: Deploy to GitHub Pages
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       id: deployment
-      uses: actions/deploy-pages@v4
+      uses: actions/deploy-pages@v5.0.1

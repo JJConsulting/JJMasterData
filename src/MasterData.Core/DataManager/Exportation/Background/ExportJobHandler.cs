@@ -31,8 +31,6 @@ internal sealed class ExportJobHandler(
     IStringLocalizer<MasterDataResources> localizer,
     IMasterDataUser masterDataUser) : BackgroundJobHandler<ExportRequest>
 {
-    private const int RecordsPerPage = 10_000;
-
     public override async Task<object?> ExecuteAsync(
         ExportRequest request,
         IProgress<BackgroundJobProgress> progress,
@@ -53,11 +51,19 @@ internal sealed class ExportJobHandler(
         }
         else
         {
+            var recordsPerPage = formElement.Options.ExportRecordsPerPage;
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(recordsPerPage);
+            var orderBy = OrderByData.FromString(request.OrderBy);
+
+            // Every page must use the same unique ordering, including all parts of composite keys.
+            foreach (var field in formElement.Fields.Where(field => field.IsPk))
+                orderBy.AddIfMissing(field.Name, OrderByDirection.Asc);
+
             parameters = new EntityParameters
             {
                 Filters = new Dictionary<string, object?>(request.Filters),
-                RecordsPerPage = RecordsPerPage,
-                OrderBy = OrderByData.FromString(request.OrderBy),
+                RecordsPerPage = recordsPerPage,
+                OrderBy = orderBy,
                 CurrentPage = 1
             };
             var result = await entityRepository.GetDictionaryListResultAsync(formElement, parameters);
@@ -129,7 +135,7 @@ internal sealed class ExportJobHandler(
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var totalPages = parameters is null ? 1 :
-            (int)Math.Ceiling(totalOfRecords / (double)RecordsPerPage);
+            (int)Math.Ceiling(totalOfRecords / (double)parameters.RecordsPerPage);
 
         for (var page = 1; page <= Math.Max(1, totalPages); page++)
         {

@@ -53,7 +53,7 @@ public partial class DataAccess
                 await reader.FillAsync(dataTable, token);
                 return dataTable;
             },
-            cancellationToken);
+            cancellationToken: cancellationToken);
     }
 
     ///<inheritdoc cref="GetDataSet(string)"/>
@@ -73,12 +73,13 @@ public partial class DataAccess
                 await reader.FillAsync(dataSet, token);
                 return dataSet;
             },
-            cancellationToken);
+            cancellationToken: cancellationToken);
     }
 
     private async Task<TResult> ReadAsync<TResult>(
         DataAccessCommand command,
         Func<DbDataReader, CancellationToken, Task<TResult>> read,
+        CommandBehavior behavior = CommandBehavior.Default,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(read);
@@ -91,7 +92,7 @@ public partial class DataAccess
             await using (dbCommand.Connection)
             {
                 TResult result;
-                await using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
+                await using (var reader = await dbCommand.ExecuteReaderAsync(behavior, cancellationToken))
                 {
                     result = await read(reader, cancellationToken);
                 }
@@ -99,6 +100,77 @@ public partial class DataAccess
                 SetOutputParameters(command, dbCommand);
                 return result;
             }
+        }
+        catch (Exception ex)
+        {
+            throw GetDataAccessException(ex, command);
+        }
+    }
+
+    /// <summary>Reads the first column of the first row as string; returns null for SQL NULL or no rows.</summary>
+    public Task<string?> GetStringAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        return ReadFirstValueAsync<string?>(command, static reader => DataAccessValueReader.ReadString(reader, 0), cancellationToken);
+    }
+
+    /// <summary>Reads the first column of the first row as int; returns null for SQL NULL or no rows.</summary>
+    public Task<int?> GetIntAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        return ReadFirstValueAsync<int?>(command, static reader => DataAccessValueReader.ReadInt32(reader, 0), cancellationToken);
+    }
+
+    /// <summary>Reads the first column of the first row as decimal; returns null for SQL NULL or no rows.</summary>
+    public Task<decimal?> GetDecimalAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        return ReadFirstValueAsync<decimal?>(command, static reader => DataAccessValueReader.ReadDecimal(reader, 0), cancellationToken);
+    }
+
+    /// <summary>Reads the first column of the first row as Guid; returns null for SQL NULL or no rows.</summary>
+    public Task<Guid?> GetGuidAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        return ReadFirstValueAsync<Guid?>(command, static reader => DataAccessValueReader.ReadGuid(reader, 0), cancellationToken);
+    }
+
+    /// <summary>Reads the first column of the first row as bool; returns null for SQL NULL or no rows.</summary>
+    public Task<bool?> GetBoolAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        return ReadFirstValueAsync<bool?>(command, static reader => DataAccessValueReader.ReadBoolean(reader, 0), cancellationToken);
+    }
+
+    /// <summary>Reads the first column of the first row as long; returns null for SQL NULL or no rows.</summary>
+    public Task<long?> GetLongAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        return ReadFirstValueAsync<long?>(command, static reader => DataAccessValueReader.ReadInt64(reader, 0), cancellationToken);
+    }
+
+    /// <summary>Reads the first column of the first row as DateTime; returns null for SQL NULL or no rows.</summary>
+    public Task<DateTime?> GetDateTimeAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    {
+        return ReadFirstValueAsync<DateTime?>(command, static reader => DataAccessValueReader.ReadDateTime(reader, 0), cancellationToken);
+    }
+
+    private async Task<T?> ReadFirstValueAsync<T>(
+        DataAccessCommand command,
+        Func<DbDataReader, T> read,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var dbCommand = CreateDbCommand(command);
+            dbCommand.Connection = await CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
+            await using var connection = dbCommand.Connection;
+
+            T? result = default;
+            await using (var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow | CommandBehavior.SingleResult, cancellationToken).ConfigureAwait(false))
+            {
+                if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false) && reader.FieldCount > 0 && !await reader.IsDBNullAsync(0, cancellationToken).ConfigureAwait(false))
+                {
+                    result = read(reader);
+                }
+            }
+
+            SetOutputParameters(command, dbCommand);
+            return result;
         }
         catch (Exception ex)
         {
@@ -282,36 +354,38 @@ public partial class DataAccess
             dbCommand.Connection = await CreateConnectionAsync(cancellationToken);
 
             await using var connection = dbCommand.Connection;
-            await using var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken);
-
-            var fieldCount = dataReader.FieldCount;
-            var columnNames = new string[fieldCount];
-
-            for (var i = 0; i < fieldCount; i++)
+            await using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
-                columnNames[i] = dataReader.GetName(i);
-            }
 
-            int[]? ordinals = null;
-
-            while (await dataReader.ReadAsync(cancellationToken))
-            {
-                ordinals ??= Array.ConvertAll(columnNames, dataReader.GetOrdinal);
-
-                var dictionary = new Dictionary<string, object?>(
-                    fieldCount,
-                    StringComparer.InvariantCultureIgnoreCase);
+                var fieldCount = dataReader.FieldCount;
+                var columnNames = new string[fieldCount];
 
                 for (var i = 0; i < fieldCount; i++)
                 {
-                    var ordinal = ordinals[i];
-
-                    dictionary[columnNames[i]] = dataReader.IsDBNull(ordinal)
-                        ? null
-                        : dataReader.GetValue(ordinal);
+                    columnNames[i] = dataReader.GetName(i);
                 }
 
-                dictionaryList.Add(dictionary);
+                int[]? ordinals = null;
+
+                while (await dataReader.ReadAsync(cancellationToken))
+                {
+                    ordinals ??= Array.ConvertAll(columnNames, dataReader.GetOrdinal);
+
+                    var dictionary = new Dictionary<string, object?>(
+                        fieldCount,
+                        StringComparer.InvariantCultureIgnoreCase);
+
+                    for (var i = 0; i < fieldCount; i++)
+                    {
+                        var ordinal = ordinals[i];
+
+                        dictionary[columnNames[i]] = dataReader.IsDBNull(ordinal)
+                            ? null
+                            : dataReader.GetValue(ordinal);
+                    }
+
+                    dictionaryList.Add(dictionary);
+                }
             }
 
             SetOutputParameters(command, dbCommand);

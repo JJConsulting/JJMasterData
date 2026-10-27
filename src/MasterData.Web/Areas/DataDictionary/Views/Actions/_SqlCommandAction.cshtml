@@ -38,8 +38,10 @@
                 }
             </div>
             <div class="col-sm-12">
-                <label asp-for="RedirectUrl" class="form-label"></label>
-                <tooltip title="@StringLocalizer["Redirects to this URL after the command is executed successfully."]"></tooltip>
+                <label asp-for="RedirectUrl" class="form-label">
+                    @StringLocalizer[Html.DisplayNameFor(model => model.RedirectUrl)]
+                    <tooltip title="@StringLocalizer["Redirects to this URL after the command is executed successfully."]"></tooltip>
+                </label>
                 <input asp-for="RedirectUrl" class="form-control font-monospace"/>
             </div>
         </div>

@@ -18,8 +18,10 @@
 @section ActionTabContent {
     <div id="divImportAction" class="tab-pane fade">
         <partial name="_ProcessOptions" for="ProcessOptions"/>
-        <label asp-for="HelpText" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Help text that will be shown to the user."]"/>
+        <label asp-for="HelpText" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.HelpText)]
+            <tooltip title="@StringLocalizer["Help text that will be shown to the user."]"/>
+        </label>
         <textarea asp-for="HelpText" class="form-control" rows="5"></textarea>
     </div>
 }

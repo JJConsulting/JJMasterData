@@ -10,23 +10,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  setup:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v5
-    
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Restore NuGet packages
-        run: |
-          dotnet restore
-    
   nuget-push:
-    runs-on: ubuntu-24.04
-    needs: setup
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       matrix:
         project:
@@ -44,10 +32,13 @@ jobs:
           - src/Plugins/MasterData.Pdf
           - src/Plugins/MasterData.Brasil
     steps:
-      - uses: actions/checkout@v5
-      - name: Build and publish NuGet package
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      - uses: actions/checkout@v7.0.1
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build NuGet package
         run: |
           cd ${{ matrix.project }}
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -57,9 +48,17 @@ jobs:
           fi
           dotnet build -c release -p:VersionSuffix="${VERSION_SUFFIX}" -p:ContinuousIntegrationBuild=true
           dotnet pack -c release --no-build --output="nuget" -p:VersionSuffix="${VERSION_SUFFIX}" -p:ContinuousIntegrationBuild=true
-          cd nuget
-          if [ -n "${NUGET_API_KEY}" ]; then
-            dotnet nuget push "*.nupkg" --api-key "${NUGET_API_KEY}" --source https://api.nuget.org/v3/index.json --skip-duplicate
-          else
-            echo "NUGET_API_KEY is unavailable; package was built but not published."
-          fi
+
+      - name: NuGet login
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: NuGet/login@v1.2.0
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish NuGet package
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        working-directory: ${{ matrix.project }}/nuget
+        run: dotnet nuget push "*.nupkg" --api-key "${NUGET_API_KEY}" --source https://api.nuget.org/v3/index.json --skip-duplicate

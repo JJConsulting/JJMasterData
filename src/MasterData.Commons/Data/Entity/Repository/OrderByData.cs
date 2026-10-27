@@ -34,6 +34,21 @@ public class OrderByData
         _fields[fieldName] = direction;
         return this;
     }
+
+    /// <summary>
+    /// Appends a field only if it is not already ordered, preserving existing directions and priority.
+    /// </summary>
+    public OrderByData AddIfMissing(string fieldName, OrderByDirection direction)
+    {
+        foreach (var existingField in _fields.Keys)
+        {
+            if (string.Equals(existingField, fieldName, StringComparison.OrdinalIgnoreCase))
+                return this;
+        }
+
+        _fields.Add(fieldName, direction);
+        return this;
+    }
     
     public static OrderByData FromString(string? orderByString)
     {

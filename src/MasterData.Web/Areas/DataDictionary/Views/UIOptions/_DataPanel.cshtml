@@ -6,41 +6,38 @@
 @model JJMasterData.Core.DataDictionary.Models.FormUI
 
 
-<div class="row mb-3">
+<div class="row align-items-center mb-3">
     <div class="col-sm-4">
         <checkbox for="IsVerticalLayout" layout="Switch"/>
     </div>
 
     <div class="col-sm-4">
-        <checkbox tooltip="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]" for="ShowViewModeAsStatic" layout="Switch"/>
-    </div>
-    
-    <div class="col-sm-4 col-6">
-        <div class="form-floating">
-            <select asp-for="TabsStyle" class="form-select" asp-items="Html.GetEnumSelectList<JJConsulting.Html.Bootstrap.Models.TabsStyle>()"></select>
-            <label asp-for="TabsStyle"></label>
-        </div>
+        <checkbox for="ShowViewModeAsStatic" layout="Switch" tooltip="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]"/>
     </div>
 </div>
 
-<div class="row mb-3">
+<div class="row align-items-center mb-3">
     <div class="col-sm-4 col-6">
-        <div class="form-floating">
-            <select asp-for="FormCols" class="form-select" data-bs-toggle="tooltip" title="@StringLocalizer["Number of columns where fields will be rendered by default."]">
-                <option value="1">@StringLocalizer["1 (one column)"]</option>
-                <option value="2">@StringLocalizer["2 (two columns)"]</option>
-                <option value="3">@StringLocalizer["3 (three columns)"]</option>
-                <option value="4">@StringLocalizer["4 (four columns)"]</option>
-                <option value="6">@StringLocalizer["6 (six columns)"]</option>
-                <option value="12">@StringLocalizer["12 (twelve columns)"]</option>
-            </select>
-            <label asp-for="FormCols"></label>
-        </div>
+        <label asp-for="FormCols" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.FormCols)]
+            <tooltip title="@StringLocalizer["Number of columns where fields will be rendered by default."]"/>
+        </label>
+        <select asp-for="FormCols" class="form-select">
+            <option value="1">@StringLocalizer["1 (one column)"]</option>
+            <option value="2">@StringLocalizer["2 (two columns)"]</option>
+            <option value="3">@StringLocalizer["3 (three columns)"]</option>
+            <option value="4">@StringLocalizer["4 (four columns)"]</option>
+            <option value="6">@StringLocalizer["6 (six columns)"]</option>
+            <option value="12">@StringLocalizer["12 (twelve columns)"]</option>
+        </select>
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-4 col-6 required">
-        <div class="form-floating">
-            <select asp-for="EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
-            <label asp-for="EnterKey"></label>
-        </div>
+    <div class="col-sm-4 col-6 required">
+        <label asp-for="EnterKey" class="form-label"></label>
+        <select asp-for="EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+    </div>
+    
+    <div class="col-sm-4">
+        <label asp-for="TabsStyle" class="form-label"></label>
+        <select asp-for="TabsStyle" class="form-select" asp-items="Html.GetEnumSelectList<JJConsulting.Html.Bootstrap.Models.TabsStyle>()"></select>
     </div>
 </div>

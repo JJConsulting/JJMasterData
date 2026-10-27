@@ -28,6 +28,11 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
 
         }
         
+        if (options.ExportRecordsPerPage < 1)
+        {
+            AddError(nameof(options.ExportRecordsPerPage), StringLocalizer["Export records per page must be greater than zero."]);
+        }
+
         return IsValid;
     }
 
@@ -44,6 +49,7 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
                 formElement.Options.Grid = options.Grid;
                 formElement.Options.EnableAuditLog = options.EnableAuditLog;
                 formElement.Options.UseFloatingLabels = options.UseFloatingLabels;
+                formElement.Options.ExportRecordsPerPage = options.ExportRecordsPerPage;
                 
                 await DataDictionaryService.InsertOrReplaceAsync(formElement);
             }

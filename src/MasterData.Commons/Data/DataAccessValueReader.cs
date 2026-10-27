@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace JJMasterData.Commons.Data;
 
-/// <summary>Strict, culture-independent conversions used by generated mappers.</summary>
+/// <summary>Strict, culture-independent conversions.</summary>
 public static class DataAccessValueReader
 {
     /// <summary>Resolves one column once per query; missing columns return -1, ambiguous columns fail.</summary>
@@ -24,7 +24,7 @@ public static class DataAccessValueReader
     }
 
     /// <summary>Resolves all mapped columns in one schema pass, preserving missing and duplicate checks.</summary>
-    public static int[] FindOrdinals(DbDataReader reader, IReadOnlyDictionary<string, int> columns)
+    public static int[] FindOrdinals<TDictionary>(DbDataReader reader, TDictionary columns) where TDictionary : IReadOnlyDictionary<string,int>
     {
         var ordinals = new int[columns.Count];
         Array.Fill(ordinals, -1);
@@ -63,7 +63,7 @@ public static class DataAccessValueReader
 
     private static T Read<T>(DbDataReader reader, int ordinal, object value, string expectedType, Func<object, T> convert)
     {
-        if (value is T exact) 
+        if (value is T exact)
             return exact;
         try
         {
@@ -74,94 +74,148 @@ public static class DataAccessValueReader
             throw new DataException($"Column '{reader.GetName(ordinal)}' cannot be mapped to {expectedType}.", ex);
         }
     }
-    
+
     public static byte ReadByte(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(byte))
+            return reader.GetByte(ordinal);
+
         return ReadByte(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static sbyte ReadSByte(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(sbyte))
+            return reader.GetFieldValue<sbyte>(ordinal);
+
         return ReadSByte(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static short ReadInt16(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(short))
+            return reader.GetInt16(ordinal);
+
         return ReadInt16(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static ushort ReadUInt16(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(ushort))
+            return reader.GetFieldValue<ushort>(ordinal);
+
         return ReadUInt16(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static int ReadInt32(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(int))
+            return reader.GetInt32(ordinal);
+
         return ReadInt32(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static uint ReadUInt32(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(uint))
+            return reader.GetFieldValue<uint>(ordinal);
+
         return ReadUInt32(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static long ReadInt64(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(long))
+            return reader.GetInt64(ordinal);
+
         return ReadInt64(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static ulong ReadUInt64(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(ulong))
+            return reader.GetFieldValue<ulong>(ordinal);
+
         return ReadUInt64(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static float ReadSingle(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(float))
+            return reader.GetFloat(ordinal);
+
         return ReadSingle(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static double ReadDouble(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(double))
+            return reader.GetDouble(ordinal);
+
         return ReadDouble(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static decimal ReadDecimal(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(decimal))
+            return reader.GetDecimal(ordinal);
+
         return ReadDecimal(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static string ReadString(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(string))
+            return reader.GetString(ordinal);
+
         return ReadString(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static char ReadChar(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(char))
+            return reader.GetChar(ordinal);
+
         return ReadChar(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static bool ReadBoolean(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(bool))
+            return reader.GetBoolean(ordinal);
+
         return ReadBoolean(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static Guid ReadGuid(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(Guid))
+            return reader.GetGuid(ordinal);
+
         return ReadGuid(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static DateTime ReadDateTime(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(DateTime))
+            return reader.GetDateTime(ordinal);
+
         return ReadDateTime(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static DateTimeOffset ReadDateTimeOffset(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(DateTimeOffset))
+            return reader.GetFieldValue<DateTimeOffset>(ordinal);
+
         return ReadDateTimeOffset(reader, ordinal, reader.GetValue(ordinal));
     }
 
     public static TimeSpan ReadTimeSpan(DbDataReader reader, int ordinal)
     {
+        if (reader.GetFieldType(ordinal) == typeof(TimeSpan))
+            return reader.GetFieldValue<TimeSpan>(ordinal);
+
         return ReadTimeSpan(reader, ordinal, reader.GetValue(ordinal));
     }
 
@@ -239,7 +293,7 @@ public static class DataAccessValueReader
             {
                 return decimal.Parse(text, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
             }
-            
+
             return Convert.ToDecimal(Numeric(value, false), CultureInfo.InvariantCulture);
         });
     }

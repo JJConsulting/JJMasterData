@@ -20,8 +20,10 @@
     <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
         <div class="row">
             <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-                <label asp-for="UrlRedirect" class="form-label"></label>
-                <tooltip title="@StringLocalizer["This field support runtime values between {}. Use {AppPath} for the base path of the application."]"/>
+                <label asp-for="UrlRedirect" class="form-label">
+                    @StringLocalizer[Html.DisplayNameFor(model => model.UrlRedirect)]
+                    <tooltip title="@StringLocalizer["This field support runtime values between {}. Use {AppPath} for the base path of the application."]"/>
+                </label>
                 <input asp-for="UrlRedirect" class="form-control font-monospace"/>
             </div>
             <div class="@BootstrapHelper.FormGroup col-sm-6">
@@ -44,8 +46,10 @@
                     <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <label class="form-label" asp-for="ModalTitle"></label>
-                    <tooltip title="@StringLocalizer["This field support runtime values between {}."]"/>
+                    <label class="form-label" asp-for="ModalTitle">
+                        @StringLocalizer[Html.DisplayNameFor(model => model.ModalTitle)]
+                        <tooltip title="@StringLocalizer["This field support runtime values between {}."]"/>
+                    </label>
                     <input asp-for="ModalTitle" class="form-control"/>
                 </div>
             </div>

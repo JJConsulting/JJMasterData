@@ -43,3 +43,12 @@
         </collapse-panel>
     </card>
 }
+
+<script>
+    function setMaxRecordsPerPage(button) {
+        const input = button.closest('.input-group').querySelector('input');
+        input.value = '@int.MaxValue';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+</script>

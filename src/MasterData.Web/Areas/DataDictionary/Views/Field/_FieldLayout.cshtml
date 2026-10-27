@@ -1,7 +1,5 @@
 ﻿@using JJMasterData.Commons.Data.Entity.Models
 @using JJMasterData.Core.DataDictionary.Models
-@using JJMasterData.Web.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @model FormElementField
 
@@ -12,27 +10,35 @@
 }
 <div class="row">
     <div class="mb-3 col-sm-6">
-        <label asp-for="CssClass" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
+        <label asp-for="CssClass" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.CssClass)]
+            <tooltip title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
+        </label>
         <input asp-for="CssClass" placeholder="" class="form-control"/>
     </div>
 
     <div class="mb-3 col-sm-6">
-        <label asp-for="LineGroup" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
+        <label asp-for="LineGroup" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.LineGroup)]
+            <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
+        </label>
         <input asp-for="LineGroup" type="number" placeholder="" class="form-control"/>
     </div>
     <div class="mb-3 col-sm-6">
-        <label asp-for="HelpDescription" class="form-label"></label>
-        <tooltip title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
+        <label asp-for="HelpDescription" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.HelpDescription)]
+            <tooltip title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
+        </label>
         <input asp-for="HelpDescription" placeholder="" class="form-control"/>
     </div>
 
     @if(isString)
     {
         <div class="mb-3 col-sm-6">
-            <label asp-for="TextCase" class="form-label"></label>
-            <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
+            <label asp-for="TextCase" class="form-label">
+                @StringLocalizer[Html.DisplayNameFor(model => model.TextCase)]
+                <tooltip title="@StringLocalizer["Automatically normalizes the text on save by applying the selected format. Useful for case-sensitive integrations (e.g., Protheus)."]"/>
+            </label>
             <select asp-for="TextCase" class="form-control form-select"
                     asp-items="Html.GetEnumSelectList<TextCase>()"></select>
         </div>

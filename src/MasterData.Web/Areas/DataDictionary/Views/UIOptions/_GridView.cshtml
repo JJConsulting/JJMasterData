@@ -14,7 +14,7 @@
     </div>
 
     <div class="col-sm-3">
-        <checkbox tooltip="@StringLocalizer["Allows you to select multiple lines in the grid."]" for="EnableMultiSelect" layout="Switch"/>
+        <checkbox for="EnableMultiSelect" layout="Switch" tooltip="@StringLocalizer["Allows you to select multiple lines in the grid."]"/>
     </div>
 
     <div class="col-sm-3">
@@ -25,7 +25,7 @@
 
 <div class="row mb-3">
     <div class="col-sm-3">
-        <checkbox for="ShowRowHover" tooltip="@StringLocalizer["Change the line color on mouseover."]" layout="Switch"/>
+        <checkbox for="ShowRowHover" layout="Switch" tooltip="@StringLocalizer["Change the line color on mouseover."]"/>
     </div>
 
     <div class="col-sm-3">
@@ -54,7 +54,7 @@
         <checkbox for="ShowHeaderWhenEmpty" layout="Switch"/>
     </div>
     <div class="col-sm-3">
-        <checkbox tooltip="@StringLocalizer["Filters, sorting and grid settings are saved."]" for="MaintainValuesOnLoad" layout="Switch"/>
+        <checkbox for="MaintainValuesOnLoad" layout="Switch" tooltip="@StringLocalizer["Filters, sorting and grid settings are saved."]"/>
     </div>
 </div>
 
@@ -66,41 +66,32 @@
     
 <div class="row mb-3">
     <div class="mb-3 col-sm-4">
-        <div class="form-floating">
-            <select asp-for="PaginationType" class="form-control form-select" asp-items="Html.GetEnumSelectList<GridPaginationType>()"></select>
-            <label asp-for="PaginationType"></label>
-        </div>
+        <label asp-for="PaginationType" class="form-label"></label>
+        <select asp-for="PaginationType" class="form-control form-select" asp-items="Html.GetEnumSelectList<GridPaginationType>()"></select>
     </div>
     <div class="col-sm-4 mb-3">
+        <label asp-for="RecordsPerPage" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.RecordsPerPage)]
+        </label>
         <div class="input-group">
-            <div class="form-floating">
-                <input type="text" class="form-control" asp-for="RecordsPerPage" placeholder="">
-                <label asp-for="RecordsPerPage"></label>
-            </div>
-            <div class="input-group-text" onclick="setMaxRecordsPerPage()" data-bs-toggle="tooltip" title="@StringLocalizer["Maximum possible records"]">
+            <input type="number" class="form-control" asp-for="RecordsPerPage">
+            <button type="button" class="input-group-text" onclick="setMaxRecordsPerPage(this)" data-bs-toggle="tooltip" title="@StringLocalizer["Maximum possible records"]">
                 <icon icon="SolidGaugeHigh"></icon>
-            </div>
+            </button>
         </div>
     </div>
 
     <div class="col-sm-4 mb-3">
-        <div class="form-floating">
-            <input asp-for="TotalPaggingButton" class="form-control" placeholder="">
-            <label asp-for="TotalPaggingButton"></label>
-        </div>
+        <label asp-for="TotalPaggingButton" class="form-label"></label>
+        <input type="number" asp-for="TotalPaggingButton" class="form-control">
 
     </div>
 
     <div class="col-sm-12 mb-3">
-        <div class="form-floating">
-            <input asp-for="EmptyDataText" placeholder="" class="form-control" data-bs-toggle="tooltip" title="@StringLocalizer["Text shown when there are no records."]"/>
-            <label asp-for="EmptyDataText"></label>
-        </div>
+        <label asp-for="EmptyDataText" class="form-label">
+            @StringLocalizer[Html.DisplayNameFor(model => model.EmptyDataText)]
+            <tooltip title="@StringLocalizer["Text shown when there are no records."]"/>
+        </label>
+        <input asp-for="EmptyDataText" class="form-control"/>
     </div>
 </div>
-
-<script>
-    function setMaxRecordsPerPage(){
-        document.getElementById('@Html.IdFor(m => m.RecordsPerPage)').value = '@int.MaxValue';
-    }
-</script>

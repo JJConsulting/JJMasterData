@@ -36,8 +36,10 @@
         <expression for="SubTitle" use-floating-label="false"/>
     </div>
     <div class="col-sm-4 required">
-        <label class="form-label" asp-for="ExpandedByDefault"></label>
-        <tooltip title="@StringLocalizer["This option is valid only for Collapse panels."]"/>
+        <label class="form-label" asp-for="ExpandedByDefault">
+            @StringLocalizer[Html.DisplayNameFor(model => model.ExpandedByDefault)]
+            <tooltip title="@StringLocalizer["This option is valid only for Collapse panels."]"/>
+        </label>
         <select asp-for="ExpandedByDefault" class="form-control form-select">
             <option value="true">@StringLocalizer["Yes"]</option>
             <option value="false">@StringLocalizer["No"]</option>

@@ -950,4 +950,7 @@
   <data name="API settings saved successfully." xml:space="preserve">
     <value>Configuración de la API guardada correctamente</value>
   </data>
+  <data name="Export Records Per Page" xml:space="preserve"><value>Registros por página en la exportación</value></data>
+  <data name="Number of records retrieved per query during export." xml:space="preserve"><value>Cantidad de registros consultados por vez durante la exportación.</value></data>
+  <data name="Export records per page must be greater than zero." xml:space="preserve"><value>La cantidad de registros por página en la exportación debe ser mayor que cero.</value></data>
 </root>

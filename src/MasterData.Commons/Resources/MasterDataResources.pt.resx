@@ -4469,4 +4469,7 @@
   <data name="A hierarchy item cannot be its own parent." xml:space="preserve"><value>Um item da hierarquia não pode ser seu próprio pai.</value></data>
   <data name="Hierarchy parent item was not found." xml:space="preserve"><value>O item pai da hierarquia não foi encontrado.</value></data>
   <data name="Hierarchy contains a cycle." xml:space="preserve"><value>A hierarquia contém um ciclo.</value></data>
+  <data name="Export Records Per Page" xml:space="preserve"><value>Registros por página na exportação</value></data>
+  <data name="Number of records retrieved per query during export." xml:space="preserve"><value>Quantidade de registros consultados por vez durante a exportação.</value></data>
+  <data name="Export records per page must be greater than zero." xml:space="preserve"><value>A quantidade de registros por página na exportação deve ser maior que zero.</value></data>
 </root>

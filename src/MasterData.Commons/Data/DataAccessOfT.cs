@@ -28,7 +28,7 @@ public partial class DataAccess
 
                 return null;
             },
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -58,6 +58,6 @@ public partial class DataAccess
 
                 return items;
             },
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }

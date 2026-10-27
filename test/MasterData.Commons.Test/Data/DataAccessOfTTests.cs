@@ -63,6 +63,26 @@ public class TypedDataAccessTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
+    public void GeneratedMapperUsesCentralizedTypedReaderWithoutBoxing()
+    {
+        var reader = new Mock<DbDataReader>(MockBehavior.Strict);
+        reader.SetupGet(r => r.FieldCount).Returns(1);
+        reader.Setup(r => r.GetName(0)).Returns("customer_id");
+        reader.Setup(r => r.IsDBNull(0)).Returns(false);
+        reader.Setup(r => r.GetFieldType(0)).Returns(typeof(int));
+        reader.Setup(r => r.GetInt32(0)).Returns(42);
+
+        var customer = ReadModel<QueryCustomer>(reader.Object);
+
+        static T ReadModel<T>(DbDataReader dataReader) where T : class, IDataAccessModel<T>
+            => T.Read(dataReader, T.ResolveOrdinals(dataReader));
+
+        Assert.Equal(42, customer.Id);
+        reader.Verify(r => r.GetInt32(0), Times.Once);
+        reader.Verify(r => r.GetValue(It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
     public async Task MapsNestedModelsFromEachCurrentRowAndHonorsMappingAttributes()
     {
         var orders = await CreateAccess().GetListAsync<QueryOrder>(new("""
@@ -207,7 +227,9 @@ public class TypedDataAccessTests
         var reader = new Mock<DbDataReader>();
         reader.SetupGet(r => r.FieldCount).Returns(1);
         reader.Setup(r => r.GetName(0)).Returns("customer_id");
-        reader.Setup(r => r.GetValue(0)).Returns(outcome == "map" ? "bad" : 1);
+        reader.Setup(r => r.GetFieldType(0)).Returns(outcome == "map" ? typeof(string) : typeof(int));
+        reader.Setup(r => r.GetInt32(0)).Returns(1);
+        reader.Setup(r => r.GetValue(0)).Returns("bad");
         reader.SetupSequence(r => r.ReadAsync(token)).ReturnsAsync(true).ReturnsAsync(true).ReturnsAsync(false);
         var factory = new Mock<DbProviderFactory>();
         factory.Setup(f => f.CreateConnection()).Returns(connection.Object);
@@ -225,8 +247,9 @@ public class TypedDataAccessTests
             Assert.Equal(2, (await access.GetListAsync<QueryCustomer>(query, token)).Count);
             // One schema pass per result, and one value fetch per mapped cell.
             reader.Verify(r => r.GetName(0), Times.Once);
-            reader.Verify(r => r.GetValue(0), Times.Exactly(2));
-            reader.Verify(r => r.IsDBNull(It.IsAny<int>()), Times.Never);
+            reader.Verify(r => r.GetInt32(0), Times.Exactly(2));
+            reader.Verify(r => r.GetValue(0), Times.Never);
+            reader.Verify(r => r.IsDBNull(0), Times.Exactly(2));
         }
         else
         {
@@ -241,8 +264,20 @@ public class TypedDataAccessTests
         reader.Verify(r => r.DisposeAsync(), outcome is "open" or "execute" ? Times.Never : Times.Once);
         if (outcome is not "open" and not "execute") reader.Verify(r => r.ReadAsync(token), Times.AtLeastOnce);
     }
-    [Fact]
-    public async Task CopiesOutputParametersAfterReaderDisposal()
+    [Theory]
+    [InlineData("typed")]
+    [InlineData("typed-list")]
+    [InlineData("dictionary-list-async")]
+    [InlineData("dictionary-list")]
+    [InlineData("dictionary-async")]
+    [InlineData("dictionary")]
+    [InlineData("hashtable-async")]
+    [InlineData("hashtable")]
+    [InlineData("datatable-async")]
+    [InlineData("dataset-async")]
+    [InlineData("datatable")]
+    [InlineData("dataset")]
+    public async Task CopiesOutputParametersAfterReaderDisposal(string method)
     {
         var connection = new Mock<DbConnection>();
         connection.Setup(c => c.OpenAsync(Token)).Returns(Task.CompletedTask);
@@ -253,17 +288,43 @@ public class TypedDataAccessTests
         command.Protected().Setup<DbParameterCollection>("DbParameterCollection").Returns(parameterOwner.Parameters);
         var reader = new Mock<DbDataReader>();
         reader.Setup(r => r.ReadAsync(Token)).ReturnsAsync(false);
-        reader.Setup(r => r.DisposeAsync()).Callback(() => parameterOwner.Parameters["@out"].Value = 123).Returns(ValueTask.CompletedTask);
+        void CompleteOutputs()
+        {
+            parameterOwner.Parameters["@out"].Value = 123;
+            parameterOwner.Parameters["@total"].Value = 456;
+        }
+        reader.Setup(r => r.Close()).Callback(CompleteOutputs);
+        reader.Setup(r => r.DisposeAsync()).Callback(CompleteOutputs).Returns(ValueTask.CompletedTask);
+        reader.Protected().Setup("Dispose", ItExpr.IsAny<bool>()).Callback<bool>(_ => CompleteOutputs());
+        command.Protected().Setup<DbDataReader>("ExecuteDbDataReader", ItExpr.IsAny<CommandBehavior>()).Returns(reader.Object);
         command.Protected().Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), Token).ReturnsAsync(reader.Object);
         var factory = new Mock<DbProviderFactory>();
         factory.Setup(f => f.CreateConnection()).Returns(connection.Object);
         factory.Setup(f => f.CreateCommand()).Returns(command.Object);
         factory.Setup(f => f.CreateParameter()).Returns(() => new Microsoft.Data.SqlClient.SqlParameter());
         var output = new DataAccessParameter("@out", DBNull.Value, DbType.Int32, ParameterDirection.Output);
-        var query = new DataAccessCommand("EXEC test", [output], CommandType.StoredProcedure);
+        var total = new DataAccessParameter("@total", 1, DbType.Int32, ParameterDirection.InputOutput);
+        var query = new DataAccessCommand("EXEC test", [output, total], CommandType.StoredProcedure);
+        factory.Setup(f => f.CreateDataAdapter()).Returns(() => new Mock<DbDataAdapter> { CallBase = true }.Object);
         var access = new DataAccess("test", factory.Object);
-        Assert.Null(await access.GetAsync<QueryCustomer>(query, Token));
+        switch (method)
+        {
+            case "typed": Assert.Null(await access.GetAsync<QueryCustomer>(query, Token)); break;
+            case "typed-list": Assert.Empty(await access.GetListAsync<QueryCustomer>(query, Token)); break;
+            case "dictionary-list-async": Assert.Empty(await access.GetDictionaryListAsync(query, Token)); break;
+            case "dictionary-list": Assert.Empty(access.GetDictionaryList(query)); break;
+            case "dictionary-async": Assert.Empty(await access.GetDictionaryAsync(query, Token)); break;
+            case "dictionary": Assert.Null(access.GetDictionary(query)); break;
+            case "hashtable-async": Assert.Null(await access.GetHashtableAsync(query, Token)); break;
+            case "hashtable": Assert.Null(access.GetHashtable(query)); break;
+            case "datatable-async": await access.GetDataTableAsync(query, Token); break;
+            case "dataset-async": await access.GetDataSetAsync(query, Token); break;
+            case "datatable": access.GetDataTable(query); break;
+            case "dataset": access.GetDataSet(query); break;
+            default: throw new ArgumentOutOfRangeException(nameof(method));
+        }
         Assert.Equal(123, output.Value);
+        Assert.Equal(456, total.Value);
         Assert.Equal(CommandType.StoredProcedure, command.Object.CommandType);
     }
 
