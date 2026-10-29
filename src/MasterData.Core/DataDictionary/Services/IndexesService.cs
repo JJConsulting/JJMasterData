@@ -1,18 +1,17 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class IndexesService(IValidationDictionary validationDictionary,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     public async Task<bool> SaveAsync(string id, string index, ElementIndex elementIndex)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(id);
+        var formElement = await DataDictionaryService.GetFormElementAsync(id);
 
         
         if (!string.IsNullOrEmpty(index))
@@ -26,7 +25,7 @@ public class IndexesService(IValidationDictionary validationDictionary,
 
         if (Validate(elementIndex))
         {
-            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+            await DataDictionaryService.InsertOrReplaceAsync(formElement);
         }
 
         return IsValid;
@@ -43,33 +42,33 @@ public class IndexesService(IValidationDictionary validationDictionary,
 
     public async Task DeleteAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await DataDictionaryService.GetFormElementAsync(elementName);
         var elementIndex = dictionary.Indexes[int.Parse(index)];
         dictionary.Indexes.Remove(elementIndex);
-        await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
+        await DataDictionaryService.InsertOrReplaceAsync(dictionary);
     }
 
     public async Task MoveDownAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await DataDictionaryService.GetFormElementAsync(elementName);
         var indexes = dictionary.Indexes;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < indexes.Count - 1)
         {
             (indexes[indexToMoveDown + 1], indexes[indexToMoveDown]) = (indexes[indexToMoveDown], indexes[indexToMoveDown + 1]);
-            await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
+            await DataDictionaryService.InsertOrReplaceAsync(dictionary);
         }
     }
 
     public async Task MoveUpAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await DataDictionaryService.GetFormElementAsync(elementName);
         var indexes = dictionary.Indexes;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
         {
             (indexes[indexToMoveUp - 1], indexes[indexToMoveUp]) = (indexes[indexToMoveUp], indexes[indexToMoveUp - 1]);
-            await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
+            await DataDictionaryService.InsertOrReplaceAsync(dictionary);
         }
     }
 

@@ -33,7 +33,7 @@ public class PanelServiceTests
         var repository = new Mock<IDataDictionaryRepository>();
         repository.Setup(x => x.GetFormElementAsync("test")).ReturnsAsync(form);
         repository.Setup(x => x.InsertOrReplaceAsync(form)).Returns(Task.CompletedTask);
-        var service = new PanelService(Mock.Of<IValidationDictionary>(), [], repository.Object,
+        var service = new PanelService(Mock.Of<IValidationDictionary>(), [], DataDictionaryTestHelper.Create(repository.Object),
             Mock.Of<IStringLocalizer<MasterDataResources>>());
 
         Assert.Equal(expected, await service.MovePanelAsync("test", panelId, parentId, beforePanelId));
@@ -71,7 +71,7 @@ public class PanelServiceTests
         expressionProvider.SetupGet(x => x.Prefix).Returns("val:");
 
         var service = new PanelService(validation.Object,
-            [expressionProvider.Object], repository.Object,
+            [expressionProvider.Object], DataDictionaryTestHelper.Create(repository.Object),
             Mock.Of<IStringLocalizer<MasterDataResources>>());
 
         await service.SavePanelAsync("test", panel, ["second", "newField", "first"]);

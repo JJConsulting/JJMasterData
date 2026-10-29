@@ -1,21 +1,20 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class EntityService(IValidationDictionary validationDictionary,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     private async Task<bool> ValidateEntity(Entity entity, string originName)
     {
         if (ValidateName(entity.Name) && !originName.Equals(entity.Name, StringComparison.OrdinalIgnoreCase))
         {
-            if (await DataDictionaryRepository.ExistsAsync(entity.Name))
+            if (await DataDictionaryService.ExistsAsync(entity.Name))
                 AddError("Name", StringLocalizer["There is already a dictionary with the name {0}",entity.Name]);
         }
 
@@ -45,18 +44,18 @@ public class EntityService(IValidationDictionary validationDictionary,
         
         try
         {
-            var formElement = await DataDictionaryRepository.GetFormElementAsync(entityName);
+            var formElement = await DataDictionaryService.GetFormElementAsync(entityName);
 
             entity.SetFormElement(formElement);
             
             if (!entityName.Equals(formElement.Name))
             {
-                await DataDictionaryRepository.DeleteAsync(entityName);
+                await DataDictionaryService.DeleteAsync(entityName);
 
                 await UpdateOldElementNameReferences(entityName, formElement);
             }
 
-            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+            await DataDictionaryService.InsertOrReplaceAsync(formElement);
         }
         catch (Exception ex)
         {
@@ -66,7 +65,7 @@ public class EntityService(IValidationDictionary validationDictionary,
 
     private async Task UpdateOldElementNameReferences(string entityName, FormElement formElement)
     {
-        var elementList = await DataDictionaryRepository.GetFormElementListAsync();
+        var elementList = await DataDictionaryService.GetFormElementListAsync();
         bool updateElement = false;
         foreach (var element in elementList)
         {
@@ -94,7 +93,7 @@ public class EntityService(IValidationDictionary validationDictionary,
 
             if (updateElement)
             {
-                await DataDictionaryRepository.InsertOrReplaceAsync(element);
+                await DataDictionaryService.InsertOrReplaceAsync(element);
                 updateElement = false;
             }
         }

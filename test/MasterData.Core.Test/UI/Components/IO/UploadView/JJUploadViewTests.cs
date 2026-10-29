@@ -1,3 +1,4 @@
+using JJMasterData.Core.Test.DataDictionary.Services;
 using System.Text;
 using System.Runtime.CompilerServices;
 using JJConsulting.MasterData.Storage.Abstractions;
@@ -103,7 +104,7 @@ public class JJUploadViewTests
     {
         var stringLocalizer = Mock.Of<IStringLocalizer<MasterDataResources>>();
         var elementFileService = new ElementFileService(
-            Mock.Of<IDataDictionaryRepository>(),
+            DataDictionaryTestHelper.Create(Mock.Of<IDataDictionaryRepository>()),
             Mock.Of<IEntityRepository>(),
             fileStorage,
             new FileValidationService(stringLocalizer));
