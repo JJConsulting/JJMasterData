@@ -298,9 +298,12 @@ public class JJDataImportation : ProcessComponent
 
     private HtmlBuilder GetUploadAreaCollapse()
     {
+        var lastJob = ImportJobService.GetLastStatus(FormElement.Name, UserId);
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithId(Name)
             .AppendHiddenInput("filename");
+        if (lastJob is not null)
+            html.AppendHiddenInput($"{Name}-import-job-id", lastJob.Id.ToString());
         
         var collapsePanel = new JJMasterDataCollapsePanel(HttpContextAccessor)
         {
@@ -319,7 +322,7 @@ public class JJDataImportation : ProcessComponent
                 col.WithCssClass("col-sm-12");
                 col.AppendComponent(HelpButton);
 
-                if (TryGetJobId(out _))
+                if (lastJob is not null)
                 {
                     col.AppendComponent(LogButton);
                 }
