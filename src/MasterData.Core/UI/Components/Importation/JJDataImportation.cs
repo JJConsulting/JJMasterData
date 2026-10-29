@@ -184,7 +184,7 @@ public class JJDataImportation : ProcessComponent
                 var pastedFile = form.Files.GetFile("pastedFile") ??
                                  throw new InvalidOperationException("Pasted content was not provided.");
                 await using var source = pastedFile.OpenReadStream();
-                var jobId = await ImportInBackgroundAsync(source, pastedFile.FileName, pastedFile.ContentType, '\t', false);
+                var jobId = await ImportInBackgroundAsync(source, '\t', false);
                 htmlBuilder = GetLoadingHtml();
                 htmlBuilder.AppendHiddenInput($"{Name}-import-job-id", jobId.ToString());
                 break;
@@ -338,15 +338,13 @@ public class JJDataImportation : ProcessComponent
     private async ValueTask FileUploadedAsync(object sender, FormUploadFileEventArgs e)
     {
         await using var source = e.File.OpenReadStream();
-        var jobId = await ImportInBackgroundAsync(source, e.File.FileName, e.File.ContentType, ';', true);
+        var jobId = await ImportInBackgroundAsync(source, ';', true);
         e.JobId = jobId.ToString();
         e.SuccessMessage = StringLocalizer["File uploaded. Importation was queued."];
     }
 
     private async Task<Guid> ImportInBackgroundAsync(
         Stream source,
-        string fileName,
-        string? contentType,
         char separator,
         bool detectDelimiter)
     {
@@ -373,8 +371,6 @@ public class JJDataImportation : ProcessComponent
                 CultureName = CultureInfo.CurrentCulture.Name,
                 UICultureName = CultureInfo.CurrentUICulture.Name,
                 FilePath = filePath,
-                FileName = fileName,
-                ContentType = contentType,
                 Options = new CsvImportOptions
                 {
                     Delimiter =  CsvImportDelimiter.From(separator),
