@@ -28,17 +28,16 @@ public static class MasterDataApiEndpoints
         {
             var currentPage = pag ?? 1;
             var recordsPerPage = regporpag ?? 5;
+            var response = await service.GetListFieldsAsync(elementName, currentPage, recordsPerPage, orderby, tot ?? 0);
             
             if (request.Headers.Accept.ToString().Contains("text/csv"))
-            {
-                var text = await service.GetListFieldAsTextAsync(elementName, currentPage, recordsPerPage, orderby);
-                return Results.Text(text, "text/csv");
-            }
-
-            var response = await service.GetListFieldsAsync(elementName, currentPage, recordsPerPage, orderby, tot ?? 0);
+                return Results.Text(response.ToCsv(), "text/csv");
+            
+            //O próprio ASP.NET já joga para json
             return Results.Ok(response);
         })
-        .Produces<MasterApiListResponse>();
+        .Produces<MasterApiListResponse>()
+        .Produces<string>(contentType: "text/csv");
 
         group.MapGet("/{id}", async (string elementName, string id, MasterApiService service) =>
         {

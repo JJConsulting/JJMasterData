@@ -29,6 +29,7 @@ public interface IEntityRepository
     ///   Numbers = en-US<para/>
     ///   Date = yyyy-MM-dd HH:mm:ss
     /// </returns>
+    [Obsolete]
     public Task<string> GetListFieldsAsTextAsync(
         Element element, 
         EntityParameters? parameters = null,

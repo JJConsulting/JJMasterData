@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -33,32 +32,15 @@ public class MasterApiService(ExpressionsService expressionsService,
 
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
+    [Obsolete("Use GetListFieldsAsync and MasterApiListResponse.ToCsv instead.")]
     public async Task<string> GetListFieldAsTextAsync(
         string elementName,
         int pag,
         int regporpag,
         string? orderby)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
-        if (!formElement.ApiOptions.EnableGetAll)
-            throw new UnauthorizedAccessException();
-
-        var filters = GetDefaultFilter(formElement, true);
-        var showLogInfo = Debugger.IsAttached;
-        string text = await entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters
-        {
-            Filters = filters!,
-            CurrentPage = pag,
-            RecordsPerPage = regporpag,
-            OrderBy = OrderByData.FromString(orderby)
-        }, showLogInfo);
-        if (string.IsNullOrEmpty(text))
-            throw new KeyNotFoundException("No records found");
-
-        return text;
+        var response = await GetListFieldsAsync(elementName, pag, regporpag, orderby);
+        return response.ToCsv();
     }
 
     public async Task<MasterApiListResponse> GetListFieldsAsync(
