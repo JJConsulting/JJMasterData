@@ -21,8 +21,6 @@ public sealed class ImportRequest : BackgroundJobRequest
     
     public override required string UserId { get; init; }
     public required string FilePath { get; init; }
-    public required string FileName { get; init; }
-    public string? ContentType { get; init; }
     public required CsvImportOptions Options { get; init; }
     public required Dictionary<string, object?> RelationValues { get; init; }
     public required Dictionary<string, object?> UserValues { get; init; }

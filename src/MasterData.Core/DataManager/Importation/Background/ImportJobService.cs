@@ -21,9 +21,12 @@ public sealed class ImportJobService(IBackgroundJobClient jobs)
 
     public BackgroundJobSnapshot? GetStatus(Guid id, string userId) => jobs.GetStatus(id, userId);
 
+    public BackgroundJobSnapshot? GetLastStatus(string elementName, string userId) =>
+        GetStatus(BackgroundJobId.Create(OperationName, elementName, userId), userId);
+
     public BackgroundJobSnapshot? GetCurrentStatus(string elementName, string userId)
     {
-        var status = GetStatus(BackgroundJobId.Create(OperationName, elementName, userId), userId);
+        var status = GetLastStatus(elementName, userId);
         return status?.State is BackgroundJobState.Queued or BackgroundJobState.Running ? status : null;
     }
 

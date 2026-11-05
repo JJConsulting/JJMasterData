@@ -67,8 +67,10 @@ class TomSelectHelper {
         if (element.matches(':disabled'))
             tomSelect.disable();
 
-        if (!isTagsInput)
+        if (!isTagsInput) {
+            this.enableWrapperClick(tomSelect);
             this.enableTypeAhead(tomSelect);
+        }
 
         return tomSelect;
     }
@@ -85,6 +87,24 @@ class TomSelectHelper {
     static clear(element: TomSelectElement) {
         const tomSelect = this.initialize(element);
         tomSelect.clear();
+    }
+
+    private static enableWrapperClick(tomSelect: any) {
+        const onClick = (event: MouseEvent) => {
+            // Bootstrap draws the caret in the wrapper's padding, outside .ts-control.
+            if (event.target !== tomSelect.wrapper
+                || tomSelect.isLocked
+                || tomSelect.isDisabled
+                || tomSelect.isReadOnly)
+                return;
+
+            event.preventDefault();
+            event.stopPropagation();
+            tomSelect.onClick();
+        };
+
+        tomSelect.wrapper.addEventListener('click', onClick);
+        tomSelect.on('destroy', () => tomSelect.wrapper.removeEventListener('click', onClick));
     }
 
     private static enableTypeAhead(tomSelect: any) {

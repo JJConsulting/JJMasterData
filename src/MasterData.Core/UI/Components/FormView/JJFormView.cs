@@ -882,10 +882,24 @@ public class JJFormView : AsyncComponent
         }
 
         child.CurrentActionMap = null;
-        var state = CurrentActionMap is { ActionSource: ActionSource.GridTable, PkFieldValues.Count: > 0 }
-            ? new FormStateData(await EntityRepository.GetFieldsAsync(FormElement, CurrentActionMap.PkFieldValues),
-                UserValues, PageState)
-            : await GetFormStateDataAsync();
+        FormStateData state;
+        if (CurrentActionMap is { ActionSource: ActionSource.GridTable, PkFieldValues.Count: > 0 })
+        {
+            var filters = new Dictionary<string, object?>(await GridView.GetCurrentFilterAsync(),
+                StringComparer.InvariantCultureIgnoreCase);
+            DataHelper.CopyIntoDictionary(filters, CurrentActionMap.PkFieldValues!, true);
+            
+            var row = await EntityRepository.GetFieldsAsync(FormElement, filters!);
+            if (row.Count == 0)
+                throw new JJMasterDataException(
+                    $"No database values were returned for internal action '{action.Name}'. Element: {FormElement.Name}.");
+
+            state = new FormStateData(row, UserValues, PageState);
+        }
+        else
+        {
+            state = await GetFormStateDataAsync();
+        }
         var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var field in redirect.RelationFields)
         {
@@ -907,7 +921,13 @@ public class JJFormView : AsyncComponent
         child.DataPanel.AutoReloadFormFields = false;
 
         if (child.PageState is PageState.Update or PageState.View)
+        {
+            if (values.Count == 0)
+                throw new JJMasterDataException(
+                    $"No relation values were found for internal action '{action.Name}'. Element: {child.FormElement.Name}.");
+
             await child.DataPanel.LoadValuesFromPkAsync(values);
+        }
 
         DataHelper.CopyIntoDictionary(child.DataPanel.Values, values!);
         return child;
