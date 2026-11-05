@@ -2,6 +2,7 @@ using System.Text.Json;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Exceptions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Structure;
 using Microsoft.Extensions.Options;
@@ -192,6 +193,54 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
         var result = await _repository.GetFormElementInfoListAsync(new DataDictionaryFilter(), null, 10, 1);
         Assert.Empty(result.Data);
         Assert.Equal(0, result.TotalOfRecords);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task MissingDictionaryThrowsDomainException(bool missingFolder)
+    {
+        if (missingFolder) Directory.Delete(_folder);
+        var syncException = Assert.Throws<FormElementNotFoundException>(
+            () => _repository.GetFormElement("Missing"));
+        var asyncException = await Assert.ThrowsAsync<FormElementNotFoundException>(
+            async () => await _repository.GetFormElementAsync("Missing"));
+        Assert.Equal("Missing", syncException.ElementName);
+        Assert.Equal("Missing", asyncException.ElementName);
+        var expectedInnerType = missingFolder ? typeof(DirectoryNotFoundException) : typeof(FileNotFoundException);
+        Assert.IsType(expectedInnerType, syncException.InnerException);
+        Assert.IsType(expectedInnerType, asyncException.InnerException);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task WritesCreateMissingFolder(bool asynchronous)
+    {
+        Directory.Delete(_folder);
+        var element = new FormElement { Name = "Created" };
+        if (asynchronous) await _repository.InsertOrReplaceAsync(element);
+        else _repository.InsertOrReplace(element);
+        Assert.Equal("Created", _repository.GetFormElement("Created").Name);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("nEeDlE")]
+    [InlineData("sÃo")]
+    [InlineData("NOT_PRESENT")]
+    public async Task AnythingFilterSearchesNestedMetadataAndCombinesWithOtherFilters(string? search)
+    {
+        var element = new FormElement { Name = "Person", TableName = "People" };
+        element.Fields.Add(new FormElementField { Name = "Field", Label = "Needle São" });
+        await _repository.InsertOrReplaceAsync(new[]
+        {
+            element,
+            new FormElement { Name = "Other", TableName = "Other", Info = "Needle" }
+        });
+        var filter = new DataDictionaryFilter { Json = search, Name = "Person", ContainsTableName = ["People"] };
+        await AssertInfoList(filter, null, search == "NOT_PRESENT" ? [] : ["Person"]);
     }
 
     private async Task AssertInfoList(DataDictionaryFilter filter, OrderByData? order, string[] names)

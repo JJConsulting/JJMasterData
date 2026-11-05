@@ -31,8 +31,9 @@ public sealed class UIOptionsServiceTests
     public async Task EditOptionsValidatesAndPersistsExportPageSize(int pageSize, bool valid)
     {
         var form = new FormElement { Name = "customers" };
-        var service = new Mock<DataDictionaryService>();
-        service.Setup(r => r.GetFormElementAsync(form.Name)).ReturnsAsync(form);
+        var repository = new Mock<IDataDictionaryRepository>();
+        var service = DataDictionaryTestHelper.Create(repository.Object);
+        repository.Setup(r => r.GetFormElementAsync(form.Name)).ReturnsAsync(form);
         var errors = new List<string>();
         var validation = new Mock<IValidationDictionary>();
         validation.Setup(v => v.AddError(It.IsAny<string>(), It.IsAny<string>()))
@@ -40,12 +41,12 @@ public sealed class UIOptionsServiceTests
         validation.SetupGet(v => v.IsValid).Returns(() => errors.Count == 0);
         var localizer = new Mock<IStringLocalizer<MasterDataResources>>();
         localizer.Setup(l => l[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
-        var optionsService = new UIOptionsService(validation.Object, service.Object, localizer.Object);
+        var optionsService = new UIOptionsService(validation.Object, service, localizer.Object);
         var options = new FormElementOptions { ExportRecordsPerPage = pageSize };
 
         Assert.Equal(valid, await optionsService.EditOptionsAsync(options, form.Name));
 
-        service.Verify(r => r.InsertOrReplaceAsync(form), valid ? Times.Once() : Times.Never());
+        repository.Verify(r => r.InsertOrReplaceAsync(form), valid ? Times.Once() : Times.Never());
         if (valid)
             Assert.Equal(pageSize, form.Options.ExportRecordsPerPage);
         else

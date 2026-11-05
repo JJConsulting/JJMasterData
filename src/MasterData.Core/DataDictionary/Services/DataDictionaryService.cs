@@ -26,7 +26,7 @@ public class DataDictionaryService(
         return (typeof(DataDictionaryService), name);
     }
 
-    public FormElement? GetFormElement(string elementName)
+    public FormElement GetFormElement(string elementName)
     {
         if (!_enableCaching)
             return repository.GetFormElement(elementName);
@@ -37,8 +37,7 @@ public class DataDictionaryService(
 
         var element = repository.GetFormElement(elementName);
         
-        if (element is not null && _enableCaching)
-            memoryCache.Set(key, element);
+        memoryCache.Set(key, element.DeepCopy());
 
         return element;
     }
@@ -54,8 +53,7 @@ public class DataDictionaryService(
 
         var element = await repository.GetFormElementAsync(elementName);
         
-        if(_enableCaching)
-            memoryCache.Set(key, element);
+        memoryCache.Set(key, element.DeepCopy());
         
         return element;
     }

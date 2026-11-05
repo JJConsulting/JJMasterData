@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.DataDictionary.Exceptions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -86,23 +86,20 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         return nameList;
     }
 
-    public FormElement? GetFormElement(string elementName)
+    public FormElement GetFormElement(string elementName)
     {
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         var values =  _entityRepository.GetFields(_masterDataElement, filter);
 
+        if (values.Count == 0)
+            throw new FormElementNotFoundException(elementName);
+
         var model = DataDictionaryModel.FromDictionary(values);
 
-        if (model != null)
-        {
-            var formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
-
-            return formElement;
-        }
-
-        return null;
+        return JsonSerializer.Deserialize<FormElement>(model.Json)
+               ?? throw new JsonException($"Dictionary '{elementName}' contains null metadata.");
     }
 
     public async ValueTask<FormElement> GetFormElementAsync(string elementName)
@@ -118,11 +115,12 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var values = await _entityRepository.GetFieldsAsync(_masterDataElement, filter);
 
         if (values.Count == 0)
-            throw new JJMasterDataException($"Element {elementName} was not found.");
+            throw new FormElementNotFoundException(elementName);
         
         var model = DataDictionaryModel.FromDictionary(values);
         
-        var formElement = JsonSerializer.Deserialize<FormElement>(model.Json);
+        var formElement = JsonSerializer.Deserialize<FormElement>(model.Json)
+                          ?? throw new JsonException($"Dictionary '{elementName}' contains null metadata.");
 
         return formElement;
     }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Core.DataDictionary.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
@@ -17,6 +19,12 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 /// </summary>
 public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataDictionaryOptions> options) : IDataDictionaryRepository
 {
+    // Search the text users see, including accents, rather than JSON Unicode escape sequences.
+    private static readonly JsonSerializerOptions SearchOptions = new()
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
     public List<FormElement> GetMetadataList(bool? sync = null)
     {
         var list = new List<FormElement>();
@@ -61,21 +69,36 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
         return GetMetadataList(apiSync);
     }
 
-    public FormElement? GetMetadata(string elementName)
+    public FormElement GetMetadata(string elementName)
     {
-        using var stream = OpenRead(GetFullFileName(elementName), false);
-        return JsonSerializer.Deserialize<FormElement>(stream);
+        try
+        {
+            using var stream = OpenRead(GetFullFileName(elementName), false);
+            return JsonSerializer.Deserialize<FormElement>(stream)
+                   ?? throw new JsonException($"Dictionary '{elementName}' contains null metadata.");
+        }
+        catch (IOException ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+        {
+            throw new FormElementNotFoundException(elementName, ex);
+        }
     }
 
-    public FormElement? GetFormElement(string elementName)
+    public FormElement GetFormElement(string elementName)
     {
         return GetMetadata(elementName);
     }
 
     public async ValueTask<FormElement> GetFormElementAsync(string elementName)
     {
-        return await ReadMetadataAsync(GetFullFileName(elementName))
-               ?? throw new JsonException($"Dictionary '{elementName}' contains null metadata.");
+        try
+        {
+            return await ReadMetadataAsync(GetFullFileName(elementName))
+                   ?? throw new JsonException($"Dictionary '{elementName}' contains null metadata.");
+        }
+        catch (IOException ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+        {
+            throw new FormElementNotFoundException(elementName, ex);
+        }
     }
 
     private static async ValueTask<FormElement?> ReadMetadataAsync(string path)
@@ -100,6 +123,7 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
     {
         ArgumentNullException.ThrowIfNull(formElement);
         var path = GetFullFileName(formElement.Name);
+        CreateStructureIfNotExists();
         var temporaryPath = GetTemporaryPath(path);
         try
         {
@@ -124,6 +148,7 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
     {
         ArgumentNullException.ThrowIfNull(metadata);
         var path = GetFullFileName(metadata.Name);
+        await CreateStructureIfNotExistsAsync();
         var temporaryPath = GetTemporaryPath(path);
         try
         {
@@ -230,7 +255,9 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
                ((string.IsNullOrEmpty(filter.Name) ||
                  element.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase)) &&
                 (filter.ContainsTableName is not { Count: > 0 } || filter.ContainsTableName.Any(table =>
-                    element.TableName.Contains(table, StringComparison.OrdinalIgnoreCase))));
+                    element.TableName?.Contains(table, StringComparison.OrdinalIgnoreCase) == true)) &&
+                (string.IsNullOrEmpty(filter.Json) ||
+                 JsonSerializer.Serialize(element, SearchOptions).Contains(filter.Json, StringComparison.OrdinalIgnoreCase)));
     }
 
     private static IEnumerable<FormElementInfo> GetPage(List<FormElementInfo> list, OrderByData? orderBy,
@@ -272,7 +299,7 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
         ArgumentException.ThrowIfNullOrWhiteSpace(elementName);
         if (Path.IsPathRooted(elementName) || elementName.IndexOfAny(['/', '\\', ':']) >= 0 ||
             elementName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || elementName is "." or "..")
-            throw new ArgumentException("Dictionary name must be a simple file name.", nameof(elementName));
+            throw new ArgumentException(@"Dictionary name must be a simple file name.", nameof(elementName));
 
         if (!elementName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             elementName += ".json";

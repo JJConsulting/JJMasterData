@@ -2,6 +2,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Exceptions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services;
@@ -164,12 +165,12 @@ public class DataDictionaryServiceTests : IDisposable
     [Fact]
     public async Task MissingElementsPreserveRepositoryResultsAndExceptions()
     {
-        _repository.Setup(x => x.GetFormElement("missing")).Returns((FormElement)null!);
-        var exception = new JJMasterDataException("missing");
+        var exception = new FormElementNotFoundException("missing");
+        _repository.Setup(x => x.GetFormElement("missing")).Throws(exception);
         _repository.Setup(x => x.GetFormElementAsync("missing")).ThrowsAsync(exception);
         var service = Create();
-        Assert.Null(service.GetFormElement("missing"));
-        Assert.Same(exception, await Assert.ThrowsAsync<JJMasterDataException>(async () => await service.GetFormElementAsync("missing")));
+        Assert.Same(exception, Assert.Throws<FormElementNotFoundException>(() => service.GetFormElement("missing")));
+        Assert.Same(exception, await Assert.ThrowsAsync<FormElementNotFoundException>(async () => await service.GetFormElementAsync("missing")));
     }
 
     [Theory]
