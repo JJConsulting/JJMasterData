@@ -31,6 +31,8 @@ if (!await dictionaries.ExistsAsync("Person"))
 var element = await dictionaries.GetFormElementAsync("Person");
 ```
 
+Both `GetFormElement` and `GetFormElementAsync` throw `FormElementNotFoundException` (derived from `JJMasterDataException`) when the dictionary does not exist. They do not return `null`.
+
 ## Choose the storage provider
 
 JJMasterData registers the SQL repository by default. You can select the provider explicitly through the builder returned by `AddJJMasterDataWeb`:
@@ -101,7 +103,7 @@ var page = await dictionaries.GetFormElementInfoListAsync(
     currentPage: 1);
 ```
 
-`DataDictionaryFilter` can filter by name, mapped table and modification interval. Prefer the asynchronous methods in web requests.
+`DataDictionaryFilter` can filter by name, mapped table, modification interval and JSON content (`Json`, shown as “Filter for anything” in the editor). Prefer the asynchronous methods in web requests.
 
 ## Save and delete definitions
 

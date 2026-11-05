@@ -1,39 +1,42 @@
 using JetBrains.Annotations;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Web.Configuration;
 
-public static partial class WebApplicationExtensions
+public static class WebApplicationExtensions
 {
-    [PublicAPI]
-    public static async Task UseMasterDataSeedingAsync(this WebApplication app)
+    extension(WebApplication app)
     {
-        using var dbScope = app.Services.CreateScope();
-        var serviceProvider = dbScope.ServiceProvider;
+        [PublicAPI]
+        public async Task UseMasterDataSeedingAsync()
+        {
+            using var dbScope = app.Services.CreateScope();
+            var serviceProvider = dbScope.ServiceProvider;
     
-        var dataDictionaryRepository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
-        var auditLogService = serviceProvider.GetRequiredService<AuditLogService>();
+            var dataDictionaryService = serviceProvider.GetRequiredService<DataDictionaryService>();
+            var auditLogService = serviceProvider.GetRequiredService<AuditLogService>();
 
-        await auditLogService.CreateStructureIfNotExistsAsync();
-        await dataDictionaryRepository.CreateStructureIfNotExistsAsync();
-    }
-    
-    public static ControllerActionEndpointConventionBuilder MapDataDictionary(this WebApplication app)
-    {
-        return app.MapAreaControllerRoute(
-            name: "dataDictionary",
-            areaName: "DataDictionary",
-            pattern: "DataDictionary/{controller=Element}/{action=Index}/{elementName?}/{fieldName?}");
-    }
-    
-    public static ControllerActionEndpointConventionBuilder MapMasterData(this WebApplication app)
-    {
-        return app.MapAreaControllerRoute(
-            name: "masterData",
-            areaName: "MasterData",
-            pattern:  "MasterData/{controller}/{action}/{elementName?}/{fieldName?}/{id?}");
+            await auditLogService.CreateStructureIfNotExistsAsync();
+            await dataDictionaryService.CreateStructureIfNotExistsAsync();
+        }
+
+        public ControllerActionEndpointConventionBuilder MapDataDictionary()
+        {
+            return app.MapAreaControllerRoute(
+                name: "dataDictionary",
+                areaName: "DataDictionary",
+                pattern: "DataDictionary/{controller=Element}/{action=Index}/{elementName?}/{fieldName?}");
+        }
+
+        public ControllerActionEndpointConventionBuilder MapMasterData()
+        {
+            return app.MapAreaControllerRoute(
+                name: "masterData",
+                areaName: "MasterData",
+                pattern:  "MasterData/{controller}/{action}/{elementName?}/{fieldName?}/{id?}");
+        }
     }
 }

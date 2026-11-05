@@ -1,10 +1,10 @@
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using Spectre.Console;
 
 namespace JJMasterData.CommandLine;
 
 public sealed class DiffService(
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IAnsiConsole console)
 {
     public async Task<DictionaryDiffResult> DiffAsync(string dictionariesPath, CancellationToken cancellationToken)
@@ -56,7 +56,7 @@ public sealed class DiffService(
     public async Task<DictionaryDiffResult> CompareAsync(string dictionariesPath, CancellationToken cancellationToken)
     {
         var localFiles = await DictionaryFileService.LoadAsync(dictionariesPath, cancellationToken);
-        var databaseElements = await dataDictionaryRepository.GetFormElementListAsync();
+        var databaseElements = await dataDictionaryService.GetFormElementListAsync();
         return DictionaryComparisonService.Compare(localFiles, databaseElements);
     }
 }

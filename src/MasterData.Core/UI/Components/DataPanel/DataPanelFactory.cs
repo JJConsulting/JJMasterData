@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Localization;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 namespace JJMasterData.Core.UI.Components;
 
 internal sealed class DataPanelFactory(IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IHttpContextAccessor httpContext,
         DataProtectionService encryptionService,
         FieldFormattingService fieldFormattingService,
@@ -40,7 +40,7 @@ internal sealed class DataPanelFactory(IEntityRepository entityRepository,
 
     public async ValueTask<JJDataPanel> CreateAsync(string elementName)
     {
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
         return Create(formElement);
     }
 }

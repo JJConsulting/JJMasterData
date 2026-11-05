@@ -1,10 +1,10 @@
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using Spectre.Console;
 
 namespace JJMasterData.CommandLine;
 
 public sealed class ExportService(
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IAnsiConsole console)
 {
     public async Task ExportAsync(string dictionariesPath, CancellationToken cancellationToken)
@@ -14,7 +14,7 @@ public sealed class ExportService(
         var localFiles = Directory.Exists(fullPath)
             ? await DictionaryFileService.LoadAsync(fullPath, cancellationToken)
             : [];
-        var databaseElements = await dataDictionaryRepository.GetFormElementListAsync();
+        var databaseElements = await dataDictionaryService.GetFormElementListAsync();
         var diff = DictionaryComparisonService.Compare(localFiles, databaseElements);
 
         console.MarkupLine("[grey]Starting export[/]");

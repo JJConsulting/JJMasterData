@@ -1,21 +1,20 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class UIOptionsService(IValidationDictionary validationDictionary,
-        IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<MasterDataResources> stringLocalizer)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+        DataDictionaryService dataDictionaryService, IStringLocalizer<MasterDataResources> stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     private async Task<bool> ValidateOptions(FormElementOptions options, string elementName)
     {
 
         if (options.Grid.EnableMultiSelect)
         {
-            var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+            var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
             var pks = formElement.Fields.FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
@@ -44,7 +43,7 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
         {
             if (await ValidateOptions(options, elementName))
             {
-                var formElement =await DataDictionaryRepository.GetFormElementAsync(elementName);
+                var formElement =await DataDictionaryService.GetFormElementAsync(elementName);
                 
                 formElement.Options.Form = options.Form;
                 formElement.Options.Grid = options.Grid;
@@ -52,7 +51,7 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
                 formElement.Options.UseFloatingLabels = options.UseFloatingLabels;
                 formElement.Options.ExportRecordsPerPage = options.ExportRecordsPerPage;
                 
-                await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+                await DataDictionaryService.InsertOrReplaceAsync(formElement);
             }
         }
         catch (Exception ex)

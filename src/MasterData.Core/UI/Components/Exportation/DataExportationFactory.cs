@@ -3,7 +3,7 @@ using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Background;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.UI.Components;
 
 internal class DataExportationFactory(
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IMasterDataUser masterDataUser,
     IUrlHelper urlHelper,
     ExpressionsService expressionsService,
@@ -32,7 +32,7 @@ internal class DataExportationFactory(
 {
     public async ValueTask<JJDataExportation> CreateAsync(string elementName)
     {
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
         return Create(formElement);
     }
 

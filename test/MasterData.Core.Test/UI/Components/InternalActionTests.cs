@@ -1,3 +1,4 @@
+using JJMasterData.Core.Test.DataDictionary.Services;
 using System.Reflection;
 using System.Text.Json;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -297,7 +298,7 @@ public class InternalActionTests
         services.AddSingleton(Mock.Of<Microsoft.AspNetCore.Mvc.IUrlHelper>());
         var dictionary = new Mock<IDataDictionaryRepository>();
         dictionary.Setup(r => r.GetFormElementAsync(target.Name)).ReturnsAsync(target);
-        services.AddSingleton(dictionary.Object);
+        services.AddSingleton(DataDictionaryTestHelper.Create(dictionary.Object));
         return services.BuildServiceProvider();
     }
 }

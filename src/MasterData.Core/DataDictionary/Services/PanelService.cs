@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJConsulting.Html.Bootstrap.Models;
 using Microsoft.Extensions.Localization;
@@ -11,15 +10,15 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class PanelService(IValidationDictionary validationDictionary,
         IEnumerable<IExpressionProvider> expressionProviders,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
 
     public async Task SavePanelAsync(string elementName, FormElementPanel panel, string[]? selectedFields)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         selectedFields = selectedFields?.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray() ?? [];
 
         if (panel.ParentId == 0)
@@ -87,12 +86,12 @@ public class PanelService(IValidationDictionary validationDictionary,
                 formElement.Fields[i] = orderedFields[selectedFieldIndex++]!;
         }
         
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
 
     public async Task<bool> MovePanelAsync(string elementName, int panelId, int? parentId, int? beforePanelId)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         var panel = formElement.Panels.FirstOrDefault(x => x.PanelId == panelId);
         if (parentId == 0)
             parentId = null;
@@ -109,7 +108,7 @@ public class PanelService(IValidationDictionary validationDictionary,
             formElement.Panels.Add(panel);
         else
             formElement.Panels.Insert(formElement.Panels.IndexOf(before), panel);
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
         return true;
     }
 
@@ -148,7 +147,7 @@ public class PanelService(IValidationDictionary validationDictionary,
 
     public async Task<bool> DeleteFieldAsync(string elementName, int panelId)
     {
-        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await DataDictionaryService.GetFormElementAsync(elementName);
 
         for (int i = 0; i < dictionary.Panels.Count; i++)
         {
@@ -165,14 +164,14 @@ public class PanelService(IValidationDictionary validationDictionary,
         foreach (var panel in dictionary.Panels.Where(x => x.ParentId == panelId))
             panel.ParentId = null;
 
-        await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
+        await DataDictionaryService.InsertOrReplaceAsync(dictionary);
 
         return IsValid;
     }
 
     public async Task<bool> SortPanelsAsync(string elementName, string[] orderFields)
     {
-        var formElement =await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement =await DataDictionaryService.GetFormElementAsync(elementName);
         var newList = new List<FormElementPanel>();
         for (int i = 0; i < orderFields.Length; i++)
         {
@@ -185,18 +184,18 @@ public class PanelService(IValidationDictionary validationDictionary,
             formElement.Panels[i] = newList[i];
         }
         
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
 
         return true;
     }
 
     public async Task<FormElementPanel> CopyPanel(string elementName, FormElementPanel panel)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         var newPanel = panel.DeepCopy();
         newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
         formElement.Panels.Add(newPanel);
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
 
         return newPanel;
     }

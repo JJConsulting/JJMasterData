@@ -8,12 +8,12 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class ElementFileService(
-    IDataDictionaryRepository dictionaryRepository,
+    DataDictionaryService dictionaryService,
     IEntityRepository entityRepository,
     IFileStorage fileStorage,
     FileValidationService fileValidationService)
@@ -48,7 +48,7 @@ public class ElementFileService(
 
     public async Task<Stream?> GetElementFileAsync(string elementName, string pkValues, string fieldName, string? fileName)
     {
-        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryService.GetFormElementAsync(elementName);
 
         fileName = Path.GetFileName(fileName);
 
@@ -72,7 +72,7 @@ public class ElementFileService(
         string pkValues,
         IFormFile file)
     {
-        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryService.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableAdd)
             throw new UnauthorizedAccessException();
@@ -133,7 +133,7 @@ public class ElementFileService(
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
     {
-        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryService.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
@@ -185,7 +185,7 @@ public class ElementFileService(
     
     public async Task RenameFileAsync(string elementName, string fieldName, string pkValues, string oldName, string newName)
     {
-        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryService.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();

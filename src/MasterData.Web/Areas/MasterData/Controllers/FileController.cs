@@ -2,7 +2,7 @@ using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Services;
@@ -14,7 +14,7 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class FileController(
     ElementFileService service,
     IFileStorage fileStorage,
-    IDataDictionaryRepository dictionaryRepository,
+    DataDictionaryService dictionaryService,
     IMasterDataUser masterDataUser,
     IOptionsSnapshot<MasterDataCoreOptions> options) : MasterDataController
 {
@@ -53,7 +53,7 @@ public class FileController(
         if (string.IsNullOrWhiteSpace(elementName) || string.IsNullOrWhiteSpace(fileName))
             return BadRequest();
 
-        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryService.GetFormElementAsync(elementName);
         var folderPath = DataExportationHelper.GetExportationFolderPath(
             formElement,
             options.Value.ExportationFolderPath,

@@ -5,11 +5,10 @@ using System.IO.Compression;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ElementExportService(IDataDictionaryRepository dataDictionaryRepository)
+public class ElementExportService(DataDictionaryService dataDictionaryService)
 {
     private static readonly JsonSerializerOptions JsonSerializerOptions;
     static ElementExportService()
@@ -24,7 +23,7 @@ public class ElementExportService(IDataDictionaryRepository dataDictionaryReposi
     public async Task<MemoryStream> ExportSingleRowAsync(Dictionary<string, object> row)
     {
         var elementName = row["name"].ToString();
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
 
         var memoryStream = new MemoryStream();
         await JsonSerializer.SerializeAsync(memoryStream, formElement, JsonSerializerOptions);
@@ -44,7 +43,7 @@ public class ElementExportService(IDataDictionaryRepository dataDictionaryReposi
             foreach (var element in selectedRows)
             {
                 var elementName = element["name"].ToString();
-                var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+                var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
 
                 var jsonFile = archive.CreateEntry($"{elementName}.json");
                 using var jsonFileStream = jsonFile.Open();

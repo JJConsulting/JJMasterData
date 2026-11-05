@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
@@ -21,7 +21,7 @@ internal sealed class FormViewFactory(
     IHttpContextAccessor currentContext,
     IMasterDataUser masterDataUser,
     IEntityRepository entityRepository,
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     FormService formService,
     DataProtectionService encryptionService,
     FormValuesService formValuesService,
@@ -44,7 +44,7 @@ internal sealed class FormViewFactory(
             currentContext,
             masterDataUser,
             entityRepository,
-            dataDictionaryRepository,
+            dataDictionaryService,
             formService,
             encryptionService, 
             formValuesService,
@@ -63,7 +63,7 @@ internal sealed class FormViewFactory(
 
     public async ValueTask<JJFormView> CreateAsync(string elementName)
     {
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
         var formView = Create(formElement);
         await SetFormEventHandlerAsync(formView, formElement);
         return formView;
