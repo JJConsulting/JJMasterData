@@ -69,11 +69,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
         
-        Dictionary<string, object?> filters;
-        if (parameters?.Filters is { } supplied)
-            filters = new Dictionary<string, object?>(supplied, StringComparer.InvariantCultureIgnoreCase);
-        else
-            filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        if (parameters?.Filters is not null)
+            filters = parameters.Filters;
         
         foreach (var key in filters.Keys)
         {
@@ -83,9 +81,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var userField = formElement.ApiOptions.ApplyUserIdOn;
         if (!string.IsNullOrEmpty(userField) && filters.TryGetValue(userField, out var userId) && userId?.ToString() != masterDataUser.Id)
-        {
             throw new UnauthorizedAccessException("Access denied to change user filter");
-        }
 
         foreach (var (key, value) in GetDefaultFilter(formElement, true))
             filters[key] = value;
