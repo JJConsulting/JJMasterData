@@ -2,11 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Csv;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -357,24 +359,28 @@ internal sealed class EntityRepository(
         return provider.GetReadProcedureScript(element);
     }
 
-    public Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null,
-        bool showLogInfo = false,
-        string delimiter = "|")
+    public Task<long> WriteCsvAsync(
+        Element element,
+        TextWriter destination,
+        EntityParameters? parameters = null,
+        CsvWriteOptions? options = null,
+        CancellationToken cancellationToken = default)
     {
-        EntityParameters entityParameters = parameters ?? new EntityParameters();
-        if (element == null)
-            throw new ArgumentNullException(nameof(element));
-
-        if (!entityParameters.OrderBy.Validate(element.Fields))
+        ArgumentNullException.ThrowIfNull(element);
+        
+        parameters ??= new EntityParameters();
+        if (!parameters.OrderBy.Validate(element.Fields))
             throw new ArgumentException("[order by] clause is not valid");
 
-        var plainTextWriter = new PlainTextReader(provider, connectionRepository, loggerFactory.CreateLogger<PlainTextReader>())
-        {
-            ShowLogInfo = showLogInfo,
-            Delimiter = delimiter
-        };
+        var totalParameter = new DataAccessParameter($"{provider.VariablePrefix}qtdtotal", -1,
+            DbType.Int32, 0, ParameterDirection.InputOutput);
 
-        return plainTextWriter.GetFieldsListAsTextAsync(element, entityParameters);
+        var command = provider.GetReadCommand(element, parameters, totalParameter);
+        var columns = element.Fields.Select(field => new CsvColumn(field.Name)).ToArray();
+
+        var dataAccess = GetDataAccess(element.ConnectionId);
+        
+        return dataAccess.WriteCsvAsync(command, destination, columns, options, cancellationToken);
     }
 
     public List<Dictionary<string, object?>> GetDictionaryList(Element element, EntityParameters? parameters = null)
@@ -471,9 +477,9 @@ internal sealed class EntityRepository(
 
     public async Task<DictionaryListResult> GetDictionaryListResultAsync(Element element, EntityParameters? parameters = null, bool recoverTotalOfRecords = true)
     {
-        EntityParameters entityParameters = parameters ?? new EntityParameters();
-        if (element == null)
-            throw new ArgumentNullException(nameof(element));
+        var entityParameters = parameters ?? new EntityParameters();
+        
+        ArgumentNullException.ThrowIfNull(element);
 
         if (!entityParameters.OrderBy.Validate(element.Fields))
             throw new ArgumentException("[order by] clause is not valid");

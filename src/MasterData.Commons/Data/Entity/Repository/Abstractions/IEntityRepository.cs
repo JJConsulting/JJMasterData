@@ -3,40 +3,16 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Csv;
 using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 
 public interface IEntityRepository
 {
-    /// <summary>
-    /// Returns database records based on filter.  
-    /// </summary>
-    /// <param name="element">Structure basic from a table</param>
-    /// <param name="parameters"></param>
-    /// <param name="showLogInfo">Records detailed log of each operation</param>
-    /// <param name="delimiter">Field delimiter in text file (default is pipe)</param>
-    /// <returns>
-    /// Returns a string with one record per line separated by the delimiter.<para/>
-    /// If no record is found it returns null. <para/>
-    /// *Warning: <para/>
-    /// - Some special characters will be replaced:<para/>
-    ///   enter =  #182;<para/>
-    ///   {delimiter} = #124;<para/>
-    /// - Submitted formats:<para/>
-    ///   Numbers = en-US<para/>
-    ///   Date = yyyy-MM-dd HH:mm:ss
-    /// </returns>
-    [Obsolete]
-    public Task<string> GetListFieldsAsTextAsync(
-        Element element, 
-        EntityParameters? parameters = null,
-        bool showLogInfo = false, 
-        string delimiter = "|");
-   
-
     /// <summary>
     /// Update a record in the database
     /// </summary>
@@ -193,6 +169,15 @@ public interface IEntityRepository
     
     public Task<bool> ExecuteBatchAsync(string script, Guid? connectionId = null);
 
+    /// <summary>Writes the selected page directly to CSV in element field order, without requesting a total count.
+    /// Returns the number of rows written and leaves the destination open.</summary>
+    Task<long> WriteCsvAsync(
+        Element element,
+        TextWriter destination,
+        EntityParameters? parameters = null,
+        CsvWriteOptions? options = null,
+        CancellationToken cancellationToken = default);
+    
     Dictionary<string, object?> GetFields(DataAccessCommand command, Guid? connectionId = null);
     Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command, Guid? connectionId = null);
     Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command, Guid? connectionId = null);

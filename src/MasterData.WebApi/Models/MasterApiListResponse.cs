@@ -1,7 +1,5 @@
-﻿using System.Globalization;
-using System.Text.Json.Serialization;
-using CsvHelper;
-using CsvHelper.Configuration;
+﻿using System.Text.Json.Serialization;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Models;
 
 
@@ -21,68 +19,23 @@ public class MasterApiListResponse
     [JsonPropertyName("fields")]
     public Dictionary<string, object?>[]? Fields { get; set; }
 
-
-    /// <summary>
-    /// Formats the response fields as CSV. Defaults to pipe-delimited output without a header row.
-    /// </summary>
-    /// <param name="configuration">CSV writing options, including delimiter, headers, culture and quoting.</param>
-    public string ToCsv(CsvConfiguration? configuration = null)
-    {
-        if (Fields == null || Fields.Length == 0)
-            return string.Empty;
-
-        configuration ??= new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            Delimiter = "|",
-            HasHeaderRecord = false,
-            NewLine = Environment.NewLine
-        };
-
-        using var writer = new StringWriter(configuration.CultureInfo);
-        using var csv = new CsvWriter(writer, configuration);
-        csv.Context.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = ["yyyy-MM-dd HH:mm:ss"];
-
-        var columns = Fields[0].Keys;
-        if (configuration.HasHeaderRecord)
-        {
-            foreach (var column in columns)
-                csv.WriteField(column);
-            csv.NextRecord();
-        }
-
-        foreach (var row in Fields)
-        {
-            foreach (var column in columns)
-            {
-                row.TryGetValue(column, out var value);
-                csv.WriteField(value == DBNull.Value ? null : value);
-            }
-            csv.NextRecord();
-        }
-
-        csv.Flush();
-        return writer.ToString();
-    }
-
-    public void SetData(FormElement formElement, List<Dictionary<string, object?>> data)
+    public MasterApiListResponse(FormElement formElement, DictionaryListResult result)
     {
         var list = new List<Dictionary<string, object?>>();
-        foreach (var row in data)
+        foreach (var row in result.Data)
         {
             var cols = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var field in formElement.Fields)
             {
                 var fieldName = formElement.ApiOptions.GetJsonFieldName(field.Name);
                 var val = row[field.Name];
-                if (val == DBNull.Value)
-                    cols.Add(fieldName, null);
-                else
-                    cols.Add(fieldName, val);
+                cols.Add(fieldName, val == DBNull.Value ? null : val);
             }
 
             list.Add(cols);
         }
-
+        
+        TotalOfRecords = result.TotalOfRecords;
         Fields = list.ToArray();
     }
 }
