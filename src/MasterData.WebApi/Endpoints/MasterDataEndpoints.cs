@@ -1,3 +1,5 @@
+using System.Text;
+using JJMasterData.Commons.Data.Entity.Repository;
 using System.Net;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
@@ -28,17 +30,29 @@ public static class MasterDataApiEndpoints
         {
             var currentPage = pag ?? 1;
             var recordsPerPage = regporpag ?? 5;
-            
             if (request.Headers.Accept.ToString().Contains("text/csv"))
             {
-                var text = await service.GetListFieldAsTextAsync(elementName, currentPage, recordsPerPage, orderby);
-                return Results.Text(text, "text/csv");
+                return Results.Stream(async stream =>
+                {
+                    var writer = new StreamWriter(stream, new UTF8Encoding(false), leaveOpen: true);
+                    await service.WriteCsvAsync(elementName, writer, new EntityParameters
+                    {
+                        CurrentPage = currentPage,
+                        RecordsPerPage = recordsPerPage,
+                        OrderBy = OrderByData.FromString(orderby)
+                    }, cancellationToken: request.HttpContext.RequestAborted);
+                    await writer.FlushAsync(request.HttpContext.RequestAborted);
+                    await writer.DisposeAsync();
+                }, "text/csv; charset=utf-8");
             }
-
+            
             var response = await service.GetListFieldsAsync(elementName, currentPage, recordsPerPage, orderby, tot ?? 0);
+            
+            //O próprio ASP.NET já joga para json
             return Results.Ok(response);
         })
-        .Produces<MasterApiListResponse>();
+        .Produces<MasterApiListResponse>()
+        .Produces<string>(contentType: "text/csv");
 
         group.MapGet("/{id}", async (string elementName, string id, MasterApiService service) =>
         {

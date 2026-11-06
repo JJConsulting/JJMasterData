@@ -43,6 +43,7 @@
     <Project Path="test\MasterData.CommandLine.Test\MasterData.CommandLine.Test.csproj" />
     <Project Path="test\MasterData.Commons.Test\MasterData.Commons.Test.csproj" />
     <Project Path="test\MasterData.Core.Test\MasterData.Core.Test.csproj" />
+    <Project Path="test\MasterData.WebApi.Test\MasterData.WebApi.Test.csproj" />
     <Project Path="test\MasterData.IntegrationTests\MasterData.IntegrationTests.csproj" />
     <Project Path="test\Plugins\MasterData.Brasil.Test\MasterData.Brasil.Test.csproj" />
   </Folder>

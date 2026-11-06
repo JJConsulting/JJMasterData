@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
+using JJMasterData.Commons.Data.Csv;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -11,7 +11,6 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
-using Microsoft.AspNetCore.Http;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
 
@@ -33,34 +32,6 @@ public class MasterApiService(ExpressionsService expressionsService,
 
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    public async Task<string> GetListFieldAsTextAsync(
-        string elementName,
-        int pag,
-        int regporpag,
-        string? orderby)
-    {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
-        if (!formElement.ApiOptions.EnableGetAll)
-            throw new UnauthorizedAccessException();
-
-        var filters = GetDefaultFilter(formElement, true);
-        var showLogInfo = Debugger.IsAttached;
-        string text = await entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters
-        {
-            Filters = filters!,
-            CurrentPage = pag,
-            RecordsPerPage = regporpag,
-            OrderBy = OrderByData.FromString(orderby)
-        }, showLogInfo);
-        if (string.IsNullOrEmpty(text))
-            throw new KeyNotFoundException("No records found");
-
-        return text;
-    }
-
     public async Task<MasterApiListResponse> GetListFieldsAsync(
         string elementName, 
         int pag,
@@ -68,13 +39,64 @@ public class MasterApiService(ExpressionsService expressionsService,
         string? orderby,
         int total = 0)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
+        var result = await GetListDataAsync(formElement, pag, regporpag, orderby, total);
+        var response = new MasterApiListResponse(formElement, result);
+        
+        if (total != 0)
+            response.TotalOfRecords = total;
+        
+        return response;
+    }
+
+    /// <summary>Writes CSV directly to the destination, applying API permissions and user filters.
+    /// Returns rows written, leaves the destination open and does not request a total count.</summary>
+    public async Task<long> WriteCsvAsync(
+        string elementName,
+        TextWriter destination,
+        EntityParameters? parameters = null, 
+        CsvWriteOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(elementName);
+        ArgumentNullException.ThrowIfNull(destination);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        if (!formElement.ApiOptions.EnableGetAll)
+            throw new UnauthorizedAccessException();
+        
+        var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        if (parameters?.Filters is not null)
+            filters = parameters.Filters;
+        
+        foreach (var key in filters.Keys)
+        {
+            if (!formElement.Fields.Contains(key))
+                throw new ArgumentException($@"Unknown filter field: {key}", nameof(parameters));
+        }
+
+        var userField = formElement.ApiOptions.ApplyUserIdOn;
+        if (!string.IsNullOrEmpty(userField) && filters.TryGetValue(userField, out var userId) && userId?.ToString() != masterDataUser.Id)
+            throw new UnauthorizedAccessException("Access denied to change user filter");
+
+        foreach (var (key, value) in GetDefaultFilter(formElement, true))
+            filters[key] = value;
+        
+        return await entityRepository.WriteCsvAsync(formElement, destination, new EntityParameters
+        {
+            Filters = filters,
+            CurrentPage = parameters?.CurrentPage ?? 1,
+            RecordsPerPage = parameters?.RecordsPerPage ?? int.MaxValue,
+            OrderBy = parameters?.OrderBy ?? new OrderByData()
+        }, options, cancellationToken);
+    }
+
+    private async Task<DictionaryListResult> GetListDataAsync(FormElement formElement, int pag, int regporpag, string? orderby, int total)
+    {
         var recoverTotalOfRecords = total == 0;
         var filters = GetDefaultFilter(formElement, true);
         var result = await entityRepository.GetDictionaryListResultAsync(formElement, new EntityParameters
@@ -85,16 +107,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             OrderBy = OrderByData.FromString(orderby)
         }, recoverTotalOfRecords);
 
-        if (result == null || result.Data.Count == 0)
-            throw new KeyNotFoundException("No records found");
-
-        var response = new MasterApiListResponse
-        {
-            TotalOfRecords = recoverTotalOfRecords ? result.TotalOfRecords : total
-        };
-        response.SetData(formElement, result.Data);
-
-        return response;
+        return result;
     }
 
     public async Task<Dictionary<string, object?>> GetFieldsAsync(string elementName, string id)
@@ -107,8 +120,9 @@ public class MasterApiService(ExpressionsService expressionsService,
         var filters = ParseFilter(formElement, primaryKeys);
         var fields = await entityRepository.GetFieldsAsync(formElement, filters);
 
+        //todo: result pattern
         if (fields == null || fields.Count == 0)
-            throw new KeyNotFoundException("No records found");
+            throw new KeyNotFoundException("No record found.");
 
         //We transform to dictionary to preserve the order of fields in parse
         var result = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
