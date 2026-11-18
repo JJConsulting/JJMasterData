@@ -1,4 +1,8 @@
-﻿using System;
+// Benchmark-only snapshot from 042ad69d.
+#nullable disable
+using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity.Providers;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -12,12 +16,12 @@ using JJMasterData.Commons.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Commons.Data.Entity.Providers;
+namespace CsvHttpBenchmarks;
 
-public class PlainTextReader(
+public class LegacyPlainTextReader(
     IEntityProvider provider,
     IConnectionRepository connectionRepository,
-    ILogger<PlainTextReader> logger
+    ILogger<LegacyPlainTextReader> logger
     )
 {
     public bool ShowLogInfo { get; init; }
