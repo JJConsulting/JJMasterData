@@ -336,22 +336,23 @@ internal sealed class GridTableBody(
         string? value)
     {
         var name = gridView.GetFieldName(field.Name, formStateData.Values);
-        var hasError = gridView.Errors.ContainsKey(name);
 
         var div = new HtmlBuilder(HtmlTag.Div);
-
-        div.WithCssClassIf(hasError, BootstrapHelper.HasError);
 
         var control = gridView.ComponentFactory.Controls.Create(gridView.FormElement, field, formStateData, name, value);
         control.Name = name;
         
         control.Attributes.Add("gridViewRowIndex", index.ToString());
-        
         if(field.AutoPostBack)
             control.Attributes.Add("onchange", gridView.Scripts.GetReloadRowScript(field,index));
         
         control.CssClass = field.Name;
 
+        var hasError = gridView.Errors.ContainsKey(name);
+
+        if (hasError)
+            control.CssClass += " is-invalid";
+        
         if (OnRenderCell != null)
         {
             var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = control };

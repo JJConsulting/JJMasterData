@@ -1427,7 +1427,7 @@ public class JJGridView : AsyncComponent
                         val = row[field.Name]?.ToString();
 
                     var fieldName = GetFieldName(field.Name, row);
-                    var err = _fieldValidationService.ValidateField(field, fieldName, val);
+                    var err = _fieldValidationService.ValidateField(field, val);
                     if (!string.IsNullOrEmpty(err))
                     {
                         var errorMessage = $"{StringLocalizer["Line"]} {line}: {err}";

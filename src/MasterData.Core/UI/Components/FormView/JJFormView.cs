@@ -1654,7 +1654,7 @@ public class JJFormView : AsyncComponent
         formHtml.AppendComponent(toolbar);
 
         if (DataPanel.Errors.Count > 0)
-            formHtml.AppendComponent(new JJValidationSummary(DataPanel.Errors));
+            formHtml.AppendComponent(GetValidationSummary());
 
         return formHtml;
     }
@@ -1683,7 +1683,7 @@ public class JJFormView : AsyncComponent
         formHtml.AppendComponent(toolbar);
 
         if (DataPanel.Errors.Count > 0)
-            formHtml.AppendComponent(new JJValidationSummary(DataPanel.Errors));
+            formHtml.AppendComponent(GetValidationSummary());
 
         return formHtml;
     }
@@ -1943,6 +1943,40 @@ public class JJFormView : AsyncComponent
             return new Dictionary<string, object>();
 
         return DataProtectionService.ProtectDictionary(encryptedRelationValues);
+    }
+
+    public JJValidationSummary GetValidationSummary()
+    {
+        var validationSummary = new JJValidationSummary
+        {
+            Title = Localizer["Invalid data"]
+        };
+
+        foreach (var error in DataPanel.Errors)
+        {
+            if (FormElement.Fields.TryGetField(error.Key, out var field))
+            {
+                validationSummary.HtmlErrors.Add(GetFieldLinkHtml(field, error.Value));
+            }
+            else
+            {
+                validationSummary.Errors.Add(error.Value);
+            }
+        }
+
+        return validationSummary;
+    }
+    
+    private HtmlBuilder GetFieldLinkHtml(FormElementField field, string error)
+    {
+        var link = new HtmlBuilder(HtmlTag.A);
+        link.WithAttribute("href", "javascript:void(0)");
+        link.WithOnClick($"javascript:$('#{DataPanel.FieldNamePrefix}{field.Name}').focus();");
+        link.WithCssClass("alert-link fw-normal");
+        
+        link.AppendText(error);
+
+        return link;
     }
 
     internal void DisableActionsAtViewMode()

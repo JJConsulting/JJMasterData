@@ -34,7 +34,7 @@ public class FieldValidationServiceTests
             localizerMock.Object);
 
         // Act and Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => service.ValidateFieldsAsync(null!, new Dictionary<string, object?>(), new PageState(), true).AsTask());
+        await Assert.ThrowsAsync<ArgumentNullException>(() => service.ValidateFieldsAsync(null!, new Dictionary<string, object?>(), new PageState()).AsTask());
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class FieldValidationServiceTests
         const PageState pageState = new();
 
         // Act
-        var result = await service.ValidateFieldsAsync(formElement, formValues, pageState, true);
+        var result = await service.ValidateFieldsAsync(formElement, formValues, pageState);
 
         // Assert
         Assert.Empty(result);
@@ -80,7 +80,7 @@ public class FieldValidationServiceTests
         const string value = "";
 
         // Act
-        var result = service.ValidateField(field, fieldId, value);
+        var result = service.ValidateField(field, value);
 
         // Assert
         Assert.Equal("Field is required", result);
@@ -112,7 +112,7 @@ public class FieldValidationServiceTests
             ]
         };
 
-        var result = await service.ValidateFieldsAsync(formElement, new Dictionary<string, object?>(), PageState.Import, false);
+        var result = await service.ValidateFieldsAsync(formElement, new Dictionary<string, object?>(), PageState.Import);
 
         Assert.Single(result);
         Assert.Equal("Import validation error", result["rule:import"]);

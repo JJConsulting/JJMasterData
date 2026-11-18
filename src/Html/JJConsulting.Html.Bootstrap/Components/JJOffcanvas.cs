@@ -1,6 +1,7 @@
 ﻿using JJConsulting.Html.Bootstrap.Abstractions;
 using JJConsulting.Html.Bootstrap.Models;
 using JJConsulting.Html.Extensions;
+using Microsoft.AspNetCore.Html;
 
 namespace JJConsulting.Html.Bootstrap.Components;
 
@@ -11,7 +12,7 @@ public class JJOffcanvas : HtmlComponent
 
     public OffcanvasSize Size { get; set; }
 
-    public HtmlBuilder? Body { get; set; }
+    public IHtmlContent? Body { get; set; }
 
     protected override HtmlBuilder BuildHtml()
     {

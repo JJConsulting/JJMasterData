@@ -84,7 +84,7 @@ internal sealed class GridTableHeader(
                     }
                     else
                     {
-                        //Enable HTML in label for backward compatibility
+                        //Enable HTML in label for backward compatibility!!!
                         var label = new HtmlBuilder(_stringLocalizer[field.Label], encode: false);
                         span.Append(label); 
                     }
