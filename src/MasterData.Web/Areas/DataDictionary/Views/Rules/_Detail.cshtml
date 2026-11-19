@@ -25,8 +25,7 @@
         const form = getMasterDataForm();
         const formData = new FormData(form);
 
-        fetch("@Url.Action("ChangeLanguage", new { elementName = ViewBag.ElementName })", {
-            method: "POST",
+        DataDictionaryUtils.post("@Url.Action("ChangeLanguage", new { elementName = ViewBag.ElementName })", {
             body: formData
         })
             .then(response => {

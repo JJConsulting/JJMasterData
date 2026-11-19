@@ -1,4 +1,17 @@
 ﻿class DataDictionaryUtils {
+    static getAntiforgeryHeaders(url: string, headers?: HeadersInit): Headers {
+        const requestHeaders = new Headers(headers);
+        const token = document.querySelector<HTMLMetaElement>('meta[name="jjmasterdata-antiforgery"]');
+        if (token?.content && token.dataset.headerName && new URL(url, location.href).origin === location.origin) {
+            requestHeaders.set(token.dataset.headerName, token.content);
+        }
+        return requestHeaders;
+    }
+
+    static post(url: string, options: RequestInit = {}): Promise<Response> {
+        return fetch(url, { ...options, method: "POST", headers: this.getAntiforgeryHeaders(url, options.headers) });
+    }
+
     static sortAction(context: string, url: string, errorMessage: string): void {
         $("#sortable-" + context).sortable({
             update: function () {
@@ -8,8 +21,7 @@
                 const formData = new FormData();
                 formData.append('fieldsOrder', order);
                 formData.append('context', context);
-                fetch(url, {
-                    method: 'POST',
+                DataDictionaryUtils.post(url, {
                     body: formData,
                 })
                     .then(function (response) {
@@ -27,8 +39,7 @@
     static toggleActionEnabled(visibility: boolean, url: string, errorMessage: string): void {
         const formData = new FormData();
         formData.append('visibility', visibility.toString());
-        fetch(url, {
-            method: "POST",
+        this.post(url, {
             body: formData,
         })
             .then(response => response.json())

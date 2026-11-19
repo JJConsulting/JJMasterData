@@ -13,6 +13,8 @@ app.MapMasterData().RequireAuthorization("MasterDataUser");
 
 Define these policies in `AddAuthorization`. For per-dictionary permissions, inspect the `elementName` route value in your authorization handler. Apply policies separately to API groups if you map them.
 
+The Data Dictionary validates an antiforgery token on unsafe HTTP methods. Submit mutations with POST. Include `_MasterDataScripts` in custom dictionary layouts so the built-in AJAX calls and uploads can send the configured antiforgery header.
+
 `MasterDataCoreOptions.UserIdClaimType` defaults to `ClaimTypes.NameIdentifier`. `IMasterDataUser.Id` reads that claim and supplies user identity to features such as audit and import/export. Configure the claim type if the host uses another identifier.
 
 The built-in render controller shows an editor shortcut for an identified user with the `Admin` role or a `DataDictionary` claim. This shortcut does not authorize the administration routes.

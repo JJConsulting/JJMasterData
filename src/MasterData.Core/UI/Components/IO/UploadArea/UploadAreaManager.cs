@@ -53,13 +53,14 @@ public class UploadAreaManager(IHttpContextAccessor httpContextAccessor, FileVal
 
     public bool TryGetFile(string fileName, out IFormFile? formFile)
     {
-        if (httpContextAccessor.HttpContext?.Request.HasFormContentType is false)
+        var request = httpContextAccessor.HttpContext?.Request;
+        if (request is null || !HttpMethods.IsPost(request.Method) || !request.HasFormContentType)
         {
             formFile = null;
             return false;
         }
         
-        formFile = httpContextAccessor.HttpContext?.Request.Form.Files[fileName];
+        formFile = request.Form.Files[fileName];
         return formFile != null;
     }
 }

@@ -50,6 +50,7 @@ public class PanelController(PanelService panelService, IStringLocalizer<MasterD
         return PartialView("_Detail", panel);
     }
 
+    [HttpPost]
     public async Task<IActionResult> Delete(string elementName, int panelId)
     {
         await panelService.DeleteFieldAsync(elementName, panelId);
@@ -89,7 +90,6 @@ public class PanelController(PanelService panelService, IStringLocalizer<MasterD
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Move(string elementName, int panelId, int? parentId, int? beforePanelId)
     {
         if (!ModelState.IsValid || !await panelService.MovePanelAsync(elementName, panelId, parentId, beforePanelId))

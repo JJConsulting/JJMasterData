@@ -32,8 +32,7 @@
         $("#sortable").sortable({
             update: function () {
                 const relationships = $(this).sortable('toArray');
-                fetch('@Url.Action("Sort", new { elementName = Model.ElementName })', {
-                    method: 'POST',
+                DataDictionaryUtils.post('@Url.Action("Sort", new { elementName = Model.ElementName })', {
                     headers: {
                         'Content-Type': 'application/json'
                     },

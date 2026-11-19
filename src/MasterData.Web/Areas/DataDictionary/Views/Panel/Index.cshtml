@@ -99,10 +99,8 @@
         try {
             const formData = new FormData();
             formData.append('fieldsOrder', getPanelRows().map(row => row.id).join(','));
-            const token = getMasterDataForm()?.querySelector('[name="__RequestVerificationToken"]');
-            if (token) formData.append(token.name, token.value);
-            const response = await fetch('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
-                method: 'POST', body: formData
+            const response = await DataDictionaryUtils.post('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
+                body: formData
             });
             if (!response.ok) throw new Error();
             updatePanelOrder();
