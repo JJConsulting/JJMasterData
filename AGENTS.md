@@ -13,7 +13,7 @@ JJMasterData is a .NET library and web UI for generating dynamic CRUDs from data
 - `test/*` xUnit test projects (Commons, Core, Web, WebApi, Plugins).
 
 ## Build
-- Install .NET SDK
+- Install the .NET SDK specified in `global.json`.
 - Build from repo root:
   - `dotnet build`
 
