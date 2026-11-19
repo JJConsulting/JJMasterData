@@ -2,6 +2,8 @@
 
 Implement `IExportFormat<TOptions>` to add a format to the standard export modal. The export pipeline supplies columns and asynchronous rows, binds the selected options, and stores the resulting file. The format writes content to the supplied stream.
 
+The CSV format in the export modal escapes text and headers that a spreadsheet could interpret as formulas. It preserves numeric values. The text export format and CSV API responses retain their existing data interchange format.
+
 ## Implement a streaming JSON format
 
 The example writes only fields in `context.Columns`. Rows can contain other repository values, so serializing entire row dictionaries would bypass the export column selection.

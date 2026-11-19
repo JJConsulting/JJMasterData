@@ -7,6 +7,7 @@ internal sealed class CsvExportFormat : DelimitedTextExportFormat<CsvExportOptio
     public override string Id => "csv";
     public override string DisplayName => "CSV";
     public override string FileExtension => "csv";
+    protected override bool ProtectSpreadsheetCells => true;
 
     protected override string GetDelimiter(CsvExportOptions options) => options.Delimiter switch
     {

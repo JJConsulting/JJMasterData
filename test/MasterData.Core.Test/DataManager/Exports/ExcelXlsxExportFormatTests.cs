@@ -1,5 +1,8 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using CsvHelper;
+using CsvHelper.Configuration;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataDictionary.Models;
@@ -55,6 +58,30 @@ public sealed class ExcelXlsxExportFormatTests
         Assert.Equal("Show Table Style", option.DisplayName);
         Assert.Equal(ExportFormatOptionKind.Boolean, option.Kind);
         Assert.Equal("true", option.DefaultValue);
+    }
+
+    [Fact]
+    public async Task CsvWriteAsync_ShouldEscapeTextAndPreserveNumericValues()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var context = CreateContext(
+            CreateColumns(("text", "+Label"), ("number", "Number")),
+            Rows([new Dictionary<string, object?> { ["text"] = "-Quarter; 1\nnotes", ["number"] = -42 }],
+                cancellationToken: cancellationToken),
+            1);
+        using var output = new MemoryStream();
+        await new CsvExportFormat().WriteAsync(
+            context, new CsvExportOptions { IncludeFirstRowAsHeader = true }, output, cancellationToken);
+        output.Position = 0;
+        using var csv = new CsvReader(new StreamReader(output), new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            Delimiter = ";"
+        });
+        Assert.True(await csv.ReadAsync());
+        Assert.Equal("'+Label", csv.GetField(0));
+        Assert.True(await csv.ReadAsync());
+        Assert.Equal("'-Quarter; 1\nnotes", csv.GetField(0));
+        Assert.Equal("-42", csv.GetField(1));
     }
 
     [Fact]
