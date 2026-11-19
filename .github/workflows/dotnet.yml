@@ -15,10 +15,11 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v6.0.0
       with:
-        dotnet-version: 10.0.x
+        global-json-file: global.json
         
     - name: Build
       run: |
+        dotnet --version
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           VERSION_SUFFIX="rc.${{ github.event.pull_request.number }}.${{ github.run_number }}"
         else
