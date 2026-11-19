@@ -43,6 +43,12 @@ Shared settings include `Text`, `Icon`, `Order`, `ConfirmationMessage`, `Visible
 
 `SqlCommandAction.ApplyOnSelected` applies the command to each selected row in a toolbar context. Use a row action when the command requires exactly one record.
 
+## Protected redirect parameters
+
+When `UrlRedirectAction.EncryptParameters` is enabled, placeholder values are protected using ASP.NET Core Data Protection with a dedicated redirect purpose. Read values through `DataProtectionService.UnprotectRedirectParameter` on the receiving application. Receiving applications must share the Data Protection key ring and application name with the issuer. Continue to authorize the destination request after unprotecting its parameters.
+
+Redirect parameters issued in the legacy encryption format are no longer accepted by the new protector. Update receiving integrations before reissuing these links. If `SignParametersWithHmac` is also enabled, configure an installation-specific `HmacOptions:SecretKey` and rotate any key previously sourced from the example configuration.
+
 ## Selected-row SQL commands
 
 For a grid toolbar `SqlCommandAction`, `ApplyOnSelected` takes effect when the grid also has `EnableMultiSelect` enabled. Each selected row supplies its primary keys to the expression context, not the full displayed record. Look up any current business values inside the command instead of assuming a displayed column is available as a placeholder.

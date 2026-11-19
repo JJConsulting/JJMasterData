@@ -12,11 +12,13 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Reflection;
+using System.Security.Cryptography;
 
 namespace JJMasterData.Core.Test.UI.Components;
 
@@ -62,6 +64,31 @@ public class ActionScriptsTests
 
         Assert.Contains("/SupplierTreatment/Index?requestId=42", script);
         Assert.Contains(",'Request 42','", script);
+    }
+
+    [Fact]
+    public void GetParsedUrl_ShouldUseAuthenticatedRedirectProtection_WhenParametersAreEncrypted()
+    {
+        var protection = new DataProtectionService(new EphemeralDataProtectionProvider());
+        var service = new UrlRedirectService(
+            CreateHttpContextAccessor(), Mock.Of<IEntityRepository>(), CreateStringLocalizer(),
+            null!, CreateExpressionsService(), new HmacHelper(Options.Create(new HmacOptions())), protection);
+        var action = new UrlRedirectAction
+        {
+            Name = "redirect",
+            UrlRedirect = "/Request/Details?requestId={Id}",
+            EncryptParameters = true
+        };
+        var state = new FormStateData(new Dictionary<string, object?> { ["Id"] = 42 }, PageState.List);
+        var firstUrl = service.GetParsedUrl(action, state);
+        var secondUrl = service.GetParsedUrl(action, state);
+        var first = QueryHelpers.ParseQuery(firstUrl.Substring(firstUrl.IndexOf('?')))["requestId"].ToString();
+        var second = QueryHelpers.ParseQuery(secondUrl.Substring(secondUrl.IndexOf('?')))["requestId"].ToString();
+
+        Assert.NotEqual(first, second);
+        Assert.Equal("42", protection.UnprotectRedirectParameter(first));
+        Assert.Throws<CryptographicException>(() => protection.Unprotect(first));
+        Assert.Throws<CryptographicException>(() => protection.UnprotectRedirectParameter(first.Substring(1)));
     }
 
     [Theory]
