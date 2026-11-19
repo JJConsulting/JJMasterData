@@ -8,7 +8,22 @@ public static class FileEndpoints
     internal static IEndpointRouteBuilder MapFileApi(this RouteGroupBuilder parentGroup)
     {
         var group = parentGroup.MapGroup("{id}/{fieldName}/file")
-            .WithTags("File").DisableAntiforgery();
+            .WithTags("File").DisableAntiforgery()
+            .AddEndpointFilter(async (context, next) =>
+            {
+                try
+                {
+                    return await next(context);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return Results.StatusCode(StatusCodes.Status403Forbidden);
+                }
+                catch (Exception exception) when (exception is KeyNotFoundException or FileNotFoundException or DirectoryNotFoundException)
+                {
+                    return Results.NotFound();
+                }
+            });
 
         group.MapGet("/{fileName}", async (
             string elementName,
@@ -17,7 +32,7 @@ public static class FileEndpoints
             string fileName,
             ElementFileService service) =>
         {
-            var fileStream = await service.GetElementFileAsync(elementName, id, fieldName, fileName);
+            var fileStream = await service.GetElementFileAsync(elementName, id, fieldName, fileName, requireDetailPermission: true);
             if (fileStream == null)
                 return Results.NotFound();
 
