@@ -10,6 +10,8 @@ namespace JJMasterData.WebApi.Endpoints;
 
 public static class MasterDataApiEndpoints
 {
+    internal const int MaximumPageSize = 1000;
+
     public static IEndpointConventionBuilder MapMasterDataApi(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/masterdata/{elementName}")
@@ -28,6 +30,10 @@ public static class MasterDataApiEndpoints
         {
             var currentPage = pag ?? 1;
             var recordsPerPage = regporpag ?? 5;
+            if (recordsPerPage is < 1 or > MaximumPageSize)
+                return Results.Problem(
+                    title: $"regporpag must be between 1 and {MaximumPageSize}.",
+                    statusCode: StatusCodes.Status400BadRequest);
             
             if (request.Headers.Accept.ToString().Contains("text/csv"))
             {
@@ -38,7 +44,8 @@ public static class MasterDataApiEndpoints
             var response = await service.GetListFieldsAsync(elementName, currentPage, recordsPerPage, orderby, tot ?? 0);
             return Results.Ok(response);
         })
-        .Produces<MasterApiListResponse>();
+        .Produces<MasterApiListResponse>()
+        .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapGet("/{id}", async (string elementName, string id, MasterApiService service) =>
         {
