@@ -1,5 +1,4 @@
-// This is a debug and example purposes Program.cs
-
+using System.Net;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Brasil.Configuration;
 using JJMasterData.Web.Configuration;
@@ -10,10 +9,17 @@ using JJMasterData.WebApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (!builder.Environment.IsDevelopment())
+    throw new InvalidOperationException("The MasterData example host can only run in the Development environment.");
+
 var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
 var settingsPath = Path.Combine(root, "appsettings.json");
 
 builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
+builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+{
+    ["AllowedHosts"] = "localhost;127.0.0.1;[::1]"
+});
 
 builder.Services.AddResponseCompression(options =>
 {
@@ -33,21 +39,27 @@ builder.Services.AddJJMasterDataWebApi();
 builder.Services.AddResponseCaching();
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    var address = context.Connection.RemoteIpAddress;
+    if (address?.IsIPv4MappedToIPv6 == true)
+        address = address.MapToIPv4();
+
+    if (address is null || !IPAddress.IsLoopback(address))
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return;
+    }
+
+    await next(context);
+});
+
 using var scope = app.Services.CreateScope();
 await scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>().CreateStructureIfNotExistsAsync();
 
 app.UseResponseCompression();
 
-if (app.Environment.IsProduction())
-{
-    app.UseHsts();
-    app.UseExceptionHandler("/Error");
-    app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
-}
-else
-{
-    app.UseDeveloperExceptionPage();
-}
+app.UseDeveloperExceptionPage();
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();
@@ -55,7 +67,6 @@ app.UseRouting();
 app.UseResponseCaching();
 await app.UseMasterDataSeedingAsync();
 
-//Here you can also app.MapDataDictionary().RequireAuthorization();
 app.MapDataDictionary();
 app.MapMasterData();
 app.MapDictionaries();

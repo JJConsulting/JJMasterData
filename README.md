@@ -107,7 +107,9 @@ See all steps in [documentation](https://md.jjconsulting.tech/articles/getting-s
 
 5. Set the `WebEntryPoint` as startup project
 
-6. Run the project
+6. Run the project with the Development launch profile.
+
+The example host runs only in Development and accepts loopback requests for local host names. Use a disposable database and run it directly on your machine. For a deployed application, create your own host and require authorization for the Data Dictionary and MasterData routes.
 ## Special Thanks
 
 #### Code contributors
