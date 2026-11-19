@@ -18,7 +18,7 @@ The record routes are relative to `/api/masterdata/{elementName}`:
 
 | Method / path | Request |
 | --- | --- |
-| `GET /` | `pag` (default 1), `regporpag` (default 5), `orderby`, `tot`. |
+| `GET /` | `pag` (default 1), `regporpag` (default 5, range 1 to 1000), `orderby`, `tot`. |
 | `GET /{id}` | Read one record. |
 | `POST /` | JSON array of field/value objects; optional `replace=true`. |
 | `PUT /` | JSON array for full updates, including keys. |
@@ -26,5 +26,7 @@ The record routes are relative to `/api/masterdata/{elementName}`:
 | `DELETE /{id}` | Delete one record. |
 
 Enable the required methods in the dictionary's `ApiOptions`. Batch writes can return `207 Multi-Status`; inspect each response item.
+
+The list endpoint returns `400 Bad Request` for a page size outside the allowed range, for both JSON and CSV responses.
 
 The generic routes are excluded from normal endpoint descriptions; the transformer adds paths for configured dictionaries. In the current implementation it describes PUT/PATCH under `/{id}`, while the actual handlers accept arrays at the collection route shown above. Use the registered routes when implementing clients.

@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.WebApi.Endpoints;
 using Microsoft.OpenApi;
 using static JJMasterData.WebApi.OpenApi.DataDictionarySchema;
 
@@ -183,7 +184,7 @@ internal sealed class DataDictionaryOperationFactory
                 new OpenApiParameter
                 {
                     Name = Options.GetJsonFieldName("regporpag"),
-                    Description = "Number of records per page",
+                    Description = $"Number of records per page (1 to {MasterDataApiEndpoints.MaximumPageSize})",
                     In = ParameterLocation.Query,
                     Required = true,
                     Schema = new OpenApiSchema
