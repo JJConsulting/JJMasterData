@@ -33,10 +33,17 @@ public class ExpressionsService(
         FormStateData formStateData,
         bool encryptValues = false)
     {
+        return ReplaceExpressionWithParsedValues(expression, formStateData,
+            encryptValues ? encryptionService.EncryptStringWithUrlEscape : null);
+    }
+
+    internal string? ReplaceExpressionWithParsedValues(
+        string? expression, FormStateData formStateData, Func<string, string>? protectValue)
+    {
         var parsedValues = expressionParser.ParseExpression(expression, formStateData);
 
-        if (encryptValues)
-            EncryptValues(parsedValues);
+        if (protectValue is not null)
+            ProtectValues(parsedValues, protectValue);
 
         if (expression != null)
             return ExpressionHelper.ReplaceExpression(expression, parsedValues);
@@ -44,7 +51,7 @@ public class ExpressionsService(
         return null;
     }
 
-    private void EncryptValues(Dictionary<string, object?> parsedValues)
+    private static void ProtectValues(Dictionary<string, object?> parsedValues, Func<string, string> protectValue)
     {
         List<string> keysToUpdate = [];
 
@@ -56,7 +63,7 @@ public class ExpressionsService(
 
         foreach (var key in keysToUpdate)
         {
-            parsedValues[key] = encryptionService.EncryptStringWithUrlEscape(parsedValues[key]!.ToString()!);
+            parsedValues[key] = protectValue(parsedValues[key]!.ToString()!);
         }
     }
 

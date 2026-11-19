@@ -14,17 +14,22 @@ namespace JJMasterData.Commons.Security.Cryptography;
 [Obsolete("Please use Microsoft IDataProtectionProvider")]
 public class EncryptionService(IOptionsSnapshot<MasterDataCommonsOptions> options) : IEncryptionService
 {
-    private readonly string _secretKey = options.Value.SecretKey!;
+    private readonly string? _secretKey = options.Value.SecretKey;
 
     public string EncryptString(string plainText)
     {
-        return AesEncryptionAlgorithm.EncryptString(plainText, _secretKey);
+        return AesEncryptionAlgorithm.EncryptString(plainText, GetConfiguredKey());
     }
 
     public string DecryptString(string cipherText)
     {
-        return AesEncryptionAlgorithm.DecryptString(cipherText, _secretKey);
+        return AesEncryptionAlgorithm.DecryptString(cipherText, GetConfiguredKey());
     }
+
+    private string GetConfiguredKey() =>
+        !string.IsNullOrWhiteSpace(_secretKey)
+            ? _secretKey
+            : throw new InvalidOperationException("JJMasterData:SecretKey is required for legacy encryption.");
 }
 
 internal sealed class AesEncryptionAlgorithm

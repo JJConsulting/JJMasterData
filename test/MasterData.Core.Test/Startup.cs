@@ -14,6 +14,10 @@ public class Startup
             var root = Path.Join(context.HostingEnvironment.ContentRootPath,  "..","..","..","..","..");
             var sharedSettings = Path.Combine(root, "appsettings.json");
             builder.AddJsonFile(sharedSettings);
+            builder.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["JJMasterData:SecretKey"] = Guid.NewGuid().ToString("N")
+            });
         }
 
         hostBuilder

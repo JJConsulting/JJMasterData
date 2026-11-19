@@ -12,6 +12,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -23,8 +24,20 @@ public class UrlRedirectService(
     IStringLocalizer<MasterDataResources> localizer,
     FormValuesService formValuesService,
     ExpressionsService expressionsService,
-    HmacHelper hmacHelper)
+    HmacHelper hmacHelper,
+    DataProtectionService? dataProtectionService)
 {
+    public UrlRedirectService(
+        IHttpContextAccessor httpRequest,
+        IEntityRepository entityRepository,
+        IStringLocalizer<MasterDataResources> localizer,
+        FormValuesService formValuesService,
+        ExpressionsService expressionsService,
+        HmacHelper hmacHelper)
+        : this(httpRequest, entityRepository, localizer, formValuesService, expressionsService, hmacHelper, null)
+    {
+    }
+
     public async Task<JsonComponentResult> GetUrlRedirectResult(
         JJDataPanel dataPanel,
         ActionMap actionMap)
@@ -92,9 +105,18 @@ public class UrlRedirectService(
         var parsedUrl = expressionsService.ReplaceExpressionWithParsedValues(
             decodedUrl,
             formStateDataCopy,
-            action.EncryptParameters) ?? string.Empty;
+            action.EncryptParameters ? ProtectRedirectParameter : null) ?? string.Empty;
 
         return action.SignParametersWithHmac ? SignUrlParameters(parsedUrl) : parsedUrl;
+    }
+
+    private string ProtectRedirectParameter(string value)
+    {
+        var protection = dataProtectionService ??
+                         httpRequest.HttpContext?.RequestServices?.GetService<DataProtectionService>() ??
+                         throw new InvalidOperationException("Data Protection is required for redirect parameters.");
+
+        return protection.ProtectRedirectParameter(value);
     }
 
     private string SignUrlParameters(string url)

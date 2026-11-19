@@ -16,12 +16,15 @@ public class HmacHelper
     {
         var opt = options.Value;
 
-        _key = Encoding.UTF8.GetBytes(opt.SecretKey ?? string.Empty);
+        _key = string.IsNullOrWhiteSpace(opt.SecretKey) ? [] : Encoding.UTF8.GetBytes(opt.SecretKey);
         _clockSkew = opt.ClockSkew;
     }
 
     public string Generate(string content, DateTime? expiresUtc = null)
     {
+        if (_key.Length == 0)
+            throw new InvalidOperationException("An HMAC key must be configured before signing.");
+
         var contentBytes = Encoding.UTF8.GetBytes(content);
 
         var ticks = expiresUtc?.ToUniversalTime().Ticks;
@@ -44,7 +47,7 @@ public class HmacHelper
 
     public bool Validate(string content, string token)
     {
-        if (string.IsNullOrWhiteSpace(token))
+        if (_key.Length == 0 || string.IsNullOrWhiteSpace(token))
             return false;
 
         var parts = token.Split('.');
