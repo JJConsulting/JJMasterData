@@ -192,6 +192,7 @@ public class RelationshipsController(RelationshipsService relationshipsService, 
         return View("DetailLayout", model);
     }
     
+    [HttpPost]
     public async Task<IActionResult> SaveRelationshipLayout(RelationshipsLayoutDetailsViewModel model, FormElementPanel panel)
     {
         if (relationshipsService.ValidatePanel(panel))

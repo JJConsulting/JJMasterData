@@ -1,7 +1,16 @@
 ﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery Antiforgery
+
 @{
     var pathBase = Context.Request.PathBase;
+}
+
+@if (ViewContext.RouteData.Values["area"] as string == "DataDictionary")
+{
+    var tokens = Antiforgery.GetAndStoreTokens(Context);
+    <meta name="jjmasterdata-antiforgery" content="@tokens.RequestToken" data-header-name="@tokens.HeaderName" />
 }
 
 <script src="~/_content/JJMasterData.Web/js/jquery/jquery.min.js"></script>

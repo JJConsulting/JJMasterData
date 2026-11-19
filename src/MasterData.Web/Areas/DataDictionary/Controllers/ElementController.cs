@@ -62,6 +62,7 @@ public class ElementController(
         return File(exportStream, "application/octet-stream");
     }
 
+    [AcceptVerbs("GET", "POST")]
     public async Task<IActionResult> Import()
     {
         var uploadArea = uploadAreaFactory.Create();
@@ -184,6 +185,7 @@ public class ElementController(
         }
     }
     
+    [HttpPost]
     public async Task<IActionResult> Delete()
     {
         var formView = elementService.GetFormView();

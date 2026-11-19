@@ -19,6 +19,7 @@
             dictInvalidFileType: options.extensionNotAllowedLabel,
             clickable:true,
             parallelUploads: options.parallelUploads,
+            headers: Object.fromEntries(DataDictionaryUtils.getAntiforgeryHeaders(options.url).entries()),
             url: options.url
         });
         

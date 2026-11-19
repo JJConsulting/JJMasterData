@@ -17,8 +17,7 @@
     <script type="text/javascript">
         function saveForm() {
             const form = document.querySelector('form');
-            fetch('@Url.Action("SaveRelationshipLayout", "Relationships")', {
-                method: 'POST',
+            DataDictionaryUtils.post('@Url.Action("SaveRelationshipLayout", "Relationships")', {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },

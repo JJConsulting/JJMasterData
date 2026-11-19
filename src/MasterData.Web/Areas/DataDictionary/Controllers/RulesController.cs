@@ -72,6 +72,7 @@ public class RulesController(FormElementRulesService formElementRulesService) : 
         return RedirectToIndex(elementName, rule, selectedTab);
     }
 
+    [HttpPost]
     public async Task<IActionResult> Delete(string elementName, int ruleId)
     {
         await formElementRulesService.DeleteAsync(elementName, ruleId);
