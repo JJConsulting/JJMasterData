@@ -96,4 +96,15 @@ public class Element()
     {
         return Fields.FindAll(x => x.IsPk);
     }
+
+    internal ElementField? WriteOwner { get; private set; }
+    internal object? WriteOwnerValue { get; private set; }
+
+    internal Element WithWriteOwner(ElementField ownerField, object ownerValue)
+    {
+        var element = (Element)MemberwiseClone();
+        element.WriteOwner = ownerField;
+        element.WriteOwnerValue = ownerValue;
+        return element;
+    }
 }

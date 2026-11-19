@@ -77,8 +77,15 @@ public static class MasterDataApiEndpoints
 
         group.MapDelete("/{id}", async (string elementName, string id, MasterApiService service) =>
         {
-            var result = await service.DeleteAsync(elementName, id);
-            return Results.Ok(result);
+            try
+            {
+                var result = await service.DeleteAsync(elementName, id);
+                return result.Status >= 400 ? Results.Json(result, statusCode: result.Status) : Results.Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.StatusCode(StatusCodes.Status403Forbidden);
+            }
         });
 
         group.MapPost("/trigger/{pageState?}/{objname?}", async (

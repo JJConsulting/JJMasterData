@@ -193,7 +193,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         try
         {
             var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Insert), true);
-            var formResult = await formService.InsertAsync(formElement, values, GetDataContext());
+            var formResult = await formService.InsertAsync(formElement, values, GetDataContext(formElement));
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter
@@ -224,7 +224,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         try
         {
             var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Update), true);
-            var formResult = await formService.UpdateAsync(formElement, values, GetDataContext());
+            var formResult = await formService.UpdateAsync(formElement, values, GetDataContext(formElement));
             if (formResult.IsValid)
             {
                 if (formResult.NumberOfRowsAffected == 0)
@@ -259,7 +259,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         try
         {
             var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement,  new FormStateData(apiValues, PageState.Import), true);
-            var formResult =await formService.InsertOrReplaceAsync(formElement, values, GetDataContext());
+            var formResult =await formService.InsertOrReplaceAsync(formElement, values, GetDataContext(formElement));
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter();
@@ -300,7 +300,18 @@ public class MasterApiService(ExpressionsService expressionsService,
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
             var currentValues = await entityRepository.GetFieldsAsync(formElement, pkValues);
-            if (currentValues == null)
+            if (currentValues == null || currentValues.Count == 0)
+                throw new KeyNotFoundException("No records found");
+
+            var ownerName = formElement.ApiOptions.ApplyUserIdOn;
+            if (!string.IsNullOrEmpty(ownerName) &&
+                (!formElement.Fields.Contains(ownerName) ||
+                 !currentValues.TryGetValue(formElement.Fields[ownerName].Name, out var owner) ||
+                 owner is null or DBNull || string.IsNullOrWhiteSpace(masterDataUser.Id) ||
+                 _httpContext.User.Identity?.IsAuthenticated != true ||
+                 !string.Equals(owner.ToString(), masterDataUser.Id, owner is Guid
+                     ? StringComparison.OrdinalIgnoreCase
+                     : StringComparison.Ordinal)))
                 throw new KeyNotFoundException("No records found");
 
             DataHelper.CopyIntoDictionary( currentValues, parsedValues, true);
@@ -325,7 +336,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var values = await fieldValuesService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
-        var formResult = await formService.DeleteAsync(formElement, values!, GetDataContext());
+        var formResult = await formService.DeleteAsync(formElement, values!, GetDataContext(formElement));
 
         if (formResult.IsValid)
         {
@@ -449,9 +460,13 @@ public class MasterApiService(ExpressionsService expressionsService,
         return filters;
     }
 
-    private DataContext GetDataContext()
+    private DataContext GetDataContext(FormElement formElement)
     {
-        var userId = masterDataUser.Id;
+        string? userId = masterDataUser.Id;
+        if (!string.IsNullOrEmpty(formElement.ApiOptions.ApplyUserIdOn) &&
+            _httpContext.User.Identity?.IsAuthenticated != true)
+            userId = null;
+
         return new DataContext(httpContextAccessor.HttpContext!.Request, DataContextSource.Api, userId);
     }
 

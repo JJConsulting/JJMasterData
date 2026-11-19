@@ -178,6 +178,25 @@ public class SqlServerProvider(
         {
             sql = _options.GetWriteProcedureName(element);
         }
+        else if (element.WriteOwner is not null)
+        {
+            sql = SqlServerScripts.GetWriteScript(element);
+            if (action.Length == 0)
+            {
+                sql = $"""
+                       SET XACT_ABORT ON;
+                       BEGIN TRY
+                           BEGIN TRANSACTION;
+                           {sql}
+                           COMMIT TRANSACTION;
+                       END TRY
+                       BEGIN CATCH
+                           IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
+                           THROW;
+                       END CATCH;
+                       """;
+            }
+        }
         else
         {
             var cacheKey = $"{element.Name}_WriteScript";
@@ -199,6 +218,14 @@ public class SqlServerProvider(
         };
 
         writeCommand.AddParameter("@action", action, DbType.AnsiString, 1);
+        if (element.WriteOwner is { } owner)
+        {
+            const string expectedOwnerName = "@__jjMasterDataExpectedOwner";
+            if (element.WriteOwnerValue is string ownerText)
+                writeCommand.AddParameter(expectedOwnerName, ownerText, DbType.String, -1);
+            else
+                writeCommand.AddParameter(expectedOwnerName, element.WriteOwnerValue, GetDbType(owner.DataType));
+        }
 
         foreach (var field in element.Fields)
         {

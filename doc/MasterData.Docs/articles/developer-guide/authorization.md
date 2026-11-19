@@ -22,3 +22,7 @@ The built-in render controller shows an editor shortcut for an identified user w
 A custom expression function can resolve the current user to decide action visibility. It must also handle evaluation without an HTTP request, and it must not capture one user's identity in shared options. See [Add application expression functions](../cookbook/custom-expression-functions.md).
 
 `JJDataPanel.SecretValues` protects round-trip field values against editing, but does not establish access to the referenced record or prove that previously granted access is still valid. Recheck authorization when the host processes the submission and rebuild sensitive values from trusted context.
+
+## Owner-scoped API writes
+
+When `ApplyUserIdOn` is set, the API assigns the request's authenticated user ID on insert and preserves that owner on updates. An update or delete can affect only a record owned by the caller. An upsert updates only a matching owner's record or inserts a new record for the caller. Owner-scoped writes require the built-in SQL Server repository with generated write commands, physical primary-key fields, and a physical `NVarchar`, ASCII `Varchar`, `Int`, or `UniqueIdentifier` ownership field. Configure the generated write path before enabling such mutations on a dictionary that currently uses a custom write procedure.

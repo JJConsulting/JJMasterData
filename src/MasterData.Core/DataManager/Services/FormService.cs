@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons;
 using JJMasterData.Commons.Background;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
@@ -39,6 +41,41 @@ public class FormService(
 
     #region Methods
 
+    private Element ApplyWriteOwner(FormElement formElement, Dictionary<string, object?> values, DataContext context)
+    {
+        var ownerName = formElement.ApiOptions.ApplyUserIdOn;
+        if (context.Source != DataContextSource.Api || string.IsNullOrEmpty(ownerName))
+            return formElement;
+
+        if (string.IsNullOrWhiteSpace(context.UserId) || formElement.UseWriteProcedure ||
+            entityRepository is not EntityRepository || !formElement.Fields.Contains(ownerName))
+            throw new UnauthorizedAccessException("Owner-scoped writes require the built-in generated SQL Server path.");
+
+        var owner = formElement.Fields[ownerName];
+        var keys = formElement.GetPrimaryKeys();
+        if (owner.AutoNum || owner.DataBehavior != FieldBehavior.Real ||
+            keys.Count == 0 || keys.Any(key => key.DataBehavior != FieldBehavior.Real))
+            throw new UnauthorizedAccessException("Invalid owner-scoped dictionary configuration.");
+
+        var actor = context.UserId;
+        if (values.TryGetValue(owner.Name, out var requestedOwner) && requestedOwner is not (null or DBNull) &&
+            !string.Equals(requestedOwner.ToString(), actor, StringComparison.Ordinal))
+            throw new UnauthorizedAccessException("The ownership field cannot be changed.");
+
+        object expectedOwner = owner.DataType switch
+        {
+            FieldType.NVarchar when owner.Size < 1 || actor.Length <= owner.Size => actor,
+            FieldType.Varchar when (owner.Size < 1 || actor.Length <= owner.Size) && actor.All(c => c <= 127) => actor,
+            FieldType.Int when int.TryParse(actor, CultureInfo.InvariantCulture, out var id) &&
+                               id.ToString(CultureInfo.InvariantCulture) == actor => id,
+            FieldType.UniqueIdentifier when Guid.TryParseExact(actor, "D", out var id) => id,
+            _ => throw new UnauthorizedAccessException("The user ID does not match the configured ownership field.")
+        };
+
+        values[owner.Name] = actor;
+        return formElement.WithWriteOwner(owner, expectedOwner);
+    }
+
     public async Task<FormLetter<Dictionary<string, object>>> GetAsync(FormElement formElement,
         Dictionary<string, object?> filters)
     {
@@ -69,6 +106,7 @@ public class FormService(
         Dictionary<string, object?> values,
         DataContext dataContext)
     {
+        ApplyWriteOwner(formElement, values, dataContext);
         ApplyTextCaseTransform(formElement, values);
 
         var errors = await fieldValidationService.ValidateFieldsAsync(
@@ -91,7 +129,7 @@ public class FormService(
 
         try
         {
-            rowsAffected = await entityRepository.UpdateAsync(formElement, values);
+            rowsAffected = await entityRepository.UpdateAsync(ApplyWriteOwner(formElement, values, dataContext), values);
         }
         catch (Exception e)
         {
@@ -120,6 +158,7 @@ public class FormService(
     public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object?> values,
         DataContext dataContext, bool validateFields = true)
     {
+        ApplyWriteOwner(formElement, values, dataContext);
         ApplyTextCaseTransform(formElement, values);
 
         Dictionary<string, string> errors;
@@ -144,7 +183,7 @@ public class FormService(
 
         try
         {
-            await entityRepository.InsertAsync(formElement, values);
+            await entityRepository.InsertAsync(ApplyWriteOwner(formElement, values, dataContext), values);
         }
         catch (Exception e)
         {
@@ -176,6 +215,7 @@ public class FormService(
     /// <param name="dataContext"></param>
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, Dictionary<string, object?> values, DataContext dataContext, bool validateFields = true)
     {
+        ApplyWriteOwner(formElement, values, dataContext);
         ApplyTextCaseTransform(formElement, values);
         var isForm = dataContext.Source is DataContextSource.Form;
         
@@ -199,7 +239,7 @@ public class FormService(
 
         try
         {
-            letter.Result = await entityRepository.SetValuesAsync(formElement, values);
+            letter.Result = await entityRepository.SetValuesAsync(ApplyWriteOwner(formElement, values, dataContext), values);
         }
         catch (Exception e)
         {
@@ -252,6 +292,7 @@ public class FormService(
     public async Task<FormLetter> DeleteAsync(FormElement formElement, Dictionary<string, object> primaryKeys,
         DataContext dataContext)
     {
+        ApplyWriteOwner(formElement, primaryKeys!, dataContext);
         var errors = await fieldValidationService.ValidateRulesAsync(
             formElement,
             primaryKeys!,
@@ -270,7 +311,8 @@ public class FormService(
 
         try
         {
-            int rowsAffected = await entityRepository.DeleteAsync(formElement, primaryKeys);
+            int rowsAffected = await entityRepository.DeleteAsync(
+                ApplyWriteOwner(formElement, primaryKeys!, dataContext), primaryKeys);
             result.NumberOfRowsAffected = rowsAffected;
         }
         catch (Exception e)
