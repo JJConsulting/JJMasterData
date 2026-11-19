@@ -42,7 +42,7 @@ internal sealed class EntityRepository(
 
     public async Task InsertAsync(Element element, Dictionary<string, object?> values)
     {
-        var command = provider.GetInsertCommand(element, values);
+        var command = GetWriteProvider(element).GetInsertCommand(element, values);
 
         var dataAccess = GetDataAccess(element.ConnectionId);
         _logger.LogInformation("Executing insert command for element {Element}", element.Name);
@@ -88,7 +88,7 @@ internal sealed class EntityRepository(
     public async Task<int> UpdateAsync(Element element, Dictionary<string, object?> values)
     {
         var dataAccess = GetDataAccess(element.ConnectionId);
-        var command = provider.GetUpdateCommand(element, values);
+        var command = GetWriteProvider(element).GetUpdateCommand(element, values);
         _logger.LogInformation("Executing update command for element {Element}", element.Name);
         int numberRowsAffected = await dataAccess.SetCommandAsync(command);
         return numberRowsAffected;
@@ -97,7 +97,7 @@ internal sealed class EntityRepository(
     public async Task<int> DeleteAsync(Element element, Dictionary<string, object> filters)
     {
         var dataAccess = GetDataAccess(element.ConnectionId);
-        var command = provider.GetDeleteCommand(element, filters);
+        var command = GetWriteProvider(element).GetDeleteCommand(element, filters);
 
         _logger.LogInformation("Executing delete command for element {Element}", element.Name);
         int numberRowsAffected = await dataAccess.SetCommandAsync(command);
@@ -149,7 +149,7 @@ internal sealed class EntityRepository(
     {
         var dataAccess = GetDataAccess(element.ConnectionId);
         const CommandOperation commandType = CommandOperation.None;
-        var command = provider.GetInsertOrReplaceCommand(element, values);
+        var command = GetWriteProvider(element).GetInsertOrReplaceCommand(element, values);
 
         _logger.LogInformation("Executing SET command for element {Element}", element.Name);
         var newFields = await dataAccess.GetDictionaryAsync(command);
@@ -576,6 +576,15 @@ internal sealed class EntityRepository(
         }
 
         return commandType;
+    }
+
+    private IEntityProvider GetWriteProvider(Element element)
+    {
+        if (element.WriteOwner is not null &&
+            (element.UseWriteProcedure || provider.GetType() != typeof(SqlServerProvider)))
+            throw new UnauthorizedAccessException("Owner-scoped writes require generated SQL Server commands.");
+
+        return provider;
     }
 
     internal DataAccess GetDataAccess(Guid? connectionId)

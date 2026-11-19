@@ -114,7 +114,7 @@ public class SqlServerWriteProcedureScripts(
             sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             sql.Append("FROM ");
             sql.Append(SqlServerScriptsHelper.GetTableName(element));
-            sql.AppendLine(" WITH (NOLOCK) ");
+            sql.AppendLine(element.WriteOwner is null ? " WITH (NOLOCK) " : " WITH (UPDLOCK, HOLDLOCK) ");
 
             foreach (var f in pks)
             {
@@ -226,7 +226,7 @@ public class SqlServerWriteProcedureScripts(
         sql.Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("BEGIN ");
         sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
-        if (updateScript)
+        if (updateScript && (element.WriteOwner is null || fields.Any(field => !field.IsPk)))
         {
             sql.Append("UPDATE ");
             sql.Append(SqlServerScriptsHelper.GetTableName(element));
@@ -266,6 +266,12 @@ public class SqlServerWriteProcedureScripts(
                 sql.Append(" = @");
                 sql.AppendLine(f.Name);
             }
+            if (element.WriteOwner is { } owner)
+                AppendOwnerPredicate(sql, owner);
+        }
+        else if (element.WriteOwner is not null)
+        {
+            sql.AppendLine("THROW 50000, 'The record has no updateable fields.', 1;");
         }
         else
         {
@@ -288,7 +294,7 @@ public class SqlServerWriteProcedureScripts(
         sql.AppendLine(" ");
 
         isFirst = true;
-        foreach (var field in fields.Where(f => f.IsPk && f.EnableOnDelete))
+        foreach (var field in fields.Where(f => f.IsPk && (f.EnableOnDelete || element.WriteOwner is not null)))
         {
             sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
             if (isFirst)
@@ -305,6 +311,8 @@ public class SqlServerWriteProcedureScripts(
             sql.Append(" = @");
             sql.AppendLine(field.Name);
         }
+        if (element.WriteOwner is { } deleteOwner)
+            AppendOwnerPredicate(sql, deleteOwner);
 
         sql.Append(SqlServerScriptsHelper.Tab).Append(SqlServerScriptsHelper.Tab);
         sql.AppendLine("SET @RET = 2; ");
@@ -318,6 +326,23 @@ public class SqlServerWriteProcedureScripts(
     private static bool HasUpdateFields(Element element)
     {
         return element.Fields.Any(f => !f.IsPk && f.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly);
+    }
+
+    private static void AppendOwnerPredicate(StringBuilder sql, ElementField owner)
+    {
+        var column = $"[{owner.Name.Replace("]", "]]")}]";
+        const string parameter = "@__jjMasterDataExpectedOwner";
+        if (owner.DataType.IsString)
+        {
+            sql.AppendLine($"AND CONVERT(nvarchar(max), {column}) COLLATE Latin1_General_100_BIN2 = {parameter} COLLATE Latin1_General_100_BIN2");
+            sql.AppendLine($"AND DATALENGTH(CONVERT(nvarchar(max), {column})) = DATALENGTH(CONVERT(nvarchar(max), {parameter}));");
+        }
+        else
+        {
+            sql.AppendLine($"AND {column} = {parameter};");
+        }
+
+        sql.AppendLine("IF @@ROWCOUNT = 0 THROW 50000, 'Record not found or access denied.', 1;");
     }
 
 }
