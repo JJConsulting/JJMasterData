@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -13,6 +14,7 @@ namespace JJMasterData.Core.DataManager.Exportation.Formats;
 internal abstract class DelimitedTextExportFormat<TOptions> : IExportFormat<TOptions> where TOptions : ExportFormatOptions, new()
 {
     protected abstract string GetDelimiter(TOptions options);
+    protected virtual bool ProtectSpreadsheetCells => false;
 
     public abstract string Id { get; }
     public abstract string DisplayName { get; }
@@ -25,12 +27,20 @@ internal abstract class DelimitedTextExportFormat<TOptions> : IExportFormat<TOpt
         CancellationToken cancellationToken)
     {
         await using var textWriter = new StreamWriter(output, new UTF8Encoding(true), leaveOpen: true);
-        await using var csv = new CsvWriter(textWriter,
-            new CsvConfiguration(CultureInfo.CurrentCulture)
-            {
-                Delimiter = GetDelimiter(options),
-                HasHeaderRecord = false
-            });
+        var configuration = new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            Delimiter = GetDelimiter(options),
+            HasHeaderRecord = false
+        };
+        if (ProtectSpreadsheetCells)
+        {
+            configuration.InjectionOptions = InjectionOptions.Escape;
+            configuration.InjectionCharacters = ['=', '+', '-', '@', '\t', '\r', '\n', '＝', '＋', '－', '＠'];
+        }
+
+        await using var csv = ProtectSpreadsheetCells
+            ? new SpreadsheetCsvWriter(textWriter, configuration)
+            : new CsvWriter(textWriter, configuration);
 
         if (options.IncludeFirstRowAsHeader)
         {
@@ -46,7 +56,7 @@ internal abstract class DelimitedTextExportFormat<TOptions> : IExportFormat<TOpt
             {
                 row.TryGetValue(field.Name, out var rawValue);
                 var value = FieldFormattingService.FormatValue(field, rawValue);
-                csv.WriteField(value);
+                csv.WriteConvertedField(value, rawValue?.GetType() ?? typeof(string));
             }
             await csv.NextRecordAsync();
             processed++;
@@ -55,5 +65,29 @@ internal abstract class DelimitedTextExportFormat<TOptions> : IExportFormat<TOpt
 
         context.Progress.Complete(processed);
         await textWriter.FlushAsync(cancellationToken);
+    }
+
+    private sealed class SpreadsheetCsvWriter(TextWriter writer, CsvConfiguration configuration)
+        : CsvWriter(writer, configuration)
+    {
+        private bool _isNumber;
+
+        public override void WriteConvertedField(string? field, Type fieldType)
+        {
+            _isNumber = Type.GetTypeCode(fieldType) is >= TypeCode.SByte and <= TypeCode.Decimal;
+            try
+            {
+                base.WriteConvertedField(field, fieldType);
+            }
+            finally
+            {
+                _isNumber = false;
+            }
+        }
+
+        protected override string? SanitizeForInjection(string? field)
+        {
+            return _isNumber ? field : base.SanitizeForInjection(field);
+        }
     }
 }
