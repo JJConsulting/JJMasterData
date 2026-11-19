@@ -1,9 +1,11 @@
 using System.Text;
+using JJConsulting.MasterData.Storage.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Resources;
 using JJMasterData.Commons.Storage;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
@@ -119,6 +121,32 @@ public class FormFileServiceTests
             await fileStorage.DeleteFolderAsync(folderPath, TestContext.Current.CancellationToken);
             await fileStorage.DeleteFolderAsync(draftFolderPath, TestContext.Current.CancellationToken);
         }
+    }
+
+    [Theory]
+    [InlineData("other-user", "stored.pdf")]
+    [InlineData("owner", "unlisted.pdf")]
+    public async Task GetElementFileAsync_ShouldAvoidStorage_WhenRecordOrFileIsNotAccessible(string userId, string fileName)
+    {
+        var element = CreateFormElement();
+        element.ApiOptions.EnableGetDetail = true;
+        element.ApiOptions.ApplyUserIdOn = "Owner";
+        element.Fields.Add(new FormElementField { Name = "Owner" });
+        var dictionaries = new Mock<IDataDictionaryRepository>();
+        dictionaries.Setup(repository => repository.GetFormElementAsync(element.Name)).ReturnsAsync(element);
+        var records = new Mock<IEntityRepository>();
+        records.Setup(repository => repository.GetFieldsAsync(element, It.IsAny<Dictionary<string, object>>()))
+            .ReturnsAsync(new Dictionary<string, object?> { ["Id"] = "10", ["Owner"] = "owner", ["Document"] = "stored.pdf" });
+        var storage = new Mock<IFileStorage>(MockBehavior.Strict);
+        var user = Mock.Of<IMasterDataUser>(current => current.Id == userId);
+        var service = new ElementFileService(
+            dictionaries.Object, records.Object, storage.Object,
+            new FileValidationService(Mock.Of<IStringLocalizer<MasterDataResources>>()), user);
+
+        var file = await service.GetElementFileAsync(element.Name, "10", "Document", fileName, requireDetailPermission: true);
+
+        Assert.Null(file);
+        storage.VerifyNoOtherCalls();
     }
 
     private static MemoryStream CreateStream(string value)

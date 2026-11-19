@@ -12,6 +12,8 @@ builder.Services.AddJJMasterDataWeb(builder.Configuration)
 
 `MyFileStorage` is your implementation of list, read, save, delete, folder delete and move operations. Storage is also used for generated import/export files.
 
+Direct attachment actions check the existing record before accessing storage. Download, rename, and delete also require a filename listed in the record's file field. When `ApiOptions.ApplyUserIdOn` is configured, the signed-in user's ID must match the value stored in that field. The API also requires the dictionary option for the requested operation, including `EnableGetDetail` for downloads.
+
 For a file field, set `Component = FormComponent.File` and configure `DataFile`:
 
 | Property | Meaning |
