@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.WebApi.Attributes;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
@@ -16,17 +16,17 @@ public static class DictionariesEndpoints
             .WithTags("Dictionaries")
             .WithMetadata(new MasterDataApiAttribute());
 
-        group.MapGet("/", async (IDataDictionaryRepository dataDictionaryRepository) =>
+        group.MapGet("/", async (DataDictionaryService dataDictionaryService) =>
             {
-                var dicList = await dataDictionaryRepository.GetFormElementListAsync(true);
+                var dicList = await dataDictionaryService.GetFormElementListAsync(true);
                 return dicList is null ? Results.NotFound() : Results.Ok(dicList);
             })
             .Produces<List<FormElement>>()
             .WithSummary("Get all dictionaries with sync enabled.")
             .WithDescription("Returns all dictionaries with synchronization enabled.");
 
-        group.MapGet("/{id}", (string id, IDataDictionaryRepository dataDictionaryRepository) =>
-                dataDictionaryRepository.GetFormElementAsync(id))
+        group.MapGet("/{id}", (string id, DataDictionaryService dataDictionaryService) =>
+                dataDictionaryService.GetFormElementAsync(id))
             .Produces<FormElement>()
             .WithSummary("Get a specific data dictionary.")
             .WithDescription("Returns a single data dictionary based on element name.");

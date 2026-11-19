@@ -2,6 +2,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NCalc.Cache.Configuration;
 using NCalc.DependencyInjection;
 
@@ -13,12 +14,12 @@ public static class ExpressionsServiceExtensions
     {
         services.AddNCalc().WithMemoryCache();
 
-        services.AddTransient<ExpressionsService>();
-        services.AddTransient<ExpressionParser>();
+        services.TryAddScoped<ExpressionsService>();
+        services.TryAddScoped<ExpressionParser>();
 
-        services.AddScoped<IExpressionProvider, ValueExpressionProvider>();
-        services.AddScoped<IExpressionProvider, DefaultExpressionProvider>();
-        services.AddScoped<IExpressionProvider, SqlExpressionProvider>();
+        services.TryAddScoped<IExpressionProvider, ValueExpressionProvider>();
+        services.TryAddScoped<IExpressionProvider, DefaultExpressionProvider>();
+        services.TryAddScoped<IExpressionProvider, SqlExpressionProvider>();
 
         return services;
     }

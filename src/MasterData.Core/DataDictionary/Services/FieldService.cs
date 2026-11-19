@@ -1,4 +1,4 @@
-﻿#nullable disable warnings
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -14,15 +13,15 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService(
         IValidationDictionary validationDictionary,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IEntityRepository entityRepository,
         IEnumerable<IExpressionProvider> expressionProviders,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string? originalName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
 
         RemoveUnusedProperties(field);
 
@@ -52,7 +51,7 @@ public class FieldService(
 
         if (IsValid)
         {
-            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+            await DataDictionaryService.InsertOrReplaceAsync(formElement);
         }
             
 
@@ -359,7 +358,7 @@ public class FieldService(
             return null;
         }
         
-        var childFormElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var childFormElement = await DataDictionaryService.GetFormElementAsync(elementMap.ElementName);
 
         if (childFormElement is null)
         {
@@ -490,11 +489,11 @@ public class FieldService(
 
     public async Task<bool> SortFieldsAsync(string elementName, string[] fieldsOrder)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         
         SortFields(formElement, fieldsOrder);
 
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
         return true;
     }
 
@@ -541,7 +540,7 @@ public class FieldService(
 
         if (IsValid)
         {
-            var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+            var childElement = await DataDictionaryService.GetFormElementAsync(elementMap.ElementName);
             var fieldKey = childElement.Fields[elementMap.IdFieldName];
             if (!fieldKey.IsPk && fieldKey.Filter.Type == FilterMode.None)
             {
@@ -561,19 +560,19 @@ public class FieldService(
 
     public async Task<bool> DeleteField(string elementName, string fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         if (!formElement.Fields.Contains(fieldName))
             return false;
         
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
         return IsValid;
     }
 
     public async Task<string> GetNextFieldNameAsync(string elementName, string fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         string nextField = null;
         if (formElement.Fields.Contains(fieldName))
         {
@@ -595,7 +594,7 @@ public class FieldService(
         if (string.IsNullOrEmpty(elementName))
             return fields;
 
-        var dataEntry = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dataEntry = await DataDictionaryService.GetFormElementAsync(elementName);
         if (dataEntry == null)
             return fields;
 
@@ -628,18 +627,18 @@ public class FieldService(
         }
 
         formElement.Fields.Add(newField);
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
         return IsValid;
     }
 
     public Task SetFormElementAsync(FormElement formElement)
     {
-        return DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        return DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
 
     public async Task ImportFieldsFromTable(string elementName)
     {
-        var existingElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var existingElement = await DataDictionaryService.GetFormElementAsync(elementName);
         var elementFromDb = await entityRepository.GetElementFromTableAsync(existingElement.Schema ?? "dbo", existingElement.TableName, existingElement.ConnectionId);
         
         var fields = elementFromDb.Fields;
@@ -651,6 +650,6 @@ public class FieldService(
             }
         }
 
-        await DataDictionaryRepository.InsertOrReplaceAsync(existingElement);
+        await DataDictionaryService.InsertOrReplaceAsync(existingElement);
     }
 }

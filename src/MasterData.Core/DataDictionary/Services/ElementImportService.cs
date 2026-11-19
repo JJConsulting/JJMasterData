@@ -5,11 +5,10 @@ using System.IO.Compression;
 using System.Text.Json;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ElementImportService(IDataDictionaryRepository dataDictionaryRepository)
+public class ElementImportService(DataDictionaryService dataDictionaryService)
 {
     public async Task<bool> Import(Stream file)
     {
@@ -17,7 +16,7 @@ public class ElementImportService(IDataDictionaryRepository dataDictionaryReposi
         
         var formElement = await JsonSerializer.DeserializeAsync<FormElement>(file);
 
-        await dataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await dataDictionaryService.InsertOrReplaceAsync(formElement);
 
         return true;
     }
@@ -28,7 +27,7 @@ public class ElementImportService(IDataDictionaryRepository dataDictionaryReposi
         
         var formElements = GetFormElements(zip);
 
-        await dataDictionaryRepository.InsertOrReplaceAsync(formElements);
+        await dataDictionaryService.InsertOrReplaceAsync(formElements);
     }
 
     private static IEnumerable<FormElement> GetFormElements(ZipArchive zip)

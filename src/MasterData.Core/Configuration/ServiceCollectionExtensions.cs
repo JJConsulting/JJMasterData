@@ -67,21 +67,21 @@ public static class ServiceCollectionExtensions
             services.AddExpressionServices();
             services.AddActionServices();
 
-            services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
+            services.TryAddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
 
-            services.AddTransient<HtmlTemplateRenderer>();
+            services.TryAddTransient<HtmlTemplateRenderer>();
         
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, CsvExportFormat>());
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, TextExportFormat>());
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, ExcelXlsExportFormat>());
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IExportFormat, ExcelXlsxExportFormat>());
             
-            services.AddScoped<ExportFormatCatalog>();
-            services.AddScoped<ExportJobService>();
-            services.AddScoped<BackgroundJobHandler<ExportRequest>, ExportJobHandler>();
+            services.TryAddScoped<ExportFormatCatalog>();
+            services.TryAddScoped<ExportJobService>();
+            services.TryAddScoped<BackgroundJobHandler<ExportRequest>, ExportJobHandler>();
          
-            services.AddScoped<ImportJobService>();
-            services.AddScoped<BackgroundJobHandler<ImportRequest>, ImportJobHandler>();
+            services.TryAddScoped<ImportJobService>();
+            services.TryAddScoped<BackgroundJobHandler<ImportRequest>, ImportJobHandler>();
             services.AddFactories();
         }
     }

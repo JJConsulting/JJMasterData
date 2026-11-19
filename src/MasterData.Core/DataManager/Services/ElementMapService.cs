@@ -3,27 +3,27 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class ElementMapService(
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IEntityRepository entityRepository,
     ExpressionsService expressionsService)
 {
     public async Task<Dictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
-        var childElement = await dataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var childElement = await dataDictionaryService.GetFormElementAsync(elementMap.ElementName);
         var filters = GetFilters(elementMap, value, formStateData);
         return await entityRepository.GetFieldsAsync(childElement, filters);
     }
     
     public async Task<List<Dictionary<string, object?>>> GetDictionaryList(DataElementMap elementMap, object? value, FormStateData formStateData)
     {
-        var childElement = await dataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var childElement = await dataDictionaryService.GetFormElementAsync(elementMap.ElementName);
         var filters = GetFilters(elementMap, value, formStateData);
         return await entityRepository.GetDictionaryListAsync(childElement, new EntityParameters
         {
@@ -37,7 +37,7 @@ public class ElementMapService(
         string? parentId,
         FormStateData formStateData)
     {
-        var childElement = await dataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var childElement = await dataDictionaryService.GetFormElementAsync(elementMap.ElementName);
         var filters = GetMapFilters(elementMap, formStateData);
 
         if (!string.IsNullOrEmpty(searchId))

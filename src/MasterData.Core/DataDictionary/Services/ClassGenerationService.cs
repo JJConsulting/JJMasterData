@@ -2,19 +2,18 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepository)
+public class ClassGenerationService(DataDictionaryService dataDictionaryService)
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private DataDictionaryService DataDictionaryService { get; } = dataDictionaryService;
     
     public async ValueTask<string> GetClassSourceCode(string elementName)
     {
         const string propertyTemplate = "public @PropertyType @PropertyName { get; set; } ";
 
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         var properties = new StringBuilder();
 
         foreach (var item in formElement.Fields)

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DotNet.Testcontainers.Images;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,14 +100,14 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
     public async Task<FormElement?> CreateDataDictionaryAsync(string elementName)
     {
         await using var scope = WebFactory.Services.CreateAsyncScope();
-        var dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
+        var dataDictionaryService = scope.ServiceProvider.GetRequiredService<DataDictionaryService>();
         var formElement = new FormElement
         {
             Name = elementName,
             TableName = elementName
         };
 
-        await dataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await dataDictionaryService.InsertOrReplaceAsync(formElement);
         return formElement;
     }
 

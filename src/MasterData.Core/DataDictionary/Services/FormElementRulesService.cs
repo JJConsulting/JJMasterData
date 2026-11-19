@@ -2,20 +2,19 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FormElementRulesService(
     IValidationDictionary validationDictionary,
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository, stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService, stringLocalizer)
 {
     public async Task SaveAsync(string elementName, FormElementRule rule)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
 
         if (!Validate(rule, formElement))
             return;
@@ -40,18 +39,18 @@ public class FormElementRulesService(
             }
         }
 
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
 
     public async Task DeleteAsync(string elementName, int ruleId)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         var rule = formElement.Rules.FirstOrDefault(v => v.Id == ruleId);
         if (rule == null)
             return;
 
         formElement.Rules.Remove(rule);
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
     }
 
     public bool Validate(FormElementRule rule, FormElement formElement)

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Text;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -6,7 +6,7 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using Microsoft.AspNetCore.Http;
 using JJMasterData.WebApi.Models;
@@ -16,7 +16,7 @@ namespace JJMasterData.WebApi.Services;
 
 public class DictionariesService(
     IMasterDataUser masterDataUser,
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IEntityRepository entityRepository,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILogger<DictionariesService> logger)
@@ -43,7 +43,7 @@ public class DictionariesService(
             throw new ArgumentException("DicSyncParam invalid");
 
         var dStart = DateTime.Now;
-        var dictionaries = await dataDictionaryRepository.GetFormElementListAsync(true);
+        var dictionaries = await dataDictionaryService.GetFormElementListAsync(true);
         var syncInfo = new DicSyncInfo
         {
             ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm")

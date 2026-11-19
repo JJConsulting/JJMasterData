@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Models;
@@ -12,7 +12,9 @@ namespace JJMasterData.Core.DataDictionary.Repository.Abstractions;
 public interface IDataDictionaryRepository
 {
     Task CreateStructureIfNotExistsAsync();
+    /// <exception cref="JJMasterData.Core.DataDictionary.Exceptions.FormElementNotFoundException">The dictionary does not exist.</exception>
     FormElement GetFormElement(string elementName);
+    /// <exception cref="JJMasterData.Core.DataDictionary.Exceptions.FormElementNotFoundException">The dictionary does not exist.</exception>
     ValueTask<FormElement> GetFormElementAsync(string elementName);
     Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null);
     ValueTask<List<string>> GetElementNameListAsync();
