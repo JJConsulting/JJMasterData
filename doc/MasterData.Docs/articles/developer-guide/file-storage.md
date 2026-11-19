@@ -24,3 +24,5 @@ For a file field, set `Component = FormComponent.File` and configure `DataFile`:
 | `ViewGallery` | Display image previews as a gallery. |
 
 Ensure the configured destination is writable by the application. For custom storage, preserve the path conventions passed to the provider so upload, download, rename and delete resolve the same files.
+
+A record key occupies one folder segment under the configured destination. Portable names keep their existing folders. Empty keys and keys containing path syntax or other nonportable names use a stable encoded folder name. Move existing attachments stored using nonportable names to their new resolved folder before relying on the new mapping. The disk provider refuses links at the target file or record folder. Keep the configured roots and their parent directories under administrative control.

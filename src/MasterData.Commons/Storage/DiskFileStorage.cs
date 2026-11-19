@@ -12,7 +12,7 @@ internal sealed class DiskFileStorage : IFileStorage
 {
     public async Task SaveAsync(string fullPath, Stream content, bool replaceIfExists = true, CancellationToken cancellationToken = default)
     {
-        var filePath = FileStoragePath.ResolveFullPath(fullPath);
+        var filePath = ResolveFilePath(fullPath);
         
         var folderPath = Path.GetDirectoryName(filePath);
         if (!string.IsNullOrEmpty(folderPath))
@@ -29,14 +29,14 @@ internal sealed class DiskFileStorage : IFileStorage
 
     public Task<Stream> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
     {
-        var filePath = FileStoragePath.ResolveFullPath(fullPath);
+        var filePath = ResolveFilePath(fullPath);
         Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
         return Task.FromResult(stream);
     }
 
     public Task DeleteAsync(string fullPath, CancellationToken cancellationToken = default)
     {
-        var filePath = FileStoragePath.ResolveFullPath(fullPath);
+        var filePath = ResolveFilePath(fullPath);
         if (File.Exists(filePath))
             File.Delete(filePath);
         else
@@ -48,6 +48,7 @@ internal sealed class DiskFileStorage : IFileStorage
     public Task DeleteFolderAsync(string folderPath, CancellationToken cancellationToken = default)
     {
         var resolvedFolderPath = FileStoragePath.ResolveFolderPath(folderPath);
+        RejectReparsePoint(resolvedFolderPath);
         if (Directory.Exists(resolvedFolderPath))
             Directory.Delete(resolvedFolderPath, true);
 
@@ -56,8 +57,8 @@ internal sealed class DiskFileStorage : IFileStorage
 
     public Task MoveAsync(string currentFullPath, string newFullPath, CancellationToken cancellationToken = default)
     {
-        var currentPath = FileStoragePath.ResolveFullPath(currentFullPath);
-        var newPath = FileStoragePath.ResolveFullPath(newFullPath);
+        var currentPath = ResolveFilePath(currentFullPath);
+        var newPath = ResolveFilePath(newFullPath);
 
         if (!File.Exists(currentPath))
             throw new KeyNotFoundException("File not found");
@@ -74,12 +75,18 @@ internal sealed class DiskFileStorage : IFileStorage
     public Task<List<FileStorageItem>> ListAsync(string folderPath, bool isRecursive = false, CancellationToken cancellationToken = default)
     {
         var resolvedFolderPath = FileStoragePath.ResolveFolderPath(folderPath);
+        RejectReparsePoint(resolvedFolderPath);
         if (!Directory.Exists(resolvedFolderPath))
             return Task.FromResult(new List<FileStorageItem>());
 
-        var searchOption = isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+        var enumeration = new EnumerationOptions
+        {
+            RecurseSubdirectories = isRecursive,
+            AttributesToSkip = FileAttributes.ReparsePoint,
+            IgnoreInaccessible = false
+        };
         var files = new DirectoryInfo(resolvedFolderPath)
-            .EnumerateFiles("*", searchOption)
+            .EnumerateFiles("*", enumeration)
             .Select(file => new FileStorageItem
             {
                 FileName = file.Name,
@@ -90,5 +97,28 @@ internal sealed class DiskFileStorage : IFileStorage
             .ToList();
 
         return Task.FromResult(files);
+    }
+
+    private static string ResolveFilePath(string fullPath)
+    {
+        var path = FileStoragePath.ResolveFullPath(fullPath);
+        RejectReparsePoint(Path.GetDirectoryName(path));
+        RejectReparsePoint(path);
+        return path;
+    }
+
+    private static void RejectReparsePoint(string path)
+    {
+        try
+        {
+            if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+                throw new IOException("File storage does not follow symbolic links or reparse points at the target.");
+        }
+        catch (FileNotFoundException)
+        {
+        }
+        catch (DirectoryNotFoundException)
+        {
+        }
     }
 }
