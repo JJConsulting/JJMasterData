@@ -20,7 +20,7 @@ public class FileController(
 {
     [ResponseCache(Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> Index(
-        string elementName,
+        [FromRoute] string elementName,
         string fieldName, 
         string id,
         string? fileName = null)
@@ -48,7 +48,7 @@ public class FileController(
     }
 
     [ResponseCache(Location = ResponseCacheLocation.None)]
-    public async Task<IActionResult> Exportation(string elementName, string fileName)
+    public async Task<IActionResult> Exportation([FromRoute] string elementName, string fileName)
     {
         if (string.IsNullOrWhiteSpace(elementName) || string.IsNullOrWhiteSpace(fileName))
             return BadRequest();
