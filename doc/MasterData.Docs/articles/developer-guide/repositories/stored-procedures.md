@@ -62,4 +62,6 @@ A write procedure can update related tables, but it must explicitly manage the t
 
 Keep customized SQL in your application's database migrations or database project. Regenerating and deploying the baseline procedure can overwrite custom joins, validations and writes. When fields or filters change, compare the new generated signature with the maintained script and update both together.
 
+For SQL Server compatibility levels below 130, regenerate and redeploy read procedures that use multi-value filters. Apply the new parameterized predicate to customized procedures while retaining their joins and other customizations.
+
 Verify insert, update, delete, empty-action upsert, lookup by key, paging, ordering, count and export as applicable. Test import separately because it uses its own validation hooks. The [entity repository](entities.md) uses these procedures but direct writes do not run form validation or audit processing.
