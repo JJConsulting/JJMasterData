@@ -73,7 +73,7 @@ Other useful read methods include:
 | `GetDictionaryListResultAsync` | Return rows plus the total record count. |
 | `GetDataTableAsync` | Return an ADO.NET `DataTable`. |
 | `GetCountAsync` | Count rows matching a field-value filter. |
-| `GetListFieldsAsTextAsync` | Serialize selected results as delimited text. |
+| `WriteCsvAsync` | Stream selected results as CSV to a `TextWriter`, without materializing rows or requesting a total count. |
 
 Field names used in filters and ordering must exist in the supplied element. Values are passed to the provider as parameters.
 
@@ -153,3 +153,18 @@ builder.Services
 ```
 
 A custom repository must implement the complete `IEntityRepository` contract, including queries, writes, schema operations and connection-aware commands expected by JJMasterData internals.
+
+### Streaming CSV
+
+`IEntityRepository.WriteCsvAsync(element, destination, parameters, options, cancellationToken)`
+writes columns in the element field order directly from the database reader. It returns
+the number of data rows written. `DataAccess.WriteCsvAsync` additionally accepts an explicit
+ordered list of `CsvColumn` values, with optional header labels.
+
+```csharp
+await using var writer = new StreamWriter(output, new UTF8Encoding(false), leaveOpen: true);
+await repository.WriteCsvAsync(element, writer,
+    new EntityParameters { CurrentPage = 1, RecordsPerPage = 10000 },
+    new CsvWriteOptions { IncludeHeader = true }, cancellationToken);
+await writer.FlushAsync(cancellationToken);
+```

@@ -101,6 +101,10 @@ public partial class DataAccess
                 return result;
             }
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, command);
