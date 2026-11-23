@@ -24,9 +24,9 @@ public sealed class OffcanvasTagHelper : TagHelper
             Size = Size
         };
 
-        var content = (await output.GetChildContentAsync()).GetContent();
+        var content = await output.GetChildContentAsync();
 
-        offcanvas.Body = new HtmlBuilder(content, encode: false);
+        offcanvas.Body = content;
 
         output.TagName = null;
         output.Content.SetHtmlContent(offcanvas);

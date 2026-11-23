@@ -59,13 +59,13 @@ public sealed class JJTitle() : HtmlComponent
                     });
                 }
 
-                tag.Append(new HtmlBuilder(Title!, encode: false)).WithCssClass("me-1");
+                tag.Append(new HtmlBuilder(Title!)).WithCssClass("me-1");
                 if (!string.IsNullOrEmpty(SubTitle))
                 {
                     tag.Append(HtmlTag.Small, small =>
                     {
                         small.WithCssClass("sub-title");
-                        small.Append(new HtmlBuilder(SubTitle!, encode: false));
+                        small.Append(new HtmlBuilder(SubTitle!));
                     });
                 }
             });

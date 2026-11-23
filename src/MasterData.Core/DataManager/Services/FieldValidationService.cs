@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using JJConsulting.Html;
-using JJConsulting.Html.Extensions;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Validations;
 using JJMasterData.Core.DataDictionary.Models;
@@ -21,16 +19,14 @@ public class FieldValidationService(
     IEnumerable<IRuleExecutor> validationScriptExecutors,
     IStringLocalizer<MasterDataResources> localizer)
 {
-    private Dictionary<RuleLanguage, IRuleExecutor> ValidationScriptExecutors { get; } =
-        validationScriptExecutors.ToDictionary(e => e.Language);
+    private Dictionary<RuleLanguage, IRuleExecutor> ValidationScriptExecutors { get; } = validationScriptExecutors.ToDictionary(e => e.Language);
     
     public Dictionary<string, string> ValidateFields(
         FormElement formElement,
         Dictionary<string, object?> formValues,
-        PageState pageState,
-        bool enableErrorLink)
+        PageState pageState)
     {
-        var valueTask = ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink);
+        var valueTask = ValidateFieldsAsync(formElement, formValues, pageState);
         
         if (valueTask.IsCompletedSuccessfully)
             return valueTask.Result;
@@ -41,8 +37,7 @@ public class FieldValidationService(
     public async ValueTask<Dictionary<string, string>> ValidateFieldsAsync(
         FormElement formElement,
         Dictionary<string, object?> formValues,
-        PageState pageState,
-        bool enableErrorLink)
+        PageState pageState)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -68,12 +63,12 @@ public class FieldValidationService(
                 value = "";
             }
 
-            var error = ValidateField(field, field.Name, value, enableErrorLink);
+            var error = ValidateField(field, value);
             if (!string.IsNullOrEmpty(error))
                 errors.Add(field.Name, error!);
         }
         
-        foreach (var error in await ValidateRulesAsync(formElement, formValues, enableErrorLink, pageState))
+        foreach (var error in await ValidateRulesAsync(formElement, formValues, pageState))
         {
             errors[error.Key] = error.Value;
         }
@@ -84,7 +79,6 @@ public class FieldValidationService(
     public async Task<Dictionary<string, string>> ValidateRulesAsync(
         FormElement formElement,
         Dictionary<string, object?> values,
-        bool enableErrorLink,
         PageState pageState)
     {
         var errors = new Dictionary<string, string>();
@@ -103,10 +97,7 @@ public class FieldValidationService(
             {
                 if (formElement.Fields.TryGetField(error.Key, out var field))
                 {
-                    var fieldName = field.LabelOrName;
-                    
-                    if (enableErrorLink)
-                        fieldName = GetFieldLinkHtml(field.Name, field.LabelOrName);
+                    var fieldName = localizer[field.LabelOrName];
                     
                     errors[error.Key] = fieldName + " - " + localizer[error.Value];
                 }
@@ -120,12 +111,12 @@ public class FieldValidationService(
         return errors;
     }
 
-    public string? ValidateField(FormElementField field, string fieldId, object? value, bool enableErrorLink = true)
+    public string? ValidateField(FormElementField field, object? value)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : localizer[field.LabelOrName];
+        var fieldName = localizer[field.LabelOrName];
 
         string? error = null;
 
@@ -301,17 +292,5 @@ public class FieldValidationService(
         }
 
         return null;
-    }
-
-    private string GetFieldLinkHtml(string fieldName, string label)
-    {
-        var link = new HtmlBuilder(HtmlTag.A);
-        link.WithAttribute("href", "javascript:void(0)");
-        link.WithOnClick($"javascript:$('#{fieldName}').focus();");
-        link.WithCssClass("alert-link");
-        
-        link.AppendText(localizer[label ?? fieldName]);
-
-        return link.ToString();
     }
 }

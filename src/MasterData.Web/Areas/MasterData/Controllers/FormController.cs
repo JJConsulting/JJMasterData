@@ -1,4 +1,4 @@
-﻿using JJConsulting.FontAwesome;
+using JJConsulting.FontAwesome;
 using JJConsulting.Html.Bootstrap.Models;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -15,7 +15,7 @@ public class FormController(
     IMasterDataUser masterDataUser,
     IStringLocalizer<MasterDataResources> stringLocalizer) : MasterDataController
 {
-    public async Task<IActionResult> Render(string elementName)
+    public async Task<IActionResult> Render([FromRoute] string elementName)
     {
         var formView = await formViewFactory.CreateAsync(elementName);
 

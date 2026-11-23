@@ -9,6 +9,8 @@ The Web package maps two MVC areas:
 
 Open a CRUD at `/MasterData/Form/Render/Person`, where `Person` is the dictionary `Name`.
 
+The built-in form, attachment, and export actions bind `elementName` from the route. Include it in the route when defining custom mappings for these actions.
+
 For an existing controller, inject `IFormElementComponentFactory<JJFormView>` from `JJMasterData.Core.UI.Components` and follow the built-in controller's result handling:
 
 ```csharp

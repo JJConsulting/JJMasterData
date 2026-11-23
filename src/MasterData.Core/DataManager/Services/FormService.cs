@@ -70,12 +70,11 @@ public class FormService(
         DataContext dataContext)
     {
         ApplyTextCaseTransform(formElement, values);
-        var isForm = dataContext.Source is DataContextSource.Form;
+
         var errors = await fieldValidationService.ValidateFieldsAsync(
             formElement,
             values,
-            PageState.Update,
-            isForm);
+            PageState.Update);
 
         var result = new FormLetter(errors);
 
@@ -122,15 +121,13 @@ public class FormService(
         DataContext dataContext, bool validateFields = true)
     {
         ApplyTextCaseTransform(formElement, values);
-        
-        var isForm = dataContext.Source is DataContextSource.Form;
+
         Dictionary<string, string> errors;
         if (validateFields)
             errors = await fieldValidationService.ValidateFieldsAsync(
                 formElement,
                 values,
-                PageState.Insert,
-                isForm);
+                PageState.Insert);
         else
             errors = new Dictionary<string, string>();
 
@@ -184,7 +181,7 @@ public class FormService(
         
         Dictionary<string, string> errors;
         if (validateFields)
-            errors = await fieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, isForm);
+            errors = await fieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import);
         else
             errors = new();
         
@@ -258,7 +255,6 @@ public class FormService(
         var errors = await fieldValidationService.ValidateRulesAsync(
             formElement,
             primaryKeys!,
-            false,
             PageState.Delete);
         
         var result = new FormLetter(errors);

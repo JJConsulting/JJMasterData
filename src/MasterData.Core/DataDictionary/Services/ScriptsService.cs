@@ -6,12 +6,11 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ScriptsService(IEntityRepository entityRepository, 
-    IDataDictionaryRepository dataDictionaryRepository)
+    DataDictionaryService dataDictionaryService)
 {
     
     
@@ -40,9 +39,9 @@ public class ScriptsService(IEntityRepository entityRepository,
         List<RelationshipReference> relationshipList = [];
         foreach (var r in formElement.Relationships.GetElementRelationships())
         {
-            if (await dataDictionaryRepository.ExistsAsync(r.ChildElement))
+            if (await dataDictionaryService.ExistsAsync(r.ChildElement))
             {
-                var tableName = (await dataDictionaryRepository.GetFormElementAsync(r.ChildElement)).TableName;
+                var tableName = (await dataDictionaryService.GetFormElementAsync(r.ChildElement)).TableName;
 
                 relationshipList.Add(new(r.ChildElement, tableName));
             }
@@ -56,7 +55,7 @@ public class ScriptsService(IEntityRepository entityRepository,
 
     public async Task ExecuteScriptsAsync(string id, string scriptOption)
     {
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(id);
+        var formElement = await dataDictionaryService.GetFormElementAsync(id);
         switch (scriptOption)
         {
             case "ExecuteProcedures":

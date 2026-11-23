@@ -1,19 +1,18 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ApiService(IValidationDictionary validationDictionary,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     public async Task<bool> SetFormElementWithApiValidation(FormElement formElement)
     {
         if (ValidateWebApi(formElement))
-            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+            await DataDictionaryService.InsertOrReplaceAsync(formElement);
 
         return IsValid;
     }

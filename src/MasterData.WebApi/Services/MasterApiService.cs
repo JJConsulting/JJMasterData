@@ -1,11 +1,11 @@
-﻿using System.Net;
+using System.Net;
 using JJMasterData.Commons.Data.Csv;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -24,7 +24,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     FormService formService,
     IFormEventHandlerResolver formEventHandlerResolver,
     IEntityRepository entityRepository,
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
 
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
@@ -40,6 +40,10 @@ public class MasterApiService(ExpressionsService expressionsService,
         int total = 0)
     {
         var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        if (string.IsNullOrEmpty(elementName))
+            throw new ArgumentNullException(nameof(elementName));
+
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -108,7 +112,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
     public async Task<Dictionary<string, object?>> GetFieldsAsync(string elementName, string id)
     {
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
         
@@ -363,7 +367,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await dataDictionaryService.GetFormElementAsync(elementName);
 
         if (dictionary.ApiOptions is { EnableAdd: false, EnableUpdate: false })
             throw new UnauthorizedAccessException();
@@ -470,7 +474,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return dataDictionaryRepository.GetFormElementAsync(elementName);
+        return dataDictionaryService.GetFormElementAsync(elementName);
     }
 
     private async ValueTask<FormElement> GetFormElementAsync(

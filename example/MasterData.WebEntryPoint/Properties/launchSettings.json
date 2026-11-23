@@ -18,15 +18,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "WebEntryPoint - Release": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "applicationUrl": "https://localhost:7176;http://localhost:5108",
-      "launchUrl": "DataDictionary/Element/Index",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Release"
-      }
-    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,

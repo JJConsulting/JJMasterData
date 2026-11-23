@@ -1,19 +1,19 @@
-﻿using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
 namespace JJMasterData.WebApi.OpenApi;
 
 public class DataDictionaryDocumentTransformer(
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     ILogger<DataDictionaryDocumentTransformer> logger)
     : IOpenApiDocumentTransformer
 {
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context,
         CancellationToken cancellationToken = default)
     {
-        var formElements = await dataDictionaryRepository.GetFormElementListAsync();
+        var formElements = await dataDictionaryService.GetFormElementListAsync();
 
         document.Tags ??= new HashSet<OpenApiTag>();
 

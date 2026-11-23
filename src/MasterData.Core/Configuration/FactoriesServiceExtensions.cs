@@ -6,6 +6,7 @@ using JJMasterData.Core.UI.Components.Phone;
 using JJMasterData.Core.UI.Components.TextRange;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Core.Configuration;
 
@@ -21,7 +22,7 @@ public static class FactoriesServiceExtensions
 
         private IServiceCollection AddFormElementFactories()
         {
-            services.AddTransient<DataDictionaryFormElementFactory>();
+            services.TryAddScoped<DataDictionaryFormElementFactory>();
             return services;
         }
 
@@ -30,49 +31,49 @@ public static class FactoriesServiceExtensions
             services.AddControlsFactories();
             services.AddFormElementComponentsFactories();
 
-            services.AddScoped<UploadViewFactory>();
-            services.AddScoped<FileDownloaderFactory>();
-            services.AddScoped<UploadAreaFactory>();
-            services.AddScoped<TitleFactory>();
-            services.AddScoped<LabelFactory>();
-            services.AddScoped<MessageBoxFactory>();
-            services.AddScoped<RouteContextFactory>();
-            services.AddScoped<TextGroupFactory>();
-            services.AddScoped<IComponentFactory, ComponentFactory>();
-            services.AddScoped<ActionButtonFactory>();
+            services.TryAddScoped<UploadViewFactory>();
+            services.TryAddScoped<FileDownloaderFactory>();
+            services.TryAddScoped<UploadAreaFactory>();
+            services.TryAddScoped<TitleFactory>();
+            services.TryAddScoped<LabelFactory>();
+            services.TryAddScoped<MessageBoxFactory>();
+            services.TryAddScoped<RouteContextFactory>();
+            services.TryAddScoped<TextGroupFactory>();
+            services.TryAddScoped<IComponentFactory, ComponentFactory>();
+            services.TryAddScoped<ActionButtonFactory>();
         
             return services;
         }
 
         private void AddFormElementComponentsFactories()
         {
-            services.AddScoped<IFormElementComponentFactory<JJAuditLogView>, AuditLogViewFactory>();
-            services.AddScoped<IFormElementComponentFactory<JJDataPanel>, DataPanelFactory>();
-            services.AddScoped<IFormElementComponentFactory<JJFormView>, FormViewFactory>();
-            services.AddScoped<IFormElementComponentFactory<JJGridView>, GridViewFactory>();
-            services.AddScoped<IFormElementComponentFactory<JJDataExportation>, DataExportationFactory>();
-            services.AddScoped<IFormElementComponentFactory<JJDataImportation>, DataImportationFactory>();
+            services.TryAddScoped<IFormElementComponentFactory<JJAuditLogView>, AuditLogViewFactory>();
+            services.TryAddScoped<IFormElementComponentFactory<JJDataPanel>, DataPanelFactory>();
+            services.TryAddScoped<IFormElementComponentFactory<JJFormView>, FormViewFactory>();
+            services.TryAddScoped<IFormElementComponentFactory<JJGridView>, GridViewFactory>();
+            services.TryAddScoped<IFormElementComponentFactory<JJDataExportation>, DataExportationFactory>();
+            services.TryAddScoped<IFormElementComponentFactory<JJDataImportation>, DataImportationFactory>();
         }
 
         private void AddControlsFactories()
         {
-            services.AddScoped<IControlFactory<JJComboBox>, ComboBoxFactory>();
-            services.AddScoped<IControlFactory<JJLookup>, LookupFactory>();
-            services.AddScoped<IControlFactory<JJSearchBox>, SearchBoxFactory>();
-            services.AddScoped<IControlFactory<JJTextArea>, TextAreaFactory>();
-            services.AddScoped<IControlFactory<JJSlider>, SliderFactory>();
-            services.AddScoped<IControlFactory<JJPhoneGroup>, PhoneGroupFactory>();
-            services.AddScoped<IControlFactory<JJTextGroup>, TextGroupFactory>();
-            services.AddScoped<IControlFactory<JJTextRange>, TextRangeFactory>();
-            services.AddScoped<IControlFactory<JJTextFile>, TextFileFactory>();
-            services.AddScoped<IControlFactory<JJTextBox>, TextBoxFactory>();
-            services.AddScoped<IControlFactory<JJCheckBox>, CheckboxFactory>();
-            services.AddScoped<IControlFactory<JJColorPicker>, ColorPickerFactory>();
-            services.AddScoped<IControlFactory<JJRadioButtonGroup>, RadioButtonGroupFactory>();
-            services.AddScoped<IControlFactory<JJIconPicker>, IconPickerFactory>();
-            services.AddScoped<IControlFactory<JJCodeEditor>, CodeEditorFactory>();
-            services.AddScoped<IControlFactory<JJHierarchy>, HierarchyFactory>();
-            services.AddScoped<ControlFactory>();
+            services.TryAddScoped<IControlFactory<JJComboBox>, ComboBoxFactory>();
+            services.TryAddScoped<IControlFactory<JJLookup>, LookupFactory>();
+            services.TryAddScoped<IControlFactory<JJSearchBox>, SearchBoxFactory>();
+            services.TryAddScoped<IControlFactory<JJTextArea>, TextAreaFactory>();
+            services.TryAddScoped<IControlFactory<JJSlider>, SliderFactory>();
+            services.TryAddScoped<IControlFactory<JJPhoneGroup>, PhoneGroupFactory>();
+            services.TryAddScoped<IControlFactory<JJTextGroup>, TextGroupFactory>();
+            services.TryAddScoped<IControlFactory<JJTextRange>, TextRangeFactory>();
+            services.TryAddScoped<IControlFactory<JJTextFile>, TextFileFactory>();
+            services.TryAddScoped<IControlFactory<JJTextBox>, TextBoxFactory>();
+            services.TryAddScoped<IControlFactory<JJCheckBox>, CheckboxFactory>();
+            services.TryAddScoped<IControlFactory<JJColorPicker>, ColorPickerFactory>();
+            services.TryAddScoped<IControlFactory<JJRadioButtonGroup>, RadioButtonGroupFactory>();
+            services.TryAddScoped<IControlFactory<JJIconPicker>, IconPickerFactory>();
+            services.TryAddScoped<IControlFactory<JJCodeEditor>, CodeEditorFactory>();
+            services.TryAddScoped<IControlFactory<JJHierarchy>, HierarchyFactory>();
+            services.TryAddScoped<ControlFactory>();
         }
     }
 }

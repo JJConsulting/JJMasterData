@@ -6,7 +6,7 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Html.Templates;
@@ -18,7 +18,7 @@ namespace JJMasterData.Core.UI.Components;
 
 internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         DataProtectionService encryptionService,
         DataItemService dataItemService,
         ExpressionsService expressionsService,
@@ -85,7 +85,7 @@ internal sealed class GridViewFactory(IHttpContextAccessor currentContext,
 
     public async ValueTask<JJGridView> CreateAsync(string elementName)
     {
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
 
         var gridView = Create(formElement);
 

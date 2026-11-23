@@ -1,11 +1,10 @@
-using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using Spectre.Console;
 
 namespace JJMasterData.CommandLine;
 
 public sealed class ImportService(
-    IDataDictionaryRepository dataDictionaryRepository,
+    DataDictionaryService dataDictionaryService,
     IAnsiConsole console,
     DiffService diffService)
 {
@@ -21,21 +20,21 @@ public sealed class ImportService(
         foreach (var file in diff.FolderOnly)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await dataDictionaryRepository.InsertOrReplaceAsync(file.FormElement);
+            await dataDictionaryService.InsertOrReplaceAsync(file.FormElement);
             console.MarkupLine($"[green]Saved[/] {Markup.Escape(file.Name)}");
         }
 
         foreach (var item in diff.Changed)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await dataDictionaryRepository.InsertOrReplaceAsync(item.Local.FormElement);
+            await dataDictionaryService.InsertOrReplaceAsync(item.Local.FormElement);
             console.MarkupLine($"[green]Updated[/] {Markup.Escape(item.Name)}");
         }
 
         foreach (var formElement in diff.DatabaseOnly)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await dataDictionaryRepository.DeleteAsync(formElement.Name);
+            await dataDictionaryService.DeleteAsync(formElement.Name);
             console.MarkupLine($"[yellow]Deleted[/] {Markup.Escape(formElement.Name)}");
         }
 

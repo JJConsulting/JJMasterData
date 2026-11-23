@@ -1,4 +1,4 @@
-﻿#nullable disable warnings
+#nullable disable warnings
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -14,16 +13,16 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService(IValidationDictionary validationDictionary,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         IEnumerable<IExpressionProvider> expressionProviders,
         IEnumerable<IPluginHandler> pluginHandlers)
-    : DataDictionaryServiceBase(validationDictionary, dataDictionaryRepository,stringLocalizer)
+    : DataDictionaryServiceBase(validationDictionary, dataDictionaryService,stringLocalizer)
 {
     public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string? fieldName = null)
     {
-        var dicParser = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dicParser = await DataDictionaryService.GetFormElementAsync(elementName);
         DeleteAction(dicParser, actionName, context, fieldName);
-        await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
+        await DataDictionaryService.InsertOrReplaceAsync(dicParser);
 
         return true;
     }
@@ -65,7 +64,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
 
     public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string? originalName, string? fieldName = null)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
         ValidateAction(formElement, action, fieldName);
 
@@ -106,7 +105,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
                 throw new ArgumentOutOfRangeException(nameof(context), context, null);
         }
 
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
 
         return true;
     }
@@ -221,7 +220,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
 
     public async Task<bool> SortActionsAsync(string elementName, string[] listAction, ActionSource actionContext, string? fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         for (int i = 0; i < listAction.Length; i++)
         {
             string actionName = listAction[i];
@@ -236,14 +235,14 @@ public class ActionsService(IValidationDictionary validationDictionary,
             };
             action.Order = i + 1;
         }
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        await DataDictionaryService.InsertOrReplaceAsync(formElement);
 
         return true;
     }
 
     public async Task<bool> EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visibility)
     {
-        var dicParser = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dicParser = await DataDictionaryService.GetFormElementAsync(elementName);
         BasicAction action = actionContext switch
         {
             ActionSource.GridTable => dicParser.Options.GridTableActions[actionName],
@@ -253,7 +252,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         };
 
         action!.SetVisible(visibility);
-        await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
+        await DataDictionaryService.InsertOrReplaceAsync(dicParser);
 
         return true;
     }
@@ -279,7 +278,7 @@ public class ActionsService(IValidationDictionary validationDictionary,
         if (string.IsNullOrWhiteSpace(elementName))
             return GetFieldList((FormElement)null);
 
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await DataDictionaryService.GetFormElementAsync(elementName);
         return GetFieldList(formElement);
     }
 

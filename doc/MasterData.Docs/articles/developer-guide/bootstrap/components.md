@@ -54,7 +54,18 @@ var alert = new JJAlert
 alert.Messages.Add("Check the billing address before continuing.");
 ```
 
-Use `Content` for an `IHtmlContent` fragment when the alert body needs composed markup. `Messages` are rendered as raw HTML by the current implementation; only put trusted, application-controlled strings in that collection. For user-provided text, compose an encoded `HtmlBuilder` fragment and assign it to `Content`.
+`Messages` renders strings as HTML-encoded text. Pass plain strings directly, including user-provided text and validation errors. 
+Existing callers that put HTML strings in `Messages` will see the tags as literal text. 
+Move trusted markup to `HtmlMessages` for individual messages or to `Content` for a body fragment.
+Both accept `IHtmlContent`. Use `AppendText` when adding dynamic text to a composed fragment.
+
+```csharp
+alert.HtmlMessages.Add(HtmlBuilder.A()
+    .WithAttribute("href", "/customers")
+    .AppendText("Open the customer list"));
+```
+
+`Content` renders before the messages. A single text message renders directly in the alert body. Multiple text messages or any HTML message render in a list, with text messages first.
 
 ### Cards and panels
 

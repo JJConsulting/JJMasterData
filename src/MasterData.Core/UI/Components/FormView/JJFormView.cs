@@ -1,4 +1,4 @@
-﻿
+
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable EventNeverSubscribedTo.Global
@@ -24,7 +24,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -145,7 +145,7 @@ public class JJFormView : AsyncComponent
     private readonly IEnumerable<IPluginHandler> _pluginHandlers;
     private readonly MasterDataCoreOptions _options;
     private readonly ILogger<JJFormView> _logger;
-    private readonly IDataDictionaryRepository _dataDictionaryRepository;
+    private readonly DataDictionaryService _dataDictionaryService;
     private readonly IMasterDataUser _masterDataUser;
     private readonly FormService _formService;
     private readonly UploadViewManager _uploadViewManager;
@@ -433,7 +433,7 @@ public class JJFormView : AsyncComponent
         IHttpContextAccessor currentContext,
         IMasterDataUser masterDataUser,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryService dataDictionaryService,
         FormService formService,
         DataProtectionService dataProtectionService,
         FormValuesService formValuesService,
@@ -467,7 +467,7 @@ public class JJFormView : AsyncComponent
         _uploadViewManager = uploadViewManager;
         _options = options.Value;
         _logger = logger;
-        _dataDictionaryRepository = dataDictionaryRepository;
+        _dataDictionaryService = dataDictionaryService;
     }
 
     #endregion
@@ -882,10 +882,24 @@ public class JJFormView : AsyncComponent
         }
 
         child.CurrentActionMap = null;
-        var state = CurrentActionMap is { ActionSource: ActionSource.GridTable, PkFieldValues.Count: > 0 }
-            ? new FormStateData(await EntityRepository.GetFieldsAsync(FormElement, CurrentActionMap.PkFieldValues),
-                UserValues, PageState)
-            : await GetFormStateDataAsync();
+        FormStateData state;
+        if (CurrentActionMap is { ActionSource: ActionSource.GridTable, PkFieldValues.Count: > 0 })
+        {
+            var filters = new Dictionary<string, object?>(await GridView.GetCurrentFilterAsync(),
+                StringComparer.InvariantCultureIgnoreCase);
+            DataHelper.CopyIntoDictionary(filters, CurrentActionMap.PkFieldValues!, true);
+            
+            var row = await EntityRepository.GetFieldsAsync(FormElement, filters!);
+            if (row.Count == 0)
+                throw new JJMasterDataException(
+                    $"No database values were returned for internal action '{action.Name}'. Element: {FormElement.Name}.");
+
+            state = new FormStateData(row, UserValues, PageState);
+        }
+        else
+        {
+            state = await GetFormStateDataAsync();
+        }
         var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var field in redirect.RelationFields)
         {
@@ -907,7 +921,13 @@ public class JJFormView : AsyncComponent
         child.DataPanel.AutoReloadFormFields = false;
 
         if (child.PageState is PageState.Update or PageState.View)
+        {
+            if (values.Count == 0)
+                throw new JJMasterDataException(
+                    $"No relation values were found for internal action '{action.Name}'. Element: {child.FormElement.Name}.");
+
             await child.DataPanel.LoadValuesFromPkAsync(values);
+        }
 
         DataHelper.CopyIntoDictionary(child.DataPanel.Values, values!);
         return child;
@@ -1282,7 +1302,7 @@ public class JJFormView : AsyncComponent
         var html = new HtmlBuilder(HtmlTag.Div);
 
         var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect ?? throw new JJMasterDataException("Element name to select cannot be null.");
-        var childElement = await _dataDictionaryRepository.GetFormElementAsync(childElementName);
+        var childElement = await _dataDictionaryService.GetFormElementAsync(childElementName);
 
         var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
 
@@ -1634,7 +1654,7 @@ public class JJFormView : AsyncComponent
         formHtml.AppendComponent(toolbar);
 
         if (DataPanel.Errors.Count > 0)
-            formHtml.AppendComponent(new JJValidationSummary(DataPanel.Errors));
+            formHtml.AppendComponent(GetValidationSummary());
 
         return formHtml;
     }
@@ -1663,7 +1683,7 @@ public class JJFormView : AsyncComponent
         formHtml.AppendComponent(toolbar);
 
         if (DataPanel.Errors.Count > 0)
-            formHtml.AppendComponent(new JJValidationSummary(DataPanel.Errors));
+            formHtml.AppendComponent(GetValidationSummary());
 
         return formHtml;
     }
@@ -1923,6 +1943,40 @@ public class JJFormView : AsyncComponent
             return new Dictionary<string, object>();
 
         return DataProtectionService.ProtectDictionary(encryptedRelationValues);
+    }
+
+    public JJValidationSummary GetValidationSummary()
+    {
+        var validationSummary = new JJValidationSummary
+        {
+            Title = Localizer["Invalid data"]
+        };
+
+        foreach (var error in DataPanel.Errors)
+        {
+            if (FormElement.Fields.TryGetField(error.Key, out var field))
+            {
+                validationSummary.HtmlErrors.Add(GetFieldLinkHtml(field, error.Value));
+            }
+            else
+            {
+                validationSummary.Errors.Add(error.Value);
+            }
+        }
+
+        return validationSummary;
+    }
+    
+    private HtmlBuilder GetFieldLinkHtml(FormElementField field, string error)
+    {
+        var link = new HtmlBuilder(HtmlTag.A);
+        link.WithAttribute("href", "javascript:void(0)");
+        link.WithOnClick($"javascript:$('#{DataPanel.FieldNamePrefix}{field.Name}').focus();");
+        link.WithCssClass("alert-link fw-normal");
+        
+        link.AppendText(error);
+
+        return link;
     }
 
     internal void DisableActionsAtViewMode()

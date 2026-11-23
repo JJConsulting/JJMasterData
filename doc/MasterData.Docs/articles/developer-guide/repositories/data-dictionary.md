@@ -6,13 +6,13 @@ The repository manages definitions, not business records. Use [`IEntityRepositor
 
 ## Inject and load a dictionary
 
-Resolve `IDataDictionaryRepository` through dependency injection and identify a dictionary by its `FormElement.Name`:
+Resolve `DataDictionaryService` through dependency injection to read and write definitions with cache management. Identify a dictionary by its `FormElement.Name`:
 
 ```csharp
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 
 public sealed class PersonDictionaryService(
-    IDataDictionaryRepository dictionaries)
+    DataDictionaryService dictionaries)
 {
     public async ValueTask<string> GetTableNameAsync()
     {
@@ -30,6 +30,8 @@ if (!await dictionaries.ExistsAsync("Person"))
 
 var element = await dictionaries.GetFormElementAsync("Person");
 ```
+
+Both `GetFormElement` and `GetFormElementAsync` throw `FormElementNotFoundException` (derived from `JJMasterDataException`) when the dictionary does not exist. They do not return `null`.
 
 ## Choose the storage provider
 
@@ -71,7 +73,7 @@ var app = builder.Build();
 await app.UseMasterDataSeedingAsync();
 ```
 
-If the host does not use the web initialization extension, call the repository directly from a scope:
+If the host does not use the web initialization extension, call the service from a scope:
 
 ```csharp
 await dictionaries.CreateStructureIfNotExistsAsync();
@@ -101,7 +103,7 @@ var page = await dictionaries.GetFormElementInfoListAsync(
     currentPage: 1);
 ```
 
-`DataDictionaryFilter` can filter by name, mapped table and modification interval. Prefer the asynchronous methods in web requests.
+`DataDictionaryFilter` can filter by name, mapped table, modification interval and JSON content (`Json`, shown as “Filter for anything” in the editor). Prefer the asynchronous methods in web requests.
 
 ## Save and delete definitions
 
@@ -133,9 +135,9 @@ Treat a loaded `FormElement` as a complete document. Repository writes do not me
 
 ## Caching
 
-The SQL repository caches dictionary names and loaded definitions when `MasterDataCoreOptions.EnableDataDictionaryCaching` is enabled. It is enabled by default. Writes performed through `IDataDictionaryRepository` invalidate the related cache entries.
+`DataDictionaryService` caches dictionary names and loaded definitions for the configured repository when `MasterDataCoreOptions.EnableDataDictionaryCaching` is enabled. It is enabled by default. Writes and deletions through the service invalidate related entries even when caching is disabled for the writing scope. Generated SQL scripts are cached separately and are also invalidated when affected.
 
-Avoid editing the metadata table directly while the application is running. Those changes do not pass through the repository and therefore do not invalidate its in-memory cache.
+Writes directly through `IDataDictionaryRepository`, or changes made outside the application to the metadata table or JSON files, bypass service cache invalidation. Use `DataDictionaryService` for application reads and writes.
 
 ## Replace the repository
 

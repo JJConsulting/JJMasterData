@@ -29,12 +29,15 @@ public class JJAlert : HtmlComponent
     };
 
     public List<string> Messages { get; } = [];
+    public List<IHtmlContent> HtmlMessages { get; } = [];
     public IHtmlContent? Content { get; set; }
 
     public bool ShowCloseButton { get; set; }
 
     public bool ShowIcon { get; set; } = true;
 
+    public int MessagesCount => Messages.Count + HtmlMessages.Count;
+    
     protected override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -75,7 +78,7 @@ public class JJAlert : HtmlComponent
             if (Content is not null)
                 div.Append(Content);
 
-            if (Messages.Count > 1)
+            if (MessagesCount > 1)
             {
                 div.Append(HtmlTag.Ul, ul =>
                 {
@@ -84,15 +87,22 @@ public class JJAlert : HtmlComponent
                     {
                         ul.Append(HtmlTag.Li, li =>
                         {
-                            //TODO:
-                            li.Append(new HtmlBuilder(message, encode: false));
+                            li.Append(new HtmlBuilder(message));
+                        });
+                    }
+                    
+                    foreach (var message in HtmlMessages)
+                    {
+                        ul.Append(HtmlTag.Li, li =>
+                        {
+                            li.Append(message);
                         });
                     }
                 });
             }
-            else if (Messages.Count == 1)
+            else if (MessagesCount == 1)
             {
-                div.Append(new HtmlBuilder(Messages[0], encode:false));
+                div.Append(new HtmlBuilder(Messages[0]));
             }
         });
 

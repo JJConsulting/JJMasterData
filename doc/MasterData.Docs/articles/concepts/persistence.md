@@ -13,7 +13,7 @@ builder.Services.AddJJMasterDataWeb(builder.Configuration)
         options.FolderPath = Path.Combine(builder.Environment.ContentRootPath, "Dictionaries"));
 ```
 
-The editor writes into this folder, so it needs write access when administrators save changes. Startup seeding creates the folder if missing. Business records still use the entity connection.
+The editor writes into this folder, so it needs write access when administrators save changes. The folder is created on the first write or during startup seeding. Business records still use the entity connection.
 
 For a database-backed deployment, export JSON, commit and review it, then import it into the target metadata database using the CLI below. Review database schema scripts separately: dictionary import is not a database migration.
 

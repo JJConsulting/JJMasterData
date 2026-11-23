@@ -9,6 +9,7 @@ using JJMasterData.Web.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 
 namespace JJMasterData.Web.Configuration;
@@ -88,9 +89,9 @@ public static class ServiceCollectionExtensions
         services.AddMemoryCache();
         
         services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
-        services.AddScoped<IValidationDictionary, ModelStateWrapper>();
+        services.TryAddScoped<IValidationDictionary, ModelStateWrapper>();
 
-        services.AddTransient<JJMasterDataLogo>();
+        services.TryAddTransient<JJMasterDataLogo>();
         
         services.AddHttpContextAccessor();
         services.AddActionFilters();

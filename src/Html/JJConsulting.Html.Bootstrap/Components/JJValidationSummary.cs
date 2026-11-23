@@ -1,6 +1,7 @@
 ﻿using JJConsulting.FontAwesome;
 using JJConsulting.Html.Bootstrap.Abstractions;
 using JJConsulting.Html.Bootstrap.Models;
+using Microsoft.AspNetCore.Html;
 
 namespace JJConsulting.Html.Bootstrap.Components;
 
@@ -12,7 +13,9 @@ public class JJValidationSummary : HtmlComponent
     public string? Title { get; set; }
 
     public List<string> Errors { get; }
-
+    
+    public List<IHtmlContent> HtmlErrors { get; }
+    
     /// <summary>
     /// Enable close panel
     /// (Default = True)
@@ -23,12 +26,18 @@ public class JJValidationSummary : HtmlComponent
     {
         Visible = true;
         Errors = [];
+        HtmlErrors = [];
         ShowCloseButton = true;
     }
 
     public JJValidationSummary(IEnumerable<string> errors) : this()
     {
         Errors.AddRange(errors);
+    }
+    
+    public JJValidationSummary(IEnumerable<IHtmlContent> htmlErrors) : this()
+    {
+        HtmlErrors.AddRange(htmlErrors);
     }
 
     public JJValidationSummary(Dictionary<string,string> errors) : this()
@@ -50,7 +59,8 @@ public class JJValidationSummary : HtmlComponent
         };
 
         alert.Messages.AddRange(Errors);
-
+        alert.HtmlMessages.AddRange(HtmlErrors);
+        
         return alert.GetHtmlBuilder();
     }
 }
