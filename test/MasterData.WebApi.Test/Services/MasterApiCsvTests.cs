@@ -1,41 +1,47 @@
 using JJMasterData.Commons.Data.Csv;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager;
 using JJMasterData.WebApi.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace JJMasterData.WebApi.Test.Services;
 
 public class MasterApiCsvTests
 {
-    private static (MasterApiService Service, Mock<IEntityRepository> Repository, FormElement Form) Create(string query = "")
+    private static MasterApiService Create(out Mock<IEntityRepository> repository, out FormElement form, string query = "")
     {
-        var form = new FormElement { Name = "Test" };
+        form = new FormElement { Name = "Test" };
         form.ApiOptions.EnableGetAll = true;
         form.ApiOptions.ApplyUserIdOn = "USER_ID";
         form.Fields.Add(new FormElementField { Name = "USER_ID" });
-        var dictionary = new Mock<IDataDictionaryRepository>();
-        dictionary.Setup(x => x.GetFormElementAsync("Test")).ReturnsAsync(form);
-        var repository = new Mock<IEntityRepository>(MockBehavior.Strict);
+        var dictionaryRepository = new Mock<IDataDictionaryRepository>();
+        dictionaryRepository.Setup(x => x.GetFormElementAsync("Test")).ReturnsAsync(form);
+        var options = new Mock<IOptionsSnapshot<MasterDataCoreOptions>>();
+        options.SetupGet(x => x.Value).Returns(new MasterDataCoreOptions { EnableDataDictionaryCaching = false });
+        var dictionary = new DataDictionaryService(dictionaryRepository.Object, Mock.Of<IMemoryCache>(), options.Object);
+        repository = new Mock<IEntityRepository>(MockBehavior.Strict);
         var user = new Mock<IMasterDataUser>();
         user.SetupGet(x => x.Id).Returns("current");
         var context = new DefaultHttpContext();
         context.Request.QueryString = new QueryString(query);
-        var service = new MasterApiService(null!, new HttpContextAccessor { HttpContext = context }, user.Object,
-            null!, null!, null!, null!, repository.Object, dictionary.Object, null!);
-        return (service, repository, form);
+        return new MasterApiService(null!, new HttpContextAccessor { HttpContext = context }, user.Object,
+            null!, null!, null!, null!, repository.Object, dictionary, null!);
     }
 
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task RejectsOtherUserBeforeWriting(bool query)
+    public async Task WriteCsvAsync_ShouldRejectBeforeWriting_WhenUserFilterTargetsAnotherUser(bool query)
     {
-        var (service, repository, _) = Create(query ? "?USER_ID=other" : "");
+        var service = Create(out var repository, out _, query ? "?USER_ID=other" : "");
         using var writer = new StringWriter();
         var parameters = new EntityParameters();
         if (!query) parameters.Filters.Add("USER_ID", "other");
@@ -45,9 +51,9 @@ public class MasterApiCsvTests
     }
 
     [Fact]
-    public async Task RejectsDisabledApiBeforeWriting()
+    public async Task WriteCsvAsync_ShouldRejectBeforeWriting_WhenApiIsDisabled()
     {
-        var (service, repository, form) = Create();
+        var service = Create(out var repository, out var form);
         form.ApiOptions.EnableGetAll = false;
         using var writer = new StringWriter();
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => service.WriteCsvAsync("Test", writer, cancellationToken: TestContext.Current.CancellationToken));
@@ -56,9 +62,9 @@ public class MasterApiCsvTests
     }
 
     [Fact]
-    public async Task PassesPaginationUserOptionsAndCancellationWithoutMaterializing()
+    public async Task WriteCsvAsync_ShouldPassPaginationUserOptionsAndCancellation_WhenApiIsEnabled()
     {
-        var (service, repository, form) = Create();
+        var service = Create(out var repository, out var form);
         using var writer = new StringWriter();
         var options = new CsvWriteOptions();
         var token = TestContext.Current.CancellationToken;
