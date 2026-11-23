@@ -72,19 +72,15 @@ public class MasterApiService(ExpressionsService expressionsService,
         var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         if (parameters?.Filters is not null)
             filters = parameters.Filters;
-        
-        foreach (var key in filters.Keys)
-        {
-            if (!formElement.Fields.Contains(key))
-                throw new ArgumentException($@"Unknown filter field: {key}", nameof(parameters));
-        }
 
         var userField = formElement.ApiOptions.ApplyUserIdOn;
         if (!string.IsNullOrEmpty(userField) && filters.TryGetValue(userField, out var userId) && userId?.ToString() != masterDataUser.Id)
             throw new UnauthorizedAccessException("Access denied to change user filter");
 
         foreach (var (key, value) in GetDefaultFilter(formElement, true))
+        {
             filters[key] = value;
+        }
         
         return await entityRepository.WriteCsvAsync(formElement, destination, new EntityParameters
         {
