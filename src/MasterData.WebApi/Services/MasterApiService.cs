@@ -39,9 +39,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         string? orderby,
         int total = 0)
     {
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
+        ArgumentException.ThrowIfNullOrEmpty(elementName);
 
         var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetAll)
@@ -69,7 +67,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         ArgumentNullException.ThrowIfNull(destination);
         
         cancellationToken.ThrowIfCancellationRequested();
-        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryService.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
         
