@@ -17,9 +17,14 @@ public static class ExpressionsServiceExtensions
         services.TryAddScoped<ExpressionsService>();
         services.TryAddScoped<ExpressionParser>();
 
-        services.TryAddScoped<IExpressionProvider, ValueExpressionProvider>();
-        services.TryAddScoped<IExpressionProvider, DefaultExpressionProvider>();
-        services.TryAddScoped<IExpressionProvider, SqlExpressionProvider>();
+        services.TryAddEnumerable(
+            ServiceDescriptor.Scoped<IExpressionProvider, ValueExpressionProvider>());
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Scoped<IExpressionProvider, DefaultExpressionProvider>());
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Scoped<IExpressionProvider, SqlExpressionProvider>());
 
         return services;
     }
