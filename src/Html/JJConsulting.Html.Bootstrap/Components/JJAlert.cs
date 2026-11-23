@@ -36,8 +36,6 @@ public class JJAlert : HtmlComponent
 
     public bool ShowIcon { get; set; } = true;
 
-    public int MessagesCount => Messages.Count + HtmlMessages.Count;
-    
     protected override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -78,7 +76,7 @@ public class JJAlert : HtmlComponent
             if (Content is not null)
                 div.Append(Content);
 
-            if (MessagesCount > 1)
+            if (Messages.Count + HtmlMessages.Count > 1)
             {
                 div.Append(HtmlTag.Ul, ul =>
                 {
@@ -100,9 +98,16 @@ public class JJAlert : HtmlComponent
                     }
                 });
             }
-            else if (MessagesCount == 1)
+            else if (Messages.Count + HtmlMessages.Count == 1)
             {
-                div.Append(new HtmlBuilder(Messages[0]));
+                if (Messages.Count == 1)
+                {
+                    div.Append(new HtmlBuilder(Messages[0]));
+                }
+                else if(HtmlMessages.Count == 1)
+                {
+                    div.Append(HtmlMessages[0]);
+                }
             }
         });
 
