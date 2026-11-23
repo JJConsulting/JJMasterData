@@ -19,7 +19,7 @@ public class MasterApiListResponseTests
         table.Columns.Add("ID", typeof(int));
         table.Rows.Add(source["NAME"], source["ID"]);
         var result = DictionaryListResult.FromDataTable(table);
-        var response = MasterApiListResponse.FromList(element, result);
+        var response = new MasterApiListResponse(element, result);
         Assert.Equal(new[] { "id", "name" }, response.Fields![0].Keys);
         Assert.Equal(7, response.Fields[0]["id"]);
         Assert.Null(response.Fields[0]["name"]);
