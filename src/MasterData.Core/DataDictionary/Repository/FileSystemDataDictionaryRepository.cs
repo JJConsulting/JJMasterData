@@ -31,7 +31,7 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
         foreach (var file in GetFiles())
         {
             var metadata = GetMetadata(file.Name);
-            if (metadata != null && (!sync.HasValue || metadata.EnableSynchronism == sync.Value))
+            if (!sync.HasValue || metadata.EnableSynchronism == sync.Value)
                 list.Add(metadata);
         }
 
@@ -227,7 +227,7 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
         foreach (var file in GetFiles(filter))
         {
             var formElement = GetMetadata(file.Name);
-            if (formElement != null && MatchesFilter(formElement, filter))
+            if (MatchesFilter(formElement, filter))
                 list.Add(new FormElementInfo(formElement, file.LastWriteTime));
         }
 
@@ -251,13 +251,20 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
 
     private static bool MatchesFilter(FormElement element, DataDictionaryFilter? filter)
     {
-        return filter == null ||
-               ((string.IsNullOrEmpty(filter.Name) ||
-                 element.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase)) &&
-                (filter.ContainsTableName is not { Count: > 0 } || filter.ContainsTableName.Any(table =>
-                    element.TableName?.Contains(table, StringComparison.OrdinalIgnoreCase) == true)) &&
-                (string.IsNullOrEmpty(filter.Json) ||
-                 JsonSerializer.Serialize(element, SearchOptions).Contains(filter.Json, StringComparison.OrdinalIgnoreCase)));
+        if (filter == null)
+            return true;
+
+        if (!string.IsNullOrEmpty(filter.Name) &&
+            !element.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        if (filter.ContainsTableName is { Count: > 0 } &&
+            filter.ContainsTableName.All(table =>
+                element.TableName?.Contains(table, StringComparison.OrdinalIgnoreCase) != true))
+            return false;
+
+        return string.IsNullOrEmpty(filter.Json) ||
+               JsonSerializer.Serialize(element, SearchOptions).Contains(filter.Json, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<FormElementInfo> GetPage(List<FormElementInfo> list, OrderByData? orderBy,
@@ -280,11 +287,10 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
                     _ => throw new ArgumentException($"Invalid dictionary sort field: {parts[0]}", nameof(orderBy))
                 };
                 var descending = parts.Length > 1 && parts[1].Equals("DESC", StringComparison.OrdinalIgnoreCase);
-                ordered = ordered == null
-                    ? descending ? list.OrderByDescending(selector) : list.OrderBy(selector)
-                    : descending
-                        ? ordered.ThenByDescending(selector)
-                        : ordered.ThenBy(selector);
+                if (ordered == null)
+                    ordered = descending ? list.OrderByDescending(selector) : list.OrderBy(selector);
+                else
+                    ordered = descending ? ordered.ThenByDescending(selector) : ordered.ThenBy(selector);
             }
         }
 

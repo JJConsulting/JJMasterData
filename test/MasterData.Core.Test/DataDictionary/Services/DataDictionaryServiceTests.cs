@@ -131,6 +131,40 @@ public class DataDictionaryServiceTests : IDisposable
     }
 
     [Theory]
+    [InlineData("sync")]
+    [InlineData("async")]
+    [InlineData("batch")]
+    [InlineData("delete")]
+    public async Task Writes_ShouldInvalidateSharedCache_WhenCachingIsDisabled(string operation)
+    {
+        var element = new FormElement { Name = "test", Title = "Original" };
+        _repository.Setup(x => x.GetFormElement("test")).Returns(() => element);
+        _repository.Setup(x => x.GetElementNameListAsync()).ReturnsAsync(["test"]);
+        var reader = Create();
+        reader.GetFormElement("test");
+        await reader.GetElementNameListAsync();
+        _cache.Set("test_ReadScript", "read");
+        _cache.Set("test_WriteScript", "write");
+        element = new FormElement { Name = "test", Title = "Updated" };
+        var writer = Create(false);
+
+        switch (operation)
+        {
+            case "sync": writer.InsertOrReplace(element); break;
+            case "async": await writer.InsertOrReplaceAsync(element); break;
+            case "batch": await writer.InsertOrReplaceAsync(new[] { element }); break;
+            case "delete": await writer.DeleteAsync("test"); break;
+        }
+
+        Assert.Equal("Updated", reader.GetFormElement("test").Title);
+        await reader.GetElementNameListAsync();
+        _repository.Verify(x => x.GetFormElement("test"), Times.Exactly(2));
+        _repository.Verify(x => x.GetElementNameListAsync(), Times.Exactly(2));
+        Assert.False(_cache.TryGetValue((object)"test_ReadScript", out _));
+        Assert.False(_cache.TryGetValue((object)"test_WriteScript", out _));
+    }
+
+    [Theory]
     [InlineData(true, false)]
     [InlineData(false, true)]
     [InlineData(true, true)]

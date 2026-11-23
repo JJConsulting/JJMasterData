@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,9 +20,9 @@ public class DataDictionaryService(
     private static readonly object ElementNameListCacheKey = new();
     private readonly bool _enableCaching = options.Value.EnableDataDictionaryCaching;
 
-    private static object ElementCacheKey(string name)
+    private static string ElementCacheKey(string name)
     {
-        return (typeof(DataDictionaryService), name);
+        return $"{nameof(DataDictionaryService)}:{name}";
     }
 
     public FormElement GetFormElement(string elementName)
@@ -68,8 +67,7 @@ public class DataDictionaryService(
 
         var names = await repository.GetElementNameListAsync();
         
-        if(_enableCaching)
-            memoryCache.Set(ElementNameListCacheKey, new List<string>(names));
+        memoryCache.Set(ElementNameListCacheKey, new List<string>(names));
         
         return names;
     }
@@ -130,25 +128,19 @@ public class DataDictionaryService(
     {
         await repository.DeleteAsync(elementName);
 
-        if (_enableCaching)
-        {
-            memoryCache.Remove(ElementCacheKey(elementName));
-            memoryCache.Remove(ElementNameListCacheKey);
-            memoryCache.Remove(elementName + "_ReadScript");
-            memoryCache.Remove(elementName + "_WriteScript");
-        }
+        memoryCache.Remove(ElementCacheKey(elementName));
+        memoryCache.Remove(ElementNameListCacheKey);
+        memoryCache.Remove(elementName + "_ReadScript");
+        memoryCache.Remove(elementName + "_WriteScript");
     }
 
     private void ClearCache(FormElement element)
     {
-        if (_enableCaching)
-        {
-            memoryCache.Remove(ElementNameListCacheKey);
-            memoryCache.Remove(ElementCacheKey(element.Name));
-            if (!element.UseReadProcedure)
-                memoryCache.Remove(element.Name + "_ReadScript");
-            if (!element.UseWriteProcedure)
-                memoryCache.Remove(element.Name + "_WriteScript");
-        }
+        memoryCache.Remove(ElementNameListCacheKey);
+        memoryCache.Remove(ElementCacheKey(element.Name));
+        if (!element.UseReadProcedure)
+            memoryCache.Remove(element.Name + "_ReadScript");
+        if (!element.UseWriteProcedure)
+            memoryCache.Remove(element.Name + "_WriteScript");
     }
 }
