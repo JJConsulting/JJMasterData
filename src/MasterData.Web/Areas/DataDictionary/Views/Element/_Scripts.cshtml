@@ -218,6 +218,7 @@
         try {
             const response = await fetch('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })', {
                 method: 'POST',
+                headers: getRequestHeaders(),
                 body: formData
             });
 

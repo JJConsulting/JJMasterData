@@ -35,6 +35,7 @@
                 fetch('@Url.Action("Sort", new { elementName = Model.ElementName })', {
                     method: 'POST',
                     headers: {
+                        ...getRequestHeaders(),
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(relationships)

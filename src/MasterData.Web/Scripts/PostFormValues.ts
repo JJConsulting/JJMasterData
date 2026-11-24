@@ -4,15 +4,21 @@ class PostFormValuesOptions{
     error?: (errorMessage: string) => void;
 }
 
+function getRequestHeaders() {
+    const token = getMasterDataForm()?.querySelector<HTMLInputElement>('input[name="__RequestVerificationToken"]');
+    return {
+        "X-Requested-With": "XMLHttpRequest",
+        "RequestVerificationToken": token?.value ?? ""
+    };
+}
+
 function getRequestOptions() {
     const formData = new FormData(getMasterDataForm());
 
     return {
         method: "POST",
         body: formData,
-        headers: {
-            "X-Requested-With": "XMLHttpRequest"
-        }
+        headers: getRequestHeaders()
     };
 }
 
@@ -24,9 +30,7 @@ function postContent(options: PostFormValuesOptions, body: BodyInit) {
     postValues(options, {
         method: "POST",
         body: body,
-        headers: {
-            "X-Requested-With": "XMLHttpRequest"
-        }
+        headers: getRequestHeaders()
     });
 }
 
