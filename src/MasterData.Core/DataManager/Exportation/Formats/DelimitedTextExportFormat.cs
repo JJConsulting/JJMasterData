@@ -29,7 +29,8 @@ internal abstract class DelimitedTextExportFormat<TOptions> : IExportFormat<TOpt
             new CsvConfiguration(CultureInfo.CurrentCulture)
             {
                 Delimiter = GetDelimiter(options),
-                HasHeaderRecord = false
+                HasHeaderRecord = false,
+                InjectionOptions = InjectionOptions.Escape
             });
 
         if (options.IncludeFirstRowAsHeader)
