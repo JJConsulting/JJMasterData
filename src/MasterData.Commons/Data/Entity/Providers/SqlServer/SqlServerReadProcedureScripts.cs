@@ -66,12 +66,6 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine("DECLARE @query       NVARCHAR(MAX)");
         sql.Append(SqlServerScriptsHelper.Tab);
 
-        if (fields.Exists(f => f.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual))
-        {
-            sql.AppendLine("DECLARE @sqlLikeIn      NVARCHAR(MAX)");
-            sql.Append(SqlServerScriptsHelper.Tab);
-        }
-
         sql.AppendLine("DECLARE @count       INT");
         sql.AppendLine();
 
@@ -334,34 +328,10 @@ public class SqlServerReadProcedureScripts(
         {
             sql.AppendLine();
             sql.Append(SqlServerScriptsHelper.Tab);
-            sql.Append("IF @");
-            sql.Append(fieldName);
-            sql.AppendLine(" IS NOT NULL");
+            sql.AppendLine($"IF @{fieldName} IS NOT NULL");
             sql.Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine("BEGIN");
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendFormat("SET @likein = ' AND {0} IN ('", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("BEGIN");
-            sql.Append(SqlServerScriptsHelper.Tab, 3);
-            sql.AppendFormat("SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 3);
-            sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 3);
-            sql.AppendLine("SET @likein = @likein + ', ';");
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("END");
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
+            AppendLegacyMultiValuePredicate(sql, fieldName, contains: false);
             sql.Append(SqlServerScriptsHelper.Tab);
             sql.AppendLine("END");
         }
@@ -511,30 +481,7 @@ public class SqlServerReadProcedureScripts(
         }
         else
         {
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("DECLARE @likein      NVARCHAR(MAX)");
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("SET @likein = ' AND ( '");
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.Append($"WHILE CHARINDEX(',', @{fieldName}) <> 0");
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("BEGIN");
-            sql.Append(SqlServerScriptsHelper.Tab, 3);
-            sql.AppendFormat("SET @likein = @likein + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 3);
-            sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 3);
-            sql.AppendLine("SET @likein = @likein + ' OR ';");
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("END");
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendFormat("SET @likein = @likein  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", fieldName);
-            sql.AppendLine();
-            sql.Append(SqlServerScriptsHelper.Tab, 2);
-            sql.AppendLine("SET @sqlWhere = @sqlWhere + @likein");
+            AppendLegacyMultiValuePredicate(sql, fieldName, contains: true);
         }
 
         sql.Append(SqlServerScriptsHelper.Tab);
@@ -544,4 +491,22 @@ public class SqlServerReadProcedureScripts(
 
     }
 
+    private static void AppendLegacyMultiValuePredicate(StringBuilder sql, string fieldName, bool contains)
+    {
+        // Escape the bound value as XML before inserting separators. It never becomes SQL text.
+        const string tokenValue = "token.item.value(''.'', ''nvarchar(max)'')";
+        var comparison = contains ? $"LIKE N''%'' + {tokenValue} + N''%''" : $"= {tokenValue}";
+
+        sql.Append(SqlServerScriptsHelper.Tab, 2);
+        sql.AppendLine($"""
+                        SET @sqlWhere = @sqlWhere + N' AND EXISTS (
+                            SELECT 1
+                            FROM (SELECT CONVERT(XML, N''<token>'' +
+                                REPLACE((SELECT @{fieldName} FOR XML PATH('''')), N'','', N''</token><token>'') +
+                                N''</token>'', 1)) AS split(tokens)
+                            CROSS APPLY split.tokens.nodes(''/token'') AS token(item)
+                            WHERE [{fieldName}] {comparison}
+                        )'
+                        """);
+    }
 }
