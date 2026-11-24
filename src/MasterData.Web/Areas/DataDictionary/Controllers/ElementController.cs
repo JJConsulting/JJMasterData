@@ -184,6 +184,7 @@ public class ElementController(
         }
     }
     
+    [HttpPost]
     public async Task<IActionResult> Delete()
     {
         var formView = elementService.GetFormView();

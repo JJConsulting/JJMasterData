@@ -19,7 +19,7 @@
     <script lang="javascript" type="text/javascript">
         function deleteIndex(url) {
             if (confirm('@StringLocalizer["Are you sure you want to delete this index?"]')) {
-                fetch(url, {method:"POST"})
+                fetch(url, getRequestOptions())
             }
             return false;
         }

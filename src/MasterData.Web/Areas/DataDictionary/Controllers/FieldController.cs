@@ -53,6 +53,7 @@ public class FieldController(
         return PartialView("_Detail", field);
     }
 
+    [HttpPost]
     public async Task<IActionResult> Delete(string elementName, string fieldName)
     {
         await fieldService.DeleteField(elementName, fieldName);

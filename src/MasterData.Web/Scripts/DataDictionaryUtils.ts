@@ -10,6 +10,7 @@
                 formData.append('context', context);
                 fetch(url, {
                     method: 'POST',
+                    headers: getRequestHeaders(),
                     body: formData,
                 })
                     .then(function (response) {
@@ -29,6 +30,7 @@
         formData.append('visibility', visibility.toString());
         fetch(url, {
             method: "POST",
+            headers: getRequestHeaders(),
             body: formData,
         })
             .then(response => response.json())
