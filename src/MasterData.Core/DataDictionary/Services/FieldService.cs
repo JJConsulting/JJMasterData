@@ -169,10 +169,17 @@ public class FieldService(
                 AddError(nameof(field.Size), StringLocalizer["[Size] must be between 1 and 38."]);
             }
         }
-        if (field.Component is FormComponent.CheckBox && field.DataType is not FieldType.Bit && field.DataType is not FieldType.Int)
+        
+        if (field.Component is FormComponent.CheckBox)
         {
-            AddError(nameof(field.DataType),
-                StringLocalizer["Checkbox components can only be of type Int or Boolean"]);
+            if (field.DataType is not (FieldType.Bit or FieldType.Int))
+            {
+                if (!field.DataType.IsString || field.Size != 1)
+                {
+                    AddError(nameof(field.DataType),
+                        StringLocalizer["Checkbox components require Boolean, Int or single-character Char, NChar, Varchar or NVarchar fields"]);
+                }
+            }
         }
         
         if (field.Component is FormComponent.Cnpj or FormComponent.CnpjCpf or FormComponent.Cpf)

@@ -4082,8 +4082,8 @@
   <data name="Plugin Key" xml:space="preserve">
     <value>Chave do Plugin</value>
   </data>
-  <data name="Checkbox components can only be of type Int or Boolean" xml:space="preserve">
-    <value>Componentes do tipo Checkbox só podem ser do tipo Int ou Booleano</value>
+  <data name="Checkbox components require Boolean, Int or single-character Char, NChar, Varchar or NVarchar fields" xml:space="preserve">
+    <value>Componentes Checkbox exigem campos Boolean, Int ou Char, NChar, Varchar ou NVarchar de tamanho 1</value>
   </data>
   <data name="Enable Pagination" xml:space="preserve">
     <value>Habilitar Paginação</value>

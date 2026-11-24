@@ -11,11 +11,13 @@ For example, use `Number`, `Slider` or `Currency` with `Int`, `Float` or `Decima
 | Text | `Text`, `TextArea`, `Password`, `Email` | Plain, multiline, protected or email text. `TextArea` is appropriate for longer input. |
 | Numeric | `Number`, `Currency`, `Percentage`, `Slider` | Numeric values. `Currency` and `Percentage` provide localized visual formatting; `Slider` is useful for a bounded range. |
 | Date and time | `Date`, `DateTime`, `Hour` | A calendar date, a date with time, or a time of day. |
-| Boolean | `CheckBox` | Boolean fields (`Bit`). It can render as a checkbox, switch or button. |
+| Boolean | `CheckBox` | Boolean fields (`Bit`) or flags stored in `Int` or in `Char`, `NChar`, `Varchar` or `NVarchar` with `Size = 1`. It can render as a checkbox, switch or button. |
 | Selection | `ComboBox`, `Search`, `Lookup`, `RadioButtonGroup`, `Hierarchy` | A value chosen from a list, query, tree or related dictionary. These components require `DataItem`. |
 | Brazilian formats | `Cnpj`, `Cpf`, `CnpjCpf`, `Cep`, `Tel`, `Phone` | Brazilian identifiers, postal codes and phone numbers. These provide input masks; validation is applied where supported. |
 | Special | `Color`, `Icon`, `CodeEditor` | A color picker, icon picker or code editor. |
 | Files | `File` | Upload and manage one or more files. Requires `DataFile`. |
+
+`CheckBox` saves Boolean values for `Bit` and `"1"`/`"0"` for the other supported types. Textual checkbox fields require exactly `Size = 1`; larger sizes and `-1` are rejected. Letter flags such as `S`/`N` or `Y`/`N` are not mapped.
 
 `Size` continues to be a database concern. It is not a general-purpose width setting for the editor; use the layout settings described below to control its width on the form.
 
