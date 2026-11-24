@@ -32,6 +32,23 @@ public class FormFileServiceTests
         Assert.Equal("{app.path}/Documents/10", folderPath);
     }
 
+    [Theory]
+    [InlineData("Reference:2026")]
+    [InlineData("Document/2026")]
+    [InlineData("Document\\2026")]
+    [InlineData("")]
+    public void GetFolderPath_ShouldUseOneStableSegment_WhenKeyIsNotPortable(string key)
+    {
+        var formElement = CreateFormElement("{app.path}/Documents");
+        var field = formElement.Fields["Document"];
+        var values = new Dictionary<string, object?> { ["Id"] = key };
+
+        var folderPath = FileStoragePathExtensions.GetFolderPath(formElement, field, values);
+
+        Assert.Matches(@"^\{app\.path\}/Documents/~pk~[0-9a-f]{64}$", folderPath);
+        Assert.Equal(folderPath, FileStoragePathExtensions.GetFolderPath(formElement, field, values));
+    }
+
     [Fact]
     public async Task GetFilesAsync_WithPersistedAndDraftFiles_ReturnsMergedFiles()
     {
