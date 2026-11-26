@@ -31,9 +31,10 @@ public static class DataAccessProviderFactory
             case DataAccessProvider.SqlServer:
                 return SqlClientFactory.Instance; // this library has a ref to SqlClient so this works
             case DataAccessProvider.Oracle:
-                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Oracle.ManagedDataAccess");
             case DataAccessProvider.OracleNetCore:
-                return GetDbProviderFactory(type.GetAdoNetTypeName(), "Oracle.ManagedDataAccess.Core");
+                return GetDbProviderFactory(
+                    "Oracle.ManagedDataAccess.Client.OracleClientFactory",
+                    "Oracle.ManagedDataAccess");
             case DataAccessProvider.SQLite:
             case DataAccessProvider.MySql:
                 return GetDbProviderFactory(type.GetAdoNetTypeName(), "MySql.Data");
