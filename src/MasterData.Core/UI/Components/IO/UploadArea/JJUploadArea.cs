@@ -28,20 +28,12 @@ public class JJUploadArea : AsyncComponent
     /// <summary>
     /// Event fired when the file is posted.
     /// </summary>  
-    public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded
-    {
-        add => _manager.OnFileUploaded += value;
-        remove => _manager.OnFileUploaded -= value;
-    }
+    public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     
     /// <summary>
     /// Async event fired when the file is posted.
     /// </summary>  
-    public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync
-    {
-        add => _manager.OnFileUploadedAsync += value;
-        remove => _manager.OnFileUploadedAsync -= value;
-    }
+    public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
     /// <summary>
     /// Allowed extension type, separated by comma.
     /// Default: *
@@ -150,11 +142,19 @@ public class JJUploadArea : AsyncComponent
 
     public async Task<ComponentResult> GetFileUploadResultAsync(IFormFile formFile)
     {
-        var dto = await _manager.UploadFileAsync(formFile, AllowedTypes);
+        var dto = await _manager.UploadFileAsync(formFile, AllowedTypes, NotifyFileUploadedAsync);
 
         var result = new JsonComponentResult(dto);
         
         return result;
+    }
+
+    private async ValueTask NotifyFileUploadedAsync(object sender, FormUploadFileEventArgs args)
+    {
+        OnFileUploaded?.Invoke(sender, args);
+
+        foreach (var handler in Delegate.EnumerateInvocationList(OnFileUploadedAsync))
+            await handler(sender, args);
     }
 
     internal HtmlBuilder GetUploadAreaHtmlBuilder()

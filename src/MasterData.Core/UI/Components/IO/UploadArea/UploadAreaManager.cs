@@ -12,7 +12,13 @@ public class UploadAreaManager(IHttpContextAccessor httpContextAccessor, FileVal
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
 
-    public async Task<UploadAreaResultDto> UploadFileAsync(IFormFile file, string? allowedTypes = null)
+    public Task<UploadAreaResultDto> UploadFileAsync(IFormFile file, string? allowedTypes = null) =>
+        UploadFileAsync(file, allowedTypes, null);
+
+    internal async Task<UploadAreaResultDto> UploadFileAsync(
+        IFormFile file,
+        string? allowedTypes,
+        AsyncEventHandler<FormUploadFileEventArgs>? notifyComponentAsync)
     {
         UploadAreaResultDto dto = new();
 
@@ -25,8 +31,11 @@ public class UploadAreaManager(IHttpContextAccessor httpContextAccessor, FileVal
             var args = new FormUploadFileEventArgs(file);
             OnFileUploaded?.Invoke(this, args);
 
-            if (OnFileUploadedAsync != null)
-                await OnFileUploadedAsync.Invoke(this, args);
+            foreach (var handler in Delegate.EnumerateInvocationList(OnFileUploadedAsync))
+                await handler(this, args);
+
+            if (notifyComponentAsync is not null)
+                await notifyComponentAsync(this, args);
 
             fileValidationService.Validate(args.File, allowedTypes);
 

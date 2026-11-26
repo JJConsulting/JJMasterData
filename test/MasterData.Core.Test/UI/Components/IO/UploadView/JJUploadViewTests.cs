@@ -25,12 +25,86 @@ namespace JJMasterData.Core.Test.UI.Components.IO.UploadView;
 public class JJUploadViewTests
 {
     [Fact]
+    public async Task GetResultAsync_WhenAnotherFileFieldWasRendered_OnlyProcessesTheTargetUpload()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Method = HttpMethods.Post;
+        httpContext.Request.ContentType = "multipart/form-data; boundary=upload";
+        httpContext.Request.Form = new FormCollection(null, new FormFileCollection
+        {
+            CreateFormFile("file.txt", "content", "uploadAreaFile[0]")
+        });
+        var contextAccessor = new HttpContextAccessor { HttpContext = httpContext };
+        var fileStorage = new Mock<IFileStorage>();
+        var manager = CreateUploadViewManager(contextAccessor, fileStorage.Object);
+        var factory = CreateUploadViewFactory(contextAccessor, manager);
+
+        factory.Create(new FormElement { Name = "messages" }, new FormElementField
+        {
+            Name = "attachments",
+            Component = FormComponent.File,
+            DataFile = new FormElementDataFile { MultipleFile = true }
+        }, []);
+
+        var target = factory.Create();
+        target.Name = "proof-upload";
+        target.FolderPath = "target";
+
+        var uploadNotifications = 0;
+        target.UploadArea.OnFileUploaded += (_, _) => uploadNotifications++;
+        var targetCalls = 0;
+        target.OnBeforeCreateFileAsync += (_, _) =>
+        {
+            Assert.Equal(1, uploadNotifications);
+            targetCalls++;
+            return ValueTask.CompletedTask;
+        };
+
+        var result = await target.GetResultAsync();
+
+        Assert.IsType<JsonComponentResult>(result);
+        Assert.Equal(1, uploadNotifications);
+        Assert.Equal(1, targetCalls);
+        fileStorage.Verify(storage => storage.SaveAsync(
+            FileStoragePath.Combine(target.FolderPath, "file.txt"), It.IsAny<Stream>(), true, default), Times.Once);
+        fileStorage.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task CreateFileAsync_WhenManagerAndViewHaveHandlers_AwaitsBothBeforeSaving()
+    {
+        var contextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+        var fileStorage = new Mock<IFileStorage>();
+        var manager = CreateUploadViewManager(contextAccessor, fileStorage.Object);
+        var view = CreateUploadViewFactory(contextAccessor, manager).Create();
+        view.FolderPath = "target";
+
+        var resumeManagerHandler = new TaskCompletionSource();
+        manager.OnBeforeCreateFileAsync += async (_, _) => await resumeManagerHandler.Task;
+        view.OnBeforeCreateFileAsync += (sender, args) =>
+        {
+            Assert.Same(manager, sender);
+            args.File = CreateFormFile("renamed.txt", "replaced content");
+            return ValueTask.CompletedTask;
+        };
+
+        var upload = view.CreateFileAsync(CreateFormFile("file.txt", "content"));
+        var completedBeforeManagerHandler = upload.IsCompleted;
+        resumeManagerHandler.SetResult();
+        await upload;
+
+        Assert.False(completedBeforeManagerHandler);
+        fileStorage.Verify(storage => storage.SaveAsync(
+            FileStoragePath.Combine(view.FolderPath, "renamed.txt"), It.IsAny<Stream>(), true, default), Times.Once);
+    }
+
+    [Fact]
     public void GridView_WhenAccessed_ConfiguresFilesGrid()
     {
         var contextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
         var manager = CreateUploadViewManager(contextAccessor, Mock.Of<IFileStorage>());
         var gridView = (JJGridView)RuntimeHelpers.GetUninitializedObject(typeof(JJGridView));
-        var uploadView = CreateUploadView(contextAccessor, manager, gridView);
+        var uploadView = CreateUploadViewFactory(contextAccessor, manager, gridView).Create();
 
         var result = uploadView.GridView;
 
@@ -63,7 +137,7 @@ public class JJUploadViewTests
         });
         var folderPath = Path.Combine(Path.GetTempPath(), "jjmasterdata-tests", Guid.NewGuid().ToString("N"));
         var manager = CreateUploadViewManager(contextAccessor, fileStorage);
-        var uploadView = CreateUploadView(contextAccessor, manager);
+        var uploadView = CreateUploadViewFactory(contextAccessor, manager).Create();
         uploadView.FolderPath = folderPath;
         uploadView.AutoSave = false;
         uploadView.UploadArea.Multiple = false;
@@ -92,10 +166,10 @@ public class JJUploadViewTests
         return new MemoryStream(Encoding.UTF8.GetBytes(value));
     }
 
-    private static FormFile CreateFormFile(string fileName, string value)
+    private static FormFile CreateFormFile(string fileName, string value, string fieldName = "file")
     {
         var stream = CreateStream(value);
-        return new FormFile(stream, 0, stream.Length, "file", fileName);
+        return new FormFile(stream, 0, stream.Length, fieldName, fileName);
     }
 
     private static UploadViewManager CreateUploadViewManager(
@@ -112,7 +186,7 @@ public class JJUploadViewTests
         return new UploadViewManager(contextAccessor, elementFileService, fileStorage, stringLocalizer);
     }
 
-    private static JJUploadView CreateUploadView(
+    private static UploadViewFactory CreateUploadViewFactory(
         IHttpContextAccessor contextAccessor,
         UploadViewManager manager,
         JJGridView? gridView = null)
@@ -147,7 +221,7 @@ public class JJUploadViewTests
                 .Returns(gridViewFactory.Object);
         }
 
-        return new JJUploadView(
+        return new UploadViewFactory(
             contextAccessor,
             componentFactory.Object,
             manager,

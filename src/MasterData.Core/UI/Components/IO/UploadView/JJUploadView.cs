@@ -50,23 +50,11 @@ public class JJUploadView : AsyncComponent
 
     internal const string TempPathFolder = "{app.path}/MasterDataDraftFiles/";
     
-    public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync
-    {
-        add => Manager.OnBeforeCreateFileAsync += value;
-        remove => Manager.OnBeforeCreateFileAsync -= value;
-    }
+    public event AsyncEventHandler<FormUploadFileEventArgs> OnBeforeCreateFileAsync;
 
-    public event AsyncEventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFileAsync
-    {
-        add => Manager.OnBeforeDeleteFileAsync += value;
-        remove => Manager.OnBeforeDeleteFileAsync -= value;
-    }
+    public event AsyncEventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFileAsync;
 
-    public event AsyncEventHandler<FormRenameFileEventArgs> OnBeforeRenameFileAsync
-    {
-        add => Manager.OnBeforeRenameFileAsync += value;
-        remove => Manager.OnBeforeRenameFileAsync -= value;
-    }
+    public event AsyncEventHandler<FormRenameFileEventArgs> OnBeforeRenameFileAsync;
 
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
 
@@ -106,7 +94,13 @@ public class JJUploadView : AsyncComponent
     public string FolderPath { get; set; }
 
 
-    public string TempPath => TempPathFolder + DraftId.ToString("N") +  "/";
+    public string TempPath
+    {
+        get
+        {
+            return TempPathFolder + DraftId.ToString("N") + "/";
+        }
+    }
 
 
     internal Guid DraftId
@@ -138,7 +132,13 @@ public class JJUploadView : AsyncComponent
         }
     }
 
-    public JJGridView GridView => field ??= CreateGridView();
+    public JJGridView GridView
+    {
+        get
+        {
+            return field ??= CreateGridView();
+        }
+    }
 
     public string JsCallback
     {
@@ -172,7 +172,10 @@ public class JJUploadView : AsyncComponent
         Name = RenameFileActionName
     };
 
-    private UploadViewScripts Scripts => field ??= new UploadViewScripts(this);
+    private UploadViewScripts Scripts
+    {
+        get { return field ??= new UploadViewScripts(this); }
+    }
 
     private IHttpContextAccessor CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
@@ -779,14 +782,21 @@ public class JJUploadView : AsyncComponent
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
 
-    public Task RenameFileAsync(string currentName, string newName) =>
-        Manager.RenameFileAsync(TempPath, FolderPath, currentName, newName);
+    public Task RenameFileAsync(string currentName, string newName)
+    {
+        return Manager.RenameFileAsync(TempPath, FolderPath, currentName, newName, OnBeforeRenameFileAsync);
+    }
 
-    public Task CreateFileAsync(IFormFile file) =>
-        Manager.CreateFileAsync(TempPath, FolderPath, AutoSave, file, UploadArea.Multiple);
+    public Task CreateFileAsync(IFormFile file)
+    {
+        return Manager.CreateFileAsync(TempPath, FolderPath, AutoSave, file, UploadArea.Multiple,
+            OnBeforeCreateFileAsync);
+    }
 
-    public Task DeleteFileAsync(string fileName) =>
-        Manager.DeleteFileAsync(TempPath, FolderPath, fileName);
+    public Task DeleteFileAsync(string fileName)
+    {
+        return Manager.DeleteFileAsync(TempPath, FolderPath, fileName, OnBeforeDeleteFileAsync);
+    }
 
     private async Task<ComponentResult> GetDeleteFileResultAsync(string fileName)
     {
@@ -803,8 +813,10 @@ public class JJUploadView : AsyncComponent
         return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
 
-    public Task DeleteAllAsync() =>
-        Manager.DeleteAllAsync(TempPath, FolderPath, AutoSave);
+    public Task DeleteAllAsync()
+    {
+        return Manager.DeleteAllAsync(TempPath, FolderPath, AutoSave);
+    }
 
     public async Task<List<FileStorageItem>> GetFilesAsync()
     {
@@ -818,11 +830,15 @@ public class JJUploadView : AsyncComponent
         return files;
     }
 
-    public Task ClearTemporaryFilesAsync() =>
-        Manager.DeleteAllAsync(TempPath, null, false);
+    public Task ClearTemporaryFilesAsync()
+    {
+        return Manager.DeleteAllAsync(TempPath, null, false);
+    }
 
-    public Task PromoteDraftFilesAsync() =>
-        Manager.PromoteDraftFilesAsync(TempPath, FolderPath, GetDeletedFiles());
+    public Task PromoteDraftFilesAsync()
+    {
+        return Manager.PromoteDraftFilesAsync(TempPath, FolderPath, GetDeletedFiles());
+    }
 
     public async Task<FileStreamComponentResult> GetDownloadFileResultAsync(string fileName)
     {

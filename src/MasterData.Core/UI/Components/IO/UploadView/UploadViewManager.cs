@@ -25,8 +25,7 @@ public class UploadViewManager(
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnBeforeCreateFileAsync;
     public event AsyncEventHandler<FormDeleteFileEventArgs>? OnBeforeDeleteFileAsync;
     public event AsyncEventHandler<FormRenameFileEventArgs>? OnBeforeRenameFileAsync;
-    
-    
+
     public async Task<List<FileStorageItem>> GetFilesAsync(string tempPath, string? folderPath)
     {
         var files = new List<FileStorageItem>();
@@ -47,11 +46,19 @@ public class UploadViewManager(
         return files;
     }
 
-    public async Task RenameFileAsync(
+    public Task RenameFileAsync(
         string tempPath,
         string folderPath,
         string currentName,
-        string newName)
+        string newName) =>
+        RenameFileAsync(tempPath, folderPath, currentName, newName, null);
+
+    internal async Task RenameFileAsync(
+        string tempPath,
+        string folderPath,
+        string currentName,
+        string newName,
+        AsyncEventHandler<FormRenameFileEventArgs>? beforeRenameFileAsync)
     {
         if (string.IsNullOrEmpty(currentName))
             throw new ArgumentNullException(nameof(currentName));
@@ -68,10 +75,12 @@ public class UploadViewManager(
         if ((await GetFilesAsync(tempPath, folderPath)).Exists(x => x.FileName.Equals(newName)))
             throw new JJMasterDataException(stringLocalizer["A file with the name {0} already exists", newName]);
 
-        if (OnBeforeRenameFileAsync != null)
+        var handlers = OnBeforeRenameFileAsync + beforeRenameFileAsync;
+        if (handlers is not null)
         {
             var args = new FormRenameFileEventArgs(currentName, newName);
-            await OnBeforeRenameFileAsync(this, args);
+            foreach (var handler in Delegate.EnumerateInvocationList(handlers))
+                await handler(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
                 throw new JJMasterDataException(args.ErrorMessage);
@@ -91,20 +100,31 @@ public class UploadViewManager(
         return files.Find(x => fileName.Equals(x.FileName));
     }
 
-    public async Task CreateFileAsync(
+    public Task CreateFileAsync(
         string tempPath,
         string folderPath,
         bool autoSave,
         IFormFile file,
-        bool isMultipleFiles)
+        bool isMultipleFiles) =>
+        CreateFileAsync(tempPath, folderPath, autoSave, file, isMultipleFiles, null);
+
+    internal async Task CreateFileAsync(
+        string tempPath,
+        string folderPath,
+        bool autoSave,
+        IFormFile file,
+        bool isMultipleFiles,
+        AsyncEventHandler<FormUploadFileEventArgs>? beforeCreateFileAsync)
     {
         if (file == null)
             throw new ArgumentNullException(nameof(file));
 
-        if (OnBeforeCreateFileAsync != null)
+        var handlers = OnBeforeCreateFileAsync + beforeCreateFileAsync;
+        if (handlers is not null)
         {
             var args = new FormUploadFileEventArgs(file);
-            await OnBeforeCreateFileAsync(this, args);
+            foreach (var handler in Delegate.EnumerateInvocationList(handlers))
+                await handler(this, args);
             string errorMessage = args.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
@@ -123,17 +143,26 @@ public class UploadViewManager(
         await elementFileService.SaveFileAsync(storageFolderPath, file);
     }
 
-    public async Task DeleteFileAsync(
+    public Task DeleteFileAsync(
         string tempPath,
         string folderPath,
-        string fileName)
+        string fileName) =>
+        DeleteFileAsync(tempPath, folderPath, fileName, null);
+
+    internal async Task DeleteFileAsync(
+        string tempPath,
+        string folderPath,
+        string fileName,
+        AsyncEventHandler<FormDeleteFileEventArgs>? beforeDeleteFileAsync)
     {
         fileName = Path.GetFileName(fileName);
 
-        if (OnBeforeDeleteFileAsync != null)
+        var handlers = OnBeforeDeleteFileAsync + beforeDeleteFileAsync;
+        if (handlers is not null)
         {
             var args = new FormDeleteFileEventArgs(fileName);
-            await OnBeforeDeleteFileAsync(this, args);
+            foreach (var handler in Delegate.EnumerateInvocationList(handlers))
+                await handler(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
                 throw new JJMasterDataException(args.ErrorMessage);
