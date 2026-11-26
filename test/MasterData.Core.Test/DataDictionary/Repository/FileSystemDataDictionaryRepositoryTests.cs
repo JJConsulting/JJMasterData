@@ -222,6 +222,7 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
         if (asynchronous) await _repository.InsertOrReplaceAsync(element);
         else _repository.InsertOrReplace(element);
         Assert.Equal("Created", _repository.GetFormElement("Created").Name);
+        Assert.Contains("\n  \"name\": \"Created\"", File.ReadAllText(Path.Combine(_folder, "Created.json")));
     }
 
     [Theory]

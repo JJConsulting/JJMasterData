@@ -47,7 +47,7 @@ public class ElementExportService(DataDictionaryService dataDictionaryService)
 
                 var jsonFile = archive.CreateEntry($"{elementName}.json");
                 using var jsonFileStream = jsonFile.Open();
-                await JsonSerializer.SerializeAsync(jsonFileStream, formElement, JsonSerializerOptions.Default);
+                await JsonSerializer.SerializeAsync(jsonFileStream, formElement, JsonSerializerOptions);
             }
         }
         

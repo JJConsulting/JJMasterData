@@ -19,6 +19,11 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 /// </summary>
 public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataDictionaryOptions> options) : IDataDictionaryRepository
 {
+    private static readonly JsonSerializerOptions WriteOptions = new()
+    {
+        WriteIndented = true
+    };
+
     // Search the text users see, including accents, rather than JSON Unicode escape sequences.
     private static readonly JsonSerializerOptions SearchOptions = new()
     {
@@ -128,7 +133,7 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
         try
         {
             using (var stream = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-                JsonSerializer.Serialize(stream, formElement);
+                JsonSerializer.Serialize(stream, formElement, WriteOptions);
             File.Move(temporaryPath, path, overwrite: true);
         }
         finally
@@ -159,7 +164,7 @@ public class FileSystemDataDictionaryRepository(IOptionsSnapshot<FileSystemDataD
                              Share = FileShare.None,
                              Options = FileOptions.Asynchronous
                          }))
-                await JsonSerializer.SerializeAsync(stream, metadata);
+                await JsonSerializer.SerializeAsync(stream, metadata, WriteOptions);
             File.Move(temporaryPath, path, overwrite: true);
         }
         finally
